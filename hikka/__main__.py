@@ -46,9 +46,10 @@ else:
     log.init()
     try:
         from . import main
-    except ModuleNotFoundError:  # pragma: no cover
+    except ModuleNotFoundError as e:  # pragma: no cover
         print(
             "Error: you have not installed all dependencies correctly.\n"
+            f"{str(e)}\n"
             "Attempting dependencies installation... Just wait."
         )
 
@@ -56,9 +57,10 @@ else:
 
         try:
             from . import main
-        except ModuleNotFoundError:
+        except ModuleNotFoundError as e2:
             print(
                 "Error while installing dependencies. Please, do this manually!\n"
+                f"{str(e2)}\n"
                 "pip3 install -r requirements.txt"
             )
 
