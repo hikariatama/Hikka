@@ -25,7 +25,7 @@ class Strings:
         self._babel = babel
 
     def __getitem__(self, key):
-        return self._babel.getkey(self._prefix + key) or self._strings[key]
+        return self._babel.getkey(f"{self._prefix}{key}") or self._strings[key]
 
     def __call__(self, key, message=None):
         if isinstance(message, str):
