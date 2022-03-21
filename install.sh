@@ -2,7 +2,7 @@
 
 if [ ! -n "$BASH" ]; then
 	echo "Non-bash shell detected, fixing..."
-	bash -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/GeekTG/Friendly-Telegram/raw/master/install.sh) '"$*"
+	bash -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/hikariatama/Hikka/master/install.sh) '"$*"
 	exit $?
 fi
 
@@ -18,7 +18,7 @@ endspin() {
 
 runin() {
 	# Runs the arguments and spins once per line of stdout (tee'd to logfile), also piping stderr to logfile
-	{ "$@" 2>>../ftg-install.log || return $?; } | while read -r line; do
+	{ "$@" 2>>../hikka-install.log || return $?; } | while read -r line; do
 		spin
 		printf "%s\n" "$line" >>../ftg-install.log
 	done
@@ -26,19 +26,19 @@ runin() {
 
 runout() {
 	# Runs the arguments and spins once per line of stdout (tee'd to logfile), also piping stderr to logfile
-	{ "$@" 2>>ftg-install.log || return $?; } | while read -r line; do
+	{ "$@" 2>>hikka-install.log || return $?; } | while read -r line; do
 		spin
-		printf "%s\n" "$line" >>ftg-install.log
+		printf "%s\n" "$line" >>hikka-install.log
 	done
 }
 
 errorin() {
 	endspin "$@"
-	cat ../ftg-install.log
+	cat ../hikka-install.log
 }
 errorout() {
 	endspin "$@"
-	cat ftg-install.log
+	cat hikka-install.log
 }
 
 # Banner generated with following command:
@@ -69,9 +69,9 @@ printf '%s' "Installing now...  "
 
 spin
 
-touch ftg-install.log
+touch hikka-install.log
 if [ ! x"$SUDO_USER" = x"" ]; then
-	chown "$SUDO_USER:" ftg-install.log
+	chown "$SUDO_USER:" hikka-install.log
 fi
 
 if [ ! x"" = x"$DYNO" ] && ! command -v python >/dev/null; then
@@ -93,14 +93,14 @@ if [ ! x"" = x"$DYNO" ] && ! command -v python >/dev/null; then
 	export PATH="/app/.heroku/python/bin:$PATH" # Prefer the bootstrapped python, incl. pip, over the system one.
 fi
 
-if [ -d "Friendly-Telegram/friendly-telegram" ]; then
-	cd Friendly-Telegram || {
+if [ -d "Hikka/hikka" ]; then
+	cd Hikka || {
 		endspin "Error: Install git package and re-run installer"
 		exit 6
 	}
 	DIR_CHANGED="yes"
 fi
-if [ -f ".setup_complete" ] || [ -d "friendly-telegram" -a ! x"" = x"$DYNO" ]; then
+if [ -f ".setup_complete" ] || [ -d "hikka" -a ! x"" = x"$DYNO" ]; then
 	# If ftg is already installed by this script, or its in Heroku and installed
 	PYVER=""
 	if echo "$OSTYPE" | grep -qE '^linux-gnu.*'; then
@@ -109,7 +109,7 @@ if [ -f ".setup_complete" ] || [ -d "friendly-telegram" -a ! x"" = x"$DYNO" ]; t
 	endspin "Existing installation detected"
 	clear
 	banner
-	"python$PYVER" -m friendly-telegram "$@"
+	"python$PYVER" -m hikka "$@"
 	exit $?
 elif [ "$DIR_CHANGED" = "yes" ]; then
 	cd ..
@@ -117,7 +117,7 @@ fi
 
 ##############################################################################
 
-echo "Installing..." >ftg-install.log
+echo "Installing..." >hikka-install.log
 
 if echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/debian_version' ]; then
 	PKGMGR="apt install -y"
@@ -126,7 +126,7 @@ if echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/debian_version' ]; the
 		if command -v sudo >/dev/null; then
 			endspin "Restarting as root..."
 			echo "Relaunching" >>ftg-install.log
-			sudo "$BASH" -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/GeekTG/Friendly-Telegram/raw/master/install.sh) '"$*"
+			sudo "$BASH" -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/hikariatama/Hikka/master/install.sh) '"$*"
 			exit $?
 		else
 			PKGMGR="true"
@@ -143,7 +143,7 @@ elif echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/arch-release' ]; the
 		if command -v sudo >/dev/null; then
 			endspin "Restarting as root..."
 			echo "Relaunching" >>ftg-install.log
-			sudo "$BASH" -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/GeekTG/Friendly-Telegram/raw/master/install.sh) '"$*"
+			sudo "$BASH" -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/hikariatama/Hikka/master/install.sh) '"$*"
 			exit $?
 		else
 			PKGMGR="true"
@@ -161,7 +161,7 @@ elif echo "$OSTYPE" | grep -qE '^darwin.*'; then
 	PKGMGR="brew install"
 	PYVER="3"
 else
-	endspin "Unrecognised OS. Please follow https://ftg.geektg.ml/#installation"
+	endspin "Unrecognised OS. Please follow https://t.me/hikka_talks"
 	exit 1
 fi
 
@@ -196,7 +196,7 @@ fi
 # shellcheck disable=SC2086
 ${SUDO_CMD}rm -rf Friendly-Telegram
 # shellcheck disable=SC2086
-runout ${SUDO_CMD}git clone https://github.com/GeekTG/Friendly-Telegram || {
+runout ${SUDO_CMD}git clone https://github.com/hikariatama/Hikka/ || {
 	errorout "Clone failed."
 	exit 3
 }
@@ -215,7 +215,7 @@ endspin "Installation successful. Launching setup interface..."
 rm -f ../ftg-install.log
 touch .setup_complete
 # shellcheck disable=SC2086,SC2015
-${SUDO_CMD}"python$PYVER" -m friendly-telegram "$@" || {
+${SUDO_CMD}"python$PYVER" -m hikka "$@" || {
 	echo "Python scripts failed"
 	exit 5
 }
