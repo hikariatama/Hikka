@@ -71,7 +71,6 @@
     }
 
     body {
-      /*background: linear-gradient(-45deg, #007700 0%, #004400 100%);*/
       transition: all 2s ease;
       background: #16181d;
     }
@@ -264,10 +263,7 @@
   </div>
   <div class="blur">
     <div class="title">Hikka</div>
-    <div class="description">Ultimate userbot.<br>Best <span style="color:#28a0dc">Telegram</span> userbot.<br><b>Ever</b>.</div>
-    <div class="center">
-      <div class="button" id="restart">Restart</div>
-    </div>
+    <div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.</div>
   </div>
   <div class="darken"></div>
   <div id="root">
@@ -280,37 +276,6 @@
 <script type="text/javascript">
   $(document).ready(function() {
       $('.bg').hide().delay(2000).fadeIn(500);
-  });
-  $("#restart").click(() => {
-    Swal.fire({
-      title: 'Are you sure, you want to restart?',
-      showCancelButton: true,
-      confirmButtonText: 'Restart',
-      showLoaderOnConfirm: true,
-      preConfirm: () => {
-        return fetch("/restart", {method: "POST"})
-          .then(function(response) {
-            $("#restart").fadeOut(100);
-            $(".description").html('Restarting...');
-            $(".bg").fadeOut(() => {
-              $(".bg").css({'background-image': 'url(https://github.com/hikariatama/assets/raw/master/moon.png)'});
-              $(".bg").delay(1000).fadeIn(500);
-            });
-            setTimeout(() => {
-              setInterval(() => {
-                fetch("/is_restart_complete", {method: "GET"})
-                .then(() => {window.location.reload();})
-              }, 1000);
-            }, 3000);
-          })
-          .catch(error => {
-            Swal.showValidationMessage(
-              'Restart failed: ' + error.toString()
-            )
-          })
-      },
-      allowOutsideClick: () => !Swal.isLoading()
-    })
   });
 </script>
 {% endblock %}

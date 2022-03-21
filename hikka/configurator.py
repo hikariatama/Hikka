@@ -38,22 +38,7 @@ def _safe_input(*args, **kwargs):
     try:
         return input(*args, **kwargs)
     except (EOFError, OSError):
-        print()
-        print("=" * 30)
-        print(
-            """
-Hello. If you are seeing this, it means YOU ARE DOING SOMETHING WRONG!
-It is likely that you tried to deploy to heroku - you cannot do this via the web interface.
-To deploy to heroku, go to https://friendly-telegram.gitlab.io/heroku to learn more
-
-If you're not using heroku, then you are using a non-interactive prompt but 
-you have not got a session configured, meaning authentication to Telegram is impossible.
-
-THIS ERROR IS YOUR FAULT. DO NOT REPORT IT AS A BUG!
-
-Goodbye."""
-        )
-        sys.exit(1)
+        raise    
     except KeyboardInterrupt:
         print()
         return None
