@@ -45,8 +45,4 @@ Also, check out the folder `docs` for developers' documentation
 
 ### Support
 
-We also have a dedicated Telegram support group. Got any doubts or issues while setting-up? Shoot 'em here! **Please
-read the docs first** tho, to make sure your question isn't already answered!
-
-[GeekTG Support Group](https://t.me/chat_ftg "Telegram").
-[Hikari Modules Support](https://t.me/hikari_chat "Telegram").
+[Support Group](https://t.me/hikka_talks "Telegram").
