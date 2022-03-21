@@ -528,7 +528,7 @@ class InlineManager:
                         await m.delete()
                         await r.delete()
 
-                         try:
+                        try:
                             m = await conv.send_file(photo)
                             r = await conv.get_response()
                         except Exception:
