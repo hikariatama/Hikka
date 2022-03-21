@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class HelpMod(loader.Module):
-    """Help module, made specifically for GeekTG with <3"""
+    """Help module, made specifically for Hikka with <3"""
 
     strings = {
         "name": "Help",
@@ -38,8 +38,8 @@ class HelpMod(loader.Module):
         "hidden_shown": "👓 <b>{} modules hidden, {} module shown:</b>\n{}\n{}",
         "ihandler": "\n🎹 <code>{}</code> 👉🏻 ",
         "undoc_ihandler": "🦥 No docs",
-        "joined": "👩‍💼 <b>Joined the</b> <a href='https://t.me/GeekTGChat'>support chat</a>",
-        "join": "👩‍💼 <b>Join the</b> <a href='https://t.me/GeekTGChat'>support chat</a>",
+        "joined": "👩‍💼 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "join": "👩‍💼 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
     }
 
     def __init__(self):
@@ -47,9 +47,9 @@ class HelpMod(loader.Module):
             "core_emoji",
             "▪️",
             lambda: "Core module bullet",
-            "geek_emoji",
+            "hikka_emoji",
             "🕶",
-            lambda: "Geek-only module bullet",
+            lambda: "Hikka-only module bullet",
             "plain_emoji",
             "▫️",
             lambda: "Plain module bullet"
@@ -236,7 +236,7 @@ class HelpMod(loader.Module):
             if core:
                 emoji = self.config['core_emoji']
             elif inline:
-                emoji = self.config['geek_emoji']
+                emoji = self.config['hikka_emoji']
             else:
                 emoji = self.config['plain_emoji']
 
@@ -292,17 +292,17 @@ class HelpMod(loader.Module):
         await utils.answer(message, f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}")
 
     async def supportcmd(self, message):
-        """Joins the support GeekTG chat"""
+        """Joins the support Hikka chat"""
         if await self.allmodules.check_security(
             message, security.OWNER | security.SUDO
         ):
-            await self._client(JoinChannelRequest("https://t.me/GeekTGChat"))
+            await self._client(JoinChannelRequest("https://t.me/hikka_talks"))
 
             try:
                 await self.inline.form(
                     self.strings("joined", message),
                     reply_markup=[
-                        [{"text": "👩‍💼 Chat", "url": "https://t.me/GeekTGChat"}]
+                        [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
                     ],
                     ttl=10,
                     message=message,
@@ -314,7 +314,7 @@ class HelpMod(loader.Module):
                 await self.inline.form(
                     self.strings("join", message),
                     reply_markup=[
-                        [{"text": "👩‍💼 Chat", "url": "https://t.me/GeekTGChat"}]
+                        [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
                     ],
                     ttl=10,
                     message=message,

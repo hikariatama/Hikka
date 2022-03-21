@@ -16,16 +16,16 @@ import os
 import git
 
 from telethon.utils import get_display_name
-from ..inline import GeekInlineQuery, rand
+from ..inline import InlineQuery, rand
 
 logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class GeekInfoMod(loader.Module):
-    """Show userbot info (geek3.1.0alpha+)"""
+class HikaiInfoMod(loader.Module):
+    """Show userbot info"""
 
-    strings = {"name": "GeekInfo"}
+    strings = {"name": "HikariInfo"}
 
     def get(self, *args) -> dict:
         return self._db.get(self.strings["name"], *args)
@@ -40,11 +40,11 @@ class GeekInfoMod(loader.Module):
         self.markup = aiogram.types.inline_keyboard.InlineKeyboardMarkup()
         self.markup.row(
             aiogram.types.inline_keyboard.InlineKeyboardButton(
-                "🤵‍♀️ Support chat", url="https://t.me/chat_ftg"
+                "🤵‍♀️ Support chat", url="https://t.me/hikka_talks"
             )
         )
 
-    async def info_inline_handler(self, query: GeekInlineQuery) -> None:
+    async def info_inline_handler(self, query: InlineQuery) -> None:
         """
         Send userbot info
         @allow: all
@@ -89,10 +89,10 @@ class GeekInfoMod(loader.Module):
                     description="ℹ This will not compromise any sensitive data",
                     input_message_content=aiogram.types.input_message_content.InputTextMessageContent(
                         f"""
-<b>🕶 GeekTG Userbot</b>
+<b>👩‍🎤 Hikka Userbot</b>
 <b>🤴 Owner: <a href="tg://user?id={self._me.id}">{get_display_name(self._me)}</a></b>\n
 <b>🔮 Version: </b><i>{".".join(list(map(str, list(main.__version__))))}</i>
-<b>🧱 Build: </b><a href="https://github.com/GeekTG/Friendly-Telegram/commit/{ver}">{ver[:8] or "Unknown"}</a>
+<b>🧱 Build: </b><a href="https://github.com/hikariatama/Hikka/commit/{ver}">{ver[:8] or "Unknown"}</a>
 <b>{upd}</b>
 
 <b>{platform}</b>
@@ -100,7 +100,7 @@ class GeekInfoMod(loader.Module):
                         "HTML",
                         disable_web_page_preview=True,
                     ),
-                    thumb_url="https://github.com/GeekTG/Friendly-Telegram/raw/master/friendly-telegram/bot_avatar.png",
+                    thumb_url="https://github.com/hikariatama/Hikka/raw/master/hikka/bot_avatar.png",
                     thumb_width=128,
                     thumb_height=128,
                     reply_markup=self.markup,

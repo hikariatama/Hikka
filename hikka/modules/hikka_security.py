@@ -41,11 +41,11 @@ def chunks(lst: list, n: int) -> List[list]:
 
 
 @loader.tds
-class GeekSecurityMod(loader.Module):
-    """Control security settings (geek3.0.8alpha+)"""
+class HikkaSecurityMod(loader.Module):
+    """Control security settings"""
 
     strings = {
-        "name": "GeekSecurity",
+        "name": "HikkaSecurity",
         "no_command": "🚫 <b>Command </b><code>{}</code><b> not found!</b>",
         "permissions": "🔐 <b>Here you can configure permissions for </b><code>{}{}</code>",
         "close_menu": "🙈 Close this menu",
@@ -103,7 +103,7 @@ class GeekSecurityMod(loader.Module):
         )
 
         self._me = (await client.get_me()).id
-        self._is_geek = hasattr(self, 'inline')
+        self._is_hikka = hasattr(self, 'inline')
 
     async def inline__switch_perm(
         self, call: aiogram.types.CallbackQuery, command: str, group: str, level: bool
@@ -286,7 +286,7 @@ class GeekSecurityMod(loader.Module):
         if isinstance(user, int):
             user = await self._client.get_entity(user)
 
-        if self._is_geek and not confirmed:
+        if self._is_hikka and not confirmed:
             await self.inline.form(
                 self.strings("warning").format(
                     user.id, utils.escape_html(get_display_name(user)), group
@@ -320,7 +320,7 @@ class GeekSecurityMod(loader.Module):
             utils.escape_html(get_display_name(user)),
         )
 
-        if not self._is_geek:
+        if not self._is_hikka:
             m += f"\n\n{self.strings('restart')}"
 
         if isinstance(message, Message):
@@ -347,7 +347,7 @@ class GeekSecurityMod(loader.Module):
             utils.escape_html(get_display_name(user)),
         )
 
-        if not self._is_geek:
+        if not self._is_hikka:
             m += f"\n\n{self.strings('restart')}"
 
         await utils.answer(

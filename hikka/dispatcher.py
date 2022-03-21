@@ -14,8 +14,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#    Modded by GeekTG Team
-
 import asyncio
 import collections
 import logging
@@ -220,8 +218,8 @@ class CommandDispatcher:
                 my_id = (await message.client.get_me(True)).user_id
                 chat = await message.get_chat()
                 if (
-                    chat.title.startswith(f"friendly-{my_id}-")
-                    or chat.title == "geektg-log"
+                    chat.title.startswith(f"hikka-{my_id}-")
+                    or chat.title == "hikka-log"
                 ):
                     logging.warning("Ignoring message in datachat \\ logging chat")
                     return

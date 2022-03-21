@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 photo = io.BytesIO(
     requests.get(
-        "https://github.com/GeekTG/Friendly-Telegram/raw/master/friendly-telegram/bot_avatar.png"
+        "https://github.com/hikariatama/Hikka/raw/master/hikka/bot_avatar.png"
     ).content
 )
 photo.name = "avatar.png"
@@ -71,7 +71,7 @@ class BotMessage(AiogramMessage):
         super().__init__()
 
 
-class GeekInlineQuery:
+class InlineQuery:
     def __init__(self, inline_query: InlineQuery) -> None:
         self.inline_query = inline_query
 
@@ -266,7 +266,7 @@ class InlineManager:
         self._db = db
         self._allmodules = allmodules
 
-        self._token = db.get("geektg.inline", "bot_token", False)
+        self._token = db.get("hikka.inline", "bot_token", False)
 
         self._forms = {}
         self._galleries = {}
@@ -368,8 +368,8 @@ class InlineManager:
             await m.delete()
             await r.delete()
 
-            # Set its name to user's name + GeekTG Userbot
-            m = await conv.send_message(f"🕶 GeekTG Userbot of {self._name}")
+            # Set its name to user's name + Hikka Userbot
+            m = await conv.send_message(f"👩‍🎤 Hikka Userbot of {self._name}")
             r = await conv.get_response()
 
             await m.delete()
@@ -377,7 +377,7 @@ class InlineManager:
 
             # Generate and set random username for bot
             uid = rand(6)
-            username = f"geektg_{uid}_bot"
+            username = f"hikka_{uid}_bot"
 
             m = await conv.send_message(username)
             r = await conv.get_response()
@@ -451,7 +451,7 @@ class InlineManager:
 
             for row in r.reply_markup.rows:
                 for button in row.buttons:
-                    if re.search(r"@geektg_[0-9a-zA-Z]{6}_bot", button.text):
+                    if re.search(r"@hikka_[0-9a-zA-Z]{6}_bot", button.text):
                         m = await conv.send_message(button.text)
                         r = await conv.get_response()
 
@@ -471,7 +471,7 @@ class InlineManager:
                         token = r.raw_text.splitlines()[1]
 
                         # Save token to database, now this bot is ready-to-use
-                        self._db.set("geektg.inline", "bot_token", token)
+                        self._db.set("hikka.inline", "bot_token", token)
                         self._token = token
 
                         await m.delete()
@@ -491,7 +491,7 @@ class InlineManager:
                         await m.delete()
                         await r.delete()
 
-                        m = await conv.send_message("GeekQuery")
+                        m = await conv.send_message("HikkaQuery")
                         r = await conv.get_response()
 
                         await m.delete()
@@ -561,7 +561,7 @@ class InlineManager:
             await self._stop()
             logger.error("Got polling conflict. Attempting token revocation...")
 
-        self._db.set("geektg.inline", "bot_token", None)
+        self._db.set("hikka.inline", "bot_token", None)
         self._token = None
         if inited:
             asyncio.ensure_future(self._reassert_token())
@@ -606,7 +606,7 @@ class InlineManager:
         try:
             m = await self._client.send_message(self.bot_username, "/start")
         except (InputUserDeactivatedError, ValueError):
-            self._db.set("geektg.inline", "bot_token", None)
+            self._db.set("hikka.inline", "bot_token", None)
             self._token = False
 
             if not after_break:
@@ -811,7 +811,7 @@ class InlineManager:
             ):
                 continue
 
-            instance = GeekInlineQuery(inline_query)
+            instance = InlineQuery(inline_query)
 
             for query_text, query_func in mod.inline_handlers.items():
                 if inline_query.query.split()[
@@ -899,7 +899,7 @@ class InlineManager:
             [
                 InlineQueryResultArticle(
                     id=rand(20),
-                    title="GeekTG",
+                    title="Hikka",
                     input_message_content=InputTextMessageContent(
                         self._forms[query]["text"],
                         "HTML",
