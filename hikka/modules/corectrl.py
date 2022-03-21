@@ -14,8 +14,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#    Modded by GeekTG Team
-
 import os
 
 import telethon
@@ -51,9 +49,7 @@ class CoreMod(loader.Module):
         "packs_cleared": "<b>✅ Translations cleared</b>",
         "lang_set": "<b>✅ Language changed</b>",
         "db_cleared": "<b>✅ Database cleared</b>",
-        "geek": "🕶 <b>Congrats! You are Geek!</b>\n\n<b>GeekTG version: {}.{}.{}</b>\n<b>Branch: master</b>",
-        "geek_beta": "🕶 <b>Congrats! You are Geek!</b>\n\n<b>GeekTG version: {}.{}.{}beta</b>\n<b>Branch: beta</b>\n\n<i>🔮 You're using the unstable branch (<b>beta</b>). You receive fresh but untested updates. Report any bugs to @chat_ftg or @hikari_chat</i>",
-        "geek_alpha": "🕶 <b>Congrats! You are Geek!</b>\n\n<b>GeekTG version: {}.{}.{}alpha</b>\n<b>Branch: alpha</b>\n\n<i>🔮 You're using <b><u>very</u></b> unstable branch (<b>alpha</b>). You receive fresh but untested updates. You <b><u>can't ask for help, only report bugs</u></b></i>",
+        "hikka": "👩‍🎤 <b>You are Hikka!</b>\n\n<b>Hikka version: {}.{}.{}</b>",
     }
 
     async def client_ready(self, client, db):
@@ -85,18 +81,11 @@ class CoreMod(loader.Module):
         module = self.allmodules.get_classname(module)
         return f"{str(chatid)}.{module}" if module else chatid
 
-    async def ftgvercmd(self, message: Message) -> None:
-        """Get GeekTG version"""
+    async def hikkacmd(self, message: Message) -> None:
+        """Get Hikka version"""
         ver = getattr(main, "__version__", False)
-
-        branch = os.popen("git rev-parse --abbrev-ref HEAD").read()  # skipcq: BAN-B605, BAN-B607
-
-        if "beta" in branch:
-            await utils.answer(message, self.strings("geek_beta").format(*ver))
-        elif "alpha" in branch:
-            await utils.answer(message, self.strings("geek_alpha").format(*ver))
-        else:
-            await utils.answer(message, self.strings("geek").format(*ver))
+        
+        await utils.answer(message, self.strings("hikka").format(*ver))
 
     async def blacklistcmd(self, message: Message) -> None:
         """.blacklist [id]

@@ -131,10 +131,9 @@ dmypy.json
 
 *__pycache__
 *.pyc
-friendly-telegram/api_token.py
-friendly-telegram/FTG-Modules
-friendly-telegram/loaded_modules
-friendly-telegram*.session*
+hikka/api_token.py
+hikka/loaded_modules
+hikka*.session*
 database-*.json
 *.swp
 .setup_complete
@@ -142,7 +141,6 @@ database-*.json
 .idea/
 venv/
 data/
-mishase_cache/
 translations/
 api_token.txt
 .coverage

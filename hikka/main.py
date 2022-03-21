@@ -227,9 +227,9 @@ def get_phones(arguments):
     phones = {
         phone.split(":", maxsplit=1)[0]: phone
         for phone in map(
-            lambda f: f[18:-8],
+            lambda f: f[6:-8],
             filter(
-                lambda f: f.startswith("friendly-telegram-") and f.endswith(".session"),
+                lambda f: f.startswith("hikka-") and f.endswith(".session"),
                 os.listdir(
                     arguments.data_root or os.path.dirname(utils.get_base_dir())
                 ),
@@ -345,16 +345,16 @@ class SuperList(list):
             return list.__getattribute__(self, attr)
 
         for obj in self:  # TODO: find other way
-            _ = getattr(obj, attr)
-            if callable(_):
-                if asyncio.iscoroutinefunction(_):
+            attribute = getattr(obj, attr)
+            if callable(attribute):
+                if asyncio.iscoroutinefunction(attribute):
 
                     async def foobar(*args, **kwargs):
-                        return [await getattr(__, attr)(*args, **kwargs) for __ in self]
+                        return [await getattr(_, attr)(*args, **kwargs) for _ in self]
 
                     return foobar
                 return lambda *args, **kwargs: [
-                    getattr(__, attr)(*args, **kwargs) for __ in self
+                    getattr(_, attr)(*args, **kwargs) for _ in self
                 ]
 
             return [getattr(x, attr) for x in self]
@@ -504,7 +504,7 @@ def main():  # noqa: C901
                         os.path.join(
                             arguments.data_root
                             or os.path.dirname(utils.get_base_dir()),
-                            f"friendly-telegram-+{'X' * (len(client.phone) - 5)}{client.phone[-4:]}",
+                            f"hikka-+{'X' * (len(client.phone) - 5)}{client.phone[-4:]}",
                         )
                     )
 
@@ -531,7 +531,7 @@ def main():  # noqa: C901
                     "To deploy to heroku, go to\n"
                     "https://friendly-telegram.gitlab.io/heroku to learn more\n"
                     "\n"
-                    "In addition, you seem to have forked the friendly-telegram repo. THIS IS WRONG!\n"
+                    "In addition, you seem to have forked the hikka repo. THIS IS WRONG!\n"
                     "You should remove the forked repo, and read https://friendly-telegram.gitlab.io\n"
                     "\n"
                     "If you're not using Heroku, then you are using a non-interactive prompt but\n"
@@ -550,7 +550,7 @@ def main():  # noqa: C901
         else:
             session = os.path.join(
                 arguments.data_root or os.path.dirname(utils.get_base_dir()),
-                f"friendly-telegram{(('-' + phone_id) if phone_id else '')}",
+                f"hikka{(('-' + phone_id) if phone_id else '')}",
             )
 
         try:
@@ -572,7 +572,7 @@ def main():  # noqa: C901
                 f"Error initialising phone {(phone or 'unknown')} {','.join(ex.args)}\n"  # noqa
                 ": this is probably your fault. Try checking that this is the only instance running and"
                 "that the session is not copied. If that doesn't help, delete the file named"
-                f"'friendly-telegram-{phone if phone else ''}.session'"
+                f"'hikka-{phone if phone else ''}.session'"
             )
             continue
         except (TypeError, AuthKeyDuplicatedError):

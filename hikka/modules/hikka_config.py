@@ -6,11 +6,8 @@
     Licensed under the GNU GPLv3
 """
 
-# <3 title: GeekConfig [geek]
-# <3 pic: https://img.icons8.com/external-filled-outline-wichaiwi/64/000000/external-multitasking-generation-z-filled-outline-wichaiwi.png
-# <3 desc: Interactive configurator for GeekTG
-
-# scope: inline_content
+# meta pic: https://img.icons8.com/external-filled-outline-wichaiwi/64/000000/external-multitasking-generation-z-filled-outline-wichaiwi.png
+# scope: inline
 
 from .. import loader, utils
 from telethon.tl.types import Message
@@ -35,11 +32,11 @@ blacklist = [
 
 
 @loader.tds
-class GeekConfigMod(loader.Module):
-    """Interactive configurator for GeekTG"""
+class HikkaConfigMod(loader.Module):
+    """Interactive configurator for Hikka Userbot"""
 
     strings = {
-        "name": "GeekConfig",
+        "name": "HikkaConfig",
         "configure": "🎚 <b>Here you can configure your modules' configs</b>",
         "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>",
         "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>",

@@ -8,7 +8,7 @@
 
 # meta pic: https://img.icons8.com/pastel-glyph/344/sun-glasses--v2.png
 # scope: inline
-# scope: geektg_only
+# scope: hikka_only
 # meta developer: @hikariatama
 
 from .. import loader, utils, main
@@ -20,11 +20,11 @@ logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class GeekSettingsMod(loader.Module):
-    """Advanced settings for GeekTG"""
+class HikkaSettingsMod(loader.Module):
+    """Advanced settings for Hikka Userbot"""
 
     strings = {
-        "name": "GeekSettings",
+        "name": "HikkaSettings",
         "watchers": "👀 <b>Watchers:</b>\n\n<b>{}</b>",
         "mod404": "🚫 <b>Watcher {} not found</b>",
         "already_disabled": "👀 <b>Watcher {} is already disabled</b>",
@@ -35,7 +35,7 @@ class GeekSettingsMod(loader.Module):
         "no_cmd": "🔰 <b>Please, specify command to toggle NoNick for</b>",
         "cmd_nn": "🔰 <b>NoNick for </b><code>{}</code><b> is now {}</b>",
         "cmd404": "🔰 <b>Command not found</b>",
-        "inline_settings": "⚙️ <b>Here you can configure your GeekTG settings</b>",
+        "inline_settings": "⚙️ <b>Here you can configure your Hikka settings</b>",
         "confirm_update": "🪂 <b>Please, confirm that you want to update. Your userbot will be restarted</b>",
         "confirm_restart": "🔄 <b>Please, confirm that you want to restart</b>",
     }
@@ -227,7 +227,7 @@ class GeekSettingsMod(loader.Module):
         self._db.set(main.__name__, key, state)
 
         if key == "no_nickname" and state and self._db.get(main.__name__, "command_prefix", ".") == ".":
-            await call.answer("Warning! You enabled NoNick with default prefix! You may get muted in GeekTG chats. Change prefix or disable NoNick!", show_alert=True)
+            await call.answer("Warning! You enabled NoNick with default prefix! You may get muted in Hikka chats. Change prefix or disable NoNick!", show_alert=True)
         else:
             await call.answer("Configuration value saved!")
 

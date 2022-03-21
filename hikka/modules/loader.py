@@ -14,8 +14,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#    Modded by GeekTG Team
-
 import asyncio
 import importlib
 import inspect
@@ -163,9 +161,9 @@ class LoaderMod(loader.Module):
         "undoc_ihandler": "👁‍🗨 No docs",
         "chandler": "\n🖱 <i>Callback</i>: <code>{}</code> 👉🏻 ",
         "undoc_chandler": "👁‍🗨 No docs",
-        "inline_init_failed": """🚫 <b>This module requires GeekTG inline feature and initialization of InlineManager failed</b>
+        "inline_init_failed": """🚫 <b>This module requires Hikka inline feature and initialization of InlineManager failed</b>
 <i>Please, remove one of your old bots from @BotFather and restart userbot to load this module</i>""",
-        "version_incompatible": "🚫 <b>This module requires GeekTG {}+\nPlease, update with </b><code>.update</code>",
+        "version_incompatible": "🚫 <b>This module requires Hikka {}+\nPlease, update with </b><code>.update</code>",
         "non_heroku": "♓️ <b>This module is not supported on Heroku</b>",
         "ffmpeg_required": "🚫 <b>This module requires FFMPEG, which is not installed</b>",
         "developer": "\n🧑‍💻 <b>Developer: </b><code>{}</code>"
@@ -175,7 +173,7 @@ class LoaderMod(loader.Module):
         super().__init__()
         self.config = loader.ModuleConfig(
             "MODULES_REPO",
-            "https://raw.githubusercontent.com/GeekTG/FTG-Modules/main/",
+            "https://mods.hikariatama.ru/",
             lambda m: self.strings("repo_config_doc", m),
         )
 
@@ -320,8 +318,8 @@ class LoaderMod(loader.Module):
                 await utils.answer(message, self.strings("inline_init_failed"))
             return
 
-        if re.search(r"# ?scope: ?geektg_min", doc):
-            ver = re.search(r"# ?scope: ?geektg_min ([0-9]+\.[0-9]+\.[0-9]+)", doc).group(1)
+        if re.search(r"# ?scope: ?hikka_min", doc):
+            ver = re.search(r"# ?scope: ?hikka_min ([0-9]+\.[0-9]+\.[0-9]+)", doc).group(1)
             ver_ = tuple(map(int, ver.split('.')))
             if main.__version__ < ver_:
                 await utils.answer(message, self.strings('version_incompatible').format(ver))
@@ -336,7 +334,7 @@ class LoaderMod(loader.Module):
         else:
             uid = name.replace("%", "%%").replace(".", "%d")
 
-        module_name = "friendly-telegram.modules." + uid
+        module_name = "hikka.modules." + uid
 
         try:
             try:
@@ -605,11 +603,11 @@ class LoaderMod(loader.Module):
         without_prefix = []
 
         for mod in worked:
-            if not mod.startswith("friendly-telegram.modules.") or not mod:
+            if not mod.startswith("hikka.modules.") or not mod:
                 raise Exception("Assertion error")
 
             without_prefix += [
-                unescape_percent(mod[len("friendly-telegram.modules.") :])
+                unescape_percent(mod[len("hikka.modules.") :])
             ]
 
         it = set(self._db.get(__name__, "loaded_modules", [])).difference(
@@ -626,8 +624,8 @@ class LoaderMod(loader.Module):
     @loader.owner
     async def clearmodulescmd(self, message: Message) -> None:
         """Delete all installed modules"""
-        self._db.set("friendly-telegram.modules.loader", "loaded_modules", [])
-        self._db.set("friendly-telegram.modules.loader", "unloaded_modules", [])
+        self._db.set("hikka.modules.loader", "loaded_modules", [])
+        self._db.set("hikka.modules.loader", "unloaded_modules", [])
 
         await utils.answer(message, self.strings("all_modules_deleted", message))
 
