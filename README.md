@@ -1,9 +1,4 @@
-![image](https://user-images.githubusercontent.com/36935426/158629190-e1d54442-f480-4ce2-a58c-6d9f1d3055e8.png)
-
-A fast, easy to set up telegram userbot running Python 3 which runs on custom version
-the [Telethon](https://github.com/GeekTG/Telethon) Library.
-
-[![DeepSource](https://deepsource.io/gh/GeekTG/Friendly-Telegram.svg/?label=active+issues&show_trend=true&token=9Zxse6cjEZ0Hwh1PJJ3mMTWw)](https://deepsource.io/gh/GeekTG/Friendly-Telegram/?ref=repository-badge)
+![image](https://user-images.githubusercontent.com/36935426/159234834-d44e1bab-8e9c-499d-9169-c95dbe3ac250.png)
 
 ## Changes
 
