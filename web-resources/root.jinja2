@@ -1,0 +1,317 @@
+<!--
+    █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+    █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+    Copyright 2022 t.me/hikariatama
+    Licensed under the GNU GPLv3
+-->
+
+{% extends "base.jinja2" %}
+
+{% block head %}
+  <script src="https://cdn.jsdelivr.net/npm/scrypt-async@2.0.1/scrypt-async.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Open+Sans:wght@300&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Hubballi&display=swap');
+    .button {
+      border-radius: 5px;
+      padding: 10px 20px;
+      border: none;
+      color: #eee;
+      margin: 5px 0;
+      background: transparent;
+      border: 2px solid #aaa;
+      cursor: pointer;
+      transition: box-shadow .2s ease;
+      user-select: none;
+    }
+
+
+
+    .button:hover {
+      box-shadow: inset 5px 5px 3px rgba(255, 255, 255, .1),
+                  inset -5px -5px 3px rgba(255, 255, 255, .1);
+    }
+
+    .signin_block {
+      display: inline-block;
+    }
+
+    .signin_block ul {
+      margin: 0;
+      list-style: none;
+      padding: 0;
+    }
+
+    .signin_block li {
+      width: 100%;
+    }
+
+    .signin_block h1 {
+      margin: 0;
+      color: #eee;
+      font-size: 22px;
+      padding: 10px;
+      font-family: "Open Sans";
+    }
+
+    .hamburger, .menu {
+      display: none;
+    }
+  </style>
+
+  <style type="text/css">
+    body, html {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      /*background: linear-gradient(-45deg, #007700 0%, #004400 100%);*/
+      transition: all 2s ease;
+      background: #16181d;
+    }
+
+    #sky {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    #shootingstars {
+      margin: 0;
+      padding: 0;
+      width: 150vh;
+      height: 100vw;
+      position: fixed;
+      overflow: hidden;
+      transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 50%))
+        rotate(120deg);
+    }
+
+    .wish {
+      height: 2px;
+      top: 300px;
+      width: 100px;
+      margin: 0;
+      opacity: 0;
+      padding: 0;
+      background-color: white;
+      position: absolute;
+      background: linear-gradient(-45deg, white, rgba(0, 0, 255, 0));
+      filter: drop-shadow(0 0 6px white);
+      overflow: hidden;
+    }
+
+    .title {
+      font-size: 50px;
+      font-family: Hubballi;
+      text-align: center;
+      color: #fff;
+      width: 100%;
+      z-index: 2;
+      position: relative;
+      height: 50px;
+      line-height: 50px;
+    }
+
+    .description {
+      font-size: 24px;
+      color: #eee;
+      text-align: center;
+      width: 100%;
+      z-index: 2;
+      position: relative;
+      padding-top: 20px;
+      line-height: 1.3;
+      font-family: Hubballi;
+    }
+
+    .wrapper {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #root {
+      position: absolute;
+      top:  0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      margin: auto;
+    }
+
+    .darken {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: rgba(0, 0, 0, .1);
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      margin: auto;
+    }
+
+    .main_content {
+      display: none;
+    }
+
+    .center {
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      position: relative;
+      z-index: 2;
+      margin-top: 20px;
+    }
+
+    .blur {
+      padding: 4rem 8rem;
+      border-radius: 0.375rem;
+      background-color: rgba(22, 24, 29, .5);
+      border: 1px solid rgba(42, 46, 55, 1);
+      backdrop-filter: blur(6px);
+      position: relative;
+      z-index: 99;
+    }
+
+    .bg {
+      background: url(https://github.com/hikariatama/assets/raw/master/bg.png);
+      background-repeat: no-repeat;
+      background-size: contain;
+      width: 80vw;
+      height: 60vh;
+      position: absolute;
+      z-index: 1;
+      background-position: center;
+      display: none;
+    }
+
+    @media screen and (max-width: 736px) {
+      .blur {
+        width: 100%;
+        height: 100%;
+        padding: 1.5rem;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bg {
+        width: 100vh;
+        height: 100vw;
+        transform: rotate(90deg);
+      }
+    }
+    .invert {
+      animation: hue_rot 50s infinite ease, floating 5s infinite ease-in-out;
+    }
+
+    @keyframes hue_rot {
+      from {
+        filter: hue-rotate(0deg);
+      }
+
+      50% {
+        filter: hue-rotate(180deg)
+      }
+
+      100% {
+        filter: hue-rotate(0deg);
+      }
+    }
+
+    @keyframes floating {
+      from {
+        transform: translateY(-10px);
+      }
+
+      50% {
+        transform: translateY(10px);
+      }
+
+      to {
+        transform: translateY(-10px);
+      }
+    }
+
+  </style>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block after %}
+<div class="wrapper">
+  <div class="bg invert">
+    
+  </div>
+  <div class="blur">
+    <div class="title">GeekTG</div>
+    <div class="description">Ultimate userbot.<br>Best <span style="color:#28a0dc">Telegram</span> userbot.<br><b>Ever</b>.</div>
+    <div class="center">
+      <div class="button" id="restart">Restart</div>
+    </div>
+  </div>
+  <div class="darken"></div>
+  <div id="root">
+
+  
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('.bg').hide().delay(2000).fadeIn(500);
+  });
+  $("#restart").click(() => {
+    Swal.fire({
+      title: 'Are you sure, you want to restart?',
+      showCancelButton: true,
+      confirmButtonText: 'Restart',
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        return fetch("/restart", {method: "POST"})
+          .then(function(response) {
+            $("#restart").fadeOut(100);
+            $(".description").html('Restarting...');
+            $(".bg").fadeOut(() => {
+              $(".bg").css({'background-image': 'url(https://github.com/hikariatama/assets/raw/master/moon.png)'});
+              $(".bg").delay(1000).fadeIn(500);
+            });
+            setTimeout(() => {
+              setInterval(() => {
+                fetch("/is_restart_complete", {method: "GET"})
+                .then(() => {window.location.reload();})
+              }, 1000);
+            }, 3000);
+          })
+          .catch(error => {
+            Swal.showValidationMessage(
+              'Restart failed: ' + error.toString()
+            )
+          })
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    })
+  });
+</script>
+{% endblock %}
+

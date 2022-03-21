@@ -127,3 +127,34 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+*__pycache__
+*.pyc
+friendly-telegram/api_token.py
+friendly-telegram/FTG-Modules
+friendly-telegram/loaded_modules
+friendly-telegram*.session*
+database-*.json
+*.swp
+.setup_complete
+.tox
+.idea/
+venv/
+data/
+mishase_cache/
+translations/
+api_token.txt
+.coverage
+.vscode/
+ftg-install.log
+config.ini
+.cache
+config-*.json
+config.json
+*cache*.json
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.webm

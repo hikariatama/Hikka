@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+{% set title_s %}{% block title %}ERROR{% endblock %}{% endset %}
+
+<!--
+    Friendly Telegram (telegram userbot)
+    Copyright (C) 2018-2019 The Authors
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+	Modded by GeekNet team, t.me/hikariatama
+-->
+
+
+
+<html>
+  <head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
+    <title>GeekTG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.light_blue-deep_purple.min.css"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+      * {
+        --menuMargin: 10px;
+        --hamburgerSize: 40px;
+        --accent: #46753a;
+      }
+
+      .padded {
+        padding: 16px;
+      }
+      .scroll-to-top {
+        display: block;
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 99;
+      }
+      body {
+        background: #121212;
+      }
+
+      .menu {
+        width: 180px;
+        /*min-height: 30vh;*/
+        padding: 15px 10px 15px 15px;
+        border-radius: 28px;
+        background: #181818;
+        border-radius: 15px;
+        box-sizing: border-box;
+        margin: var(--menuMargin);
+        position: fixed;
+        z-index: 50;
+        /*left: -180px;*/
+        margin-left: calc(-180px - var(--menuMargin));
+        margin-top: calc(var(--menuMargin) * 2 + 32px);
+        transition: margin .3s cubic-bezier(.26,.46,.69,1.06);
+      }
+
+      .menu.toggled {
+        margin-left: var(--menuMargin);
+      }
+
+      .menu_item {
+        width: 100%;
+        min-height: 32px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background .1s ease;
+        background: transparent;
+        margin: 5px 0;
+        text-align: center;
+        display: flex;
+        user-select: none;
+        outline: none;
+      }
+
+      .menu_item:hover {
+        background: #202020;
+      }
+
+      .menu_item:active, .menu_item.toggled {
+        background: #262626;
+      }
+
+      .menu_item a {
+        color: var(--accent);
+        font-size: 15px;
+        text-decoration: none;
+        font-family: 'Open Sans';
+        line-height: 32px;
+      }
+
+      .menu_item i {
+        line-height: 32px;
+        color: #7b7b7b;
+        font-size: 20px;
+        margin-left: 10px;
+        margin-right: 5px;
+      }
+
+      .hamburger {
+        width: var(--hamburgerSize);
+        height: var(--hamburgerSize);
+        text-align: center;
+        border-radius: 50%;
+        margin: var(--menuMargin);
+        background: #181818;
+        color: #fff;
+        position: fixed;
+        cursor: pointer;
+        user-select: none;
+        outline: none;
+      }
+
+      .hamburger i {
+        line-height: var(--hamburgerSize);
+        color: var(--accent);
+      }
+
+      .main_content {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 20px;
+        padding-top: calc(var(--hamburgerSize) + var(--menuMargin) * 2);
+      }
+
+      @media screen and (max-width: 736px) {
+        .main_content {
+          padding: 15px;
+          padding-top: calc(var(--hamburgerSize) + var(--menuMargin) * 2);
+        }
+      }
+
+      #menu_img {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <link rel="icon" href="https://github.com/GeekTG/Friendly-Telegram/raw/master/friendly-telegram/bot_avatar.png">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <div class="hamburger">
+      <img src="https://github.com/GeekTG/Friendly-Telegram/raw/master/friendly-telegram/bot_avatar.png" id="menu_img">
+    </div>
+    <div class="menu">
+      <div class="menu_item" id="modules">
+        <i class="material-icons">extension</i> <a href="/">Modules</a>
+      </div>
+      <div class="menu_item" id="team">
+        <i class="material-icons">groups</i> <a href="/team">Admins</a>
+      </div>
+      <div class="menu_item" id="chat">
+        <i class="material-icons">textsms</i> <a href="tg://resolve?domain=chat_ftg">Chat</a>
+      </div>
+      <div class="menu_item" id="settings">
+        <i class="material-icons">toggle_on</i> <a href="/settings">Permissions</a>
+      </div>
+    </div>
+    <div class="main_content">
+      {% block content %}
+        <p><b>An internal error occured.</b></p>
+      {% endblock %}
+    </div>
+
+    {% block after %}
+
+    {% endblock %}
+
+    <script>
+      document.querySelector('.hamburger').onclick = () => {
+        document.querySelector('.menu').classList.toggle('toggled');
+      }
+
+      document.querySelectorAll('.menu_item').forEach((elem) => {
+        elem.onclick = (e) => {
+          document.querySelector('.menu').classList.remove('toggled');
+          e.currentTarget.querySelector('a').click();
+        }
+      })
+
+      path = window.location.href.split('/')[window.location.href.split('/').length - 1]
+      if(document.getElementById(path)) {
+        document.getElementById(path).classList.add('toggled');
+      } else {
+        document.querySelector('#modules').classList.add('toggled');
+      }
+    </script>
+
+  </body>
+</html>
