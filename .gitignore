@@ -141,7 +141,6 @@ database-*.json
 .idea/
 venv/
 data/
-translations/
 api_token.txt
 .coverage
 .vscode/
