@@ -41,10 +41,6 @@ errorout() {
 	cat hikka-install.log
 }
 
-# Banner generated with following command:
-# pyfiglet -f smslant -w 50 friendly telegram | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/`/\\`/g' | sed 's/^/printf "%s\\n" "/m;s/$/"/m'
-# Ugly, I know.
-
 banner() {
 	clear
 	clear
@@ -194,13 +190,13 @@ if [ ! x"$SUDO_USER" = x"" ]; then
 fi
 
 # shellcheck disable=SC2086
-${SUDO_CMD}rm -rf Friendly-Telegram
+${SUDO_CMD}rm -rf Hikka
 # shellcheck disable=SC2086
 runout ${SUDO_CMD}git clone https://github.com/hikariatama/Hikka/ || {
 	errorout "Clone failed."
 	exit 3
 }
-cd Friendly-Telegram || {
+cd Hikka || {
 	endspin "Error: Install git package and re-run installer"
 	exit 7
 }
