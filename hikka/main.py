@@ -218,6 +218,8 @@ def get_phones(arguments):
         )
     )
 
+    authtoken = {}
+
     if arguments.setup:
         authtoken = {}
     if arguments.tokens:
