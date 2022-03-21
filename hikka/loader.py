@@ -218,7 +218,6 @@ class Modules:
         self._initial_registration = True
         self.added_modules = None
         self.use_inline = use_inline
-        self._fs = "DYNO" not in os.environ
 
     def register_all(self, babelfish, mods=None):  # skipcq: PYL-W0613
         # TODO: remove babelfish
@@ -237,7 +236,7 @@ class Modules:
                 )
             ]
 
-            if self._fs and use_fs_for_modules():
+            if use_fs_for_modules():
                 mods += [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
@@ -288,7 +287,7 @@ class Modules:
 
         cls_name = ret.__class__.__name__
 
-        if self._fs and use_fs_for_modules():
+        if use_fs_for_modules():
             path = os.path.join(LOADED_MODULES_DIR, f"{cls_name}.py")
 
             if not os.path.isfile(path) and origin == "<string>":
@@ -490,7 +489,7 @@ class Modules:
                 worked += [module.__module__]
 
                 name = module.__class__.__name__
-                if self._fs and use_fs_for_modules():
+                if use_fs_for_modules():
                     path = os.path.join(LOADED_MODULES_DIR, f"{name}.py")
 
                     if os.path.isfile(path):
