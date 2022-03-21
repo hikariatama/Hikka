@@ -528,8 +528,15 @@ class InlineManager:
                         await m.delete()
                         await r.delete()
 
-                        m = await conv.send_file(photo)
-                        r = await conv.get_response()
+                         try:
+                            m = await conv.send_file(photo)
+                            r = await conv.get_response()
+                        except Exception:
+                            # In case user was not able to send photo to
+                            # BotFather, it is not a critical issue, so
+                            # just ignore it
+                            m = await conv.send_message("/cancel")
+                            r = await conv.get_response()
 
                         await m.delete()
                         await r.delete()
