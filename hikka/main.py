@@ -219,9 +219,6 @@ def get_phones(arguments):
     )
 
     authtoken = {}
-
-    if arguments.setup:
-        authtoken = {}
     if arguments.tokens:
         for token in arguments.tokens:
             phone = sorted(filter(lambda phone: ":" not in phone, phones.values()))[0]
@@ -595,8 +592,8 @@ async def amain(first, client, allclients, web, arguments):
             upd = r"Update required" if diff else r"Up-to-date"
 
             termux = bool(
-                os.popen('echo $PREFIX | grep -o "com.termux"').read()
-            )  # skipcq: BAN-B605, BAN-B607
+                os.popen('echo $PREFIX | grep -o "com.termux"').read()  # skipcq: BAN-B605, BAN-B607
+            )
             _platform = "Termux" if termux else "Unknown"
 
             logo1 = f"""
