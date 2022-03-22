@@ -1,8 +1,0 @@
-version: "3.9"
-services:
-  worker:
-    build: .
-    environment:
-      SESSION: $SESSION
-      API_ID: $API_ID
-      API_HASH: $API_HASH

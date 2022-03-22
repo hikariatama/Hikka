@@ -22,7 +22,11 @@ import sys
 import getpass
 import os
 
-if getpass.getuser() == "root" and "--root" not in " ".join(sys.argv):
+if (
+    getpass.getuser() == "root"
+    and "--root" not in " ".join(sys.argv)
+    and "OKTETO" not in os.environ
+):
     print("!" * 30)
     print("NEVER EVER RUN USERBOT FROM ROOT")
     print("THIS IS THE THREAD FOR NOT ONLY YOUR DATA, ")
@@ -53,7 +57,9 @@ else:
             "Attempting dependencies installation... Just wait."
         )
 
-        os.popen("pip3 install -r requirements.txt").read()  # skipcq: BAN-B605, BAN-B607
+        os.popen(
+            "pip3 install -r requirements.txt"
+        ).read()  # skipcq: BAN-B605, BAN-B607
 
         try:
             from . import main
