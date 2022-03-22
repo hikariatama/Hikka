@@ -53,7 +53,10 @@ class HikkaInfoMod(loader.Module):
         try:
             repo = git.Repo()
             ver = repo.heads[0].commit.hexsha
+        except Exception:
+            ver = "unknown"
 
+        try:
             diff = repo.git.log(["HEAD..origin/alpha", "--oneline"])
             upd = (
                 "⚠️ Update required </b><code>.update</code><b>"
@@ -61,25 +64,20 @@ class HikkaInfoMod(loader.Module):
                 else "✅ Up-to-date"
             )
         except Exception:
-            ver = "unknown"
             upd = ""
 
-        termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())  # skipcq: BAN-B605, BAN-B607
-        heroku = os.environ.get("DYNO", False)
+        is_termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())  # skipcq: BAN-B605, BAN-B607
+        is_okteto = "OKTETO" in os.environ
+        is_lavhost = "LAVHOST" in os.environ
 
-        platform = (
-            "🕶 Termux"
-            if termux
-            else (
-                "⛎ Heroku"
-                if heroku
-                else (
-                    f"✌️ lavHost {os.environ['LAVHOST']}"
-                    if "LAVHOST" in os.environ
-                    else "📻 VDS"
-                )
-            )
-        )
+        if is_termux:
+            platform = "🕶 Termux"
+        elif is_okteto:
+            platform = "☁️ Okteto"
+        elif is_lavhost:
+            platform = f"✌️ lavHost {os.environ['LAVHOST']}"
+        else:
+            platform = "📻 VDS"
 
         await query.answer(
             [
