@@ -372,6 +372,9 @@ class InlineManager:
             m = await conv.send_message(f"👩‍🎤 Hikka Userbot of {self._name}")
             r = await conv.get_response()
 
+            logger.debug(f">> {m.raw_text}")
+            logger.debug(f"<< {r.raw_text}")
+
             await m.delete()
             await r.delete()
 
@@ -382,6 +385,9 @@ class InlineManager:
             m = await conv.send_message(username)
             r = await conv.get_response()
 
+            logger.debug(f">> {m.raw_text}")
+            logger.debug(f"<< {r.raw_text}")
+
             await m.delete()
             await r.delete()
 
@@ -389,11 +395,17 @@ class InlineManager:
             m = await conv.send_message("/setuserpic")
             r = await conv.get_response()
 
+            logger.debug(f">> {m.raw_text}")
+            logger.debug(f"<< {r.raw_text}")
+
             await m.delete()
             await r.delete()
 
             m = await conv.send_message(username)
             r = await conv.get_response()
+
+            logger.debug(f">> {m.raw_text}")
+            logger.debug(f"<< {r.raw_text}")
 
             await m.delete()
             await r.delete()
@@ -401,12 +413,18 @@ class InlineManager:
             try:
                 m = await conv.send_file(photo)
                 r = await conv.get_response()
+
+                logger.debug(">> <Photo>")
+                logger.debug(f"<< {r.raw_text}")
             except Exception:
                 # In case user was not able to send photo to
                 # BotFather, it is not a critical issue, so
                 # just ignore it
                 m = await conv.send_message("/cancel")
                 r = await conv.get_response()
+
+                logger.debug(f">> {m.raw_text}")
+                logger.debug(f"<< {r.raw_text}")
 
             await m.delete()
             await r.delete()
@@ -438,6 +456,9 @@ class InlineManager:
 
             r = await conv.get_response()
 
+            logger.debug(f">> {m.raw_text}")
+            logger.debug(f"<< {r.raw_text}")
+
             await m.delete()
             await r.delete()
 
@@ -455,6 +476,9 @@ class InlineManager:
                         m = await conv.send_message(button.text)
                         r = await conv.get_response()
 
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
+
                         if revoke_token:
                             await m.delete()
                             await r.delete()
@@ -462,11 +486,17 @@ class InlineManager:
                             m = await conv.send_message("/revoke")
                             r = await conv.get_response()
 
+                            logger.debug(f">> {m.raw_text}")
+                            logger.debug(f"<< {r.raw_text}")
+
                             await m.delete()
                             await r.delete()
 
                             m = await conv.send_message(button.text)
                             r = await conv.get_response()
+
+                            logger.debug(f">> {m.raw_text}")
+                            logger.debug(f"<< {r.raw_text}")
 
                         token = r.raw_text.splitlines()[1]
 
@@ -482,11 +512,17 @@ class InlineManager:
                         m = await conv.send_message("/setinline")
                         r = await conv.get_response()
 
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
+
                         await m.delete()
                         await r.delete()
 
                         m = await conv.send_message(button.text)
                         r = await conv.get_response()
+
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
 
                         await m.delete()
                         await r.delete()
@@ -494,11 +530,17 @@ class InlineManager:
                         m = await conv.send_message("HikkaQuery")
                         r = await conv.get_response()
 
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
+
                         await m.delete()
                         await r.delete()
 
                         m = await conv.send_message("/setinlinefeedback")
                         r = await conv.get_response()
+
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
 
                         await m.delete()
                         await r.delete()
@@ -506,11 +548,17 @@ class InlineManager:
                         m = await conv.send_message(button.text)
                         r = await conv.get_response()
 
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
+
                         await m.delete()
                         await r.delete()
 
                         m = await conv.send_message("Enabled")
                         r = await conv.get_response()
+
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
 
                         await m.delete()
                         await r.delete()
@@ -519,11 +567,17 @@ class InlineManager:
                         m = await conv.send_message("/setuserpic")
                         r = await conv.get_response()
 
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
+
                         await m.delete()
                         await r.delete()
 
                         m = await conv.send_message(button.text)
                         r = await conv.get_response()
+
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
 
                         await m.delete()
                         await r.delete()
@@ -531,12 +585,18 @@ class InlineManager:
                         try:
                             m = await conv.send_file(photo)
                             r = await conv.get_response()
+
+                            logger.debug(">> <Photo>")
+                            logger.debug(f"<< {r.raw_text}")
                         except Exception:
                             # In case user was not able to send photo to
                             # BotFather, it is not a critical issue, so
                             # just ignore it
                             m = await conv.send_message("/cancel")
                             r = await conv.get_response()
+
+                            logger.debug(f">> {m.raw_text}")
+                            logger.debug(f"<< {r.raw_text}")
 
                         await m.delete()
                         await r.delete()
