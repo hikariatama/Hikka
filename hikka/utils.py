@@ -32,7 +32,12 @@ from telethon.tl.types import (
     MessageEntityMentionName,
     User,
     MessageMediaWebPage,
+    Channel,
 )
+
+from typing import Tuple
+
+from telethon.tl.functions.channels import CreateChannelRequest
 
 from . import __main__
 
@@ -218,7 +223,7 @@ async def answer(message, response, **kwargs):
     if not edit:
         kwargs.setdefault(
             "reply_to",
-            getattr(message, 'reply_to_msg_id', None),
+            getattr(message, "reply_to_msg_id", None),
         )
 
     parse_mode = telethon.utils.sanitize_parse_mode(
@@ -278,7 +283,7 @@ async def answer(message, response, **kwargs):
         else:
             kwargs.setdefault(
                 "reply_to",
-                getattr(message, 'reply_to_msg_id', None),
+                getattr(message, "reply_to_msg_id", None),
             )
             ret = (await message.client.send_file(message.chat_id, response, **kwargs),)
 
@@ -330,3 +335,46 @@ def merge(a, b):
         b[key] = a[key]
 
     return b
+
+
+async def asset_channel(
+    client: "TelegramClient", title: str, description: str  # noqa: F821
+) -> Tuple[Channel, bool]:
+    """
+    Create new channel (if needed) and return its entity
+    @client: Telegram client to create channel by
+    @title: Channel title
+    @description: Description
+    Returns peer and bool: is channel new or pre-existent
+    """
+    async for d in client.iter_dialogs():
+        if d.title == "acc-switcher-db":
+            return d.entity, False
+
+    return (
+        await client(
+            CreateChannelRequest(
+                "acc-switcher-db",
+                "This chat will handle your saved account via AccountSwitcher Module",
+                megagroup=True,
+            )
+        )
+    ).chats[0], True
+
+
+def get_link(user: User or Channel) -> str:
+    """Get telegram permalink to entity"""
+    return (
+        f"tg://user?id={user.id}"
+        if isinstance(user, User)
+        else (
+            f"tg://resolve?domain={user.username}"
+            if getattr(user, "username", None)
+            else ""
+        )
+    )
+
+
+def chunks(_list: list, n: int) -> list:
+    """Split provided `_list` into chunks of `n`"""
+    return [_list[i : i + n] for i in range(0, len(_list), n)]
