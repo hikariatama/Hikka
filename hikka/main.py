@@ -100,7 +100,9 @@ save_config_key("use_fs_for_modules", get_config_key("use_fs_for_modules"))
 
 
 def gen_port():
-    # TODO: Oktato 8080 default
+    if "OKTETO" in os.environ:
+        return 8080
+
     # But for own server we generate new free port, and assign to it
 
     port = get_config_key("port")

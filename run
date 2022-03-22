@@ -1,6 +1,0 @@
-echo "
-        █ █ █ █▄▀ █▄▀ ▄▀█
-        █▀█ █ █ █ █ █ █▀█
-        Is starting...
-"
-python3 -m hikka --root
