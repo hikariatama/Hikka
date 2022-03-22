@@ -1,4 +1,6 @@
-![image](https://user-images.githubusercontent.com/36935426/159234834-d44e1bab-8e9c-499d-9169-c95dbe3ac250.png)
+![image](https://user-images.githubusercontent.com/36935426/159540752-27c64526-b211-4043-826a-7649b855c598.png)
+
+[![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/#/deploy?repository=https://github.com/hikariatama/Hikka)
 
 ## Changes
 
@@ -6,11 +8,11 @@
 - Security improvements
 - UI/UX improvements
 - New core modules
-- Native FFmpeg support for Heroku
+- Okteto cloud deployment support
 - Quick bug fixes (compared to official FTG)
 - Inline Buttons, available not only for core modules, but for every developer
 - Inline Galleries for every developer
-- Full backward compatibility with older version and with official FTG modules
+- Full backward compatibility with older version and with official FTG\GeekTG modules
 
 ![img](https://user-images.githubusercontent.com/36935426/158634458-424021a3-27c4-494f-9db2-1266f161e7a2.png)
 
@@ -30,13 +32,13 @@
 
 - Python 3.8 or above
 - Requirements from `requirements.txt`
-- API ID and Hash from [Telegram](https://my.telegram.org/apps) or use default ones
-- Some basic knowledge of terminal
+- Optional: API ID and Hash from [Telegram](https://my.telegram.org/apps) or default ones, if your Telegram account is old enough
+- Optional: Some basic knowledge of terminal
 
 ### Documentation
 
-We've made docs to help you to set up the bot. They can be found [here](https://ftg.geektg.ml).
-Also, check out the folder `docs` for developers' documentation
+Check out the folder `docs` for developers' documentation
+User docs will be available soon
 
 ### Support
 
