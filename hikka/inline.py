@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 
 photo = io.BytesIO(
     requests.get(
-        "https://github.com/hikariatama/Hikka/raw/master/hikka/bot_avatar.png"
+        "https://github.com/hikariatama/Hikka/raw/master/assets/bot_pfp.png"
     ).content
 )
 photo.name = "avatar.png"
