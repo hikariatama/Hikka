@@ -1,7 +1,12 @@
 ![image](https://user-images.githubusercontent.com/36935426/159540752-27c64526-b211-4043-826a-7649b855c598.png)
 
 [![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/#/deploy?repository=https://github.com/hikariatama/Hikka)
-
+| Platform | Supported          |
+| ------- | ------------------ |
+|  [![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/#/deploy?repository=https://github.com/hikariatama/Hikka) | :white_check_mark: |
+| VDS   |  :white_check_mark:                |
+| Heroku   | :x: |
+| LavHost   | :x:                |
 ## Changes
 
 - Latest Telegram Layers with reactions, video stickers and other stuff
