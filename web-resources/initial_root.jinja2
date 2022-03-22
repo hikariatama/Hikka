@@ -28,8 +28,6 @@
       user-select: none;
     }
 
-
-
     .button:hover {
       box-shadow: inset 5px 5px 3px rgba(255, 255, 255, .1),
                   inset -5px -5px 3px rgba(255, 255, 255, .1);
@@ -71,7 +69,6 @@
     }
 
     body {
-      /*background: linear-gradient(-45deg, #007700 0%, #004400 100%);*/
       transition: all 2s ease;
       background: #16181d;
     }
@@ -303,24 +300,24 @@
   </div>
   <div class="blur">
     <div class="title">Hikka</div>
-    <div class="description">Ultimate userbot.<br>Best <span style="color:#28a0dc">Telegram</span> userbot.<br><b>Ever</b>.</div>
+    <div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.</div>
     <div class="center">
       <div class="button" id="get_started">Get started</div>
       <span id="block_api_id">
-        <label class="api_id" for="api_id">API ID: </label>
-        <input class="api_id" id="api_id" placeholder="2020" style="width: 4em;">
+        <label class="api_id" for="api_id">Telegram API ID: </label>
+        <input class="api_id" id="api_id" placeholder="xxxx" style="width: 4em;">
       </span>
       <span id="block_api_hash">
-        <label class="api_hash" for="api_hash">API HASH: </label>
-        <input class="api_hash" id="api_hash" placeholder="w7i07l02i6hymgg03ncq6esmr3t4c9kl" style="width: 24em;">
+        <label class="api_hash" for="api_hash">Telegram API hash: </label>
+        <input class="api_hash" id="api_hash" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" style="width: 24em;">
       </span>
       <span id="block_phone">
         <label class="phone" for="phone">Phone: </label>
-        <input class="phone" id="phone" placeholder="+79999999999" style="width: 12em;">
+        <input class="phone" id="phone" placeholder="xxxxxxxxxxx" style="width: 12em;">
       </span>
       <span id="block_2fa">
         <label class="_2fa" for="_2fa">2FA Password: </label>
-        <input class="_2fa" id="_2fa" placeholder="passw0rd" style="width: 12em;" type="password">
+        <input class="_2fa" id="_2fa" placeholder="password" style="width: 12em;" type="password">
       </span>
       <div id="continue_btn">Continue</div>
     </div>
@@ -333,291 +330,258 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
-  $(document).ready(function() {
-      $('.bg').hide().delay(2000).fadeIn(500);
-  });
-  $("#get_started").click(() => {
-    $("#get_started").fadeOut(500, () => {
-      cnt_btn.setAttribute('current-step', 'api_id');
-      $("#block_api_id").hide().fadeIn(500);
-      $("#continue_btn").hide().fadeIn(500);
+    $(document).ready(function() {
+        $('.bg').hide().delay(2000).fadeIn(500);
     });
-  });
-
-  function isInt(value) {
-    var x = parseFloat(value);
-    return !isNaN(value) && (x | 0) === x;
-  }
-
-  function isValidPhone(p) {
-    var phoneRe = /^[+]?\d{11,13}$/;
-    return phoneRe.test(p);
-  }
-
-  var _api_id = "", _api_hash = "", _phone = "", _2fa_pass = "", _tg_pass = "";
-
-  const cnt_btn = document.querySelector('#continue_btn');
-  cnt_btn.onclick = (e) => {
-    if(cnt_btn.disabled) return;
-
-    let step = cnt_btn.getAttribute('current-step');
-    if(step == "api_id") {
-      let api_id = document.querySelector('#api_id').value;
-      if(api_id.length < 4 || !isInt(api_id)) {
-        $(".bg").addClass("red_state");
-        cnt_btn.disabled = true;
-        setTimeout(() => {
-          cnt_btn.disabled = false;
-          $(".bg").removeClass("red_state");
-        }, 1000);
-        return;
-      }
-
-      _api_id = parseInt(api_id);
-      cnt_btn.setAttribute('current-step', 'api_hash');
-      $("#block_api_id").fadeOut(() => {
-        $("#block_api_hash").hide().fadeIn();
-      });
-    } else if (step == "api_hash") {
-      let api_hash = document.querySelector('#api_hash').value;
-      if(api_hash.length != 32) {
-        $(".bg").addClass("red_state");
-        cnt_btn.disabled = true;
-        setTimeout(() => {
-          cnt_btn.disabled = false;
-          $(".bg").removeClass("red_state");
-        }, 1000);
-        return;
-      }
-
-      _api_hash = api_hash;
-      fetch("/setApi", {
-        method: "PUT",
-        body: _api_hash + _api_id,
-        credentials: "include"
-      })
-      .then(function (response) {
-        if (!response.ok) {
-          Swal.fire({
-            'icon': 'error', 
-            'title': 'Error occured while saving credentials'
-          });
-        } else {
-          cnt_btn.setAttribute('current-step', 'phone');
-          $("#block_api_hash").fadeOut(() => {
-            $("#block_phone").hide().fadeIn();
-          });
-        }
-      })
-      .catch(function (response) {
-        Swal.fire({
-          'icon': 'error', 
-          'title': 'Error occured while saving credentials'
+    $("#get_started").click(() => {
+        $("#get_started").fadeOut(500, () => {
+            cnt_btn.setAttribute('current-step', 'api_id');
+            $("#block_api_id").hide().fadeIn(500);
+            $("#continue_btn").hide().fadeIn(500);
         });
-      });
-    } else if (step == "phone" || step == "2fa") {
-      if(step == "phone") {
-        let phone = document.querySelector('#phone').value;
-        if(!isValidPhone(phone)) {
-          $(".bg").addClass("red_state");
-          cnt_btn.disabled = true;
-          setTimeout(() => {
-            cnt_btn.disabled = false;
-            $(".bg").removeClass("red_state");
-          }, 1000);
-          return;
-        }
+    });
 
-        _phone = phone;
-        fetch("/sendTgCode", {method: "POST", body: _phone, credentials: "include"})
-        .then(function (response) {
-          if (!response.ok) {
-            Swal.fire({
-              'icon': 'error', 
-              'title': 'Code send failed'
-            });
-          } else {
-            Swal.fire({
-              title: 'Enter received code',
-              input: 'text',
-              inputAttributes: {
-                autocapitalize: 'off'
-              },
-              showCancelButton: false,
-              confirmButtonText: 'Confirm',
-              showLoaderOnConfirm: true,
-              preConfirm: (login) => {
-                _tg_pass = login
-                return fetch("/tgCode", {method: "POST", body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass})
-                  .then(function(response) {
-                    if (!response.ok) {
-                      console.log(response);
-                      if (response.status == 403) {
-                        Swal.showValidationMessage('Code is incorrect!');
-                      } else if (response.status == 401) {
-                        cnt_btn.setAttribute('current-step', '2fa');
-                        $("#block_phone").fadeOut(() => {
-                          $("#block_2fa").hide().fadeIn();
-                        });
-                      } else if (response.status == 404) {
-                        // Code expired, must re-send code request. Close dialog and wait for user action.
-                        Swal.showValidationMessage('Code is expired!');
-                      } else {
-                        Swal.showValidationMessage('Internal server error');
-                      }
-                    } else {
-                      Swal.fire({
-                        title: 'Enter Heroku token',
-                        text: 'Leave empty to NOT install to Heroku',
-                        input: 'text',
-                        inputAttributes: {
-                          autocapitalize: 'off'
-                        },
-                        showCancelButton: false,
-                        confirmButtonText: 'Confirm',
-                        showLoaderOnConfirm: true,
-                        preConfirm: (heroku_token) => {
-                          return fetch("/finishLogin", {method: "POST", body: heroku_token, credentials: "include"})
-                                .then(function (response) {
-                                  if (!response.ok) {
-                                    Swal.fire({
-                                      'icon': 'error',
-                                      'text': 'Login confirmation error'
-                                    })
-                                  } else {
-                                    Swal.fire({
-                                      'icon': 'success',
-                                      'text': 'Auth successful!',
-                                      'timer': 1000
-                                    });
-                                    setTimeout(() => {
-                                      window.location.reload();
-                                    }, 1500);
-                                  }
-                                })
-                                .catch(function (response) {
-                                  Swal.fire({
-                                    'icon': 'error',
-                                    'text': 'Login confirmation error'
-                                  })
-                                });
-                        },
-                        allowOutsideClick: () => !Swal.isLoading()
-                      })
-                    }
-                  })
-                  .catch(error => {
-                    Swal.showValidationMessage(
-                      'Auth failed: ' + error.toString()
-                    )
-                  })
-              },
-              allowOutsideClick: () => !Swal.isLoading()
-            })
-          }
-        })
-        .catch(function (error) {
-          Swal.fire({
-            'icon': 'error', 
-            'title': 'Code send failed'
-          });
-        });
-      } else {
-        let _2fa = document.querySelector('#_2fa').value;
-        _2fa_pass = _2fa;
-        fetch("/tgCode", {method: "POST", body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass})
-        .then(function(response) {
-          if (!response.ok) {
-            console.log(response);
-            if (response.status == 403) {
-              Swal.showValidationMessage('Code is incorrect!');
-            } else if (response.status == 401) {
-              cnt_btn.setAttribute('current-step', '2fa');
-              $("#block_phone").fadeOut(() => {
-                $("#block_2fa").hide().fadeIn();
-              });
-            } else if (response.status == 404) {
-              // Code expired, must re-send code request. Close dialog and wait for user action.
-              Swal.showValidationMessage('Code is expired!');
-            } else {
-              Swal.showValidationMessage('Internal server error');
-            }
-          } else {
-            {% if hosting %}
-              fetch("/finishLogin", {method: "POST", body: '', credentials: "include"})
-              .then(function (response) {
-                if (!response.ok) {
-                  Swal.fire({
-                    'icon': 'error',
-                    'text': 'Login confirmation error'
-                  })
-                } else {
-                  Swal.fire({
-                    'icon': 'success',
-                    'text': 'Auth successful!',
-                    'timer': 1000
-                  });
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 1500);
-                }
-              })
-              .catch(function (response) {
-                Swal.fire({
-                  'icon': 'error',
-                  'text': 'Login confirmation error'
-                })
-              });
-            {% else %}
-              Swal.fire({
-                title: 'Enter Heroku token',
-                text: 'Leave empty to NOT install to Heroku',
-                input: 'text',
-                inputAttributes: {
-                  autocapitalize: 'off'
-                },
-                showCancelButton: false,
-                confirmButtonText: 'Confirm',
-                showLoaderOnConfirm: true,
-                preConfirm: (heroku_token) => {
-                  return fetch("/finishLogin", {method: "POST", body: heroku_token, credentials: "include"})
-                        .then(function (response) {
-                          if (!response.ok) {
-                            Swal.fire({
-                              'icon': 'error',
-                              'text': 'Login confirmation error'
-                            })
-                          } else {
-                            Swal.fire({
-                              'icon': 'success',
-                              'text': 'Auth successful!',
-                              'timer': 1000
-                            });
-                            setTimeout(() => {
-                              window.location.reload();
-                            }, 1500);
-                          }
-                        })
-                        .catch(function (response) {
-                          Swal.fire({
-                            'icon': 'error',
-                            'text': 'Login confirmation error'
-                          })
-                        });
-                },
-                allowOutsideClick: () => !Swal.isLoading()
-              })
-            {% endif %}
-          }
-        })
-        .catch(error => {
-          Swal.showValidationMessage(
-            'Auth failed: ' + error.toString()
-          )
-        })
-      }
+    function isInt(value) {
+        var x = parseFloat(value);
+        return !isNaN(value) && (x | 0) === x;
     }
-  }
+
+    function isValidPhone(p) {
+        var phoneRe = /^[+]?\d{11,13}$/;
+        return phoneRe.test(p);
+    }
+
+    var _api_id = "",
+        _api_hash = "",
+        _phone = "",
+        _2fa_pass = "",
+        _tg_pass = "";
+
+    const cnt_btn = document.querySelector('#continue_btn');
+    cnt_btn.onclick = (e) => {
+        if (cnt_btn.disabled) return;
+
+        let step = cnt_btn.getAttribute('current-step');
+        if (step == "api_id") {
+            let api_id = document.querySelector('#api_id').value;
+            if (api_id.length < 4 || !isInt(api_id)) {
+                $(".bg").addClass("red_state");
+                cnt_btn.disabled = true;
+                setTimeout(() => {
+                    cnt_btn.disabled = false;
+                    $(".bg").removeClass("red_state");
+                }, 1000);
+                return;
+            }
+
+            _api_id = parseInt(api_id);
+            cnt_btn.setAttribute('current-step', 'api_hash');
+            $("#block_api_id").fadeOut(() => {
+                $("#block_api_hash").hide().fadeIn();
+            });
+        } else if (step == "api_hash") {
+            let api_hash = document.querySelector('#api_hash').value;
+            if (api_hash.length != 32) {
+                $(".bg").addClass("red_state");
+                cnt_btn.disabled = true;
+                setTimeout(() => {
+                    cnt_btn.disabled = false;
+                    $(".bg").removeClass("red_state");
+                }, 1000);
+                return;
+            }
+
+            _api_hash = api_hash;
+            fetch("/setApi", {
+                    method: "PUT",
+                    body: _api_hash + _api_id,
+                    credentials: "include"
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        Swal.fire({
+                            'icon': 'error',
+                            'title': 'Error occured while saving credentials'
+                        });
+                    } else {
+                        cnt_btn.setAttribute('current-step', 'phone');
+                        $("#block_api_hash").fadeOut(() => {
+                            $("#block_phone").hide().fadeIn();
+                        });
+                    }
+                })
+                .catch(function(response) {
+                    Swal.fire({
+                        'icon': 'error',
+                        'title': 'Error occured while saving credentials'
+                    });
+                });
+        } else if (step == "phone" || step == "2fa") {
+            if (step == "phone") {
+                let phone = document.querySelector('#phone').value;
+                if (!isValidPhone(phone)) {
+                    $(".bg").addClass("red_state");
+                    cnt_btn.disabled = true;
+                    setTimeout(() => {
+                        cnt_btn.disabled = false;
+                        $(".bg").removeClass("red_state");
+                    }, 1000);
+                    return;
+                }
+
+                _phone = phone;
+                fetch("/sendTgCode", {
+                        method: "POST",
+                        body: _phone,
+                        credentials: "include"
+                    })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            Swal.fire({
+                                'icon': 'error',
+                                'title': 'Code send failed'
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Enter received code',
+                                input: 'text',
+                                inputAttributes: {
+                                    autocapitalize: 'off'
+                                },
+                                showCancelButton: false,
+                                confirmButtonText: 'Confirm',
+                                showLoaderOnConfirm: true,
+                                preConfirm: (login) => {
+                                    _tg_pass = login
+                                    return fetch("/tgCode", {
+                                            method: "POST",
+                                            body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass
+                                        })
+                                        .then(function(response) {
+                                            if (!response.ok) {
+                                                console.log(response);
+                                                if (response.status == 403) {
+                                                    Swal.showValidationMessage('Code is incorrect!');
+                                                } else if (response.status == 401) {
+                                                    cnt_btn.setAttribute('current-step', '2fa');
+                                                    $("#block_phone").fadeOut(() => {
+                                                        $("#block_2fa").hide().fadeIn();
+                                                    });
+                                                } else if (response.status == 404) {
+                                                    // Code expired, must re-send code request. Close dialog and wait for user action.
+                                                    Swal.showValidationMessage('Code is expired!');
+                                                } else {
+                                                    Swal.showValidationMessage('Internal server error');
+                                                }
+                                            } else {
+                                                return fetch("/finishLogin", {
+                                                        method: "POST",
+                                                        body: heroku_token,
+                                                        credentials: "include"
+                                                    })
+                                                    .then(function(response) {
+                                                        if (!response.ok) {
+                                                            Swal.fire({
+                                                                'icon': 'error',
+                                                                'text': 'Login confirmation error'
+                                                            })
+                                                        } else {
+                                                            Swal.fire({
+                                                                'icon': 'success',
+                                                                'text': 'Auth successful!',
+                                                                'timer': 1000
+                                                            });
+                                                            setTimeout(() => {
+                                                                window.location.reload();
+                                                            }, 1500);
+                                                        }
+                                                    })
+                                                    .catch(function(response) {
+                                                        Swal.fire({
+                                                            'icon': 'error',
+                                                            'text': 'Login confirmation error'
+                                                        })
+                                                    });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            Swal.showValidationMessage(
+                                                'Auth failed: ' + error.toString()
+                                            )
+                                        })
+                                },
+                                allowOutsideClick: () => !Swal.isLoading()
+                            })
+                        }
+                    })
+                    .catch(function(error) {
+                        Swal.fire({
+                            'icon': 'error',
+                            'title': 'Code send failed'
+                        });
+                    });
+            } else {
+                let _2fa = document.querySelector('#_2fa').value;
+                _2fa_pass = _2fa;
+                fetch("/tgCode", {
+                        method: "POST",
+                        body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass
+                    })
+                    .then(function(response) {
+                        if (!response.ok) {
+                            console.log(response);
+                            if (response.status == 403) {
+                                Swal.showValidationMessage('Code is incorrect!');
+                            } else if (response.status == 401) {
+                                cnt_btn.setAttribute('current-step', '2fa');
+                                $("#block_phone").fadeOut(() => {
+                                    $("#block_2fa").hide().fadeIn();
+                                });
+                            } else if (response.status == 404) {
+                                // Code expired, must re-send code request. Close dialog and wait for user action.
+                                Swal.showValidationMessage('Code is expired!');
+                            } else {
+                                Swal.showValidationMessage('Internal server error');
+                            }
+                        } else {
+                            fetch("/finishLogin", {
+                                    method: "POST",
+                                    body: '',
+                                    credentials: "include"
+                                })
+                                .then(function(response) {
+                                    if (!response.ok) {
+                                        Swal.fire({
+                                            'icon': 'error',
+                                            'text': 'Login confirmation error'
+                                        })
+                                    } else {
+                                        Swal.fire({
+                                            'icon': 'success',
+                                            'text': 'Auth successful!',
+                                            'timer': 1000
+                                        });
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 1500);
+                                    }
+                                })
+                                .catch(function(response) {
+                                    Swal.fire({
+                                        'icon': 'error',
+                                        'text': 'Login confirmation error'
+                                    })
+                                });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            'Auth failed: ' + error.toString()
+                        )
+                    })
+            }
+        }
+    }
 </script>
 {% endblock %}
 
