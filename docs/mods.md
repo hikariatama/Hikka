@@ -113,22 +113,41 @@ relocate_entities(entities: ListLike, offset: int, text: str = None) -> list
 ```
 ---
 
-Один из самых частоиспользуемых методов. Отвечает на заданное сообщение. Если оно отправлено, то редактирует, если получено, то отвечает.
+Answer to a message (edit if possible, else send new message)
 ```python
 answer(message: Message, response: str, *args, **kwargs) -> Many
 ```
 ---
 
-Получает идентификатор пользователя, который является потенциальной целью выполнения команды
+Get possible target id
 ```python
 get_target(message: Message, arg_no: int = 0) -> int or None
 ```
 ---
 
-Объединение двух словарей
+Merge two dictionaries
 ```python
 merge(a: dict, b: dict) -> dict
 ```
+---
+
+Create new channel (if needed) and return its entity
+```python
+asset_channel(a: dict, b: dict) -> dict
+```
+---
+
+Get telegram permalink to entity
+```python
+get_link(a: dict, b: dict) -> dict
+```
+---
+
+Split provided `_list` into chunks of `n`
+```python
+chunks(a: dict, b: dict) -> dict
+```
+
 
 
 ## strings
