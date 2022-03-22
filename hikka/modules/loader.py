@@ -240,7 +240,7 @@ class LoaderMod(loader.Module):
             preset = "minimal"
 
         r = await utils.run_sync(
-            requests.get, self.config["MODULES_REPO"] + "/" + preset + ".txt"
+            requests.get, self.config["MODULES_REPO"].strip("/") + "/" + preset + ".txt"
         )
         r.raise_for_status()
         return set(filter(lambda x: x, r.text.split("\n")))
@@ -250,7 +250,7 @@ class LoaderMod(loader.Module):
             if urllib.parse.urlparse(module_name).netloc:
                 url = module_name
             else:
-                url = self.config["MODULES_REPO"] + module_name + ".py"
+                url = self.config["MODULES_REPO"].strip("/") + "/" + module_name + ".py"
 
             r = await utils.run_sync(requests.get, url)
 
