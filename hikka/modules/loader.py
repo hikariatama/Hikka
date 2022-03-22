@@ -31,6 +31,7 @@ from telethon.tl.types import Message
 import requests
 
 from .. import loader, utils, main
+from ..compat import geek
 
 logger = logging.getLogger(__name__)
 
@@ -335,6 +336,8 @@ class LoaderMod(loader.Module):
             uid = name.replace("%", "%%").replace(".", "%d")
 
         module_name = "hikka.modules." + uid
+
+        doc = geek.compat(doc)
 
         try:
             try:
