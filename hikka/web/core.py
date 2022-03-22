@@ -41,8 +41,11 @@ class Web(initial_setup.Web, root.Web):
             filters={"getdoc": inspect.getdoc, "ascii": ascii},
             loader=jinja2.FileSystemLoader("web-resources"),
         )
+        self.app["static_root_url"] = "/static"
+
         super().__init__(**kwargs)
         self.app.router.add_get("/favicon.ico", self.favicon)
+        self.app.router.add_static("/static/", "web-resources/static")
 
     async def start_if_ready(self, total_count, port):
         if total_count <= len(self.client_data):

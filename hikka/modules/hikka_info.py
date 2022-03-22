@@ -22,10 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class HikaiInfoMod(loader.Module):
+class HikkaInfoMod(loader.Module):
     """Show userbot info"""
 
-    strings = {"name": "HikariInfo"}
+    strings = {"name": "HikkaInfo"}
 
     def get(self, *args) -> dict:
         return self._db.get(self.strings["name"], *args)
@@ -100,7 +100,7 @@ class HikaiInfoMod(loader.Module):
                         "HTML",
                         disable_web_page_preview=True,
                     ),
-                    thumb_url="https://github.com/hikariatama/Hikka/raw/master/hikka/bot_avatar.png",
+                    thumb_url="https://github.com/hikariatama/Hikka/raw/master/assets/hikka_pfp.png",
                     thumb_width=128,
                     thumb_height=128,
                     reply_markup=self.markup,
