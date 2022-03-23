@@ -8,14 +8,14 @@ import json
 import os
 from typing import Any
 
-from .. import main
+from . import main
 
 ORIGIN = "/".join(main.__file__.split("/")[:-2])
 
 logger = logging.getLogger(__name__)
 
 
-class Database:
+class Database(dict):
     def __init__(self, client):
         self._client = client
         self._me = None
@@ -24,9 +24,13 @@ class Database:
         self._assets_already_exists = False
         self.close = lambda: None
 
+    def __repr__(self):
+        return object.__repr__(self)
+
     async def init(self):
         self._me = await self._client.get_me()
         self._db_path = os.path.join(ORIGIN, f"config-{self._me.id}.json")
+        self.read()
 
     async def _find_asset_channel(self) -> Channel:
         async for dialog in self._client.iter_dialogs(None, ignore_migrated=True):
@@ -54,23 +58,26 @@ class Database:
                 )
             ).chats[0]
 
-    async def read(self) -> str:
+    def read(self) -> str:
         """
         Read database
         """
         try:
             with open(self._db_path, "r", encoding="utf-8") as f:
-                return json.loads(f.read())
+                data = json.loads(f.read())
+                self.update(**data)
+                return data
         except (FileNotFoundError, json.decoder.JSONDecodeError):
+            logger.exception("Database read failed! Creating new one...")
             return {}
 
-    async def save(self, data: str) -> bool:
+    def save(self) -> bool:
         """
         Save database
         """
         try:
             with open(self._db_path, "w", encoding="utf-8") as f:
-                f.write(data or "{}")
+                f.write(json.dumps(self))
         except Exception:
             logger.exception("Database save failed!")
             return False
