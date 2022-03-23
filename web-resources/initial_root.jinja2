@@ -203,7 +203,6 @@
                                             } else {
                                                 return fetch("/finishLogin", {
                                                         method: "POST",
-                                                        body: heroku_token,
                                                         credentials: "include"
                                                     })
                                                     .then(function(response) {
@@ -273,7 +272,6 @@
                         } else {
                             fetch("/finishLogin", {
                                     method: "POST",
-                                    body: '',
                                     credentials: "include"
                                 })
                                 .then(function(response) {
