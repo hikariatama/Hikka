@@ -1,9 +1,12 @@
 """
-    █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-    █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 
-    Copyright 2022 t.me/hikariatama
-    Licensed under the GNU GPLv3
+© Copyright 2022
+https://t.me/hikariatama
+
+🔒 Licensed under the GNU GPLv3
+🌐 https://www.gnu.org/licenses/agpl-3.0.html
 """
 
 # meta pic: https://img.icons8.com/fluency/48/000000/chatbot.png
@@ -48,7 +51,7 @@ class HelpMod(loader.Module):
             "▪️",
             lambda: "Core module bullet",
             "hikka_emoji",
-            "🕶",
+            "👩‍🎤",
             lambda: "Hikka-only module bullet",
             "plain_emoji",
             "▫️",
@@ -191,13 +194,6 @@ class HelpMod(loader.Module):
 
         reply = self.strings("all_header").format(count, len(hidden) if not force else 0)
         shown_warn = False
-        cats = {}
-
-        for mod_name, cat in self._db.get("Help", "cats", {}).items():
-            if cat not in cats:
-                cats[cat] = []
-
-            cats[cat].append(mod_name)
 
         plain_ = []
         core_ = []
@@ -272,10 +268,10 @@ class HelpMod(loader.Module):
 
             if commands or icommands:
                 tmp += " )"
-                if inline:
-                    inline_ += [tmp]
-                elif core:
+                if core:
                     core_ += [tmp]
+                elif inline:
+                    inline_ += [tmp]
                 else:
                     plain_ += [tmp]
             elif not shown_warn and (mod.commands or mod.inline_handlers):

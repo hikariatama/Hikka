@@ -14,8 +14,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#    Modded by GeekTG Team
-
 # pylint: disable=R,C,W0613,W0212 # This is bad code, just let it be.
 
 import asyncio

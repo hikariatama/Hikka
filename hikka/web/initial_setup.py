@@ -14,8 +14,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#    Modded by Hikari
-#    Fuck-off haters
+"""
+█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+© Copyright 2022
+https://t.me/hikariatama
+
+🔒 Licensed under the GNU GPLv3
+🌐 https://www.gnu.org/licenses/agpl-3.0.html
+"""
+
 import asyncio
 import collections
 import os
@@ -154,5 +163,7 @@ class Web:
     async def finish_login(self, request):
         if not self.clients:
             return web.Response(status=400)
+
         self.clients_set.set()
+
         return web.Response()
