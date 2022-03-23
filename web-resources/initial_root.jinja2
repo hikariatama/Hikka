@@ -1,312 +1,122 @@
 <!--
-    █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-    █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+		█ █ ▀ █▄▀ ▄▀█ █▀█ ▀		▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+		█▀█ █ █ █ █▀█ █▀▄ █ ▄	█▀█	█	█▀█ █ ▀ █ █▀█
 
-    Copyright 2022 t.me/hikariatama
-    Licensed under the GNU GPLv3
+		Copyright 2022 t.me/hikariatama
+		Licensed under the GNU GPLv3
 -->
 
 {% extends "base.jinja2" %}
 
 {% block head %}
-  <script src="https://cdn.jsdelivr.net/npm/scrypt-async@2.0.1/scrypt-async.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/scrypt-async@2.0.1/scrypt-async.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <link rel="stylesheet" href="{{ static("base.css") }}">
+	<link href="https://cdn.jsdelivr.net/npm/css.gg/icons/all.css" rel="stylesheet">
+
+	<link rel="stylesheet" href="{{ static("base.css") }}">
+
+	<style>
+		.button i {
+			margin-left: .5em;
+		}
+
+		.button {
+			margin: 10px 5px;
+		}
+
+		.mountains {
+			display: none;
+		}
+	</style>
 {% endblock %}
 
 {% block content %}
 {% endblock %}
 
 {% block after %}
+<canvas class="mountains"></canvas>
 <div class="wrapper">
-  <div class="bg invert">
-    
-  </div>
-  <div class="blur">
-    <div class="title">Hikka</div>
-    <div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.</div>
-    <div class="center">
-      <div class="button" id="get_started">Get started</div>
-      <span id="block_api_id">
-        <label class="api_id" for="api_id">Telegram API ID: </label>
-        <input class="api_id" id="api_id" placeholder="••••" style="width: 4em;">
-      </span>
-      <span id="block_api_hash">
-        <label class="api_hash" for="api_hash">Telegram API hash: </label>
-        <input class="api_hash" id="api_hash" placeholder="••••••••••••••••••••••••••••••••" style="width: 24em;">
-      </span>
-      <span id="block_phone">
-        <label class="phone" for="phone">Phone: </label>
-        <input class="phone" id="phone" placeholder="••••••••••••" style="width: 12em;">
-      </span>
-      <span id="block_2fa">
-        <label class="_2fa" for="_2fa">2FA Password: </label>
-        <input class="_2fa" id="_2fa" placeholder="password" style="width: 12em;" type="password">
-      </span>
-      <div id="continue_btn">Continue</div>
-    </div>
-  </div>
-  <div id="root">
+	<div class="blur">
+		<div class="title">Hikka</div>
+		<div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.</div>
+		<div class="center">
+			<div class="button" id="get_started">
+				{% if hosting %}
+					<div class="horiz_center">
+						<div class="vert_center">
+							Get started
+						</div>
 
-  
-  </div>
+						<div class="vert_center">
+							<i class="gg-arrow-right-r"></i>
+						</div>
+					</div>
+				{% else %}
+					<div class="horiz_center">
+						<div class="vert_center">
+							Add phone
+						</div>
+
+						<div class="vert_center">
+							<i class="gg-add-r"></i>
+						</div>
+					</div>
+				{% endif %}
+			</div>
+			{% if skip_creds %}
+				<div class="button" id="enter_api">
+					<div class="horiz_center">
+						<div class="vert_center">
+							Change API Creds
+						</div>
+
+						<div class="vert_center">
+							<i class="gg-brackets"></i>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			<span id="block_api_id">
+				<label class="api_id" for="api_id">Telegram API ID: </label>
+				<input class="api_id" id="api_id" placeholder="••••" style="width: 4em;">
+			</span>
+			<span id="block_api_hash">
+				<label class="api_hash" for="api_hash">Telegram API hash: </label>
+				<input class="api_hash" id="api_hash" placeholder="••••••••••••••••••••••••••••••••" style="width: 24em;">
+			</span>
+			<span id="block_phone">
+				<label class="phone" for="phone">Phone: </label>
+				<input class="phone" id="phone" placeholder="••••••••••••" style="width: 12em;">
+			</span>
+			<span id="block_2fa">
+				<label class="_2fa" for="_2fa">2FA Password: </label>
+				<input class="_2fa" id="_2fa" placeholder="password" style="width: 12em;" type="password">
+			</span>
+		</div>
+
+		<div class="horiz_center">
+			<div id="continue_btn" class="button">
+				<div class="horiz_center">
+					<div class="vert_center">
+						Continue
+					</div>
+
+					<div class="vert_center">
+						<i class="gg-arrow-right-r"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="root">
+
+	
+	</div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('.bg').hide().delay(2000).fadeIn(500);
-    });
-
-    $("#get_started").click(() => {
-        $("#get_started").fadeOut(500, () => {
-            cnt_btn.setAttribute('current-step', 'api_id');
-            $("#block_api_id").hide().fadeIn(500);
-            $("#continue_btn").hide().fadeIn(500);
-        });
-    });
-
-    function isInt(value) {
-        var x = parseFloat(value);
-        return !isNaN(value) && (x | 0) === x;
-    }
-
-    function isValidPhone(p) {
-        var phoneRe = /^[+]?\d{11,13}$/;
-        return phoneRe.test(p);
-    }
-
-    var _api_id = "",
-        _api_hash = "",
-        _phone = "",
-        _2fa_pass = "",
-        _tg_pass = "";
-
-    const cnt_btn = document.querySelector('#continue_btn');
-    cnt_btn.onclick = (e) => {
-        if (cnt_btn.disabled) return;
-
-        let step = cnt_btn.getAttribute('current-step');
-        if (step == "api_id") {
-            let api_id = document.querySelector('#api_id').value;
-            if (api_id.length < 4 || !isInt(api_id)) {
-                $(".bg").addClass("red_state");
-                cnt_btn.disabled = true;
-                setTimeout(() => {
-                    cnt_btn.disabled = false;
-                    $(".bg").removeClass("red_state");
-                }, 1000);
-                return;
-            }
-
-            _api_id = parseInt(api_id);
-            cnt_btn.setAttribute('current-step', 'api_hash');
-            $("#block_api_id").fadeOut(() => {
-                $("#block_api_hash").hide().fadeIn();
-            });
-        } else if (step == "api_hash") {
-            let api_hash = document.querySelector('#api_hash').value;
-            if (api_hash.length != 32) {
-                $(".bg").addClass("red_state");
-                cnt_btn.disabled = true;
-                setTimeout(() => {
-                    cnt_btn.disabled = false;
-                    $(".bg").removeClass("red_state");
-                }, 1000);
-                return;
-            }
-
-            _api_hash = api_hash;
-            fetch("/setApi", {
-                    method: "PUT",
-                    body: _api_hash + _api_id,
-                    credentials: "include"
-                })
-                .then(function(response) {
-                    if (!response.ok) {
-                        Swal.fire({
-                            'icon': 'error',
-                            'title': 'Error occured while saving credentials'
-                        });
-                    } else {
-                        cnt_btn.setAttribute('current-step', 'phone');
-                        $("#block_api_hash").fadeOut(() => {
-                            $("#block_phone").hide().fadeIn();
-                        });
-                    }
-                })
-                .catch(function(response) {
-                    Swal.fire({
-                        'icon': 'error',
-                        'title': 'Error occured while saving credentials'
-                    });
-                });
-        } else if (step == "phone" || step == "2fa") {
-            if (step == "phone") {
-                let phone = document.querySelector('#phone').value;
-                if (!isValidPhone(phone)) {
-                    $(".bg").addClass("red_state");
-                    cnt_btn.disabled = true;
-                    setTimeout(() => {
-                        cnt_btn.disabled = false;
-                        $(".bg").removeClass("red_state");
-                    }, 1000);
-                    return;
-                }
-
-                _phone = phone;
-                fetch("/sendTgCode", {
-                        method: "POST",
-                        body: _phone,
-                        credentials: "include"
-                    })
-                    .then(function(response) {
-                        if (!response.ok) {
-                            Swal.fire({
-                                'icon': 'error',
-                                'title': 'Code send failed'
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Enter received code',
-                                input: 'text',
-                                inputAttributes: {
-                                    autocapitalize: 'off'
-                                },
-                                showCancelButton: false,
-                                confirmButtonText: 'Confirm',
-                                showLoaderOnConfirm: true,
-                                preConfirm: (login) => {
-                                    _tg_pass = login
-                                    return fetch("/tgCode", {
-                                            method: "POST",
-                                            body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass
-                                        })
-                                        .then(function(response) {
-                                            if (!response.ok) {
-                                                console.log(response);
-                                                if (response.status == 403) {
-                                                    Swal.showValidationMessage('Code is incorrect!');
-                                                } else if (response.status == 401) {
-                                                    cnt_btn.setAttribute('current-step', '2fa');
-                                                    $("#block_phone").fadeOut(() => {
-                                                        $("#block_2fa").hide().fadeIn();
-                                                    });
-                                                } else if (response.status == 404) {
-                                                    // Code expired, must re-send code request. Close dialog and wait for user action.
-                                                    Swal.showValidationMessage('Code is expired!');
-                                                } else {
-                                                    Swal.showValidationMessage('Internal server error');
-                                                }
-                                            } else {
-                                                return fetch("/finishLogin", {
-                                                        method: "POST",
-                                                        credentials: "include"
-                                                    })
-                                                    .then(function(response) {
-                                                        if (!response.ok) {
-                                                            Swal.fire({
-                                                                'icon': 'error',
-                                                                'text': 'Login confirmation error'
-                                                            })
-                                                        } else {
-                                                            Swal.fire({
-                                                                'icon': 'success',
-                                                                'text': 'Auth successful!',
-                                                                'timer': 1000
-                                                            });
-                                                            setTimeout(() => {
-                                                                window.location.reload();
-                                                            }, 1500);
-                                                        }
-                                                    })
-                                                    .catch(function(response) {
-                                                        Swal.fire({
-                                                            'icon': 'error',
-                                                            'text': 'Login confirmation error'
-                                                        })
-                                                    });
-                                            }
-                                        })
-                                        .catch(error => {
-                                            Swal.showValidationMessage(
-                                                'Auth failed: ' + error.toString()
-                                            )
-                                        })
-                                },
-                                allowOutsideClick: () => !Swal.isLoading()
-                            })
-                        }
-                    })
-                    .catch(function(error) {
-                        Swal.fire({
-                            'icon': 'error',
-                            'title': 'Code send failed'
-                        });
-                    });
-            } else {
-                let _2fa = document.querySelector('#_2fa').value;
-                _2fa_pass = _2fa;
-                fetch("/tgCode", {
-                        method: "POST",
-                        body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass
-                    })
-                    .then(function(response) {
-                        if (!response.ok) {
-                            console.log(response);
-                            if (response.status == 403) {
-                                Swal.showValidationMessage('Code is incorrect!');
-                            } else if (response.status == 401) {
-                                cnt_btn.setAttribute('current-step', '2fa');
-                                $("#block_phone").fadeOut(() => {
-                                    $("#block_2fa").hide().fadeIn();
-                                });
-                            } else if (response.status == 404) {
-                                // Code expired, must re-send code request. Close dialog and wait for user action.
-                                Swal.showValidationMessage('Code is expired!');
-                            } else {
-                                Swal.showValidationMessage('Internal server error');
-                            }
-                        } else {
-                            fetch("/finishLogin", {
-                                    method: "POST",
-                                    credentials: "include"
-                                })
-                                .then(function(response) {
-                                    if (!response.ok) {
-                                        Swal.fire({
-                                            'icon': 'error',
-                                            'text': 'Login confirmation error'
-                                        })
-                                    } else {
-                                        Swal.fire({
-                                            'icon': 'success',
-                                            'text': 'Auth successful!',
-                                            'timer': 1000
-                                        });
-                                        setTimeout(() => {
-                                            window.location.reload();
-                                        }, 1500);
-                                    }
-                                })
-                                .catch(function(response) {
-                                    Swal.fire({
-                                        'icon': 'error',
-                                        'text': 'Login confirmation error'
-                                    })
-                                });
-                        }
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(
-                            'Auth failed: ' + error.toString()
-                        )
-                    })
-            }
-        }
-    }
-</script>
+<script>var skip_creds = "{{ skip_creds }}" == "True";</script>
+<script src="{{ static("initial_root.js") }}"></script>
+<script src="{{ static("mountains.js") }}"></script>
 {% endblock %}
 

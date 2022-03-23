@@ -348,14 +348,14 @@ async def asset_channel(
     Returns peer and bool: is channel new or pre-existent
     """
     async for d in client.iter_dialogs():
-        if d.title == "acc-switcher-db":
+        if d.title == title:
             return d.entity, False
 
     return (
         await client(
             CreateChannelRequest(
-                "acc-switcher-db",
-                "This chat will handle your saved account via AccountSwitcher Module",
+                title,
+                description,
                 megagroup=True,
             )
         )
