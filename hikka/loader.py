@@ -14,7 +14,16 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Loads modules from disk and dispatches stuff, and stores state"""
+"""
+█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+© Copyright 2022
+https://t.me/hikariatama
+
+🔒 Licensed under the GNU GPLv3
+🌐 https://www.gnu.org/licenses/agpl-3.0.html
+"""
 
 import asyncio
 import functools
@@ -68,10 +77,8 @@ pm = security.pm
 unrestricted = security.unrestricted
 
 MODULES_NAME = "modules"
-ru_keys = """ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГ
-        ШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ, """
-en_keys = """`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{
-        }ASDFGHJKL:"|ZXCVBNM<>? """
+ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
+en_keys = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?"
 
 
 LOADED_MODULES_DIR = os.path.join(utils.get_base_dir(), "loaded_modules")
@@ -212,18 +219,17 @@ class Modules:
         self.aliases = {}
         self.modules = []  # skipcq: PTC-W0052
         self.watchers = []
-        self._compat_layer = None
         self._log_handlers = []
+        self._compat_layer = None
         self.client = None
         self._initial_registration = True
         self.added_modules = None
         self.use_inline = use_inline
 
-    def register_all(self, babelfish, mods=None):  # skipcq: PYL-W0613
-        # TODO: remove babelfish
+    def register_all(self, mods=None):
         """Load all modules in the module directory"""
         if self._compat_layer is None:
-            from . import compat  # Avoid circular import
+            from . import compat  # noqa
 
             self._compat_layer = compat.activate([])
 
@@ -274,7 +280,7 @@ class Modules:
             if key.endswith("Mod") and issubclass(value, Module):
                 ret = value()
 
-        if hasattr(module, '__version__'):
+        if hasattr(module, "__version__"):
             ret.__version__ = module.__version__
 
         if ret is None:
@@ -339,7 +345,6 @@ class Modules:
         """Complete registration of instance"""
         instance.allmodules = self
         instance.hikka = True
-        instance.log = self.log  # Like botlog from PP
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
                 logging.debug("Removing module for update %r", module)
@@ -410,7 +415,7 @@ class Modules:
         """Send all data to all modules"""
         self.client = client
 
-        # Register inline manager anyway, so the modules
+        # Init inline manager anyway, so the modules
         # can access its `init_complete`
         inline_manager = inline.InlineManager(client, db, self)
 
@@ -434,7 +439,7 @@ class Modules:
             )
             await asyncio.gather(
                 *[mod._client_ready2(client, db) for mod in self.modules]
-            )  # pylint: disable=W0212
+            )
         except Exception as e:
             logging.exception(f"Failed to send mod init complete signal due to {e}")
 
@@ -448,10 +453,7 @@ class Modules:
         try:
             await mod.client_ready(client, db)
         except Exception as e:
-            logging.exception(
-                f"Failed to send mod init complete signal for %r due to {e}, attempting unload",
-                mod,
-            )
+            logging.exception(f"Failed to send mod init complete signal for %r due to {e}, attempting unload")  # fmt: skip
             self.modules.remove(mod)
             raise
 

@@ -1,12 +1,22 @@
+"""
+█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+© Copyright 2022
+https://t.me/hikariatama
+
+🔒 Licensed under the GNU GPLv3
+🌐 https://www.gnu.org/licenses/agpl-3.0.html
+"""
+
 import asyncio
 import logging
 
-from telethon.tl.custom import Message as CustomMessage
 from telethon.tl.functions.channels import CreateChannelRequest
 from telethon.tl.types import Message, Channel
 import json
 import os
-from typing import Any
+from typing import Any, Union
 
 from . import main
 
@@ -21,8 +31,7 @@ class Database(dict):
         self._me = None
         self._assets = None
         self._anti_double_asset_lock = asyncio.Lock()
-        self._assets_already_exists = False
-        self.close = lambda: None
+        self._assets_chat_exists = False
 
     def __repr__(self):
         return object.__repr__(self)
@@ -35,28 +44,35 @@ class Database(dict):
     async def _find_asset_channel(self) -> Channel:
         async for dialog in self._client.iter_dialogs(None, ignore_migrated=True):
             if dialog.name == f"hikka-{self._me.id}-assets" and dialog.is_channel:
-                members = await self._client.get_participants(dialog, limit=2)
 
-                if len(members) != 1:
+                if dialog.entity.participants_count != 1:
                     continue
 
-                logger.debug(f"Found asset chat! It is {dialog.id}.")
+                logger.debug(f"Found asset chat {dialog.id}")
                 return dialog.entity
 
     async def _make_asset_channel(self) -> Channel:
+        """
+        If user doesn't have an asset channel, create it
+        """
         async with self._anti_double_asset_lock:
-            if self._assets_already_exists:
+            if self._assets_chat_exists:
                 return await self._find_data_channel()
-            self._assets_already_exists = True
-            return (
+            self._assets_chat_exists = True
+
+            dialog = (
                 await self._client(
                     CreateChannelRequest(
                         f"hikka-{self._me.id}-assets",
-                        "// Don't touch",
+                        "🌆 Your Hikka assets will be stored here",
                         megagroup=True,
                     )
                 )
             ).chats[0]
+
+            await self._client.edit_folder(dialog, folder=1)
+
+            return dialog
 
     def read(self) -> str:
         """
@@ -84,7 +100,11 @@ class Database(dict):
 
         return True
 
-    async def store_asset(self, message):
+    async def store_asset(self, message: Message) -> int:
+        """
+        Save assets
+        returns asset_id as integer
+        """
         if not self._assets:
             self._assets = await self._find_asset_channel()
 
@@ -93,7 +113,7 @@ class Database(dict):
 
         return (
             (await self._client.send_message(self._assets, message)).id
-            if isinstance(message, (Message, CustomMessage))
+            if isinstance(message, Message)
             else (
                 await self._client.send_message(
                     self._assets,
@@ -103,19 +123,22 @@ class Database(dict):
             ).id
         )
 
-    async def fetch_asset(self, id_):
+    async def fetch_asset(self, asset_id: int) -> Union[None, Message]:
+        """
+        Fetch previously saved asset by its asset_id
+        """
         if not self._assets:
             self._assets = await self._find_asset_channel()
 
         if not self._assets:
             return None
 
-        ret = await self._client.get_messages(self._assets, ids=[id_])
+        asset = await self._client.get_messages(self._assets, ids=[asset_id])
 
-        if not ret:
+        if not asset:
             return None
 
-        return ret[0]
+        return asset[0]
 
     def get(self, owner: str, key: str, default: Any = None) -> Any:
         try:

@@ -14,6 +14,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+© Copyright 2022
+https://t.me/hikariatama
+
+🔒 Licensed under the GNU GPLv3
+🌐 https://www.gnu.org/licenses/agpl-3.0.html
+"""
+
 import asyncio
 import importlib
 import inspect
@@ -343,18 +354,21 @@ class LoaderMod(loader.Module):
             try:
                 spec = ModuleSpec(module_name, StringLoader(doc, origin), origin=origin)
                 instance = self.allmodules.register_module(spec, module_name, origin)
-            except ImportError:
+            except ImportError as e:
                 logger.info(
                     "Module loading failed, attemping dependency installation",
                     exc_info=True,
                 )
                 # Let's try to reinstall dependencies
-                requirements = list(
-                    filter(
-                        lambda x: x and x[0] not in ("-", "_", "."),
-                        map(str.strip, VALID_PIP_PACKAGES.search(doc)[1].split(" ")),
+                try:
+                    requirements = list(
+                        filter(
+                            lambda x: x and x[0] not in ("-", "_", "."),
+                            map(str.strip, VALID_PIP_PACKAGES.search(doc)[1].split(" ")),
+                        )
                     )
-                )
+                except TypeError:
+                    raise Exception("No valid pip packages specified in code") from e
 
                 logger.debug("Installing requirements: %r", requirements)
 

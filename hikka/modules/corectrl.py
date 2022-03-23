@@ -14,10 +14,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-
-import telethon
-from telethon.tl.types import Message
+from telethon.tl.types import Message, Channel
 
 from .. import loader, main, utils
 
@@ -266,7 +263,7 @@ class CoreMod(loader.Module):
             await utils.answer(message, self.strings("bad_pack", message))
             return
 
-        if isinstance(pack, telethon.tl.types.Channel) and not pack.megagroup:
+        if isinstance(pack, Channel) and not pack.megagroup:
             self._db.setdefault(main.__name__, {}).setdefault("langpacks", []).append(
                 pack.id
             )
