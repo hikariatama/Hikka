@@ -15,22 +15,14 @@
 
   <link rel="stylesheet" href="{{ static("base.css") }}">
 
-  <style>
-    .bg {
-      animation: floating 5s infinite ease-in-out;
-      filter: hue-rotate(286deg);
-    }
-  </style>
 {% endblock %}
 
 {% block content %}
 {% endblock %}
 
 {% block after %}
+<canvas class="mountains"></canvas>
 <div class="wrapper">
-  <div class="bg invert">
-    
-  </div>
   <div class="blur">
     <div class="title">Hikka</div>
     <div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.</div>
@@ -41,12 +33,6 @@
   
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script type="text/javascript">
-  $(document).ready(function() {
-      $('.bg').hide().delay(2000).fadeIn(500);
-  });
-</script>
+<script src="{{ static("mountains.js") }}"></script>
 {% endblock %}
 

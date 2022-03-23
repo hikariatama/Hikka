@@ -19,7 +19,6 @@
 import asyncio
 import collections
 import os
-import re
 import string
 
 import aiohttp_jinja2
@@ -34,8 +33,6 @@ class Web:
         self.api_token = kwargs.pop("api_token")
         self.data_root = kwargs.pop("data_root")
         self.connection = kwargs.pop("connection")
-        self.hosting = kwargs.pop("hosting")
-        self.default_app = kwargs.pop("default_app")
         self.proxy = kwargs.pop("proxy")
         self.redirect_url = None
         super().__init__(**kwargs)
@@ -63,10 +60,8 @@ class Web:
     @aiohttp_jinja2.template("initial_root.jinja2")
     async def initial_setup(self, request):
         return {
-            "api_done": self.api_token is not None,
+            "skip_creds": self.api_token is not None,
             "tg_done": bool(self.client_data),
-            "hosting": self.hosting,
-            "default_app": self.default_app,
         }
 
     def wait_for_api_token_setup(self):

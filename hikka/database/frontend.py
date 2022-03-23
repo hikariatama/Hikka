@@ -40,15 +40,6 @@ class Database(dict):
         self._loading = True
         self._waiter = asyncio.Event()
         self._sync_future = None
-        # We use a future because we need await-ability and we will be delaying by 10s, but
-        # because we are gonna frequently be changing the data, we want to avoid floodwait
-        # and to do that we will discard most requests. However, attempting to await any request
-        # should return a future corresponding to the next time that we flush the database.
-        # To achieve this, we have one future stored here (the next time we flush the db) and we
-        # always return that from set(). However, if someone decides to await set() much later
-        # than when they called set(), it will already be finished. Luckily, we return a future,
-        # not a reference to _sync_future, so it will be the correct future, and set_result will
-        # not already have been called. Simple, right?
 
     def __repr__(self):
         return object.__repr__(self)
@@ -82,16 +73,7 @@ class Database(dict):
             self._backend.close()
 
     def save(self):
-        if self._pending is not None and not self._pending.cancelled():
-            self._pending.cancel()
-
-        if self._sync_future is None or self._sync_future.done():
-            self._sync_future = NotifyingFuture(on_await=self._cancel_then_set)
-
-        self._pending = asyncio.ensure_future(
-            _wait_then_do(10, self._set)
-        )  # Delay database ops by 10s
-        return self._sync_future
+        self._set()
 
     def get(self, owner, key, default=None):
         try:
@@ -111,19 +93,7 @@ class Database(dict):
         # Restart the task, but without the delay, because someone is waiting for us
 
     async def _set(self):
-        if self._noop:
-            self._sync_future.set_result(True)
-            return
-
-        if self._loading:
-            await self._waiter.wait()
-
-        try:
-            await self._backend.do_upload(json.dumps(self))
-        except Exception as e:
-            self._sync_future.set_exception(e)
-
-        self._sync_future.set_result(True)
+        self._backend.save(self)
 
     async def reload(self, event):
         if self._noop:
