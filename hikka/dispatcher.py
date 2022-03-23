@@ -1,5 +1,5 @@
 #    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
+#    Copyright (C) 2018-2022 The Authors
 
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published by
@@ -14,20 +14,30 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""
+█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+© Copyright 2022
+https://t.me/hikariatama
+
+🔒 Licensed under the GNU GPLv3
+🌐 https://www.gnu.org/licenses/agpl-3.0.html
+"""
+
 import asyncio
 import collections
 import logging
 import re
 from telethon import types
 import traceback
+from telethon.tl.types import Message
 
 from . import utils, main, security, loader
 
 # Keys for layout switch
-ru_keys = """ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГ
-ШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ, """
-en_keys = """`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{
-}ASDFGHJKL:"|ZXCVBNM<>? """
+ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
+en_keys = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?"
 
 
 def _decrement_ratelimit(delay, data, key, severity):
@@ -100,16 +110,90 @@ class CommandDispatcher:
 
         return ret
 
+    def _handle_grep(self, message: Message) -> Message:
+        # Allow escaping grep with double stick
+        if "||grep" in message.text or "|| grep" in message.text:
+            message.raw_text = re.sub(r"\|\| ?grep", "| grep", message.raw_text)
+            message.text = re.sub(r"\|\| ?grep", "| grep", message.text)
+            message.message = re.sub(r"\|\| ?grep", "| grep", message.message)
+            return message
+
+        grep = False
+        if not re.search(r".+\| ?grep (.+)", message.raw_text):
+            return message
+
+        grep = re.search(r".+\| ?grep (.+)", message.raw_text).group(1)
+        message.text = re.sub(r"\| ?grep.+", "", message.text)
+        message.raw_text = re.sub(r"\| ?grep.+", "", message.raw_text)
+        message.message = re.sub(r"\| ?grep.+", "", message.message)
+
+        ungrep = False
+
+        if re.search(r"-v (.+)", grep):
+            ungrep = re.search(r"-v (.+)", grep).group(1)
+            grep = re.sub(r"(.+) -v .+", r"\g<1>", grep)
+
+        grep = utils.escape_html(grep).strip() if grep else False
+        ungrep = utils.escape_html(ungrep).strip() if ungrep else False
+
+        old_edit = message.edit
+        old_reply = message.reply
+        old_respond = message.respond
+
+        def process_text(text: str) -> str:
+            nonlocal grep, ungrep
+            res = []
+
+            for line in text.split("\n"):
+                if (
+                    grep
+                    and grep in re.sub("<.*?>", "", line)
+                    and (not ungrep or ungrep not in re.sub("<.*?>", "", line))
+                ):
+                    res.append(line.replace(grep, f"<u>{grep}</u>"))
+
+                if not grep and ungrep and ungrep not in re.sub("<.*?>", "", line):
+                    res.append(line)
+
+            cont = (
+                (f"contain <b>{grep}</b>" if grep else "")
+                + (" and" if grep and ungrep else "")
+                + ((" do not contain <b>" + ungrep + "</b>") if ungrep else "")
+            )
+
+            if res:
+                text = f"<i>💬 Lines that {cont}:</i>\n" + ("\n".join(res))
+            else:
+                text = f"💬 <i>No lines that {cont}</i>"
+
+            return text
+
+        async def my_edit(text, *args, **kwargs):
+            text = process_text(text)
+            kwargs["parse_mode"] = "HTML"
+            return await old_edit(text, *args, **kwargs)
+
+        async def my_reply(text, *args, **kwargs):
+            text = process_text(text)
+            kwargs["parse_mode"] = "HTML"
+            return await old_reply(text, *args, **kwargs)
+
+        async def my_respond(text, *args, **kwargs):
+            text = process_text(text)
+            kwargs["parse_mode"] = "HTML"
+            return await old_respond(text, *args, **kwargs)
+
+        message.edit = my_edit
+        message.reply = my_reply
+        message.respond = my_respond
+
+        return message
+
     async def handle_command(self, event):
         """Handle all commands"""
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return
 
-        # Fix bug when after reacting message command gets executed
-        if getattr(event, "reactions", False):
-            return
-
-        # Empty string evaluates to False, so the `or` activates
         prefix = self._db.get(main.__name__, "command_prefix", False) or "."
         if isinstance(prefix, list):
             prefix = prefix[0]
@@ -125,14 +209,13 @@ class CommandDispatcher:
         else:
             return
 
-        logging.debug("Incoming command!")
-
-        if event.sticker or event.dice or event.audio:
-            logging.debug("Ignoring invisible or potentially forwarded command.")
-            return
-
-        if event.via_bot_id:
-            logging.debug("Ignoring inline bot.")
+        if (
+            event.sticker
+            or event.dice
+            or event.audio
+            or event.via_bot_id
+            or event.reactions
+        ):
             return
 
         message = utils.censor(event.message)
@@ -143,7 +226,6 @@ class CommandDispatcher:
         if utils.get_chat_id(message) in blacklist_chats or (
             whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
         ):
-            logging.debug("Message is blacklisted")
             return
 
         if (
@@ -154,15 +236,17 @@ class CommandDispatcher:
         ):
             # Allow escaping commands using .'s
             entities = utils.relocate_entities(
-                message.entities, -len(prefix), message.message
+                message.entities,
+                -len(prefix),
+                message.message,
             )
+
             await message.edit(
-                message.message[len(prefix) :], parse_mode=lambda s: (s, entities or ())
+                message.message[len(prefix) :],
+                parse_mode=lambda s: (s, entities or ()),
             )
             return
 
-        logging.debug(message)
-        # Make sure we don't get confused about spaces or other stuff in the prefix
         message.message = message.message[len(prefix) :]
 
         if translated:
@@ -191,7 +275,7 @@ class CommandDispatcher:
             event.mentioned
             and event.message is not None
             and event.message.message is not None
-            and "@" + self._cached_username not in event.message.message
+            and f"@{self._cached_username}" not in event.message.message
         ):
             pass
         elif (
@@ -207,191 +291,98 @@ class CommandDispatcher:
 
         txt, func = self._modules.dispatch(tag[0])
 
-        if func is not None:
-            if not await self._handle_ratelimit(message, func):
+        if (
+            not func
+            or not await self._handle_ratelimit(message, func)
+            or not await self.security.check(message, func)
+        ):
+            return
+
+        if (
+            message.is_channel
+            and message.is_group
+            and message.chat.title.startswith("hikka-")
+            and message.chat.title != "hikka-logs"
+        ):
+            logging.warning("Ignoring message in datachat \\ logging chat")
+            return
+
+        message.message = txt + message.message[len(command) :]
+
+        if (
+            f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
+            in blacklist_chats
+        ):
+            logging.debug("Command is blacklisted in chat")
+            return
+
+        if (
+            whitelist_modules
+            and f"{utils.get_chat_id(message)}.{func.__self__.__module__}"
+            not in whitelist_modules
+        ):  # noqa
+            logging.debug("Command is not whitelisted in chat")
+            return
+
+        if self._db.get(main.__name__, "grep", False):
+            message = self._handle_grep(message)
+
+        # Feature for CommandsLogger module
+        try:
+            if getattr(loader, "mods", False):
+                for mod in loader.mods:
+                    if mod.name == "CommandsLogger":
+                        await mod.process_log(message)
+        except Exception:
+            pass
+
+        try:
+            await func(message)
+        except Exception:
+            logging.exception("Command failed")
+            if not self._db.get(main.__name__, "inlinelogs", True):
+                try:
+                    txt = f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>"
+                    await (message.edit if message.out else message.reply)(txt)
+                except Exception:
+                    pass
                 return
 
-            if not await self.security.check(message, func):
-                return
-
-            if message.is_channel and message.is_group:
-                my_id = (await message.client.get_me(True)).user_id
-                chat = await message.get_chat()
-                if (
-                    chat.title.startswith(f"hikka-{my_id}-")
-                    or chat.title == "hikka-log"
-                ):
-                    logging.warning("Ignoring message in datachat \\ logging chat")
-                    return
-
-            message.message = txt + message.message[len(command) :]
-
-            if (
-                str(utils.get_chat_id(message)) + "." + func.__self__.__module__
-                in blacklist_chats
-            ):
-                logging.debug("Command is blacklisted in chat")
-                return
-
-            if (
-                whitelist_modules
-                and f"{utils.get_chat_id(message)}.{func.__self__.__module__}"
-                not in whitelist_modules
-            ):  # noqa
-                logging.debug("Command is not whitelisted in chat")
-                return
-
-            if self._db.get(main.__name__, "grep", False):
-                if "||grep" in message.text or "|| grep" in message.text:
-                    message.raw_text = message.raw_text.replace(
-                        "||grep", "|grep"
-                    ).replace("|| grep", "| grep")
-                    message.text = message.text.replace("||grep", "|grep").replace(
-                        "|| grep", "| grep"
-                    )
-                    message.message = message.message.replace(
-                        "||grep", "|grep"
-                    ).replace("|| grep", "| grep")
-                else:
-                    grep = False
-                    if "| grep" in message.text or "|grep" in message.text:
-                        grep = message.text[message.text.find("grep ") + 5 :]
-                        message.text = message.text[
-                            : (
-                                message.text.find(" | grep")
-                                if message.text.find(" | grep") > 0
-                                else message.text.find("|grep")
-                            )
-                        ]  # noqa
-
-                    if grep:
-                        ungrep = False
-
-                        if "-v" in grep:
-                            ungrep = grep[
-                                grep.find("-v ")
-                                + 3 : (
-                                    grep.find("grep") if "grep" in grep else len(grep)
-                                )
-                            ]
-                            grep = grep[: grep.find("-v")] + (
-                                grep[grep.find("grep") + 4 :] if "grep" in grep else ""
-                            )
-
-                        grep = utils.escape_html(grep).strip() if grep else False
-                        ungrep = utils.escape_html(ungrep).strip() if ungrep else False
-
-                        old_edit = message.edit
-                        old_reply = message.reply
-                        old_respond = message.respond
-
-                        def process_text(text):
-                            nonlocal grep, ungrep
-                            res = []
-
-                            for line in text.split("\n"):
-                                if (
-                                    grep
-                                    and grep in re.sub("<.*?>", "", line)
-                                    and (
-                                        not ungrep
-                                        or ungrep not in re.sub("<.*?>", "", line)
-                                    )
-                                ):
-                                    res.append(line.replace(grep, f"<u>{grep}</u>"))
-
-                                if (
-                                    not grep
-                                    and ungrep
-                                    and ungrep not in re.sub("<.*?>", "", line)
-                                ):
-                                    res.append(line)
-
-                            cont = (
-                                (f"contain <b>{grep}</b>" if grep else "")
-                                + (" and" if grep and ungrep else "")
-                                + (
-                                    (" do not contain <b>" + ungrep + "</b>")
-                                    if ungrep
-                                    else ""
-                                )
-                            )
-
-                            if res:
-                                text = f"<i>💬 Lines that {cont}:</i>\n" + (
-                                    "\n".join(res)
-                                )
-                            else:
-                                text = f"💬 <i>No lines that {cont}</i>"
-
-                            return text
-
-                        async def my_edit(text, *args, **kwargs):
-                            text = process_text(text)
-                            kwargs["parse_mode"] = "HTML"
-                            return await old_edit(text, *args, **kwargs)
-
-                        async def my_reply(text, *args, **kwargs):
-                            text = process_text(text)
-                            kwargs["parse_mode"] = "HTML"
-                            return await old_reply(text, *args, **kwargs)
-
-                        async def my_respond(text, *args, **kwargs):
-                            text = process_text(text)
-                            kwargs["parse_mode"] = "HTML"
-                            return await old_respond(text, *args, **kwargs)
-
-                        message.edit = my_edit
-                        message.reply = my_reply
-                        message.respond = my_respond
-
-            # Feature for CommandsLogger module
             try:
-                if getattr(loader, "mods", False):
-                    for mod in loader.mods:
-                        if mod.name == "CommandsLogger":
-                            await mod.process_log(message)
+                exc = traceback.format_exc()
+                exc = "\n".join(
+                    exc.split("\n")[1:]
+                )  # Remove `Traceback (most recent call last):`
+                txt = f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>\n\n<b>⛑ Traceback:</b>\n<code>{exc}</code>"
+                await (message.edit if message.out else message.reply)(txt)
             except Exception:
                 pass
 
-            try:
-                await func(message)
-            except Exception:
-                logging.exception("Command failed")
-                if not self._db.get(main.__name__, "inlinelogs", True):
-                    try:
-                        txt = f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>"
-                        await (message.edit if message.out else message.reply)(txt)
-                    except Exception:
-                        pass
-                else:
-                    try:
-                        exc = traceback.format_exc()
-                        exc = "\n".join(
-                            exc.split("\n")[1:]
-                        )  # Remove `Traceback (most recent call last):`
-                        txt = f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>\n\n<b>⛑ Traceback:</b>\n<code>{exc}</code>"
-                        await (message.edit if message.out else message.reply)(txt)
-                    except Exception:
-                        pass
-
     async def handle_incoming(self, event):
         """Handle all incoming messages"""
-        logging.debug("Incoming message!")
         message = utils.censor(getattr(event, "message", event))
+
         blacklist_chats = self._db.get(main.__name__, "blacklist_chats", [])
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        if utils.get_chat_id(message) in blacklist_chats or (
-            whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
+        # fmt: off
+        if (
+            utils.get_chat_id(message) in blacklist_chats
+            or (
+                whitelist_chats
+                and utils.get_chat_id(message)
+                not in whitelist_chats
+            )
         ):
             logging.debug("Message is blacklisted")
             return
+        # fmt: on
 
         for func in self._modules.watchers:
             bl = self._db.get(main.__name__, "disabled_watchers", {})
             modname = str(func.__self__.__class__.strings["name"])
+
             if (
                 modname in bl
                 and isinstance(message, types.Message)
@@ -407,23 +398,17 @@ class CommandDispatcher:
                     or "in" in bl[modname]
                     and message.out
                 )
+                or f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
+                in blacklist_chats
+                or (
+                    whitelist_modules
+                    and (
+                        f"{str(utils.get_chat_id(message))}." + func.__self__.__module__
+                    )
+                    not in whitelist_modules
+                )
             ):
                 logging.debug(f"Ignored watcher of module {modname}")
-                continue
-
-            if (
-                f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
-                in blacklist_chats
-            ):
-                logging.debug("Command is blacklisted in chat")
-                continue
-
-            if (
-                whitelist_modules
-                and (f"{str(utils.get_chat_id(message))}." + func.__self__.__module__)
-                not in whitelist_modules
-            ):
-                logging.debug("Command is not whitelisted in chat")
                 continue
 
             try:

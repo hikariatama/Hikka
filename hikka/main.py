@@ -14,7 +14,16 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#    Modded by GeekTG Team
+"""
+█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+© Copyright 2022
+https://t.me/hikariatama
+
+🔒 Licensed under the GNU GPLv3
+🌐 https://www.gnu.org/licenses/agpl-3.0.html
+"""
 
 import argparse
 import asyncio
@@ -474,7 +483,7 @@ class Hikka:
         babelfish = Translator([], [], self.arguments.data_root)
         await babelfish.init(client)
 
-        modules.register_all(babelfish)
+        modules.register_all()
 
         modules.send_config(db, babelfish)
         await modules.send_ready(client, db, self.clients)
@@ -543,7 +552,7 @@ class Hikka:
         if not web_only:
             await self.add_dispatcher(client, modules, db)
 
-        modules.register_all(babelfish, to_load)
+        modules.register_all(to_load)
         modules.send_config(db, babelfish)
         await modules.send_ready(client, db, self.clients)
 
@@ -557,7 +566,7 @@ class Hikka:
         # At this point we need to close database
         await db.close()
 
-    def main(self) -> None:  # noqa: C901
+    def main(self) -> None:
         """Main entrypoint"""
         self.init_web()
         save_config_key("port", self.arguments.port)
