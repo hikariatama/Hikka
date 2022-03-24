@@ -80,6 +80,9 @@ class Web:
         return self.clients_set.wait()
 
     def _check_session(self, request) -> bool:
+        if not main.hikka.clients:
+            return True
+
         return request.cookies.get("session", None) in self._sessions
 
     async def set_tg_api(self, request):
@@ -189,7 +192,7 @@ class Web:
 
     async def web_auth(self, request):
         if self._check_session(request):
-            return web.Response(body=request.cookies.get("session"))
+            return web.Response(body=request.cookies.get("session", "unauthorized"))
 
         token = rand(8)
 
