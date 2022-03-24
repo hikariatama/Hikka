@@ -424,7 +424,7 @@ class Hikka:
                     connection_retries=None,
                 )
 
-                client.start(phone=raise_auth)
+                client.start(phone=raise_auth if web_available else lambda: input("Phone: "))
                 client.phone = phone
 
                 self.clients.append(client)
@@ -447,7 +447,7 @@ class Hikka:
                 )
                 continue
             except InteractiveAuthRequired:
-                print("Session was terminated and re-auth is required")
+                print(f"Session {session} was terminated and re-auth is required")
                 continue
 
     def _init_loop(self) -> None:

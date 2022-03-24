@@ -1,23 +1,23 @@
-![image](https://user-images.githubusercontent.com/36935426/159540752-27c64526-b211-4043-826a-7649b855c598.png)
+![image](https://user-images.githubusercontent.com/36935426/159934486-08ea58c1-632f-464a-a1e4-beca17871616.png)
 
-[![Develop on Okteto](https://okteto.com/develop-okteto.svg)](https://cloud.okteto.com/#/deploy?repository=https://github.com/hikariatama/Hikka)
+[![Develop on Okteto](https://user-images.githubusercontent.com/36935426/159979786-61a598ef-83c8-4c53-9cda-9aea31d61587.png)](https://cloud.okteto.com/#/deploy?repository=https://github.com/hikariatama/Hikka)
 
 ## Changes
 
-- Latest Telegram Layers with reactions, video stickers and other stuff
-- Security improvements
-- UI/UX improvements
-- New core modules
-- Okteto cloud deployment support
-- Quick bug fixes (compared to official FTG)
-- Inline Buttons, available not only for core modules, but for every developer
-- Inline Galleries for every developer
-- Full backward compatibility with older version and with official FTG\GeekTG modules
+- 🆕 Latest Telegram Layers with reactions, video stickers and other stuff
+- 🔓 Security improvements
+- 🎨 UI/UX improvements
+- 📼 New core modules
+- ☁️ Okteto cloud deployment support
+- ⏱ Quick bug fixes (compared to official FTG)
+- ▶️ Inline Buttons, available not only for core modules, but for every developer
+- 🖼 Inline Galleries for every developer
+- 🔁 Full backward compatibility with older version and with official FTG\GeekTG modules
 
+---
 ![img](https://user-images.githubusercontent.com/36935426/158634458-424021a3-27c4-494f-9db2-1266f161e7a2.png)
 
-
-## Small, but useful
+## Last but not the least
 
 ### InlineLogs - traceback directly in message, caused error
 ![img2](https://user-images.githubusercontent.com/36935426/158635869-cc08a053-3bac-4d2e-ad50-30aa77c757fd.png)
