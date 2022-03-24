@@ -71,7 +71,7 @@ class Web:
         }
 
     async def check_session(self, request):
-        return "1" if self._check_session(request) else "0"
+        return web.Response(body=("1" if self._check_session(request) else "0"))
 
     def wait_for_api_token_setup(self):
         return self.api_set.wait()
