@@ -1,3 +1,5 @@
+"""Main script, where all the fun starts"""
+
 #    Friendly Telegram (telegram userbot)
 #    Copyright (C) 2018-2021 The Authors
 
@@ -14,16 +16,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""
-█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
 
-© Copyright 2022
-https://t.me/hikariatama
+# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+#
+#              © Copyright 2022
+#
+#          https://t.me/hikariatama
+#
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-🔒 Licensed under the GNU GPLv3
-🌐 https://www.gnu.org/licenses/agpl-3.0.html
-"""
 
 import argparse
 import asyncio
@@ -32,13 +35,11 @@ import importlib
 import json
 import logging
 import os
-import platform
 import random
 import socket
 import sqlite3
 import sys
 
-from requests import get
 from telethon import TelegramClient, events
 from telethon.errors.rpcerrorlist import (
     PhoneNumberInvalidError,
@@ -53,7 +54,9 @@ from . import utils, loader, database
 from .dispatcher import CommandDispatcher
 from .translations.core import Translator
 
-__version__ = (1, 0, 0)
+from math import ceil
+
+__version__ = (1, 0, 1)
 try:
     from .web import core
 except ImportError:
@@ -196,62 +199,6 @@ def parse_arguments():
     return arguments
 
 
-def get_phones(arguments):
-    """Get phones from the --phone, and environment"""
-    phones = {
-        phone.split(":", maxsplit=1)[0]: phone
-        for phone in map(
-            lambda f: f[6:-8],
-            filter(
-                lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                # fmt: off
-                os.listdir(
-                    arguments.data_root
-                    or os.path.dirname(
-                        utils.get_base_dir()
-                    )
-                ),
-                # fmt: on
-            ),
-        )
-    }
-
-    phones.update(
-        **(
-            {phone.split(":", maxsplit=1)[0]: phone for phone in arguments.phone}
-            if arguments.phone
-            else {}
-        )
-    )
-
-    return phones
-
-
-def get_api_token(arguments):
-    """Get API Token from disk or environment"""
-    api_token_type = collections.namedtuple("api_token", ("ID", "HASH"))
-
-    # Try to retrieve credintials from file, or from env vars
-    try:
-        with open(
-            os.path.join(
-                arguments.data_root or os.path.dirname(utils.get_base_dir()),
-                "api_token.txt",
-            )
-        ) as f:
-            api_token = api_token_type(*[line.strip() for line in f.readlines()])
-    except FileNotFoundError:
-        try:
-            from . import api_token
-        except ImportError:
-            try:
-                api_token = api_token_type(os.environ["api_id"], os.environ["api_hash"])
-            except KeyError:
-                api_token = None
-
-    return api_token
-
-
 class SuperList(list):
     """
     Makes able: await self.allclients.send_message("foo", "bar")
@@ -277,19 +224,30 @@ class SuperList(list):
             return [getattr(x, attr) for x in self]
 
 
+class InteractiveAuthRequired(Exception):
+    def __init__(self) -> None:
+        super().__init__()
+
+
+def raise_auth():
+    raise InteractiveAuthRequired()
+
+
 class Hikka:
     def __init__(self):
         self.arguments = parse_arguments()
         self.loop = asyncio.get_event_loop()
 
         self.clients = SuperList()
-        self.phones = get_phones(self.arguments)
-        self.api_token = get_api_token(self.arguments)
-        self.proxy, self.conn = self.get_proxy()
+        self._get_phones()
+        self._get_api_token()
+        self._get_proxy()
 
-    def get_proxy(self):
-        """Get proxy tuple from --proxy-host, --proxy-port and --proxy-secret
-        and connection to use (depends on proxy - provided or not)"""
+    def _get_proxy(self) -> None:
+        """
+        Get proxy tuple from --proxy-host, --proxy-port and --proxy-secret
+        and connection to use (depends on proxy - provided or not)
+        """
         if (
             self.arguments.proxy_host is not None
             and self.arguments.proxy_port is not None
@@ -300,7 +258,7 @@ class Hikka:
                 self.arguments.proxy_host,
                 self.arguments.proxy_port,
             )
-            return (
+            self.proxy, self.conn = (
                 (
                     self.arguments.proxy_host,
                     self.arguments.proxy_port,
@@ -308,10 +266,63 @@ class Hikka:
                 ),
                 ConnectionTcpMTProxyRandomizedIntermediate,
             )
+            return
 
-        return None, ConnectionTcpFull
+        self.proxy, self.conn = None, ConnectionTcpFull
 
-    def init_web(self) -> None:
+    def _get_phones(self) -> None:
+        """Get phones from the --phone, and environment"""
+        phones = {
+            phone.split(":", maxsplit=1)[0]: phone
+            for phone in map(
+                lambda f: f[6:-8],
+                filter(
+                    lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                    os.listdir(
+                        self.arguments.data_root
+                        or os.path.dirname(
+                            utils.get_base_dir()
+                        ),
+                    ),
+                ),
+            )
+        }
+
+        phones.update(
+            **(
+                {phone.split(":", maxsplit=1)[0]: phone for phone in self.arguments.phone}
+                if self.arguments.phone
+                else {}
+            )
+        )
+
+        self.phones = phones
+
+    def _get_api_token(self) -> None:
+        """Get API Token from disk or environment"""
+        api_token_type = collections.namedtuple("api_token", ("ID", "HASH"))
+
+        # Try to retrieve credintials from file, or from env vars
+        try:
+            with open(
+                os.path.join(
+                    self.arguments.data_root or os.path.dirname(utils.get_base_dir()),
+                    "api_token.txt",
+                )
+            ) as f:
+                api_token = api_token_type(*[line.strip() for line in f.readlines()])
+        except FileNotFoundError:
+            try:
+                from . import api_token
+            except ImportError:
+                try:
+                    api_token = api_token_type(os.environ["api_id"], os.environ["api_hash"])
+                except KeyError:
+                    api_token = None
+
+        self.api_token = api_token
+
+    def _init_web(self) -> None:
         """Initialize web"""
         if web_available:
             self.web = (
@@ -327,52 +338,22 @@ class Hikka:
         else:
             self.web = None
 
-    def get_token(self) -> None:
+    def _get_token(self) -> None:
         while self.api_token is None:
             if self.arguments.no_auth:
                 return
             if self.web:
                 self.loop.run_until_complete(self.web.start(self.arguments.port))
-                print("Web mode ready for configuration")  # noqa: T001
-                port = str(self.web.port)
-                if platform.system() == "Linux" and not os.path.exists("/etc/os-release"):  # fmt: skip
-                    print(f"Please visit http://localhost:{port}")
-                else:
-                    ipaddress = get("https://api.ipify.org").text
-                    print(f"Please visit http://{ipaddress}:{port} or http://localhost:{port}")  # fmt: skip
+                self._web_banner()
                 self.loop.run_until_complete(self.web.wait_for_api_token_setup())
                 self.api_token = self.web.api_token
             else:
                 run_config({}, self.arguments.data_root)
                 importlib.invalidate_caches()
-                self.api_token = get_api_token(self.arguments)
+                self._get_api_token()
 
-    def initial_setup(self) -> bool:
-        if self.arguments.no_auth:
-            return False
-
-        if not self.web:
-            try:
-                phone = input("Please enter your phone: ")
-                self.phones = {phone.split(":", maxsplit=1)[0]: phone}
-            except (EOFError, OSError):
-                raise
-
-            return True
-
-        if not self.web.running.is_set():
-            self.loop.run_until_complete(self.web.start(self.arguments.port))
-            print("Web mode ready for configuration")  # noqa: T001
-            port = str(self.web.port)
-            if platform.system() == "Linux" and not os.path.exists("/etc/os-release"):
-                print(f"Please visit http://localhost:{port}")
-            else:
-                ipaddress = get("https://api.ipify.org").text
-                print(f"Please visit http://{ipaddress}:{port} or http://localhost:{port}")  # fmt: skip
-
-        self.loop.run_until_complete(self.web.wait_for_clients_setup())
-        self.clients = self.web.clients
-        for client in self.clients:
+    def fetch_clients_from_web(self) -> None:
+        for client in self.web.clients:
             session = SQLiteSession(
                 os.path.join(
                     self.arguments.data_root or os.path.dirname(utils.get_base_dir()),
@@ -389,9 +370,44 @@ class Hikka:
             session.save()
             client.session = session
 
+        self.clients = list(set(self.clients + self.web.clients))
+
+    def _web_banner(self) -> None:
+        print("✅ Web mode ready for configuration")
+        print(f"🌐 Please visit http://127.0.0.1:{self.web.port}")
+
+    async def wait_for_web_auth(self, token) -> None:
+        timeout = 5 * 60
+        polling_interval = 1
+        for _ in range(ceil(timeout * polling_interval)):
+            await asyncio.sleep(polling_interval)
+
+            for client in self.clients:
+                if client.loader.inline.pop_web_auth_token(token):
+                    return True
+
+    def _initial_setup(self) -> bool:
+        if self.arguments.no_auth:
+            return False
+
+        if not self.web:
+            try:
+                phone = input("Please enter your phone: ")
+                self.phones = {phone.split(":", maxsplit=1)[0]: phone}
+            except (EOFError, OSError):
+                raise
+
+            return True
+
+        if not self.web.running.is_set():
+            self.loop.run_until_complete(self.web.start(self.arguments.port))
+            self._web_banner()
+
+        self.loop.run_until_complete(self.web.wait_for_clients_setup())
+
         return True
 
-    def init_clients(self) -> None:
+    def _init_clients(self) -> None:
         for phone_id, phone in self.phones.items():
             session = os.path.join(
                 self.arguments.data_root or os.path.dirname(utils.get_base_dir()),
@@ -408,7 +424,7 @@ class Hikka:
                     connection_retries=None,
                 )
 
-                client.start()
+                client.start(phone=raise_auth)
                 client.phone = phone
 
                 self.clients.append(client)
@@ -430,6 +446,21 @@ class Hikka:
                     " and don't put spaces in it."
                 )
                 continue
+            except InteractiveAuthRequired:
+                print("Session was terminated and re-auth is required")
+                continue
+
+    def _init_loop(self) -> None:
+        loops = [self.amain_wrapper(client) for client in self.clients]
+        self.loop.run_until_complete(asyncio.gather(*loops))
+
+    async def reconnect_clients(self) -> None:
+        for client in self.clients:
+            await client.disconnect()
+
+        self.fetch_clients_from_web()
+        self._init_clients()
+        self._init_loop()
 
     async def amain_wrapper(self, client) -> None:
         """Wrapper around amain"""
@@ -438,7 +469,7 @@ class Hikka:
             while await self.amain(first, client):
                 first = False
 
-    async def badge(self, client) -> None:
+    async def _badge(self, client) -> None:
         """Call the badge in shell"""
         try:
             import git
@@ -477,7 +508,7 @@ class Hikka:
         except Exception:
             logging.exception("Badge error")
 
-    async def handle_setup(self, client, db) -> None:
+    async def _handle_setup(self, client, db) -> None:
         await db.init()
         modules = loader.Modules(self.arguments.use_inline)
         babelfish = Translator([], [], self.arguments.data_root)
@@ -499,7 +530,7 @@ class Hikka:
             modules,
         )
 
-    async def add_dispatcher(self, client, modules, db) -> None:
+    async def _add_dispatcher(self, client, modules, db) -> None:
         dispatcher = CommandDispatcher(modules, db, self.arguments.no_nickname)
         client.dispatcher = dispatcher
         await dispatcher.init(client)
@@ -522,7 +553,7 @@ class Hikka:
         await db.init()
 
         if setup:
-            self.handle_setup(client, db)
+            self._handle_setup(client, db)
             return False
 
         logging.debug("got db")
@@ -540,6 +571,7 @@ class Hikka:
 
         await babelfish.init(client)
         modules = loader.Modules()
+        client.loader = modules
 
         if self.arguments.docker_deps_internal:
             # Loader has installed all dependencies
@@ -550,32 +582,27 @@ class Hikka:
             await self.web.start_if_ready(len(self.clients), self.arguments.port)
 
         if not web_only:
-            await self.add_dispatcher(client, modules, db)
+            await self._add_dispatcher(client, modules, db)
 
         modules.register_all(to_load)
         modules.send_config(db, babelfish)
         await modules.send_ready(client, db, self.clients)
 
         if first:
-            await self.badge(client)
+            await self._badge(client)
 
         await client.run_until_disconnected()
 
-        # Previous line will stop code execution, so this part is
-        # reached only when client is by some reason disconnected
-        # At this point we need to close database
-        await db.close()
-
     def main(self) -> None:
         """Main entrypoint"""
-        self.init_web()
+        self._init_web()
         save_config_key("port", self.arguments.port)
-        self.get_token()
+        self._get_token()
 
-        if not self.clients and not self.phones and not self.initial_setup():
+        if not self.clients and not self.phones and not self._initial_setup():
             return
 
-        self.init_clients()
+        self._init_clients()
 
         self.loop.set_exception_handler(
             lambda _, x: logging.error(
@@ -585,8 +612,7 @@ class Hikka:
             )
         )
 
-        loops = [self.amain_wrapper(client) for client in self.clients]
-        self.loop.run_until_complete(asyncio.gather(*loops))
+        self._init_loop()
 
 
 hikka = Hikka()
