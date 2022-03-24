@@ -143,7 +143,6 @@ def parse_arguments():
     parser.add_argument("--phone", "-p", action="append")
     parser.add_argument("--token", "-t", action="append", dest="tokens")
     parser.add_argument("--no-nickname", "-nn", dest="no_nickname", action="store_true")
-    parser.add_argument("--no-inline", dest="use_inline", action="store_false")
     parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
     parser.add_argument("--web-only", dest="web_only", action="store_true")
     parser.add_argument("--no-web", dest="web", action="store_false")
@@ -510,7 +509,7 @@ class Hikka:
 
     async def _handle_setup(self, client, db) -> None:
         await db.init()
-        modules = loader.Modules(self.arguments.use_inline)
+        modules = loader.Modules()
         babelfish = Translator([], [], self.arguments.data_root)
         await babelfish.init(client)
 
