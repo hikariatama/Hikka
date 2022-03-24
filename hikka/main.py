@@ -334,7 +334,7 @@ class Hikka:
                     proxy=self.proxy,
                     connection=self.conn,
                 )
-                if self.arguments.web
+                if getattr(self.arguments, "web", True)
                 else None
             )
         else:
