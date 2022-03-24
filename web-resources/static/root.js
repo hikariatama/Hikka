@@ -13,6 +13,7 @@ function auth(callback) {
         });
         fetch("/web_auth", {
             method: "POST",
+            credentials: "include",
             timeout: 5000
         })
         .then(response => response.text())
