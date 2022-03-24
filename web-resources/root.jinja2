@@ -160,7 +160,8 @@
   var skip_creds = "{{ skip_creds }}" == "True";
   var auth_required = true;
   fetch("/check_session", {
-      method: "POST"
+      method: "POST",
+      credentials: "include"
   })
   .then(response => response.text())
   .then((response) => {

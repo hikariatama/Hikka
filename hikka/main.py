@@ -145,7 +145,7 @@ def parse_arguments():
     parser.add_argument("--no-nickname", "-nn", dest="no_nickname", action="store_true")
     parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
     parser.add_argument("--web-only", dest="web_only", action="store_true")
-    parser.add_argument("--no-web", dest="web", action="store_false")
+    parser.add_argument("--no-web", dest="disable_web", action="store_false")
     parser.add_argument(
         "--data-root",
         dest="data_root",
@@ -279,9 +279,7 @@ class Hikka:
                     lambda f: f.startswith("hikka-") and f.endswith(".session"),
                     os.listdir(
                         self.arguments.data_root
-                        or os.path.dirname(
-                            utils.get_base_dir()
-                        ),
+                        or os.path.dirname(utils.get_base_dir()),
                     ),
                 ),
             )
@@ -289,7 +287,10 @@ class Hikka:
 
         phones.update(
             **(
-                {phone.split(":", maxsplit=1)[0]: phone for phone in self.arguments.phone}
+                {
+                    phone.split(":", maxsplit=1)[0]: phone
+                    for phone in self.arguments.phone
+                }
                 if self.arguments.phone
                 else {}
             )
@@ -315,7 +316,9 @@ class Hikka:
                 from . import api_token
             except ImportError:
                 try:
-                    api_token = api_token_type(os.environ["api_id"], os.environ["api_hash"])
+                    api_token = api_token_type(
+                        os.environ["api_id"], os.environ["api_hash"]
+                    )
                 except KeyError:
                     api_token = None
 
@@ -423,7 +426,15 @@ class Hikka:
                     connection_retries=None,
                 )
 
-                client.start(phone=raise_auth if web_available else lambda: input("Phone: "))
+                client.start(
+                    phone=raise_auth
+                    if self.web
+                    and (
+                        not hasattr(self.arguments, "web")
+                        or self.arguments.web is not False
+                    )
+                    else lambda: input("Phone: ")
+                )
                 client.phone = phone
 
                 self.clients.append(client)
