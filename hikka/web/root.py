@@ -206,26 +206,35 @@ class Web:
         ops = []
 
         for user in self.client_data.values():
-            bot = user[0].inline.bot
-            msg = await bot.send_message(
-                (await user[1].get_me()).id,
-                (
-                    "👩‍🎤🔐 <b>Click button below to confirm web application ops</b>\n\n"
-                    "<i>If you did not request any codes, simply ignore this message</i>"
-                ),
-                parse_mode="HTML",
-                disable_web_page_preview=True,
-                reply_markup=markup,
-            )
-            ops += [bot.delete_message(msg.chat.id, msg.message_id)]
+            try:
+                bot = user[0].inline.bot
+                msg = await bot.send_message(
+                    (await user[1].get_me()).id,
+                    (
+                        "👩‍🎤🔐 <b>Click button below to confirm web application ops</b>\n\n"
+                        "<i>If you did not request any codes, simply ignore this message</i>"
+                    ),
+                    parse_mode="HTML",
+                    disable_web_page_preview=True,
+                    reply_markup=markup,
+                )
+                ops += [bot.delete_message(msg.chat.id, msg.message_id)]
+            except Exception:
+                pass
+
+        session = f"hikka_{rand(16)}"
+
+        if not ops:
+            # If no auth message was sent, just leave it empty
+            # probably, request was a bug and user doesn't have
+            # inline bot or did not authorize any sessions
+            return web.Response(body=session)
 
         if not await main.hikka.wait_for_web_auth(token):
             return web.Response(body="TIMEOUT")
 
         for op in ops:
             await op
-
-        session = f"hikka_{rand(16)}"
 
         self._sessions += [session]
 

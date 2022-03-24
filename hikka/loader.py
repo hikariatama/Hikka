@@ -215,7 +215,7 @@ def get_callback_handlers(mod):
 class Modules:
     """Stores all registered modules"""
 
-    def __init__(self, use_inline=True):
+    def __init__(self):
         self.commands = {}
         self.aliases = {}
         self.modules = []  # skipcq: PTC-W0052
@@ -225,7 +225,6 @@ class Modules:
         self.client = None
         self._initial_registration = True
         self.added_modules = None
-        self.use_inline = use_inline
 
     def register_all(self, mods=None):
         """Load all modules in the module directory"""
@@ -420,9 +419,7 @@ class Modules:
         # can access its `init_complete`
         inline_manager = inline.InlineManager(client, db, self)
 
-        # Register only if it is not disabled
-        if self.use_inline:
-            await inline_manager._register_manager()
+        await inline_manager._register_manager()
 
         # We save it to `Modules` attribute, so not to re-init
         # it everytime module is loaded. Then we can just
