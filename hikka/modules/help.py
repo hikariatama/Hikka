@@ -1,15 +1,12 @@
-"""
-█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-
-© Copyright 2022
-https://t.me/hikariatama
-
-🔒 Licensed under the GNU GPLv3
-🌐 https://www.gnu.org/licenses/agpl-3.0.html
-"""
-
-# meta pic: https://img.icons8.com/fluency/48/000000/chatbot.png
+# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+#
+#              © Copyright 2022
+#
+#          https://t.me/hikariatama
+#
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import inspect
 from .. import loader, utils, main, security
