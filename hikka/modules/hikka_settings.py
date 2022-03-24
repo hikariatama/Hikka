@@ -1,18 +1,14 @@
-"""
-█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+#
+#              © Copyright 2022
+#
+#          https://t.me/hikariatama
+#
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-© Copyright 2022
-https://t.me/hikariatama
-
-🔒 Licensed under the GNU GPLv3
-🌐 https://www.gnu.org/licenses/agpl-3.0.html
-"""
-
-# meta pic: https://img.icons8.com/pastel-glyph/344/sun-glasses--v2.png
 # scope: inline
-# scope: hikka_only
-# meta developer: @hikariatama
 
 from .. import loader, utils, main
 from telethon.tl.types import Message

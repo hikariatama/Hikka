@@ -1,5 +1,45 @@
+function auth(callback) {
+    $(".main").fadeOut(500, () => {
+        $(".auth").hide().fadeIn(500);
+        bodymovin.loadAnimation({
+            container: document.getElementById("tg_icon"),
+            renderer: 'canvas',
+            loop: true,
+            autoplay: true,
+            path: 'https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json',
+            rendererSettings: {
+                clearCanvas: true,
+            }
+        });
+        fetch("/web_auth", {
+            method: "POST",
+            timeout: 5000
+        })
+        .then(response => response.text())
+        .then((response) => {
+            if(response == "TIMEOUT") {
+                error_message("Code waiting timeout exceeded. Reload page and try again.");
+                $(".auth").fadeOut(500);
+                return
+            }
+
+            if(response.startsWith("hikka_")) {
+                $.cookie("session", response)
+                auth_required = false;
+                $(".authorized").hide().fadeIn(100);
+                $(".auth").fadeOut(500, () => {
+                    $(".main").fadeIn(500);
+                });
+                callback();
+                return;
+            }
+        })
+    })
+}
+
 $("#get_started")
     .click(() => {
+        if(auth_required) return auth(() => {$("#get_started").click();});
         $("#enter_api").fadeOut(500);
         $("#get_started")
             .fadeOut(500, () => {
@@ -13,6 +53,7 @@ $("#get_started")
 
 $("#enter_api")
     .click(() => {
+        if(auth_required) return auth(() => {$("#enter_api").click();});
         $("#get_started").fadeOut(500);
         $("#enter_api")
             .fadeOut(500, () => {
@@ -39,20 +80,21 @@ function finish_login() {
             method: "POST",
             credentials: "include"
         })
+        .then(response => response.text())
         .then(function (response) {
-            if (!response.ok) {
-                error_state();
-                error_message("Login confirmation error");
-            } else {
-                Swal.fire({
-                    "icon": "success",
-                    "text": "Auth successful!",
-                    "timer": 1000
-                });
+            window.expanse = true;
+            if(response == "0") {
                 setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
+                    Swal.fire({
+                        "icon": "info",
+                        "title": "You would need to restart userbot in order to apply new session"
+                    })
+                }, 1000);
             }
+            $(".blur").fadeOut(1500);
+            setTimeout(() => {
+                window.location.href = "/";
+            }, response == "0" ? 10000 : 1500);
         })
         .catch(function (response) {
             error_state();
@@ -117,11 +159,11 @@ function error_message(message) {
 }
 
 function error_state() {
-    $(".bg").addClass("red_state");
+    $("#blackhole").addClass("red_state");
     cnt_btn.disabled = true;
     setTimeout(() => {
         cnt_btn.disabled = false;
-        $(".bg").removeClass("red_state");
+        $("#blackhole").removeClass("red_state");
     }, 1000);
 }
 
@@ -133,9 +175,8 @@ var _api_id = "",
 _current_block = skip_creds ? "phone" : "api_id";
 
 const cnt_btn = document.querySelector("#continue_btn");
-cnt_btn.onclick = (e) => {
-    if (cnt_btn.disabled) return;
 
+function process_next() {
     let step = cnt_btn.getAttribute("current-step");
     if (step == "api_id") {
         let api_id = document.querySelector("#api_id")
@@ -174,7 +215,8 @@ cnt_btn.onclick = (e) => {
                 }
             })
             .catch(function (response) {
-
+                error_state();
+                error_message("Error occured while saving credentials")
             });
 
         return;
@@ -233,3 +275,19 @@ cnt_btn.onclick = (e) => {
 
     }
 }
+
+cnt_btn.onclick = (e) => {
+    if (cnt_btn.disabled) return;
+    if (auth_required) return auth(() => {cnt_btn.click();});
+
+    process_next();
+}
+
+$("input").on("keyup", (e) => {
+    if (cnt_btn.disabled) return;
+    if (auth_required) return auth(() => {cnt_btn.click();});
+
+    if (e.key === "Enter" || e.keyCode === 13) {
+        process_next();
+    }
+});

@@ -1,3 +1,5 @@
+"""Responsible for web init and mandatory ops"""
+
 #    Friendly Telegram (telegram userbot)
 #    Copyright (C) 2018-2021 The Authors
 
@@ -14,16 +16,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""
-█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-
-© Copyright 2022
-https://t.me/hikariatama
-
-🔒 Licensed under the GNU GPLv3
-🌐 https://www.gnu.org/licenses/agpl-3.0.html
-"""
+# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+#
+#              © Copyright 2022
+#
+#          https://t.me/hikariatama
+#
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import inspect
@@ -33,10 +34,10 @@ import aiohttp_jinja2
 import jinja2
 from aiohttp import web
 
-from . import initial_setup, root
+from . import root
 
 
-class Web(initial_setup.Web, root.Web):
+class Web(root.Web):
     def __init__(self, **kwargs):
         self.runner = None
         self.port = None

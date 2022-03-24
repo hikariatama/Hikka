@@ -1,13 +1,14 @@
-"""
-█ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-█▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+"""Inline buttons, galleries and other Telegram-Bot-API stuff"""
 
-© Copyright 2022
-https://t.me/hikariatama
-
-🔒 Licensed under the GNU GPLv3
-🌐 https://www.gnu.org/licenses/agpl-3.0.html
-"""
+# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+#
+#              © Copyright 2022
+#
+#          https://t.me/hikariatama
+#
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 from typing import Union, Any, List
 
@@ -276,6 +277,8 @@ class InlineManager:
         self._custom_map = {}
 
         self.fsm = {}
+
+        self._web_auth_tokens = []
 
         self._markup_ttl = 60 * 60 * 24
 
@@ -988,6 +991,10 @@ class InlineManager:
         if reply_markup is None:
             reply_markup = []
 
+        if re.search(r"authorize_web_(.{8})", query.data):
+            self._web_auth_tokens += [re.search(r"authorize_web_(.{8})", query.data).group(1)]
+            return
+
         # First, dispatch all registered callback handlers
         for mod in self._allmodules.modules:
             if (
@@ -1370,6 +1377,13 @@ class InlineManager:
             await message.delete()
 
         return gallery_uid
+
+    def pop_web_auth_token(self, token) -> bool:
+        if token not in self._web_auth_tokens:
+            return False
+
+        self._web_auth_tokens.remove(token)
+        return True
 
 
 if __name__ == "__main__":
