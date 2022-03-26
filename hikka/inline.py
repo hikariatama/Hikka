@@ -1258,8 +1258,8 @@ class InlineManager:
         caption: Union[str, FunctionType],
         message: Union[Message, int],
         next_handler: FunctionType,
-        force_me: bool = False,
-        always_allow: bool = False,
+        force_me: bool = True,
+        always_allow: bool = None,
         ttl: int = False,
     ) -> Union[bool, str]:
         """
