@@ -136,7 +136,7 @@ class LoaderMod(loader.Module):
     strings = {
         "name": "Loader",
         "repo_config_doc": "Fully qualified URL to a module repo",
-        "avail_header": "<b>📥 Available official modules from repo</b>",
+        "avail_header": "<b>📲 Official modules from repo</b>",
         "select_preset": "<b>⚠️ Please select a preset</b>",
         "no_preset": "<b>🚫 Preset not found</b>",
         "preset_loaded": "<b>✅ Preset loaded</b>",
@@ -145,41 +145,23 @@ class LoaderMod(loader.Module):
         "provide_module": "<b>⚠️ Provide a module to load</b>",
         "bad_unicode": "<b>🚫 Invalid Unicode formatting in module</b>",
         "load_failed": "<b>🚫 Loading failed. See logs for details</b>",
-        "loaded": "<b>📥 Module </b><code>{}</code>{}<b> loaded.</b>{}",
+        "loaded": "<b>🪁 Module </b><code>{}</code>{}<b> loaded.</b>{}",
         "no_class": "<b>What class needs to be unloaded?</b>",
-        "unloaded": "<b>📤 Module unloaded.</b>",
+        "unloaded": "<b>🔥 Module unloaded.</b>",
         "not_unloaded": "<b>🚫 Module not unloaded.</b>",
         "requirements_failed": "<b>🚫 Requirements installation failed</b>",
         "requirements_installing": "<b>🔄 Installing requirements...</b>",
         "requirements_restart": "<b>🔄 Requirements installed, but a restart is required</b>",
         "all_modules_deleted": "<b>✅ All modules deleted</b>",
-        "no_modules": "<b>⚠️ You have no custom modules!</b>",
-        "searching": "<b>🔍 Searching...</b>",
-        "file": "<b>📥 File of module {}:<b>",
-        "module_link": '📥 <a href="{}">Link</a> for module {}: \n<code>{}</code>',
-        "not_found_info": "🚫 Request to find module with name {} failed due to:",
-        "not_found_c_info": "🚫 Request to find module with command {} failed due to:",
-        "not_found": "<b>🚫 Module was not found</b>",
-        "file_core": "<b>File of core module {}:</b>",
-        "loading": "<b>🔄 Loading...</b>",
-        "url_invalid": "<b>🚫 URL invalid</b>",
-        "args_incorrect": "<b>🚫 Args incorrect</b>",
-        "repo_loaded": "<b>✅ Repository loaded</b>",
-        "repo_not_loaded": "<b>🚫 Repository not loaded</b>",
-        "repo_unloaded": "<b>🔄 Repository unloaded, but restart is required to unload repository modules</b>",
-        "repo_not_unloaded": "<b>🚫 Repository not unloaded</b>",
         "single_cmd": "\n📍 <code>{}{}</code> 👉🏻 ",
         "undoc_cmd": "👁‍🗨 No docs",
         "ihandler": "\n🎹 <i>Inline</i>: <code>{}</code> 👉🏻 ",
         "undoc_ihandler": "👁‍🗨 No docs",
-        "chandler": "\n🖱 <i>Callback</i>: <code>{}</code> 👉🏻 ",
-        "undoc_chandler": "👁‍🗨 No docs",
         "inline_init_failed": """🚫 <b>This module requires Hikka inline feature and initialization of InlineManager failed</b>
 <i>Please, remove one of your old bots from @BotFather and restart userbot to load this module</i>""",
         "version_incompatible": "🚫 <b>This module requires Hikka {}+\nPlease, update with </b><code>.update</code>",
-        "non_heroku": "♓️ <b>This module is not supported on Heroku</b>",
         "ffmpeg_required": "🚫 <b>This module requires FFMPEG, which is not installed</b>",
-        "developer": "\n🧑‍💻 <b>Developer: </b><code>{}</code>"
+        "developer": "\n\n🧑‍💻 <b>Developer: </b><code>{}</code>",
     }
 
     def __init__(self):
@@ -218,7 +200,7 @@ class LoaderMod(loader.Module):
 
     @loader.owner
     async def dlpresetcmd(self, message: Message) -> None:
-        """Set preset. Defaults to full"""
+        """Set modules preset"""
         args = utils.get_args(message)
 
         if not args:
@@ -316,12 +298,9 @@ class LoaderMod(loader.Module):
     async def load_module(
         self, doc, message, name=None, origin="<string>", did_requirements=False
     ):
-        if re.search(r"# ?scope: ?non_heroku", doc) and 'DYNO' in os.environ:
-            if isinstance(message, Message):
-                await utils.answer(message, self.strings("non_heroku"))
-            return
-
-        if re.search(r"# ?scope: ?ffmpeg", doc) and os.system('ffmpeg -version'):  # skipcq: BAN-B605, BAN-B607
+        if re.search(r"# ?scope: ?ffmpeg", doc) and os.system(
+            "ffmpeg -version"
+        ):  # skipcq: BAN-B605, BAN-B607
             if isinstance(message, Message):
                 await utils.answer(message, self.strings("ffmpeg_required"))
             return
@@ -332,15 +311,19 @@ class LoaderMod(loader.Module):
             return
 
         if re.search(r"# ?scope: ?hikka_min", doc):
-            ver = re.search(r"# ?scope: ?hikka_min ([0-9]+\.[0-9]+\.[0-9]+)", doc).group(1)
-            ver_ = tuple(map(int, ver.split('.')))
+            ver = re.search(
+                r"# ?scope: ?hikka_min ([0-9]+\.[0-9]+\.[0-9]+)", doc
+            ).group(1)
+            ver_ = tuple(map(int, ver.split(".")))
             if main.__version__ < ver_:
-                await utils.answer(message, self.strings('version_incompatible').format(ver))
+                await utils.answer(
+                    message, self.strings("version_incompatible").format(ver)
+                )
                 return
 
         developer = re.search(r"# ?meta developer: ?(.+)", doc)
         developer = developer.group(1) if developer else False
-        developer = self.strings('developer').format(developer) if developer else ""
+        developer = self.strings("developer").format(developer) if developer else ""
 
         if name is None:
             uid = "__extmod_" + str(uuid.uuid4())
@@ -365,7 +348,9 @@ class LoaderMod(loader.Module):
                     requirements = list(
                         filter(
                             lambda x: x and x[0] not in ("-", "_", "."),
-                            map(str.strip, VALID_PIP_PACKAGES.search(doc)[1].split(" ")),
+                            map(
+                                str.strip, VALID_PIP_PACKAGES.search(doc)[1].split(" ")
+                            ),
                         )
                     )
                 except TypeError:
@@ -430,8 +415,12 @@ class LoaderMod(loader.Module):
             return False
 
         instance.inline = self.inline
-        if hasattr(instance, '__version__') and isinstance(instance.__version__, tuple):
-            version = "<b><i> (v" + ".".join(list(map(str, list(instance.__version__)))) + ")</i></b>"
+        if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
+            version = (
+                "<b><i> (v"
+                + ".".join(list(map(str, list(instance.__version__))))
+                + ")</i></b>"
+            )
         else:
             version = ""
 
@@ -472,10 +461,13 @@ class LoaderMod(loader.Module):
             if re.search(r"# ?scope: ?disable_onload_docs", doc):
                 return await utils.answer(
                     message,
-                    self.strings("loaded", message).format(modname.strip(), version, modhelp) + developer,
+                    self.strings("loaded", message).format(
+                        modname.strip(), version, modhelp
+                    )
+                    + developer,
                 )
 
-            for _name, fun in instance.commands.items():
+            for _name, fun in sorted(instance.commands.items(), key=lambda x: x[0]):
                 modhelp += self.strings("single_cmd", message).format(prefix, _name)
 
                 if fun.__doc__:
@@ -485,7 +477,7 @@ class LoaderMod(loader.Module):
 
             if self.inline.init_complete:
                 if hasattr(instance, "inline_handlers"):
-                    for _name, fun in instance.inline_handlers.items():
+                    for _name, fun in sorted(instance.inline_handlers.items(), key=lambda x: x[0]):
                         modhelp += self.strings("ihandler", message).format(
                             f"@{self.inline._bot_username} {_name}"
                         )
@@ -503,107 +495,22 @@ class LoaderMod(loader.Module):
                         else:
                             modhelp += self.strings("undoc_ihandler", message)
 
-                if hasattr(instance, "callback_handlers"):
-                    for _name, fun in instance.callback_handlers.items():
-                        modhelp += self.strings("chandler", message).format(_name)
-
-                        if fun.__doc__:
-                            modhelp += utils.escape_html(
-                                "\n".join(
-                                    [
-                                        line.strip()
-                                        for line in inspect.getdoc(fun).splitlines()
-                                        if not line.strip().startswith("@")
-                                    ]
-                                )
-                            )
-                        else:
-                            modhelp += self.strings("undoc_chandler", message)
-
             try:
                 await utils.answer(
                     message,
-                    self.strings("loaded", message).format(modname.strip(), version, modhelp) + developer,
+                    self.strings("loaded", message).format(
+                        modname.strip(), version, modhelp
+                    )
+                    + developer,
                 )
             except telethon.errors.rpcerrorlist.MediaCaptionTooLongError:
                 await message.reply(
-                    self.strings("loaded", message).format(modname.strip(), version, modhelp) + developer
+                    self.strings("loaded", message).format(
+                        modname.strip(), version, modhelp
+                    )
+                    + developer
                 )
 
-        return True
-
-    @loader.owner
-    async def dlrepocmd(self, message: Message) -> None:
-        """Downloads and installs all modules from repo"""
-        args = utils.get_args(message)
-
-        if len(args) == 1:
-            repo_url = args[0]
-            git_api = get_git_api(repo_url)
-
-            if git_api is None:
-                return await utils.answer(message, self.strings("url_invalid", message))
-
-            await utils.answer(message, self.strings("loading", message))
-
-            if await self.load_repo(git_api):
-                self._db.set(
-                    __name__,
-                    "loaded_repositories",
-                    list(
-                        set(self._db.get(__name__, "loaded_repositories", [])).union(
-                            [repo_url]
-                        )
-                    ),
-                )
-
-                await utils.answer(message, self.strings("repo_loaded", message))
-            else:
-                await utils.answer(message, self.strings("repo_not_loaded", message))
-        else:
-            await utils.answer(message, self.strings("args_incorrect", message))
-
-    @loader.owner
-    async def unloadrepocmd(self, message: Message) -> None:
-        """Removes loaded repository"""
-        args = utils.get_args(message)
-
-        if len(args) == 1:
-            repoUrl = args[0]
-            repos = set(self._db.get(__name__, "loaded_repositories", []))
-
-            try:
-                repos.remove(repoUrl)
-            except KeyError:
-                return await utils.answer(
-                    message, self.strings("repo_not_unloaded", message)
-                )
-
-            self._db.set(__name__, "loaded_repositories", list(repos))
-
-            await utils.answer(message, self.strings("repo_unloaded", message))
-        else:
-            await utils.answer(message, self.strings("args_incorrect", message))
-
-    async def load_repo(self, git_api):
-        req = await utils.run_sync(requests.get, git_api)
-
-        if req.status_code != 200:
-            return False
-
-        files = req.json()
-
-        if not isinstance(files, list):
-            return False
-
-        await asyncio.gather(
-            *[
-                self.download_and_install(f["download_url"])
-                for f in filter(
-                    lambda f: f["name"].endswith(".py") and f["type"] == "file", files
-                )
-            ]
-        )
         return True
 
     @loader.owner
@@ -624,9 +531,7 @@ class LoaderMod(loader.Module):
             if not mod.startswith("hikka.modules.") or not mod:
                 raise Exception("Assertion error")
 
-            without_prefix += [
-                unescape_percent(mod[len("hikka.modules.") :])
-            ]
+            without_prefix += [unescape_percent(mod[len("hikka.modules.") :])]
 
         it = set(self._db.get(__name__, "loaded_modules", [])).difference(
             without_prefix

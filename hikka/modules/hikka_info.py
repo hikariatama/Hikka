@@ -10,10 +10,9 @@
 
 # scope: inline
 
-from .. import loader, main
+from .. import loader, main, utils
 import logging
 import aiogram
-import os
 import git
 
 from telethon.utils import get_display_name
@@ -67,19 +66,6 @@ class HikkaInfoMod(loader.Module):
         except Exception:
             upd = ""
 
-        is_termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())  # skipcq: BAN-B605, BAN-B607
-        is_okteto = "OKTETO" in os.environ
-        is_lavhost = "LAVHOST" in os.environ
-
-        if is_termux:
-            platform = "🕶 Termux"
-        elif is_okteto:
-            platform = "☁️ Okteto"
-        elif is_lavhost:
-            platform = f"✌️ lavHost {os.environ['LAVHOST']}"
-        else:
-            platform = "📻 VDS"
-
         await query.answer(
             [
                 aiogram.types.inline_query_result.InlineQueryResultArticle(
@@ -87,15 +73,14 @@ class HikkaInfoMod(loader.Module):
                     title="Send userbot info",
                     description="ℹ This will not compromise any sensitive data",
                     input_message_content=aiogram.types.input_message_content.InputTextMessageContent(
-                        f"""
-<b>👩‍🎤 Hikka Userbot</b>
-<b>🤴 Owner: <a href="tg://user?id={self._me.id}">{get_display_name(self._me)}</a></b>\n
-<b>🔮 Version: </b><i>{".".join(list(map(str, list(main.__version__))))}</i>
-<b>🧱 Build: </b><a href="https://github.com/hikariatama/Hikka/commit/{ver}">{ver[:8] or "Unknown"}</a>
-<b>{upd}</b>
-
-<b>{platform}</b>
-""",
+                        (
+                            "<b>👩‍🎤 Hikka Userbot</b>"
+                            f"<b>🤴 Owner: <a href=\"tg://user?id={self._me.id}\">{get_display_name(self._me)}</a></b>\n"
+                            f"<b>🔮 Version: </b><i>{'.'.join(list(map(str, list(main.__version__))))}</i>"
+                            f"<b>🧱 Build: </b><a href=\"https://github.com/hikariatama/Hikka/commit/{ver}\">{ver[:8] or 'Unknown'}</a>"
+                            f"<b>{upd}</b>"
+                            f"<b>{utils.get_named_platform()}</b>"
+                        ),
                         "HTML",
                         disable_web_page_preview=True,
                     ),
