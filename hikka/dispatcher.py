@@ -200,6 +200,11 @@ class CommandDispatcher:
             prefix = prefix[0]
             self._db.set(main.__name__, "command_prefix", prefix)
 
+        if len(prefix) != 1:
+            prefix = "."
+            self._db.set(main.__name__, "command_prefix", prefix)
+            logging.warning("Prefix has been reset to a default one («.»)")
+
         change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
 
         if event.message.message.startswith(prefix):

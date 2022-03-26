@@ -170,6 +170,7 @@ class CoreMod(loader.Module):
 
         if len(args) != 1:
             await utils.answer(message, self.strings("prefix_incorrect", message))
+            return
 
         oldprefix = self._db.get(main.__name__, "command_prefix", ".")
         self._db.set(main.__name__, "command_prefix", args)
