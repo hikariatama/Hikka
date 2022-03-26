@@ -53,10 +53,8 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Restarting...</b>",
         "downloading": "🔄 <b>Downloading updates...</b>",
         "downloaded": "✅ <b>Downloaded successfully.\nPlease type</b> \n<code>.restart</code> <b>to restart the bot.</b>",
-        "already_updated": "✅ <b>Already up to date!</b>",
         "installing": "🔁 <b>Installing updates...</b>",
         "success": "✅ <b>Restart successful!</b>",
-        "heroku_warning": "⚠️ <b>Heroku API key has not been set. </b>Update was successful but updates will reset every time the bot restarts.",
         "origin_cfg_doc": "Git origin URL, for where to update from",
     }
 
@@ -124,9 +122,7 @@ class UpdaterMod(loader.Module):
             repo.create_head("master", origin.refs.master)
             repo.heads.master.set_tracking_branch(origin.refs.master)
             repo.heads.master.checkout(True)
-            return (
-                False  # Heroku never needs to install dependencies because we redeploy
-            )
+            return False
 
     @staticmethod
     def req_common() -> None:
@@ -172,21 +168,9 @@ class UpdaterMod(loader.Module):
             except telethon.errors.rpcerrorlist.MessageNotModifiedError:
                 pass
 
-            if heroku_key := os.environ.get("heroku_api_token"):
-                from .. import heroku
-
-                await self.prerestart_common(message)
-                heroku.publish(self.allclients, heroku_key)
-                # If we pushed, this won't return. If the push failed, we will get thrown at.
-                # So this only happens when remote is already up to date (remote is heroku, where we are running)
-                self._db.set(__name__, "selfupdatechat", None)
-                self._db.set(__name__, "selfupdatemsg", None)
-
-                await utils.answer(message, self.strings("already_updated", message))
-            else:
-                if req_update:
-                    self.req_common()
-                await self.restart_common(message)
+            if req_update:
+                self.req_common()
+            await self.restart_common(message)
         except GitCommandError:
             await self.updatecmd(message, True)
 
@@ -217,15 +201,7 @@ class UpdaterMod(loader.Module):
 
     async def update_complete(self, client):
         logger.debug("Self update successful! Edit message")
-        heroku_key = os.environ.get("heroku_api_token")
-        herokufail = ("DYNO" in os.environ) and (heroku_key is None)
-
-        if herokufail:
-            logger.warning("heroku token not set")
-            msg = self.strings("heroku_warning")
-        else:
-            logger.debug("Self update successful! Edit message")
-            msg = self.strings("success")
+        msg = self.strings("success")
 
         await client.edit_message(
             self._db.get(__name__, "selfupdatechat"),

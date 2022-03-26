@@ -32,6 +32,8 @@ import io
 import logging
 import os
 import shlex
+import time
+from datetime import timedelta
 
 import telethon
 from telethon.tl.custom.message import Message
@@ -388,3 +390,34 @@ def get_link(user: User or Channel) -> str:
 def chunks(_list: list, n: int) -> list:
     """Split provided `_list` into chunks of `n`"""
     return [_list[i : i + n] for i in range(0, len(_list), n)]
+
+
+def get_named_platform() -> str:
+    """Returns formatted platform name"""
+    is_termux = bool(
+        os.popen('echo $PREFIX | grep -o "com.termux"').read()
+    )
+    is_okteto = "OKTETO" in os.environ
+    is_lavhost = "LAVHOST" in os.environ
+
+    if is_termux:
+        return "🕶 Termux"
+    elif is_okteto:
+        return "☁️ Okteto"
+    elif is_lavhost:
+        return f"✌️ lavHost {os.environ['LAVHOST']}"
+    else:
+        return "📻 VDS"
+
+
+def uptime() -> int:
+    """Returns userbot uptime in seconds"""
+    return round(time.perf_counter() - init_ts)
+
+
+def formatted_uptime() -> str:
+    """Returnes formmated uptime"""
+    return "{}".format(str(timedelta(seconds=uptime())))
+
+
+init_ts = time.perf_counter()

@@ -26,7 +26,6 @@ class HikkaSettingsMod(loader.Module):
         "name": "HikkaSettings",
         "watchers": "👀 <b>Watchers:</b>\n\n<b>{}</b>",
         "mod404": "🚫 <b>Watcher {} not found</b>",
-        "already_disabled": "👀 <b>Watcher {} is already disabled</b>",
         "disabled": "👀 <b>Watcher {} is now <u>disabled</u></b>",
         "enabled": "👀 <b>Watcher {} is now <u>enabled</u></b>",
         "args": "🚫 <b>You need to specify watcher name</b>",

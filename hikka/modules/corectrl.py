@@ -41,7 +41,7 @@ class CoreMod(loader.Module):
         "alias_removed": "✅ <b>Alias</b> <code>{}</code> <b>removed.",
         "no_alias": "<b>🚫 Alias</b> <code>{}</code> <b>does not exist</b>",
         "no_pack": "<b>❓ What translation pack should be added?</b>",
-        "bad_pack": "<b>✅ Invalid translation pack specified</b>",
+        "bad_pack": "<b>🚫 Invalid translation pack specified</b>",
         "trnsl_saved": "<b>✅ Translation pack added</b>",
         "packs_cleared": "<b>✅ Translations cleared</b>",
         "lang_set": "<b>✅ Language changed</b>",
