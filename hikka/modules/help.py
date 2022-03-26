@@ -32,8 +32,6 @@ class HelpMod(loader.Module):
         "mod_tmpl": "\n{} <code>{}</code>",
         "first_cmd_tmpl": ": ( {}",
         "cmd_tmpl": " | {}",
-        "args": "🚫 <b>Args are incorrect</b>",
-        "set_cat": "ℹ️ <b>{} placed in category {}</b>",
         "no_mod": "🚫 <b>Specify module to hide</b>",
         "hidden_shown": "👓 <b>{} modules hidden, {} module shown:</b>\n{}\n{}",
         "ihandler": "\n🎹 <code>{}</code> 👉🏻 ",
@@ -224,7 +222,7 @@ class HelpMod(loader.Module):
                 except Exception:
                     pass
 
-            core = mod.__origin__ == "<file>"
+            core = mod.__origin__ == "<core>"
 
             if core:
                 emoji = self.config['core_emoji']

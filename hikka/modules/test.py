@@ -15,7 +15,7 @@ import time
 import logging
 from io import BytesIO
 
-from .. import loader, utils
+from .. import loader, utils, main
 
 from typing import Union
 from telethon.tl.types import Message
@@ -36,7 +36,7 @@ class TestMod(loader.Module):
         "set_loglevel": "🚫 <b>Please specify verbosity as an integer or string</b>",
         "no_logs": "ℹ️ <b>You don't have any logs at verbosity {}.</b>",
         "logs_filename": "hikka-logs.txt",
-        "logs_caption": "🗞 Hikka logs with verbosity {}",
+        "logs_caption": "🏩 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka version: {}.{}.{}</b>\n⏱ <b>Uptime: {}</b>\n<b>{}</b>",
         "suspend_invalid_time": "🚫 <b>Invalid time to suspend</b>",
         "suspended": "🥶 <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>",
         "results_ping": "⏱ <b>Ping:</b> <code>{}</code> <b>ms</b>",
@@ -190,16 +190,19 @@ class TestMod(loader.Module):
         logs = BytesIO(logs)
         logs.name = self.strings("logs_filename")
 
+        other = (*main.__version__, utils.formatted_uptime(), utils.get_named_platform())
+
         if isinstance(message, Message):
+            await message.delete()
             await utils.answer(
-                message, logs, caption=self.strings("logs_caption").format(named_lvl)
+                message, logs, caption=self.strings("logs_caption").format(named_lvl, *other)
             )
         else:
             await message.delete()
             await self._client.send_file(
                 message.form["chat"],
                 logs,
-                caption=self.strings("logs_caption").format(named_lvl),
+                caption=self.strings("logs_caption").format(named_lvl, *other),
             )
 
     @loader.owner
@@ -218,7 +221,7 @@ class TestMod(loader.Module):
     async def pingcmd(self, message: Message) -> None:
         """Test your userbot ping"""
         start = time.perf_counter_ns()
-        message = await utils.answer(message, "<code>Ping checking...</code>")
+        message = await utils.answer(message, "<code>🐻 Bear with us while ping is checking...</code>")
         end = time.perf_counter_ns()
 
         if isinstance(message, (list, tuple, set)):
