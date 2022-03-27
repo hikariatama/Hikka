@@ -136,11 +136,11 @@ class Web:
         return web.Response()
 
     async def okteto(self, request):
-        if not self._check_session(request):
-            return web.Response(body="WAIT")
+        if "OKTETO_URI" in os.environ:
+            return web.Response(status=418)
 
         text = await request.text()
-        main.hikka.okteto_uri = text
+        os.environ["OKTETO_URI"] = text
         return web.Response(body="URI_SAVED")
 
     async def tg_code(self, request):

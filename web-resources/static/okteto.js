@@ -11,3 +11,5 @@ function okteto() {
         }
     })
 }
+
+okteto()
