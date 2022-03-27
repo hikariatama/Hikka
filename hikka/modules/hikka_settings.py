@@ -192,6 +192,7 @@ class HikkaSettingsMod(loader.Module):
         self._db.set(main.__name__, "nonickusers", nn)
 
     async def nonickcmdcmd(self, message: Message) -> None:
+        """Allow certain command to be executed without nickname"""
         args = utils.get_args_raw(message)
         if not args:
             return await utils.answer(message, self.strings("no_cmd"))

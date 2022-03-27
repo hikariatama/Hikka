@@ -14,7 +14,7 @@ function auth(callback) {
         fetch("/web_auth", {
             method: "POST",
             credentials: "include",
-            timeout: 5000
+            timeout: 300000
         })
         .then(response => response.text())
         .then((response) => {

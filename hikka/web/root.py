@@ -54,6 +54,7 @@ class Web:
         self.app.router.add_post("/sendTgCode", self.send_tg_code)
         self.app.router.add_post("/check_session", self.check_session)
         self.app.router.add_post("/web_auth", self.web_auth)
+        self.app.router.add_post("/okteto", self.okteto)
         self.app.router.add_post("/tgCode", self.tg_code)
         self.app.router.add_post("/finishLogin", self.finish_login)
         self.api_set = asyncio.Event()
@@ -131,6 +132,14 @@ class Web:
         await client.send_code_request(phone)
         self.sign_in_clients[phone] = client
         return web.Response()
+
+    async def okteto(self, request):
+        if not self._check_session(request):
+            return web.Response(body="WAIT")
+
+        text = await request.text()
+        main.hikka.okteto_uri = text
+        return web.Response(body="URI_SAVED")
 
     async def tg_code(self, request):
         if not self._check_session(request):
