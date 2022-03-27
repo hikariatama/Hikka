@@ -207,8 +207,7 @@ class TestMod(loader.Module):
 
     @loader.owner
     async def suspendcmd(self, message: Message) -> None:
-        """.suspend <time>
-        Suspends the bot for N seconds"""
+        """<time> - Suspends the bot for N seconds"""
         try:
             time_sleep = float(utils.get_args_raw(message))
             await utils.answer(

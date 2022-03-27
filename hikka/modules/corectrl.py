@@ -85,8 +85,7 @@ class CoreMod(loader.Module):
         await utils.answer(message, self.strings("hikka").format(*ver))
 
     async def blacklistcmd(self, message: Message) -> None:
-        """.blacklist [id]
-        Blacklist the bot from operating somewhere"""
+        """Blacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
         self._db.set(
@@ -98,8 +97,7 @@ class CoreMod(loader.Module):
         await utils.answer(message, self.strings("blacklisted", message).format(chatid))
 
     async def unblacklistcmd(self, message: Message) -> None:
-        """.unblacklist [id]
-        Unblacklist the bot from operating somewhere"""
+        """Unblacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
         self._db.set(
@@ -130,8 +128,7 @@ class CoreMod(loader.Module):
             return
 
     async def blacklistusercmd(self, message: Message) -> None:
-        """.blacklistuser [id]
-        Prevent this user from running any commands"""
+        """Prevent this user from running any commands"""
         user = await self.getuser(message)
 
         self._db.set(
@@ -145,8 +142,7 @@ class CoreMod(loader.Module):
         )
 
     async def unblacklistusercmd(self, message: Message) -> None:
-        """.unblacklistuser [id]
-        Allow this user to run permitted commands"""
+        """Allow this user to run permitted commands"""
         user = await self.getuser(message)
 
         self._db.set(
@@ -280,8 +276,6 @@ class CoreMod(loader.Module):
 
     async def setlangcmd(self, message: Message) -> None:
         """Change the preferred language used for translations
-        Specify the language as space separated list of ISO 639-1 language codes in order of preference (e.g. fr en)
-        With no parameters, all translations are disabled
         Restart required after use"""
         langs = utils.get_args(message)
         self._db.set(main.__name__, "language", langs)

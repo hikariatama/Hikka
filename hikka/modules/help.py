@@ -64,7 +64,7 @@ class HelpMod(loader.Module):
         *Split modules by spaces"""
         modules = utils.get_args(message)
         if not modules:
-            await utils.answer(message, self.strings("no_mod"))
+            await utils.answer(message, self.strings("no_mod", message))
             return
 
         mods = [
@@ -88,7 +88,7 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            self.strings("hidden_shown").format(
+            self.strings("hidden_shown", message).format(
                 len(hidden),
                 len(shown),
                 "\n".join([f"👁‍🗨 <i>{m}</i>" for m in hidden]),
@@ -121,7 +121,7 @@ class HelpMod(loader.Module):
                 if args in self.allmodules.commands:
                     module = self.allmodules.commands[args].__self__
                 else:
-                    await utils.answer(message, self.strings("bad_module").format(args))
+                    await utils.answer(message, self.strings("bad_module", message).format(args))
                     return
 
             try:
@@ -129,7 +129,7 @@ class HelpMod(loader.Module):
             except KeyError:
                 name = getattr(module, "name", "ERROR")
 
-            reply = self.strings("single_mod_header").format(utils.escape_html(name))
+            reply = self.strings("single_mod_header", message).format(utils.escape_html(name))
             if module.__doc__:
                 reply += (
                     "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"
@@ -161,11 +161,11 @@ class HelpMod(loader.Module):
                         reply += self.strings("undoc_ihandler", message)
 
             for name, fun in commands.items():
-                reply += self.strings("single_cmd").format(prefix, name)
+                reply += self.strings("single_cmd", message).format(prefix, name)
                 if fun.__doc__:
                     reply += utils.escape_html(inspect.getdoc(fun))
                 else:
-                    reply += self.strings("undoc_cmd")
+                    reply += self.strings("undoc_cmd", message)
 
             await utils.answer(message, reply)
             return
@@ -187,7 +187,7 @@ class HelpMod(loader.Module):
         hidden = list(filter(lambda module: module in mods, self.get("hide", [])))
         self.set("hide", hidden)
 
-        reply = self.strings("all_header").format(count, len(hidden) if not force else 0)
+        reply = self.strings("all_header", message).format(count, len(hidden) if not force else 0)
         shown_warn = False
 
         plain_ = []
@@ -231,7 +231,7 @@ class HelpMod(loader.Module):
             else:
                 emoji = self.config['plain_emoji']
 
-            tmp += self.strings("mod_tmpl").format(emoji, name)
+            tmp += self.strings("mod_tmpl", message).format(emoji, name)
 
             first = True
 
@@ -243,10 +243,10 @@ class HelpMod(loader.Module):
 
             for cmd in commands:
                 if first:
-                    tmp += self.strings("first_cmd_tmpl").format(cmd)
+                    tmp += self.strings("first_cmd_tmpl", message).format(cmd)
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl").format(cmd)
+                    tmp += self.strings("cmd_tmpl", message).format(cmd)
 
             icommands = [
                 name
@@ -256,10 +256,10 @@ class HelpMod(loader.Module):
 
             for cmd in icommands:
                 if first:
-                    tmp += self.strings("first_cmd_tmpl").format(f"🎹 {cmd}")
+                    tmp += self.strings("first_cmd_tmpl", message).format(f"🎹 {cmd}")
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl").format(f"🎹 {cmd}")
+                    tmp += self.strings("cmd_tmpl", message).format(f"🎹 {cmd}")
 
             if commands or icommands:
                 tmp += " )"
