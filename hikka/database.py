@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 class Database(dict):
     def __init__(self, client):
+        super().__init__()
         self._client = client
         self._me = None
         self._assets = None
