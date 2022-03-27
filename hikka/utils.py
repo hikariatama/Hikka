@@ -402,13 +402,13 @@ def get_named_platform() -> str:
 
     if is_termux:
         return "🕶 Termux"
-    
+
     if is_okteto:
         return "☁️ Okteto"
-    
+
     if is_lavhost:
         return f"✌️ lavHost {os.environ['LAVHOST']}"
-    
+
     return "📻 VDS"
 
 
