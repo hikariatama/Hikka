@@ -237,7 +237,12 @@ class Modules:
             mods = [
                 os.path.join(utils.get_base_dir(), MODULES_NAME, mod)
                 for mod in filter(
-                    lambda x: (len(x) > 3 and x[-3:] == ".py" and x[0] != "_"),
+                    lambda x: (
+                        len(x) > 3
+                        and x[-3:] == ".py"
+                        and x[0] != "_"
+                        and ("OKTETO" in os.environ or x != "okteto.py")
+                    ),
                     os.listdir(os.path.join(utils.get_base_dir(), MODULES_NAME)),
                 )
             ]
