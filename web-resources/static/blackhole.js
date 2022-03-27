@@ -26,9 +26,9 @@ function blackhole(element) {
     function setDPI(canvas, dpi) {
         // Set up CSS size if it's not set up already
         if (!canvas.get(0).style.width)
-            canvas.get(0).style.width = canvas.get(0).width + 'px';
+            canvas.get(0).style.width = `${canvas.get(0).width}px`;
         if (!canvas.get(0).style.height)
-            canvas.get(0).style.height = canvas.get(0).height + 'px';
+            canvas.get(0).style.height = `${canvas.get(0).height}px`;
 
         var scaleFactor = dpi / 96;
         canvas.get(0).width = Math.ceil(canvas.get(0).width * scaleFactor);
@@ -77,7 +77,7 @@ function blackhole(element) {
         }
 
         stars.push(this);
-        this.color = 'rgba(255,180,255,'+ (1 - ((this.orbital) / 255 * .8)) +')'; // Color the star white, but make it more transparent the further out it is generated
+        this.color = `rgba(255,180,255,${1 - ((this.orbital) / 255 * 0.8)})`; // Color the star white, but make it more transparent the further out it is generated
 
         this.hoverPos = centery + (maxorbit/2) + this.collapseBonus;  // Where the star will go on hover of the blackhole
         this.expansePos = centery + (this.id%100)*-10 + (Math.floor(Math.random() * 20) + 1); // Where the star will go when expansion takes place
@@ -153,7 +153,7 @@ function blackhole(element) {
         requestFrame(loop);
     }
 
-    function init(time){
+    function init(){
         context.fillStyle = 'rgba(25,25,25,1)';  // Initial clear of the canvas, to avoid an issue where it all gets too dark
         context.fillRect(0, 0, cw, ch);
         for(var i = 0; i < 2000; i++){  // create 2000 stars

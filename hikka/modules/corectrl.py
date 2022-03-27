@@ -81,7 +81,7 @@ class CoreMod(loader.Module):
     async def hikkacmd(self, message: Message) -> None:
         """Get Hikka version"""
         ver = getattr(main, "__version__", False)
-        
+
         await utils.answer(message, self.strings("hikka").format(*ver))
 
     async def blacklistcmd(self, message: Message) -> None:

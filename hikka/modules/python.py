@@ -130,7 +130,6 @@ class PythonMod(loader.Module):
                 "f": telethon.tl.functions,
                 "c": self._client,
                 "m": message,
-                "loader": loader,
                 "lookup": self.lookup,
                 "self": self,
             },

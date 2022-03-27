@@ -498,7 +498,7 @@ class Hikka:
             _platform = "Termux" if termux else "Unknown"
 
             logo1 = f"""
- 
+
                         █ █ █ █▄▀ █▄▀ ▄▀█
                         █▀█ █ █ █ █ █ █▀█
 
