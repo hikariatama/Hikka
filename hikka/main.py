@@ -55,8 +55,8 @@ from .dispatcher import CommandDispatcher
 from .translations.core import Translator
 
 from math import ceil
+from .version import __version__
 
-__version__ = (1, 0, 4)
 try:
     from .web import core
 except ImportError:

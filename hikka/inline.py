@@ -181,32 +181,112 @@ async def edit(
             # was deleted
 
 
-async def custom_next_handler(
+async def custom_back_handler(
     call: CallbackQuery,
-    caption: str = None,
-    btn_call_data: str = None,
+    btn_call_data: List[str] = None,
     self=None,
-    func: FunctionType = None,
+    gallery_uid: str = None,
 ) -> None:
+    queue = self._galleries[gallery_uid]["photos"]
+    if not queue:
+        await call.answer("First go forward", show_alert=True)
+        return
+
+    if abs(self._galleries[gallery_uid]["current_index"] - 1) > len(queue):
+        self._galleries[gallery_uid]["current_index"] = 0
+
+    self._galleries[gallery_uid]["current_index"] -= 1
+    new_url = self._galleries[gallery_uid]["photos"][self._galleries[gallery_uid]["current_index"]]
+
+    markup = InlineKeyboardMarkup()
+    markup.add(
+        InlineKeyboardButton("⬅️", callback_data=btn_call_data[0]),
+        InlineKeyboardButton("❌", callback_data=btn_call_data[1]),
+        InlineKeyboardButton("➡️", callback_data=btn_call_data[2]),
+    )
+
+    _caption = (
+        self._galleries[gallery_uid]["caption"]
+        if isinstance(self._galleries[gallery_uid]["caption"], str)
+        or not callable(self._galleries[gallery_uid]["caption"])
+        else self._galleries[gallery_uid]["caption"]()
+    )
+
     try:
-        new_url = await func()
-        if not isinstance(new_url, (str, bool)):
-            raise Exception(
-                f"Invalid type returned by `next_handler`. Expected `str` or `False`, got `{type(new_url)}`"
-            )
+        await self.bot.edit_message_media(
+            inline_message_id=call.inline_message_id,
+            media=InputMediaPhoto(media=new_url, caption=_caption, parse_mode="HTML"),
+            reply_markup=markup,
+        )
     except Exception:
-        logger.exception("Exception while trying to parse new photo")
+        logger.exception("Exception while trying to edit media")
         await call.answer("Error occurred", show_alert=True)
         return
 
-    if not new_url:
-        await call.answer("No photos left", show_alert=True)
-        return
+
+async def custom_close_handler(
+    call: CallbackQuery,
+    btn_call_data: List[str] = None,
+    self=None,
+    gallery_uid: str = None,
+) -> bool:
+    try:
+        await self._client.delete_messages(
+            self._galleries[gallery_uid]["chat"],
+            [self._galleries[gallery_uid]["message_id"]],
+        )
+        del self._galleries[gallery_uid]
+    except Exception:
+        return False
+
+    return True
+
+
+async def custom_next_handler(
+    call: CallbackQuery,
+    btn_call_data: List[str] = None,
+    self=None,
+    func: FunctionType = None,
+    gallery_uid: str = None,
+) -> None:
+    if self._galleries[gallery_uid]["current_index"] < -1:
+        self._galleries[gallery_uid]["current_index"] += 1
+        new_url = self._galleries[gallery_uid]["photos"][self._galleries[gallery_uid]["current_index"]]
+    else:
+        try:
+            new_url = await func()
+            if not isinstance(new_url, (str, bool)):
+                raise Exception(
+                    f"Invalid type returned by `next_handler`. Expected `str` or `False`, got `{type(new_url)}`"
+                )
+        except Exception:
+            logger.exception("Exception while trying to parse new photo")
+            await call.answer("Error occurred", show_alert=True)
+            return
+
+        if not new_url:
+            await call.answer("No photos left", show_alert=True)
+            return
+
+        self._galleries[gallery_uid]["photos"] += [new_url]
+        if len(self._galleries[gallery_uid]["photos"]) > 15:
+            self._galleries[gallery_uid]["photos"] = self._galleries[gallery_uid]["photos"][
+                -15:
+            ]
 
     markup = InlineKeyboardMarkup()
-    markup.add(InlineKeyboardButton("Next ➡️", callback_data=btn_call_data))
+    markup.add(
+        InlineKeyboardButton("⬅️", callback_data=btn_call_data[0]),
+        InlineKeyboardButton("❌", callback_data=btn_call_data[1]),
+        InlineKeyboardButton("➡️", callback_data=btn_call_data[2]),
+    )
 
-    _caption = caption if isinstance(caption, str) or not callable(caption) else caption()
+    _caption = (
+        self._galleries[gallery_uid]["caption"]
+        if isinstance(self._galleries[gallery_uid]["caption"], str)
+        or not callable(self._galleries[gallery_uid]["caption"])
+        else self._galleries[gallery_uid]["caption"]()
+    )
 
     try:
         await self.bot.edit_message_media(
@@ -315,7 +395,9 @@ class InlineManager:
 
     def check_inline_security(self, func, user):
         """Checks if user with id `user` is allowed to run function `func`"""
-        allow = user in [self._me] + self._client.dispatcher.security._owner  # skipcq: PYL-W0212
+        allow = (
+            user in [self._me] + self._client.dispatcher.security._owner
+        )  # skipcq: PYL-W0212
 
         if not hasattr(func, "__doc__") or not func.__doc__ or allow:
             return allow
@@ -938,9 +1020,9 @@ class InlineManager:
             ):
                 markup = InlineKeyboardMarkup()
                 markup.add(
-                    InlineKeyboardButton(
-                        "Next ➡️", callback_data=gallery["btn_call_data"]
-                    )
+                    InlineKeyboardButton("⬅️", callback_data=gallery["btn_call_data"][0]),
+                    InlineKeyboardButton("❌", callback_data=gallery["btn_call_data"][1]),
+                    InlineKeyboardButton("➡️", callback_data=gallery["btn_call_data"][2]),
                 )
 
                 caption = gallery["caption"]
@@ -992,7 +1074,9 @@ class InlineManager:
             reply_markup = []
 
         if re.search(r"authorize_web_(.{8})", query.data):
-            self._web_auth_tokens += [re.search(r"authorize_web_(.{8})", query.data).group(1)]
+            self._web_auth_tokens += [
+                re.search(r"authorize_web_(.{8})", query.data).group(1)
+            ]
             return
 
         # First, dispatch all registered callback handlers
@@ -1063,7 +1147,8 @@ class InlineManager:
             if (
                 self._custom_map[query.data]["force_me"]
                 and query.from_user.id != self._me
-                and query.from_user.id not in self._client.dispatcher.security._owner  # skipcq: PYL-W0212
+                and query.from_user.id
+                not in self._client.dispatcher.security._owner  # skipcq: PYL-W0212
                 and query.from_user.id
                 not in self._custom_map[query.data]["always_allow"]
             ):
@@ -1309,7 +1394,7 @@ class InlineManager:
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
         gallery_uid = rand(30)
-        btn_call_data = rand(16)
+        btn_call_data = [rand(16), rand(16), rand(16)]
 
         try:
             photo_url = await next_handler()
@@ -1332,16 +1417,44 @@ class InlineManager:
             "photo_url": photo_url,
             "next_handler": next_handler,
             "btn_call_data": btn_call_data,
+            "photos": [photo_url],
+            "current_index": -1,
         }
 
-        self._custom_map[btn_call_data] = {
+        self._custom_map[btn_call_data[0]] = {
+            "handler": asyncio.coroutine(
+                functools.partial(
+                    custom_back_handler,
+                    self=self,
+                    btn_call_data=btn_call_data,
+                    gallery_uid=gallery_uid,
+                )
+            ),
+            "always_allow": always_allow,
+            "force_me": force_me,
+        }
+
+        self._custom_map[btn_call_data[1]] = {
+            "handler": asyncio.coroutine(
+                functools.partial(
+                    custom_close_handler,
+                    self=self,
+                    btn_call_data=btn_call_data,
+                    gallery_uid=gallery_uid,
+                )
+            ),
+            "always_allow": always_allow,
+            "force_me": force_me,
+        }
+
+        self._custom_map[btn_call_data[2]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
                     custom_next_handler,
                     func=next_handler,
                     self=self,
                     btn_call_data=btn_call_data,
-                    caption=caption,
+                    gallery_uid=gallery_uid,
                 )
             ),
             "always_allow": always_allow,
@@ -1373,7 +1486,7 @@ class InlineManager:
 
         self._galleries[gallery_uid]["chat"] = utils.get_chat_id(m)
         self._galleries[gallery_uid]["message_id"] = m.id
-        if isinstance(message, Message):
+        if isinstance(message, Message) and not message.out:
             await message.delete()
 
         return gallery_uid
