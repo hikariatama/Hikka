@@ -170,4 +170,7 @@
 </script>
 <script src="{{ static("root.js") }}"></script>
 <script src="{{ static("blackhole.js") }}"></script>
+{% if okteto %}
+  <script src="{{ static("okteto.js") }}"></script>
+{% endif %}
 {% endblock %}
