@@ -1486,7 +1486,7 @@ class InlineManager:
 
         self._galleries[gallery_uid]["chat"] = utils.get_chat_id(m)
         self._galleries[gallery_uid]["message_id"] = m.id
-        if isinstance(message, Message) and not message.out:
+        if isinstance(message, Message) and message.out:
             await message.delete()
 
         return gallery_uid
