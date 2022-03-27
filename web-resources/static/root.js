@@ -97,7 +97,7 @@ function finish_login() {
                 window.location.href = "/";
             }, response == "0" ? 10000 : 1500);
         })
-        .catch(function (response) {
+        .catch(function () {
             error_state();
             error_message("Login confirmation error");
         });
@@ -106,11 +106,10 @@ function finish_login() {
 function tg_code() {
     fetch("/tgCode", {
             method: "POST",
-            body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass
+            body: `${_tg_pass}\n${_phone}\n${_2fa_pass}`
         })
         .then(function (response) {
             if (!response.ok) {
-                console.log(response);
                 if (response.status == 403) {
                     error_state();
                     Swal.showValidationMessage("Code is incorrect!");
@@ -129,7 +128,7 @@ function tg_code() {
         })
         .catch(error => {
             Swal.showValidationMessage(
-                "Auth failed: " + error.toString()
+                `Auth failed: ${error.toString()}`
             )
         })
 }
@@ -137,14 +136,14 @@ function tg_code() {
 function switch_block(block) {
     cnt_btn.setAttribute("current-step", block);
    try {
-        $("#block_" + _current_block)
+        $(`#block_${_current_block}`)
             .fadeOut(() => {
-                $("#block_" + block)
+                $(`#block_${block}`)
                     .hide()
                     .fadeIn();
             });
     } catch {
-        $("#block_" + block)
+        $(`#block_${block}`)
             .hide()
             .fadeIn();
     }
@@ -215,7 +214,7 @@ function process_next() {
                     switch_block("phone");
                 }
             })
-            .catch(function (response) {
+            .catch(function () {
                 error_state();
                 error_message("Error occured while saving credentials")
             });
@@ -258,7 +257,7 @@ function process_next() {
                     })
                 }
             })
-            .catch(function (error) {
+            .catch(function () {
                 error_state();
                 error_message("Code send failed");
             });
@@ -271,13 +270,9 @@ function process_next() {
         tg_code();
         return
     }
-
-    if (step == "config") {
-
-    }
 }
 
-cnt_btn.onclick = (e) => {
+cnt_btn.onclick = () => {
     if (cnt_btn.disabled) return;
     if (auth_required) return auth(() => {cnt_btn.click();});
 

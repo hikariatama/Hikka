@@ -402,12 +402,14 @@ def get_named_platform() -> str:
 
     if is_termux:
         return "🕶 Termux"
-    elif is_okteto:
+    
+    if is_okteto:
         return "☁️ Okteto"
-    elif is_lavhost:
+    
+    if is_lavhost:
         return f"✌️ lavHost {os.environ['LAVHOST']}"
-    else:
-        return "📻 VDS"
+    
+    return "📻 VDS"
 
 
 def uptime() -> int:

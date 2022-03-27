@@ -29,7 +29,6 @@ from telethon.utils import get_display_name
 
 from aiogram.types import (  # skipcq: PYL-C0412
     InputTextMessageContent,
-    InlineQuery,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     InlineQueryResultArticle,
@@ -40,6 +39,7 @@ from aiogram.types import (  # skipcq: PYL-C0412
 )
 
 from aiogram.types import Message as AiogramMessage
+from aiogram.types import InlineQuery as AiogramInlineQuery
 
 from aiogram.utils.exceptions import Unauthorized
 
@@ -76,7 +76,7 @@ class BotMessage(AiogramMessage):
 
 
 class InlineQuery:
-    def __init__(self, inline_query: InlineQuery) -> None:
+    def __init__(self, inline_query: AiogramInlineQuery) -> None:
         self.inline_query = inline_query
 
         # Inherit original `InlineQuery` attributes for
