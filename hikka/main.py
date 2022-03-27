@@ -524,7 +524,7 @@ class Hikka:
         babelfish = Translator([], [], self.arguments.data_root)
         await babelfish.init(client)
 
-        modules.register_all()
+        modules.register_all(db)
 
         modules.send_config(db, babelfish)
         await modules.send_ready(client, db, self.clients)
@@ -594,7 +594,7 @@ class Hikka:
         if not web_only:
             await self._add_dispatcher(client, modules, db)
 
-        modules.register_all(to_load)
+        modules.register_all(db, to_load)
         modules.send_config(db, babelfish)
         await modules.send_ready(client, db, self.clients)
 

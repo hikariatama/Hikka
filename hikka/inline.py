@@ -196,7 +196,9 @@ async def custom_back_handler(
         self._galleries[gallery_uid]["current_index"] = 0
 
     self._galleries[gallery_uid]["current_index"] -= 1
-    new_url = self._galleries[gallery_uid]["photos"][self._galleries[gallery_uid]["current_index"]]
+    new_url = self._galleries[gallery_uid]["photos"][
+        self._galleries[gallery_uid]["current_index"]
+    ]
 
     markup = InlineKeyboardMarkup()
     markup.add(
@@ -251,7 +253,9 @@ async def custom_next_handler(
 ) -> None:
     if self._galleries[gallery_uid]["current_index"] < -1:
         self._galleries[gallery_uid]["current_index"] += 1
-        new_url = self._galleries[gallery_uid]["photos"][self._galleries[gallery_uid]["current_index"]]
+        new_url = self._galleries[gallery_uid]["photos"][
+            self._galleries[gallery_uid]["current_index"]
+        ]
     else:
         try:
             new_url = await func()
@@ -270,9 +274,9 @@ async def custom_next_handler(
 
         self._galleries[gallery_uid]["photos"] += [new_url]
         if len(self._galleries[gallery_uid]["photos"]) > 15:
-            self._galleries[gallery_uid]["photos"] = self._galleries[gallery_uid]["photos"][
-                -15:
-            ]
+            self._galleries[gallery_uid]["photos"] = self._galleries[gallery_uid][
+                "photos"
+            ][-15:]
 
     markup = InlineKeyboardMarkup()
     markup.add(
@@ -1020,9 +1024,15 @@ class InlineManager:
             ):
                 markup = InlineKeyboardMarkup()
                 markup.add(
-                    InlineKeyboardButton("⬅️", callback_data=gallery["btn_call_data"][0]),
-                    InlineKeyboardButton("❌", callback_data=gallery["btn_call_data"][1]),
-                    InlineKeyboardButton("➡️", callback_data=gallery["btn_call_data"][2]),
+                    InlineKeyboardButton(
+                        "⬅️", callback_data=gallery["btn_call_data"][0]
+                    ),
+                    InlineKeyboardButton(
+                        "❌", callback_data=gallery["btn_call_data"][1]
+                    ),
+                    InlineKeyboardButton(
+                        "➡️", callback_data=gallery["btn_call_data"][2]
+                    ),
                 )
 
                 caption = gallery["caption"]

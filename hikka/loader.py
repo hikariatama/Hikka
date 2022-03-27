@@ -226,7 +226,7 @@ class Modules:
         self._initial_registration = True
         self.added_modules = None
 
-    def register_all(self, mods=None):
+    def register_all(self, db, mods=None):
         """Load all modules in the module directory"""
         if self._compat_layer is None:
             from . import compat  # noqa
@@ -242,6 +242,7 @@ class Modules:
                         and x[-3:] == ".py"
                         and x[0] != "_"
                         and ("OKTETO" in os.environ or x != "okteto.py")
+                        and (not db.get("hikka", "disable_quickstart", False) or x != "quickstart.py")
                     ),
                     os.listdir(os.path.join(utils.get_base_dir(), MODULES_NAME)),
                 )
