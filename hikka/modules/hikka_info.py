@@ -75,7 +75,7 @@ class HikkaInfoMod(loader.Module):
                     input_message_content=aiogram.types.input_message_content.InputTextMessageContent(
                         (
                             "<b>👩‍🎤 Hikka Userbot</b>\n"
-                            f"<b>🤴 Owner: <a href=\"tg://user?id={self._me.id}\">{get_display_name(self._me)}</a></b>\n\n"
+                            f"<b>🤴 Owner: <a href=\"tg://user?id={self._me.id}\">{utils.escape_html(get_display_name(self._me))}</a></b>\n\n"
                             f"<b>🔮 Version: </b><i>{'.'.join(list(map(str, list(main.__version__))))}</i>\n"
                             f"<b>🧱 Build: </b><a href=\"https://github.com/hikariatama/Hikka/commit/{ver}\">{ver[:8] or 'Unknown'}</a>\n"
                             f"<b>{upd}</b>\n"

@@ -47,6 +47,8 @@ from telethon.tl.types import (
     Channel,
 )
 
+import random
+
 from typing import Tuple
 
 from telethon.tl.functions.channels import CreateChannelRequest
@@ -394,9 +396,7 @@ def chunks(_list: list, n: int) -> list:
 
 def get_named_platform() -> str:
     """Returns formatted platform name"""
-    is_termux = bool(
-        os.popen('echo $PREFIX | grep -o "com.termux"').read()
-    )
+    is_termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())
     is_okteto = "OKTETO" in os.environ
     is_lavhost = "LAVHOST" in os.environ
 
@@ -420,6 +420,50 @@ def uptime() -> int:
 def formatted_uptime() -> str:
     """Returnes formmated uptime"""
     return "{}".format(str(timedelta(seconds=uptime())))
+
+
+def ascii_face() -> str:
+    """Returnes cute ASCII-art face"""
+    return random.choice(
+        [
+            "ヽ(๑◠ܫ◠๑)ﾉ",
+            "☜(⌒▽⌒)☞",
+            "/|\\ ^._.^ /|\\",
+            "(◕ᴥ◕ʋ)",
+            "ᕙ(`▽´)ᕗ",
+            "(☞ﾟ∀ﾟ)☞",
+            "(✿◠‿◠)",
+            "(▰˘◡˘▰)",
+            "(˵ ͡° ͜ʖ ͡°˵)",
+            "ʕっ•ᴥ•ʔっ",
+            "( ͡° ᴥ ͡°)",
+            "ʕ♥ᴥ♥ʔ",
+            "\\m/,(> . <)_\\m/",
+            "(๑•́ ヮ •̀๑)",
+            "٩(^‿^)۶",
+            "(っˆڡˆς)",
+            "ψ(｀∇´)ψ",
+            "⊙ω⊙",
+            "٩(^ᴗ^)۶",
+            "(´・ω・)っ由",
+            "※\\(^o^)/※",
+            "٩(*❛⊰❛)～❤",
+            "( ͡~ ͜ʖ ͡°)",
+            "✧♡(◕‿◕✿)",
+            "โ๏௰๏ใ ื",
+            "∩｡• ᵕ •｡∩ ♡",
+            "(♡´౪`♡)",
+            "(◍＞◡＜◍)⋈。✧♡",
+            "♥(ˆ⌣ˆԅ)",
+            "╰(✿´⌣`✿)╯♡",
+            "ʕ•ᴥ•ʔ",
+            "ᶘ ◕ᴥ◕ᶅ",
+            "▼・ᴥ・▼",
+            "【≽ܫ≼】",
+            "ฅ^•ﻌ•^ฅ",
+            "(΄◞ิ౪◟ิ‵)",
+        ]
+    )
 
 
 init_ts = time.perf_counter()
