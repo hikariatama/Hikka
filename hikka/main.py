@@ -56,7 +56,7 @@ from .translations.core import Translator
 
 from math import ceil
 
-__version__ = (1, 0, 3)
+__version__ = (1, 0, 4)
 try:
     from .web import core
 except ImportError:
