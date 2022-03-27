@@ -114,237 +114,14 @@ def array_sum(array: list) -> Any:
     return result
 
 
-async def edit(
-    text: str,
-    reply_markup: List[List[dict]] = None,
-    force_me: Union[bool, None] = None,
-    always_allow: Union[List[int], None] = None,
-    self: Any = None,
-    query: Any = None,
-    form: Any = None,
-    form_uid: Any = None,
-    inline_message_id: Union[str, None] = None,
-    disable_web_page_preview: bool = True,
-) -> None:
-    """Do not edit or pass `self`, `query`, `form`, `form_uid` params, they are for internal use only"""
-    if reply_markup is None:
-        reply_markup = []
+class ListGalleryHelper:
+    def __init__(self, lst: List[str]):
+        self.lst = lst
 
-    if not isinstance(text, str):
-        logger.error("Invalid type for `text`")
-        return False
-
-    if isinstance(reply_markup, list):
-        form["buttons"] = reply_markup
-    if isinstance(force_me, bool):
-        form["force_me"] = force_me
-    if isinstance(always_allow, list):
-        form["always_allow"] = always_allow
-    try:
-        await self.bot.edit_message_text(
-            text,
-            inline_message_id=inline_message_id or query.inline_message_id,
-            parse_mode="HTML",
-            disable_web_page_preview=disable_web_page_preview,
-            reply_markup=self._generate_markup(form_uid),
-        )
-    except aiogram.utils.exceptions.MessageNotModified:
-        try:
-            await query.answer()
-        except aiogram.utils.exceptions.InvalidQueryID:
-            pass  # Just ignore that error, bc we need to just
-            # remove preloader from user's button, if message
-            # was deleted
-
-    except aiogram.utils.exceptions.RetryAfter as e:
-        logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
-        await asyncio.sleep(e.timeout)
-        return await edit(
-            text,
-            reply_markup,
-            force_me,
-            always_allow,
-            self,
-            query,
-            form,
-            form_uid,
-            inline_message_id,
-        )
-    except aiogram.utils.exceptions.MessageIdInvalid:
-        try:
-            await query.answer(
-                "I should have edited some message, but it is deleted :("
-            )
-        except aiogram.utils.exceptions.InvalidQueryID:
-            pass  # Just ignore that error, bc we need to just
-            # remove preloader from user's button, if message
-            # was deleted
-
-
-async def custom_back_handler(
-    call: CallbackQuery,
-    btn_call_data: List[str] = None,
-    self=None,
-    gallery_uid: str = None,
-) -> None:
-    queue = self._galleries[gallery_uid]["photos"]
-    if not queue:
-        await call.answer("First go forward", show_alert=True)
-        return
-
-    if abs(self._galleries[gallery_uid]["current_index"] - 1) > len(queue):
-        self._galleries[gallery_uid]["current_index"] = 0
-
-    self._galleries[gallery_uid]["current_index"] -= 1
-    new_url = self._galleries[gallery_uid]["photos"][
-        self._galleries[gallery_uid]["current_index"]
-    ]
-
-    markup = InlineKeyboardMarkup()
-    markup.add(
-        InlineKeyboardButton("⬅️", callback_data=btn_call_data[0]),
-        InlineKeyboardButton("❌", callback_data=btn_call_data[1]),
-        InlineKeyboardButton("➡️", callback_data=btn_call_data[2]),
-    )
-
-    _caption = (
-        self._galleries[gallery_uid]["caption"]
-        if isinstance(self._galleries[gallery_uid]["caption"], str)
-        or not callable(self._galleries[gallery_uid]["caption"])
-        else self._galleries[gallery_uid]["caption"]()
-    )
-
-    try:
-        await self.bot.edit_message_media(
-            inline_message_id=call.inline_message_id,
-            media=InputMediaPhoto(media=new_url, caption=_caption, parse_mode="HTML"),
-            reply_markup=markup,
-        )
-    except Exception:
-        logger.exception("Exception while trying to edit media")
-        await call.answer("Error occurred", show_alert=True)
-        return
-
-
-async def custom_close_handler(
-    call: CallbackQuery,
-    btn_call_data: List[str] = None,
-    self=None,
-    gallery_uid: str = None,
-) -> bool:
-    try:
-        await self._client.delete_messages(
-            self._galleries[gallery_uid]["chat"],
-            [self._galleries[gallery_uid]["message_id"]],
-        )
-        del self._galleries[gallery_uid]
-    except Exception:
-        return False
-
-    return True
-
-
-async def custom_next_handler(
-    call: CallbackQuery,
-    btn_call_data: List[str] = None,
-    self=None,
-    func: FunctionType = None,
-    gallery_uid: str = None,
-) -> None:
-    if self._galleries[gallery_uid]["current_index"] < -1:
-        self._galleries[gallery_uid]["current_index"] += 1
-        new_url = self._galleries[gallery_uid]["photos"][
-            self._galleries[gallery_uid]["current_index"]
-        ]
-    else:
-        try:
-            new_url = await func()
-            if not isinstance(new_url, (str, bool)):
-                raise Exception(
-                    f"Invalid type returned by `next_handler`. Expected `str` or `False`, got `{type(new_url)}`"
-                )
-        except Exception:
-            logger.exception("Exception while trying to parse new photo")
-            await call.answer("Error occurred", show_alert=True)
-            return
-
-        if not new_url:
-            await call.answer("No photos left", show_alert=True)
-            return
-
-        self._galleries[gallery_uid]["photos"] += [new_url]
-        if len(self._galleries[gallery_uid]["photos"]) > 15:
-            self._galleries[gallery_uid]["photos"] = self._galleries[gallery_uid][
-                "photos"
-            ][-15:]
-
-    markup = InlineKeyboardMarkup()
-    markup.add(
-        InlineKeyboardButton("⬅️", callback_data=btn_call_data[0]),
-        InlineKeyboardButton("❌", callback_data=btn_call_data[1]),
-        InlineKeyboardButton("➡️", callback_data=btn_call_data[2]),
-    )
-
-    _caption = (
-        self._galleries[gallery_uid]["caption"]
-        if isinstance(self._galleries[gallery_uid]["caption"], str)
-        or not callable(self._galleries[gallery_uid]["caption"])
-        else self._galleries[gallery_uid]["caption"]()
-    )
-
-    try:
-        await self.bot.edit_message_media(
-            inline_message_id=call.inline_message_id,
-            media=InputMediaPhoto(media=new_url, caption=_caption, parse_mode="HTML"),
-            reply_markup=markup,
-        )
-    except Exception:
-        logger.exception("Exception while trying to edit media")
-        await call.answer("Error occurred", show_alert=True)
-        return
-
-
-async def delete(self: Any = None, form: Any = None, form_uid: Any = None) -> bool:
-    """Params `self`, `form`, `form_uid` are for internal use only, do not try to pass them"""
-    try:
-        await self._client.delete_messages(form["chat"], [form["message_id"]])
-        del self._forms[form_uid]
-    except Exception:
-        return False
-
-    return True
-
-
-async def unload(self: Any = None, form_uid: Any = None) -> bool:
-    """Params `self`, `form_uid` are for internal use only, do not try to pass them"""
-    try:
-        del self._forms[form_uid]
-    except Exception:
-        return False
-
-    return True
-
-
-async def answer(
-    text: str = None,
-    mod: Any = None,
-    message: AiogramMessage = None,
-    parse_mode: str = "HTML",
-    disable_web_page_preview: bool = True,
-    **kwargs,
-) -> bool:
-    try:
-        await mod.bot.send_message(
-            message.chat.id,
-            text,
-            parse_mode=parse_mode,
-            disable_web_page_preview=disable_web_page_preview,
-            **kwargs,
-        )
-    except Exception:
-        return False
-
-    return True
+    def __call__(self):
+        elem = self.lst[-1]
+        del self.lst[-1]
+        return elem
 
 
 class InlineManager:
@@ -370,15 +147,11 @@ class InlineManager:
 
     def ss(self, user: Union[str, int], state: Union[str, bool]) -> bool:
         if not isinstance(user, (str, int)):
-            logger.error(
-                f"Invalid type for `user` in `ss` (expected `str or int` got `{type(user)}`)"
-            )
+            logger.error("Invalid type for `user` in `ss`")
             return False
 
         if not isinstance(state, (str, bool)):
-            logger.error(
-                f"Invalid type for `state` in `ss` (expected `str or bool` got `{type(state)}`)"
-            )
+            logger.error("Invalid type for `state` in `ss`")
             return False
 
         if state:
@@ -390,18 +163,14 @@ class InlineManager:
 
     def gs(self, user: Union[str, int]) -> Union[bool, str]:
         if not isinstance(user, (str, int)):
-            logger.error(
-                f"Invalid type for `user` in `gs` (expected `str or int` got `{type(user)}`)"
-            )
+            logger.error("Invalid type for `user` in `gs`")
             return False
 
         return self.fsm.get(str(user), False)
 
     def check_inline_security(self, func, user):
         """Checks if user with id `user` is allowed to run function `func`"""
-        allow = (
-            user in [self._me] + self._client.dispatcher.security._owner
-        )  # skipcq: PYL-W0212
+        allow = (user in [self._me] + self._client.dispatcher.security._owner)  # fmt: skip
 
         if not hasattr(func, "__doc__") or not func.__doc__ or allow:
             return allow
@@ -715,14 +484,14 @@ class InlineManager:
         else:
             await self._register_manager(ignore_token_checks=True)
 
-    async def _dp_revoke_token(self, inited=True) -> None:
-        if inited:
+    async def _dp_revoke_token(self, already_initialised=True) -> None:
+        if already_initialised:
             await self._stop()
             logger.error("Got polling conflict. Attempting token revocation...")
 
         self._db.set("hikka.inline", "bot_token", None)
         self._token = None
-        if inited:
+        if already_initialised:
             asyncio.ensure_future(self._reassert_token())
         else:
             return await self._reassert_token()
@@ -783,16 +552,24 @@ class InlineManager:
 
         # Register required event handlers inside aiogram
         self._dp.register_inline_handler(
-            self._inline_handler, lambda inline_query: True
+            self._inline_handler,
+            lambda inline_query: True,
         )
+
         self._dp.register_callback_query_handler(
-            self._callback_query_handler, lambda query: True
+            self._callback_query_handler,
+            lambda query: True,
         )
+
         self._dp.register_chosen_inline_handler(
-            self._chosen_inline_handler, lambda chosen_inline_query: True
+            self._chosen_inline_handler,
+            lambda chosen_inline_query: True,
         )
+
         self._dp.register_message_handler(
-            self._message_handler, lambda *args: True, content_types=["any"]
+            self._message_handler,
+            lambda *args: True,
+            content_types=["any"],
         )
 
         old = self.bot.get_updates
@@ -826,7 +603,12 @@ class InlineManager:
                 continue
 
             setattr(
-                message, "answer", functools.partial(answer, mod=self, message=message)
+                message,
+                "answer",
+                functools.partial(
+                    self._bot_message_answer,
+                    message=message,
+                ),
             )
 
             try:
@@ -862,27 +644,29 @@ class InlineManager:
                     if "url" in button:
                         line += [
                             InlineKeyboardButton(
-                                button["text"], url=button.get("url", None)
+                                button["text"],
+                                url=button.get("url", None),
                             )
                         ]
                     elif "callback" in button:
                         line += [
                             InlineKeyboardButton(
-                                button["text"], callback_data=button["_callback_data"]
+                                button["text"],
+                                callback_data=button["_callback_data"],
                             )
                         ]
                     elif "input" in button:
                         line += [
                             InlineKeyboardButton(
                                 button["text"],
-                                switch_inline_query_current_chat=button["_switch_query"]
-                                + " ",
+                                switch_inline_query_current_chat=button["_switch_query"] + " ",  # fmt: skip
                             )
                         ]
                     elif "data" in button:
                         line += [
                             InlineKeyboardButton(
-                                button["text"], callback_data=button["data"]
+                                button["text"],
+                                callback_data=button["data"],
                             )
                         ]
                     else:
@@ -1022,32 +806,16 @@ class InlineManager:
                 + gallery["always_allow"]
                 and query == gallery["uid"]
             ):
-                markup = InlineKeyboardMarkup()
-                markup.add(
-                    InlineKeyboardButton(
-                        "⬅️", callback_data=gallery["btn_call_data"][0]
-                    ),
-                    InlineKeyboardButton(
-                        "❌", callback_data=gallery["btn_call_data"][1]
-                    ),
-                    InlineKeyboardButton(
-                        "➡️", callback_data=gallery["btn_call_data"][2]
-                    ),
-                )
-
-                caption = gallery["caption"]
-                caption = caption() if callable(caption) else caption
-
                 await inline_query.answer(
                     [
                         InlineQueryResultPhoto(
                             id=rand(20),
-                            title="Toss a coin",
+                            title="Processing inline gallery",
                             photo_url=gallery["photo_url"],
                             thumb_url=gallery["photo_url"],
-                            caption=caption,
-                            description=caption,
-                            reply_markup=markup,
+                            caption=self._get_caption(gallery["uid"]),
+                            description=self._get_caption(gallery["uid"]),
+                            reply_markup=self._gallery_markup(gallery["btn_call_data"]),
                             parse_mode="HTML",
                         )
                     ],
@@ -1124,13 +892,21 @@ class InlineManager:
                         return
 
                     query.delete = functools.partial(
-                        delete, self=self, form=form, form_uid=form_uid
+                        self._callback_query_delete,
+                        form=form,
+                        form_uid=form_uid,
                     )
+
                     query.unload = functools.partial(
-                        unload, self=self, form_uid=form_uid
+                        self._callback_query_unload,
+                        form_uid=form_uid,
                     )
+
                     query.edit = functools.partial(
-                        edit, self=self, query=query, form=form, form_uid=form_uid
+                        self._callback_query_edit,
+                        query=query,
+                        form=form,
+                        form_uid=form_uid,
                     )
 
                     query.form = {"id": form_uid, **form}
@@ -1190,14 +966,16 @@ class InlineManager:
                     call = InlineCall()
 
                     call.delete = functools.partial(
-                        delete, self=self, form=form, form_uid=form_uid
+                        self._callback_query_delete,
+                        form=form,
+                        form_uid=form_uid,
                     )
                     call.unload = functools.partial(
-                        unload, self=self, form_uid=form_uid
+                        self._callback_query_unload,
+                        form_uid=form_uid,
                     )
                     call.edit = functools.partial(
-                        edit,
-                        self=self,
+                        self._callback_query_edit,
                         query=chosen_inline_query,
                         form=form,
                         form_uid=form_uid,
@@ -1222,8 +1000,9 @@ class InlineManager:
         message: Union[Message, int],
         reply_markup: List[List[dict]] = None,
         force_me: bool = True,
-        always_allow: List[int] = None,
+        always_allow: Union[List[list], None] = None,
         ttl: Union[int, bool] = False,
+        on_unload: Union[FunctionType, None] = None,
     ) -> Union[str, bool]:
         """Creates inline form with callback
         Args:
@@ -1243,6 +1022,9 @@ class InlineManager:
                         buttons with inline queries and callback queries will become unusable, but
                         buttons with type url will still work as usual. Pay attention, that ttl can't
                         be bigger, than default one (1 day) and must be either `int` or `False`
+                on_unload
+                    Callback, called when form is unloaded and/or closed. You can clean up trash
+                    or perform another needed action
         """
 
         if reply_markup is None:
@@ -1316,6 +1098,7 @@ class InlineManager:
             "chat": None,
             "message_id": None,
             "uid": form_uid,
+            "on_unload": on_unload,
         }
 
         try:
@@ -1352,10 +1135,12 @@ class InlineManager:
         self,
         caption: Union[str, FunctionType],
         message: Union[Message, int],
-        next_handler: FunctionType,
+        next_handler: Union[FunctionType, List[str]],
         force_me: bool = True,
-        always_allow: bool = None,
-        ttl: int = False,
+        always_allow: Union[list, None] = None,
+        ttl: Union[int, bool] = False,
+        on_unload: Union[FunctionType, None] = None,
+        preload: Union[bool, int] = False,
     ) -> Union[bool, str]:
         """
         Processes inline gallery
@@ -1364,16 +1149,22 @@ class InlineManager:
             message
                     Where to send inline. Can be either `Message` or `int`
             next_handler
-                    Callback function, which must return url for next photo
+                    Callback function, which must return url for next photo or list with photo urls
             force_me
-                    Either this form buttons must be pressed only by owner scope or no
+                    Either this gallery buttons must be pressed only by owner scope or no
             always_allow
                     Users, that are allowed to press buttons in addition to previous rules
             ttl
-                    Time, when the form is going to be unloaded. Unload means, that the form
-                    buttons with inline queries and callback queries will become unusable, but
-                    buttons with type url will still work as usual. Pay attention, that ttl can't
+                    Time, when the gallery is going to be unloaded. Unload means, that the gallery
+                    will become unusable. Pay attention, that ttl can't
                     be bigger, than default one (1 day) and must be either `int` or `False`
+            on_unload
+                    Callback, called when gallery is unloaded and/or closed. You can clean up trash
+                    or perform another needed action
+            preload
+                    Either to preload gallery photos beforehand or no. If yes - specify threshold to
+                    be loaded. Toggle this attribute, if your callback is too slow to load photos
+                    in real time
         """
 
         if not isinstance(caption, str) and not callable(caption):
@@ -1386,6 +1177,10 @@ class InlineManager:
 
         if not isinstance(force_me, bool):
             logger.error("Invalid type for `force_me`")
+            return False
+
+        if not isinstance(preload, (bool, int)) or isinstance(preload, bool) and preload:
+            logger.error("Invalid type for `preload`")
             return False
 
         if always_allow and not isinstance(always_allow, list):
@@ -1403,15 +1198,26 @@ class InlineManager:
             ttl = self._markup_ttl
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
+        if isinstance(next_handler, list):
+            if all(isinstance(i, str) for i in next_handler):
+                next_handler = ListGalleryHelper(next_handler)
+            else:
+                logger.error("Invalid type for `next_handler`")
+                return False
+
         gallery_uid = rand(30)
         btn_call_data = [rand(16), rand(16), rand(16)]
 
         try:
-            photo_url = await next_handler()
-            if not isinstance(photo_url, str):
-                raise Exception(
-                    f"Got invalid result from `next_handler`. Expected `str`, got `{type(photo_url)}`"
-                )
+            if asyncio.iscoroutinefunction(next_handler):
+                photo_url = await next_handler()
+            elif getattr(next_handler, "__call__", False):
+                photo_url = next_handler()
+            else:
+                raise Exception("Invalid type for `next_handler`")
+
+            if not isinstance(photo_url, (str, list)):
+                raise Exception("Got invalid result from `next_handler`")
         except Exception:
             logger.exception("Error while parsing first photo in gallery")
             return False
@@ -1424,18 +1230,19 @@ class InlineManager:
             "chat": None,
             "message_id": None,
             "uid": gallery_uid,
-            "photo_url": photo_url,
+            "photo_url": (photo_url if isinstance(photo_url, str) else photo_url[0]),
             "next_handler": next_handler,
             "btn_call_data": btn_call_data,
-            "photos": [photo_url],
-            "current_index": -1,
+            "photos": [photo_url] if isinstance(photo_url, str) else photo_url,
+            "current_index": 0,
+            "on_unload": on_unload,
+            "preload": preload,
         }
 
         self._custom_map[btn_call_data[0]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
-                    custom_back_handler,
-                    self=self,
+                    self._gallery_back,
                     btn_call_data=btn_call_data,
                     gallery_uid=gallery_uid,
                 )
@@ -1447,8 +1254,7 @@ class InlineManager:
         self._custom_map[btn_call_data[1]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
-                    custom_close_handler,
-                    self=self,
+                    self._gallery_close,
                     btn_call_data=btn_call_data,
                     gallery_uid=gallery_uid,
                 )
@@ -1460,9 +1266,8 @@ class InlineManager:
         self._custom_map[btn_call_data[2]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
-                    custom_next_handler,
+                    self._gallery_next,
                     func=next_handler,
-                    self=self,
                     btn_call_data=btn_call_data,
                     gallery_uid=gallery_uid,
                 )
@@ -1499,13 +1304,282 @@ class InlineManager:
         if isinstance(message, Message) and message.out:
             await message.delete()
 
+        asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
+
         return gallery_uid
 
+    async def _load_gallery_photos(self, gallery_uid: str) -> None:
+        """Preloads photo. Should be called via ensure_future"""
+        if asyncio.iscoroutinefunction(self._galleries[gallery_uid]["next_handler"]):
+            photo_url = await self._galleries[gallery_uid]["next_handler"]()
+        elif getattr(self._galleries[gallery_uid]["next_handler"], "__call__", False):
+            photo_url = self._galleries[gallery_uid]["next_handler"]()
+        else:
+            raise Exception("Invalid type for `next_handler`")
+
+        if not isinstance(photo_url, (str, list)):
+            raise Exception("Got invalid result from `next_handler`")
+
+        self._galleries[gallery_uid]["photos"] += (
+            [photo_url] if isinstance(photo_url, str) else photo_url
+        )
+
+        # If only one preload was insufficient to load needed amount of photos
+        if (
+            self._galleries[gallery_uid]["preload"]
+            and len(self._galleries[gallery_uid]["photos"])
+            - self._galleries[gallery_uid]["current_index"]
+            < self._galleries[gallery_uid]["preload"]
+        ):
+            # Start load again
+            asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
+
+    async def _gallery_back(
+        self,
+        call: CallbackQuery,
+        btn_call_data: List[str] = None,
+        gallery_uid: str = None,
+    ) -> None:
+        queue = self._galleries[gallery_uid]["photos"]
+
+        if not queue:
+            await call.answer("No way back", show_alert=True)
+            return
+
+        self._galleries[gallery_uid]["current_index"] -= 1
+
+        if self._galleries[gallery_uid]["current_index"] < 0:
+            self._galleries[gallery_uid]["current_index"] = 0
+            await call.answer("No way back")
+            return
+
+        try:
+            await self.bot.edit_message_media(
+                inline_message_id=call.inline_message_id,
+                media=InputMediaPhoto(
+                    media=self._get_next_photo(gallery_uid),
+                    caption=self._get_caption(gallery_uid),
+                    parse_mode="HTML",
+                ),
+                reply_markup=self._gallery_markup(btn_call_data),
+            )
+        except Exception:
+            logger.exception("Exception while trying to edit media")
+            await call.answer("Error occurred", show_alert=True)
+            return
+
+    async def _gallery_close(
+        self,
+        call: CallbackQuery,
+        btn_call_data: List[str] = None,
+        gallery_uid: str = None,
+    ) -> bool:
+        try:
+            await self._client.delete_messages(
+                self._galleries[gallery_uid]["chat"],
+                [self._galleries[gallery_uid]["message_id"]],
+            )
+
+            if callable(self._galleries[gallery_uid]["on_unload"]):
+                self._galleries[gallery_uid]["on_unload"]()
+
+            del self._galleries[gallery_uid]
+        except Exception:
+            return False
+
+        return True
+
+    async def _gallery_next(
+        self,
+        call: CallbackQuery,
+        btn_call_data: List[str] = None,
+        func: FunctionType = None,
+        gallery_uid: str = None,
+    ) -> None:
+        self._galleries[gallery_uid]["current_index"] += 1
+        # If we exceeded photos limit in gallery and need to preload more
+        if self._galleries[gallery_uid]["current_index"] >= len(
+            self._galleries[gallery_uid]["photos"]
+        ):
+            await self._load_gallery_photos(gallery_uid)
+
+        # If we still didn't get needed photo index
+        if self._galleries[gallery_uid]["current_index"] >= len(
+            self._galleries[gallery_uid]["photos"]
+        ):
+            await call.answer("Can't load next photo")
+            return
+
+        if (
+            self._galleries[gallery_uid]["preload"]
+            and len(self._galleries[gallery_uid]["photos"])
+            - self._galleries[gallery_uid]["current_index"]
+            < self._galleries[gallery_uid]["preload"]
+        ):
+            logger.debug(f"Started preload for gallery {gallery_uid}")
+            asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
+
+        try:
+            await self.bot.edit_message_media(
+                inline_message_id=call.inline_message_id,
+                media=InputMediaPhoto(
+                    media=self._get_next_photo(gallery_uid),
+                    caption=self._get_caption(gallery_uid),
+                    parse_mode="HTML",
+                ),
+                reply_markup=self._gallery_markup(btn_call_data),
+            )
+        except Exception:
+            logger.exception("Exception while trying to edit media")
+            await call.answer("Error occurred", show_alert=True)
+            return
+
+    def _get_next_photo(self, gallery_uid: str) -> str:
+        """Returns next photo"""
+        return self._galleries[gallery_uid]["photos"][
+            self._galleries[gallery_uid]["current_index"]
+        ]
+
+    def _get_caption(self, gallery_uid: str) -> str:
+        """Calls and returnes caption for gallery"""
+        return (
+            self._galleries[gallery_uid]["caption"]
+            if isinstance(self._galleries[gallery_uid]["caption"], str)
+            or not callable(self._galleries[gallery_uid]["caption"])
+            else self._galleries[gallery_uid]["caption"]()
+        )
+
+    def _gallery_markup(self, btn_call_data: List[str]) -> InlineKeyboardMarkup:
+        """Converts `btn_call_data` into a aiogram markup"""
+        markup = InlineKeyboardMarkup()
+        markup.add(
+            InlineKeyboardButton("⬅️", callback_data=btn_call_data[0]),
+            InlineKeyboardButton("❌", callback_data=btn_call_data[1]),
+            InlineKeyboardButton("➡️", callback_data=btn_call_data[2]),
+        )
+
+        return markup
+
     def pop_web_auth_token(self, token) -> bool:
+        """Check if web confirmation button was pressed"""
         if token not in self._web_auth_tokens:
             return False
 
         self._web_auth_tokens.remove(token)
+        return True
+
+    async def _callback_query_edit(
+        self,
+        text: str,
+        reply_markup: List[List[dict]] = None,
+        force_me: Union[bool, None] = None,
+        always_allow: Union[List[int], None] = None,
+        query: Any = None,
+        form: Any = None,
+        form_uid: Any = None,
+        inline_message_id: Union[str, None] = None,
+        disable_web_page_preview: bool = True,
+    ) -> None:
+        """Do not edit or pass `self`, `query`, `form`, `form_uid` params, they are for internal use only"""
+        if reply_markup is None:
+            reply_markup = []
+
+        if not isinstance(text, str):
+            logger.error("Invalid type for `text`")
+            return False
+
+        if isinstance(reply_markup, list):
+            form["buttons"] = reply_markup
+        if isinstance(force_me, bool):
+            form["force_me"] = force_me
+        if isinstance(always_allow, list):
+            form["always_allow"] = always_allow
+        try:
+            await self.bot.edit_message_text(
+                text,
+                inline_message_id=inline_message_id or query.inline_message_id,
+                parse_mode="HTML",
+                disable_web_page_preview=disable_web_page_preview,
+                reply_markup=self._generate_markup(form_uid),
+            )
+        except aiogram.utils.exceptions.MessageNotModified:
+            try:
+                await query.answer()
+            except aiogram.utils.exceptions.InvalidQueryID:
+                pass  # Just ignore that error, bc we need to just
+                # remove preloader from user's button, if message
+                # was deleted
+
+        except aiogram.utils.exceptions.RetryAfter as e:
+            logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
+            await asyncio.sleep(e.timeout)
+            return await self._callback_query_edit(
+                text,
+                reply_markup,
+                force_me,
+                always_allow,
+                query,
+                form,
+                form_uid,
+                inline_message_id,
+            )
+        except aiogram.utils.exceptions.MessageIdInvalid:
+            try:
+                await query.answer(
+                    "I should have edited some message, but it is deleted :("
+                )
+            except aiogram.utils.exceptions.InvalidQueryID:
+                pass  # Just ignore that error, bc we need to just
+                # remove preloader from user's button, if message
+                # was deleted
+
+    async def _callback_query_delete(
+        self, form: Any = None, form_uid: Any = None
+    ) -> bool:
+        """Params `self`, `form`, `form_uid` are for internal use only, do not try to pass them"""
+        try:
+            await self._client.delete_messages(form["chat"], [form["message_id"]])
+
+            if callable(self._forms[form_uid]["on_unload"]):
+                self._forms[form_uid]["on_unload"]()
+
+            del self._forms[form_uid]
+        except Exception:
+            return False
+
+        return True
+
+    async def _callback_query_unload(self, form_uid: Any = None) -> bool:
+        """Params `self`, `form_uid` are for internal use only, do not try to pass them"""
+        try:
+            if callable(self._forms[form_uid]["on_unload"]):
+                self._forms[form_uid]["on_unload"]()
+
+            del self._forms[form_uid]
+        except Exception:
+            return False
+
+        return True
+
+    async def _bot_message_answer(
+        mod,
+        text: str = None,
+        message: AiogramMessage = None,
+        parse_mode: str = "HTML",
+        disable_web_page_preview: bool = True,
+        **kwargs,
+    ) -> bool:
+        try:
+            await mod.bot.send_message(
+                message.chat.id,
+                text,
+                parse_mode=parse_mode,
+                disable_web_page_preview=disable_web_page_preview,
+                **kwargs,
+            )
+        except Exception:
+            return False
+
         return True
 
 
