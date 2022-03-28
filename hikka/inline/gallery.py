@@ -6,8 +6,10 @@ from aiogram.types import (
     InlineKeyboardButton,
     CallbackQuery,
     InputMediaPhoto,
+    InputMediaAnimation,
     InlineQueryResultPhoto,
     InlineQuery,
+    InlineQueryResultGif,
 )
 
 from aiogram.utils.exceptions import InvalidHTTPUrlContent, BadRequest, RetryAfter
@@ -28,22 +30,23 @@ class ListGalleryHelper:
         self.lst = lst
 
     def __call__(self):
-        elem = self.lst[-1]
-        del self.lst[-1]
+        elem = self.lst[0]
+        del self.lst[0]
         return elem
 
 
 class Gallery(InlineUnit):
     async def gallery(
         self,
-        caption: Union[str, FunctionType],
         message: Union[Message, int],
         next_handler: Union[FunctionType, List[str]],
+        caption: Union[str, FunctionType] = "",
         force_me: bool = True,
         always_allow: Union[list, None] = None,
         ttl: Union[int, bool] = False,
         on_unload: Union[FunctionType, None] = None,
         preload: Union[bool, int] = False,
+        gif: bool = False,
         reattempt: bool = False,
     ) -> Union[bool, str]:
         """
@@ -69,6 +72,9 @@ class Gallery(InlineUnit):
                     Either to preload gallery photos beforehand or no. If yes - specify threshold to
                     be loaded. Toggle this attribute, if your callback is too slow to load photos
                     in real time
+            gif
+                    Whether the gallery will be filled with gifs. If you omit this argument and specify
+                    gifs in `next_handler`, they will be interpreted as plain images (not GIFs!)
         """
 
         if not isinstance(caption, str) and not callable(caption):
@@ -81,6 +87,10 @@ class Gallery(InlineUnit):
 
         if not isinstance(force_me, bool):
             logger.error("Invalid type for `force_me`")
+            return False
+
+        if not isinstance(gif, bool):
+            logger.error("Invalid type for `gif`")
             return False
 
         if (
@@ -145,6 +155,7 @@ class Gallery(InlineUnit):
             "current_index": 0,
             "on_unload": on_unload,
             "preload": preload,
+            "gif": gif,
         }
 
         self._custom_map[btn_call_data[0]] = {
@@ -281,11 +292,7 @@ class Gallery(InlineUnit):
         try:
             await self.bot.edit_message_media(
                 inline_message_id=call.inline_message_id,
-                media=InputMediaPhoto(
-                    media=self._get_next_photo(gallery_uid),
-                    caption=self._get_caption(gallery_uid),
-                    parse_mode="HTML",
-                ),
+                media=self._get_current_media(gallery_uid),
                 reply_markup=self._gallery_markup(btn_call_data),
             )
         except RetryAfter as e:
@@ -296,6 +303,25 @@ class Gallery(InlineUnit):
             logger.exception("Exception while trying to edit media")
             await call.answer("Error occurred", show_alert=True)
             return
+
+    def _get_current_media(
+        self,
+        gallery_uid: str,
+    ) -> Union[InputMediaPhoto, InputMediaAnimation]:
+        """Return current media, which should be updated in gallery"""
+        return (
+            InputMediaPhoto(
+                media=self._get_next_photo(gallery_uid),
+                caption=self._get_caption(gallery_uid),
+                parse_mode="HTML",
+            )
+            if not self._galleries[gallery_uid]["gif"]
+            else InputMediaAnimation(
+                media=self._get_next_photo(gallery_uid),
+                caption=self._get_caption(gallery_uid),
+                parse_mode="HTML",
+            )
+        )
 
     async def _gallery_close(
         self,
@@ -351,15 +377,11 @@ class Gallery(InlineUnit):
         try:
             await self.bot.edit_message_media(
                 inline_message_id=call.inline_message_id,
-                media=InputMediaPhoto(
-                    media=self._get_next_photo(gallery_uid),
-                    caption=self._get_caption(gallery_uid),
-                    parse_mode="HTML",
-                ),
+                media=self._get_current_media(gallery_uid),
                 reply_markup=self._gallery_markup(btn_call_data),
             )
         except (InvalidHTTPUrlContent, BadRequest):
-            logger.warning("Error fetching photo content, attempting load next one")
+            logger.exception("Error fetching photo content, attempting load next one")
             del self._galleries[gallery_uid]["photos"][
                 self._galleries[gallery_uid]["current_index"]
             ]
@@ -367,7 +389,8 @@ class Gallery(InlineUnit):
             await self._gallery_next(call, btn_call_data, func, gallery_uid)
         except RetryAfter as e:
             await call.answer(
-                f"Got FloodWait. Wait for {e.timeout} seconds", show_alert=True
+                f"Got FloodWait. Wait for {e.timeout} seconds",
+                show_alert=True,
             )
         except Exception:
             logger.exception("Exception while trying to edit media")
@@ -408,19 +431,38 @@ class Gallery(InlineUnit):
                 + gallery["always_allow"]
                 and inline_query.query == gallery["uid"]
             ):
+                if not gallery["gif"]:
+                    await inline_query.answer(
+                        [
+                            InlineQueryResultPhoto(
+                                id=utils.rand(20),
+                                title="Processing inline gallery",
+                                photo_url=gallery["photo_url"],
+                                thumb_url="https://img.icons8.com/fluency/344/loading.png",
+                                caption=self._get_caption(gallery["uid"]),
+                                description="Processing inline gallery",
+                                reply_markup=self._gallery_markup(
+                                    gallery["btn_call_data"],
+                                ),
+                                parse_mode="HTML",
+                            )
+                        ],
+                        cache_time=0,
+                    )
+                    return
+
                 await inline_query.answer(
                     [
-                        InlineQueryResultPhoto(
+                        InlineQueryResultGif(
                             id=utils.rand(20),
                             title="Processing inline gallery",
-                            photo_url=gallery["photo_url"],
+                            gif_url=gallery["photo_url"],
                             thumb_url="https://img.icons8.com/fluency/344/loading.png",
                             caption=self._get_caption(gallery["uid"]),
-                            description=self._get_caption(gallery["uid"]),
-                            reply_markup=self._gallery_markup(gallery["btn_call_data"]),
                             parse_mode="HTML",
+                            reply_markup=self._gallery_markup(
+                                gallery["btn_call_data"],
+                            ),
                         )
-                    ],
-                    cache_time=0,
+                    ]
                 )
-                return
