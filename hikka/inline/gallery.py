@@ -195,6 +195,9 @@ class Gallery(InlineUnit):
             "force_me": force_me,
         }
 
+        if isinstance(message, Message):
+            await (message.edit if message.out else message.respond)("👩‍🎤 <b>Loading inline gallery...</b>")
+
         try:
             q = await self._client.inline_query(self.bot_username, gallery_uid)
             m = await q[0].click(
@@ -237,7 +240,7 @@ class Gallery(InlineUnit):
         self._galleries[gallery_uid]["chat"] = utils.get_chat_id(m)
         self._galleries[gallery_uid]["message_id"] = m.id
 
-        if isinstance(message, Message) and message.out:
+        if isinstance(message, Message):
             await message.delete()
 
         asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
@@ -297,7 +300,8 @@ class Gallery(InlineUnit):
             )
         except RetryAfter as e:
             await call.answer(
-                f"Got FloodWait. Wait for {e.timeout} seconds", show_alert=True
+                f"Got FloodWait. Wait for {e.timeout} seconds",
+                show_alert=True,
             )
         except Exception:
             logger.exception("Exception while trying to edit media")
@@ -398,9 +402,13 @@ class Gallery(InlineUnit):
 
     def _get_next_photo(self, gallery_uid: str) -> str:
         """Returns next photo"""
-        return self._galleries[gallery_uid]["photos"][
-            self._galleries[gallery_uid]["current_index"]
-        ]
+        try:
+            return self._galleries[gallery_uid]["photos"][
+                self._galleries[gallery_uid]["current_index"]
+            ]
+        except IndexError:
+            logger.error(f"Got IndexError in `_get_next_photo`. {self._galleries[gallery_uid]['current_index']=} / {len(self._galleries[gallery_uid]['photos'])=}")
+            return self._galleries[gallery_uid]["photos"][0]
 
     def _get_caption(self, gallery_uid: str) -> str:
         """Calls and returnes caption for gallery"""
