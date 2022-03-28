@@ -44,6 +44,7 @@ class Gallery(InlineUnit):
         ttl: Union[int, bool] = False,
         on_unload: Union[FunctionType, None] = None,
         preload: Union[bool, int] = False,
+        reattempt: bool = False,
     ) -> Union[bool, str]:
         """
         Processes inline gallery
@@ -192,19 +193,35 @@ class Gallery(InlineUnit):
                 else None,
             )
         except Exception:
-            msg = (
-                "🚫 <b>A problem occurred with inline bot "
-                "while processing query. Check logs for "
-                "further info.</b>"
-            )
+            logger.exception("Error sending inline gallery")
 
             del self._galleries[gallery_uid]
-            if isinstance(message, Message):
-                await (message.edit if message.out else message.respond)(msg)
-            else:
-                await self._client.send_message(message, msg)
 
-            return False
+            if reattempt:
+                msg = (
+                    "🚫 <b>A problem occurred with inline bot "
+                    "while processing query. Check logs for "
+                    "further info.</b>"
+                )
+
+                if isinstance(message, Message):
+                    await (message.edit if message.out else message.respond)(msg)
+                else:
+                    await self._client.send_message(message, msg)
+
+                return False
+
+            return await self.gallery(
+                caption,
+                message,
+                next_handler,
+                force_me,
+                always_allow,
+                ttl,
+                on_unload,
+                preload,
+                True,
+            )
 
         self._galleries[gallery_uid]["chat"] = utils.get_chat_id(m)
         self._galleries[gallery_uid]["message_id"] = m.id
@@ -397,7 +414,7 @@ class Gallery(InlineUnit):
                             id=utils.rand(20),
                             title="Processing inline gallery",
                             photo_url=gallery["photo_url"],
-                            thumb_url=gallery["photo_url"],
+                            thumb_url="https://img.icons8.com/fluency/344/loading.png",
                             caption=self._get_caption(gallery["uid"]),
                             description=self._get_caption(gallery["uid"]),
                             reply_markup=self._gallery_markup(gallery["btn_call_data"]),
