@@ -10,6 +10,8 @@ from aiogram.types import (
     InlineQuery,
 )
 
+from aiogram.utils.exceptions import InvalidHTTPUrlContent, BadRequest
+
 from typing import Union, List
 from types import FunctionType
 from telethon.tl.types import Message
@@ -335,10 +337,16 @@ class Gallery(InlineUnit):
                 ),
                 reply_markup=self._gallery_markup(btn_call_data),
             )
+        except (InvalidHTTPUrlContent, BadRequest):
+            logger.warning("Error fetching photo content, attempting load next one")
+            del self._galleries[gallery_uid]["photos"][
+                self._galleries[gallery_uid]["current_index"]
+            ]
+            self._galleries[gallery_uid]["current_index"] -= 1
+            await self._gallery_next(call, btn_call_data, func, gallery_uid)
         except Exception:
             logger.exception("Exception while trying to edit media")
             await call.answer("Error occurred", show_alert=True)
-            return
 
     def _get_next_photo(self, gallery_uid: str) -> str:
         """Returns next photo"""
