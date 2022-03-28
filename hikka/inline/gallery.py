@@ -10,7 +10,7 @@ from aiogram.types import (
     InlineQuery,
 )
 
-from aiogram.utils.exceptions import InvalidHTTPUrlContent, BadRequest
+from aiogram.utils.exceptions import InvalidHTTPUrlContent, BadRequest, RetryAfter
 
 from typing import Union, List
 from types import FunctionType
@@ -271,6 +271,10 @@ class Gallery(InlineUnit):
                 ),
                 reply_markup=self._gallery_markup(btn_call_data),
             )
+        except RetryAfter as e:
+            await call.answer(
+                f"Got FloodWait. Wait for {e.timeout} seconds", show_alert=True
+            )
         except Exception:
             logger.exception("Exception while trying to edit media")
             await call.answer("Error occurred", show_alert=True)
@@ -344,6 +348,10 @@ class Gallery(InlineUnit):
             ]
             self._galleries[gallery_uid]["current_index"] -= 1
             await self._gallery_next(call, btn_call_data, func, gallery_uid)
+        except RetryAfter as e:
+            await call.answer(
+                f"Got FloodWait. Wait for {e.timeout} seconds", show_alert=True
+            )
         except Exception:
             logger.exception("Exception while trying to edit media")
             await call.answer("Error occurred", show_alert=True)
