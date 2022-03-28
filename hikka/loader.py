@@ -36,8 +36,9 @@ import os
 import sys
 import json
 
-from . import utils, security, inline
+from . import utils, security
 from .translations.dynamic import Strings
+from .inline.core import InlineManager
 
 
 class LoadError(Exception):
@@ -424,7 +425,7 @@ class Modules:
 
         # Init inline manager anyway, so the modules
         # can access its `init_complete`
-        inline_manager = inline.InlineManager(client, db, self)
+        inline_manager = InlineManager(client, db, self)
 
         await inline_manager._register_manager()
 

@@ -36,7 +36,6 @@ import telethon
 from aiohttp import web
 
 from .. import utils, main
-from ..inline import rand
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -205,7 +204,7 @@ class Web:
         if self._check_session(request):
             return web.Response(body=request.cookies.get("session", "unauthorized"))
 
-        token = rand(8)
+        token = utils.rand(8)
 
         markup = InlineKeyboardMarkup()
         markup.add(
@@ -233,7 +232,7 @@ class Web:
             except Exception:
                 pass
 
-        session = f"hikka_{rand(16)}"
+        session = f"hikka_{utils.rand(16)}"
 
         if not ops:
             # If no auth message was sent, just leave it empty
