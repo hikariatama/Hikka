@@ -172,7 +172,12 @@ class UpdaterMod(loader.Module):
                 self.req_common()
             await self.restart_common(message)
         except GitCommandError:
-            await self.updatecmd(message, True)
+            if not hard:
+                await self.updatecmd(message, True)
+                return
+
+            logger.critical("Got update loop. Update manually via .terminal")
+            return
 
     @loader.unrestricted
     async def sourcecmd(self, message: Message) -> None:
