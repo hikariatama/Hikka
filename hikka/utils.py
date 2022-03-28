@@ -50,7 +50,7 @@ from telethon.tl.types import (
 
 import random
 
-from typing import Tuple, Union, List
+from typing import Tuple, Union, List, Any
 
 from telethon.tl.functions.channels import CreateChannelRequest
 
@@ -232,10 +232,7 @@ async def answer(message: Message, response: str, **kwargs) -> list:
     """Use this to give the response to a command"""
     if isinstance(message, list):
         delete_job = asyncio.ensure_future(
-            message[0].client.delete_messages(
-                message[0].input_chat,
-                message[1:]
-            )
+            message[0].client.delete_messages(message[0].input_chat, message[1:])
         )
         message = message[0]
     else:
@@ -313,7 +310,9 @@ async def answer(message: Message, response: str, **kwargs) -> list:
                 "reply_to",
                 getattr(message, "reply_to_msg_id", None),
             )
-            result = (await message.client.send_file(message.chat_id, response, **kwargs),)
+            result = (
+                await message.client.send_file(message.chat_id, response, **kwargs),
+            )
 
     if delete_job:
         await delete_job
@@ -480,6 +479,22 @@ def ascii_face() -> str:
             "ฅ^•ﻌ•^ฅ",
             "(΄◞ิ౪◟ิ‵)",
         ]
+    )
+
+
+def array_sum(array: List[Any]) -> List[Any]:
+    """Performs basic sum operation on array"""
+    result = []
+    for item in array:
+        result += item
+
+    return result
+
+
+def rand(size: int) -> str:
+    """Return random string of len `size`"""
+    return "".join(
+        [random.choice("abcdefghijklmnopqrstuvwxyz1234567890") for _ in range(size)]
     )
 
 

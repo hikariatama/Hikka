@@ -12,11 +12,16 @@
 
 from .. import loader, main, utils
 import logging
-import aiogram
 import git
 
 from telethon.utils import get_display_name
-from ..inline import InlineQuery, rand
+from ..inline.types import InlineQuery
+from aiogram.types import (
+    InlineQueryResultArticle,
+    InputTextMessageContent,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -37,11 +42,9 @@ class HikkaInfoMod(loader.Module):
         self._db = db
         self._client = client
         self._me = await client.get_me()
-        self.markup = aiogram.types.inline_keyboard.InlineKeyboardMarkup()
+        self.markup = InlineKeyboardMarkup()
         self.markup.row(
-            aiogram.types.inline_keyboard.InlineKeyboardButton(
-                "🤵‍♀️ Support chat", url="https://t.me/hikka_talks"
-            )
+            InlineKeyboardButton("🤵‍♀️ Support chat", url="https://t.me/hikka_talks")
         )
 
     async def info_inline_handler(self, query: InlineQuery) -> None:
@@ -68,14 +71,14 @@ class HikkaInfoMod(loader.Module):
 
         await query.answer(
             [
-                aiogram.types.inline_query_result.InlineQueryResultArticle(
-                    id=rand(20),
+                InlineQueryResultArticle(
+                    id=utils.rand(20),
                     title="Send userbot info",
                     description="ℹ This will not compromise any sensitive data",
-                    input_message_content=aiogram.types.input_message_content.InputTextMessageContent(
+                    input_message_content=InputTextMessageContent(
                         (
                             "<b>👩‍🎤 Hikka Userbot</b>\n"
-                            f"<b>🤴 Owner: <a href=\"tg://user?id={self._me.id}\">{utils.escape_html(get_display_name(self._me))}</a></b>\n\n"
+                            f'<b>🤴 Owner: <a href="tg://user?id={self._me.id}">{utils.escape_html(get_display_name(self._me))}</a></b>\n\n'
                             f"<b>🔮 Version: </b><i>{'.'.join(list(map(str, list(main.__version__))))}</i>\n"
                             f"<b>🧱 Build: </b><a href=\"https://github.com/hikariatama/Hikka/commit/{ver}\">{ver[:8] or 'Unknown'}</a>\n"
                             f"<b>{upd}</b>\n"
