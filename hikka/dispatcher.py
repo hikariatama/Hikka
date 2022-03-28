@@ -33,8 +33,10 @@ import re
 from telethon import types
 import traceback
 from telethon.tl.types import Message
+from typing import Union, Tuple
+from types import FunctionType
 
-from . import utils, main, security, loader
+from . import utils, main, security
 
 # Keys for layout switch
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
@@ -68,7 +70,8 @@ class CommandDispatcher:
 
     async def _handle_ratelimit(self, message, func):
         if await self.security.check(
-            message, security.OWNER | security.SUDO | security.SUPPORT
+            message,
+            security.OWNER | security.SUDO | security.SUPPORT,
         ):
             return True
         func = getattr(func, "__func__", func)
@@ -190,10 +193,9 @@ class CommandDispatcher:
 
         return message
 
-    async def handle_command(self, event):
-        """Handle all commands"""
+    async def _handle_command(self, event) -> Union[bool, Tuple[Message, str, str, FunctionType]]:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
-            return
+            return False
 
         prefix = self._db.get(main.__name__, "command_prefix", False) or "."
         if isinstance(prefix, list):
@@ -206,25 +208,25 @@ class CommandDispatcher:
             logging.warning("Prefix has been reset to a default one («.»)")
 
         change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
+        message = utils.censor(event.message)
 
         if event.message.message.startswith(prefix):
-            translated = False
+            pass
         elif event.message.message.startswith(str.translate(prefix, change)):
             prefix = str.translate(prefix, change)
-            translated = True
+            message.message = str.translate(message.message, change)
         else:
-            return
+            return False
 
         if (
             event.sticker
             or event.dice
             or event.audio
             or event.via_bot_id
-            or getattr(event, 'reactions', False)
+            or getattr(event, "reactions", False)
         ):
-            return
+            return False
 
-        message = utils.censor(event.message)
         blacklist_chats = self._db.get(main.__name__, "blacklist_chats", [])
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
@@ -232,7 +234,7 @@ class CommandDispatcher:
         if utils.get_chat_id(message) in blacklist_chats or (
             whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
         ):
-            return
+            return False
 
         if (
             message.out
@@ -251,15 +253,12 @@ class CommandDispatcher:
                 message.message[len(prefix) :],
                 parse_mode=lambda s: (s, entities or ()),
             )
-            return
+            return False
 
         message.message = message.message[len(prefix) :]
 
-        if translated:
-            message.message = str.translate(message.message, change)
-
         if not message.message:
-            return  # Message is just the prefix
+            return False  # Message is just the prefix
 
         utils.relocate_entities(message.entities, -len(prefix))
 
@@ -274,9 +273,9 @@ class CommandDispatcher:
         if len(tag) == 2:
             if tag[1] == "me":
                 if not message.out:
-                    return
+                    return False
             elif tag[1].lower() != self._cached_username:
-                return
+                return False
         elif (
             event.mentioned
             and event.message is not None
@@ -293,7 +292,7 @@ class CommandDispatcher:
             and initiator not in self._db.get(main.__name__, "nonickusers", [])
         ):
             logging.debug("Ignoring message without nickname")
-            return
+            return False
 
         txt, func = self._modules.dispatch(tag[0])
 
@@ -302,7 +301,7 @@ class CommandDispatcher:
             or not await self._handle_ratelimit(message, func)
             or not await self.security.check(message, func)
         ):
-            return
+            return False
 
         if (
             message.is_channel
@@ -311,7 +310,7 @@ class CommandDispatcher:
             and message.chat.title != "hikka-logs"
         ):
             logging.warning("Ignoring message in datachat \\ logging chat")
-            return
+            return False
 
         message.message = txt + message.message[len(command) :]
 
@@ -320,27 +319,28 @@ class CommandDispatcher:
             in blacklist_chats
         ):
             logging.debug("Command is blacklisted in chat")
-            return
+            return False
 
         if (
             whitelist_modules
             and f"{utils.get_chat_id(message)}.{func.__self__.__module__}"
             not in whitelist_modules
-        ):  # noqa
+        ):
             logging.debug("Command is not whitelisted in chat")
-            return
+            return False
 
         if self._db.get(main.__name__, "grep", False):
             message = self._handle_grep(message)
 
-        # Feature for CommandsLogger module
-        try:
-            if getattr(loader, "mods", False):
-                for mod in loader.mods:
-                    if mod.name == "CommandsLogger":
-                        await mod.process_log(message)
-        except Exception:
-            pass
+        return message, prefix, txt, func
+
+    async def handle_command(self, event: Message) -> None:
+        """Handle all commands"""
+        message = await self._handle_command(event)
+        if not message:
+            return
+
+        message, prefix, txt, func = message
 
         try:
             await func(message)
@@ -356,10 +356,12 @@ class CommandDispatcher:
 
             try:
                 exc = traceback.format_exc()
-                exc = "\n".join(
-                    exc.split("\n")[1:]
-                )  # Remove `Traceback (most recent call last):`
-                txt = f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>\n\n<b>⛑ Traceback:</b>\n<code>{exc}</code>"
+                # Remove `Traceback (most recent call last):`
+                exc = "\n".join(exc.split("\n")[1:])
+                txt = (
+                    f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>\n\n"
+                    f"<b>⛑ Traceback:</b>\n<code>{exc}</code>"
+                )
                 await (message.edit if message.out else message.reply)(txt)
             except Exception:
                 pass

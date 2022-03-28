@@ -124,10 +124,10 @@ def gen_port():
 
     # Then ensure it's free
     while (
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect_ex(
-            ("localhost", port)
-        )
-        == 0
+        not socket.socket(
+            socket.AF_INET,
+            socket.SOCK_STREAM,
+        ).connect_ex(("localhost", port))
     ):
         # Until we find the free port, generate new one
         port = random.randint(1024, 65536)
@@ -317,7 +317,8 @@ class Hikka:
             except ImportError:
                 try:
                     api_token = api_token_type(
-                        os.environ["api_id"], os.environ["api_hash"]
+                        os.environ["api_id"],
+                        os.environ["api_hash"],
                     )
                 except KeyError:
                     api_token = None
@@ -440,7 +441,8 @@ class Hikka:
                 self.clients.append(client)
             except sqlite3.OperationalError:
                 print(
-                    f"""Check that this is the only instance running. If that doesn't help, delete the file named'hikka-{phone or ""}.session'"""
+                    "Check that this is the only instance running. "
+                    f"If that doesn't help, delete the file named 'hikka-{phone or ''}.session'"
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
@@ -452,8 +454,8 @@ class Hikka:
                 return
             except PhoneNumberInvalidError:
                 print(
-                    "Phone number is incorrect. Use international format (+XX...)"
-                    " and don't put spaces in it."
+                    "Phone number is incorrect. Use international format (+XX...) "
+                    "and don't put spaces in it."
                 )
                 continue
             except InteractiveAuthRequired:
@@ -493,7 +495,7 @@ class Hikka:
             termux = bool(
                 os.popen(
                     'echo $PREFIX | grep -o "com.termux"'
-                ).read()  # skipcq: BAN-B605, BAN-B607
+                ).read()
             )
             _platform = "Termux" if termux else "Unknown"
 
@@ -546,10 +548,25 @@ class Hikka:
         await dispatcher.init(client)
         modules.check_security = dispatcher.check_security
 
-        client.add_event_handler(dispatcher.handle_incoming, events.NewMessage)
-        client.add_event_handler(dispatcher.handle_incoming, events.ChatAction)
-        client.add_event_handler(dispatcher.handle_command, events.NewMessage(forwards=False))  # fmt: skip
-        client.add_event_handler(dispatcher.handle_command, events.MessageEdited())
+        client.add_event_handler(
+            dispatcher.handle_incoming,
+            events.NewMessage,
+        )
+
+        client.add_event_handler(
+            dispatcher.handle_incoming,
+            events.ChatAction,
+        )
+
+        client.add_event_handler(
+            dispatcher.handle_command,
+            events.NewMessage(forwards=False),
+        )
+
+        client.add_event_handler(
+            dispatcher.handle_command,
+            events.MessageEdited(),
+        )
 
     async def amain(self, first, client) -> None:
         """Entrypoint for async init, run once for each user"""
@@ -589,7 +606,10 @@ class Hikka:
 
         if self.web:
             await self.web.add_loader(client, modules, db)
-            await self.web.start_if_ready(len(self.clients), self.arguments.port)
+            await self.web.start_if_ready(
+                len(self.clients),
+                self.arguments.port,
+            )
 
         if not web_only:
             await self._add_dispatcher(client, modules, db)

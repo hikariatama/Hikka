@@ -261,9 +261,7 @@ class Modules:
 
         for mod in mods:
             try:
-                module_name = (
-                    f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
-                )
+                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
                 logging.debug(module_name)
                 spec = importlib.util.spec_from_file_location(module_name, mod)
                 self.register_module(spec, module_name)
@@ -275,9 +273,7 @@ class Modules:
         from .compat import uniborg
 
         module = importlib.util.module_from_spec(spec)
-        sys.modules[
-            module_name
-        ] = module  # Do this early for the benefit of RaphielGang compat layer
+        sys.modules[module_name] = module
         module.borg = uniborg.UniborgClient(module_name)
         spec.loader.exec_module(module)
         ret = None
@@ -356,7 +352,12 @@ class Modules:
                 logging.debug("Removing module for update %r", module)
                 self.modules.remove(module)
                 asyncio.ensure_future(
-                    asyncio.wait_for(asyncio.gather(module.on_unload()), timeout=5)
+                    asyncio.wait_for(
+                        asyncio.gather(
+                            module.on_unload(),
+                        ),
+                        timeout=5,
+                    )
                 )
 
         self.modules += [instance]
@@ -457,7 +458,7 @@ class Modules:
         try:
             await mod.client_ready(client, db)
         except Exception as e:
-            logging.exception(f"Failed to send mod init complete signal for %r due to {e}, attempting unload")  # fmt: skip
+            logging.exception(f"Failed to send mod init complete signal for {mod} due to {e}, attempting unload")  # fmt: skip
             self.modules.remove(mod)
             raise
 
@@ -506,7 +507,12 @@ class Modules:
                 self.modules.remove(module)
 
                 asyncio.ensure_future(
-                    asyncio.wait_for(asyncio.gather(module.on_unload()), timeout=5)
+                    asyncio.wait_for(
+                        asyncio.gather(
+                            module.on_unload(),
+                        ),
+                        timeout=5,
+                    )
                 )
 
                 to_remove += module.commands.values()

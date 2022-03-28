@@ -45,18 +45,19 @@ from telethon.tl.types import (
     User,
     MessageMediaWebPage,
     Channel,
+    Chat,
 )
 
 import random
 
-from typing import Tuple
+from typing import Tuple, Union, List
 
 from telethon.tl.functions.channels import CreateChannelRequest
 
 from . import __main__
 
 
-def get_args(message):
+def get_args(message: Message) -> List[str]:
     """Get arguments from message (str or Message), return list of arguments"""
     try:
         message = message.message
@@ -81,7 +82,7 @@ def get_args(message):
     return list(filter(lambda x: len(x) > 0, split))
 
 
-def get_args_raw(message):
+def get_args_raw(message: Message) -> str:
     """Get the parameters to the command as a raw string (not split)"""
     try:
         message = message.message
@@ -99,44 +100,46 @@ def get_args_raw(message):
     return ""
 
 
-def get_args_split_by(message, sep):
-    """Split args with a specific sep"""
+def get_args_split_by(message: Message, separator: str) -> List[str]:
+    """Split args with a specific separator"""
     raw = get_args_raw(message)
-    mess = raw.split(sep)
+    mess = raw.split(separator)
 
     return [section.strip() for section in mess if section]
 
 
-def get_chat_id(message):
+def get_chat_id(message: Message) -> int:
     """Get the chat ID, but without -100 if its a channel"""
     return telethon.utils.resolve_id(message.chat_id)[0]
 
 
-def get_entity_id(entity):
+def get_entity_id(
+    entity: Union[Chat, User, Channel, PeerChat, PeerChat, PeerChannel]
+) -> int:
     return telethon.utils.get_peer_id(entity)
 
 
-def escape_html(text):
+def escape_html(text: str) -> str:
     """Pass all untrusted/potentially corrupt input here"""
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def escape_quotes(text):
+def escape_quotes(text: str) -> str:
     """Escape quotes to html quotes"""
     return escape_html(text).replace('"', "&quot;")
 
 
-def get_base_dir():
+def get_base_dir() -> str:
     """Get directory of this file"""
     return get_dir(__main__.__file__)
 
 
-def get_dir(mod):
+def get_dir(mod: str) -> str:
     """Get directory of given module"""
     return os.path.abspath(os.path.dirname(os.path.abspath(mod)))
 
 
-async def get_user(message):
+async def get_user(message: Message) -> Union[None, User]:
     """Get user who sent message, searching if not found easily"""
     try:
         return await message.client.get_entity(message.sender_id)
@@ -152,16 +155,22 @@ async def get_user(message):
         return await message.client.get_entity(message.sender_id)
 
     if isinstance(message.peer_id, (PeerChannel, PeerChat)):
+        try:
+            return await message.client.get_entity(message.sender_id)
+        except Exception:
+            pass
+
         async for user in message.client.iter_participants(
-            message.peer_id, aggressive=True
+            message.peer_id,
+            aggressive=True,
         ):
             if user.id == message.sender_id:
                 return user
 
-        logging.critical("WTF! user isn't in the group where they sent the message")
+        logging.error("User isn't in the group where they sent the message")
         return None
 
-    logging.critical("WTF! `peer_id` is not a user, chat or channel")
+    logging.error("`peer_id` is not a user, chat or channel")
     return None
 
 
@@ -169,7 +178,8 @@ def run_sync(func, *args, **kwargs):
     """Run a non-async function in a new thread and return an awaitable"""
     # Returning a coro
     return asyncio.get_event_loop().run_in_executor(
-        None, functools.partial(func, *args, **kwargs)
+        None,
+        functools.partial(func, *args, **kwargs),
     )
 
 
@@ -180,9 +190,10 @@ def run_async(loop, coro):
 
 
 def censor(
-    obj, to_censor=None, replace_with="redacted_{count}_chars"
-):  # pylint: disable=W0102
-    # Safe to disable W0102 because we don't touch to_censor, mutably or immutably.
+    obj,
+    to_censor=None,
+    replace_with="redacted_{count}_chars",
+):
     """May modify the original object, but don't rely on it"""
     if to_censor is None:
         to_censor = ["phone"]
@@ -196,9 +207,13 @@ def censor(
     return obj
 
 
-def relocate_entities(entities, offset, text=None):
+def relocate_entities(
+    entities: list,
+    offset: int,
+    text: Union[str, None] = None,
+) -> list:
     """Move all entities by offset (truncating at text)"""
-    length = len(text) if text is not None else 0  # TODO: refactor about text=None
+    length = len(text) if text is not None else 0
 
     for ent in entities.copy() if entities else ():
         ent.offset += offset
@@ -213,22 +228,18 @@ def relocate_entities(entities, offset, text=None):
     return entities
 
 
-async def answer(message, response, **kwargs):
+async def answer(message: Message, response: str, **kwargs) -> list:
     """Use this to give the response to a command"""
     if isinstance(message, list):
         delete_job = asyncio.ensure_future(
-            message[0].client.delete_messages(message[0].input_chat, message[1:])
+            message[0].client.delete_messages(
+                message[0].input_chat,
+                message[1:]
+            )
         )
         message = message[0]
     else:
         delete_job = None
-
-    if (
-        await message.client.is_bot()
-        and isinstance(response, str)
-        and len(response) > 4096
-    ):
-        kwargs.setdefault("asfile", True)
 
     kwargs.setdefault("link_preview", False)
 
@@ -241,17 +252,20 @@ async def answer(message, response, **kwargs):
         )
 
     parse_mode = telethon.utils.sanitize_parse_mode(
-        kwargs.pop("parse_mode", message.client.parse_mode)
+        kwargs.pop(
+            "parse_mode",
+            message.client.parse_mode,
+        )
     )
 
     if isinstance(response, str) and not kwargs.pop("asfile", False):
-        txt, ent = parse_mode.parse(response)
+        text, entity = parse_mode.parse(response)
 
-        if len(txt) >= 4096:
-            file = io.BytesIO(txt.encode("utf-8"))
+        if len(text) >= 4096:
+            file = io.BytesIO(text.encode("utf-8"))
             file.name = "command_result.txt"
 
-            ret = [
+            result = [
                 await message.client.send_file(
                     message.peer_id,
                     file,
@@ -262,18 +276,18 @@ async def answer(message, response, **kwargs):
             if message.out:
                 await message.delete()
 
-            return ret
+            return result
 
-        ret = [
+        result = [
             await (message.edit if edit else message.respond)(
-                txt, parse_mode=lambda t: (t, ent), **kwargs
+                text, parse_mode=lambda t: (t, entity), **kwargs
             )
         ]
     elif isinstance(response, Message):
         if message.media is None and (
             response.media is None or isinstance(response.media, MessageMediaWebPage)
         ):
-            ret = (
+            result = (
                 await message.edit(
                     response.message,
                     parse_mode=lambda t: (t, response.entities or []),
@@ -281,7 +295,7 @@ async def answer(message, response, **kwargs):
                 ),
             )
         else:
-            ret = (await message.respond(response, **kwargs),)
+            result = (await message.respond(response, **kwargs),)
     else:
         if isinstance(response, bytes):
             response = io.BytesIO(response)
@@ -299,17 +313,18 @@ async def answer(message, response, **kwargs):
                 "reply_to",
                 getattr(message, "reply_to_msg_id", None),
             )
-            ret = (await message.client.send_file(message.chat_id, response, **kwargs),)
+            result = (await message.client.send_file(message.chat_id, response, **kwargs),)
 
     if delete_job:
         await delete_job
 
-    return ret
+    return result
 
 
-async def get_target(message, arg_no=0):
+async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
     if any(
-        isinstance(ent, MessageEntityMentionName) for ent in (message.entities or [])
+        isinstance(entity, MessageEntityMentionName)
+        for entity in (message.entities or [])
     ):
         e = sorted(
             filter(lambda x: isinstance(x, MessageEntityMentionName), message.entities),
@@ -327,15 +342,15 @@ async def get_target(message, arg_no=0):
         return None
 
     try:
-        ent = await message.client.get_entity(user)
+        entity = await message.client.get_entity(user)
     except ValueError:
         return None
     else:
-        if isinstance(ent, User):
-            return ent.id
+        if isinstance(entity, User):
+            return entity.id
 
 
-def merge(a, b):
+def merge(a: dict, b: dict) -> dict:
     """Merge with replace dictionary a to dictionary b"""
     for key in a:
         if key in b:
@@ -352,7 +367,9 @@ def merge(a, b):
 
 
 async def asset_channel(
-    client: "TelegramClient", title: str, description: str  # noqa: F821
+    client: "TelegramClient",  # noqa: F821
+    title: str,
+    description: str,
 ) -> Tuple[Channel, bool]:
     """
     Create new channel (if needed) and return its entity
@@ -376,7 +393,7 @@ async def asset_channel(
     ).chats[0], True
 
 
-def get_link(user: User or Channel) -> str:
+def get_link(user: Union[User, Channel]) -> str:
     """Get telegram permalink to entity"""
     return (
         f"tg://user?id={user.id}"
@@ -389,7 +406,7 @@ def get_link(user: User or Channel) -> str:
     )
 
 
-def chunks(_list: list, n: int) -> list:
+def chunks(_list: Union[list, tuple, set], n: int) -> list:
     """Split provided `_list` into chunks of `n`"""
     return [_list[i : i + n] for i in range(0, len(_list), n)]
 

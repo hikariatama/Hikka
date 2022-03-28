@@ -270,10 +270,7 @@ class HelpMod(loader.Module):
                 else:
                     plain_ += [tmp]
             elif not shown_warn and (mod.commands or mod.inline_handlers):
-                reply = (
-                    "<i>You have permissions to execute only this commands</i>\n"
-                    + reply
-                )
+                reply = f"<i>You have permissions to execute only this commands</i>\n{reply}"
                 shown_warn = True
 
         plain_.sort(key=lambda x: x.split()[1])
@@ -285,7 +282,8 @@ class HelpMod(loader.Module):
     async def supportcmd(self, message):
         """Joins the support Hikka chat"""
         if await self.allmodules.check_security(
-            message, security.OWNER | security.SUDO
+            message,
+            security.OWNER | security.SUDO,
         ):
             await self._client(JoinChannelRequest("https://t.me/hikka_talks"))
 
@@ -315,5 +313,4 @@ class HelpMod(loader.Module):
 
     async def client_ready(self, client, db) -> None:
         self._client = client
-        self.is_bot = await client.is_bot()
         self._db = db

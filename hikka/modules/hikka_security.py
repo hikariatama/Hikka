@@ -38,10 +38,6 @@ from ..security import (
 logger = logging.getLogger(__name__)
 
 
-def chunks(lst: list, n: int) -> List[list]:
-    return [lst[i : i + n] for i in range(0, len(lst), n)]
-
-
 @loader.tds
 class HikkaSecurityMod(loader.Module):
     """Control security settings"""
@@ -166,7 +162,7 @@ class HikkaSecurityMod(loader.Module):
             for group, level in perms.items()
         ]
 
-        return chunks(buttons, 2) + [
+        return utils.chunks(buttons, 2) + [
             [{"text": self.strings("close_menu"), "callback": self.inline_close}]
         ]
 
@@ -181,7 +177,7 @@ class HikkaSecurityMod(loader.Module):
             for group, level in perms.items()
         ]
 
-        return chunks(buttons, 2) + [
+        return utils.chunks(buttons, 2) + [
             [{"text": self.strings("close_menu"), "callback": self.inline_close}]
         ]
 

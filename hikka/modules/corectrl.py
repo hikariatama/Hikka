@@ -80,8 +80,7 @@ class CoreMod(loader.Module):
 
     async def hikkacmd(self, message: Message) -> None:
         """Get Hikka version"""
-        ver = getattr(main, "__version__", False)
-
+        ver = main.__version__
         await utils.answer(message, self.strings("hikka").format(*ver))
 
     async def blacklistcmd(self, message: Message) -> None:
@@ -104,7 +103,7 @@ class CoreMod(loader.Module):
             main.__name__,
             "blacklist_chats",
             list(
-                set(self._db.get(main.__name__, "blacklist_chats", [])) - set([chatid])  # skipcq: PTC-W0018
+                set(self._db.get(main.__name__, "blacklist_chats", [])) - set([chatid])
             ),
         )
 
@@ -152,7 +151,8 @@ class CoreMod(loader.Module):
         )
 
         await utils.answer(
-            message, self.strings("user_unblacklisted", message).format(user)
+            message,
+            self.strings("user_unblacklisted", message).format(user),
         )
 
     @loader.owner
@@ -242,7 +242,6 @@ class CoreMod(loader.Module):
 
     async def addtrnslcmd(self, message: Message) -> None:
         """Add a translation pack
-        .addtrnsl <pack>
         Restart required after use"""
         args = utils.get_args(message)
 
