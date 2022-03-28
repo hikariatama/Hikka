@@ -11,15 +11,13 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 from aiogram import Bot, Dispatcher
+from aiogram.utils.exceptions import Unauthorized, TerminatedByOtherGetUpdates
 
 import time
 import asyncio
 
 from telethon.errors.rpcerrorlist import InputUserDeactivatedError
-
 from telethon.utils import get_display_name
-
-from aiogram.utils.exceptions import Unauthorized, TerminatedByOtherGetUpdates
 
 from .gallery import Gallery
 from .form import Form

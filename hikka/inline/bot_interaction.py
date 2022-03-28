@@ -32,7 +32,7 @@ class BotInteractions(InlineUnit):
 
         return self.fsm.get(str(user), False)
 
-    async def _bot_message_answer(
+    async def _bot_message_answer(  # skipcq: PYL-E0213
         mod,
         text: str = None,
         message: AiogramMessage = None,

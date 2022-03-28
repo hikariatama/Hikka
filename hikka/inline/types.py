@@ -2,6 +2,7 @@ from aiogram.types import Message as AiogramMessage, InlineQuery as AiogramInlin
 
 
 class InlineCall:
+    """Modified version of original Aiogram CallbackQuery"""
     def __init__(self):
         self.delete = None
         self.unload = None
@@ -10,16 +11,19 @@ class InlineCall:
 
 
 class InlineUnit:
+    """InlineManager extension type. For internal use only"""
     def __init__(self):
-        pass
+        """Made just for type specification"""
 
 
 class BotMessage(AiogramMessage):
+    """Modified version of original Aiogram Message"""
     def __init__(self):
         super().__init__()
 
 
 class InlineQuery:
+    """Modified version of original Aiogram InlineQuery"""
     def __init__(self, inline_query: AiogramInlineQuery) -> None:
         self.inline_query = inline_query
 
