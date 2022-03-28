@@ -82,7 +82,7 @@ function finish_login() {
             credentials: "include"
         })
         .then(response => response.text())
-        .then(function (response) {
+        .then((response) => {
             window.expanse = true;
             if(response == "0") {
                 setTimeout(() => {
@@ -97,7 +97,7 @@ function finish_login() {
                 window.location.href = "/";
             }, response == "0" ? 10000 : 1500);
         })
-        .catch(function () {
+        .catch(() => {
             error_state();
             error_message("Login confirmation error");
         });
@@ -108,7 +108,7 @@ function tg_code() {
             method: "POST",
             body: `${_tg_pass}\n${_phone}\n${_2fa_pass}`
         })
-        .then(function (response) {
+        .then((response) => {
             if (!response.ok) {
                 if (response.status == 403) {
                     error_state();
@@ -186,7 +186,7 @@ function process_next() {
             return;
         }
 
-        _api_id = parseInt(api_id);
+        _api_id = parseInt(api_id, 10);
         switch_block("api_hash");
 
         return;
@@ -206,7 +206,7 @@ function process_next() {
                 body: _api_hash + _api_id,
                 credentials: "include"
             })
-            .then(function (response) {
+            .then((response) => {
                 if (!response.ok) {
                     error_state();
                     error_message("Error occured while saving credentials")
@@ -214,7 +214,7 @@ function process_next() {
                     switch_block("phone");
                 }
             })
-            .catch(function () {
+            .catch(() => {
                 error_state();
                 error_message("Error occured while saving credentials")
             });
@@ -235,7 +235,7 @@ function process_next() {
                 body: _phone,
                 credentials: "include"
             })
-            .then(function (response) {
+            .then((response) => {
                 if (!response.ok) {
                     error_state();
                     error_message("Code send failed");
@@ -257,7 +257,7 @@ function process_next() {
                     })
                 }
             })
-            .catch(function () {
+            .catch(() => {
                 error_state();
                 error_message("Code send failed");
             });

@@ -37,12 +37,12 @@ class TokenObtainment(InlineUnit):
             uid = utils.rand(6)
             username = f"hikka_{uid}_bot"
 
-            for msg in {
+            for msg in [
                 f"👩‍🎤 Hikka Userbot of {self._name}",
                 username,
                 "/setuserpic",
                 username,
-            }:
+            ]:
                 m = await conv.send_message(msg)
                 r = await conv.get_response()
 
@@ -154,7 +154,7 @@ class TokenObtainment(InlineUnit):
                         # Enable inline mode or change its
                         # placeholder in case it is not set
 
-                        for msg in {
+                        for msg in [
                             "/setinline",
                             button.text,
                             "HikkaQuery",
@@ -163,7 +163,7 @@ class TokenObtainment(InlineUnit):
                             "Enabled",
                             "/setuserpic",
                             button.text,
-                        }:
+                        ]:
                             m = await conv.send_message(msg)
                             r = await conv.get_response()
 
