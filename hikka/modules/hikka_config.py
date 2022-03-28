@@ -19,12 +19,6 @@ import ast
 
 logger = logging.getLogger(__name__)
 
-
-def chunks(lst: Union[list, tuple, set], n: int) -> List[list]:
-    for i in range(0, len(lst), n):
-        yield lst[i : i + n]
-
-
 blacklist = [
     "Raphielgang Configuration Placeholder",
     "Uniborg configuration placeholder",
@@ -76,6 +70,7 @@ class HikkaConfigMod(loader.Module):
                         query = ast.literal_eval(query)
                     except (ValueError, SyntaxError):
                         pass
+
                     self._db.setdefault(module.__module__, {}).setdefault(
                         "__config__", {}
                     )[option] = query
@@ -106,7 +101,10 @@ class HikkaConfigMod(loader.Module):
         )
 
     async def inline__configure_option(
-        self, call: CallbackQuery, mod: str, config_opt: str
+        self,
+        call: CallbackQuery,
+        mod: str,
+        config_opt: str,
     ) -> None:  # noqa
         for module in self.allmodules.modules:
             if module.strings("name") == mod:
@@ -138,7 +136,7 @@ class HikkaConfigMod(loader.Module):
                     ],
                 )
 
-    async def inline__configure(self, call: CallbackQuery, mod: str) -> None:  # noqa
+    async def inline__configure(self, call: CallbackQuery, mod: str) -> None:
         btns = []
         for module in self.allmodules.modules:
             if module.strings("name") == mod:
@@ -153,7 +151,7 @@ class HikkaConfigMod(loader.Module):
 
         await call.edit(
             self.strings("configuring_mod").format(utils.escape_html(mod)),
-            reply_markup=list(chunks(btns, 2))
+            reply_markup=list(utils.chunks(btns, 2))
             + [
                 [
                     {"text": "👈 Back", "callback": self.inline__global_config},
@@ -163,15 +161,16 @@ class HikkaConfigMod(loader.Module):
         )
 
     async def inline__global_config(
-        self, call: Union[Message, CallbackQuery]
-    ) -> None:  # noqa
+        self,
+        call: Union[Message, CallbackQuery],
+    ) -> None:
         to_config = [
             mod.strings("name")
             for mod in self.allmodules.modules
             if hasattr(mod, "config") and mod.strings("name") not in blacklist
         ]
         kb = []
-        for mod_row in chunks(to_config, 3):
+        for mod_row in utils.chunks(to_config, 3):
             row = [
                 {"text": btn, "callback": self.inline__configure, "args": (btn,)}
                 for btn in mod_row
@@ -182,7 +181,9 @@ class HikkaConfigMod(loader.Module):
 
         if isinstance(call, Message):
             await self.inline.form(
-                self.strings("configure"), reply_markup=kb, message=call
+                self.strings("configure"),
+                reply_markup=kb,
+                message=call,
             )
         else:
             await call.edit(self.strings("configure"), reply_markup=kb)

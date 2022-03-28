@@ -37,11 +37,13 @@ class Database(dict):
         return object.__repr__(self)
 
     async def init(self):
+        """Asynchronous initialisation unit"""
         self._me = await self._client.get_me()
         self._db_path = os.path.join(ORIGIN, f"config-{self._me.id}.json")
         self.read()
 
     async def _find_asset_channel(self) -> Channel:
+        """Find the asset channel and returns its peer"""
         async for dialog in self._client.iter_dialogs(None, ignore_migrated=True):
             if dialog.name == f"hikka-{self._me.id}-assets" and dialog.is_channel:
 
@@ -52,9 +54,7 @@ class Database(dict):
                 return dialog.entity
 
     async def _make_asset_channel(self) -> Channel:
-        """
-        If user doesn't have an asset channel, create it
-        """
+        """If user doesn't have an asset channel, create it"""
         async with self._anti_double_asset_lock:
             if self._assets_chat_exists:
                 return await self._find_data_channel()
@@ -75,9 +75,7 @@ class Database(dict):
             return dialog
 
     def read(self) -> str:
-        """
-        Read database
-        """
+        """Read database"""
         try:
             with open(self._db_path, "r", encoding="utf-8") as f:
                 data = json.loads(f.read())
@@ -88,9 +86,7 @@ class Database(dict):
             return {}
 
     def save(self) -> bool:
-        """
-        Save database
-        """
+        """Save database"""
         try:
             with open(self._db_path, "w", encoding="utf-8") as f:
                 f.write(json.dumps(self))
@@ -124,9 +120,7 @@ class Database(dict):
         )
 
     async def fetch_asset(self, asset_id: int) -> Union[None, Message]:
-        """
-        Fetch previously saved asset by its asset_id
-        """
+        """Fetch previously saved asset by its asset_id"""
         if not self._assets:
             self._assets = await self._find_asset_channel()
 
@@ -141,11 +135,13 @@ class Database(dict):
         return asset[0]
 
     def get(self, owner: str, key: str, default: Any = None) -> Any:
+        """Get database key"""
         try:
             return self[owner][key]
         except KeyError:
             return default
 
-    def set(self, owner, key, value):
+    def set(self, owner: str, key: str, value: Any) -> bool:
+        """Set database key"""
         super().setdefault(owner, {})[key] = value
         return self.save()

@@ -28,10 +28,6 @@
 
 import logging
 
-import telethon
-from telethon.tl.functions.channels import GetParticipantRequest
-from telethon.tl.functions.messages import GetFullChatRequest
-
 from . import main
 
 logger = logging.getLogger(__name__)
@@ -189,8 +185,13 @@ class SecurityManager:
         self._reload_rights()
         config = self.get_flags(func)
 
-        if not config:  # Either False or 0, either way we can failfast
+        if not config:
             return False
+
+        if message.out:
+            # If message was sent from the account, where
+            # userbot is installed, skip security check
+            return True
 
         logger.debug("Checking security match for %d", config)
 
@@ -218,22 +219,20 @@ class SecurityManager:
             or f_group_admin
         )
 
-        if f_owner and message.sender_id in self._owner + [self._me]:
-            return True
-
-        if f_sudo and message.sender_id in self._sudo:
-            return True
-
-        if f_support and message.sender_id in self._support:
+        if (
+            f_owner
+            and message.sender_id in self._owner
+            or f_sudo
+            and message.sender_id in self._sudo
+            or f_support
+            and message.sender_id in self._support
+        ):
             return True
 
         if message.sender_id in self._db.get(main.__name__, "blacklist_users", []):
             return False
 
-        if f_pm and message.is_private:
-            return True
-
-        if f_group_member and message.is_group:
+        if f_group_member and message.is_group or f_pm and message.is_private:
             return True
 
         if message.is_channel:
@@ -243,91 +242,60 @@ class SecurityManager:
 
                 chat = await message.get_chat()
 
-                if not chat.creator and not (
-                    chat.admin_rights and chat.admin_rights.post_messages
+                if (
+                    not chat.creator
+                    and not chat.admin_rights
+                    or not chat.creator
+                    and not chat.admin_rights.post_messages
                 ):
                     return False
 
-                if self._any_admin and f_group_admin_any:
+                if self._any_admin and f_group_admin_any or f_group_admin:
                     return True
-
-                if f_group_admin:
-                    return True
-            else:
-                if f_group_admin_any or f_group_owner:
-                    participant = await message.client(
-                        GetParticipantRequest(
-                            await message.get_input_chat(),
-                            await message.get_input_sender(),
-                        )
-                    )
-                    participant = participant.participant
-
-                    if isinstance(
-                        participant, telethon.types.ChannelParticipantCreator
-                    ):
-                        return True
-
-                    if isinstance(participant, telethon.types.ChannelParticipantAdmin):
-                        if self._any_admin and f_group_admin_any:
-                            return True
-                        rights = participant.admin_rights
-
-                        if (
-                            f_group_admin
-                            or f_group_admin_add_admins
-                            and rights.add_admins
-                            or f_group_admin_change_info
-                            and rights.change_info
-                            or f_group_admin_ban_users
-                            and rights.ban_users
-                            or f_group_admin_delete_messages
-                            and rights.delete_messages
-                            or f_group_admin_pin_messages
-                            and rights.pin_messages
-                            or f_group_admin_invite_users
-                            and rights.invite_users
-                        ):
-                            return True
-
-                chat = await message.get_chat()
-
-            if message.out:
-                if chat.creator and f_group_owner:
-                    return True
-                me_id = (await message.client.get_me(True)).user_id
-
-                if (
-                    f_owner
-                    and me_id in self._owner
-                    or f_sudo
-                    and me_id in self._sudo
-                    or f_support
-                    and me_id in self._support
-                ):
-                    return True
-
-        elif message.is_group:
-            if f_group_admin_any or f_group_owner:
-                full_chat = await message.client(GetFullChatRequest(message.chat_id))
-                participants = full_chat.full_chat.participants.participants
-                participant = next(
-                    (
-                        possible_participant
-                        for possible_participant in participants
-                        if possible_participant.user_id == message.sender_id
-                    ),
-                    None,
+            elif f_group_admin_any or f_group_owner:
+                participant = await message.client.get_permissions(
+                    message.peer_id,
+                    message.sender_id,
                 )
 
-                if not participant:
-                    return
-
-                if isinstance(participant, telethon.types.ChatParticipantCreator):
+                if participant.is_creator:
                     return True
 
+                if participant.is_admin:
+                    if self._any_admin and f_group_admin_any:
+                        return True
+
+                    if (
+                        f_group_admin
+                        or f_group_admin_add_admins
+                        and participant.add_admins
+                        or f_group_admin_change_info
+                        and participant.change_info
+                        or f_group_admin_ban_users
+                        and participant.ban_users
+                        or f_group_admin_delete_messages
+                        and participant.delete_messages
+                        or f_group_admin_pin_messages
+                        and participant.pin_messages
+                        or f_group_admin_invite_users
+                        and participant.invite_users
+                    ):
+                        return True
+            return False
+
+        if message.is_group:
+            participant = await message.client.get_permissions(
+                message.peer_id,
+                message.sender_id,
+            )
+
+            if not participant:
+                return False
+
             if (
-                isinstance(participant, telethon.types.ChatParticipantAdmin)
+                (f_group_admin_any or f_group_owner)
+                and participant.is_creator
+                or participant.is_admin
                 and f_group_admin_any
             ):
                 return True

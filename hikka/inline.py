@@ -27,7 +27,7 @@ from telethon.errors.rpcerrorlist import YouBlockedUserError, InputUserDeactivat
 from telethon.tl.functions.contacts import UnblockRequest
 from telethon.utils import get_display_name
 
-from aiogram.types import (  # skipcq: PYL-C0412
+from aiogram.types import (
     InputTextMessageContent,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
@@ -36,10 +36,9 @@ from aiogram.types import (  # skipcq: PYL-C0412
     ChosenInlineResult,
     InlineQueryResultPhoto,
     InputMediaPhoto,
+    Message as AiogramMessage,
+    InlineQuery as AiogramInlineQuery,
 )
-
-from aiogram.types import Message as AiogramMessage
-from aiogram.types import InlineQuery as AiogramInlineQuery
 
 from aiogram.utils.exceptions import Unauthorized
 
@@ -229,47 +228,24 @@ class InlineManager:
             await m.delete()
             await r.delete()
 
-            # Set its name to user's name + Hikka Userbot
-            m = await conv.send_message(f"👩‍🎤 Hikka Userbot of {self._name}")
-            r = await conv.get_response()
-
-            logger.debug(f">> {m.raw_text}")
-            logger.debug(f"<< {r.raw_text}")
-
-            await m.delete()
-            await r.delete()
-
             # Generate and set random username for bot
             uid = rand(6)
             username = f"hikka_{uid}_bot"
 
-            m = await conv.send_message(username)
-            r = await conv.get_response()
+            for msg in {
+                f"👩‍🎤 Hikka Userbot of {self._name}",
+                username,
+                "/setuserpic",
+                username,
+            }:
+                m = await conv.send_message(msg)
+                r = await conv.get_response()
 
-            logger.debug(f">> {m.raw_text}")
-            logger.debug(f"<< {r.raw_text}")
+                logger.debug(f">> {m.raw_text}")
+                logger.debug(f"<< {r.raw_text}")
 
-            await m.delete()
-            await r.delete()
-
-            # Set bot profile pic
-            m = await conv.send_message("/setuserpic")
-            r = await conv.get_response()
-
-            logger.debug(f">> {m.raw_text}")
-            logger.debug(f"<< {r.raw_text}")
-
-            await m.delete()
-            await r.delete()
-
-            m = await conv.send_message(username)
-            r = await conv.get_response()
-
-            logger.debug(f">> {m.raw_text}")
-            logger.debug(f"<< {r.raw_text}")
-
-            await m.delete()
-            await r.delete()
+                await m.delete()
+                await r.delete()
 
             try:
                 m = await conv.send_file(photo)
@@ -295,7 +271,9 @@ class InlineManager:
         return await self._assert_token(False)
 
     async def _assert_token(
-        self, create_new_if_needed=True, revoke_token=False
+        self,
+        create_new_if_needed=True,
+        revoke_token=False,
     ) -> None:
         # If the token is set in db
         if self._token:
@@ -370,78 +348,25 @@ class InlineManager:
 
                         # Enable inline mode or change its
                         # placeholder in case it is not set
-                        m = await conv.send_message("/setinline")
-                        r = await conv.get_response()
 
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
+                        for msg in {
+                            "/setinline",
+                            button.text,
+                            "HikkaQuery",
+                            "/setinlinefeedback",
+                            button.text,
+                            "Enabled",
+                            "/setuserpic",
+                            button.text,
+                        }:
+                            m = await conv.send_message(msg)
+                            r = await conv.get_response()
 
-                        await m.delete()
-                        await r.delete()
+                            logger.debug(f">> {m.raw_text}")
+                            logger.debug(f"<< {r.raw_text}")
 
-                        m = await conv.send_message(button.text)
-                        r = await conv.get_response()
-
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
-
-                        await m.delete()
-                        await r.delete()
-
-                        m = await conv.send_message("HikkaQuery")
-                        r = await conv.get_response()
-
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
-
-                        await m.delete()
-                        await r.delete()
-
-                        m = await conv.send_message("/setinlinefeedback")
-                        r = await conv.get_response()
-
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
-
-                        await m.delete()
-                        await r.delete()
-
-                        m = await conv.send_message(button.text)
-                        r = await conv.get_response()
-
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
-
-                        await m.delete()
-                        await r.delete()
-
-                        m = await conv.send_message("Enabled")
-                        r = await conv.get_response()
-
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
-
-                        await m.delete()
-                        await r.delete()
-
-                        # Set bot profile pic
-                        m = await conv.send_message("/setuserpic")
-                        r = await conv.get_response()
-
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
-
-                        await m.delete()
-                        await r.delete()
-
-                        m = await conv.send_message(button.text)
-                        r = await conv.get_response()
-
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
-
-                        await m.delete()
-                        await r.delete()
+                            await m.delete()
+                            await r.delete()
 
                         try:
                             m = await conv.send_file(photo)
@@ -757,10 +682,13 @@ class InlineManager:
             instance = InlineQuery(inline_query)
 
             for query_text, query_func in mod.inline_handlers.items():
-                if inline_query.query.split()[
-                    0
-                ].lower() == query_text.lower() and self.check_inline_security(
-                    query_func, inline_query.from_user.id
+                if (
+                    inline_query.query.split()[0].lower()
+                    == query_text.lower()
+                    and self.check_inline_security(
+                        query_func,
+                        inline_query.from_user.id
+                    )
                 ):
                     try:
                         await query_func(instance)
@@ -776,7 +704,7 @@ class InlineManager:
                     and button["_switch_query"] == query.split()[0]
                     and inline_query.from_user.id
                     in [self._me]
-                    + self._client.dispatcher.security._owner  # skipcq: PYL-W0212
+                    + self._client.dispatcher.security._owner
                     + form["always_allow"]
                 ):
                     await inline_query.answer(
@@ -802,7 +730,7 @@ class InlineManager:
             if (
                 inline_query.from_user.id
                 in [self._me]
-                + self._client.dispatcher.security._owner  # skipcq: PYL-W0212
+                + self._client.dispatcher.security._owner
                 + gallery["always_allow"]
                 and query == gallery["uid"]
             ):
@@ -885,7 +813,7 @@ class InlineManager:
                         form["force_me"]
                         and query.from_user.id != self._me
                         and query.from_user.id
-                        not in self._client.dispatcher.security._owner  # skipcq: PYL-W0212
+                        not in self._client.dispatcher.security._owner
                         and query.from_user.id not in form["always_allow"]
                     ):
                         await query.answer("You are not allowed to press this button!")
@@ -934,7 +862,7 @@ class InlineManager:
                 self._custom_map[query.data]["force_me"]
                 and query.from_user.id != self._me
                 and query.from_user.id
-                not in self._client.dispatcher.security._owner  # skipcq: PYL-W0212
+                not in self._client.dispatcher.security._owner
                 and query.from_user.id
                 not in self._custom_map[query.data]["always_allow"]
             ):
@@ -957,7 +885,7 @@ class InlineManager:
                     and button["_switch_query"] == query.split()[0]
                     and chosen_inline_query.from_user.id
                     in [self._me]
-                    + self._client.dispatcher.security._owner  # skipcq: PYL-W0212
+                    + self._client.dispatcher.security._owner
                     + form["always_allow"]
                 ):
 
@@ -1179,7 +1107,11 @@ class InlineManager:
             logger.error("Invalid type for `force_me`")
             return False
 
-        if not isinstance(preload, (bool, int)) or isinstance(preload, bool) and preload:
+        if (
+            not isinstance(preload, (bool, int))
+            or isinstance(preload, bool)
+            and preload
+        ):
             logger.error("Invalid type for `preload`")
             return False
 
@@ -1301,6 +1233,7 @@ class InlineManager:
 
         self._galleries[gallery_uid]["chat"] = utils.get_chat_id(m)
         self._galleries[gallery_uid]["message_id"] = m.id
+
         if isinstance(message, Message) and message.out:
             await message.delete()
 

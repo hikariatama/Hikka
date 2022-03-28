@@ -39,6 +39,8 @@ from importlib.abc import SourceLoader
 from importlib.machinery import ModuleSpec
 import telethon
 from telethon.tl.types import Message
+import functools
+from typing import Any
 
 import requests
 
@@ -48,20 +50,21 @@ from ..compat import geek
 logger = logging.getLogger(__name__)
 
 VALID_URL = r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
+
 VALID_PIP_PACKAGES = re.compile(
-    r"^\s*# requires:(?: ?)((?:{url} )*(?:{url}))\s*$".format(url=VALID_URL),
+    r"^\s*# ?requires:(?: ?)((?:{url} )*(?:{url}))\s*$".format(url=VALID_URL),
     re.MULTILINE,
 )
+
 USER_INSTALL = "PIP_TARGET" not in os.environ and "VIRTUAL_ENV" not in os.environ
+
 GIT_REGEX = re.compile(
     r"^https?://github\.com((?:/[a-z0-9-]+){2})(?:/tree/([a-z0-9-]+)((?:/[a-z0-9-]+)*))?/?$",
     flags=re.IGNORECASE,
 )
 
 
-class StringLoader(
-    SourceLoader
-):  # pylint: disable=W0223 # False positive, implemented in SourceLoader
+class StringLoader(SourceLoader):  # pylint: disable=W0223
     """Load a python module/file from a string"""
 
     def __init__(self, data, origin):
@@ -157,8 +160,12 @@ class LoaderMod(loader.Module):
         "undoc_cmd": "👁‍🗨 No docs",
         "ihandler": "\n🎹 <i>Inline</i>: <code>{}</code> 👉🏻 ",
         "undoc_ihandler": "👁‍🗨 No docs",
-        "inline_init_failed": """🚫 <b>This module requires Hikka inline feature and initialization of InlineManager failed</b>
-<i>Please, remove one of your old bots from @BotFather and restart userbot to load this module</i>""",
+        "inline_init_failed": (
+            "🚫 <b>This module requires Hikka inline feature and "
+            "initialization of InlineManager failed</b>\n"
+            "<i>Please, remove one of your old bots from @BotFather and "
+            "restart userbot to load this module</i>"
+        ),
         "version_incompatible": "🚫 <b>This module requires Hikka {}+\nPlease, update with </b><code>.update</code>",
         "ffmpeg_required": "🚫 <b>This module requires FFMPEG, which is not installed</b>",
         "developer": "\n\n🧑‍💻 <b>Developer: </b><code>{}</code>",
@@ -298,14 +305,17 @@ class LoaderMod(loader.Module):
     async def load_module(
         self, doc, message, name=None, origin="<string>", did_requirements=False
     ):
-        if re.search(r"# ?scope: ?ffmpeg", doc) and os.system(
-            "ffmpeg -version"
-        ):  # skipcq: BAN-B605, BAN-B607
+        if any(
+            line.replace(" ", "") == "#scope:ffmpeg" for line in doc.splitlines()
+        ) and os.system("ffmpeg -version"):
             if isinstance(message, Message):
                 await utils.answer(message, self.strings("ffmpeg_required"))
             return
 
-        if re.search(r"# ?scope: ?inline", doc) and not self.inline.init_complete:
+        if (
+            any(line.replace(" ", "") == "#scope:inline" for line in doc.splitlines())
+            and not self.inline.init_complete
+        ):
             if isinstance(message, Message):
                 await utils.answer(message, self.strings("inline_init_failed"))
             return
@@ -415,6 +425,15 @@ class LoaderMod(loader.Module):
             return False
 
         instance.inline = self.inline
+        instance.get = functools.partial(
+            self._mod_get,
+            mod=instance.strings["name"],
+        )
+        instance.set = functools.partial(
+            self._mod_set,
+            mod=instance.strings["name"],
+        )
+
         if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
             version = (
                 "<b><i> (v"
@@ -458,7 +477,10 @@ class LoaderMod(loader.Module):
                     f"<i>\nℹ️ {utils.escape_html(inspect.getdoc(instance))}</i>\n"
                 )
 
-            if re.search(r"# ?scope: ?disable_onload_docs", doc):
+            if any(
+                line.replace(" ", "") == "#scope:disable_onload_docs"
+                for line in doc.splitlines()
+            ):
                 return await utils.answer(
                     message,
                     self.strings("loaded", message).format(
@@ -467,7 +489,10 @@ class LoaderMod(loader.Module):
                     + developer,
                 )
 
-            for _name, fun in sorted(instance.commands.items(), key=lambda x: x[0]):
+            for _name, fun in sorted(
+                instance.commands.items(),
+                key=lambda x: x[0],
+            ):
                 modhelp += self.strings("single_cmd", message).format(prefix, _name)
 
                 if fun.__doc__:
@@ -477,7 +502,10 @@ class LoaderMod(loader.Module):
 
             if self.inline.init_complete:
                 if hasattr(instance, "inline_handlers"):
-                    for _name, fun in sorted(instance.inline_handlers.items(), key=lambda x: x[0]):
+                    for _name, fun in sorted(
+                        instance.inline_handlers.items(),
+                        key=lambda x: x[0],
+                    ):
                         modhelp += self.strings("ihandler", message).format(
                             f"@{self.inline._bot_username} {_name}"
                         )
@@ -499,14 +527,18 @@ class LoaderMod(loader.Module):
                 await utils.answer(
                     message,
                     self.strings("loaded", message).format(
-                        modname.strip(), version, modhelp
+                        modname.strip(),
+                        version,
+                        modhelp,
                     )
                     + developer,
                 )
             except telethon.errors.rpcerrorlist.MediaCaptionTooLongError:
                 await message.reply(
                     self.strings("loaded", message).format(
-                        modname.strip(), version, modhelp
+                        modname.strip(),
+                        version,
+                        modhelp,
                     )
                     + developer
                 )
@@ -541,8 +573,15 @@ class LoaderMod(loader.Module):
         self._db.set(__name__, "unloaded_modules", list(it))
 
         await utils.answer(
-            message, self.strings("unloaded" if worked else "not_unloaded", message)
+            message,
+            self.strings("unloaded" if worked else "not_unloaded", message),
         )
+
+    def _mod_get(self, *args, mod: str = None) -> Any:
+        return self._db.get(mod, *args)
+
+    def _mod_set(self, *args, mod: str = None) -> bool:
+        return self._db.set(mod, *args)
 
     @loader.owner
     async def clearmodulescmd(self, message: Message) -> None:
@@ -569,25 +608,3 @@ class LoaderMod(loader.Module):
         self._db = db
         self._client = client
         await self._update_modules()
-
-
-def get_module(module):
-    name = module.name
-    sysmod = sys.modules.get(module.__module__)
-    origin = sysmod.__spec__.origin
-    loader_ = sysmod.__loader__
-    cname = type(loader_).__name__
-    r = [name, None, None]
-
-    if cname == "SourceFileLoader":
-        r[1] = "path"
-        r[2] = loader_.get_filename()
-    elif cname == "StringLoader":
-        if origin == "<string>":
-            r[1] = "text"
-            r[2] = loader_.data
-        else:
-            r[1] = "link"
-            r[2] = origin
-
-    return r
