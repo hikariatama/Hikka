@@ -409,7 +409,7 @@ class InlineManager:
         else:
             await self._register_manager(ignore_token_checks=True)
 
-    async def _dp_revoke_token(self, already_initialised=True) -> None:
+    async def _dp_revoke_token(self, already_initialised: bool = True) -> None:
         if already_initialised:
             await self._stop()
             logger.error("Got polling conflict. Attempting token revocation...")
@@ -422,7 +422,9 @@ class InlineManager:
             return await self._reassert_token()
 
     async def _register_manager(
-        self, after_break=False, ignore_token_checks=False
+        self,
+        after_break: bool = False,
+        ignore_token_checks: bool = False,
     ) -> None:
         # Get info about user to use it in this class
         me = await self._client.get_me()
@@ -682,13 +684,10 @@ class InlineManager:
             instance = InlineQuery(inline_query)
 
             for query_text, query_func in mod.inline_handlers.items():
-                if (
-                    inline_query.query.split()[0].lower()
-                    == query_text.lower()
-                    and self.check_inline_security(
-                        query_func,
-                        inline_query.from_user.id
-                    )
+                if inline_query.query.split()[
+                    0
+                ].lower() == query_text.lower() and self.check_inline_security(
+                    query_func, inline_query.from_user.id
                 ):
                     try:
                         await query_func(instance)
@@ -773,7 +772,9 @@ class InlineManager:
         )
 
     async def _callback_query_handler(
-        self, query: CallbackQuery, reply_markup: List[List[dict]] = None
+        self,
+        query: CallbackQuery,
+        reply_markup: List[List[dict]] = None,
     ) -> None:
         """Callback query handler (buttons' presses)"""
         if reply_markup is None:
@@ -861,8 +862,7 @@ class InlineManager:
             if (
                 self._custom_map[query.data]["force_me"]
                 and query.from_user.id != self._me
-                and query.from_user.id
-                not in self._client.dispatcher.security._owner
+                and query.from_user.id not in self._client.dispatcher.security._owner
                 and query.from_user.id
                 not in self._custom_map[query.data]["always_allow"]
             ):
@@ -873,7 +873,8 @@ class InlineManager:
             return
 
     async def _chosen_inline_handler(
-        self, chosen_inline_query: ChosenInlineResult
+        self,
+        chosen_inline_query: ChosenInlineResult,
     ) -> None:
         query = chosen_inline_query.query
 
@@ -1056,6 +1057,16 @@ class InlineManager:
         self._forms[form_uid]["message_id"] = m.id
         if isinstance(message, Message):
             await message.delete()
+
+        if not any(
+            any("callback" in button or "input" in button for button in row)
+            for row in reply_markup
+        ):
+            del self._forms[form_uid]
+            logger.debug(
+                f"Unloading form {form_uid}, because it "
+                "doesn't contain callbacks"
+            )
 
         return form_uid
 
@@ -1467,7 +1478,9 @@ class InlineManager:
                 # was deleted
 
     async def _callback_query_delete(
-        self, form: Any = None, form_uid: Any = None
+        self,
+        form: Any = None,
+        form_uid: Any = None,
     ) -> bool:
         """Params `self`, `form`, `form_uid` are for internal use only, do not try to pass them"""
         try:
