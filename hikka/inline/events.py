@@ -1,7 +1,7 @@
 from .types import InlineUnit, InlineCall
 from aiogram.types import (
     Message as AiogramMessage,
-    InlineQuery,
+    InlineQuery as AiogramInlineQuery,
     CallbackQuery,
     ChosenInlineResult,
     InlineQueryResultArticle,
@@ -11,6 +11,7 @@ import logging
 from typing import List
 import re
 from .. import utils
+from .types import InlineQuery
 import functools
 import inspect
 
@@ -41,7 +42,7 @@ class Events(InlineUnit):
             except BaseException:
                 logger.exception("Error on running aiogram watcher!")
 
-    async def _inline_handler(self, inline_query: InlineQuery) -> None:
+    async def _inline_handler(self, inline_query: AiogramInlineQuery) -> None:
         """Inline query handler (forms' calls)"""
         # Retrieve query from passed object
         query = inline_query.query
