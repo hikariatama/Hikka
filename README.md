@@ -1,3 +1,5 @@
+<a href="https://github.com/hikariatama/Hikka/blob/master/README_ru.md"><img src="https://img.icons8.com/external-justicon-flat-justicon/344/external-russia-countrys-flags-justicon-flat-justicon.png"> Русская версия страницы</a>
+<hr>
 <h2><img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="54" align="middle"> Installation</h2>
 <img src="https://github.com/hikariatama/assets/raw/master/install.gif">
 

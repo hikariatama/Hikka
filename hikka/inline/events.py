@@ -175,7 +175,11 @@ class Events(InlineUnit):
                 await query.answer("You are not allowed to press this button!")
                 return
 
-            await self._custom_map[query.data]["handler"](query, *self._custom_map[query.data].get("args", []), **self._custom_map[query.data].get("kwargs", {}))
+            await self._custom_map[query.data]["handler"](
+                query,
+                *self._custom_map[query.data].get("args", []),
+                **self._custom_map[query.data].get("kwargs", {}),
+            )
             return
 
     async def _chosen_inline_handler(
