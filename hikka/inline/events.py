@@ -175,7 +175,7 @@ class Events(InlineUnit):
                 await query.answer("You are not allowed to press this button!")
                 return
 
-            await self._custom_map[query.data]["handler"](query)
+            await self._custom_map[query.data]["handler"](query, *self._custom_map[query.data].get("args", []), **self._custom_map[query.data].get("kwargs", {}))
             return
 
     async def _chosen_inline_handler(
@@ -248,15 +248,18 @@ class Events(InlineUnit):
                     continue
 
                 # Retrieve docs from func
-                doc = utils.escape_html(
-                    "\n".join(
-                        [
-                            line.strip()
-                            for line in inspect.getdoc(fun).splitlines()
-                            if not line.strip().startswith("@")
-                        ]
+                try:
+                    doc = utils.escape_html(
+                        "\n".join(
+                            [
+                                line.strip()
+                                for line in inspect.getdoc(fun).splitlines()
+                                if not line.strip().startswith("@")
+                            ]
+                        )
                     )
-                )
+                except AttributeError:
+                    doc = "🦥 No docs"
 
                 _help += f"🎹 <code>@{self.bot_username} {name}</code> - {doc}\n"
 

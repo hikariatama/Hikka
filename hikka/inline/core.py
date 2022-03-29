@@ -105,7 +105,15 @@ class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment):
                 if form["ttl"] < time.time():
                     del self._forms[form_uid]
 
-            await asyncio.sleep(10)
+            for gallery_uid, gallery in self._galleries.copy().items():
+                if gallery["ttl"] < time.time():
+                    del self._galleries[gallery_uid]
+
+            for map_uid, config in self._custom_map.copy().items():
+                if config["ttl"] < time.time():
+                    del self._custom_map[map_uid]
+
+            await asyncio.sleep(5)
 
     async def _register_manager(
         self,
