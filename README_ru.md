@@ -1,4 +1,4 @@
-<a href="https://github.com/hikariatama/Hikka/blob/master/README.md"><img src="https://img.icons8.com/external-justicon-flat-justicon/344/external-uk-flag-countrys-flags-justicon-flat-justicon.png"> English page version</a>
+<a href="https://github.com/hikariatama/Hikka/blob/master/README.md"><img src="https://img.icons8.com/external-justicon-flat-justicon/344/external-uk-flag-countrys-flags-justicon-flat-justicon.png" width=40> English page version</a>
 <hr>
 <h2><img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="54" align="middle"> Установка</h2>
 <img src="https://github.com/hikariatama/assets/raw/master/install.gif">
