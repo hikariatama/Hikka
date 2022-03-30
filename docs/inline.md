@@ -12,19 +12,20 @@
 `# scope: hikka_min 1.0.0`
 
 ## Создание формы
-Для создания кнопок в сообщении, используй встроенный **менеджер форм**:
+Для создания кнопок в сообщении, используй встроенный [менеджер форм](https://github.com/hikariatama/Hikka/blob/master/hikka/inline/form.py#L40):
 
 ### Референс:
 ```python
 async def form(
-        self,
-        text: str,
-        message: Union[Message, int],
-        reply_markup: List[List[dict]] = None,
-        force_me: bool = True,
-        always_allow: List[int] = None,
-        ttl: Union[int, bool] = False,
-    ) -> Union[str, bool]:
+    self,
+    text: str,
+    message: Union[Message, int],
+    reply_markup: List[List[dict]] = None,
+    force_me: bool = True,
+    always_allow: Union[List[list], None] = None,
+    ttl: Union[int, bool] = False,
+    on_unload: Union[FunctionType, None] = None,
+) -> Union[str, bool]:
 ```
 ### Пример:
 ```python
@@ -95,8 +96,26 @@ await self.inline.form(
 > ⚠️ **При возникновении ошибки при создании формы, exception не поднимается!**
 
 ## Галерея
-В Hikka доступны inline-галереи. Вызвать ее очень просто:
+В Hikka доступны [inline-галереи](https://github.com/hikariatama/Hikka/blob/master/hikka/inline/gallery.py#L42). Вызвать ее очень просто:
 
+### Референс:
+```python
+async def gallery(
+    self,
+    message: Union[Message, int],
+    next_handler: Union[FunctionType, List[str]],
+    caption: Union[str, FunctionType] = "",
+    *,
+    force_me: bool = True,
+    always_allow: Union[list, None] = None,
+    ttl: Union[int, bool] = False,
+    on_unload: Union[FunctionType, None] = None,
+    preload: Union[bool, int] = False,
+    gif: bool = False,
+    _reattempt: bool = False,
+) -> Union[bool, str]:
+```
+### Пример
 ```python
 def generate_caption() -> str:
     return random.choice(["Да", "Нет"])
@@ -105,14 +124,52 @@ async def photo() -> str:
     return (await utils.run_sync(requests.get, "https://api.catboys.com/img")).json()["url"]
 
 await self.inline.gallery(
-    caption=generate_caption,
     message=message,
     next_handler=photo,
+    caption=generate_caption,
 )
 ```
 Здесь `generate_caption` - функция, возвращающая описание фото
 `photo` - Асинхронная функция, возвращая следующую картинку (при нажатии на кнопку Next)
 > Вместо функции `generate_caption` можно передать обычную строку или лямбда-функцию
+## Инлайн-галерея
+Если ты хочешь, чтобы пользователь мог вызвать галерею через инлайн-запрос к боту (@hikka_xxxxxx_bot), используй (встроенные галереи)[https://github.com/hikariatama/Hikka/blob/master/hikka/inline/gallery.py#L253]
+
+### Референс:
+```python
+async def query_gallery(
+    self,
+    query: InlineQuery,
+    items: List[dict],
+    *,
+    force_me: bool = True,
+    always_allow: Union[list, None] = None,
+) -> None:
+```
+### Пример
+```python
+async def catboy_inline_handler(self, query: InlineQuery) -> None:
+    """
+    Send Catboys
+    """
+    await self.inline.query_gallery(
+        query,
+        [
+            {
+                "title": "👩‍🎤 Catboy",
+                "description": "Send catboy photo",
+                "next_handler": photo,
+                "thumb_handler": photo,  # Optional
+                "caption": lambda: f"<i>Enjoy! {utils.escape_html(utils.ascii_face())}</i>",  # Optional
+                # Because of ^ this lambda, face will be generated every time the photo is switched
+
+                # "caption": f"<i>Enjoy! {utils.escape_html(utils.ascii_face())}</i>",
+                # If you make it without lambda ^, it will be generated once
+            }
+        ],
+    )
+
+```
 
 ## Обработка нажатий (вариант 1)
 Есть несколько вариантов обработки нажатий. Если ты хочешь, чтобы кнопка жила **бесконечное** количество времени, ты можешь использовать опцию `data`.
@@ -201,7 +258,7 @@ async def <name>_inline_handler(self, query: InlineQuery) -> None:
 await query.answer(
     [
         InlineQueryResultArticle(
-            id=rand(20),
+            id=utils.rand(20),
             title="Show available inline commands",
             description=f"You have {len(_help.splitlines())} available command(-s)",
             input_message_content=InputTextMessageContent(
@@ -219,8 +276,9 @@ await query.answer(
 ```
 В каждом из таких ответов необходимо указывать идентификатор. Чтобы не усложнять жизнь, можно импортировать генератор из встроенного модуля:
 ```python
-from ..inline import rand
+from .. import utils
 ```
 Затем можно указывать rand(20) в значении атрибута id
-
+### Полезные сокращения
+`await query.e404()` - Уведомляет пользователя о том, что требуемый результат не найден
 

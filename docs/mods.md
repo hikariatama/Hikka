@@ -109,41 +109,49 @@ run_sync(func: FunctionType, *args, **kwargs) -> coroutine
 
 Репозиционирование объектов и их смещений
 ```python
-relocate_entities(entities: ListLike, offset: int, text: str = None) -> list
+def relocate_entities(
+    entities: list,
+    offset: int,
+    text: Union[str, None] = None,
+) -> list:
 ```
 ---
 
-Answer to a message (edit if possible, else send new message)
+Ответить на сообщение (редактировать, если возможно, иначе отправить новое)
 ```python
-answer(message: Message, response: str, *args, **kwargs) -> Many
+async def answer(message: Message, response: str, **kwargs) -> list:
 ```
 ---
 
-Get possible target id
+Получить ID вероятной цели
 ```python
-get_target(message: Message, arg_no: int = 0) -> int or None
+async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
 ```
 ---
 
-Merge two dictionaries
+Объединить два словаря
 ```python
-merge(a: dict, b: dict) -> dict
+def merge(a: dict, b: dict) -> dict:
 ```
 ---
 
-Create new channel (if needed) and return its entity
+Создать новый канал (если это требуется), и вернуть его entity
 ```python
-asset_channel(a: dict, b: dict) -> dict
+async def asset_channel(
+    client: "TelegramClient",  # noqa: F821
+    title: str,
+    description: str,
+) -> Tuple[Channel, bool]
 ```
 ---
 
-Get telegram permalink to entity
+Получить пермалинк на entity
 ```python
 get_link(a: dict, b: dict) -> dict
 ```
 ---
 
-Split provided `_list` into chunks of `n`
+Разделить `_list` на чанки по `n`
 ```python
 chunks(a: dict, b: dict) -> dict
 ```
