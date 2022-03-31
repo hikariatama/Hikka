@@ -131,10 +131,7 @@ class Form(InlineUnit):
 
         form_uid = utils.rand(30)
 
-        if not manual_security:
-            perms_map = self._find_caller_sec_map()
-        else:
-            perms_map = None
+        perms_map = self._find_caller_sec_map() if not manual_security else None
 
         self._forms[form_uid] = {
             "text": text,

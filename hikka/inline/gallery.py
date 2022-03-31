@@ -136,7 +136,15 @@ class Gallery(InlineUnit):
                 return False
 
         gallery_uid = utils.rand(30)
-        btn_call_data = [utils.rand(16), utils.rand(16), utils.rand(16)]
+        btn_call_data = {
+            key: utils.rand(16)
+            for key in {
+                "back",
+                "next",
+                "close",
+                "show",
+            }
+        }
 
         try:
             photo_url = await self._call_photo(next_handler)
@@ -146,10 +154,7 @@ class Gallery(InlineUnit):
             logger.exception("Error while parsing first photo in gallery")
             return False
 
-        if not manual_security:
-            perms_map = self._find_caller_sec_map()
-        else:
-            perms_map = None
+        perms_map = self._find_caller_sec_map() if not manual_security else None
 
         self._galleries[gallery_uid] = {
             "caption": caption,
@@ -191,7 +196,7 @@ class Gallery(InlineUnit):
             **({"message": message} if isinstance(message, Message) else {}),
         }
 
-        self._custom_map[btn_call_data[0]] = {
+        self._custom_map[btn_call_data["back"]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
                     self._gallery_back,
@@ -199,10 +204,10 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            **default_map
+            **default_map,
         }
 
-        self._custom_map[btn_call_data[1]] = {
+        self._custom_map[btn_call_data["close"]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
                     self._gallery_close,
@@ -210,10 +215,10 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            **default_map
+            **default_map,
         }
 
-        self._custom_map[btn_call_data[2]] = {
+        self._custom_map[btn_call_data["next"]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
                     self._gallery_next,
@@ -222,7 +227,18 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            **default_map
+            **default_map,
+        }
+
+        self._custom_map[btn_call_data["show"]] = {
+            "handler": asyncio.coroutine(
+                functools.partial(
+                    self._gallery_slideshow,
+                    btn_call_data=btn_call_data,
+                    gallery_uid=gallery_uid,
+                )
+            ),
+            **default_map,
         }
 
         if isinstance(message, Message):
@@ -426,6 +442,48 @@ class Gallery(InlineUnit):
             # Start load again
             asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
 
+    async def _gallery_slideshow(
+        self,
+        call: CallbackQuery,
+        btn_call_data: List[str] = None,
+        gallery_uid: str = None,
+        _recall: bool = False,
+    ):
+        if not _recall:
+            if not self._galleries[gallery_uid].get("slideshow", False):
+                self._galleries[gallery_uid]["slideshow"] = True
+                await self.bot.edit_message_reply_markup(
+                    inline_message_id=call.inline_message_id,
+                    reply_markup=self._gallery_markup(gallery_uid),
+                )
+                await call.answer("✅ Slideshow on")
+            else:
+                del self._galleries[gallery_uid]["slideshow"]
+                await self.bot.edit_message_reply_markup(
+                    inline_message_id=call.inline_message_id,
+                    reply_markup=self._gallery_markup(gallery_uid),
+                )
+                await call.answer("🚫 Slideshow off")
+                return
+
+        await self._custom_map[btn_call_data["next"]]["handler"](
+            call,
+            *self._custom_map[btn_call_data["next"]].get("args", []),
+            **self._custom_map[btn_call_data["next"]].get("kwargs", {}),
+        )
+
+        await asyncio.sleep(7)
+
+        if self._galleries[gallery_uid].get("slideshow", False):
+            asyncio.ensure_future(
+                self._gallery_slideshow(
+                    call,
+                    btn_call_data,
+                    gallery_uid,
+                    True,
+                )
+            )
+
     async def _gallery_back(
         self,
         call: CallbackQuery,
@@ -449,7 +507,7 @@ class Gallery(InlineUnit):
             await self.bot.edit_message_media(
                 inline_message_id=call.inline_message_id,
                 media=self._get_current_media(gallery_uid),
-                reply_markup=self._gallery_markup(btn_call_data),
+                reply_markup=self._gallery_markup(gallery_uid),
             )
         except RetryAfter as e:
             await call.answer(
@@ -536,7 +594,7 @@ class Gallery(InlineUnit):
             await self.bot.edit_message_media(
                 inline_message_id=call.inline_message_id,
                 media=self._get_current_media(gallery_uid),
-                reply_markup=self._gallery_markup(btn_call_data),
+                reply_markup=self._gallery_markup(gallery_uid),
             )
         except (InvalidHTTPUrlContent, BadRequest):
             logger.debug("Error fetching photo content, attempting load next one")
@@ -544,15 +602,17 @@ class Gallery(InlineUnit):
                 self._galleries[gallery_uid]["current_index"]
             ]
             self._galleries[gallery_uid]["current_index"] -= 1
-            await self._gallery_next(call, btn_call_data, func, gallery_uid)
+            return await self._gallery_next(call, btn_call_data, func, gallery_uid)
         except RetryAfter as e:
             await call.answer(
                 f"Got FloodWait. Wait for {e.timeout} seconds",
                 show_alert=True,
             )
+            return
         except Exception:
             logger.exception("Exception while trying to edit media")
             await call.answer("Error occurred", show_alert=True)
+            return
 
     def _get_next_photo(self, gallery_uid: str) -> str:
         """Returns next photo"""
@@ -577,13 +637,31 @@ class Gallery(InlineUnit):
             else self._galleries[gallery_uid]["caption"]()
         )
 
-    def _gallery_markup(self, btn_call_data: List[str]) -> InlineKeyboardMarkup:
+    def _gallery_markup(self, gallery_uid: str) -> InlineKeyboardMarkup:
         """Converts `btn_call_data` into a aiogram markup"""
         markup = InlineKeyboardMarkup()
         markup.add(
-            InlineKeyboardButton("⬅️", callback_data=btn_call_data[0]),
-            InlineKeyboardButton("❌", callback_data=btn_call_data[1]),
-            InlineKeyboardButton("➡️", callback_data=btn_call_data[2]),
+            InlineKeyboardButton(
+                "⏪",
+                callback_data=self._galleries[gallery_uid]["btn_call_data"]["back"],
+            ),
+            InlineKeyboardButton(
+                "▶️"
+                if not self._galleries[gallery_uid].get("slideshow", False)
+                else "⏸",
+                callback_data=self._galleries[gallery_uid]["btn_call_data"]["show"],
+            ),
+            InlineKeyboardButton(
+                "⏩",
+                callback_data=self._galleries[gallery_uid]["btn_call_data"]["next"],
+            ),
+        )
+
+        markup.add(
+            InlineKeyboardButton(
+                "❌ Close",
+                callback_data=self._galleries[gallery_uid]["btn_call_data"]["close"],
+            ),
         )
 
         return markup
@@ -608,7 +686,7 @@ class Gallery(InlineUnit):
                                 caption=self._get_caption(gallery["uid"]),
                                 description="Processing inline gallery",
                                 reply_markup=self._gallery_markup(
-                                    gallery["btn_call_data"],
+                                    gallery["uid"],
                                 ),
                                 parse_mode="HTML",
                             )
@@ -627,7 +705,7 @@ class Gallery(InlineUnit):
                             caption=self._get_caption(gallery["uid"]),
                             parse_mode="HTML",
                             reply_markup=self._gallery_markup(
-                                gallery["btn_call_data"],
+                                gallery["uid"],
                             ),
                         )
                     ]
