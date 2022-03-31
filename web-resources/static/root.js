@@ -95,7 +95,7 @@ function finish_login() {
             $(".blur").fadeOut(1500);
             setTimeout(() => {
                 window.location.href = "/";
-            }, response == "0" ? 10000 : 1500);
+            }, 8000);
         })
         .catch(() => {
             error_state();
