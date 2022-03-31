@@ -88,8 +88,7 @@ class Events(InlineUnit):
         """Checks if user is able to execute command with provided security mask"""
         return await self._client.dispatcher.security._check(
             message=message,
-            func=None,
-            mask=mask,
+            func=mask,
             user=user,
         )
 
@@ -138,8 +137,8 @@ class Events(InlineUnit):
                         await self._check_inline_sec_by_mask(
                             mask=form.get(
                                 "perms_map",
-                                self._client.dispatcher.security._default,
-                            ),
+                                lambda: self._client.dispatcher.security._default,
+                            )(),
                             user=query.from_user.id,
                             message=form["message"],
                         )
@@ -196,8 +195,22 @@ class Events(InlineUnit):
         if query.data in self._custom_map:
             if (
                 self._custom_map[query.data].get("force_me", False)
-                and query.from_user.id != self._me
-                and query.from_user.id not in self._client.dispatcher.security._owner
+                and query.from_user.id == self._me
+            ) or (
+                await self._check_inline_sec_by_mask(
+                    mask=self._custom_map[query.data].get(
+                        "perms_map",
+                        lambda: self._client.dispatcher.security._default,
+                    )(),
+                    user=query.from_user.id,
+                    message=self._custom_map[query.data]["message"],
+                )
+                if "message" in self._custom_map[query.data]
+                else False
+            ):
+                pass
+            elif (
+                query.from_user.id not in self._client.dispatcher.security._owner
                 and query.from_user.id
                 not in self._custom_map[query.data].get("always_allow", [])
             ):

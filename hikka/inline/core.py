@@ -25,7 +25,7 @@ from .bot_interaction import BotInteractions
 from .events import Events
 from .token_obtainment import TokenObtainment
 
-from typing import Union
+from typing import Union, Callable
 import inspect
 from .. import security
 
@@ -119,11 +119,11 @@ class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment):
 
             await asyncio.sleep(5)
 
-    def _find_caller_sec_map(self) -> Union[int, None]:
+    def _find_caller_sec_map(self) -> Union[Callable, None]:
         try:
             return next(
                 next(
-                    self._db.get(security.__name__, "masks", {}).get(
+                    lambda: self._db.get(security.__name__, "masks", {}).get(
                         f"{getattr(cls_, stack_entry.function).__module__}.{getattr(cls_, stack_entry.function).__name__}",
                         getattr(
                             getattr(cls_, stack_entry.function),

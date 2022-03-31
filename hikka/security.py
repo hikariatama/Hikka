@@ -186,21 +186,13 @@ class SecurityManager:
     async def _check(
         self,
         message: Message,
-        func: FunctionType = None,
-        mask: int = None,
+        func: FunctionType,
         user: int = None,
     ) -> bool:
         """Checks if message sender is permitted to execute certain function"""
-        if not func and not mask:
-            return False
-
         self._reload_rights()
 
-        config = (
-            self.get_flags(func)
-            if func
-            else (mask & self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS))
-        )
+        config = self.get_flags(func)
 
         if not config:
             return False

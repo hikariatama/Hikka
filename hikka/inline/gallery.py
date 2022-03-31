@@ -45,7 +45,7 @@ class Gallery(InlineUnit):
         next_handler: Union[FunctionType, List[str]],
         caption: Union[str, FunctionType] = "",
         *,
-        force_me: bool = True,
+        force_me: bool = False,
         always_allow: Union[list, None] = None,
         ttl: Union[int, bool] = False,
         on_unload: Union[FunctionType, None] = None,
@@ -168,6 +168,27 @@ class Gallery(InlineUnit):
             **({"gif": gif} if gif else {}),
             **({"always_allow": always_allow} if always_allow else {}),
             **({"perms_map": perms_map} if perms_map else {}),
+            **({"message": message} if isinstance(message, Message) else {}),
+        }
+
+        default_map = {
+            **(
+                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
+                if "always_allow" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"force_me": self._galleries[gallery_uid]["force_me"]}
+                if "force_me" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"ttl": self._galleries[gallery_uid]["ttl"]}
+                if "ttl" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **({"perms_map": perms_map} if perms_map else {}),
+            **({"message": message} if isinstance(message, Message) else {}),
         }
 
         self._custom_map[btn_call_data[0]] = {
@@ -178,22 +199,7 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            **(
-                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
-                if "always_allow" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
-                {"force_me": self._galleries[gallery_uid]["force_me"]}
-                if "force_me" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
-                {"ttl": self._galleries[gallery_uid]["ttl"]}
-                if "ttl" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **({"perms_map": perms_map} if perms_map else {}),
+            **default_map
         }
 
         self._custom_map[btn_call_data[1]] = {
@@ -204,22 +210,7 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            **(
-                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
-                if "always_allow" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
-                {"force_me": self._galleries[gallery_uid]["force_me"]}
-                if "force_me" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
-                {"ttl": self._galleries[gallery_uid]["ttl"]}
-                if "ttl" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **({"perms_map": perms_map} if perms_map else {}),
+            **default_map
         }
 
         self._custom_map[btn_call_data[2]] = {
@@ -231,22 +222,7 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            **(
-                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
-                if "always_allow" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
-                {"force_me": self._galleries[gallery_uid]["force_me"]}
-                if "force_me" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
-                {"ttl": self._galleries[gallery_uid]["ttl"]}
-                if "ttl" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **({"perms_map": perms_map} if perms_map else {}),
+            **default_map
         }
 
         if isinstance(message, Message):
