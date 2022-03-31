@@ -349,12 +349,12 @@ class Hikka:
                 importlib.invalidate_caches()
                 self._get_api_token()
 
-    def fetch_clients_from_web(self) -> None:
+    async def fetch_clients_from_web(self) -> None:
         for client in self.web.clients:
             session = SQLiteSession(
                 os.path.join(
                     self.arguments.data_root or os.path.dirname(utils.get_base_dir()),
-                    f"hikka-+{'X' * (len(client.phone) - 5)}{client.phone[-4:]}",
+                    f"hikka-+{'x' * (len(client.phone) - 5)}{client.phone[-4:]}-{(await client.get_me()).id}",
                 )
             )
 
@@ -455,14 +455,6 @@ class Hikka:
     def _init_loop(self) -> None:
         loops = [self.amain_wrapper(client) for client in self.clients]
         self.loop.run_until_complete(asyncio.gather(*loops))
-
-    async def reconnect_clients(self) -> None:
-        for client in self.clients:
-            await client.disconnect()
-
-        self.fetch_clients_from_web()
-        self._init_clients()
-        self._init_loop()
 
     async def amain_wrapper(self, client) -> None:
         """Wrapper around amain"""

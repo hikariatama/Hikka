@@ -194,7 +194,7 @@ class Web:
 
         first_session = not bool(main.hikka.clients)
 
-        main.hikka.fetch_clients_from_web()
+        await main.hikka.fetch_clients_from_web()
 
         self.clients_set.set()
 
