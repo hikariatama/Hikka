@@ -81,6 +81,7 @@ class HikkaInfoMod(loader.Module):
                             f'<b>🤴 Owner: <a href="tg://user?id={self._me.id}">{utils.escape_html(get_display_name(self._me))}</a></b>\n\n'
                             f"<b>🔮 Version: </b><i>{'.'.join(list(map(str, list(main.__version__))))}</i>\n"
                             f"<b>🧱 Build: </b><a href=\"https://github.com/hikariatama/Hikka/commit/{ver}\">{ver[:8] or 'Unknown'}</a>\n"
+                            f"<b>📼 Command prefix: </b>«<code>{utils.escape_html((self._db.get(main.__name__, 'command_prefix', False) or '.')[0] )}</code>»\n"
                             f"<b>{upd}</b>\n"
                             f"<b>{utils.get_named_platform()}</b>\n"
                         ),

@@ -339,6 +339,46 @@ class HikkaSettingsMod(loader.Module):
                 ),
             ],
             [
+                (
+                    {
+                        "text": "✅ Suggest FS for modules",
+                        "callback": self.inline__setting,
+                        "args": (
+                            "disable_modules_fs",
+                            True,
+                        ),
+                    }
+                    if not self._db.get(main.__name__, "disable_modules_fs", False)
+                    else {
+                        "text": "🚫 Suggest FS for modules",
+                        "callback": self.inline__setting,
+                        "args": (
+                            "disable_modules_fs",
+                            False,
+                        ),
+                    }
+                ),
+                (
+                    {
+                        "text": "✅ Always use FS for modules",
+                        "callback": self.inline__setting,
+                        "args": (
+                            "permanent_modules_fs",
+                            False,
+                        ),
+                    }
+                    if self._db.get(main.__name__, "permanent_modules_fs", False)
+                    else {
+                        "text": "🚫 Always use FS for modules",
+                        "callback": self.inline__setting,
+                        "args": (
+                            "permanent_modules_fs",
+                            True,
+                        ),
+                    }
+                ),
+            ],
+            [
                 {
                     "text": "🔄 Restart",
                     "callback": self.inline__restart,

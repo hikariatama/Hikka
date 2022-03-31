@@ -34,22 +34,12 @@ import inspect
 import logging
 import os
 import sys
-import json
 
 from . import utils, security
 from .translations.dynamic import Strings
 from .inline.core import InlineManager
 from .types import Module, LoadError, ModuleConfig  # noqa: F401
-
-
-def use_fs_for_modules():
-    try:
-        with open("config.json", "r") as f:
-            config = json.loads(f.read())
-    except Exception:
-        return False
-
-    return config.get("use_fs_for_modules", False)
+from importlib.machinery import ModuleSpec
 
 
 def test(*args, **kwargs):
@@ -179,33 +169,43 @@ class Modules:
                         and x[-3:] == ".py"
                         and x[0] != "_"
                         and ("OKTETO" in os.environ or x != "okteto.py")
-                        and (not db.get("hikka", "disable_quickstart", False) or x != "quickstart.py")
+                        and (
+                            not db.get("hikka", "disable_quickstart", False)
+                            or x != "quickstart.py"
+                        )
                     ),
                     os.listdir(os.path.join(utils.get_base_dir(), MODULES_NAME)),
                 )
             ]
 
-            if use_fs_for_modules():
-                mods += [
-                    os.path.join(LOADED_MODULES_DIR, mod)
-                    for mod in filter(
-                        lambda x: (len(x) > 3 and x[-3:] == ".py" and x[0] != "_"),
-                        os.listdir(LOADED_MODULES_DIR),
-                    )
-                ]
+            mods += [
+                os.path.join(LOADED_MODULES_DIR, mod)
+                for mod in filter(
+                    lambda x: (len(x) > 3 and x[-3:] == ".py" and x[0] != "_"),
+                    os.listdir(LOADED_MODULES_DIR),
+                )
+            ]
 
         logging.debug(mods)
 
         for mod in mods:
             try:
-                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
+                module_name = (
+                    f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
+                )
                 logging.debug(module_name)
                 spec = importlib.util.spec_from_file_location(module_name, mod)
                 self.register_module(spec, module_name)
             except BaseException as e:
                 logging.exception(f"Failed to load module %s due to {e}:", mod)
 
-    def register_module(self, spec, module_name, origin="<core>"):
+    def register_module(
+        self,
+        spec: ModuleSpec,
+        module_name: str,
+        origin: str = "<core>",
+        save_fs: bool = False,
+    ) -> Module:
         """Register single module from importlib spec"""
         from .compat import uniborg
 
@@ -232,7 +232,7 @@ class Modules:
 
         cls_name = ret.__class__.__name__
 
-        if use_fs_for_modules():
+        if save_fs:
             path = os.path.join(LOADED_MODULES_DIR, f"{cls_name}.py")
 
             if not os.path.isfile(path) and origin == "<string>":
@@ -243,7 +243,7 @@ class Modules:
 
         return ret
 
-    def register_commands(self, instance):
+    def register_commands(self, instance: Module) -> None:
         """Register commands from instance"""
         for command in instance.commands.copy():
             # Verify that command does not already exist, or,
@@ -264,7 +264,7 @@ class Modules:
 
             self.commands.update({command.lower(): instance.commands[command]})
 
-    def register_watcher(self, instance):
+    def register_watcher(self, instance: Module) -> None:
         """Register watcher from instance"""
         try:
             if instance.watcher:
@@ -280,7 +280,7 @@ class Modules:
         except AttributeError:
             pass
 
-    def complete_registration(self, instance):
+    def complete_registration(self, instance: Module) -> None:
         """Complete registration of instance"""
         instance.allmodules = self
         instance.hikka = True
@@ -299,7 +299,7 @@ class Modules:
 
         self.modules += [instance]
 
-    def dispatch(self, command):
+    def dispatch(self, command: str) -> tuple:
         """Dispatch command to appropriate module"""
         change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
         try:
@@ -319,13 +319,13 @@ class Modules:
                     except KeyError:
                         return command, None
 
-    def send_config(self, db, babel, skip_hook=False):
+    def send_config(self, db, babel, skip_hook: bool = False) -> None:
         """Configure modules"""
         for mod in self.modules:
             self.send_config_one(mod, db, babel, skip_hook)
 
     @staticmethod
-    def send_config_one(mod, db, babel=None, skip_hook=False):
+    def send_config_one(mod, db, babel=None, skip_hook: bool = False) -> None:
         """Send config to single instance"""
         if hasattr(mod, "config"):
             modcfg = db.get(mod.__module__, "__config__", {})
@@ -413,7 +413,7 @@ class Modules:
         if not self._initial_registration and self.added_modules:
             await self.added_modules(self)
 
-    def get_classname(self, name):
+    def get_classname(self, name: str) -> str:
         return next(
             (
                 module.__class__.__module__
@@ -423,7 +423,7 @@ class Modules:
             name,
         )
 
-    def unload_module(self, classname):
+    def unload_module(self, classname: str) -> bool:
         """Remove module and all stuff from it"""
         worked = []
         to_remove = []
@@ -433,12 +433,11 @@ class Modules:
                 worked += [module.__module__]
 
                 name = module.__class__.__name__
-                if use_fs_for_modules():
-                    path = os.path.join(LOADED_MODULES_DIR, f"{name}.py")
+                path = os.path.join(LOADED_MODULES_DIR, f"{name}.py")
 
-                    if os.path.isfile(path):
-                        os.remove(path)
-                        logging.debug(f"Removed {name} file")
+                if os.path.isfile(path):
+                    os.remove(path)
+                    logging.debug(f"Removed {name} file")
 
                 logging.debug("Removing module for unload %r", module)
                 self.modules.remove(module)

@@ -105,9 +105,6 @@ def save_config_key(key, value):
     return True
 
 
-save_config_key("use_fs_for_modules", get_config_key("use_fs_for_modules"))
-
-
 def gen_port():
     if "OKTETO" in os.environ:
         return 8080
@@ -327,19 +324,16 @@ class Hikka:
 
     def _init_web(self) -> None:
         """Initialize web"""
-        if web_available:
-            self.web = (
-                core.Web(
-                    data_root=self.arguments.data_root,
-                    api_token=self.api_token,
-                    proxy=self.proxy,
-                    connection=self.conn,
-                )
-                if getattr(self.arguments, "web", True)
-                else None
-            )
-        else:
+        if web_available and not getattr(self.arguments, "disable_web", False):
             self.web = None
+            return
+
+        self.web = core.Web(
+            data_root=self.arguments.data_root,
+            api_token=self.api_token,
+            proxy=self.proxy,
+            connection=self.conn,
+        )
 
     def _get_token(self) -> None:
         while self.api_token is None:
@@ -430,10 +424,6 @@ class Hikka:
                 client.start(
                     phone=raise_auth
                     if self.web
-                    and (
-                        not hasattr(self.arguments, "web")
-                        or self.arguments.web is not False
-                    )
                     else lambda: input("Phone: ")
                 )
                 client.phone = phone

@@ -18,15 +18,20 @@ def compat(code: str) -> str:
                 r"^( *)from \.\.inline import (.+)$",
                 r"\1from ..inline.types import \2",
                 re.sub(
-                    r"^( *)from \.\.inline import rand, ?(.+)$",
-                    r"\1from ..inline.types import \2\n\1from ..utils import rand",
+                    r"^( *)from \.\.inline import rand[^,]*$",
+                    "\1from ..utils import rand",
                     re.sub(
-                        r"^( *)from \.\.inline import (.+), ?rand[^,]+$",
+                        r"^( *)from \.\.inline import rand, ?(.+)$",
                         r"\1from ..inline.types import \2\n\1from ..utils import rand",
                         re.sub(
-                            r"^( *)from \.\.inline import (.+), ?rand, ?(.+)$",
-                            r"\1from ..inline.types import \2, \3\n\1from ..utils import rand",
-                            line.replace("GeekInlineQuery", "InlineQuery"),
+                            r"^( *)from \.\.inline import (.+), ?rand[^,]*$",
+                            r"\1from ..inline.types import \2\n\1from ..utils import rand",
+                            re.sub(
+                                r"^( *)from \.\.inline import (.+), ?rand, ?(.+)$",
+                                r"\1from ..inline.types import \2, \3\n\1from ..utils import rand",
+                                line.replace("GeekInlineQuery", "InlineQuery"),
+                                flags=re.M,
+                            ),
                             flags=re.M,
                         ),
                         flags=re.M,

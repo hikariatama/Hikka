@@ -48,6 +48,10 @@ from telethon.tl.types import (
     Chat,
 )
 
+from aiogram.types import CallbackQuery
+
+from .inline.types import InlineCall
+
 import random
 
 from typing import Tuple, Union, List, Any
@@ -228,8 +232,11 @@ def relocate_entities(
     return entities
 
 
-async def answer(message: Message, response: str, **kwargs) -> list:
+async def answer(message: Union[Message, CallbackQuery], response: str, **kwargs) -> list:
     """Use this to give the response to a command"""
+    if isinstance(message, (CallbackQuery, InlineCall)):
+        return await message.edit(response)
+    
     if isinstance(message, list):
         delete_job = asyncio.ensure_future(
             message[0].client.delete_messages(message[0].input_chat, message[1:])

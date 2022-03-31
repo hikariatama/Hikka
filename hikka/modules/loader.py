@@ -26,6 +26,8 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+# scope: inline
+
 import asyncio
 import importlib
 import inspect
@@ -40,7 +42,8 @@ from importlib.machinery import ModuleSpec
 import telethon
 from telethon.tl.types import Message
 import functools
-from typing import Any
+from typing import Any, Union
+from aiogram.types import CallbackQuery
 
 import requests
 
@@ -169,6 +172,12 @@ class LoaderMod(loader.Module):
         "version_incompatible": "🚫 <b>This module requires Hikka {}+\nPlease, update with </b><code>.update</code>",
         "ffmpeg_required": "🚫 <b>This module requires FFMPEG, which is not installed</b>",
         "developer": "\n\n🧑‍💻 <b>Developer: </b><code>{}</code>",
+        "module_fs": "💿 <b>Would you like to save this module to filesystem, so it won't get unloaded after restart?</b>",
+        "save": "💿 Save",
+        "no_save": "🚫 Don't save",
+        "save_for_all": "💽 Always save to fs",
+        "never_save": "🚫 Never save to fs",
+        "will_save_fs": "💽 Now all modules, loaded with .loadmod will be saved to filesystem",
     }
 
     def __init__(self):
@@ -268,6 +277,30 @@ class LoaderMod(loader.Module):
         except Exception:
             logger.exception(f"Failed to load {module_name}")
 
+    async def _inline__load(
+        self,
+        call: CallbackQuery,
+        doc: str,
+        path_: Union[str, None],
+        mode: str,
+    ) -> None:
+        save = False
+        if mode == "all_yes":
+            self._db.set(main.__name__, "permanent_modules_fs", True)
+            self._db.set(main.__name__, "disable_modules_fs", False)
+            await call.answer(self.strings("will_save_fs"))
+            save = True
+        elif mode == "all_no":
+            self._db.set(main.__name__, "disable_modules_fs", True)
+            self._db.set(main.__name__, "permanent_modules_fs", False)
+        elif mode == "once":
+            save = True
+
+        if path_ is not None:
+            await self.load_module(doc, call, origin=path_, save_fs=save)
+        else:
+            await self.load_module(doc, call, save_fs=save)
+
     @loader.owner
     async def loadmodcmd(self, message: Message) -> None:
         """Loads the module file"""
@@ -291,20 +324,79 @@ class LoaderMod(loader.Module):
 
         logger.debug("Loading external module...")
 
+        if message.file:
+            await message.edit("")
+            message = await message.respond("👩‍🎤")
+
         try:
             doc = doc.decode("utf-8")
         except UnicodeDecodeError:
             await utils.answer(message, self.strings("bad_unicode", message))
             return
 
+        if (
+            not self._db.get(main.__name__, "disable_modules_fs", False)
+            and not self._db.get(main.__name__, "permanent_modules_fs", False)
+        ):
+            await self.inline.form(
+                self.strings("module_fs"),
+                message=message,
+                reply_markup=[
+                    [
+                        {
+                            "text": self.strings("save"),
+                            "callback": self._inline__load,
+                            "args": (doc, path_, "once"),
+                        },
+                        {
+                            "text": self.strings("no_save"),
+                            "callback": self._inline__load,
+                            "args": (doc, path_, "no"),
+                        },
+                    ],
+                    [
+                        {
+                            "text": self.strings("save_for_all"),
+                            "callback": self._inline__load,
+                            "args": (doc, path_, "all_yes"),
+                        }
+                    ],
+                    [
+                        {
+                            "text": self.strings("never_save"),
+                            "callback": self._inline__load,
+                            "args": (doc, path_, "all_no"),
+                        }
+                    ],
+                ],
+            )
+            return
+
         if path_ is not None:
-            await self.load_module(doc, message, origin=path_)
+            await self.load_module(
+                doc,
+                message,
+                origin=path_,
+                save_fs=self._db.get(main.__name__, "permanent_modules_fs", False)
+                and not self._db.get(main.__name__, "disable_modules_fs", False),
+            )
         else:
-            await self.load_module(doc, message)
+            await self.load_module(
+                doc,
+                message,
+                save_fs=self._db.get(main.__name__, "permanent_modules_fs", False)
+                and not self._db.get(main.__name__, "disable_modules_fs", False),
+            )
 
     async def load_module(
-        self, doc, message, name=None, origin="<string>", did_requirements=False
-    ):
+        self,
+        doc: str,
+        message: Message,
+        name: Union[str, None] = None,
+        origin: str = "<string>",
+        did_requirements: bool = False,
+        save_fs: bool = False,
+    ) -> None:
         if any(
             line.replace(" ", "") == "#scope:ffmpeg" for line in doc.splitlines()
         ) and os.system("ffmpeg -version"):
@@ -322,12 +414,14 @@ class LoaderMod(loader.Module):
 
         if re.search(r"# ?scope: ?hikka_min", doc):
             ver = re.search(
-                r"# ?scope: ?hikka_min ([0-9]+\.[0-9]+\.[0-9]+)", doc
+                r"# ?scope: ?hikka_min ([0-9]+\.[0-9]+\.[0-9]+)",
+                doc,
             ).group(1)
             ver_ = tuple(map(int, ver.split(".")))
             if main.__version__ < ver_:
                 await utils.answer(
-                    message, self.strings("version_incompatible").format(ver)
+                    message,
+                    self.strings("version_incompatible").format(ver),
                 )
                 return
 
@@ -347,7 +441,7 @@ class LoaderMod(loader.Module):
         try:
             try:
                 spec = ModuleSpec(module_name, StringLoader(doc, origin), origin=origin)
-                instance = self.allmodules.register_module(spec, module_name, origin)
+                instance = self.allmodules.register_module(spec, module_name, origin, save_fs=save_fs)
             except ImportError as e:
                 logger.info(
                     "Module loading failed, attemping dependency installation",
@@ -359,7 +453,8 @@ class LoaderMod(loader.Module):
                         filter(
                             lambda x: x and x[0] not in ("-", "_", "."),
                             map(
-                                str.strip, VALID_PIP_PACKAGES.search(doc)[1].split(" ")
+                                str.strip,
+                                VALID_PIP_PACKAGES.search(doc)[1].split(" "),
                             ),
                         )
                     )
@@ -374,14 +469,16 @@ class LoaderMod(loader.Module):
                 if did_requirements:
                     if message is not None:
                         await utils.answer(
-                            message, self.strings("requirements_restart", message)
+                            message,
+                            self.strings("requirements_restart", message),
                         )
 
                     return True  # save to database despite failure, so it will work after restart
 
                 if message is not None:
                     await utils.answer(
-                        message, self.strings("requirements_installing", message)
+                        message,
+                        self.strings("requirements_installing", message),
                     )
 
                 pip = await asyncio.create_subprocess_exec(
@@ -402,7 +499,8 @@ class LoaderMod(loader.Module):
                 if rc != 0:
                     if message is not None:
                         await utils.answer(
-                            message, self.strings("requirements_failed", message)
+                            message,
+                            self.strings("requirements_failed", message),
                         )
 
                     return False
@@ -410,7 +508,12 @@ class LoaderMod(loader.Module):
                 importlib.invalidate_caches()
 
                 return await self.load_module(
-                    doc, message, name, origin, True
+                    doc,
+                    message,
+                    name,
+                    origin,
+                    True,
+                    save_fs,
                 )  # Try again
             except loader.LoadError as e:
                 if message:
@@ -447,7 +550,10 @@ class LoaderMod(loader.Module):
             try:
                 self.allmodules.send_config_one(instance, self._db, self.babel)
                 await self.allmodules.send_ready_one(
-                    instance, self._client, self._db, self.allclients
+                    instance,
+                    self._client,
+                    self._db,
+                    self.allclients,
                 )
             except loader.LoadError as e:
                 if message:
