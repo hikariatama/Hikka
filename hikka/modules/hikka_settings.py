@@ -36,6 +36,13 @@ class HikkaSettingsMod(loader.Module):
         "inline_settings": "⚙️ <b>Here you can configure your Hikka settings</b>",
         "confirm_update": "🪂 <b>Please, confirm that you want to update. Your userbot will be restarted</b>",
         "confirm_restart": "🔄 <b>Please, confirm that you want to restart</b>",
+        "suggest_fs": "✅ Suggest FS for modules",
+        "do_not_suggest_fs": "🚫 Suggest FS for modules",
+        "use_fs": "✅ Always use FS for modules",
+        "do_not_use_fs": "🚫 Always use FS for modules",
+        "btn_restart": "🔄 Restart",
+        "btn_update": "🪂 Update",
+        "close_menu": "😌 Close menu",
     }
 
     def get_watchers(self) -> tuple:
@@ -341,7 +348,7 @@ class HikkaSettingsMod(loader.Module):
             [
                 (
                     {
-                        "text": "✅ Suggest FS for modules",
+                        "text": self.strings("suggest_fs"),
                         "callback": self.inline__setting,
                         "args": (
                             "disable_modules_fs",
@@ -350,7 +357,7 @@ class HikkaSettingsMod(loader.Module):
                     }
                     if not self._db.get(main.__name__, "disable_modules_fs", False)
                     else {
-                        "text": "🚫 Suggest FS for modules",
+                        "text": self.strings("do_not_suggest_fs"),
                         "callback": self.inline__setting,
                         "args": (
                             "disable_modules_fs",
@@ -358,9 +365,11 @@ class HikkaSettingsMod(loader.Module):
                         ),
                     }
                 ),
+            ],
+            [
                 (
                     {
-                        "text": "✅ Always use FS for modules",
+                        "text": self.strings("use_fs"),
                         "callback": self.inline__setting,
                         "args": (
                             "permanent_modules_fs",
@@ -369,7 +378,7 @@ class HikkaSettingsMod(loader.Module):
                     }
                     if self._db.get(main.__name__, "permanent_modules_fs", False)
                     else {
-                        "text": "🚫 Always use FS for modules",
+                        "text": self.strings("do_not_use_fs"),
                         "callback": self.inline__setting,
                         "args": (
                             "permanent_modules_fs",
@@ -380,13 +389,13 @@ class HikkaSettingsMod(loader.Module):
             ],
             [
                 {
-                    "text": "🔄 Restart",
+                    "text": self.strings("btn_restart"),
                     "callback": self.inline__restart,
                     "args": (True,),
                 },
-                {"text": "🪂 Update", "callback": self.inline__update, "args": (True,)},
+                {"text": self.strings("btn_update"), "callback": self.inline__update, "args": (True,)},
             ],
-            [{"text": "😌 Close menu", "callback": self.inline__close}],
+            [{"text": self.strings("close_menu"), "callback": self.inline__close}],
         ]
 
     @loader.owner
