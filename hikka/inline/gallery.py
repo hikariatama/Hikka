@@ -51,6 +51,7 @@ class Gallery(InlineUnit):
         on_unload: Union[FunctionType, None] = None,
         preload: Union[bool, int] = False,
         gif: bool = False,
+        manual_security: bool = False,
         _reattempt: bool = False,
     ) -> Union[bool, str]:
         """
@@ -79,10 +80,17 @@ class Gallery(InlineUnit):
             gif
                     Whether the gallery will be filled with gifs. If you omit this argument and specify
                     gifs in `next_handler`, they will be interpreted as plain images (not GIFs!)
+            manual_security
+                    By default, Hikka will try to inherit inline buttons security from the caller (command)
+                    If you want to avoid this, pass `manual_security=True`
         """
 
         if not isinstance(caption, str) and not callable(caption):
             logger.error("Invalid type for `caption`")
+            return False
+
+        if not isinstance(manual_security, bool):
+            logger.error("Invalid type for `manual_security`")
             return False
 
         if not isinstance(message, (Message, int)):
@@ -138,11 +146,13 @@ class Gallery(InlineUnit):
             logger.exception("Error while parsing first photo in gallery")
             return False
 
+        if not manual_security:
+            perms_map = self._find_caller_sec_map()
+        else:
+            perms_map = None
+
         self._galleries[gallery_uid] = {
             "caption": caption,
-            "ttl": round(time.time()) + ttl or self._markup_ttl,
-            "force_me": force_me,
-            "always_allow": always_allow,
             "chat": None,
             "message_id": None,
             "uid": gallery_uid,
@@ -151,9 +161,13 @@ class Gallery(InlineUnit):
             "btn_call_data": btn_call_data,
             "photos": [photo_url] if isinstance(photo_url, str) else photo_url,
             "current_index": 0,
-            "on_unload": on_unload,
-            "preload": preload,
-            "gif": gif,
+            **({"ttl": round(time.time()) + ttl} if ttl else {}),
+            **({"force_me": force_me} if force_me else {}),
+            **({"on_unload": on_unload} if callable(on_unload) else {}),
+            **({"preload": preload} if preload else {}),
+            **({"gif": gif} if gif else {}),
+            **({"always_allow": always_allow} if always_allow else {}),
+            **({"perms_map": perms_map} if perms_map else {}),
         }
 
         self._custom_map[btn_call_data[0]] = {
@@ -164,9 +178,22 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            "always_allow": always_allow,
-            "force_me": force_me,
-            "ttl": self._galleries[gallery_uid]["ttl"],
+            **(
+                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
+                if "always_allow" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"force_me": self._galleries[gallery_uid]["force_me"]}
+                if "force_me" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"ttl": self._galleries[gallery_uid]["ttl"]}
+                if "ttl" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **({"perms_map": perms_map} if perms_map else {}),
         }
 
         self._custom_map[btn_call_data[1]] = {
@@ -177,9 +204,22 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            "always_allow": always_allow,
-            "force_me": force_me,
-            "ttl": self._galleries[gallery_uid]["ttl"],
+            **(
+                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
+                if "always_allow" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"force_me": self._galleries[gallery_uid]["force_me"]}
+                if "force_me" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"ttl": self._galleries[gallery_uid]["ttl"]}
+                if "ttl" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **({"perms_map": perms_map} if perms_map else {}),
         }
 
         self._custom_map[btn_call_data[2]] = {
@@ -191,9 +231,22 @@ class Gallery(InlineUnit):
                     gallery_uid=gallery_uid,
                 )
             ),
-            "always_allow": always_allow,
-            "force_me": force_me,
-            "ttl": self._galleries[gallery_uid]["ttl"],
+            **(
+                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
+                if "always_allow" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"force_me": self._galleries[gallery_uid]["force_me"]}
+                if "force_me" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **(
+                {"ttl": self._galleries[gallery_uid]["ttl"]}
+                if "ttl" in self._galleries[gallery_uid]
+                else {}
+            ),
+            **({"perms_map": perms_map} if perms_map else {}),
         }
 
         if isinstance(message, Message):
@@ -334,10 +387,10 @@ class Gallery(InlineUnit):
 
             self._custom_map[id_] = {
                 "handler": i["next_handler"],
-                "always_allow": always_allow,
-                "force_me": force_me,
-                "caption": i.get("caption", ""),
                 "ttl": round(time.time()) + 120,
+                **({"always_allow": always_allow} if always_allow else {}),
+                **({"force_me": force_me} if force_me else {}),
+                **({"caption": i["caption"]} if "caption" in i else {}),
             }
 
             result += [
@@ -387,11 +440,12 @@ class Gallery(InlineUnit):
         )
 
         # If only one preload was insufficient to load needed amount of photos
-        if (
-            self._galleries[gallery_uid]["preload"]
-            and len(self._galleries[gallery_uid]["photos"])
-            - self._galleries[gallery_uid]["current_index"]
-            < self._galleries[gallery_uid]["preload"]
+        if self._galleries[gallery_uid].get("preload", False) and len(
+            self._galleries[gallery_uid]["photos"]
+        ) - self._galleries[gallery_uid]["current_index"] < self._galleries[
+            gallery_uid
+        ].get(
+            "preload", False
         ):
             # Start load again
             asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
@@ -442,7 +496,7 @@ class Gallery(InlineUnit):
                 caption=self._get_caption(gallery_uid),
                 parse_mode="HTML",
             )
-            if not self._galleries[gallery_uid]["gif"]
+            if not self._galleries[gallery_uid].get("gif", False)
             else InputMediaAnimation(
                 media=self._get_next_photo(gallery_uid),
                 caption=self._get_caption(gallery_uid),
@@ -492,11 +546,12 @@ class Gallery(InlineUnit):
             await call.answer("Can't load next photo")
             return
 
-        if (
-            self._galleries[gallery_uid]["preload"]
-            and len(self._galleries[gallery_uid]["photos"])
-            - self._galleries[gallery_uid]["current_index"]
-            < self._galleries[gallery_uid]["preload"]
+        if self._galleries[gallery_uid].get("preload", False) and len(
+            self._galleries[gallery_uid]["photos"]
+        ) - self._galleries[gallery_uid]["current_index"] < self._galleries[
+            gallery_uid
+        ].get(
+            "preload", False
         ):
             logger.debug(f"Started preload for gallery {gallery_uid}")
             asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
@@ -563,10 +618,10 @@ class Gallery(InlineUnit):
                 inline_query.from_user.id
                 in [self._me]
                 + self._client.dispatcher.security._owner
-                + gallery["always_allow"]
+                + gallery.get("always_allow", [])
                 and inline_query.query == gallery["uid"]
             ):
-                if not gallery["gif"]:
+                if not gallery.get("gif", False):
                     await inline_query.answer(
                         [
                             InlineQueryResultPhoto(

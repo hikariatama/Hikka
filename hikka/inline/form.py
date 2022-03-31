@@ -26,26 +26,18 @@ import time
 logger = logging.getLogger(__name__)
 
 
-class ListGalleryHelper:
-    def __init__(self, lst: List[str]):
-        self.lst = lst
-
-    def __call__(self):
-        elem = self.lst[-1]
-        del self.lst[-1]
-        return elem
-
-
 class Form(InlineUnit):
     async def form(
         self,
         text: str,
         message: Union[Message, int],
         reply_markup: List[List[dict]] = None,
+        *,
         force_me: bool = True,
         always_allow: Union[List[list], None] = None,
         ttl: Union[int, bool] = False,
         on_unload: Union[FunctionType, None] = None,
+        manual_security: bool = False,
     ) -> Union[str, bool]:
         """Creates inline form with callback
         Args:
@@ -66,8 +58,11 @@ class Form(InlineUnit):
                         buttons with type url will still work as usual. Pay attention, that ttl can't
                         be bigger, than default one (1 day) and must be either `int` or `False`
                 on_unload
-                    Callback, called when form is unloaded and/or closed. You can clean up trash
-                    or perform another needed action
+                        Callback, called when form is unloaded and/or closed. You can clean up trash
+                        or perform another needed action
+                manual_security
+                        By default, Hikka will try to inherit inline buttons security from the caller (command)
+                        If you want to avoid this, pass `manual_security=True`
         """
 
         if reply_markup is None:
@@ -78,6 +73,10 @@ class Form(InlineUnit):
 
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
+            return False
+
+        if not isinstance(manual_security, bool):
+            logger.error("Invalid type for `manual_security`")
             return False
 
         if not isinstance(message, (Message, int)):
@@ -127,21 +126,28 @@ class Form(InlineUnit):
             return False
 
         if isinstance(ttl, int) and (ttl > self._markup_ttl or ttl < 10):
-            ttl = self._markup_ttl
+            ttl = None
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
         form_uid = utils.rand(30)
 
+        if not manual_security:
+            perms_map = self._find_caller_sec_map()
+        else:
+            perms_map = None
+
         self._forms[form_uid] = {
             "text": text,
             "buttons": reply_markup,
-            "ttl": round(time.time()) + ttl or self._markup_ttl,
-            "force_me": force_me,
-            "always_allow": always_allow,
             "chat": None,
             "message_id": None,
             "uid": form_uid,
             "on_unload": on_unload,
+            **({"perms_map": perms_map} if perms_map else {}),
+            **({"message": message} if isinstance(message, Message) else {}),
+            **({"force_me": force_me} if force_me else {}),
+            **({"ttl": round(time.time()) + ttl} if ttl else {}),
+            **({"always_allow": always_allow} if always_allow else {}),
         }
 
         try:
@@ -178,7 +184,8 @@ class Form(InlineUnit):
         ):
             del self._forms[form_uid]
             logger.debug(
-                f"Unloading form {form_uid}, because it " "doesn't contain callbacks"
+                f"Unloading form {form_uid}, because it "
+                "doesn't contain any button callbacks"
             )
 
         return form_uid
@@ -354,7 +361,7 @@ class Form(InlineUnit):
                     and inline_query.from_user.id
                     in [self._me]
                     + self._client.dispatcher.security._owner
-                    + form["always_allow"]
+                    + form.get("always_allow", [])
                 ):
                     await inline_query.answer(
                         [

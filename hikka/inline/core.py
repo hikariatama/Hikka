@@ -25,6 +25,10 @@ from .bot_interaction import BotInteractions
 from .events import Events
 from .token_obtainment import TokenObtainment
 
+from typing import Union
+import inspect
+from .. import security
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -102,18 +106,41 @@ class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment):
         """Cleans outdated _forms"""
         while True:
             for form_uid, form in self._forms.copy().items():
-                if form["ttl"] < time.time():
+                if form.get("ttl", time.time() + self._markup_ttl) < time.time():
                     del self._forms[form_uid]
 
             for gallery_uid, gallery in self._galleries.copy().items():
-                if gallery["ttl"] < time.time():
+                if gallery.get("ttl", time.time() + self._markup_ttl) < time.time():
                     del self._galleries[gallery_uid]
 
             for map_uid, config in self._custom_map.copy().items():
-                if config["ttl"] < time.time():
+                if config.get("ttl", time.time() + self._markup_ttl) < time.time():
                     del self._custom_map[map_uid]
 
             await asyncio.sleep(5)
+
+    def _find_caller_sec_map(self) -> Union[int, None]:
+        try:
+            return next(
+                next(
+                    self._db.get(security.__name__, "masks", {}).get(
+                        f"{getattr(cls_, stack_entry.function).__module__}.{getattr(cls_, stack_entry.function).__name__}",
+                        getattr(
+                            getattr(cls_, stack_entry.function),
+                            "security",
+                            self._client.dispatcher.security._default,
+                        ),
+                    )
+                    for name, cls_ in stack_entry.frame.f_globals.items()
+                    if name.endswith("Mod") and hasattr(cls_, "strings")
+                )
+                for stack_entry in inspect.stack()
+                if hasattr(stack_entry, "function")
+                and stack_entry.function.endswith("cmd")
+            )
+        except Exception:
+            logger.exception("Can't parse security mask in form")
+            return None
 
     async def _register_manager(
         self,

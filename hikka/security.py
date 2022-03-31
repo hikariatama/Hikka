@@ -27,6 +27,8 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
+from telethon.tl.types import Message
+from types import FunctionType
 
 from . import main
 
@@ -181,14 +183,35 @@ class SecurityManager:
 
         return config & self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS)
 
-    async def _check(self, message, func):
+    async def _check(
+        self,
+        message: Message,
+        func: FunctionType = None,
+        mask: int = None,
+        user: int = None,
+    ) -> bool:
+        """Checks if message sender is permitted to execute certain function"""
+        if not func and not mask:
+            return False
+
         self._reload_rights()
-        config = self.get_flags(func)
+
+        config = (
+            self.get_flags(func)
+            if func
+            else (mask & self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS))
+        )
 
         if not config:
             return False
 
-        if message.out:
+        if not user:
+            user = message.sender_id
+            check_message = True
+        else:
+            check_message = False
+
+        if check_message and message.out:
             # If message was sent from the account, where
             # userbot is installed, skip security check
             return True
@@ -221,15 +244,15 @@ class SecurityManager:
 
         if (
             f_owner
-            and message.sender_id in self._owner
+            and user in self._owner
             or f_sudo
-            and message.sender_id in self._sudo
+            and user in self._sudo
             or f_support
-            and message.sender_id in self._support
+            and user in self._support
         ):
             return True
 
-        if message.sender_id in self._db.get(main.__name__, "blacklist_users", []):
+        if user in self._db.get(main.__name__, "blacklist_users", []):
             return False
 
         if f_group_member and message.is_group or f_pm and message.is_private:
@@ -255,7 +278,7 @@ class SecurityManager:
             elif f_group_admin_any or f_group_owner:
                 participant = await message.client.get_permissions(
                     message.peer_id,
-                    message.sender_id,
+                    user,
                 )
 
                 if participant.is_creator:
@@ -286,7 +309,7 @@ class SecurityManager:
         if message.is_group:
             participant = await message.client.get_permissions(
                 message.peer_id,
-                message.sender_id,
+                user,
             )
 
             if not participant:

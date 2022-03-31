@@ -14,6 +14,7 @@ from .. import utils
 from .types import InlineQuery
 import functools
 import inspect
+from telethon.tl.types import Message
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,21 @@ class Events(InlineUnit):
         await self._form_inline_handler(inline_query)
         await self._gallery_inline_handler(inline_query)
 
+    async def _check_inline_sec_by_mask(
+        self,
+        *,
+        mask: int,
+        user: int,
+        message: Message,
+    ) -> bool:
+        """Checks if user is able to execute command with provided security mask"""
+        return await self._client.dispatcher.security._check(
+            message=message,
+            func=None,
+            mask=mask,
+            user=user,
+        )
+
     async def _callback_query_handler(
         self,
         query: CallbackQuery,
@@ -117,11 +133,24 @@ class Events(InlineUnit):
             for button in utils.array_sum(form.get("buttons", [])):
                 if button.get("_callback_data", None) == query.data:
                     if (
-                        form["force_me"]
-                        and query.from_user.id != self._me
-                        and query.from_user.id
+                        form.get("force_me", False) and query.from_user.id == self._me
+                    ) or (
+                        await self._check_inline_sec_by_mask(
+                            mask=form.get(
+                                "perms_map",
+                                self._client.dispatcher.security._default,
+                            ),
+                            user=query.from_user.id,
+                            message=form["message"],
+                        )
+                        if "message" in form
+                        else False
+                    ):
+                        pass
+                    elif (
+                        query.from_user.id
                         not in self._client.dispatcher.security._owner
-                        and query.from_user.id not in form["always_allow"]
+                        and query.from_user.id not in form.get("always_allow", [])
                     ):
                         await query.answer("You are not allowed to press this button!")
                         return
@@ -166,11 +195,11 @@ class Events(InlineUnit):
 
         if query.data in self._custom_map:
             if (
-                self._custom_map[query.data]["force_me"]
+                self._custom_map[query.data].get("force_me", False)
                 and query.from_user.id != self._me
                 and query.from_user.id not in self._client.dispatcher.security._owner
                 and query.from_user.id
-                not in self._custom_map[query.data]["always_allow"]
+                not in self._custom_map[query.data].get("always_allow", [])
             ):
                 await query.answer("You are not allowed to press this button!")
                 return
@@ -197,7 +226,7 @@ class Events(InlineUnit):
                     and chosen_inline_query.from_user.id
                     in [self._me]
                     + self._client.dispatcher.security._owner
-                    + form["always_allow"]
+                    + form.get("always_allow", [])
                 ):
 
                     query = query.split(maxsplit=1)[1] if len(query.split()) > 1 else ""
