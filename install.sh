@@ -236,6 +236,7 @@ runin ${SUDO_CMD}"python$PYVER" -m pip install -r requirements.txt --upgrade --u
 	exit 4
 }
 endspin "Installation successful. Launching setup interface..."
+BLA::stop_loading_animation
 rm -f ../hikka-install.log
 touch .setup_complete
 # shellcheck disable=SC2086,SC2015
