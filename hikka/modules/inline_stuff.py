@@ -46,8 +46,10 @@ class InlineStuffMod(loader.Module):
 
         id_ = re.search(r"#id: ([a-zA-Z0-9]+)", message.raw_text).group(1)
 
+        m = await message.respond("👩‍🎤 <b>Opening gallery... wait</b>")
+
         await self.inline.gallery(
-            message=utils.get_chat_id(message),
+            message=m,
             next_handler=self.inline._custom_map[id_]["handler"],
             caption=self.inline._custom_map[id_].get("caption", ""),
         )
