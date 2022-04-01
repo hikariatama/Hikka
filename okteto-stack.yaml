@@ -9,3 +9,15 @@ services:
     resources:
       cpu: 900m
       memory: 2Gi
+    volumes:
+      - hikka:/data
+
+volumes:
+  hikka:
+    driver_opts:
+      size: 1Gi
+
+persistentVolume:
+  enabled: true
+  storageClass: standard
+  size: 1Gi
