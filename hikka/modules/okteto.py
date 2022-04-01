@@ -85,7 +85,8 @@ class OktetoMod(loader.Module):
 
     async def watcher(self, message: Message) -> None:
         if (
-            "OKTETO_URI" not in os.environ
+            not hasattr(message, "raw_text", False)
+            or "OKTETO_URI" not in os.environ
             or os.environ["OKTETO_URI"] not in message.raw_text
             and "Link previews was updated successfully" not in message.raw_text
             or utils.get_chat_id(message) != 169642392
