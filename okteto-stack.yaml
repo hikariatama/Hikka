@@ -16,8 +16,3 @@ volumes:
   hikka:
     driver_opts:
       size: 1Gi
-
-persistentVolume:
-  enabled: true
-  storageClass: standard
-  size: 1Gi
