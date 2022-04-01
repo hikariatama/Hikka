@@ -296,7 +296,7 @@ class HikkaSettingsMod(loader.Module):
                             False,
                         ),
                     }
-                    if self._db.get(main.__name__, "no_nickname", True)
+                    if self._db.get(main.__name__, "no_nickname", False)
                     else {
                         "text": "🚫 NoNick",
                         "callback": self.inline__setting,
@@ -315,7 +315,7 @@ class HikkaSettingsMod(loader.Module):
                             False,
                         ),
                     }
-                    if self._db.get(main.__name__, "grep", True)
+                    if self._db.get(main.__name__, "grep", False)
                     else {
                         "text": "🚫 Grep",
                         "callback": self.inline__setting,

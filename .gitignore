@@ -140,7 +140,6 @@ database-*.json
 .tox
 .idea/
 venv/
-data/
 api_token.txt
 .coverage
 .vscode/
