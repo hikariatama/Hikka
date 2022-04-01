@@ -149,6 +149,8 @@ class Modules:
 
     def __init__(self):
         self.commands = {}
+        self.inline_handlers = {}
+        self.callback_handlers = {}
         self.aliases = {}
         self.modules = []  # skipcq: PTC-W0052
         self.watchers = []
@@ -268,6 +270,40 @@ class Modules:
                 logging.debug("Missing docs for %s", command)
 
             self.commands.update({command.lower(): instance.commands[command]})
+
+        for handler in instance.inline_handlers.copy():
+            if handler.lower() in self.inline_handlers:
+                if (
+                    hasattr(instance.inline_handlers[handler], "__self__")
+                    and hasattr(self.inline_handlers[handler], "__self__")
+                    and instance.inline_handlers[handler].__self__.__class__.__name__
+                    != self.inline_handlers[handler].__self__.__class__.__name__
+                ):
+                    logging.debug("Duplicate inline_handler %s", handler)
+
+                logging.debug(
+                    "Replacing inline_handler for %r", self.inline_handlers[handler]
+                )
+
+            if not instance.inline_handlers[handler].__doc__:
+                logging.debug("Missing docs for %s", handler)
+
+            self.inline_handlers.update(
+                {handler.lower(): instance.inline_handlers[handler]}
+            )
+
+        for handler in instance.callback_handlers.copy():
+            if handler.lower() in self.callback_handlers and (
+                hasattr(instance.callback_handlers[handler], "__self__")
+                and hasattr(self.callback_handlers[handler], "__self__")
+                and instance.callback_handlers[handler].__self__.__class__.__name__
+                != self.callback_handlers[handler].__self__.__class__.__name__
+            ):
+                logging.debug("Duplicate callback_handler %s", handler)
+
+            self.callback_handlers.update(
+                {handler.lower(): instance.callback_handlers[handler]}
+            )
 
     def register_watcher(self, instance: Module) -> None:
         """Register watcher from instance"""

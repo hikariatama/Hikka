@@ -26,6 +26,7 @@ from .events import Events
 from .token_obtainment import TokenObtainment
 
 from typing import Union, Callable
+from types import FunctionType
 import inspect
 from .. import security
 
@@ -55,7 +56,7 @@ class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment):
 
         self.init_complete = False
 
-    def check_inline_security(self, func, user):
+    async def check_inline_security(self, func: FunctionType, user: int) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         allow = (user in [self._me] + self._client.dispatcher.security._owner)  # fmt: skip
 
@@ -100,7 +101,28 @@ class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment):
                 ):
                     allow = True
 
-        return allow
+        if allow:
+            return True
+
+        config = self._db.get(security.__name__, "masks", {}).get(
+            f"{func.__module__}.{func.__name__}",
+            self._client.dispatcher.security._default,
+        )
+
+        owner = config & security.OWNER
+        sudo = config & security.SUDO
+        support = config & security.SUPPORT
+        everyone = config & security.EVERYONE
+
+        return (
+            owner
+            and user in self._client.dispatcher.security._owner
+            or sudo
+            and user in self._client.dispatcher.security._sudo
+            or support
+            and user in self._client.dispatcher.security._support
+            or everyone
+        )
 
     async def _cleaner(self) -> None:
         """Cleans outdated _forms"""

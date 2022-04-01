@@ -54,26 +54,17 @@ class Events(InlineUnit):
             return
 
         # First, dispatch all registered inline handlers
-        for mod in self._allmodules.modules:
-            if (
-                not hasattr(mod, "inline_handlers")
-                or not isinstance(mod.inline_handlers, dict)
-                or not mod.inline_handlers
-            ):
-                continue
-
+        cmd = inline_query.query.split()[0].lower()
+        if cmd in self._allmodules.inline_handlers and await self.check_inline_security(
+            self._allmodules.inline_handlers[cmd],
+            inline_query.from_user.id,
+        ):
             instance = InlineQuery(inline_query)
 
-            for query_text, query_func in mod.inline_handlers.items():
-                if inline_query.query.split()[
-                    0
-                ].lower() == query_text.lower() and self.check_inline_security(
-                    query_func, inline_query.from_user.id
-                ):
-                    try:
-                        await query_func(instance)
-                    except BaseException:
-                        logger.exception("Error on running inline watcher!")
+            try:
+                await self._allmodules.inline_handlers[cmd](instance)
+            except BaseException:
+                logger.exception("Error on running inline watcher!")
 
         await self._form_inline_handler(inline_query)
         await self._gallery_inline_handler(inline_query)
@@ -108,25 +99,17 @@ class Events(InlineUnit):
             return
 
         # First, dispatch all registered callback handlers
-        for mod in self._allmodules.modules:
-            if (
-                not hasattr(mod, "callback_handlers")
-                or not isinstance(mod.callback_handlers, dict)
-                or not mod.callback_handlers
-            ):
-                continue
-
-            for query_func in mod.callback_handlers.values():
-                if self.check_inline_security(query_func, query.from_user.id):
-                    try:
-                        await query_func(query)
-                    except Exception:
-                        logger.exception("Error on running callback watcher!")
-                        await query.answer(
-                            "Error occured while processing request. More info in logs",
-                            show_alert=True,
-                        )
-                        return
+        for func in self._allmodules.callback_handlers.values():
+            if await self.check_inline_security(func, query.from_user.id):
+                try:
+                    await func(query)
+                except Exception:
+                    logger.exception("Error on running callback watcher!")
+                    await query.answer(
+                        "Error occured while processing request. More info in logs",
+                        show_alert=True,
+                    )
+                    continue
 
         for form_uid, form in self._forms.copy().items():
             for button in utils.array_sum(form.get("buttons", [])):
@@ -290,7 +273,7 @@ class Events(InlineUnit):
                 # If user doesn't have enough permissions
                 # to run this inline command, do not show it
                 # in help
-                if not self.check_inline_security(fun, inline_query.from_user.id):
+                if not await self.check_inline_security(fun, inline_query.from_user.id):
                     continue
 
                 # Retrieve docs from func

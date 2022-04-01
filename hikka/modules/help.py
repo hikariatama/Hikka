@@ -251,7 +251,7 @@ class HelpMod(loader.Module):
             icommands = [
                 name
                 for name, func in mod.inline_handlers.items()
-                if self.inline.check_inline_security(func, message.sender_id) or force
+                if await self.inline.check_inline_security(func, message.sender_id) or force
             ]
 
             for cmd in icommands:

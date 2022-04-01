@@ -33,6 +33,7 @@ from ..security import (
     GROUP_MEMBER,
     PM,
     DEFAULT_PERMISSIONS,
+    EVERYONE,
 )
 
 logger = logging.getLogger(__name__)
@@ -61,6 +62,7 @@ class HikkaSecurityMod(loader.Module):
         "group_admin": "👨‍💻 Admin (any)",
         "group_member": "👥 In group",
         "pm": "🤙 In PM",
+        "everyone": "🌍 Everyone",
         "owner_list": "🤴 <b>Users in group </b><code>owner</code><b>:</b>\n\n{}",
         "sudo_list": "🤵‍♀️ <b>Users in group </b><code>sudo</code><b>:</b>\n\n{}",
         "support_list": "🙋‍♂️ <b>Users in group </b><code>support</code><b>:</b>\n\n{}",
@@ -109,8 +111,13 @@ class HikkaSecurityMod(loader.Module):
         command: str,
         group: str,
         level: bool,
+        is_inline: bool,
     ) -> None:
-        cmd = self.allmodules.commands[command]
+        cmd = (
+            self.allmodules.commands[command]
+            if not is_inline
+            else self.allmodules.inline_handlers[command]
+        )
         mask = self._db.get(security.__name__, "masks", {}).get(
             f"{cmd.__module__}.{cmd.__name__}",
             getattr(cmd, "security", security.DEFAULT_PERMISSIONS),
@@ -129,8 +136,11 @@ class HikkaSecurityMod(loader.Module):
 
         await call.answer("Security value set!")
         await call.edit(
-            self.strings("permissions").format(self.prefix, command),
-            reply_markup=self._build_markup(cmd),
+            self.strings("permissions").format(
+                self.prefix if not is_inline else f"@{self.inline.bot_username} ",
+                command,
+            ),
+            reply_markup=self._build_markup(cmd, is_inline),
         )
 
     async def inline__switch_perm_bm(
@@ -164,66 +174,98 @@ class HikkaSecurityMod(loader.Module):
         is_inline: bool = False,
     ) -> List[List[dict]]:
         perms = self._get_current_perms(command, is_inline)
-        buttons = [
-            {
-                "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
-                "callback": self.inline__switch_perm,
-                "args": (command.__name__[:-3], group, not level),
-            }
-            for group, level in perms.items()
-        ]
+        if not is_inline:
+            return utils.chunks(
+                [
+                    {
+                        "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
+                        "callback": self.inline__switch_perm,
+                        "args": (
+                            command.__name__[:-3],
+                            group,
+                            not level,
+                            is_inline,
+                        ),
+                    }
+                    for group, level in perms.items()
+                ],
+                2,
+            ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
 
-        return utils.chunks(buttons, 2) + [
-            [{"text": self.strings("close_menu"), "callback": self.inline_close}]
-        ]
+        return utils.chunks(
+            [
+                {
+                    "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
+                    "callback": self.inline__switch_perm,
+                    "args": (
+                        command.__name__[:-15],
+                        group,
+                        not level,
+                        is_inline,
+                    ),
+                }
+                for group, level in perms.items()
+            ],
+            2,
+        ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
 
     def _build_markup_global(self) -> List[List[dict]]:
         perms = self._get_current_bm()
-        buttons = [
-            {
-                "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
-                "callback": self.inline__switch_perm_bm,
-                "args": (group, not level),
-            }
-            for group, level in perms.items()
-        ]
-
-        return utils.chunks(buttons, 2) + [
-            [{"text": self.strings("close_menu"), "callback": self.inline_close}]
-        ]
+        return utils.chunks(
+            [
+                {
+                    "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
+                    "callback": self.inline__switch_perm_bm,
+                    "args": (group, not level),
+                }
+                for group, level in perms.items()
+            ],
+            2,
+        ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
 
     def _get_current_bm(self) -> dict:
         return self._perms_map(
-            self._db.get(security.__name__, "bounding_mask", DEFAULT_PERMISSIONS)
+            self._db.get(security.__name__, "bounding_mask", DEFAULT_PERMISSIONS), False
         )
 
     @staticmethod
-    def _perms_map(perms: int) -> dict:
-        return {
-            "owner": bool(perms & OWNER),
-            "sudo": bool(perms & SUDO),
-            "support": bool(perms & SUPPORT),
-            "group_owner": bool(perms & GROUP_OWNER),
-            "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
-            "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
-            "group_admin_ban_users": bool(perms & GROUP_ADMIN_BAN_USERS),
-            "group_admin_delete_messages": bool(perms & GROUP_ADMIN_DELETE_MESSAGES),
-            "group_admin_pin_messages": bool(perms & GROUP_ADMIN_PIN_MESSAGES),
-            "group_admin_invite_users": bool(perms & GROUP_ADMIN_INVITE_USERS),
-            "group_admin": bool(perms & GROUP_ADMIN),
-            "group_member": bool(perms & GROUP_MEMBER),
-            "pm": bool(perms & PM),
-        }
-
-    def _get_current_perms(self, command: FunctionType) -> dict:
-        config = self._db.get(security.__name__, "masks", {}).get(
-            f"{command.__module__}.{command.__name__}",
-            getattr(
-                command, "security", self._client.dispatcher.security._default
-            ),
+    def _perms_map(perms: int, is_inline: bool) -> dict:
+        return (
+            {
+                "owner": bool(perms & OWNER),
+                "sudo": bool(perms & SUDO),
+                "support": bool(perms & SUPPORT),
+                "group_owner": bool(perms & GROUP_OWNER),
+                "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
+                "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
+                "group_admin_ban_users": bool(perms & GROUP_ADMIN_BAN_USERS),
+                "group_admin_delete_messages": bool(
+                    perms & GROUP_ADMIN_DELETE_MESSAGES
+                ),
+                "group_admin_pin_messages": bool(perms & GROUP_ADMIN_PIN_MESSAGES),
+                "group_admin_invite_users": bool(perms & GROUP_ADMIN_INVITE_USERS),
+                "group_admin": bool(perms & GROUP_ADMIN),
+                "group_member": bool(perms & GROUP_MEMBER),
+                "pm": bool(perms & PM),
+            }
+            if not is_inline
+            else {
+                "owner": bool(perms & OWNER),
+                "sudo": bool(perms & SUDO),
+                "support": bool(perms & SUPPORT),
+                "everyone": bool(perms & EVERYONE),
+            }
         )
 
-        return self._perms_map(config)
+    def _get_current_perms(
+        self, command: FunctionType, is_inline: bool = False
+    ) -> dict:
+        config = self._db.get(security.__name__, "masks", {}).get(
+            f"{command.__module__}.{command.__name__}",
+            getattr(command, "security", self._client.dispatcher.security._default),
+        )
+
+        return self._perms_map(config, is_inline)
 
     async def securitycmd(self, message: Message) -> None:
         """[command] - Configure command's security settings"""
@@ -253,33 +295,13 @@ class HikkaSecurityMod(loader.Module):
     async def inlineseccmd(self, message: Message) -> None:
         """[command] - Configure inline command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
-        if args and all(
-            args not in mod.inline_handlers
-            for mod in self.allmodules.modules
-            if hasattr(mod, "inline_handlers")
-            and isinstance(mod.inline_handlers, (list, set, tuple))
-        ):
+        if args not in self.allmodules.inline_handlers:
             await utils.answer(message, self.strings("no_command").format(args))
             return
 
-        if not args:
-            await self.inline.form(
-                self.strings("global"),
-                reply_markup=self._build_markup_global(),
-                message=message,
-                ttl=5 * 60,
-            )
-            return
-
-        i_handler = next(
-            mod.inline_handlers[args]
-            for mod in self.allmodules.modules
-            if hasattr(mod, "inline_handlers")
-            and isinstance(mod.inline_handlers, (list, set, tuple))
-        )
-
+        i_handler = self.allmodules.inline_handlers[args]
         await self.inline.form(
-            self.strings("permissions").format(self.prefix, args),
+            self.strings("permissions").format(f"@{self.inline.bot_username} ", args),
             reply_markup=self._build_markup(i_handler, True),
             message=message,
             ttl=5 * 60,
@@ -385,9 +407,7 @@ class HikkaSecurityMod(loader.Module):
         self._db.set(
             security.__name__,
             group,
-            list(
-                set(self._db.get(security.__name__, group, [])) - set([user.id])
-            ),
+            list(set(self._db.get(security.__name__, group, [])) - set([user.id])),
         )
 
         m = self.strings(f"{group}_removed").format(

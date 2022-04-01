@@ -28,6 +28,15 @@ DATA_DIR = (
 logger = logging.getLogger(__name__)
 
 
+def is_serializable(x: Any, /) -> bool:
+    """Checks if object is JSON-serializable"""
+    try:
+        json.dumps(x)
+        return True
+    except (TypeError, OverflowError):
+        return False
+
+
 class Database(dict):
     def __init__(self, client):
         super().__init__()
@@ -147,5 +156,26 @@ class Database(dict):
 
     def set(self, owner: str, key: str, value: Any) -> bool:
         """Set database key"""
+        if not is_serializable(owner):
+            raise RuntimeError(
+                "Attempted to write object to "
+                f"{type(owner)=} of database. It is not "
+                "JSON-serializable key which will cause errors"
+            )
+
+        if not is_serializable(key):
+            raise RuntimeError(
+                "Attempted to write object to "
+                f"{type(key)=} of database. It is not "
+                "JSON-serializable key which will cause errors"
+            )
+
+        if not is_serializable(value):
+            raise RuntimeError(
+                "Attempted to write object of "
+                f"{type(value)=} to database. It is not "
+                "JSON-serializable value which will cause errors"
+            )
+
         super().setdefault(owner, {})[key] = value
         return self.save()
