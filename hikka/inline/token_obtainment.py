@@ -27,15 +27,30 @@ class TokenObtainment(InlineUnit):
             m = await conv.send_message("/newbot")
             r = await conv.get_response()
 
+            logger.debug(f">> {m.raw_text}")
+            logger.debug(f"<< {r.raw_text}")
+
             if "20" in r.raw_text:
                 return False
 
             await m.delete()
             await r.delete()
 
-            # Generate and set random username for bot
-            uid = utils.rand(6)
-            username = f"hikka_{uid}_bot"
+            if self._db.get("hikka.inline", "custom_bot", False):
+                username = self._db.get("hikka.inline", "custom_bot").strip("@")
+                username = f"@{username}"
+                try:
+                    await self._client.get_entity(username)
+                except ValueError:
+                    pass
+                else:
+                    # Generate and set random username for bot
+                    uid = utils.rand(6)
+                    username = f"@hikka_{uid}_bot"
+            else:
+                # Generate and set random username for bot
+                uid = utils.rand(6)
+                username = f"@hikka_{uid}_bot"
 
             for msg in [
                 f"👩‍🎤 Hikka Userbot of {self._name}",
@@ -116,84 +131,95 @@ class TokenObtainment(InlineUnit):
 
             for row in r.reply_markup.rows:
                 for button in row.buttons:
-                    if re.search(r"@hikka_[0-9a-zA-Z]{6}_bot", button.text):
+                    if (
+                        self._db.get("hikka.inline", "custom_bot", False)
+                        and self._db.get("hikka.inline", "custom_bot", False)
+                        != button.text.strip("@")
+                    ):
+                        continue
+
+                    if not self._db.get(
+                        "hikka.inline", "custom_bot", False
+                    ) and not re.search(r"@hikka_[0-9a-zA-Z]{6}_bot", button.text):
+                        continue
+
+                    m = await conv.send_message(button.text)
+                    r = await conv.get_response()
+
+                    logger.debug(f">> {m.raw_text}")
+                    logger.debug(f"<< {r.raw_text}")
+
+                    if revoke_token:
+                        await m.delete()
+                        await r.delete()
+
+                        m = await conv.send_message("/revoke")
+                        r = await conv.get_response()
+
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
+
+                        await m.delete()
+                        await r.delete()
+
                         m = await conv.send_message(button.text)
                         r = await conv.get_response()
 
                         logger.debug(f">> {m.raw_text}")
                         logger.debug(f"<< {r.raw_text}")
 
-                        if revoke_token:
-                            await m.delete()
-                            await r.delete()
+                    token = r.raw_text.splitlines()[1]
 
-                            m = await conv.send_message("/revoke")
-                            r = await conv.get_response()
+                    # Save token to database, now this bot is ready-to-use
+                    self._db.set("hikka.inline", "bot_token", token)
+                    self._token = token
 
-                            logger.debug(f">> {m.raw_text}")
-                            logger.debug(f"<< {r.raw_text}")
+                    await m.delete()
+                    await r.delete()
 
-                            await m.delete()
-                            await r.delete()
+                    # Enable inline mode or change its
+                    # placeholder in case it is not set
 
-                            m = await conv.send_message(button.text)
-                            r = await conv.get_response()
+                    for msg in [
+                        "/setinline",
+                        button.text,
+                        "HikkaQuery",
+                        "/setinlinefeedback",
+                        button.text,
+                        "Enabled",
+                        "/setuserpic",
+                        button.text,
+                    ]:
+                        m = await conv.send_message(msg)
+                        r = await conv.get_response()
 
-                            logger.debug(f">> {m.raw_text}")
-                            logger.debug(f"<< {r.raw_text}")
-
-                        token = r.raw_text.splitlines()[1]
-
-                        # Save token to database, now this bot is ready-to-use
-                        self._db.set("hikka.inline", "bot_token", token)
-                        self._token = token
-
-                        await m.delete()
-                        await r.delete()
-
-                        # Enable inline mode or change its
-                        # placeholder in case it is not set
-
-                        for msg in [
-                            "/setinline",
-                            button.text,
-                            "HikkaQuery",
-                            "/setinlinefeedback",
-                            button.text,
-                            "Enabled",
-                            "/setuserpic",
-                            button.text,
-                        ]:
-                            m = await conv.send_message(msg)
-                            r = await conv.get_response()
-
-                            logger.debug(f">> {m.raw_text}")
-                            logger.debug(f"<< {r.raw_text}")
-
-                            await m.delete()
-                            await r.delete()
-
-                        try:
-                            m = await conv.send_file(photo)
-                            r = await conv.get_response()
-
-                            logger.debug(">> <Photo>")
-                            logger.debug(f"<< {r.raw_text}")
-                        except Exception:
-                            # In case user was not able to send photo to
-                            # BotFather, it is not a critical issue, so
-                            # just ignore it
-                            m = await conv.send_message("/cancel")
-                            r = await conv.get_response()
-
-                            logger.debug(f">> {m.raw_text}")
-                            logger.debug(f"<< {r.raw_text}")
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
 
                         await m.delete()
                         await r.delete()
 
-                        # Return `True` to say, that everything is okay
-                        return True
+                    try:
+                        m = await conv.send_file(photo)
+                        r = await conv.get_response()
+
+                        logger.debug(">> <Photo>")
+                        logger.debug(f"<< {r.raw_text}")
+                    except Exception:
+                        # In case user was not able to send photo to
+                        # BotFather, it is not a critical issue, so
+                        # just ignore it
+                        m = await conv.send_message("/cancel")
+                        r = await conv.get_response()
+
+                        logger.debug(f">> {m.raw_text}")
+                        logger.debug(f"<< {r.raw_text}")
+
+                    await m.delete()
+                    await r.delete()
+
+                    # Return `True` to say, that everything is okay
+                    return True
 
         # And we are not returned after creation
         return await self._create_bot() if create_new_if_needed else False

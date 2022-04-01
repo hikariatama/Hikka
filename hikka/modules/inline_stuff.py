@@ -18,6 +18,9 @@ from aiogram.types import CallbackQuery
 import logging
 import re
 
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.tl.functions.contacts import UnblockRequest
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,7 +28,12 @@ logger = logging.getLogger(__name__)
 class InlineStuffMod(loader.Module):
     """Provides support for inline stuff"""
 
-    strings = {"name": "InlineStuff"}
+    strings = {
+        "name": "InlineStuff",
+        "bot_username_invalid": "🚫 <b>Specified bot username is invalid. It must end with </b><code>bot</code><b> and contain at least 4 symbols</b>",
+        "bot_username_occupied": "🚫 <b>This username is already occupied</b>",
+        "bot_updated": "😌 <b>Config successfully saved. Restart userbot to apply changes</b>",
+    }
 
     async def client_ready(self, client, db) -> None:
         self._db = db
@@ -55,3 +63,52 @@ class InlineStuffMod(loader.Module):
         )
 
         await message.delete()
+
+    async def _check_bot(self, username: str) -> bool:
+        async with self._client.conversation("@BotFather", exclusive=False) as conv:
+            try:
+                m = await conv.send_message("/token")
+            except YouBlockedUserError:
+                await self._client(UnblockRequest(id="@BotFather"))
+                m = await conv.send_message("/token")
+
+            r = await conv.get_response()
+
+            await m.delete()
+            await r.delete()
+
+            if not hasattr(r, "reply_markup") or not hasattr(r.reply_markup, "rows"):
+                return False
+
+            for row in r.reply_markup.rows:
+                for button in row.buttons:
+                    if username != button.text.strip("@"):
+                        continue
+
+                    m = await conv.send_message("/cancel")
+                    r = await conv.get_response()
+
+                    await m.delete()
+                    await r.delete()
+
+                    return True
+
+    async def ch_hikka_botcmd(self, message: Message) -> None:
+        """<username> - Change your Hikka inline bot username"""
+        args = utils.get_args_raw(message).strip("@")
+        if not args or not args.endswith("bot") or len(args) <= 4:
+            await utils.answer(message, self.strings("bot_username_invalid"))
+            return
+
+        try:
+            await self._client.get_entity(f"@{args}")
+        except ValueError:
+            pass
+        else:
+            if not await self._check_bot(args):
+                await utils.answer(message, self.strings("bot_username_occupied"))
+                return
+
+        self._db.set("hikka.inline", "custom_bot", args)
+        self._db.set("hikka.inline", "bot_token", None)
+        await utils.answer(message, self.strings("bot_updated"))
