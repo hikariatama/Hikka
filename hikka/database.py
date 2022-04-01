@@ -22,9 +22,7 @@ from . import utils
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
     if "OKTETO" not in os.environ
-    else os.path.join(
-        os.path.normpath(os.path.join(utils.get_base_dir(), "..")), "data"
-    )
+    else "/data"
 )
 
 logger = logging.getLogger(__name__)

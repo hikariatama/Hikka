@@ -67,15 +67,13 @@ else:
 
 is_okteto = "OKTETO" in os.environ
 
-if is_okteto and not os.path.isdir("data"):
-    os.mkdir("data", mode=0o755)
+if is_okteto and not os.path.isdir("/data"):
+    os.mkdir("/data", mode=0o755)
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
     if not is_okteto
-    else os.path.join(
-        os.path.normpath(os.path.join(utils.get_base_dir(), "..")), "data"
-    )
+    else "/data"
 )
 
 CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
