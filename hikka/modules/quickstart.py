@@ -32,7 +32,7 @@ class QuickstartMod(loader.Module):
     strings = {
         "name": "Quickstart",
         "quickstart": "👩‍🎤🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.\n\n❓ <b>Need help?</b> Feel free to join our support chat. We help <b>everyone</b>.\n\n📼 <b>Official modules sources: </b>\n▫️ @hikarimods\n▫️ @hikarimods_database\n▫️ <code>.dlmod</code>",
-        "quickstart_ru": "👩‍🎤🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka</b> установлен.\n\n❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>\n\n📼 <b>Официальные источники модулей: </b>\n▫️ @hikarimods\n▫️ @hikarimods_database\n▫️ <code>.dlmod</code>",
+        "quickstart_ru": "👩‍🎤🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka</b> установлен.\n\n❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>.\n\n📼 <b>Официальные источники модулей: </b>\n▫️ @hikarimods\n▫️ @hikarimods_database\n▫️ <code>.dlmod</code>",
     }
 
     def get(self, *args) -> dict:
