@@ -9,10 +9,8 @@ services:
     resources:
       cpu: 900m
       memory: 2Gi
-    volumes:
-      - hikka:/data
-
-volumes:
-  hikka:
-    driver_opts:
-      size: 1Gi
+    environment:
+          SESSION: $SESSION
+          API_ID: $API_ID
+          API_HASH: $API_HASH
+          CLOUD_PASS: $CLOUD_PASS
