@@ -39,6 +39,12 @@ from .. import utils, main
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+DATA_DIR = (
+    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
+    if "OKTETO" not in os.environ
+    else "/data"
+)
+
 
 class Web:
     def __init__(self, **kwargs):
@@ -101,9 +107,7 @@ class Web:
         ):
             return web.Response(status=400)
         with open(
-            os.path.join(
-                self.data_root or os.path.dirname(utils.get_base_dir()), "api_token.txt"
-            ),
+            os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
             "w",
         ) as f:
             f.write(api_id + "\n" + api_hash)
@@ -209,7 +213,8 @@ class Web:
         markup = InlineKeyboardMarkup()
         markup.add(
             InlineKeyboardButton(
-                "🔓 Authorize user", callback_data=f"authorize_web_{token}"
+                "🔓 Authorize user",
+                callback_data=f"authorize_web_{token}",
             )
         )
 
