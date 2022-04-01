@@ -65,6 +65,24 @@ except ImportError:
 else:
     web_available = True
 
+is_okteto = "OKTETO" in os.environ
+
+if is_okteto and not os.path.isdir("data"):
+    os.mkdir("data", mode=0o755)
+
+DATA_DIR = (
+    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
+    if not is_okteto
+    else os.path.join(
+        os.path.normpath(os.path.join(utils.get_base_dir(), "..")), "data"
+    )
+)
+
+CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
+
+if is_okteto:
+    os.chdir(DATA_DIR)
+
 
 def run_config(db, data_root, phone=None, modules=None):
     """Load configurator.py"""
@@ -76,7 +94,7 @@ def run_config(db, data_root, phone=None, modules=None):
 def get_config_key(key):
     """Parse and return key from config"""
     try:
-        with open("config.json", "r") as f:
+        with open(CONFIG_PATH, "r") as f:
             config = json.loads(f.read())
 
         return config.get(key, False)
@@ -87,7 +105,7 @@ def get_config_key(key):
 def save_config_key(key, value):
     try:
         # Try to open our newly created json config
-        with open("config.json", "r") as f:
+        with open(CONFIG_PATH, "r") as f:
             config = json.loads(f.read())
     except FileNotFoundError:
         # If it doesn't exist, just default config to none
@@ -99,7 +117,7 @@ def save_config_key(key, value):
     config[key] = value
 
     # And save config
-    with open("config.json", "w") as f:
+    with open(CONFIG_PATH, "w") as f:
         f.write(json.dumps(config))
 
     return True
@@ -120,12 +138,10 @@ def gen_port():
     port = random.randint(1024, 65536)
 
     # Then ensure it's free
-    while (
-        not socket.socket(
-            socket.AF_INET,
-            socket.SOCK_STREAM,
-        ).connect_ex(("localhost", port))
-    ):
+    while not socket.socket(
+        socket.AF_INET,
+        socket.SOCK_STREAM,
+    ).connect_ex(("localhost", port)):
         # Until we find the free port, generate new one
         port = random.randint(1024, 65536)
 
@@ -275,8 +291,7 @@ class Hikka:
                 filter(
                     lambda f: f.startswith("hikka-") and f.endswith(".session"),
                     os.listdir(
-                        self.arguments.data_root
-                        or os.path.dirname(utils.get_base_dir()),
+                        self.arguments.data_root or DATA_DIR,
                     ),
                 ),
             )
@@ -303,7 +318,7 @@ class Hikka:
         try:
             with open(
                 os.path.join(
-                    self.arguments.data_root or os.path.dirname(utils.get_base_dir()),
+                    self.arguments.data_root or DATA_DIR,
                     "api_token.txt",
                 )
             ) as f:
@@ -353,7 +368,7 @@ class Hikka:
         for client in self.web.clients:
             session = SQLiteSession(
                 os.path.join(
-                    self.arguments.data_root or os.path.dirname(utils.get_base_dir()),
+                    self.arguments.data_root or DATA_DIR,
                     f"hikka-+{'x' * (len(client.phone) - 5)}{client.phone[-4:]}-{(await client.get_me()).id}",
                 )
             )
@@ -407,7 +422,7 @@ class Hikka:
     def _init_clients(self) -> None:
         for phone_id, phone in self.phones.items():
             session = os.path.join(
-                self.arguments.data_root or os.path.dirname(utils.get_base_dir()),
+                self.arguments.data_root or DATA_DIR,
                 f'hikka{f"-{phone_id}" if phone_id else ""}',
             )
 
@@ -421,11 +436,7 @@ class Hikka:
                     connection_retries=None,
                 )
 
-                client.start(
-                    phone=raise_auth
-                    if self.web
-                    else lambda: input("Phone: ")
-                )
+                client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
                 client.phone = phone
 
                 self.clients.append(client)
@@ -474,11 +485,7 @@ class Hikka:
             diff = repo.git.log(["HEAD..origin/master", "--oneline"])
             upd = r"Update required" if diff else r"Up-to-date"
 
-            termux = bool(
-                os.popen(
-                    'echo $PREFIX | grep -o "com.termux"'
-                ).read()
-            )
+            termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())
             _platform = "Termux" if termux else "Unknown"
 
             logo1 = f"""

@@ -78,13 +78,13 @@ class HikkaSecurityMod(loader.Module):
         "li": '⦿ <b><a href="tg://user?id={}">{}</a></b>',
         "warning": (
             '⚠️ <b>Please, confirm, that you want to add <a href="tg://user?id={}">{}</a> '
-            'to group </b><code>{}</code><b>!\nThis action may reveal personal info and grant '
-            'full or partial access to userbot to this user</b>'
+            "to group </b><code>{}</code><b>!\nThis action may reveal personal info and grant "
+            "full or partial access to userbot to this user</b>"
         ),
         "cancel": "🚫 Cancel",
         "confirm": "👑 Confirm",
         "self": "🚫 <b>You can't promote/demote yourself!</b>",
-        "restart": "<i>🔄 Restart may be required to commit changes</i>"
+        "restart": "<i>🔄 Restart may be required to commit changes</i>",
     }
 
     def get(self, *args) -> dict:
@@ -101,10 +101,14 @@ class HikkaSecurityMod(loader.Module):
         )
 
         self._me = (await client.get_me()).id
-        self._is_hikka = hasattr(self, 'inline')
+        self._is_hikka = hasattr(self, "inline")
 
     async def inline__switch_perm(
-        self, call: aiogram.types.CallbackQuery, command: str, group: str, level: bool
+        self,
+        call: aiogram.types.CallbackQuery,
+        command: str,
+        group: str,
+        level: bool,
     ) -> None:
         cmd = self.allmodules.commands[command]
         mask = self._db.get(security.__name__, "masks", {}).get(
@@ -130,7 +134,10 @@ class HikkaSecurityMod(loader.Module):
         )
 
     async def inline__switch_perm_bm(
-        self, call: aiogram.types.CallbackQuery, group: str, level: bool
+        self,
+        call: aiogram.types.CallbackQuery,
+        group: str,
+        level: bool,
     ) -> None:
         mask = self._db.get(security.__name__, "bounding_mask", DEFAULT_PERMISSIONS)
         bit = security.BITMAP[group.upper()]
@@ -151,8 +158,12 @@ class HikkaSecurityMod(loader.Module):
     async def inline_close(call: aiogram.types.CallbackQuery) -> None:
         await call.delete()
 
-    def _build_markup(self, command: FunctionType) -> List[List[dict]]:
-        perms = self._get_current_perms(command)
+    def _build_markup(
+        self,
+        command: FunctionType,
+        is_inline: bool = False,
+    ) -> List[List[dict]]:
+        perms = self._get_current_perms(command, is_inline)
         buttons = [
             {
                 "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
@@ -207,7 +218,9 @@ class HikkaSecurityMod(loader.Module):
     def _get_current_perms(self, command: FunctionType) -> dict:
         config = self._db.get(security.__name__, "masks", {}).get(
             f"{command.__module__}.{command.__name__}",
-            getattr(command, "security", self._client.dispatcher.security._default),  # skipcq: PYL-W0212
+            getattr(
+                command, "security", self._client.dispatcher.security._default
+            ),
         )
 
         return self._perms_map(config)
@@ -233,6 +246,41 @@ class HikkaSecurityMod(loader.Module):
         await self.inline.form(
             self.strings("permissions").format(self.prefix, args),
             reply_markup=self._build_markup(cmd),
+            message=message,
+            ttl=5 * 60,
+        )
+
+    async def inlineseccmd(self, message: Message) -> None:
+        """[command] - Configure inline command's security settings"""
+        args = utils.get_args_raw(message).lower().strip()
+        if args and all(
+            args not in mod.inline_handlers
+            for mod in self.allmodules.modules
+            if hasattr(mod, "inline_handlers")
+            and isinstance(mod.inline_handlers, (list, set, tuple))
+        ):
+            await utils.answer(message, self.strings("no_command").format(args))
+            return
+
+        if not args:
+            await self.inline.form(
+                self.strings("global"),
+                reply_markup=self._build_markup_global(),
+                message=message,
+                ttl=5 * 60,
+            )
+            return
+
+        i_handler = next(
+            mod.inline_handlers[args]
+            for mod in self.allmodules.modules
+            if hasattr(mod, "inline_handlers")
+            and isinstance(mod.inline_handlers, (list, set, tuple))
+        )
+
+        await self.inline.form(
+            self.strings("permissions").format(self.prefix, args),
+            reply_markup=self._build_markup(i_handler, True),
             message=message,
             ttl=5 * 60,
         )
@@ -337,7 +385,9 @@ class HikkaSecurityMod(loader.Module):
         self._db.set(
             security.__name__,
             group,
-            list(set(self._db.get(security.__name__, group, [])) - set([user.id])),  # skipcq: PTC-W0018
+            list(
+                set(self._db.get(security.__name__, group, [])) - set([user.id])
+            ),
         )
 
         m = self.strings(f"{group}_removed").format(
@@ -348,14 +398,13 @@ class HikkaSecurityMod(loader.Module):
         if not self._is_hikka:
             m += f"\n\n{self.strings('restart')}"
 
-        await utils.answer(
-            message,
-            m
-        )
+        await utils.answer(message, m)
 
     async def _list_group(self, message: Message, group: str) -> None:
         _resolved_users = []
-        for user in self._db.get(security.__name__, group, []) + ([self._me] if group == "owner" else []):
+        for user in self._db.get(security.__name__, group, []) + (
+            [self._me] if group == "owner" else []
+        ):
             try:
                 _resolved_users += [await self._client.get_entity(user)]
             except Exception:

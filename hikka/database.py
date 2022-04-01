@@ -17,9 +17,15 @@ import json
 import os
 from typing import Any, Union
 
-from . import main
+from . import utils
 
-ORIGIN = "/".join(main.__file__.split("/")[:-2])
+DATA_DIR = (
+    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
+    if "OKTETO" not in os.environ
+    else os.path.join(
+        os.path.normpath(os.path.join(utils.get_base_dir(), "..")), "data"
+    )
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +45,7 @@ class Database(dict):
     async def init(self):
         """Asynchronous initialisation unit"""
         self._me = await self._client.get_me()
-        self._db_path = os.path.join(ORIGIN, f"config-{self._me.id}.json")
+        self._db_path = os.path.join(DATA_DIR, f"config-{self._me.id}.json")
         self.read()
 
     async def _find_asset_channel(self) -> Channel:

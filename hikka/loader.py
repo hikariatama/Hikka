@@ -65,8 +65,15 @@ MODULES_NAME = "modules"
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
 en_keys = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?"
 
+DATA_DIR = (
+    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
+    if "OKTETO" not in os.environ
+    else os.path.join(
+        os.path.normpath(os.path.join(utils.get_base_dir(), "..")), "data"
+    )
+)
 
-LOADED_MODULES_DIR = os.path.join(utils.get_base_dir(), "loaded_modules")
+LOADED_MODULES_DIR = os.path.join(DATA_DIR, "loaded_modules")
 
 if not os.path.isdir(LOADED_MODULES_DIR):
     os.mkdir(LOADED_MODULES_DIR, mode=0o755)
