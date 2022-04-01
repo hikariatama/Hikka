@@ -8,12 +8,13 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-from .. import loader
+from .. import loader, utils
 import logging
 import asyncio
 import os
 import time
 from telethon.tl.functions.messages import GetScheduledHistoryRequest
+from telethon.tl.types import Message
 
 logger = logging.getLogger(__name__)
 
@@ -26,16 +27,14 @@ class OktetoMod(loader.Module):
 
     async def client_ready(self, client, db) -> None:
         if "OKTETO" not in os.environ:
-            raise loader.LoadError(
-                "This module can be loaded only if userbot is installed to ☁️ Okteto"
-            )
+            raise loader.LoadError("This module can be loaded only if userbot is installed to ☁️ Okteto")  # fmt: skip
 
         self._db = db
         self._client = client
         self._env_wait_interval = 10
-        self._overall_polling_interval = 60 * 60
-        self._plan = 3 * 24 * 60 * 60
-        self._messages_interval = 60 * 60
+        self._overall_polling_interval = 30 * 60
+        self._plan = 2 * 24 * 60 * 60
+        self._messages_interval = 30 * 60
         self._exception_timeout = 10
         self._send_interval = 5
         self._bot = "@WebpageBot"
@@ -83,3 +82,17 @@ class OktetoMod(loader.Module):
             except Exception:
                 logger.exception("Caught exception on Okteto poller")
                 await asyncio.sleep(self._exception_timeout)
+
+    async def watcher(self, message: Message) -> None:
+        if (
+            "OKTETO_URI" not in os.environ
+            or os.environ["OKTETO_URI"] not in message.raw_text
+            and "Link previews was updated successfully" not in message.raw_text
+            or utils.get_chat_id(message) != 169642392
+        ):
+            return
+
+        if message.out:
+            await asyncio.sleep(1)
+
+        await message.delete()
