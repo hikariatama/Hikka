@@ -71,6 +71,9 @@ DATA_DIR = (
     else "/data"
 )
 
+if "OKTETO" in os.environ and not os.path.isdir("/data"):
+    os.mkdir("/data", mode=0o755)
+
 LOADED_MODULES_DIR = os.path.join(DATA_DIR, "loaded_modules")
 
 if not os.path.isdir(LOADED_MODULES_DIR):
