@@ -85,7 +85,7 @@ class OktetoMod(loader.Module):
 
     async def watcher(self, message: Message) -> None:
         if (
-            not hasattr(message, "raw_text", False)
+            not getattr(message, "raw_text", False)
             or "OKTETO_URI" not in os.environ
             or os.environ["OKTETO_URI"] not in message.raw_text
             and "Link previews was updated successfully" not in message.raw_text
