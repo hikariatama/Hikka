@@ -9,8 +9,9 @@ services:
     resources:
       cpu: 900m
       memory: 2Gi
-    environment:
-          SESSION: $SESSION
-          API_ID: $API_ID
-          API_HASH: $API_HASH
-          CLOUD_PASS: $CLOUD_PASS
+    volumes:
+      - worker:/data
+ 
+volumes:
+  worker:
+    size: 1Gi
