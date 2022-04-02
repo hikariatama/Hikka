@@ -46,7 +46,11 @@ from telethon.tl.types import (
     MessageMediaWebPage,
     Channel,
     Chat,
+    InputPeerNotifySettings,
 )
+
+from telethon.tl.functions.channels import CreateChannelRequest
+from telethon.tl.functions.account import UpdateNotifySettingsRequest
 
 from aiogram.types import CallbackQuery
 
@@ -55,10 +59,6 @@ from .inline.types import InlineCall
 import random
 
 from typing import Tuple, Union, List, Any
-
-from telethon.tl.functions.channels import CreateChannelRequest
-
-from . import __main__
 
 
 def get_args(message: Message) -> List[str]:
@@ -118,23 +118,25 @@ def get_chat_id(message: Message) -> int:
 
 
 def get_entity_id(
+    *,
     entity: Union[Chat, User, Channel, PeerChat, PeerChat, PeerChannel]
 ) -> int:
     return telethon.utils.get_peer_id(entity)
 
 
-def escape_html(text: str) -> str:
+def escape_html(*, text: str) -> str:
     """Pass all untrusted/potentially corrupt input here"""
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def escape_quotes(text: str) -> str:
+def escape_quotes(*, text: str) -> str:
     """Escape quotes to html quotes"""
     return escape_html(text).replace('"', "&quot;")
 
 
 def get_base_dir() -> str:
     """Get directory of this file"""
+    from . import __main__
     return get_dir(__main__.__file__)
 
 
@@ -239,7 +241,10 @@ async def answer(message: Union[Message, CallbackQuery], response: str, **kwargs
     
     if isinstance(message, list):
         delete_job = asyncio.ensure_future(
-            message[0].client.delete_messages(message[0].input_chat, message[1:])
+            message[0].client.delete_messages(
+                message[0].input_chat,
+                message[1:],
+            )
         )
         message = message[0]
     else:
@@ -356,7 +361,7 @@ async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
             return entity.id
 
 
-def merge(a: dict, b: dict) -> dict:
+def merge(*, a: dict, b: dict) -> dict:
     """Merge with replace dictionary a to dictionary b"""
     for key in a:
         if key in b:
@@ -376,19 +381,24 @@ async def asset_channel(
     client: "TelegramClient",  # noqa: F821
     title: str,
     description: str,
+    *,
+    silent: bool = False,
+    archive: bool = False,
 ) -> Tuple[Channel, bool]:
     """
     Create new channel (if needed) and return its entity
     @client: Telegram client to create channel by
     @title: Channel title
     @description: Description
+    @silent: Automatically mute channel
+    @archive: Automatically archive channel
     Returns peer and bool: is channel new or pre-existent
     """
     async for d in client.iter_dialogs():
         if d.title == title:
             return d.entity, False
 
-    return (
+    peer = (
         await client(
             CreateChannelRequest(
                 title,
@@ -396,7 +406,24 @@ async def asset_channel(
                 megagroup=True,
             )
         )
-    ).chats[0], True
+    ).chats[0]
+
+    if silent:
+        await client(
+            UpdateNotifySettingsRequest(
+                peer=peer,
+                settings=InputPeerNotifySettings(
+                    show_previews=False,
+                    silent=True,
+                    mute_until=2 ** 31 - 1,
+                ),
+            )
+        )
+
+    if archive:
+        await client.edit_folder(peer, 1)
+
+    return peer, True
 
 
 def get_link(user: Union[User, Channel]) -> str:
@@ -412,7 +439,7 @@ def get_link(user: Union[User, Channel]) -> str:
     )
 
 
-def chunks(_list: Union[list, tuple, set], n: int) -> list:
+def chunks(*, _list: Union[list, tuple, set], n: int) -> list:
     """Split provided `_list` into chunks of `n`"""
     return [_list[i : i + n] for i in range(0, len(_list), n)]
 

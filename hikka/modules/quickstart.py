@@ -12,6 +12,7 @@ from .. import loader
 import logging
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from random import choice
+import os
 
 logger = logging.getLogger(__name__)
 imgs = [
@@ -24,15 +25,40 @@ imgs = [
     "https://i2.wp.com/metanorn.net/wp-content/uploads/2011/08/NS3-04b.gif",
 ]
 
+TEXT = """👩‍🎤🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
+
+❓ <b>Need help?</b> Feel free to join our support chat. We help <b>everyone</b>.
+
+📼 <b>Official modules sources: </b>
+▫️ @hikarimods
+▫️ @hikarimods_database
+▫️ <code>.dlmod</code>
+
+"""
+
+
+TEXT_RU = """👩‍🎤🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka</b> установлен.
+
+❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>.
+
+📼 <b>Официальные источники модулей: </b>
+▫️ @hikarimods
+▫️ @hikarimods_database
+▫️ <code>.dlmod</code>
+
+"""
+
+if "OKTETO" in os.environ:
+    TEXT += "☁️ <b>Your userbot is installed on Okteto</b>. Don't worry, you will get some notifications from @WebpageBot. Do not block him."
+    TEXT_RU += "☁️ <b>Твой юзербот установлен на Okteto</b>. Не пугайся, когда будешь получать уведомления от @WebpageBot и не блокируй его."
+
 
 @loader.tds
 class QuickstartMod(loader.Module):
     """Notifies user about userbot installation"""
 
     strings = {
-        "name": "Quickstart",
-        "quickstart": "👩‍🎤🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.\n\n❓ <b>Need help?</b> Feel free to join our support chat. We help <b>everyone</b>.\n\n📼 <b>Official modules sources: </b>\n▫️ @hikarimods\n▫️ @hikarimods_database\n▫️ <code>.dlmod</code>",
-        "quickstart_ru": "👩‍🎤🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka</b> установлен.\n\n❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>\n\n📼 <b>Официальные источники модулей: </b>\n▫️ @hikarimods\n▫️ @hikarimods_database\n▫️ <code>.dlmod</code>",
+        "name": "Quickstart"
     }
 
     def get(self, *args) -> dict:
@@ -62,7 +88,7 @@ class QuickstartMod(loader.Module):
         await self.inline.bot.send_animation(
             self._me,
             animation=choice(imgs),
-            caption=self.strings("quickstart"),
+            caption=TEXT,
             parse_mode="HTML",
             reply_markup=mark,
         )
@@ -92,7 +118,7 @@ class QuickstartMod(loader.Module):
             await self.inline.bot.edit_message_caption(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                caption=self.strings("quickstart_ru"),
+                caption=TEXT_RU,
                 parse_mode="HTML",
                 reply_markup=mark,
             )
@@ -114,7 +140,7 @@ class QuickstartMod(loader.Module):
             await self.inline.bot.edit_message_caption(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                caption=self.strings("quickstart"),
+                caption=TEXT,
                 parse_mode="HTML",
                 reply_markup=mark,
             )

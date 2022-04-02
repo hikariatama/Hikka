@@ -56,6 +56,7 @@ else:
     from . import log
 
     log.init()
+
     try:
         from . import main
     except ModuleNotFoundError as e:  # pragma: no cover
@@ -65,9 +66,7 @@ else:
             "Attempting dependencies installation... Just wait."
         )
 
-        os.popen(
-            "pip3 install -r requirements.txt"
-        ).read()  # skipcq: BAN-B605, BAN-B607
+        os.popen("pip3 install -r requirements.txt").read()
 
         try:
             from . import main
