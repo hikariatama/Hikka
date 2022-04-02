@@ -118,18 +118,17 @@ def get_chat_id(message: Message) -> int:
 
 
 def get_entity_id(
-    *,
     entity: Union[Chat, User, Channel, PeerChat, PeerChat, PeerChannel]
 ) -> int:
     return telethon.utils.get_peer_id(entity)
 
 
-def escape_html(*, text: str) -> str:
+def escape_html(text: str) -> str:
     """Pass all untrusted/potentially corrupt input here"""
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def escape_quotes(*, text: str) -> str:
+def escape_quotes(text: str) -> str:
     """Escape quotes to html quotes"""
     return escape_html(text).replace('"', "&quot;")
 
@@ -361,7 +360,7 @@ async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
             return entity.id
 
 
-def merge(*, a: dict, b: dict) -> dict:
+def merge(a: dict, b: dict) -> dict:
     """Merge with replace dictionary a to dictionary b"""
     for key in a:
         if key in b:
@@ -439,7 +438,7 @@ def get_link(user: Union[User, Channel]) -> str:
     )
 
 
-def chunks(*, _list: Union[list, tuple, set], n: int) -> list:
+def chunks(_list: Union[list, tuple, set], n: int) -> list:
     """Split provided `_list` into chunks of `n`"""
     return [_list[i : i + n] for i in range(0, len(_list), n)]
 
