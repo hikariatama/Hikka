@@ -56,6 +56,7 @@ from .translations.core import Translator
 
 from math import ceil
 from .version import __version__
+from typing import Union
 
 try:
     from .web import core
@@ -79,14 +80,14 @@ if is_okteto:
     logging.info(os.popen("ls /data").read())
 
 
-def run_config(db, data_root, phone=None, modules=None):
+def run_config(db: database.Database, data_root: str, phone: Union[str, int] = None, modules: list = None) -> None:
     """Load configurator.py"""
     from . import configurator
 
     return configurator.run(db, data_root, phone, phone is None, modules)
 
 
-def get_config_key(key):
+def get_config_key(key: str) -> Union[str, bool]:
     """Parse and return key from config"""
     try:
         with open(CONFIG_PATH, "r") as f:
@@ -97,7 +98,7 @@ def get_config_key(key):
         return False
 
 
-def save_config_key(key, value):
+def save_config_key(key: str, value: str) -> bool:
     try:
         # Try to open our newly created json config
         with open(CONFIG_PATH, "r") as f:
@@ -118,7 +119,7 @@ def save_config_key(key, value):
     return True
 
 
-def gen_port():
+def gen_port() -> int:
     if "OKTETO" in os.environ:
         return 8080
 
@@ -143,7 +144,7 @@ def gen_port():
     return port
 
 
-def parse_arguments():
+def parse_arguments() -> None:
     """Parse the arguments"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--setup", "-s", action="store_true")
@@ -346,6 +347,7 @@ class Hikka:
         )
 
     def _get_token(self) -> None:
+        """Reads or waits for user to enter API credentials"""
         while self.api_token is None:
             if self.arguments.no_auth:
                 return
@@ -360,6 +362,7 @@ class Hikka:
                 self._get_api_token()
 
     async def fetch_clients_from_web(self) -> None:
+        """Imports clients from web module"""
         for client in self.web.clients:
             session = SQLiteSession(
                 os.path.join(
@@ -380,10 +383,12 @@ class Hikka:
         self.clients = list(set(self.clients + self.web.clients))
 
     def _web_banner(self) -> None:
+        """Shows web banner"""
         print("✅ Web mode ready for configuration")
         print(f"🌐 Please visit http://127.0.0.1:{self.web.port}")
 
-    async def wait_for_web_auth(self, token) -> None:
+    async def wait_for_web_auth(self, token: str) -> None:
+        """Waits for web auth confirmation in Telegram"""
         timeout = 5 * 60
         polling_interval = 1
         for _ in range(ceil(timeout * polling_interval)):
@@ -394,6 +399,7 @@ class Hikka:
                     return True
 
     def _initial_setup(self) -> bool:
+        """Responsible for first start"""
         if self.arguments.no_auth:
             return False
 
@@ -415,6 +421,7 @@ class Hikka:
         return True
 
     def _init_clients(self) -> None:
+        """Reads session from disk and inits them"""
         for phone_id, phone in self.phones.items():
             session = os.path.join(
                 self.arguments.data_root or DATA_DIR,

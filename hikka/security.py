@@ -83,70 +83,70 @@ PUBLIC_PERMISSIONS = GROUP_OWNER | GROUP_ADMIN_ANY | GROUP_MEMBER | PM
 ALL = (1 << 13) - 1
 
 
-def owner(func):
+def owner(func: FunctionType) -> FunctionType:
     return _sec(func, OWNER)
 
 
-def sudo(func):
-    return _sec(func, OWNER | SUDO)
+def sudo(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO)
 
 
-def support(func):
-    return _sec(func, OWNER | SUDO | SUPPORT)
+def support(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | SUPPORT)
 
 
-def group_owner(func):
-    return _sec(func, OWNER | SUDO | GROUP_OWNER)
+def group_owner(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_OWNER)
 
 
-def group_admin_add_admins(func):
-    return _sec(func, OWNER | SUDO | GROUP_ADMIN_ADD_ADMINS)
+def group_admin_add_admins(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_ADMIN_ADD_ADMINS)
 
 
-def group_admin_change_info(func):
-    return _sec(func, OWNER | SUDO | GROUP_ADMIN_CHANGE_INFO)
+def group_admin_change_info(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_ADMIN_CHANGE_INFO)
 
 
-def group_admin_ban_users(func):
-    return _sec(func, OWNER | SUDO | GROUP_ADMIN_BAN_USERS)
+def group_admin_ban_users(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_ADMIN_BAN_USERS)
 
 
-def group_admin_delete_messages(func):
-    return _sec(func, OWNER | SUDO | GROUP_ADMIN_DELETE_MESSAGES)
+def group_admin_delete_messages(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_ADMIN_DELETE_MESSAGES)
 
 
-def group_admin_pin_messages(func):
-    return _sec(func, OWNER | SUDO | GROUP_ADMIN_PIN_MESSAGES)
+def group_admin_pin_messages(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_ADMIN_PIN_MESSAGES)
 
 
-def group_admin_invite_users(func):
-    return _sec(func, OWNER | SUDO | GROUP_ADMIN_INVITE_USERS)
+def group_admin_invite_users(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_ADMIN_INVITE_USERS)
 
 
-def group_admin(func):
-    return _sec(func, OWNER | SUDO | GROUP_ADMIN)
+def group_admin(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_ADMIN)
 
 
-def group_member(func):
-    return _sec(func, OWNER | SUDO | GROUP_MEMBER)
+def group_member(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | GROUP_MEMBER)
 
 
-def pm(func):
-    return _sec(func, OWNER | SUDO | PM)
+def pm(func: FunctionType) -> FunctionType:
+    return _sec(func, SUDO | PM)
 
 
-def unrestricted(func):
+def unrestricted(func: FunctionType) -> FunctionType:
     return _sec(func, ALL)
 
 
-def _sec(func, flags):
+def _sec(func: FunctionType, flags: int) -> FunctionType:
     prev = getattr(func, "security", 0)
-    func.security = prev | flags
+    func.security = prev | OWNER | flags
     return func
 
 
 class SecurityManager:
-    def __init__(self, db):
+    def __init__(self, db) -> None:
         self._any_admin = db.get(__name__, "any_admin", False)
         self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
         self._db = db
@@ -162,11 +162,11 @@ class SecurityManager:
         )
         self._support = self._db.get(__name__, "support", []).copy()
 
-    async def init(self, client):
+    async def init(self, client) -> None:
         self._client = client
         self._me = (await client.get_me()).id
 
-    def get_flags(self, func):
+    def get_flags(self, func: FunctionType) -> int:
         if isinstance(func, int):
             config = func
         else:
@@ -201,13 +201,8 @@ class SecurityManager:
 
         if not user:
             user = message.sender_id
-            check_message = True
-        else:
-            check_message = False
 
-        if check_message and message.out:
-            # If message was sent from the account, where
-            # userbot is installed, skip security check
+        if user == self._me:
             return True
 
         logger.debug("Checking security match for %d", config)

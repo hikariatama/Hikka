@@ -1,4 +1,5 @@
 import logging
+from telethon.tl.types import Message
 
 
 class Module:
@@ -21,7 +22,7 @@ class Module:
 
 
 class LoadError(Exception):
-    def __init__(self, error_message):  # skipcq: PYL-W0231
+    def __init__(self, error_message: str) -> None:  # skipcq: PYL-W0231
         self._error = error_message
 
     def __str__(self) -> str:
@@ -49,7 +50,7 @@ class ModuleConfig(dict):
         self._docstrings = dict(zip(keys, docstrings))
         self._defaults = dict(zip(keys, defaults))
 
-    def getdoc(self, key, message=None):
+    def getdoc(self, key: str, message: Message = None) -> str:
         """Get the documentation by key"""
         ret = self._docstrings[key]
         if callable(ret):
@@ -61,6 +62,6 @@ class ModuleConfig(dict):
 
         return ret
 
-    def getdef(self, key):
+    def getdef(self, key: str) -> str:
         """Get the default value by key"""
         return self._defaults[key]

@@ -117,18 +117,16 @@ def get_chat_id(message: Message) -> int:
     return telethon.utils.resolve_id(message.chat_id)[0]
 
 
-def get_entity_id(
-    entity: Union[Chat, User, Channel, PeerChat, PeerChat, PeerChannel]
-) -> int:
+def get_entity_id(entity: Union[Chat, User, Channel, PeerChat, PeerChat, PeerChannel]) -> int:  # fmt: skip
     return telethon.utils.get_peer_id(entity)
 
 
-def escape_html(text: str) -> str:
+def escape_html(text: str, /) -> str:
     """Pass all untrusted/potentially corrupt input here"""
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def escape_quotes(text: str) -> str:
+def escape_quotes(text: str, /) -> str:
     """Escape quotes to html quotes"""
     return escape_html(text).replace('"', "&quot;")
 
@@ -425,7 +423,7 @@ async def asset_channel(
     return peer, True
 
 
-def get_link(user: Union[User, Channel]) -> str:
+def get_link(user: Union[User, Channel], /) -> str:
     """Get telegram permalink to entity"""
     return (
         f"tg://user?id={user.id}"
@@ -438,7 +436,7 @@ def get_link(user: Union[User, Channel]) -> str:
     )
 
 
-def chunks(_list: Union[list, tuple, set], n: int) -> list:
+def chunks(_list: Union[list, tuple, set], n: int, /) -> list:
     """Split provided `_list` into chunks of `n`"""
     return [_list[i : i + n] for i in range(0, len(_list), n)]
 
@@ -515,7 +513,7 @@ def ascii_face() -> str:
     )
 
 
-def array_sum(array: List[Any]) -> List[Any]:
+def array_sum(array: List[Any], /) -> List[Any]:
     """Performs basic sum operation on array"""
     result = []
     for item in array:
@@ -524,7 +522,7 @@ def array_sum(array: List[Any]) -> List[Any]:
     return result
 
 
-def rand(size: int) -> str:
+def rand(size: int, /) -> str:
     """Return random string of len `size`"""
     return "".join(
         [random.choice("abcdefghijklmnopqrstuvwxyz1234567890") for _ in range(size)]

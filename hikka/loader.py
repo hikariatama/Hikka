@@ -41,10 +41,7 @@ from .inline.core import InlineManager
 from .types import Module, LoadError, ModuleConfig  # noqa: F401
 from importlib.machinery import ModuleSpec
 
-
-def test(*args, **kwargs):
-    return lambda func: func
-
+from typing import Any
 
 owner = security.owner
 sudo = security.sudo
@@ -325,6 +322,15 @@ class Modules:
         """Complete registration of instance"""
         instance.allmodules = self
         instance.hikka = True
+        instance.get = functools.partial(
+            self._mod_get,
+            mod=instance.strings["name"],
+        )
+        instance.set = functools.partial(
+            self._mod_set,
+            mod=instance.strings["name"],
+        )
+
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
                 logging.debug("Removing module for update %r", module)
@@ -339,6 +345,12 @@ class Modules:
                 )
 
         self.modules += [instance]
+
+    def _mod_get(self, *args, mod: str = None) -> Any:
+        return self._db.get(mod, *args)
+
+    def _mod_set(self, *args, mod: str = None) -> bool:
+        return self._db.set(mod, *args)
 
     def dispatch(self, command: str) -> tuple:
         """Dispatch command to appropriate module"""
