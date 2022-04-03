@@ -20,6 +20,7 @@ from telethon.errors.rpcerrorlist import InputUserDeactivatedError
 from telethon.utils import get_display_name
 
 from .gallery import Gallery
+from .query_gallery import QueryGallery
 from .form import Form
 from .bot_interaction import BotInteractions
 from .events import Events
@@ -35,7 +36,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment):
+class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment, QueryGallery):
     def __init__(self, client, db, allmodules) -> None:
         """Initialize InlineManager to create forms"""
         self._client = client

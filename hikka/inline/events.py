@@ -6,6 +6,10 @@ from aiogram.types import (
     ChosenInlineResult,
     InlineQueryResultArticle,
     InputTextMessageContent,
+    InlineQueryResultPhoto,
+    InlineQueryResultGif,
+    InlineQueryResultVideo,
+    InlineQueryResultDocument,
 )
 import logging
 from typing import List
@@ -55,16 +59,116 @@ class Events(InlineUnit):
 
         # First, dispatch all registered inline handlers
         cmd = inline_query.query.split()[0].lower()
-        if cmd in self._allmodules.inline_handlers and await self.check_inline_security(
-            self._allmodules.inline_handlers[cmd],
-            inline_query.from_user.id,
+        if (
+            cmd in self._allmodules.inline_handlers
+            and await self.check_inline_security(
+                self._allmodules.inline_handlers[cmd],
+                inline_query.from_user.id,
+            )
         ):
             instance = InlineQuery(inline_query)
 
             try:
-                await self._allmodules.inline_handlers[cmd](instance)
+                result = await self._allmodules.inline_handlers[cmd](instance)
             except BaseException:
                 logger.exception("Error on running inline watcher!")
+                return
+
+            if not result:
+                return
+
+            if isinstance(result, dict):
+                result = [result]
+
+            if not isinstance(result, list) or not all(
+                (
+                    "message" in res
+                    or "photo" in res
+                    or "gif" in res
+                    or "video" in res
+                    or "file" in res and "mime_type" in res
+                )
+                and "title" in res
+                for res in result
+            ):
+                logger.error("Got invalid type from inline handler. Refer to docs for more info")  # fmt: skip
+                return
+
+            inline_result = []
+
+            for res in result:
+                if "message" in res:
+                    inline_result += [
+                        InlineQueryResultArticle(
+                            id=utils.rand(20),
+                            title=res["title"],
+                            description=res.get("description", None),
+                            input_message_content=InputTextMessageContent(
+                                res["message"],
+                                "HTML",
+                                disable_web_page_preview=True,
+                            ),
+                            thumb_url=res.get("thumb", None),
+                            thumb_width=128,
+                            thumb_height=128,
+                        )
+                    ]
+                elif "photo" in res:
+                    inline_result += [
+                        InlineQueryResultPhoto(
+                            id=utils.rand(20),
+                            title=res.get("title", None),
+                            description=res.get("description", None),
+                            caption=res.get("caption", None),
+                            parse_mode="HTML",
+                            thumb_url=res.get("thumb", res["photo"]),
+                            photo_url=res["photo"],
+                        )
+                    ]
+                elif "gif" in res:
+                    inline_result += [
+                        InlineQueryResultGif(
+                            id=utils.rand(20),
+                            title=res.get("title", None),
+                            description=res.get("description", None),
+                            caption=res.get("caption", None),
+                            parse_mode="HTML",
+                            thumb_url=res.get("thumb", res["gif"]),
+                            gif_url=res["gif"],
+                        )
+                    ]
+                elif "video" in res:
+                    inline_result += [
+                        InlineQueryResultVideo(
+                            id=utils.rand(20),
+                            title=res.get("title", None),
+                            description=res.get("description", None),
+                            caption=res.get("caption", None),
+                            parse_mode="HTML",
+                            thumb_url=res.get("thumb", res["video"]),
+                            video_url=res["video"],
+                            mime_type="video/mp4",
+                        )
+                    ]
+                elif "file" in res:
+                    inline_result += [
+                        InlineQueryResultDocument(
+                            id=utils.rand(20),
+                            title=res.get("title", None),
+                            description=res.get("description", None),
+                            caption=res.get("caption", None),
+                            parse_mode="HTML",
+                            thumb_url=res.get("thumb", res["file"]),
+                            document_url=res["file"],
+                            mime_type=res["mime_type"],
+                        )
+                    ]
+
+            try:
+                await inline_query.answer(inline_result)
+            except Exception:
+                logger.exception(f"Exception when answering inline query with result from {cmd}")  # fmt: skip
+                return
 
         await self._form_inline_handler(inline_query)
         await self._gallery_inline_handler(inline_query)
@@ -260,37 +364,28 @@ class Events(InlineUnit):
 
     async def _query_help(self, inline_query: InlineQuery) -> None:
         _help = ""
-        for mod in self._allmodules.modules:
-            if (
-                not hasattr(mod, "inline_handlers")
-                or not isinstance(mod.inline_handlers, dict)
-                or not mod.inline_handlers
-            ):
+        for name, fun in self._allmodules.inline_handlers.items():
+            # If user doesn't have enough permissions
+            # to run this inline command, do not show it
+            # in help
+            if not await self.check_inline_security(fun, inline_query.from_user.id):
                 continue
 
-            _ihandlers = dict(mod.inline_handlers.items())
-            for name, fun in _ihandlers.items():
-                # If user doesn't have enough permissions
-                # to run this inline command, do not show it
-                # in help
-                if not await self.check_inline_security(fun, inline_query.from_user.id):
-                    continue
-
-                # Retrieve docs from func
-                try:
-                    doc = utils.escape_html(
-                        "\n".join(
-                            [
-                                line.strip()
-                                for line in inspect.getdoc(fun).splitlines()
-                                if not line.strip().startswith("@")
-                            ]
-                        )
+            # Retrieve docs from func
+            try:
+                doc = utils.escape_html(
+                    "\n".join(
+                        [
+                            line.strip()
+                            for line in inspect.getdoc(fun).splitlines()
+                            if not line.strip().startswith("@")
+                        ]
                     )
-                except AttributeError:
-                    doc = "🦥 No docs"
+                )
+            except AttributeError:
+                doc = "🦥 No docs"
 
-                _help += f"🎹 <code>@{self.bot_username} {name}</code> - {doc}\n"
+            _help += f"🎹 <code>@{self.bot_username} {name}</code> - {doc}\n"
 
         await inline_query.answer(
             [

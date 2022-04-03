@@ -288,4 +288,12 @@ from .. import utils
 `await query.e426()` - Необходимо обновление юзербота
 `await query.e500()` - Ошибка модуля. Смотри логи
 
+### Правильный ответ на Inline запрос
 
+Вместо того, чтобы вручную вызывать `query.answer`, можно просто вернуть словарь с нужным ответом. Либо список из подобных словарей
+
+- `{"message": "<b>Текст сообщения</b>", "title": "Текстовый ответ"}` 
+- `{"photo": "https://i.imgur.com/hZIyI7v.jpeg", "title": "Фотография"}`
+- `{"video": "https://x0.at/wWN9.mp4", "title": "Видео"}`
+- `{"file": "https://x0.at/f7ps.pdf", "mime_type": "application/pdf", "title": "Документ"}`
+- `{"gif": "https://x0.at/Sey-.mp4", "title": "GIF-ка"}`
