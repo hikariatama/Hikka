@@ -29,11 +29,11 @@ logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class AutoUpdaterMod(loader.Module):
+class UpdateNotifierMod(loader.Module):
     """Tracks latest Hikka releases, and notifies you, if update is required"""
 
     strings = {
-        "name": "AutoUpdater",
+        "name": "UpdateNotifier",
         "update_required": "🌒 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
     }
 
@@ -54,6 +54,8 @@ class AutoUpdaterMod(loader.Module):
     def get_changelog(self) -> str:
         try:
             repo = git.Repo()
+            for remote in repo.remotes:
+                remote.fetch()
             diff = repo.git.log(["HEAD..origin/master", "--oneline"])
             if not diff:
                 return False
@@ -107,10 +109,6 @@ class AutoUpdaterMod(loader.Module):
 
     async def poller(self) -> None:
         while True:
-            if self.get("ignore_until", 0) > time.time():
-                await asyncio.sleep(self.get("ignore_until") - time.time())
-                continue
-
             if not self.get_changelog():
                 await asyncio.sleep(60)
                 continue
@@ -142,7 +140,6 @@ class AutoUpdaterMod(loader.Module):
                     )
 
                     self.set("ignore_permanent", False)
-                    self.set("ignore_until", 0)
 
                     self._notified = self._pending
             except Exception:
