@@ -245,7 +245,9 @@ class HikkaSettingsMod(loader.Module):
         await call.delete()
 
     async def inline__update(
-        self, call: CallbackQuery, confirm_required: bool = False
+        self,
+        call: CallbackQuery,
+        confirm_required: bool = False,
     ) -> None:
         if confirm_required:
             await call.edit(
@@ -265,7 +267,9 @@ class HikkaSettingsMod(loader.Module):
         await self.allmodules.commands["update"](m)
 
     async def inline__restart(
-        self, call: CallbackQuery, confirm_required: bool = False
+        self,
+        call: CallbackQuery,
+        confirm_required: bool = False,
     ) -> None:
         if confirm_required:
             await call.edit(

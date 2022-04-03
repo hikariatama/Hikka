@@ -53,12 +53,6 @@ class HelpMod(loader.Module):
             lambda: "Plain module bullet"
         )
 
-    def get(self, *args) -> dict:
-        return self._db.get(self.strings["name"], *args)
-
-    def set(self, *args) -> None:
-        return self._db.set(self.strings["name"], *args)
-
     async def helphidecmd(self, message: Message) -> None:
         """<module or modules> - Hide module(-s) from help
         *Split modules by spaces"""

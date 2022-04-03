@@ -54,6 +54,8 @@ class InlineStuffMod(loader.Module):
 
         id_ = re.search(r"#id: ([a-zA-Z0-9]+)", message.raw_text).group(1)
 
+        await message.delete()
+
         m = await message.respond("👩‍🎤 <b>Opening gallery... wait</b>")
 
         await self.inline.gallery(
@@ -61,8 +63,6 @@ class InlineStuffMod(loader.Module):
             next_handler=self.inline._custom_map[id_]["handler"],
             caption=self.inline._custom_map[id_].get("caption", ""),
         )
-
-        await message.delete()
 
     async def _check_bot(self, username: str) -> bool:
         async with self._client.conversation("@BotFather", exclusive=False) as conv:

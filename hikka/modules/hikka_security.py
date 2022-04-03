@@ -89,12 +89,6 @@ class HikkaSecurityMod(loader.Module):
         "restart": "<i>🔄 Restart may be required to commit changes</i>",
     }
 
-    def get(self, *args) -> dict:
-        return self._db.get(self.strings["name"], *args)
-
-    def set(self, *args) -> None:
-        return self._db.set(self.strings["name"], *args)
-
     async def client_ready(self, client, db) -> None:
         self._db = db
         self._client = client
@@ -232,7 +226,6 @@ class HikkaSecurityMod(loader.Module):
     def _perms_map(perms: int, is_inline: bool) -> dict:
         return (
             {
-                "owner": bool(perms & OWNER),
                 "sudo": bool(perms & SUDO),
                 "support": bool(perms & SUPPORT),
                 "group_owner": bool(perms & GROUP_OWNER),
@@ -250,7 +243,6 @@ class HikkaSecurityMod(loader.Module):
             }
             if not is_inline
             else {
-                "owner": bool(perms & OWNER),
                 "sudo": bool(perms & SUDO),
                 "support": bool(perms & SUPPORT),
                 "everyone": bool(perms & EVERYONE),

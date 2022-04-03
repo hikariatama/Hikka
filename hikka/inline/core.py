@@ -158,10 +158,13 @@ class InlineManager(Gallery, Form, BotInteractions, Events, TokenObtainment):
                 )
                 for stack_entry in inspect.stack()
                 if hasattr(stack_entry, "function")
-                and stack_entry.function.endswith("cmd")
+                and (
+                    stack_entry.function.endswith("cmd")
+                    or stack_entry.function.endswith("_inline_handler")
+                )
             )
         except Exception:
-            logger.exception("Can't parse security mask in form")
+            logger.debug("Can't parse security mask in form", exc_info=True)
             return None
 
     async def _register_manager(

@@ -57,15 +57,7 @@ if "OKTETO" in os.environ:
 class QuickstartMod(loader.Module):
     """Notifies user about userbot installation"""
 
-    strings = {
-        "name": "Quickstart"
-    }
-
-    def get(self, *args) -> dict:
-        return self._db.get(self.strings["name"], *args)
-
-    def set(self, *args) -> None:
-        return self._db.set(self.strings["name"], *args)
+    strings = {"name": "Quickstart"}
 
     async def client_ready(self, client, db) -> None:
         self._me = (await client.get_me()).id

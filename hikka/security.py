@@ -249,6 +249,9 @@ class SecurityManager:
         if user in self._db.get(main.__name__, "blacklist_users", []):
             return False
 
+        if message is None:  # In case of checking inline query security map
+            return bool(config & EVERYONE)
+
         if f_group_member and message.is_group or f_pm and message.is_private:
             return True
 
