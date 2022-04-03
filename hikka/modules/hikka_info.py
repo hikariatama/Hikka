@@ -81,3 +81,21 @@ class HikkaInfoMod(loader.Module):
             text=self._render_info(),
             reply_markup=self.markup,
         )
+
+    async def hikkainfocmd(self, message: Message) -> None:
+        """[en/ru - default en] - Send info aka 'What is Hikka?'"""
+        args = utils.get_args_raw(message)
+        args = args if args in {"en", "ru"} else "en"
+
+        await utils.answer(
+            message,
+            """🌒 <b>Hikka</b>
+
+Brand new userbot for Telegram with a lot of features, aka InlineGalleries, Forms and others. Userbot - software, running on your Telegram account. If you write a command to any chat, it will get executed right there. Check out live examples at <a href="https://github.com/hikariatama/Hikka">GitHub</a>
+"""
+            if args == "en"
+            else """🌒 <b>Hikka</b>
+
+Новый юзербот для Telegram с огромным количеством функций, из которых: Инлайн Галереи, формы и другое. Юзербот - программа, которая запускается на твоем Telegram-аккаунте. Когда ты пишешь команду в любом чате, она сразу же выполняется. Обрати внимание на живые примеры на <a href="https://github.com/hikariatama/Hikka">GitHub</a>
+""",
+        )
