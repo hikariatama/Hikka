@@ -96,7 +96,7 @@ class InlineStuffMod(loader.Module):
     async def ch_hikka_botcmd(self, message: Message) -> None:
         """<username> - Change your Hikka inline bot username"""
         args = utils.get_args_raw(message).strip("@")
-        if not args or not args.endswith("bot") or len(args) <= 4:
+        if not args or not args.lower().endswith("bot") or len(args) <= 4:
             await utils.answer(message, self.strings("bot_username_invalid"))
             return
 

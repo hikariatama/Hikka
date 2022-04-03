@@ -2,8 +2,6 @@ from .types import InlineUnit
 from .. import utils
 
 from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
     InlineQueryResultArticle,
     InputTextMessageContent,
     InlineQuery,
@@ -31,7 +29,7 @@ class Form(InlineUnit):
         self,
         text: str,
         message: Union[Message, int],
-        reply_markup: List[List[dict]] = None,
+        reply_markup: Union[List[List[dict]], List[dict], dict] = None,
         *,
         force_me: bool = True,
         always_allow: Union[List[list], None] = None,
@@ -83,9 +81,18 @@ class Form(InlineUnit):
             logger.error("Invalid type for `message`")
             return False
 
-        if not isinstance(reply_markup, list):
+        if not isinstance(reply_markup, (list, dict)):
             logger.error("Invalid type for `reply_markup`")
             return False
+
+        if isinstance(reply_markup, dict):
+            reply_markup = [[reply_markup]]
+        elif (
+            isinstance(reply_markup, list)
+            and len(reply_markup)
+            and isinstance(reply_markup[0], dict)
+        ):
+            reply_markup = [reply_markup]
 
         if not all(
             all(isinstance(button, dict) for button in row) for row in reply_markup
@@ -186,72 +193,6 @@ class Form(InlineUnit):
             )
 
         return form_uid
-
-    def _generate_markup(self, form_uid: Union[str, list]) -> InlineKeyboardMarkup:
-        """Generate markup for form"""
-        markup = InlineKeyboardMarkup()
-
-        for row in (
-            self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid
-        ):
-            for button in row:
-                if "callback" in button and "_callback_data" not in button:
-                    button["_callback_data"] = utils.rand(30)
-
-                if "input" in button and "_switch_query" not in button:
-                    button["_switch_query"] = utils.rand(10)
-
-        for row in (
-            self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid
-        ):
-            line = []
-            for button in row:
-                try:
-                    if "url" in button:
-                        line += [
-                            InlineKeyboardButton(
-                                button["text"],
-                                url=button.get("url", None),
-                            )
-                        ]
-                    elif "callback" in button:
-                        line += [
-                            InlineKeyboardButton(
-                                button["text"],
-                                callback_data=button["_callback_data"],
-                            )
-                        ]
-                    elif "input" in button:
-                        line += [
-                            InlineKeyboardButton(
-                                button["text"],
-                                switch_inline_query_current_chat=button["_switch_query"] + " ",  # fmt: skip
-                            )
-                        ]
-                    elif "data" in button:
-                        line += [
-                            InlineKeyboardButton(
-                                button["text"],
-                                callback_data=button["data"],
-                            )
-                        ]
-                    else:
-                        logger.warning(
-                            "Button have not been added to "
-                            "form, because it is not structured "
-                            f"properly. {button}"
-                        )
-                except KeyError:
-                    logger.exception(
-                        "Error while forming markup! Probably, you "
-                        "passed wrong type combination for button. "
-                        "Contact developer of module."
-                    )
-                    return False
-
-            markup.row(*line)
-
-        return markup
 
     async def _callback_query_edit(
         self,
