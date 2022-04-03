@@ -76,9 +76,6 @@ DATA_DIR = (
 
 CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
 
-if is_okteto:
-    logging.info(os.popen("ls /data").read())
-
 
 def run_config(db: database.Database, data_root: str, phone: Union[str, int] = None, modules: list = None) -> None:
     """Load configurator.py"""

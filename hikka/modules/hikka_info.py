@@ -41,7 +41,7 @@ class HikkaInfoMod(loader.Module):
             ver = "unknown"
 
         try:
-            diff = repo.git.log(["HEAD..origin/alpha", "--oneline"])
+            diff = repo.git.log(["HEAD..origin/master", "--oneline"])
             upd = (
                 "⚠️ Update required </b><code>.update</code><b>"
                 if diff
