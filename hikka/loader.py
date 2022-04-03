@@ -159,6 +159,8 @@ class Modules:
 
     def register_all(self, db, mods=None):
         """Load all modules in the module directory"""
+        self._db = db
+
         if self._compat_layer is None:
             from . import compat  # noqa
 
