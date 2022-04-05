@@ -617,7 +617,7 @@ class LoaderMod(loader.Module):
                         key=lambda x: x[0],
                     ):
                         modhelp += self.strings("ihandler", message).format(
-                            f"@{self.inline._bot_username} {_name}"
+                            f"@{self.inline.bot_username} {_name}"
                         )
 
                         if fun.__doc__:
