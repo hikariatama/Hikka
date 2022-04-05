@@ -37,6 +37,7 @@ import telethon
 import git
 from git import Repo, GitCommandError
 from telethon.tl.types import Message
+from aiogram.types import CallbackQuery
 
 from .. import loader, utils
 
@@ -56,6 +57,11 @@ class UpdaterMod(loader.Module):
         "installing": "🔁 <b>Installing updates...</b>",
         "success": "✅ <b>Restart successful!</b>",
         "origin_cfg_doc": "Git origin URL, for where to update from",
+        "btn_restart": "🔄 Restart",
+        "btn_update": "⛵️ Update",
+        "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
+        "update_confirm": "⛵️ <b>Are you sure you want to update?</b>",
+        "cancel": "🚫 Cancel",
     }
 
     def __init__(self):
@@ -68,24 +74,35 @@ class UpdaterMod(loader.Module):
     @loader.owner
     async def restartcmd(self, message: Message) -> None:
         """Restarts the userbot"""
-        msg = (
-            await utils.answer(message, self.strings("restarting_caption", message))
-        )[0]
-        await self.restart_common(msg)
+        await self.inline.form(
+            message=message,
+            text=self.strings(
+                "restart_confirm",
+                message,
+            ),
+            reply_markup=[
+                {
+                    "text": self.strings("btn_restart"),
+                    "callback": self.inline_restart,
+                },
+                {"text": self.strings("cancel"), "callback": self.inline_close},
+            ],
+        )
 
-    async def prerestart_common(self, message: Message) -> None:
+    async def inline_restart(self, call: CallbackQuery) -> None:
+        await call.edit(self.strings("restarting_caption"))
+        await self.restart_common(call)
+
+    async def inline_close(self, call: CallbackQuery) -> None:
+        await call.delete()
+
+    async def prerestart_common(self, call: CallbackQuery) -> None:
         logger.debug(f"Self-update. {sys.executable} -m {utils.get_base_dir()}")
+        self._db.set(__name__, "selfupdatemsg", call.inline_message_id)
 
-        check = str(uuid.uuid4())
-        self._db.set(__name__, "selfupdatecheck", check)
-        await asyncio.sleep(3)
-        if self._db.get(__name__, "selfupdatecheck", "") != check:
-            raise ValueError("An update is already in progress!")
-        self._db.set(__name__, "selfupdatechat", utils.get_chat_id(message))
-        self._db.set(__name__, "selfupdatemsg", message.id)
-
-    async def restart_common(self, message: Message) -> None:
-        await self.prerestart_common(message)
+    async def restart_common(self, call: Message) -> None:
+        message = self.inline._forms[call.form["uid"]]["message"]
+        await self.prerestart_common(call)
         atexit.register(functools.partial(restart, *sys.argv[1:]))
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
@@ -95,13 +112,6 @@ class UpdaterMod(loader.Module):
             if client is not message.client:
                 await client.disconnect()
         await message.client.disconnect()
-
-    @loader.owner
-    async def downloadcmd(self, message: Message) -> None:
-        """Downloads userbot updates"""
-        message = await utils.answer(message, self.strings("downloading", message))
-        await self.download_common()
-        await utils.answer(message, self.strings("downloaded", message))
 
     async def download_common(self):
         try:
@@ -147,33 +157,53 @@ class UpdaterMod(loader.Module):
             logger.exception("Req install failed")
 
     @loader.owner
-    async def updatecmd(self, message: Message, hard: bool = False) -> None:
+    async def updatecmd(self, message: Message) -> None:
         """Downloads userbot updates"""
+        await self.inline.form(
+            message=message,
+            text=self.strings(
+                "update_confirm",
+                message,
+            ),
+            reply_markup=[
+                {
+                    "text": self.strings("btn_update"),
+                    "callback": self.inline_update,
+                },
+                {"text": self.strings("cancel"), "callback": self.inline_close},
+            ],
+        )
+
+    async def inline_update(self, call: CallbackQuery, hard: bool = False) -> None:
         # We don't really care about asyncio at this point, as we are shutting down
         if hard:
-            os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")  # skipcq: BAN-B605
+            os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")  # fmt: skip
 
         try:
             try:
-                msgs = await utils.answer(message, self.strings("downloading", message))
-            except telethon.errors.rpcerrorlist.MessageNotModifiedError:
+                await utils.answer(call, self.strings("downloading"))
+            except Exception:
                 pass
 
             req_update = await self.download_common()
 
             try:
-                message = (
-                    await utils.answer(msgs, self.strings("installing", message))
-                )[0]
-            except telethon.errors.rpcerrorlist.MessageNotModifiedError:
+                await utils.answer(call, self.strings("installing"))
+            except Exception:
                 pass
 
             if req_update:
                 self.req_common()
-            await self.restart_common(message)
+
+            try:
+                await utils.answer(call, self.strings("restarting_caption"))
+            except Exception:
+                pass
+
+            await self.restart_common(call)
         except GitCommandError:
             if not hard:
-                await self.updatecmd(message, True)
+                await self.inline_update(call, True)
                 return
 
             logger.critical("Got update loop. Update manually via .terminal")
@@ -192,26 +222,22 @@ class UpdaterMod(loader.Module):
         self._me = await client.get_me()
         self._client = client
 
-        if (
-            db.get(__name__, "selfupdatechat") is not None
-            and db.get(__name__, "selfupdatemsg") is not None
-        ):
+        if db.get(__name__, "selfupdatemsg") is not None:
             try:
                 await self.update_complete(client)
             except Exception:
                 logger.exception("Failed to complete update!")
 
-        self._db.set(__name__, "selfupdatechat", None)
         self._db.set(__name__, "selfupdatemsg", None)
 
     async def update_complete(self, client):
         logger.debug("Self update successful! Edit message")
         msg = self.strings("success")
 
-        await client.edit_message(
-            self._db.get(__name__, "selfupdatechat"),
-            self._db.get(__name__, "selfupdatemsg"),
-            msg,
+        await self.inline.bot.edit_message_text(
+            inline_message_id=self._db.get(__name__, "selfupdatemsg"),
+            text=msg,
+            parse_mode="HTML",
         )
 
 
