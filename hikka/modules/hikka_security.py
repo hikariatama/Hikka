@@ -19,7 +19,6 @@ from telethon.utils import get_display_name
 import logging
 import aiogram
 from ..security import (
-    OWNER,
     SUDO,
     SUPPORT,
     GROUP_OWNER,

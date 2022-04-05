@@ -81,17 +81,8 @@ function finish_login() {
             method: "POST",
             credentials: "include"
         })
-        .then(response => response.text())
         .then((response) => {
             window.expanse = true;
-            if(response == "0") {
-                setTimeout(() => {
-                    Swal.fire({
-                        "icon": "info",
-                        "title": "You would need to restart userbot in order to apply new session"
-                    })
-                }, 1000);
-            }
             $(".blur").fadeOut(1500);
             setTimeout(() => {
                 window.location.href = "/";

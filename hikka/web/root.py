@@ -34,6 +34,10 @@ import string
 import aiohttp_jinja2
 import telethon
 from aiohttp import web
+import atexit
+import functools
+import logging
+import sys
 
 from .. import utils, main
 
@@ -44,6 +48,16 @@ DATA_DIR = (
     if "OKTETO" not in os.environ
     else "/data"
 )
+
+
+def restart(*argv):
+    os.execl(
+        sys.executable,
+        sys.executable,
+        "-m",
+        os.path.relpath(utils.get_base_dir()),
+        *argv,
+    )
 
 
 class Web:
@@ -202,7 +216,14 @@ class Web:
 
         self.clients_set.set()
 
-        return web.Response(body=("1" if first_session else "0"))
+        if not first_session:
+            atexit.register(functools.partial(restart, *sys.argv[1:]))
+            handler = logging.getLogger().handlers[0]
+            handler.setLevel(logging.CRITICAL)
+            for client in main.hikka.clients:
+                await client.disconnect()
+
+        return web.Response()
 
     async def web_auth(self, request):
         if self._check_session(request):
@@ -226,7 +247,7 @@ class Web:
                 msg = await bot.send_message(
                     (await user[1].get_me()).id,
                     (
-                        "👩‍🎤🔐 <b>Click button below to confirm web application ops</b>\n\n"
+                        "🌘🔐 <b>Click button below to confirm web application ops</b>\n\n"
                         "<i>If you did not request any codes, simply ignore this message</i>"
                     ),
                     parse_mode="HTML",

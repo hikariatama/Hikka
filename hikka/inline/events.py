@@ -177,6 +177,7 @@ class Events(InlineUnit):
 
         await self._form_inline_handler(inline_query)
         await self._gallery_inline_handler(inline_query)
+        await self._list_inline_handler(inline_query)
 
     async def _check_inline_sec_by_mask(
         self,

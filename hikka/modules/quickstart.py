@@ -25,7 +25,7 @@ imgs = [
     "https://i2.wp.com/metanorn.net/wp-content/uploads/2011/08/NS3-04b.gif",
 ]
 
-TEXT = """👩‍🎤🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
+TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
 
 ❓ <b>Need help?</b> Feel free to join our support chat. We help <b>everyone</b>.
 
@@ -37,7 +37,7 @@ TEXT = """👩‍🎤🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> u
 """
 
 
-TEXT_RU = """👩‍🎤🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka</b> установлен.
+TEXT_RU = """🌘🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka</b> установлен.
 
 ❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>.
 

@@ -240,9 +240,12 @@ class Gallery(InlineUnit):
         }
 
         if isinstance(message, Message):
-            await (message.edit if message.out else message.respond)(
-                "👩‍🎤 <b>Loading inline gallery...</b>"
-            )
+            try:
+                await (message.edit if message.out else message.respond)(
+                    "🌘 <b>Loading inline gallery...</b>"
+                )
+            except Exception:
+                pass
 
         try:
             q = await self._client.inline_query(self.bot_username, gallery_uid)

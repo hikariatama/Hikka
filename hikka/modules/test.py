@@ -36,7 +36,7 @@ class TestMod(loader.Module):
         "set_loglevel": "🚫 <b>Please specify verbosity as an integer or string</b>",
         "no_logs": "ℹ️ <b>You don't have any logs at verbosity {}.</b>",
         "logs_filename": "hikka-logs.txt",
-        "logs_caption": "🏩 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka version: {}.{}.{}</b>\n⏱ <b>Uptime: {}</b>\n<b>{}</b>",
+        "logs_caption": "🌘 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka version: {}.{}.{}</b>\n⏱ <b>Uptime: {}</b>\n<b>{}</b>",
         "suspend_invalid_time": "🚫 <b>Invalid time to suspend</b>",
         "suspended": "🥶 <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>",
         "results_ping": "⏱ <b>Ping:</b> <code>{}</code> <b>ms</b>",

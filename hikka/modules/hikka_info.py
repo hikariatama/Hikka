@@ -31,7 +31,7 @@ class HikkaInfoMod(loader.Module):
         self._db = db
         self._client = client
         self._me = await client.get_me()
-        self.markup = {"text": "🤵‍♀️ Support chat", "url": "https://t.me/hikka_talks"}
+        self.markup = {"text": "🌘 Support chat", "url": "https://t.me/hikka_talks"}
 
     def _render_info(self) -> str:
         try:
@@ -51,7 +51,7 @@ class HikkaInfoMod(loader.Module):
             upd = ""
 
         return (
-            "<b>👩‍🎤 Hikka Userbot</b>\n"
+            "<b>🌘 Hikka Userbot</b>\n"
             f'<b>🤴 Owner: <a href="tg://user?id={self._me.id}">{utils.escape_html(get_display_name(self._me))}</a></b>\n\n'
             f"<b>🔮 Version: </b><i>{'.'.join(list(map(str, list(main.__version__))))}</i>\n"
             f"<b>🧱 Build: </b><a href=\"https://github.com/hikariatama/Hikka/commit/{ver}\">{ver[:8] or 'Unknown'}</a>\n"
@@ -89,12 +89,12 @@ class HikkaInfoMod(loader.Module):
 
         await utils.answer(
             message,
-            """🌒 <b>Hikka</b>
+            """🌘 <b>Hikka</b>
 
 Brand new userbot for Telegram with a lot of features, aka InlineGalleries, Forms and others. Userbot - software, running on your Telegram account. If you write a command to any chat, it will get executed right there. Check out live examples at <a href="https://github.com/hikariatama/Hikka">GitHub</a>
 """
             if args == "en"
-            else """🌒 <b>Hikka</b>
+            else """🌘 <b>Hikka</b>
 
 Новый юзербот для Telegram с огромным количеством функций, из которых: Инлайн Галереи, формы и другое. Юзербот - программа, которая запускается на твоем Telegram-аккаунте. Когда ты пишешь команду в любом чате, она сразу же выполняется. Обрати внимание на живые примеры на <a href="https://github.com/hikariatama/Hikka">GitHub</a>
 """,

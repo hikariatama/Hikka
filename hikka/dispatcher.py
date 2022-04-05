@@ -193,7 +193,10 @@ class CommandDispatcher:
 
         return message
 
-    async def _handle_command(self, event) -> Union[bool, Tuple[Message, str, str, FunctionType]]:
+    async def _handle_command(
+        self,
+        event,
+    ) -> Union[bool, Tuple[Message, str, str, FunctionType]]:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return False
 
@@ -342,29 +345,38 @@ class CommandDispatcher:
 
         message, prefix, txt, func = message
 
-        try:
-            await func(message)
-        except Exception:
-            logging.exception("Command failed")
-            if not self._db.get(main.__name__, "inlinelogs", True):
-                try:
-                    txt = f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>"
-                    await (message.edit if message.out else message.reply)(txt)
-                except Exception:
-                    pass
-                return
+        asyncio.ensure_future(
+            self.future_dispatcher(
+                func,
+                message,
+                self.command_exc,
+            )
+        )
 
+    async def command_exc(self, e, message):
+        logging.exception("Command failed")
+        if not self._db.get(main.__name__, "inlinelogs", True):
             try:
-                exc = traceback.format_exc()
-                # Remove `Traceback (most recent call last):`
-                exc = "\n".join(exc.split("\n")[1:])
-                txt = (
-                    f"<b>🚫 Command</b> <code>{prefix}{utils.escape_html(message.message)}</code><b> failed!</b>\n\n"
-                    f"<b>⛑ Traceback:</b>\n<code>{exc}</code>"
-                )
+                txt = f"<b>🚫 Command</b> <code>{utils.escape_html(message.message)}</code><b> failed!</b>"
                 await (message.edit if message.out else message.reply)(txt)
             except Exception:
                 pass
+            return
+
+        try:
+            exc = traceback.format_tb(e.__traceback__)
+            # Remove `Traceback (most recent call last):`
+            exc = "\n".join(exc.split("\n")[1:])
+            txt = (
+                f"<b>🚫 Command</b> <code>{utils.escape_html(message.message)}</code><b> failed!</b>\n\n"
+                f"<b>⛑ Traceback:</b>\n<code>{exc}</code>"
+            )
+            await (message.edit if message.out else message.reply)(txt)
+        except Exception:
+            pass
+
+    async def watcher_exc(self, e, message) -> None:
+        logging.error(f"Error running watcher. {traceback.format_tb(e.__traceback__)}")
 
     async def handle_incoming(self, event):
         """Handle all incoming messages"""
@@ -374,18 +386,11 @@ class CommandDispatcher:
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        # fmt: off
-        if (
-            utils.get_chat_id(message) in blacklist_chats
-            or (
-                whitelist_chats
-                and utils.get_chat_id(message)
-                not in whitelist_chats
-            )
+        if utils.get_chat_id(message) in blacklist_chats or (
+            whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
         ):
             logging.debug("Message is blacklisted")
             return
-        # fmt: on
 
         for func in self._modules.watchers:
             bl = self._db.get(main.__name__, "disabled_watchers", {})
@@ -419,7 +424,23 @@ class CommandDispatcher:
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue
 
-            try:
-                await func(message)
-            except Exception as e:
-                logging.exception(f"Error running watcher {e}")
+            # Run watcher via ensure_future so in case user has a lot
+            # of watchers with long actions, they can run simultaneously
+            asyncio.ensure_future(
+                self.future_dispatcher(
+                    func,
+                    message,
+                    self.watcher_exc,
+                )
+            )
+
+    async def future_dispatcher(
+        self,
+        func: FunctionType,
+        message: Message,
+        exception_handler: FunctionType,
+    ) -> None:
+        try:
+            await func(message)
+        except BaseException as e:
+            await exception_handler(e, message)

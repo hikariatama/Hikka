@@ -29,7 +29,7 @@
 import logging
 import asyncio
 import traceback
-from .types import Module
+from ._types import Module
 from . import utils
 
 _formatter = logging.Formatter

@@ -56,7 +56,7 @@ class InlineStuffMod(loader.Module):
 
         await message.delete()
 
-        m = await message.respond("👩‍🎤 <b>Opening gallery... wait</b>")
+        m = await message.respond("🌘 <b>Opening gallery... wait</b>")
 
         await self.inline.gallery(
             message=m,

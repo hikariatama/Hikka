@@ -68,6 +68,8 @@ else:
 
 is_okteto = "OKTETO" in os.environ
 
+omit_log = False
+
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
     if not is_okteto
@@ -475,6 +477,7 @@ class Hikka:
 
     async def _badge(self, client) -> None:
         """Call the badge in shell"""
+        global omit_log
         try:
             import git
 
@@ -484,8 +487,7 @@ class Hikka:
             diff = repo.git.log(["HEAD..origin/master", "--oneline"])
             upd = r"Update required" if diff else r"Up-to-date"
 
-            termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())
-            _platform = "Termux" if termux else "Unknown"
+            _platform = utils.get_named_platform()
 
             logo1 = f"""
 
@@ -499,12 +501,14 @@ class Hikka:
                      - Started for {(await client.get_me()).id} -"""
 
             print(logo1)
-
-            logging.info(f"=== BUILD: {build} ===")
-            logging.info(
-                f"=== VERSION: {'.'.join(list(map(str, list(__version__))))} ==="
-            )
-            logging.info(f"=== PLATFORM: {_platform} ===")
+            if not omit_log:
+                logging.info(
+                    "🌘 Hikka started\n"
+                    f"GitHub commit SHA: {build[:7]} ({upd})\n"
+                    f"Hikka version: {'.'.join(list(map(str, list(__version__))))}\n"
+                    f"Platform: {_platform}"
+                )
+                omit_log = True
         except Exception:
             logging.exception("Badge error")
 

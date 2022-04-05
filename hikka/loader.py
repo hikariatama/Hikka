@@ -38,7 +38,7 @@ import sys
 from . import utils, security
 from .translations.dynamic import Strings
 from .inline.core import InlineManager
-from .types import Module, LoadError, ModuleConfig  # noqa: F401
+from ._types import Module, LoadError, ModuleConfig  # noqa: F401
 from importlib.machinery import ModuleSpec
 
 from typing import Any

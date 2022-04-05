@@ -37,7 +37,7 @@ class HikkaLoggerMod(loader.Module):
         chat, is_new = await utils.asset_channel(
             self._client,
             "hikka-logs",
-            "👩‍🎤 Your Hikka logs will appear in this chat",
+            "🌘 Your Hikka logs will appear in this chat",
             silent=True,
         )
 
@@ -45,7 +45,10 @@ class HikkaLoggerMod(loader.Module):
 
         logger = logging.getLogger(__name__)
 
-        if not is_new:
+        if not is_new or all(
+            participant.id != self.inline.bot_id
+            for participant in (await self._client.get_participants(chat))
+        ):
             logging.getLogger().handlers[0].install_tg_log(self)
             logger.info(f"Bot logging installed for {self._logchat}")
             return

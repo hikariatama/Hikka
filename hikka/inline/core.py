@@ -26,6 +26,7 @@ from .bot_interaction import BotInteractions
 from .events import Events
 from .token_obtainment import TokenObtainment
 from .utils import Utils
+from .list import List
 
 import logging
 
@@ -39,6 +40,7 @@ class InlineManager(
     Form,
     Gallery,
     QueryGallery,
+    List,
     BotInteractions,
 ):
     def __init__(self, client, db, allmodules) -> None:
@@ -51,6 +53,7 @@ class InlineManager(
 
         self._forms = {}
         self._galleries = {}
+        self._lists = {}
         self._custom_map = {}
 
         self.fsm = {}
@@ -108,8 +111,7 @@ class InlineManager(
         # Get bot username to call inline queries
         try:
             self.bot_username = (await self.bot.get_me()).username
-            self._bot_username = self.bot_username  # This is a temporary alias so the
-            # developers can adapt their code
+            self.bot_id = (await self.bot.get_me()).id
         except Unauthorized:
             logger.critical("Token expired, revoking...")
             return await self._dp_revoke_token(False)

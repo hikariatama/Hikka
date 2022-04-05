@@ -1,29 +1,12 @@
-# Telegram connection
 Telethon-Mod==1.24.6
-
-# Config
 pythondialog==3.5.3
-
-# Python Git Library
 gitpython==3.1.27
-
-# Translations
 babel==2.9.1
-
-# Eval
 meval==2.5
-
-# Web
 aiohttp_jinja2==1.5
-
-# Async http client/server framework
 aiohttp
-
-# A very fast and expressive template engine.
 Jinja2==3.0.3
-
-# Python HTTP for Humans.
 requests==2.27.1
-
-# Inline buttons support
 aiogram==2.19
+
+# Python 3.8+

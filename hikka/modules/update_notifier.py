@@ -21,9 +21,8 @@ import asyncio
 import logging
 import git
 from typing import Union
-import time
 
-from ..types import LoadError
+from .._types import LoadError
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings = {
         "name": "UpdateNotifier",
-        "update_required": "🌒 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
+        "update_required": "🌘 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
     }
 
     _notified = None

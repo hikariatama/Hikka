@@ -46,7 +46,7 @@ class CoreMod(loader.Module):
         "packs_cleared": "<b>✅ Translations cleared</b>",
         "lang_set": "<b>✅ Language changed</b>",
         "db_cleared": "<b>✅ Database cleared</b>",
-        "hikka": "👩‍🎤 <b>You are Hikka!</b>\n<b>Hikka version: {}.{}.{}</b>",
+        "hikka": "🌘 <b>You are Hikka!</b>\n<b>Hikka version: {}.{}.{}</b>",
     }
 
     async def client_ready(self, client, db):

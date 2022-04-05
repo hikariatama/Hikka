@@ -30,7 +30,7 @@ async def form(
 ### Пример:
 ```python
 await self.inline.form(
-    text="📊 Poll Hikka vs. FTG\n👩‍🎤 Hikka: No votes\n😔 FTG: No votes",
+    text="📊 Poll Hikka vs. FTG\n🌘 Hikka: No votes\n😔 FTG: No votes",
     message=message,
     reply_markup=[
         [
@@ -156,7 +156,7 @@ async def catboy_inline_handler(self, query: InlineQuery) -> None:
         query,
         [
             {
-                "title": "👩‍🎤 Catboy",
+                "title": "🌘 Catboy",
                 "description": "Send catboy photo",
                 "next_handler": photo,
                 "thumb_handler": photo,  # Optional

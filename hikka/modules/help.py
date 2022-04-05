@@ -33,11 +33,11 @@ class HelpMod(loader.Module):
         "first_cmd_tmpl": ": ( {}",
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Specify module to hide</b>",
-        "hidden_shown": "👓 <b>{} modules hidden, {} module shown:</b>\n{}\n{}",
+        "hidden_shown": "🌘 <b>{} modules hidden, {} module shown:</b>\n{}\n{}",
         "ihandler": "\n🎹 <code>{}</code> 👉🏻 ",
         "undoc_ihandler": "🦥 No docs",
-        "joined": "👩‍💼 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
-        "join": "👩‍💼 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "joined": "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
     }
 
     def __init__(self):
@@ -46,7 +46,7 @@ class HelpMod(loader.Module):
             "▪️",
             lambda: "Core module bullet",
             "hikka_emoji",
-            "👩‍🎤",
+            "🌘",
             lambda: "Hikka-only module bullet",
             "plain_emoji",
             "▫️",

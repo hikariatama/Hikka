@@ -250,7 +250,8 @@ class LoaderMod(loader.Module):
             preset = "minimal"
 
         r = await utils.run_sync(
-            requests.get, self.config["MODULES_REPO"].strip("/") + "/" + preset + ".txt"
+            requests.get,
+            f'{self.config["MODULES_REPO"].strip("/")}/{preset}.txt'
         )
         r.raise_for_status()
         return set(filter(lambda x: x, r.text.split("\n")))
@@ -260,7 +261,7 @@ class LoaderMod(loader.Module):
             if urllib.parse.urlparse(module_name).netloc:
                 url = module_name
             else:
-                url = self.config["MODULES_REPO"].strip("/") + "/" + module_name + ".py"
+                url = f'{self.config["MODULES_REPO"].strip("/")}/{module_name}.py'
 
             r = await utils.run_sync(requests.get, url)
 
@@ -272,7 +273,10 @@ class LoaderMod(loader.Module):
 
             r.raise_for_status()
             return await self.load_module(
-                r.content.decode("utf-8"), message, module_name, url
+                r.content.decode("utf-8"),
+                message,
+                module_name,
+                url,
             )
         except Exception:
             logger.exception(f"Failed to load {module_name}")
@@ -324,10 +328,6 @@ class LoaderMod(loader.Module):
 
         logger.debug("Loading external module...")
 
-        if message.file:
-            await message.edit("")
-            message = await message.respond("👩‍🎤")
-
         try:
             doc = doc.decode("utf-8")
         except UnicodeDecodeError:
@@ -338,6 +338,10 @@ class LoaderMod(loader.Module):
             not self._db.get(main.__name__, "disable_modules_fs", False)
             and not self._db.get(main.__name__, "permanent_modules_fs", False)
         ):
+            if message.file:
+                await message.edit("")
+                message = await message.respond("🌘")
+
             await self.inline.form(
                 self.strings("module_fs"),
                 message=message,

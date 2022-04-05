@@ -72,7 +72,7 @@ class OktetoMod(loader.Module):
                     last_date += self._messages_interval
                     await self._client.send_message(
                         self._bot,
-                        uri,
+                        f"{uri}?hash={utils.rand(6)}",
                         schedule=last_date,
                     )
                     logger.debug(f"Scheduled Okteto pinger to {last_date}")
