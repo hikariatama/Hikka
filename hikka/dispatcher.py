@@ -376,7 +376,7 @@ class CommandDispatcher:
             pass
 
     async def watcher_exc(self, e, message) -> None:
-        logging.exception(f"Error running watcher")
+        logging.exception("Error running watcher")
 
     async def handle_incoming(self, event):
         """Handle all incoming messages"""
