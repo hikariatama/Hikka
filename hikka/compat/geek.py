@@ -12,7 +12,7 @@ import re
 
 def compat(code: str) -> str:
     """Reformats modules, built for GeekTG to work with Hikka"""
-    code = "\n".join(
+    return "\n".join(
         [
             re.sub(
                 r"^( *)from \.\.inline import (.+)$",
@@ -29,7 +29,7 @@ def compat(code: str) -> str:
                             re.sub(
                                 r"^( *)from \.\.inline import (.+), ?rand, ?(.+)$",
                                 r"\1from ..inline.types import \2, \3\n\1from ..utils import rand",
-                                line.replace("GeekInlineQuery", "InlineQuery"),
+                                line.replace("GeekInlineQuery", "InlineQuery").replace("self.inline._bot", "self.inline.bot"),
                                 flags=re.M,
                             ),
                             flags=re.M,
@@ -43,4 +43,3 @@ def compat(code: str) -> str:
             for line in code.splitlines()
         ]
     )
-    return code
