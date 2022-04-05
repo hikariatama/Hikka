@@ -216,6 +216,7 @@ class List(InlineUnit):
                 text=self._lists[list_uid]["strings"][
                     self._lists[list_uid]["current_index"]
                 ],
+                parse_mode="HTML",
                 reply_markup=self._list_markup(list_uid),
             )
         except RetryAfter as e:
@@ -271,6 +272,7 @@ class List(InlineUnit):
                 text=self._lists[list_uid]["strings"][
                     self._lists[list_uid]["current_index"]
                 ],
+                parse_mode="HTML",
                 reply_markup=self._list_markup(list_uid),
             )
         except RetryAfter as e:

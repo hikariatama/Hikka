@@ -364,9 +364,9 @@ class CommandDispatcher:
             return
 
         try:
-            exc = traceback.format_tb(e.__traceback__)
+            exc = traceback.format_exc()
             # Remove `Traceback (most recent call last):`
-            exc = "\n".join(exc.split("\n")[1:])
+            exc = "\n".join(exc.splitlines()[1:])
             txt = (
                 f"<b>🚫 Command</b> <code>{utils.escape_html(message.message)}</code><b> failed!</b>\n\n"
                 f"<b>⛑ Traceback:</b>\n<code>{exc}</code>"
@@ -376,7 +376,7 @@ class CommandDispatcher:
             pass
 
     async def watcher_exc(self, e, message) -> None:
-        logging.error(f"Error running watcher. {traceback.format_tb(e.__traceback__)}")
+        logging.exception(f"Error running watcher")
 
     async def handle_incoming(self, event):
         """Handle all incoming messages"""
