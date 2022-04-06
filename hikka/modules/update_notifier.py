@@ -126,7 +126,7 @@ class UpdateNotifierMod(loader.Module):
                     self._pending != self.get_commit()
                     and self._pending != self._notified
                 ):
-                    await self.inline.bot.send_message(
+                    m = await self.inline.bot.send_message(
                         self._me,
                         self.strings("update_required").format(
                             self.get_commit()[:6],
@@ -138,9 +138,16 @@ class UpdateNotifierMod(loader.Module):
                         reply_markup=self._markup,
                     )
 
+                    self._notified = self._pending
                     self.set("ignore_permanent", False)
 
-                    self._notified = self._pending
+                    if self.get("upd_msg"):
+                        try:
+                            await self.inline.bot.delete_message(self._me, self.get("upd_msg"))
+                        except Exception:
+                            pass
+
+                    self.set("upd_msg", m.message_id)
             except Exception:
                 # We need to catch error manually because of
                 # `ensure_future`

@@ -219,6 +219,7 @@ class List(InlineUnit):
                 parse_mode="HTML",
                 reply_markup=self._list_markup(list_uid),
             )
+            await call.answer()
         except RetryAfter as e:
             await call.answer(
                 f"Got FloodWait. Wait for {e.timeout} seconds",
@@ -275,6 +276,7 @@ class List(InlineUnit):
                 parse_mode="HTML",
                 reply_markup=self._list_markup(list_uid),
             )
+            await call.answer()
         except RetryAfter as e:
             await call.answer(
                 f"Got FloodWait. Wait for {e.timeout} seconds",
