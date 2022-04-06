@@ -11,6 +11,7 @@
 # scope: inline
 # scope: hikka_only
 # meta developer: @hikariatama
+# requires: websockets
 
 from .. import loader
 import websockets

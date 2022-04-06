@@ -8,5 +8,6 @@ aiohttp
 Jinja2==3.0.3
 requests==2.27.1
 aiogram==2.19
+websockets==10.2
 
 # Python 3.8+
