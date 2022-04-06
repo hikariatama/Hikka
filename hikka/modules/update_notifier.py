@@ -34,6 +34,7 @@ class UpdateNotifierMod(loader.Module):
     strings = {
         "name": "UpdateNotifier",
         "update_required": "🌘 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
+        "more": "\n<i><b>🎥 And {} more...</b></i>",
     }
 
     _notified = None
@@ -67,7 +68,7 @@ class UpdateNotifierMod(loader.Module):
         )
 
         if diff.count("\n") >= 10:
-            res += f"\n<i><b>🎥 And {len(diff.splitlines()) - 10} more...</b></i>"
+            res += self.strings("more").format(len(diff.splitlines()) - 10)
 
         return res
 
