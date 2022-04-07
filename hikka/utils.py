@@ -49,6 +49,8 @@ from telethon.tl.types import (
     InputPeerNotifySettings,
 )
 
+from telethon.hints import Entity
+
 from telethon.tl.functions.channels import CreateChannelRequest
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 
@@ -117,8 +119,12 @@ def get_chat_id(message: Message) -> int:
     return telethon.utils.resolve_id(message.chat_id)[0]
 
 
-def get_entity_id(entity: Union[Chat, User, Channel, PeerChat, PeerChat, PeerChannel]) -> int:  # fmt: skip
+def get_entity_id(entity: Entity) -> int:
+
     return telethon.utils.get_peer_id(entity)
+
+
+# fmt: skip
 
 
 def escape_html(text: str, /) -> str:
@@ -134,6 +140,7 @@ def escape_quotes(text: str, /) -> str:
 def get_base_dir() -> str:
     """Get directory of this file"""
     from . import __main__
+
     return get_dir(__main__.__file__)
 
 
@@ -231,11 +238,15 @@ def relocate_entities(
     return entities
 
 
-async def answer(message: Union[Message, CallbackQuery], response: str, **kwargs) -> list:
+async def answer(
+    message: Union[Message, CallbackQuery],
+    response: str,
+    **kwargs,
+) -> list:
     """Use this to give the response to a command"""
     if isinstance(message, (CallbackQuery, InlineCall)):
         return await message.edit(response)
-    
+
     if isinstance(message, list):
         delete_job = asyncio.ensure_future(
             message[0].client.delete_messages(
@@ -406,21 +417,31 @@ async def asset_channel(
     ).chats[0]
 
     if silent:
+        await dnd(client, peer, archive)
+
+    return peer, True
+
+
+async def dnd(client: "TelegramClient", peer: Entity, archive: bool = True) -> bool:  # noqa: F821
+    try:
         await client(
             UpdateNotifySettingsRequest(
                 peer=peer,
                 settings=InputPeerNotifySettings(
                     show_previews=False,
                     silent=True,
-                    mute_until=2 ** 31 - 1,
+                    mute_until=2**31 - 1,
                 ),
             )
         )
 
-    if archive:
-        await client.edit_folder(peer, 1)
+        if archive:
+            await client.edit_folder(peer, 1)
+    except Exception:
+        logging.exception("utils.dnd error")
+        return False
 
-    return peer, True
+    return True
 
 
 def get_link(user: Union[User, Channel], /) -> str:

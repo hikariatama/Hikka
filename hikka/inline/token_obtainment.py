@@ -6,8 +6,6 @@ import io
 import requests
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
-from telethon.tl.types import InputPeerNotifySettings
 import asyncio
 
 logger = logging.getLogger(__name__)
@@ -104,18 +102,7 @@ class TokenObtainment(InlineUnit):
 
         logger.info("Bot token not found in db, attempting search in BotFather")
 
-        await self._client(
-            UpdateNotifySettingsRequest(
-                peer="@BotFather",
-                settings=InputPeerNotifySettings(
-                    show_previews=False,
-                    silent=True,
-                    mute_until=2 ** 31 - 1,
-                ),
-            )
-        )
-
-        await self._client.edit_folder("@BotFather", 1)
+        await utils.dnd(self._client, await self._client.get_entity("@BotFather"), True)
 
         # Start conversation with BotFather to attempt search
         async with self._client.conversation("@BotFather", exclusive=False) as conv:

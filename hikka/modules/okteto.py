@@ -38,6 +38,7 @@ class OktetoMod(loader.Module):
         self._exception_timeout = 10
         self._send_interval = 5
         self._bot = "@WebpageBot"
+        await utils.dnd(client, await client.get_entity(self._bot), True)
         self._task = asyncio.ensure_future(self._okteto_poller())
 
     async def on_unload(self) -> None:

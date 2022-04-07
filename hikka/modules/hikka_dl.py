@@ -118,6 +118,8 @@ class HikkaDLMod(loader.Module):
 
             self.set("token", token)
 
+        await self._client.delete_dialog(self._bot)
+
     async def client_ready(self, client, db) -> None:
         self._db = db
         self._client = client
