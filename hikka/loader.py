@@ -488,7 +488,7 @@ class Modules:
         to_remove = []
 
         for module in self.modules:
-            if classname in (module.name, module.__class__.__name__):
+            if classname in (module.name.lower(), module.__class__.__name__.lower()):
                 worked += [module.__module__]
 
                 name = module.__class__.__name__

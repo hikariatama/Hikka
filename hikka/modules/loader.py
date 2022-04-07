@@ -666,7 +666,7 @@ class LoaderMod(loader.Module):
             return
 
         worked = self.allmodules.unload_module(
-            args.capitalize()
+            args.lower()
         ) + self.allmodules.unload_module(args)
         without_prefix = []
 
