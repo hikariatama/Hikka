@@ -18,6 +18,7 @@ from .._types import LoadError
 import json
 import re
 import websockets
+from telethon.tl.functions.messages import SendReactionRequest
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,17 @@ class HikkaDLMod(loader.Module):
                     if "/".join(link.split("/")[:-1]).lower() not in ALLOWED_ORIGINS:
                         await wss.send("🚫 Origin is not allowed")
                         continue
+
+                    try:
+                        await self._client(
+                            SendReactionRequest(
+                                peer=ans["channel"],
+                                msg_id=ans["message_id"],
+                                reaction="❤️",
+                            )
+                        )
+                    except Exception:
+                        pass
 
                     m = await self._client.send_message("me", f".dlmod {link}")
                     await self.allmodules.commands["dlmod"](m)
