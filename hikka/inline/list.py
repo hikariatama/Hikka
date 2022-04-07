@@ -12,7 +12,7 @@ from aiogram.types import (
 
 from aiogram.utils.exceptions import RetryAfter
 
-from typing import Union, List
+from typing import Union, List as _List
 from types import FunctionType
 from telethon.tl.types import Message
 import logging
@@ -28,7 +28,7 @@ class List(InlineUnit):
     async def list(
         self,
         message: Union[Message, int],
-        strings: List[str],
+        strings: _List[str],
         *,
         force_me: bool = False,
         always_allow: Union[list, None] = None,
@@ -201,7 +201,7 @@ class List(InlineUnit):
     async def _list_back(
         self,
         call: CallbackQuery,
-        btn_call_data: List[str] = None,
+        btn_call_data: _List[str] = None,
         list_uid: str = None,
     ) -> None:
         if not self._lists[list_uid]["current_index"]:
@@ -233,7 +233,7 @@ class List(InlineUnit):
     async def _list_close(
         self,
         call: CallbackQuery,
-        btn_call_data: List[str] = None,
+        btn_call_data: _List[str] = None,
         list_uid: str = None,
     ) -> bool:
         try:
@@ -254,7 +254,7 @@ class List(InlineUnit):
     async def _list_next(
         self,
         call: CallbackQuery,
-        btn_call_data: List[str] = None,
+        btn_call_data: _List[str] = None,
         func: FunctionType = None,
         list_uid: str = None,
     ) -> None:

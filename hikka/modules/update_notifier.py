@@ -12,8 +12,7 @@
 # scope: inline
 # scope: hikka_only
 
-from .. import loader, utils, main  # noqa: F401
-from telethon.tl.types import Message  # noqa: F401
+from .. import loader, utils
 
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 

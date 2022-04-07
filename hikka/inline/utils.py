@@ -24,9 +24,6 @@ class Utils(InlineUnit):
         if isinstance(form_uid, dict):
             form_uid = [[form_uid]]
         elif isinstance(form_uid, list):
-            if not len(form_uid):
-                return None
-
             if isinstance(form_uid[0], dict):
                 form_uid = [form_uid]
 

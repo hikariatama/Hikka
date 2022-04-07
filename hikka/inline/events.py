@@ -132,7 +132,6 @@ class Events(InlineUnit):
                         InlineQueryResultGif(
                             id=utils.rand(20),
                             title=res.get("title", None),
-                            description=res.get("description", None),
                             caption=res.get("caption", None),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["gif"]),

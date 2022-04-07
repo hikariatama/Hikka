@@ -45,7 +45,6 @@ from telethon.tl.types import (
     User,
     MessageMediaWebPage,
     Channel,
-    Chat,
     InputPeerNotifySettings,
 )
 

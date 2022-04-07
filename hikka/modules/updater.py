@@ -24,15 +24,12 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import asyncio
 import atexit
 import functools
 import logging
 import os
 import subprocess
 import sys
-import uuid
-import telethon
 from typing import Union
 
 import git
