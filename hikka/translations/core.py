@@ -40,14 +40,12 @@ class Translator:
             except (ValueError, telethon.errors.rpcerrorlist.ChannelPrivateError):
                 # We can't access the channel
                 logger.warning(
-                    "No translation pack found for %r", pack, exc_info=True
+                    f"No translation pack found for {pack}",
+                    exc_info=True,
                 )
                 continue
             if not message.document or not message.entities:
-                logger.info(
-                    "Last message in translation pack %r has no document/entities",
-                    pack,
-                )
+                logger.info(f"Last message in translation pack {pack} has no document/entities")  # fmt: skip
                 continue
             found = False
             for ent in filter(
@@ -68,7 +66,7 @@ class Translator:
                     (await message.download_media(bytes)).decode("utf-8")
                 )
             except (json.decoder.JSONDecodeError, UnicodeDecodeError):
-                logger.exception("Unable to decode %s", pack)
+                logger.exception(f"Unable to decode {pack}")
                 continue
             try:
                 self._data.setdefault(ndata["language"], {}).update(ndata["data"])

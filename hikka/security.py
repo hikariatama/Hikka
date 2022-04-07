@@ -206,7 +206,7 @@ class SecurityManager:
         if user == self._me:
             return True
 
-        logger.debug("Checking security match for %d", config)
+        logger.debug(f"Checking security match for {config}")
 
         f_owner = config & OWNER
         f_sudo = config & SUDO

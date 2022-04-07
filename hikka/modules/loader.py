@@ -477,7 +477,7 @@ class LoaderMod(loader.Module):
                     logger.warning("No valid pip packages specified in code, attemping installation from error")  # fmt: skip
                     requirements = [e.name]
 
-                logger.debug("Installing requirements: %r", requirements)
+                logger.debug(f"Installing requirements: {requirements}")
 
                 if not requirements:
                     raise Exception("Nothing to install") from e

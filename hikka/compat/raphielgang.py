@@ -493,7 +493,7 @@ class RaphielgangEvents:
 
     def register(self, *args, **kwargs):
         if len(args) == 1:
-            logger.debug("Register for %s", args[0])
+            logger.debug(f"Register for {args[0]}")
             return self.instances[args[0]].register(
                 True
             )  # Passthrough if we have enough info
