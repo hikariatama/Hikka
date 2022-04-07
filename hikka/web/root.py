@@ -153,11 +153,14 @@ class Web:
         return web.Response()
 
     async def okteto(self, request):
-        if "OKTETO_URI" in os.environ:
+        if any(cl[2].get("hikka", "okteto_uri", False) for cl in self.client_data.values()):
             return web.Response(status=418)
 
         text = await request.text()
-        os.environ["OKTETO_URI"] = text
+
+        for client_uid in self.client_data:
+            self.client_data[client_uid][2].set("hikka", "okteto_uri", text)
+
         return web.Response(body="URI_SAVED")
 
     async def tg_code(self, request):

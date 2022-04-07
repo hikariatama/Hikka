@@ -38,6 +38,7 @@ class OktetoMod(loader.Module):
         self._exception_timeout = 10
         self._send_interval = 5
         self._bot = "@WebpageBot"
+        await utils.dnd(client, await client.get_entity(self._bot), True)
         self._task = asyncio.ensure_future(self._okteto_poller())
 
     async def on_unload(self) -> None:
@@ -47,11 +48,11 @@ class OktetoMod(loader.Module):
         """Creates queue to Webpage bot to reset Okteto polling after app goes to sleep"""
         while True:
             try:
-                if "OKTETO_URI" not in os.environ:
+                if not self._db.get("hikka", "okteto_uri", False):
                     await asyncio.sleep(self._env_wait_interval)
                     continue
 
-                uri = os.environ["OKTETO_URI"]
+                uri = self._db.get("hikka", "okteto_uri")
                 current_queue = (
                     await self._client(
                         GetScheduledHistoryRequest(
@@ -86,8 +87,8 @@ class OktetoMod(loader.Module):
     async def watcher(self, message: Message) -> None:
         if (
             not getattr(message, "raw_text", False)
-            or "OKTETO_URI" not in os.environ
-            or os.environ["OKTETO_URI"] not in message.raw_text
+            or not self._db.get("hikka", "okteto_uri", False)
+            or self._db.get("hikka", "okteto_uri") not in message.raw_text
             and "Link previews was updated successfully" not in message.raw_text
             or utils.get_chat_id(message) != 169642392
         ):

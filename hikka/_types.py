@@ -57,7 +57,7 @@ class ModuleConfig(dict):
             try:
                 ret = ret(message)
             except TypeError:  # Invalid number of params
-                logging.debug("%s using legacy doc trnsl", key)
+                logging.debug(f"{key} using legacy doc trnsl")
                 ret = ret()
 
         return ret

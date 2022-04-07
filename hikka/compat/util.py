@@ -41,10 +41,7 @@ def get_cmd_name(pattern):
         # That seems to be the normal command prefix
         pattern = pattern[2:]
     else:
-        logger.info(
-            "Unable to register for non-command-based outgoing messages, pattern=%s",
-            pattern,
-        )
+        logger.info(f"Unable to register for non-command-based outgoing messages, {pattern=}")  # fmt: skip
         return False
 
     # Find first non-alpha character and get all chars before it
@@ -55,9 +52,7 @@ def get_cmd_name(pattern):
         cmd = pattern[:i]
 
     if not cmd:
-        logger.info(
-            "Unable to identify command correctly, i=%d, pattern=%s", i, pattern
-        )
+        logger.info(f"Unable to identify command correctly, {i=}, {pattern=}")  # fmt: skip
         return False
 
     return cmd
@@ -118,13 +113,7 @@ class MarkdownBotPassthrough:
         ).startswith("telethon"):
             ret = MarkdownBotPassthrough(ret)
             if hasattr(ret, "text"):
-                logger.debug(
-                    "%r(%s) %r(%s)",
-                    ret.entities,
-                    type(ret.entities),
-                    ret.message,
-                    type(ret.message),
-                )
+                logger.debug(f"{ret.entities=}, {type(ret.entities)=}, {ret.message=}, {type(ret.message)=}")  # fmt: skip
                 ret.text = markdown.unparse(
                     ret.message, [x.__under for x in ret.entities or []]
                 )

@@ -260,11 +260,7 @@ class Hikka:
             and self.arguments.proxy_port is not None
             and self.arguments.proxy_secret is not None
         ):
-            logging.debug(
-                "Using proxy: %s:%s",
-                self.arguments.proxy_host,
-                self.arguments.proxy_port,
-            )
+            logging.debug(f"Using proxy: {self.arguments.proxy_host}:{self.arguments.proxy_port}")  # fmt: skip
             self.proxy, self.conn = (
                 (
                     self.arguments.proxy_host,
@@ -629,8 +625,7 @@ class Hikka:
 
         self.loop.set_exception_handler(
             lambda _, x: logging.error(
-                "Exception on event loop! %s",
-                x["message"],
+                f"Exception on event loop! {x['message']}",
                 exc_info=x.get("exception", None),
             )
         )

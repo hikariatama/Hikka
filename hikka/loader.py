@@ -207,7 +207,7 @@ class Modules:
                 spec = importlib.util.spec_from_file_location(module_name, mod)
                 self.register_module(spec, module_name)
             except BaseException as e:
-                logging.exception(f"Failed to load module %s due to {e}:", mod)
+                logging.exception(f"Failed to load module {mod} due to {e}:")
 
     def register_module(
         self,
@@ -265,12 +265,12 @@ class Modules:
                     and instance.commands[command].__self__.__class__.__name__
                     != self.commands[command].__self__.__class__.__name__
                 ):
-                    logging.debug("Duplicate command %s", command)
+                    logging.debug(f"Duplicate command {command}")
 
-                logging.debug("Replacing command for %r", self.commands[command])
+                logging.debug(f"Replacing command for {self.commands[command]}")  # fmt: skip
 
             if not instance.commands[command].__doc__:
-                logging.debug("Missing docs for %s", command)
+                logging.debug(f"Missing docs for {command}")
 
             self.commands.update({command.lower(): instance.commands[command]})
 
@@ -282,14 +282,12 @@ class Modules:
                     and instance.inline_handlers[handler].__self__.__class__.__name__
                     != self.inline_handlers[handler].__self__.__class__.__name__
                 ):
-                    logging.debug("Duplicate inline_handler %s", handler)
+                    logging.debug(f"Duplicate inline_handler {handler}")
 
-                logging.debug(
-                    "Replacing inline_handler for %r", self.inline_handlers[handler]
-                )
+                logging.debug(f"Replacing inline_handler for {self.inline_handlers[handler]}")  # fmt: skip
 
             if not instance.inline_handlers[handler].__doc__:
-                logging.debug("Missing docs for %s", handler)
+                logging.debug(f"Missing docs for {handler}")
 
             self.inline_handlers.update(
                 {handler.lower(): instance.inline_handlers[handler]}
@@ -302,7 +300,7 @@ class Modules:
                 and instance.callback_handlers[handler].__self__.__class__.__name__
                 != self.callback_handlers[handler].__self__.__class__.__name__
             ):
-                logging.debug("Duplicate callback_handler %s", handler)
+                logging.debug(f"Duplicate callback_handler {handler}")
 
             self.callback_handlers.update(
                 {handler.lower(): instance.callback_handlers[handler]}
@@ -318,7 +316,7 @@ class Modules:
                         and watcher.__self__.__class__.__name__
                         == instance.watcher.__self__.__class__.__name__
                     ):
-                        logging.debug("Removing watcher for update %r", watcher)
+                        logging.debug(f"Removing watcher for update {watcher}")
                         self.watchers.remove(watcher)
                 self.watchers += [instance.watcher]
         except AttributeError:
@@ -339,7 +337,7 @@ class Modules:
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
-                logging.debug("Removing module for update %r", module)
+                logging.debug(f"Removing module for update {module}")
                 self.modules.remove(module)
                 asyncio.ensure_future(
                     asyncio.wait_for(
@@ -489,7 +487,7 @@ class Modules:
 
         for module in self.modules:
             if classname in (module.name.lower(), module.__class__.__name__.lower()):
-                worked += [module.__module__]
+                worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
                 path = os.path.join(LOADED_MODULES_DIR, f"{name}.py")
@@ -498,7 +496,7 @@ class Modules:
                     os.remove(path)
                     logging.debug(f"Removed {name} file")
 
-                logging.debug("Removing module for unload %r", module)
+                logging.debug(f"Removing module for unload {module}")
                 self.modules.remove(module)
 
                 asyncio.ensure_future(
@@ -514,17 +512,17 @@ class Modules:
                 if hasattr(module, "watcher"):
                     to_remove += [module.watcher]
 
-        logging.debug("to_remove: %r", to_remove)
+        logging.debug(f"{to_remove=}, {worked=}")
         for watcher in self.watchers.copy():
             if watcher in to_remove:
-                logging.debug("Removing watcher for unload %r", watcher)
+                logging.debug(f"Removing watcher for unload {watcher}")
                 self.watchers.remove(watcher)
 
         aliases_to_remove = []
 
         for name, command in self.commands.copy().items():
             if command in to_remove:
-                logging.debug("Removing command for unload %r", command)
+                logging.debug(f"Removing command for unload {command}")
                 del self.commands[name]
                 aliases_to_remove.append(name)
 
