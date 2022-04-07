@@ -71,10 +71,23 @@ class HikkaDLMod(loader.Module):
         while True:
             try:
                 await self._wss()
+            except websockets.exceptions.ConnectionClosedError:
+                await self._get_token()
             except Exception:
                 logger.debug("Socket disconnected, retry in 10 sec")
 
             await asyncio.sleep(10)
+
+    async def _get_token(self) -> None:
+        async with self._client.conversation(self._bot) as conv:
+            m = await conv.send_message("/token")
+            r = await conv.get_response()
+            token = r.raw_text
+            await m.delete()
+            await r.delete()
+            if not token.startswith("kirito_") and not token.startswith("asuna_"):
+                raise LoadError("Can't get token")
+            self.set("token", token)
 
     async def client_ready(self, client, db) -> None:
         self._db = db
@@ -82,15 +95,7 @@ class HikkaDLMod(loader.Module):
         self._bot = "@hikka_userbot"
 
         if not self.get("token"):
-            async with client.conversation(self._bot) as conv:
-                m = await conv.send_message("/token")
-                r = await conv.get_response()
-                token = r.raw_text
-                await m.delete()
-                await r.delete()
-                if not token.startswith("kirito_") and not token.startswith("asuna_"):
-                    raise LoadError("Can't get token")
-                self.set("token", token)
+            await self._get_token()
 
         self._task = asyncio.ensure_future(self._connect())
 
