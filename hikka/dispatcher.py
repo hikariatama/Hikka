@@ -424,6 +424,12 @@ class CommandDispatcher:
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue
 
+            # Avoid weird AttributeErrors in weird dochub modules by settings placeholder
+            # of attributes
+            for placeholder in {"text", "raw_text"}:
+                if not hasattr(event, placeholder):
+                    setattr(event, placeholder, "")
+
             # Run watcher via ensure_future so in case user has a lot
             # of watchers with long actions, they can run simultaneously
             asyncio.ensure_future(
