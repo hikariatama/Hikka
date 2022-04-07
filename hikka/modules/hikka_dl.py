@@ -9,19 +9,29 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # scope: inline
-# scope: hikka_only
-# meta developer: @hikariatama
 # requires: websockets
 
 from .. import loader
-import websockets
 import logging
 import asyncio
 from .._types import LoadError
 import json
 import re
+import websockets
 
 logger = logging.getLogger(__name__)
+
+ALLOWED_ORIGINS = [
+    "https://github.com/morisummerz/ftg-mods/raw/main",
+    "https://raw.githubusercontent.com/morisummerz/ftg-mods/main",
+    "https://mods.morisummer.ml",
+    "https://gitlab.com/cakestwix/friendly-userbot-modules/-/raw/master",
+    "https://mods.hikariatama.ru",
+    "https://raw.githubusercontent.com/hikariatama/ftg/master",
+    "https://github.com/hikariatama/ftg/raw/master",
+    "https://raw.githubusercontent.com/hikariatama/host/master",
+    "https://github.com/hikariatama/host/raw/master",
+]
 
 
 @loader.tds
@@ -58,13 +68,14 @@ class HikkaDLMod(loader.Module):
                         await wss.send("link_404")
                         continue
 
+                    if "/".join(link.split("/")[:-1]).lower() not in ALLOWED_ORIGINS:
+                        await wss.send("🚫 Origin is not allowed")
+                        continue
+
                     m = await self._client.send_message("me", f".dlmod {link}")
                     await self.allmodules.commands["dlmod"](m)
-                    await wss.send(
-                        (await self._client.get_messages(m.peer_id, ids=[m.id]))[
-                            0
-                        ].raw_text.splitlines()[0]
-                    )
+                    load = (await self._client.get_messages(m.peer_id, ids=[m.id]))[0]
+                    await wss.send(load.raw_text.splitlines()[0])
                     await m.delete()
 
     async def _connect(self) -> None:
@@ -72,6 +83,7 @@ class HikkaDLMod(loader.Module):
             try:
                 await self._wss()
             except websockets.exceptions.ConnectionClosedError:
+                logger.debug("Token became invalid, revoking...")
                 await self._get_token()
             except Exception:
                 logger.debug("Socket disconnected, retry in 10 sec")
@@ -85,8 +97,10 @@ class HikkaDLMod(loader.Module):
             token = r.raw_text
             await m.delete()
             await r.delete()
+
             if not token.startswith("kirito_") and not token.startswith("asuna_"):
                 raise LoadError("Can't get token")
+
             self.set("token", token)
 
     async def client_ready(self, client, db) -> None:

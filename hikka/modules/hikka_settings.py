@@ -43,6 +43,8 @@ class HikkaSettingsMod(loader.Module):
         "btn_restart": "🔄 Restart",
         "btn_update": "🪂 Update",
         "close_menu": "😌 Close menu",
+        "download_btn": "✅ Download via button",
+        "no_download_btn": "🚫 Download via button",
     }
 
     def get_watchers(self) -> tuple:
@@ -386,6 +388,27 @@ class HikkaSettingsMod(loader.Module):
                         "callback": self.inline__setting,
                         "args": (
                             "permanent_modules_fs",
+                            True,
+                        ),
+                    }
+                ),
+            ],
+            [
+                (
+                    {
+                        "text": self.strings("download_btn"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "use_dl_btn",
+                            False,
+                        ),
+                    }
+                    if self._db.get(main.__name__, "use_dl_btn", True)
+                    else {
+                        "text": self.strings("no_download_btn"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "use_dl_btn",
                             True,
                         ),
                     }

@@ -33,6 +33,7 @@ import subprocess
 import sys
 import uuid
 import telethon
+from typing import Union
 
 import git
 from git import Repo, GitCommandError
@@ -74,7 +75,7 @@ class UpdaterMod(loader.Module):
     @loader.owner
     async def restartcmd(self, message: Message) -> None:
         """Restarts the userbot"""
-        await self.inline.form(
+        if self.inline.init_complete and await self.inline.form(
             message=message,
             text=self.strings(
                 "restart_confirm",
@@ -87,7 +88,14 @@ class UpdaterMod(loader.Module):
                 },
                 {"text": self.strings("cancel"), "callback": self.inline_close},
             ],
-        )
+        ):
+            return
+
+        message = await utils.answer(message, self.strings("restarting_caption"))
+        if isinstance(message, (list, set, tuple)):
+            message = message[0]
+
+        await self.restart_common(message)
 
     async def inline_restart(self, call: CallbackQuery) -> None:
         await call.edit(self.strings("restarting_caption"))
@@ -96,12 +104,27 @@ class UpdaterMod(loader.Module):
     async def inline_close(self, call: CallbackQuery) -> None:
         await call.delete()
 
-    async def prerestart_common(self, call: CallbackQuery) -> None:
+    async def prerestart_common(self, call: Union[CallbackQuery, Message]) -> None:
         logger.debug(f"Self-update. {sys.executable} -m {utils.get_base_dir()}")
-        self._db.set(__name__, "selfupdatemsg", call.inline_message_id)
+        if hasattr(call, "inline_message_id"):
+            self._db.set(__name__, "selfupdatemsg", call.inline_message_id)
+        else:
+            self._db.set(
+                __name__, "selfupdatemsg", f"{utils.get_chat_id(call)}:{call.id}"
+            )
 
-    async def restart_common(self, call: Message) -> None:
-        message = self.inline._forms[call.form["uid"]]["message"]
+    async def restart_common(self, call: Union[CallbackQuery, Message]) -> None:
+        if (
+            hasattr(call, "form")
+            and isinstance(call.form, dict)
+            and "uid" in call.form
+            and call.form["uid"] in self.inline._forms
+            and "message" in self.inline._forms[call.form["uid"]]
+        ):
+            message = self.inline._forms[call.form["uid"]]["message"]
+        else:
+            message = call
+
         await self.prerestart_common(call)
         atexit.register(functools.partial(restart, *sys.argv[1:]))
         handler = logging.getLogger().handlers[0]
@@ -111,6 +134,7 @@ class UpdaterMod(loader.Module):
             # Won't work if not all clients are ready
             if client is not message.client:
                 await client.disconnect()
+
         await message.client.disconnect()
 
     async def download_common(self):
@@ -159,7 +183,7 @@ class UpdaterMod(loader.Module):
     @loader.owner
     async def updatecmd(self, message: Message) -> None:
         """Downloads userbot updates"""
-        await self.inline.form(
+        if self.inline.init_complete and await self.inline.form(
             message=message,
             text=self.strings(
                 "update_confirm",
@@ -172,9 +196,16 @@ class UpdaterMod(loader.Module):
                 },
                 {"text": self.strings("cancel"), "callback": self.inline_close},
             ],
-        )
+        ):
+            return
 
-    async def inline_update(self, call: CallbackQuery, hard: bool = False) -> None:
+        await self.inline_update(message)
+
+    async def inline_update(
+        self,
+        call: Union[CallbackQuery, Message],
+        hard: bool = False,
+    ) -> None:
         # We don't really care about asyncio at this point, as we are shutting down
         if hard:
             os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")  # fmt: skip
@@ -233,9 +264,16 @@ class UpdaterMod(loader.Module):
     async def update_complete(self, client):
         logger.debug("Self update successful! Edit message")
         msg = self.strings("success")
+        ms = self._db.get(__name__, "selfupdatemsg")
+
+        if ":" in str(ms):
+            chat_id, message_id = ms.split(":")
+            chat_id, message_id = int(chat_id), int(message_id)
+            await self._client.edit_message(chat_id, message_id, msg)
+            return
 
         await self.inline.bot.edit_message_text(
-            inline_message_id=self._db.get(__name__, "selfupdatemsg"),
+            inline_message_id=ms,
             text=msg,
             parse_mode="HTML",
         )
