@@ -463,7 +463,8 @@ class LoaderMod(loader.Module):
                         )
                     )
                 except TypeError:
-                    raise Exception("No valid pip packages specified in code") from e
+                    logger.warning("No valid pip packages specified in code, attemping installation from error")
+                    requirements = [e.name]
 
                 logger.debug("Installing requirements: %r", requirements)
 

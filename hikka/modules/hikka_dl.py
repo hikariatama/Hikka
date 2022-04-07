@@ -73,6 +73,9 @@ class HikkaDLMod(loader.Module):
                         await wss.send("🚫 Origin is not allowed")
                         continue
 
+                    # Modules' creators spend so much time to create cool modules
+                    # so this code part is a little propriety gesture. Send a ❤
+                    # to a message with a link to currently downloading module
                     try:
                         await self._client(
                             SendReactionRequest(
