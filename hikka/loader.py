@@ -489,7 +489,7 @@ class Modules:
 
         for module in self.modules:
             if classname in (module.name.lower(), module.__class__.__name__.lower()):
-                worked += [module.__module__]
+                worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
                 path = os.path.join(LOADED_MODULES_DIR, f"{name}.py")
@@ -514,7 +514,7 @@ class Modules:
                 if hasattr(module, "watcher"):
                     to_remove += [module.watcher]
 
-        logging.debug("to_remove: %r", to_remove)
+        logging.debug(f"{to_remove=}, {worked=}")
         for watcher in self.watchers.copy():
             if watcher in to_remove:
                 logging.debug("Removing watcher for unload %r", watcher)

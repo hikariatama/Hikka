@@ -188,30 +188,36 @@ class LoaderMod(loader.Module):
             lambda m: self.strings("repo_config_doc", m),
         )
 
+    def _update_modules_in_db(self) -> None:
+        self._db.set(
+            __name__,
+            "loaded_modules",
+            {
+                module.__class__.__name__: module.__origin__
+                for module in self.allmodules.modules
+                if module.__origin__.startswith("http")
+            },
+        )
+
     @loader.owner
     async def dlmodcmd(self, message: Message) -> None:
         """Downloads and installs a module from the official module repo"""
         if args := utils.get_args(message):
             args = args[0] if urllib.parse.urlparse(args[0]).netloc else args[0].lower()
 
-            if await self.download_and_install(args, message):
-                self._db.set(
-                    __name__,
-                    "loaded_modules",
-                    list(
-                        set(self._db.get(__name__, "loaded_modules", [])).union([args])
-                    ),
-                )
+            await self.download_and_install(args, message)
+            self._update_modules_in_db()
         else:
-            text = utils.escape_html("\n".join(await self.get_repo_list("full")))
+            available = "\n".join(
+                f"<code>{i}</code>"
+                for i in sorted(
+                    [utils.escape_html(i) for i in await self.get_repo_list("full")]
+                )
+            )
+
             await utils.answer(
                 message,
-                (
-                    "<b>"
-                    + self.strings("avail_header", message)
-                    + "</b>\n"
-                    + "\n".join(f"<code>{i}</code>" for i in sorted(text.split("\n")))
-                ),
+                f"<b>{self.strings('avail_header')}</b>\n{available}",
             )
 
     @loader.owner
@@ -233,16 +239,14 @@ class LoaderMod(loader.Module):
             raise
 
         self._db.set(__name__, "chosen_preset", args[0])
-        self._db.set(__name__, "loaded_modules", [])
-        self._db.set(__name__, "unloaded_modules", [])
+        self._db.set(__name__, "loaded_modules", {})
 
         await utils.answer(message, self.strings("preset_loaded", message))
         await self.allmodules.commands["restart"](await message.reply("_"))
 
     async def _get_modules_to_load(self):
         todo = await self.get_repo_list(self._db.get(__name__, "chosen_preset", None))
-        todo = todo.difference(self._db.get(__name__, "unloaded_modules", []))
-        todo.update(self._db.get(__name__, "loaded_modules", []))
+        todo.update(**self._db.get(__name__, "loaded_modules", {}))
         return todo
 
     async def get_repo_list(self, preset=None):
@@ -251,10 +255,13 @@ class LoaderMod(loader.Module):
 
         r = await utils.run_sync(
             requests.get,
-            f'{self.config["MODULES_REPO"].strip("/")}/{preset}.txt'
+            f'{self.config["MODULES_REPO"].strip("/")}/{preset}.txt',
         )
         r.raise_for_status()
-        return set(filter(lambda x: x, r.text.split("\n")))
+        return {
+            f"Preset_mod_{i}": link
+            for i, link in enumerate(set(filter(lambda x: x, r.text.split("\n"))))
+        }
 
     async def download_and_install(self, module_name, message=None):
         try:
@@ -334,10 +341,9 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("bad_unicode", message))
             return
 
-        if (
-            not self._db.get(main.__name__, "disable_modules_fs", False)
-            and not self._db.get(main.__name__, "permanent_modules_fs", False)
-        ):
+        if not self._db.get(
+            main.__name__, "disable_modules_fs", False
+        ) and not self._db.get(main.__name__, "permanent_modules_fs", False):
             if message.file:
                 await message.edit("")
                 message = await message.respond("🌘")
@@ -445,7 +451,12 @@ class LoaderMod(loader.Module):
         try:
             try:
                 spec = ModuleSpec(module_name, StringLoader(doc, origin), origin=origin)
-                instance = self.allmodules.register_module(spec, module_name, origin, save_fs=save_fs)
+                instance = self.allmodules.register_module(
+                    spec,
+                    module_name,
+                    origin,
+                    save_fs=save_fs,
+                )
             except ImportError as e:
                 logger.info(
                     "Module loading failed, attemping dependency installation",
@@ -463,13 +474,13 @@ class LoaderMod(loader.Module):
                         )
                     )
                 except TypeError:
-                    logger.warning("No valid pip packages specified in code, attemping installation from error")
+                    logger.warning("No valid pip packages specified in code, attemping installation from error")  # fmt: skip
                     requirements = [e.name]
 
                 logger.debug("Installing requirements: %r", requirements)
 
                 if not requirements:
-                    raise  # we don't know what to install
+                    raise Exception("Nothing to install") from e
 
                 if did_requirements:
                     if message is not None:
@@ -478,7 +489,7 @@ class LoaderMod(loader.Module):
                             self.strings("requirements_restart", message),
                         )
 
-                    return True  # save to database despite failure, so it will work after restart
+                    return
 
                 if message is not None:
                     await utils.answer(
@@ -508,7 +519,7 @@ class LoaderMod(loader.Module):
                             self.strings("requirements_failed", message),
                         )
 
-                    return False
+                    return
 
                 importlib.invalidate_caches()
 
@@ -524,13 +535,13 @@ class LoaderMod(loader.Module):
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
                 return
-        except BaseException as e:  # That's okay because it might try to exit or something, who knows.
+        except BaseException as e:
             logger.exception(f"Loading external module failed due to {e}")
 
             if message is not None:
                 await utils.answer(message, self.strings("load_failed", message))
 
-            return False
+            return
 
         instance.inline = self.inline
         instance.get = functools.partial(
@@ -543,11 +554,7 @@ class LoaderMod(loader.Module):
         )
 
         if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
-            version = (
-                "<b><i> (v"
-                + ".".join(list(map(str, list(instance.__version__))))
-                + ")</i></b>"
-            )
+            version = f"<b><i> (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
         else:
             version = ""
 
@@ -570,7 +577,7 @@ class LoaderMod(loader.Module):
             if message is not None:
                 await utils.answer(message, self.strings("load_failed", message))
 
-            return False
+            return
 
         if message is not None:
             try:
@@ -592,13 +599,14 @@ class LoaderMod(loader.Module):
                 line.replace(" ", "") == "#scope:disable_onload_docs"
                 for line in doc.splitlines()
             ):
-                return await utils.answer(
+                await utils.answer(
                     message,
                     self.strings("loaded", message).format(
                         modname.strip(), version, modhelp
                     )
                     + developer,
                 )
+                return
 
             for _name, fun in sorted(
                 instance.commands.items(),
@@ -654,7 +662,7 @@ class LoaderMod(loader.Module):
                     + developer
                 )
 
-        return True
+        return
 
     @loader.owner
     async def unloadmodcmd(self, message: Message) -> None:
@@ -665,23 +673,17 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("no_class", message))
             return
 
-        worked = self.allmodules.unload_module(
-            args.lower()
-        ) + self.allmodules.unload_module(args)
-        without_prefix = []
+        worked = self.allmodules.unload_module(args)
 
-        for mod in worked:
-            if not mod.startswith("hikka.modules.") or not mod:
-                raise Exception("Assertion error")
-
-            without_prefix += [unescape_percent(mod[len("hikka.modules.") :])]
-
-        it = set(self._db.get(__name__, "loaded_modules", [])).difference(
-            without_prefix
+        self._db.set(
+            __name__,
+            "loaded_modules",
+            {
+                mod: link
+                for mod, link in self._db.get(__name__, "loaded_modules", {}).items()
+                if mod not in worked
+            },
         )
-        self._db.set(__name__, "loaded_modules", list(it))
-        it = set(self._db.get(__name__, "unloaded_modules", [])).union(without_prefix)
-        self._db.set(__name__, "unloaded_modules", list(it))
 
         await utils.answer(
             message,
@@ -697,8 +699,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     async def clearmodulescmd(self, message: Message) -> None:
         """Delete all installed modules"""
-        self._db.set("hikka.modules.loader", "loaded_modules", [])
-        self._db.set("hikka.modules.loader", "unloaded_modules", [])
+        self._db.set(__name__, "loaded_modules", {})
 
         await utils.answer(message, self.strings("all_modules_deleted", message))
 
@@ -708,14 +709,26 @@ class LoaderMod(loader.Module):
 
     async def _update_modules(self):
         todo = await self._get_modules_to_load()
+        for mod in todo.values():
+            await self.download_and_install(mod)
 
-        await asyncio.gather(*[self.download_and_install(mod) for mod in todo])
-
-        repos = set(self._db.get(__name__, "loaded_repositories", []))
-
-        await asyncio.gather(*[self.load_repo(get_git_api(url)) for url in repos])
+        self._update_modules_in_db()
 
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        # Legacy db migration
+        if isinstance(self._db.get(__name__, "loaded_modules", {}), list):
+            self._db.set(
+                __name__,
+                "loaded_modules",
+                {
+                    f"Loaded_module_{i}": link
+                    for i, link in enumerate(
+                        self._db.get(__name__, "loaded_modules", {})
+                    )
+                },
+            )
+
         await self._update_modules()

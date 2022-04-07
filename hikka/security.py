@@ -27,8 +27,9 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
-from telethon.tl.types import Message
+from telethon.tl.types import Message, ChatParticipantCreator, ChatParticipantAdmin
 from types import FunctionType
+from telethon.tl.functions.messages import GetFullChatRequest
 
 from . import main
 
@@ -273,15 +274,13 @@ class SecurityManager:
                     user,
                 )
 
-                if participant.is_creator:
-                    return True
-
-                if participant.is_admin:
-                    if self._any_admin and f_group_admin_any:
-                        return True
-
-                    if (
-                        f_group_admin
+                if (
+                    participant.is_creator
+                    or participant.is_admin
+                    and (
+                        self._any_admin
+                        and f_group_admin_any
+                        or f_group_admin
                         or f_group_admin_add_admins
                         and participant.add_admins
                         or f_group_admin_change_info
@@ -294,25 +293,30 @@ class SecurityManager:
                         and participant.pin_messages
                         or f_group_admin_invite_users
                         and participant.invite_users
-                    ):
-                        return True
+                    )
+                ):
+                    return True
             return False
 
-        if message.is_group:
-            participant = await message.client.get_permissions(
-                message.peer_id,
-                user,
+        if message.is_group and (f_group_admin_any or f_group_owner):
+            full_chat = await message.client(GetFullChatRequest(message.chat_id))
+            participants = full_chat.full_chat.participants.participants
+            participant = next(
+                (
+                    possible_participant
+                    for possible_participant in participants
+                    if possible_participant.user_id == message.sender_id
+                ),
+                None,
             )
 
             if not participant:
-                return False
+                return
 
-            if (
-                (f_group_admin_any or f_group_owner)
-                and participant.is_creator
-                or participant.is_admin
-                and f_group_admin_any
-            ):
+            if isinstance(participant, ChatParticipantCreator):
+                return True
+
+            if isinstance(participant, ChatParticipantAdmin) and f_group_admin_any:
                 return True
 
         return False
