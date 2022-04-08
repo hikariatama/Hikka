@@ -240,7 +240,8 @@ class Events(InlineUnit):
                             form.get("force_me", False)
                             and query.from_user.id == self._me
                         )
-                        or (
+                        or not form.get("force_me", False)
+                        and (
                             await self._check_inline_sec_by_mask(
                                 mask=form.get(
                                     "perms_map",
@@ -307,7 +308,8 @@ class Events(InlineUnit):
                     self._custom_map[query.data].get("force_me", False)
                     and query.from_user.id == self._me
                 )
-                or (
+                or not form.get("force_me", False)
+                and (
                     await self._check_inline_sec_by_mask(
                         mask=self._custom_map[query.data].get(
                             "perms_map",

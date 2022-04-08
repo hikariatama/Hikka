@@ -36,8 +36,10 @@ class QueryGallery(InlineUnit):
                     - `title` - The title of the result
                     - `description` - Short description of the result
                     - `next_handler` - Inline gallery handler. Callback or awaitable
-                Each dict *could* has a:
+                Each dict *can* has a:
                     - `caption` - Caption of photo. Defaults to `""`
+                    - `force_me` - Whether the button must be accessed only by owner. Defaults to `False`
+                    - `disable_security` - Whether to disable the security checks at all. Defaults to `False`
             force_me
                 Either this gallery buttons must be pressed only by owner scope or no
             always_allow
