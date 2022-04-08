@@ -21,13 +21,16 @@ class QueryGallery(InlineUnit):
         query: InlineQuery,
         items: List[dict],
         *,
-        force_me: bool = True,
+        force_me: bool = False,
+        disable_security: bool = False,
         always_allow: Union[list, None] = None,
     ) -> None:
         """
-        query
+        Processes inline query galleries
+        Args:
+            query
                 `InlineQuery` which should be answered with inline gallery
-        items
+            items
                 Array of dicts with inline results.
                 Each dict *must* has a:
                     - `title` - The title of the result
@@ -35,13 +38,20 @@ class QueryGallery(InlineUnit):
                     - `next_handler` - Inline gallery handler. Callback or awaitable
                 Each dict *could* has a:
                     - `caption` - Caption of photo. Defaults to `""`
-        force_me
+            force_me
                 Either this gallery buttons must be pressed only by owner scope or no
-        always_allow
+            always_allow
                 Users, that are allowed to press buttons in addition to previous rules
+            disable_security
+                By default, Hikka will try to check security of gallery
+                If you want to disable all security checks on this gallery in particular, pass `disable_security=True`
         """
         if not isinstance(force_me, bool):
             logger.error("Invalid type for `force_me`")
+            return False
+
+        if not isinstance(disable_security, bool):
+            logger.error("Invalid type for `disable_security`")
             return False
 
         if always_allow and not isinstance(always_allow, list):
@@ -103,6 +113,7 @@ class QueryGallery(InlineUnit):
                 "ttl": round(time.time()) + 120,
                 **({"always_allow": always_allow} if always_allow else {}),
                 **({"force_me": force_me} if force_me else {}),
+                **({"disable_security": disable_security} if disable_security else {}),
                 **({"caption": i["caption"]} if "caption" in i else {}),
             }
 

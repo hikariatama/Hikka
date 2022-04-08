@@ -50,37 +50,42 @@ class Gallery(InlineUnit):
         preload: Union[bool, int] = False,
         gif: bool = False,
         manual_security: bool = False,
+        disable_security: bool = False,
         _reattempt: bool = False,
     ) -> Union[bool, str]:
         """
         Processes inline gallery
+        Args:
             caption
-                    Caption for photo, or callable, returning caption
+                Caption for photo, or callable, returning caption
             message
-                    Where to send inline. Can be either `Message` or `int`
+                Where to send inline. Can be either `Message` or `int`
             next_handler
-                    Callback function, which must return url for next photo or list with photo urls
+                Callback function, which must return url for next photo or list with photo urls
             force_me
-                    Either this gallery buttons must be pressed only by owner scope or no
+                Either this gallery buttons must be pressed only by owner scope or no
             always_allow
-                    Users, that are allowed to press buttons in addition to previous rules
+                Users, that are allowed to press buttons in addition to previous rules
             ttl
-                    Time, when the gallery is going to be unloaded. Unload means, that the gallery
-                    will become unusable. Pay attention, that ttl can't
-                    be bigger, than default one (1 day) and must be either `int` or `False`
+                Time, when the gallery is going to be unloaded. Unload means, that the gallery
+                will become unusable. Pay attention, that ttl can't
+                be bigger, than default one (1 day) and must be either `int` or `False`
             on_unload
-                    Callback, called when gallery is unloaded and/or closed. You can clean up trash
-                    or perform another needed action
+                Callback, called when gallery is unloaded and/or closed. You can clean up trash
+                or perform another needed action
             preload
-                    Either to preload gallery photos beforehand or no. If yes - specify threshold to
-                    be loaded. Toggle this attribute, if your callback is too slow to load photos
-                    in real time
+                Either to preload gallery photos beforehand or no. If yes - specify threshold to
+                be loaded. Toggle this attribute, if your callback is too slow to load photos
+                in real time
             gif
-                    Whether the gallery will be filled with gifs. If you omit this argument and specify
-                    gifs in `next_handler`, they will be interpreted as plain images (not GIFs!)
+                Whether the gallery will be filled with gifs. If you omit this argument and specify
+                gifs in `next_handler`, they will be interpreted as plain images (not GIFs!)
             manual_security
-                    By default, Hikka will try to inherit inline buttons security from the caller (command)
-                    If you want to avoid this, pass `manual_security=True`
+                By default, Hikka will try to inherit inline buttons security from the caller (command)
+                If you want to avoid this, pass `manual_security=True`
+            disable_security
+                By default, Hikka will try to inherit inline buttons security from the caller (command)
+                If you want to disable all security checks on this gallery in particular, pass `disable_security=True`
         """
 
         if not isinstance(caption, str) and not callable(caption):
@@ -89,6 +94,10 @@ class Gallery(InlineUnit):
 
         if not isinstance(manual_security, bool):
             logger.error("Invalid type for `manual_security`")
+            return False
+
+        if not isinstance(disable_security, bool):
+            logger.error("Invalid type for `disable_security`")
             return False
 
         if not isinstance(message, (Message, int)):
@@ -166,6 +175,7 @@ class Gallery(InlineUnit):
             "current_index": 0,
             **({"ttl": round(time.time()) + ttl} if ttl else {}),
             **({"force_me": force_me} if force_me else {}),
+            **({"disable_security": disable_security} if disable_security else {}),
             **({"on_unload": on_unload} if callable(on_unload) else {}),
             **({"preload": preload} if preload else {}),
             **({"gif": gif} if gif else {}),
@@ -176,20 +186,13 @@ class Gallery(InlineUnit):
 
         default_map = {
             **(
-                {"always_allow": self._galleries[gallery_uid]["always_allow"]}
-                if "always_allow" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
-                {"force_me": self._galleries[gallery_uid]["force_me"]}
-                if "force_me" in self._galleries[gallery_uid]
-                else {}
-            ),
-            **(
                 {"ttl": self._galleries[gallery_uid]["ttl"]}
                 if "ttl" in self._galleries[gallery_uid]
                 else {}
             ),
+            **({"always_allow": always_allow} if always_allow else {}),
+            **({"force_me": force_me} if force_me else {}),
+            **({"disable_security": disable_security} if disable_security else {}),
             **({"perms_map": perms_map} if perms_map else {}),
             **({"message": message} if isinstance(message, Message) else {}),
         }

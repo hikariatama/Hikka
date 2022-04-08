@@ -31,36 +31,41 @@ class Form(InlineUnit):
         message: Union[Message, int],
         reply_markup: Union[List[List[dict]], List[dict], dict] = None,
         *,
-        force_me: bool = True,
+        force_me: bool = False,
         always_allow: Union[List[list], None] = None,
         ttl: Union[int, bool] = False,
         on_unload: Union[FunctionType, None] = None,
         manual_security: bool = False,
+        disable_security: bool = False,
     ) -> Union[str, bool]:
-        """Creates inline form with callback
+        """
+        Creates inline form with callback
         Args:
-                text
-                        Content of inline form. HTML markdown supported
-                message
-                        Where to send inline. Can be either `Message` or `int`
-                reply_markup
-                        List of buttons to insert in markup. List of dicts with
-                        keys: text, callback
-                force_me
-                        Either this form buttons must be pressed only by owner scope or no
-                always_allow
-                        Users, that are allowed to press buttons in addition to previous rules
-                ttl
-                        Time, when the form is going to be unloaded. Unload means, that the form
-                        buttons with inline queries and callback queries will become unusable, but
-                        buttons with type url will still work as usual. Pay attention, that ttl can't
-                        be bigger, than default one (1 day) and must be either `int` or `False`
-                on_unload
-                        Callback, called when form is unloaded and/or closed. You can clean up trash
-                        or perform another needed action
-                manual_security
-                        By default, Hikka will try to inherit inline buttons security from the caller (command)
-                        If you want to avoid this, pass `manual_security=True`
+            text
+                Content of inline form. HTML markdown supported
+            message
+                Where to send inline. Can be either `Message` or `int`
+            reply_markup
+                List of buttons to insert in markup. List of dicts with
+                keys: text, callback
+            force_me
+                Either this form buttons must be pressed only by owner scope or no
+            always_allow
+                Users, that are allowed to press buttons in addition to previous rules
+            ttl
+                Time, when the form is going to be unloaded. Unload means, that the form
+                buttons with inline queries and callback queries will become unusable, but
+                buttons with type url will still work as usual. Pay attention, that ttl can't
+                be bigger, than default one (1 day) and must be either `int` or `False`
+            on_unload
+                Callback, called when form is unloaded and/or closed. You can clean up trash
+                or perform another needed action
+            manual_security
+                By default, Hikka will try to inherit inline buttons security from the caller (command)
+                If you want to avoid this, pass `manual_security=True`
+            disable_security
+                By default, Hikka will try to inherit inline buttons security from the caller (command)
+                If you want to disable all security checks on this form in particular, pass `disable_security=True`
         """
 
         if reply_markup is None:
@@ -75,6 +80,10 @@ class Form(InlineUnit):
 
         if not isinstance(manual_security, bool):
             logger.error("Invalid type for `manual_security`")
+            return False
+
+        if not isinstance(disable_security, bool):
+            logger.error("Invalid type for `disable_security`")
             return False
 
         if not isinstance(message, (Message, int)):
@@ -150,6 +159,7 @@ class Form(InlineUnit):
             **({"perms_map": perms_map} if perms_map else {}),
             **({"message": message} if isinstance(message, Message) else {}),
             **({"force_me": force_me} if force_me else {}),
+            **({"disable_security": disable_security} if disable_security else {}),
             **({"ttl": round(time.time()) + ttl} if ttl else {}),
             **({"always_allow": always_allow} if always_allow else {}),
         }

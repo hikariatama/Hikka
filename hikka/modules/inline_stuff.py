@@ -62,6 +62,8 @@ class InlineStuffMod(loader.Module):
             message=m,
             next_handler=self.inline._custom_map[id_]["handler"],
             caption=self.inline._custom_map[id_].get("caption", ""),
+            force_me=self.inline._custom_map[id_].get("force_me", False),
+            disable_security=self.inline._custom_map[id_].get("disable_security", False),
         )
 
     async def _check_bot(self, username: str) -> bool:
