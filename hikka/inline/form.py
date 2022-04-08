@@ -258,14 +258,16 @@ class Form(InlineUnit):
             logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
             await asyncio.sleep(e.timeout)
             return await self._callback_query_edit(
-                text,
-                reply_markup,
-                force_me,
-                always_allow,
-                query,
-                form,
-                form_uid,
-                inline_message_id,
+                text=text,
+                reply_markup=reply_markup,
+                force_me=force_me,
+                disable_security=disable_security,
+                always_allow=always_allow,
+                disable_web_page_preview=disable_web_page_preview,
+                query=query,
+                form=form,
+                form_uid=form_uid,
+                inline_message_id=inline_message_id,
             )
         except MessageIdInvalid:
             try:
