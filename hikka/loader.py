@@ -256,6 +256,35 @@ class Modules:
     def register_commands(self, instance: Module) -> None:
         """Register commands from instance"""
         for command in instance.commands.copy():
+            # Restrict overwriting core modules' commands
+            if (
+                command.lower()
+                in {
+                    "help",
+                    "dlmod",
+                    "loadmod",
+                    "unloadmod",
+                    "logs",
+                    "ping",
+                    "hikka",
+                    "e",
+                    "eval",
+                    "settings",
+                    "restart",
+                    "update",
+                    "ch_hikka_bot",
+                    "security",
+                    "inlinesec",
+                    "info",
+                }
+                and command.lower() in self.commands
+            ):
+                logging.warning(
+                    f"Command {command} is core and will not be overwritten by {instance}"
+                )
+                del instance.commands[command]
+                continue
+
             # Verify that command does not already exist, or,
             # if it does, the command must be from the same class name
             if command.lower() in self.commands:
@@ -266,7 +295,6 @@ class Modules:
                     != self.commands[command].__self__.__class__.__name__
                 ):
                     logging.debug(f"Duplicate command {command}")
-
                 logging.debug(f"Replacing command for {self.commands[command]}")  # fmt: skip
 
             if not instance.commands[command].__doc__:
@@ -283,7 +311,6 @@ class Modules:
                     != self.inline_handlers[handler].__self__.__class__.__name__
                 ):
                     logging.debug(f"Duplicate inline_handler {handler}")
-
                 logging.debug(f"Replacing inline_handler for {self.inline_handlers[handler]}")  # fmt: skip
 
             if not instance.inline_handlers[handler].__doc__:
@@ -337,6 +364,9 @@ class Modules:
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
+                if getattr(module, "__origin__", "") == "<core>":
+                    raise RuntimeError(f"Attempted to overwrite core module {module}")
+
                 logging.debug(f"Removing module for update {module}")
                 self.modules.remove(module)
                 asyncio.ensure_future(
@@ -486,7 +516,10 @@ class Modules:
         to_remove = []
 
         for module in self.modules:
-            if classname.lower() in (module.name.lower(), module.__class__.__name__.lower()):
+            if classname.lower() in (
+                module.name.lower(),
+                module.__class__.__name__.lower(),
+            ):
                 worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
