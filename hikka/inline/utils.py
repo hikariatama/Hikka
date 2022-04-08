@@ -16,28 +16,34 @@ logger = logging.getLogger(__name__)
 
 
 class Utils(InlineUnit):
-    def _generate_markup(self, form_uid: Union[str, list], /) -> Union[None, InlineKeyboardMarkup]:
+    def _generate_markup(
+        self,
+        form_uid: Union[str, list],
+        /,
+    ) -> Union[None, InlineKeyboardMarkup]:
         """Generate markup for form or list of `dict`s"""
         if not form_uid:
             return None
 
-        if isinstance(form_uid, dict):
-            form_uid = [[form_uid]]
-        elif isinstance(form_uid, list):
-            if isinstance(form_uid[0], dict):
-                form_uid = [form_uid]
-
         markup = InlineKeyboardMarkup()
 
-        for row in (self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid):  # fmt: skip
+        map_ = (
+            self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid
+        )
+
+        for row in map_:
             for button in row:
+                if not isinstance(button, dict):
+                    logger.error(f"Button {button} is not a `dict`, but `{type(button)}` in {map_}")  # fmt: skip
+                    return None
+
                 if "callback" in button and "_callback_data" not in button:
                     button["_callback_data"] = utils.rand(30)
 
                 if "input" in button and "_switch_query" not in button:
                     button["_switch_query"] = utils.rand(10)
 
-        for row in (self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid):  # fmt: skip
+        for row in map_:
             line = []
             for button in row:
                 try:
@@ -180,3 +186,14 @@ class Utils(InlineUnit):
         except Exception:
             logger.debug("Can't parse security mask in form", exc_info=True)
             return None
+
+    def _normalize_markup(self, reply_markup: Union[dict, list]) -> list:
+        if isinstance(reply_markup, dict):
+            return [[reply_markup]]
+
+        if isinstance(reply_markup, list) and any(
+            isinstance(i, dict) for i in reply_markup
+        ):
+            return [reply_markup]
+
+        return reply_markup

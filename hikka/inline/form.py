@@ -94,14 +94,7 @@ class Form(InlineUnit):
             logger.error("Invalid type for `reply_markup`")
             return False
 
-        if isinstance(reply_markup, dict):
-            reply_markup = [[reply_markup]]
-        elif (
-            isinstance(reply_markup, list)
-            and len(reply_markup)
-            and isinstance(reply_markup[0], dict)
-        ):
-            reply_markup = [reply_markup]
+        reply_markup = self._normalize_markup(reply_markup)
 
         if not all(
             all(isinstance(button, dict) for button in row) for row in reply_markup
@@ -221,6 +214,8 @@ class Form(InlineUnit):
         """Do not edit or pass `self`, `query`, `form`, `form_uid` params, they are for internal use only"""
         if reply_markup is None:
             reply_markup = []
+
+        reply_markup = self._normalize_markup(reply_markup)
 
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
