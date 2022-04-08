@@ -208,13 +208,15 @@ class Form(InlineUnit):
         self,
         text: str,
         reply_markup: List[List[dict]] = None,
+        *,
         force_me: Union[bool, None] = None,
+        disable_security: Union[bool, None] = None,
         always_allow: Union[List[int], None] = None,
+        disable_web_page_preview: bool = True,
         query: Any = None,
         form: Any = None,
         form_uid: Any = None,
         inline_message_id: Union[str, None] = None,
-        disable_web_page_preview: bool = True,
     ) -> None:
         """Do not edit or pass `self`, `query`, `form`, `form_uid` params, they are for internal use only"""
         if reply_markup is None:
@@ -226,10 +228,16 @@ class Form(InlineUnit):
 
         if isinstance(reply_markup, list):
             form["buttons"] = reply_markup
+
         if isinstance(force_me, bool):
             form["force_me"] = force_me
+
+        if isinstance(disable_security, bool):
+            form["disable_security"] = disable_security
+
         if isinstance(always_allow, list):
             form["always_allow"] = always_allow
+
         try:
             await self.bot.edit_message_text(
                 text,
