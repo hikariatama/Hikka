@@ -211,7 +211,10 @@ class LoaderMod(loader.Module):
             available = "\n".join(
                 f"<code>{i}</code>"
                 for i in sorted(
-                    [utils.escape_html(i) for i in (await self.get_repo_list("full")).values()]
+                    [
+                        utils.escape_html(i)
+                        for i in (await self.get_repo_list("full")).values()
+                    ]
                 )
             )
 
@@ -429,10 +432,11 @@ class LoaderMod(loader.Module):
             ).group(1)
             ver_ = tuple(map(int, ver.split(".")))
             if main.__version__ < ver_:
-                await utils.answer(
-                    message,
-                    self.strings("version_incompatible").format(ver),
-                )
+                if isinstance(message, Message):
+                    await utils.answer(
+                        message,
+                        self.strings("version_incompatible").format(ver),
+                    )
                 return
 
         developer = re.search(r"# ?meta developer: ?(.+)", doc)
@@ -442,6 +446,9 @@ class LoaderMod(loader.Module):
         if name is None:
             uid = "__extmod_" + str(uuid.uuid4())
         else:
+            if name.startswith(self.config["MODULES_REPO"]):
+                name = name.split("/")[-1].split(".py")[0]
+
             uid = name.replace("%", "%%").replace(".", "%d")
 
         module_name = "hikka.modules." + uid
