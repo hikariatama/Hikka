@@ -31,6 +31,8 @@ class Utils(InlineUnit):
             self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid
         )
 
+        map_ = self._normalize_markup(map_)
+
         for row in map_:
             for button in row:
                 if not isinstance(button, dict):
