@@ -291,14 +291,14 @@ async def answer(
 
         if len(text) >= 4096:
             try:
-                if (
-                    not message.client.loader.inline.init_complete
-                    or not await message.client.loader.inline.list(
-                        message=message,
-                        strings=smart_split(text, 4096),
-                    )
-                ):
+                list_ = await message.client.loader.inline.list(
+                    message=message,
+                    strings=smart_split(text, 4096),
+                )
+                if not message.client.loader.inline.init_complete or not list_:
                     raise
+
+                return [list_]
             except Exception:
                 file = io.BytesIO(text.encode("utf-8"))
                 file.name = "command_result.txt"

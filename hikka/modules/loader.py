@@ -211,7 +211,7 @@ class LoaderMod(loader.Module):
             available = "\n".join(
                 f"<code>{i}</code>"
                 for i in sorted(
-                    [utils.escape_html(i) for i in await self.get_repo_list("full")]
+                    [utils.escape_html(i) for i in (await self.get_repo_list("full")).values()]
                 )
             )
 
