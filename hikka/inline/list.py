@@ -174,11 +174,13 @@ class List(InlineUnit):
 
         if isinstance(message, Message):
             try:
-                await (message.edit if message.out else message.respond)(
+                status_message = await (message.edit if message.out else message.respond)(
                     "🌘 <b>Loading inline list...</b>"
                 )
             except Exception:
                 pass
+        else:
+            status_message = None
 
         try:
             q = await self._client.inline_query(self.bot_username, list_uid)
@@ -196,8 +198,11 @@ class List(InlineUnit):
         self._lists[list_uid]["chat"] = utils.get_chat_id(m)
         self._lists[list_uid]["message_id"] = m.id
 
-        if isinstance(message, Message):
+        if isinstance(message, Message) and message.out:
             await message.delete()
+
+        if status_message and not message.out:
+            await status_message.delete()
 
         return list_uid
 

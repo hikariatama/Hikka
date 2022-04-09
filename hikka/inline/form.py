@@ -138,6 +138,16 @@ class Form(InlineUnit):
             ttl = None
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
+        if isinstance(message, Message):
+            try:
+                status_message = await (message.edit if message.out else message.respond)(
+                    "🌘 <b>Loading inline form...</b>"
+                )
+            except Exception:
+                pass
+        else:
+            status_message = None
+
         form_uid = utils.rand(30)
 
         perms_map = self._find_caller_sec_map() if not manual_security else None
@@ -182,8 +192,12 @@ class Form(InlineUnit):
 
         self._forms[form_uid]["chat"] = utils.get_chat_id(m)
         self._forms[form_uid]["message_id"] = m.id
+
         if isinstance(message, Message) and message.out:
             await message.delete()
+
+        if status_message and not message.out:
+            await status_message.delete()
 
         if not any(
             any("callback" in button or "input" in button for button in row)

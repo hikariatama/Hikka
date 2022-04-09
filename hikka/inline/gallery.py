@@ -244,11 +244,13 @@ class Gallery(InlineUnit):
 
         if isinstance(message, Message):
             try:
-                await (message.edit if message.out else message.respond)(
+                status_message = await (message.edit if message.out else message.respond)(
                     "🌘 <b>Loading inline gallery...</b>"
                 )
             except Exception:
                 pass
+        else:
+            status_message = None
 
         try:
             q = await self._client.inline_query(self.bot_username, gallery_uid)
@@ -292,8 +294,11 @@ class Gallery(InlineUnit):
         self._galleries[gallery_uid]["chat"] = utils.get_chat_id(m)
         self._galleries[gallery_uid]["message_id"] = m.id
 
-        if isinstance(message, Message):
+        if isinstance(message, Message) and message.out:
             await message.delete()
+
+        if status_message and not message.out:
+            await status_message.delete()
 
         asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
 
