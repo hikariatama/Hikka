@@ -166,6 +166,8 @@ class Modules:
 
             self._compat_layer = compat.activate([])
 
+        external_mods = []
+
         if not mods:
             mods = [
                 os.path.join(utils.get_base_dir(), MODULES_NAME, mod)
@@ -188,7 +190,7 @@ class Modules:
                 )
             ]
 
-            mods += [
+            external_mods = [
                 os.path.join(LOADED_MODULES_DIR, mod)
                 for mod in filter(
                     lambda x: (len(x) > 3 and x[-3:] == ".py" and x[0] != "_"),
@@ -200,12 +202,19 @@ class Modules:
 
         for mod in mods:
             try:
-                module_name = (
-                    f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
-                )
+                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
                 logging.debug(module_name)
                 spec = importlib.util.spec_from_file_location(module_name, mod)
-                self.register_module(spec, module_name)
+                self.register_module(spec, module_name, "<core>")
+            except BaseException as e:
+                logging.exception(f"Failed to load core module {mod} due to {e}:")
+
+        for mod in external_mods:
+            try:
+                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
+                logging.debug(module_name)
+                spec = importlib.util.spec_from_file_location(module_name, mod)
+                self.register_module(spec, module_name, "<file>")
             except BaseException as e:
                 logging.exception(f"Failed to load module {mod} due to {e}:")
 

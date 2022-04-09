@@ -34,19 +34,20 @@ import os
 import shlex
 import time
 from datetime import timedelta
-
 import telethon
 from telethon.tl.custom.message import Message
 from telethon.tl.types import (
     PeerUser,
     PeerChat,
     PeerChannel,
-    MessageEntityMentionName,
     User,
     MessageMediaWebPage,
     Channel,
     InputPeerNotifySettings,
+    MessageEntityMentionName,
 )
+
+import copy
 
 from telethon.hints import Entity
 
@@ -60,6 +61,20 @@ from .inline.types import InlineCall
 import random
 
 from typing import Tuple, Union, List, Any
+
+import re
+
+emoji_pattern = re.compile(
+    "["
+    "\U0001F600-\U0001F64F"  # emoticons
+    "\U0001F300-\U0001F5FF"  # symbols & pictographs
+    "\U0001F680-\U0001F6FF"  # transport & map symbols
+    "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+    "]+",
+    flags=re.UNICODE,
+)
+
+parser = telethon.utils.sanitize_parse_mode("html")
 
 
 def get_args(message: Message) -> List[str]:
@@ -121,9 +136,6 @@ def get_chat_id(message: Message) -> int:
 def get_entity_id(entity: Entity) -> int:
 
     return telethon.utils.get_peer_id(entity)
-
-
-# fmt: skip
 
 
 def escape_html(text: str, /) -> str:
@@ -278,21 +290,31 @@ async def answer(
         text, entity = parse_mode.parse(response)
 
         if len(text) >= 4096:
-            file = io.BytesIO(text.encode("utf-8"))
-            file.name = "command_result.txt"
+            try:
+                if (
+                    not message.client.loader.inline.init_complete
+                    or not await message.client.loader.inline.list(
+                        message=message,
+                        strings=smart_split(text, 4096),
+                    )
+                ):
+                    raise
+            except Exception:
+                file = io.BytesIO(text.encode("utf-8"))
+                file.name = "command_result.txt"
 
-            result = [
-                await message.client.send_file(
-                    message.peer_id,
-                    file,
-                    caption="<b>📤 Command output seems to be too long, so it's sent in file.</b>",
-                ),
-            ]
+                result = [
+                    await message.client.send_file(
+                        message.peer_id,
+                        file,
+                        caption="<b>📤 Command output seems to be too long, so it's sent in file.</b>",
+                    ),
+                ]
 
-            if message.out:
-                await message.delete()
+                if message.out:
+                    await message.delete()
 
-            return result
+                return result
 
         result = [
             await (message.edit if edit else message.respond)(
@@ -421,7 +443,11 @@ async def asset_channel(
     return peer, True
 
 
-async def dnd(client: "TelegramClient", peer: Entity, archive: bool = True) -> bool:  # noqa: F821
+async def dnd(
+    client: "TelegramClient",  # noqa: F821
+    peer: Entity,
+    archive: bool = True,
+) -> bool:
     try:
         await client(
             UpdateNotifySettingsRequest(
@@ -547,6 +573,56 @@ def rand(size: int, /) -> str:
     return "".join(
         [random.choice("abcdefghijklmnopqrstuvwxyz1234567890") for _ in range(size)]
     )
+
+
+def change_attribute(obj, attribute: str, value: str):
+    object_ = copy.deepcopy(obj)
+    setattr(object_, attribute, value)
+    return object_
+
+
+def smart_split(text: str, chunk_size: int) -> List[str]:
+    text = emoji_pattern.sub(r"", text)
+    text, entities = parser.parse(text)
+    result = []
+
+    chunk_begin_offset = 0
+
+    for chunk in chunks(text, chunk_size):
+        chunk_end_offset = chunk_begin_offset + chunk_size
+        # Find all entities which are located in this chunk in particular
+        this_chunk_entities = [
+            copy.deepcopy(entity)
+            for entity in entities
+            if entity.offset + entity.length > chunk_begin_offset
+            and entity.offset < chunk_end_offset
+        ]
+
+        for entity in this_chunk_entities:
+            # If entity starts *before* the chunk
+            if entity.offset < chunk_begin_offset:
+                if entity.offset + entity.length in range(
+                    chunk_begin_offset,
+                    chunk_end_offset + 1,
+                ):
+                    # Entity ends *inside* of the chunk
+                    entity.length = entity.offset + entity.length - chunk_begin_offset
+                else:
+                    # Entity ends *outside* of the chunk
+                    entity.length = chunk_size
+                entity.offset = 0
+            # If entity starts *inside* of chunk
+            elif entity.offset in range(chunk_begin_offset, chunk_end_offset + 1):
+                entity.offset -= chunk_begin_offset
+                if entity.length > chunk_size - entity.offset:
+                    entity.length = chunk_size - entity.offset
+
+        this_chunk_entities.sort(key=lambda x: x.offset)
+
+        result += [[chunk, this_chunk_entities]]
+        chunk_begin_offset += chunk_size
+
+    return [parser.unparse(*i) for i in result]
 
 
 init_ts = time.perf_counter()
