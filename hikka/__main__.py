@@ -29,6 +29,7 @@
 import sys
 import getpass
 import os
+import subprocess
 
 if (
     getpass.getuser() == "root"
@@ -46,6 +47,30 @@ if (
     if input("> ").lower() != "force_insecure":
         sys.exit(1)
 
+
+def deps(e):
+    print(
+        "Error: you have not installed all dependencies correctly.\n"
+        f"{str(e)}\n"
+        "Attempting dependencies installation... Just wait."
+    )
+
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "-q",
+            "--disable-pip-version-check",
+            "--no-warn-script-location",
+            "-r",
+            "requirements.txt",
+        ]
+    )
+
+
 if sys.version_info < (3, 8, 0):
     print("Error: you must use at least Python version 3.8.0")  # pragma: no cover
 elif __package__ != "hikka":  # In case they did python __main__.py
@@ -53,21 +78,29 @@ elif __package__ != "hikka":  # In case they did python __main__.py
         "Error: you cannot run this as a script; you must execute as a package"
     )  # pragma: no cover
 else:
-    from . import log
+    try:
+        from . import log
 
-    log.init()
+        log.init()
+    except ModuleNotFoundError as e:  # pragma: no cover
+        deps(e)
+        try:
+            from . import log
+
+            log.init()
+        except ModuleNotFoundError as e2:
+            print(
+                "Error while installing dependencies. Please, do this manually!\n"
+                f"{str(e2)}\n"
+                "pip3 install -r requirements.txt"
+            )
+
+            sys.exit(1)
 
     try:
         from . import main
     except ModuleNotFoundError as e:  # pragma: no cover
-        print(
-            "Error: you have not installed all dependencies correctly.\n"
-            f"{str(e)}\n"
-            "Attempting dependencies installation... Just wait."
-        )
-
-        os.popen("pip3 install -r requirements.txt").read()
-
+        deps(e)
         try:
             from . import main
         except ModuleNotFoundError as e2:

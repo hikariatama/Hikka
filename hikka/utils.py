@@ -47,7 +47,7 @@ from telethon.tl.types import (
     MessageEntityMentionName,
 )
 
-import copy
+import grapheme
 
 from telethon.hints import Entity
 
@@ -293,8 +293,9 @@ async def answer(
             try:
                 list_ = await message.client.loader.inline.list(
                     message=message,
-                    strings=smart_split(text, 4096),
+                    strings=list(smart_split(text, entity, 4096)),
                 )
+
                 if not message.client.loader.inline.init_complete or not list_:
                     raise
 
@@ -575,54 +576,140 @@ def rand(size: int, /) -> str:
     )
 
 
-def change_attribute(obj, attribute: str, value: str):
-    object_ = copy.deepcopy(obj)
-    setattr(object_, attribute, value)
-    return object_
+def smart_split(text, entities, length=4096, split_on=("\n", " "), min_length=1):
+    """
+    Split the message into smaller messages.
+    A grapheme will never be broken. Entities will be displaced to match the right location. No inputs will be mutated.
+    The end of each message except the last one is stripped of characters from [split_on]
+    :param text: the plain text input
+    :param entities: the entities
+    :param length: the maximum length of a single message
+    :param split_on: characters (or strings) which are preferred for a message break
+    :param min_length: ignore any matches on [split_on] strings before this number of characters into each message
+    :return:
+    """
+
+    # Authored by @bsolute
+    # https://t.me/LonamiWebs/27777
+
+    encoded = text.encode("utf-16le")
+    pending_entities = entities
+    text_offset = 0
+    bytes_offset = 0
+    text_length = len(text)
+    bytes_length = len(encoded)
+    while text_offset < text_length:
+        if bytes_offset + length * 2 >= bytes_length:
+            yield parser.unparse(
+                text[text_offset:],
+                list(sorted(pending_entities, key=lambda x: x.offset)),
+            )
+            break
+        codepoint_count = len(
+            encoded[bytes_offset : bytes_offset + length * 2].decode(
+                "utf-16le",
+                errors="ignore",
+            )
+        )
+        for search in split_on:
+            search_index = text.rfind(
+                search,
+                text_offset + min_length,
+                text_offset + codepoint_count,
+            )
+            if search_index != -1:
+                break
+        else:
+            search_index = text_offset + codepoint_count
+        split_index = grapheme.safe_split_index(text, search_index)
+        assert split_index > text_offset
+        split_offset_utf16 = (
+            len(text[text_offset:split_index].encode("utf-16le"))
+        ) // 2
+        exclude = 0
+        while (
+            split_index + exclude < text_length
+            and text[split_index + exclude] in split_on
+        ):
+            exclude += 1
+        current_entities = []
+        entities = pending_entities.copy()
+        pending_entities = []
+        for entity in entities:
+            if (
+                entity.offset < split_offset_utf16
+                and entity.offset + entity.length > split_offset_utf16 + exclude
+            ):
+                # spans boundary
+                current_entities.append(
+                    _copy_tl(
+                        entity,
+                        length=split_offset_utf16 - entity.offset,
+                    )
+                )
+                pending_entities.append(
+                    _copy_tl(
+                        entity,
+                        offset=0,
+                        length=entity.offset
+                        + entity.length
+                        - split_offset_utf16
+                        - exclude,
+                    )
+                )
+            elif entity.offset < split_offset_utf16 < entity.offset + entity.length:
+                # overlaps boundary
+                current_entities.append(
+                    _copy_tl(
+                        entity,
+                        length=split_offset_utf16 - entity.offset,
+                    )
+                )
+            elif entity.offset < split_offset_utf16:
+                # wholly left
+                current_entities.append(entity)
+            elif (
+                entity.offset + entity.length
+                > split_offset_utf16 + exclude
+                > entity.offset
+            ):
+                # overlaps right boundary
+                pending_entities.append(
+                    _copy_tl(
+                        entity,
+                        offset=0,
+                        length=entity.offset
+                        + entity.length
+                        - split_offset_utf16
+                        - exclude,
+                    )
+                )
+            elif entity.offset + entity.length > split_offset_utf16 + exclude:
+                # wholly right
+                pending_entities.append(
+                    _copy_tl(
+                        entity,
+                        offset=entity.offset - split_offset_utf16 - exclude,
+                    )
+                )
+            else:
+                assert entity.length <= exclude
+                # ignore entity in whitespace
+        current_text = text[text_offset:split_index]
+        yield parser.unparse(
+            current_text,
+            list(sorted(current_entities, key=lambda x: x.offset)),
+        )
+        text_offset = split_index + exclude
+        bytes_offset += len(current_text.encode("utf-16le"))
+        assert bytes_offset % 2 == 0
 
 
-def smart_split(text: str, chunk_size: int) -> List[str]:
-    text = emoji_pattern.sub(r"", text)
-    text, entities = parser.parse(text)
-    result = []
-
-    chunk_begin_offset = 0
-
-    for chunk in chunks(text, chunk_size):
-        chunk_end_offset = chunk_begin_offset + chunk_size
-        # Find all entities which are located in this chunk in particular
-        this_chunk_entities = [
-            copy.deepcopy(entity)
-            for entity in entities
-            if entity.offset + entity.length > chunk_begin_offset
-            and entity.offset < chunk_end_offset
-        ]
-
-        for entity in this_chunk_entities:
-            # If entity starts *before* the chunk
-            if entity.offset < chunk_begin_offset:
-                if entity.offset + entity.length in range(
-                    chunk_begin_offset,
-                    chunk_end_offset + 1,
-                ):
-                    # Entity ends *inside* of the chunk
-                    entity.length = entity.offset + entity.length - chunk_begin_offset
-                else:
-                    # Entity ends *outside* of the chunk
-                    entity.length = chunk_size
-                entity.offset = 0
-            # If entity starts *inside* of chunk
-            elif entity.offset in range(chunk_begin_offset, chunk_end_offset + 1):
-                entity.offset -= chunk_begin_offset
-                if entity.length > chunk_size - entity.offset:
-                    entity.length = chunk_size - entity.offset
-
-        this_chunk_entities.sort(key=lambda x: x.offset)
-
-        result += [[chunk, this_chunk_entities]]
-        chunk_begin_offset += chunk_size
-
-    return [parser.unparse(*i) for i in result]
+def _copy_tl(o, **kwargs):
+    d = o.to_dict()
+    del d["_"]
+    d.update(kwargs)
+    return o.__class__(**d)
 
 
 init_ts = time.perf_counter()

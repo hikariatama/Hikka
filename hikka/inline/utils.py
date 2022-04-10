@@ -10,6 +10,7 @@ import logging
 from typing import Union
 from types import FunctionType
 from .. import security
+from .._types import Module
 import inspect
 
 logger = logging.getLogger(__name__)
@@ -168,7 +169,7 @@ class Utils(InlineUnit):
             return next(
                 next(
                     lambda: self._db.get(security.__name__, "masks", {}).get(
-                        f"{getattr(cls_, stack_entry.function).__module__}.{getattr(cls_, stack_entry.function).__name__}",
+                        f"{getattr(cls_, stack_entry.function).__module__}.{stack_entry.function}",
                         getattr(
                             getattr(cls_, stack_entry.function),
                             "security",
@@ -176,7 +177,7 @@ class Utils(InlineUnit):
                         ),
                     )
                     for name, cls_ in stack_entry.frame.f_globals.items()
-                    if name.endswith("Mod") and hasattr(cls_, "strings")
+                    if name.endswith("Mod") and issubclass(cls_, Module)
                 )
                 for stack_entry in inspect.stack()
                 if hasattr(stack_entry, "function")
