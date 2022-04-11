@@ -490,7 +490,13 @@ def chunks(_list: Union[list, tuple, set], n: int, /) -> list:
 
 def get_named_platform() -> str:
     """Returns formatted platform name"""
+    if os.path.isfile('/proc/device-tree/model'):
+        with open('/proc/device-tree/model') as f:
+            model = f.read()
+            return f"🍇 {model}" if model.startswith("Raspberry") else f"❓ {model}"
+
     is_termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())
+
     is_okteto = "OKTETO" in os.environ
     is_lavhost = "LAVHOST" in os.environ
 
