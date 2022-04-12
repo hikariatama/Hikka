@@ -27,6 +27,7 @@ ALLOWED_ORIGINS = [
     "https://raw.githubusercontent.com/morisummerz/ftg-mods/main",
     "https://mods.morisummer.ml",
     "https://gitlab.com/cakestwix/friendly-userbot-modules/-/raw/master",
+    "https://twix.nonfalse-networks.net.ua/modules",
     "https://mods.hikariatama.ru",
     "https://raw.githubusercontent.com/hikariatama/ftg/master",
     "https://github.com/hikariatama/ftg/raw/master",
