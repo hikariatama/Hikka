@@ -30,6 +30,7 @@ import sys
 import getpass
 import os
 import subprocess
+import atexit
 
 if (
     getpass.getuser() == "root"
@@ -69,6 +70,36 @@ def deps(e):
             "requirements.txt",
         ]
     )
+
+    restart()
+
+
+def restart():
+    if "HIKKA_DO_NOT_RESTART" in os.environ:
+        print("Got in a loop, exiting")
+        sys.exit(0)
+
+    print("🔄 Restarting...")
+
+    atexit.register(
+        lambda: os.execl(
+            sys.executable,
+            sys.executable,
+            "-m",
+            os.path.relpath(
+                os.path.abspath(
+                    os.path.dirname(
+                        os.path.abspath(__file__),
+                    ),
+                ),
+            ),
+            *(sys.argv[1:]),
+        )
+    )
+
+    os.environ["HIKKA_DO_NOT_RESTART"] = "1"
+
+    sys.exit(0)
 
 
 if sys.version_info < (3, 8, 0):
@@ -110,7 +141,7 @@ else:
                 ]
             )
 
-            print("🔄 Restart this script for changes to take effect!")
+            restart()
 
     try:
         from . import log
@@ -118,33 +149,16 @@ else:
         log.init()
     except ModuleNotFoundError as e:  # pragma: no cover
         deps(e)
-        try:
-            from . import log
-
-            log.init()
-        except ModuleNotFoundError as e2:
-            print(
-                "🚫 Error while installing dependencies. Please, do this manually!\n"
-                f"{str(e2)}\n"
-                "Run: pip3 install -r requirements.txt"
-            )
-
-            sys.exit(1)
+        sys.exit(1)
 
     try:
         from . import main
     except ModuleNotFoundError as e:  # pragma: no cover
         deps(e)
-        try:
-            from . import main
-        except ModuleNotFoundError as e2:
-            print(
-                "🚫 Error while installing dependencies. Please, do this manually!\n"
-                f"{str(e2)}\n"
-                "Run: pip3 install -r requirements.txt"
-            )
-
-            sys.exit(1)
+        sys.exit(1)
 
     if __name__ == "__main__":
+        if "HIKKA_DO_NOT_RESTART" in os.environ:
+            del os.environ["HIKKA_DO_NOT_RESTART"]
+
         main.hikka.main()  # Execute main function
