@@ -18,7 +18,6 @@ from .. import utils
 from .types import InlineQuery
 import functools
 import inspect
-from telethon.tl.types import Message
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +61,8 @@ class Events(InlineUnit):
         if (
             cmd in self._allmodules.inline_handlers
             and await self.check_inline_security(
-                self._allmodules.inline_handlers[cmd],
-                inline_query.from_user.id,
+                func=self._allmodules.inline_handlers[cmd],
+                user=inline_query.from_user.id,
             )
         ):
             instance = InlineQuery(inline_query)
@@ -189,20 +188,6 @@ class Events(InlineUnit):
         await self._gallery_inline_handler(inline_query)
         await self._list_inline_handler(inline_query)
 
-    async def _check_inline_sec_by_mask(
-        self,
-        *,
-        mask: int,
-        user: int,
-        message: Message,
-    ) -> bool:
-        """Checks if user is able to execute command with provided security mask"""
-        return await self._client.dispatcher.security._check(
-            message=message,
-            func=mask,
-            user=user,
-        )
-
     async def _callback_query_handler(
         self,
         query: CallbackQuery,
@@ -220,7 +205,7 @@ class Events(InlineUnit):
 
         # First, dispatch all registered callback handlers
         for func in self._allmodules.callback_handlers.values():
-            if await self.check_inline_security(func, query.from_user.id):
+            if await self.check_inline_security(func=func, user=query.from_user.id):
                 try:
                     await func(query)
                 except Exception:
@@ -242,11 +227,11 @@ class Events(InlineUnit):
                         )
                         or not form.get("force_me", False)
                         and (
-                            await self._check_inline_sec_by_mask(
-                                mask=form.get(
+                            await self.check_inline_security(
+                                func=form.get(
                                     "perms_map",
                                     lambda: self._client.dispatcher.security._default,
-                                )(),
+                                )(),  # we call it so we can get reloaded rights in runtime
                                 user=query.from_user.id,
                                 message=form["message"],
                             )
@@ -395,7 +380,7 @@ class Events(InlineUnit):
             # If user doesn't have enough permissions
             # to run this inline command, do not show it
             # in help
-            if not await self.check_inline_security(fun, inline_query.from_user.id):
+            if not await self.check_inline_security(func=fun, user=inline_query.from_user.id):
                 continue
 
             # Retrieve docs from func

@@ -61,7 +61,7 @@ class HikkaSecurityMod(loader.Module):
         "group_admin": "👨‍💻 Admin (any)",
         "group_member": "👥 In group",
         "pm": "🤙 In PM",
-        "everyone": "🌍 Everyone",
+        "everyone": "🌍 Everyone (Inline)",
         "owner_list": "🤴 <b>Users in group </b><code>owner</code><b>:</b>\n\n{}",
         "sudo_list": "🤵‍♀️ <b>Users in group </b><code>sudo</code><b>:</b>\n\n{}",
         "support_list": "🙋‍♂️ <b>Users in group </b><code>support</code><b>:</b>\n\n{}",
@@ -141,6 +141,7 @@ class HikkaSecurityMod(loader.Module):
         call: aiogram.types.CallbackQuery,
         group: str,
         level: bool,
+        is_inline: bool,
     ) -> None:
         mask = self._db.get(security.__name__, "bounding_mask", DEFAULT_PERMISSIONS)
         bit = security.BITMAP[group.upper()]
@@ -154,7 +155,8 @@ class HikkaSecurityMod(loader.Module):
 
         await call.answer("Bounding mask value set!")
         await call.edit(
-            self.strings("global"), reply_markup=self._build_markup_global()
+            self.strings("global"),
+            reply_markup=self._build_markup_global(is_inline),
         )
 
     @staticmethod
@@ -202,23 +204,24 @@ class HikkaSecurityMod(loader.Module):
             2,
         ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
 
-    def _build_markup_global(self) -> List[List[dict]]:
-        perms = self._get_current_bm()
+    def _build_markup_global(self, is_inline: bool = False) -> List[List[dict]]:
+        perms = self._get_current_bm(is_inline)
         return utils.chunks(
             [
                 {
                     "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
                     "callback": self.inline__switch_perm_bm,
-                    "args": (group, not level),
+                    "args": (group, not level, is_inline),
                 }
                 for group, level in perms.items()
             ],
             2,
         ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
 
-    def _get_current_bm(self) -> dict:
+    def _get_current_bm(self, is_inline: bool = False) -> dict:
         return self._perms_map(
-            self._db.get(security.__name__, "bounding_mask", DEFAULT_PERMISSIONS), False
+            self._db.get(security.__name__, "bounding_mask", DEFAULT_PERMISSIONS),
+            is_inline,
         )
 
     @staticmethod
@@ -249,7 +252,9 @@ class HikkaSecurityMod(loader.Module):
         )
 
     def _get_current_perms(
-        self, command: FunctionType, is_inline: bool = False
+        self,
+        command: FunctionType,
+        is_inline: bool = False,
     ) -> dict:
         config = self._db.get(security.__name__, "masks", {}).get(
             f"{command.__module__}.{command.__name__}",
@@ -286,6 +291,15 @@ class HikkaSecurityMod(loader.Module):
     async def inlineseccmd(self, message: Message) -> None:
         """[command] - Configure inline command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
+        if not args:
+            await self.inline.form(
+                self.strings("global"),
+                reply_markup=self._build_markup_global(True),
+                message=message,
+                ttl=5 * 60,
+            )
+            return
+
         if args not in self.allmodules.inline_handlers:
             await utils.answer(message, self.strings("no_command").format(args))
             return

@@ -140,6 +140,10 @@ def unrestricted(func: FunctionType) -> FunctionType:
     return _sec(func, ALL)
 
 
+def inline_everyone(func: FunctionType) -> FunctionType:
+    return _sec(func, EVERYONE)
+
+
 def _sec(func: FunctionType, flags: int) -> FunctionType:
     prev = getattr(func, "security", 0)
     func.security = prev | OWNER | flags
@@ -180,7 +184,7 @@ class SecurityManager:
                 getattr(func, "security", self._default),
             )
 
-        if config & ~ALL:
+        if config & ~ALL and not config & EVERYONE:
             logger.error("Security config contains unknown bits")
             return False
 

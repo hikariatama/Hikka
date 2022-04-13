@@ -57,6 +57,7 @@ group_admin = security.group_admin
 group_member = security.group_member
 pm = security.pm
 unrestricted = security.unrestricted
+inline_everyone = security.inline_everyone
 
 MODULES_NAME = "modules"
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
