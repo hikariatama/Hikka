@@ -17,6 +17,7 @@ import itertools
 from types import ModuleType
 from telethon.tl.types import Message
 from aiogram.types import CallbackQuery
+from telethon.errors.rpcerrorlist import MessageIdInvalidError
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +78,9 @@ class PythonMod(loader.Module):
         ret = self.strings("eval", message)
         try:
             it = await meval(
-                utils.get_args_raw(message), globals(), **await self.getattrs(message)
+                utils.get_args_raw(message),
+                globals(),
+                **await self.getattrs(message),
             )
         except FakeDbException:
             await self.inline.form(
@@ -106,10 +109,14 @@ class PythonMod(loader.Module):
 
             return
         ret = ret.format(
-            utils.escape_html(utils.get_args_raw(message)), utils.escape_html(it)
+            utils.escape_html(utils.get_args_raw(message)),
+            utils.escape_html(it),
         )
         ret = ret.replace(str(phone), "📵")
-        await utils.answer(message, ret)
+        try:
+            await utils.answer(message, ret)
+        except MessageIdInvalidError:
+            pass
 
     async def getattrs(self, message):
         reply = await message.get_reply_message()

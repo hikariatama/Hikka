@@ -5,6 +5,7 @@ from aiogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
     InlineQuery,
+    InlineQueryResultPhoto,
 )
 
 from aiogram.utils.exceptions import (
@@ -33,10 +34,12 @@ class Form(InlineUnit):
         *,
         force_me: bool = False,
         always_allow: Union[List[list], None] = None,
-        ttl: Union[int, bool] = False,
-        on_unload: Union[FunctionType, None] = None,
         manual_security: bool = False,
         disable_security: bool = False,
+        ttl: Union[int, bool] = False,
+        on_unload: Union[FunctionType, None] = None,
+        photo: Union[str, None] = None,
+        silent: bool = False,
     ) -> Union[str, bool]:
         """
         Creates inline form with callback
@@ -66,6 +69,10 @@ class Form(InlineUnit):
             disable_security
                 By default, Hikka will try to inherit inline buttons security from the caller (command)
                 If you want to disable all security checks on this form in particular, pass `disable_security=True`
+            photo
+                Attach the photo to the form. URL must be supplied
+            silent
+                Whether the form must be sent silently (w/o "Loading inline form..." message)
         """
 
         if reply_markup is None:
@@ -76,6 +83,10 @@ class Form(InlineUnit):
 
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
+            return False
+
+        if not isinstance(silent, bool):
+            logger.error("Invalid type for `silent`")
             return False
 
         if not isinstance(manual_security, bool):
@@ -92,6 +103,10 @@ class Form(InlineUnit):
 
         if not isinstance(reply_markup, (list, dict)):
             logger.error("Invalid type for `reply_markup`")
+            return False
+
+        if photo and not isinstance(photo, str):
+            logger.error("Invalid type for `photo`")
             return False
 
         reply_markup = self._normalize_markup(reply_markup)
@@ -138,7 +153,7 @@ class Form(InlineUnit):
             ttl = None
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
-        if isinstance(message, Message):
+        if isinstance(message, Message) and not silent:
             try:
                 status_message = await (message.edit if message.out else message.respond)(
                     "🌘 <b>Loading inline form...</b>"
@@ -159,6 +174,7 @@ class Form(InlineUnit):
             "message_id": None,
             "uid": form_uid,
             "on_unload": on_unload,
+            **({"photo": photo} if photo else {}),
             **({"perms_map": perms_map} if perms_map else {}),
             **({"message": message} if isinstance(message, Message) else {}),
             **({"force_me": force_me} if force_me else {}),
@@ -352,18 +368,38 @@ class Form(InlineUnit):
             return
 
         # Otherwise, answer it with templated form
-        await inline_query.answer(
-            [
-                InlineQueryResultArticle(
-                    id=utils.rand(20),
-                    title="Hikka",
-                    input_message_content=InputTextMessageContent(
-                        self._forms[inline_query.query]["text"],
-                        "HTML",
-                        disable_web_page_preview=True,
-                    ),
-                    reply_markup=self._generate_markup(inline_query.query),
-                )
-            ],
-            cache_time=60,
-        )
+        form = self._forms[inline_query.query]
+        if not form.get("photo", False):
+            await inline_query.answer(
+                [
+                    InlineQueryResultArticle(
+                        id=utils.rand(20),
+                        title="Hikka",
+                        input_message_content=InputTextMessageContent(
+                            form["text"],
+                            "HTML",
+                            disable_web_page_preview=True,
+                        ),
+                        reply_markup=self._generate_markup(inline_query.query),
+                    )
+                ],
+                cache_time=0,
+            )
+        else:
+            await inline_query.answer(
+                [
+                    InlineQueryResultPhoto(
+                        id=utils.rand(20),
+                        title="Processing inline form",
+                        photo_url=form["photo"],
+                        thumb_url="https://img.icons8.com/fluency/344/loading.png",
+                        caption=form["text"],
+                        description="Processing inline form",
+                        reply_markup=self._generate_markup(
+                            form["uid"],
+                        ),
+                        parse_mode="HTML",
+                    )
+                ],
+                cache_time=0,
+            )

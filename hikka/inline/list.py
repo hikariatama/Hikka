@@ -32,10 +32,11 @@ class List(InlineUnit):
         *,
         force_me: bool = False,
         always_allow: Union[list, None] = None,
-        ttl: Union[int, bool] = False,
-        on_unload: Union[FunctionType, None] = None,
         manual_security: bool = False,
         disable_security: bool = False,
+        ttl: Union[int, bool] = False,
+        on_unload: Union[FunctionType, None] = None,
+        silent: bool = False,
     ) -> Union[bool, str]:
         """
         Processes inline lists
@@ -61,10 +62,16 @@ class List(InlineUnit):
             disable_security
                 By default, Hikka will try to inherit inline buttons security from the caller (command)
                 If you want to disable all security checks on this list in particular, pass `disable_security=True`
+            silent
+                Whether the list must be sent silently (w/o "Loading inline list..." message)
         """
 
         if not isinstance(manual_security, bool):
             logger.error("Invalid type for `manual_security`")
+            return False
+
+        if not isinstance(silent, bool):
+            logger.error("Invalid type for `silent`")
             return False
 
         if not isinstance(disable_security, bool):
@@ -172,7 +179,7 @@ class List(InlineUnit):
             **default_map,
         }
 
-        if isinstance(message, Message):
+        if isinstance(message, Message) and not silent:
             try:
                 status_message = await (message.edit if message.out else message.respond)(
                     "🌘 <b>Loading inline list...</b>"

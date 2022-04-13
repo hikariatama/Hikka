@@ -45,12 +45,13 @@ class Gallery(InlineUnit):
         *,
         force_me: bool = False,
         always_allow: Union[list, None] = None,
+        manual_security: bool = False,
+        disable_security: bool = False,
         ttl: Union[int, bool] = False,
         on_unload: Union[FunctionType, None] = None,
         preload: Union[bool, int] = False,
         gif: bool = False,
-        manual_security: bool = False,
-        disable_security: bool = False,
+        silent: bool = False,
         _reattempt: bool = False,
     ) -> Union[bool, str]:
         """
@@ -86,6 +87,8 @@ class Gallery(InlineUnit):
             disable_security
                 By default, Hikka will try to inherit inline buttons security from the caller (command)
                 If you want to disable all security checks on this gallery in particular, pass `disable_security=True`
+            silent
+                Whether the gallery must be sent silently (w/o "Loading inline gallery..." message)
         """
 
         if not isinstance(caption, str) and not callable(caption):
@@ -94,6 +97,10 @@ class Gallery(InlineUnit):
 
         if not isinstance(manual_security, bool):
             logger.error("Invalid type for `manual_security`")
+            return False
+
+        if not isinstance(silent, bool):
+            logger.error("Invalid type for `silent`")
             return False
 
         if not isinstance(disable_security, bool):
@@ -242,7 +249,7 @@ class Gallery(InlineUnit):
             **default_map,
         }
 
-        if isinstance(message, Message):
+        if isinstance(message, Message) and not silent:
             try:
                 status_message = await (message.edit if message.out else message.respond)(
                     "🌘 <b>Loading inline gallery...</b>"
