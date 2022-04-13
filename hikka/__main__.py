@@ -36,11 +36,11 @@ if (
     and "--root" not in " ".join(sys.argv)
     and "OKTETO" not in os.environ
 ):
-    print("!" * 30)
+    print("🚫" * 30)
     print("NEVER EVER RUN USERBOT FROM ROOT")
     print("THIS IS THE THREAD FOR NOT ONLY YOUR DATA, ")
     print("BUT ALSO FOR YOUR DEVICE ITSELF!")
-    print("!" * 30)
+    print("🚫" * 30)
     print()
     print("TYPE force_insecure TO IGNORE THIS WARNING")
     print("TYPE ANYTHING ELSE TO EXIT:")
@@ -50,9 +50,9 @@ if (
 
 def deps(e):
     print(
-        "Error: you have not installed all dependencies correctly.\n"
+        "🚫 Error: you have not installed all dependencies correctly.\n"
         f"{str(e)}\n"
-        "Attempting dependencies installation... Just wait."
+        "🔄 Attempting dependencies installation... Just wait ⏱"
     )
 
     subprocess.run(
@@ -72,12 +72,46 @@ def deps(e):
 
 
 if sys.version_info < (3, 8, 0):
-    print("Error: you must use at least Python version 3.8.0")  # pragma: no cover
+    print("🚫 Error: you must use at least Python version 3.8.0")
 elif __package__ != "hikka":  # In case they did python __main__.py
-    print(
-        "Error: you cannot run this as a script; you must execute as a package"
-    )  # pragma: no cover
+    print("🚫 Error: you cannot run this as a script; you must execute as a package")  # fmt: skip
 else:
+    try:
+        import telethon  # noqa: F401
+    except Exception:
+        pass
+    else:
+        try:
+            from telethon.tl.functions.messages import SendReactionRequest  # noqa: F401
+        except ImportError:
+            print("⚠️ Warning: Default telethon is used as main one. This can cause errors and enables DAR. Attempting to reinstall telethon-mod...")  # fmt: skip
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "uninstall",
+                    "-y",
+                    "telethon",
+                ]
+            )
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "-U",
+                    "-q",
+                    "--disable-pip-version-check",
+                    "--no-warn-script-location",
+                    "telethon-mod",
+                ]
+            )
+
+            print("🔄 Restart this script for changes to take effect!")
+
     try:
         from . import log
 
@@ -90,9 +124,9 @@ else:
             log.init()
         except ModuleNotFoundError as e2:
             print(
-                "Error while installing dependencies. Please, do this manually!\n"
+                "🚫 Error while installing dependencies. Please, do this manually!\n"
                 f"{str(e2)}\n"
-                "pip3 install -r requirements.txt"
+                "Run: pip3 install -r requirements.txt"
             )
 
             sys.exit(1)
@@ -105,9 +139,9 @@ else:
             from . import main
         except ModuleNotFoundError as e2:
             print(
-                "Error while installing dependencies. Please, do this manually!\n"
+                "🚫 Error while installing dependencies. Please, do this manually!\n"
                 f"{str(e2)}\n"
-                "pip3 install -r requirements.txt"
+                "Run: pip3 install -r requirements.txt"
             )
 
             sys.exit(1)
