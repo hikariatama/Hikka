@@ -577,10 +577,7 @@ class Gallery(InlineUnit):
     async def _gallery_inline_handler(self, inline_query: InlineQuery) -> None:
         for gallery in self._galleries.copy().values():
             if (
-                inline_query.from_user.id
-                in [self._me]
-                + self._client.dispatcher.security._owner
-                + gallery.get("always_allow", [])
+                inline_query.from_user.id == self._me
                 and inline_query.query == gallery["uid"]
             ):
                 if not gallery.get("gif", False):

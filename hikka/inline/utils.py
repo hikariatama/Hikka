@@ -9,10 +9,8 @@ from aiogram.types import (
 import logging
 from typing import Union
 from types import FunctionType
-from .. import security
 from .._types import Module
 import inspect
-from telethon.tl.types import Message
 
 import re
 
@@ -116,36 +114,39 @@ class Utils(InlineUnit):
 
         return markup
 
-    async def check_inline_security(self, *, func: FunctionType, user: int, message: Union[Message, None] = None) -> bool:
+    async def check_inline_security(
+        self,
+        *,
+        func: FunctionType,
+        user: int,
+    ) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
             func=func,
             user=user,
-            message=message,
+            message=None,
         )
 
     def _find_caller_sec_map(self) -> Union[FunctionType, None]:
         try:
-            return next(
-                next(
-                    lambda: self._db.get(security.__name__, "masks", {}).get(
-                        f"{getattr(cls_, stack_entry.function).__module__}.{stack_entry.function}",
-                        getattr(
-                            getattr(cls_, stack_entry.function),
-                            "security",
-                            self._client.dispatcher.security._default,
-                        ),
+            for stack_entry in inspect.stack():
+                if (
+                    hasattr(stack_entry, "function")
+                    and (
+                        stack_entry.function.endswith("cmd")
+                        or stack_entry.function.endswith("_inline_handler")
                     )
-                    for name, cls_ in stack_entry.frame.f_globals.items()
-                    if name.endswith("Mod") and issubclass(cls_, Module)
-                )
-                for stack_entry in inspect.stack()
-                if hasattr(stack_entry, "function")
-                and (
-                    stack_entry.function.endswith("cmd")
-                    or stack_entry.function.endswith("_inline_handler")
-                )
-            )
+                ):
+                    return next(
+                        lambda: self._client.dispatcher.security.get_flags(
+                            getattr(
+                                cls_,
+                                stack_entry.function,
+                            ),
+                        )
+                        for name, cls_ in stack_entry.frame.f_globals.items()
+                        if name.endswith("Mod") and issubclass(cls_, Module)
+                    )
         except Exception:
             logger.debug("Can't parse security mask in form", exc_info=True)
             return None

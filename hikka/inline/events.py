@@ -233,7 +233,6 @@ class Events(InlineUnit):
                                     lambda: self._client.dispatcher.security._default,
                                 )(),  # we call it so we can get reloaded rights in runtime
                                 user=query.from_user.id,
-                                message=form["message"],
                             )
                             if "message" in form
                             else False
@@ -295,13 +294,12 @@ class Events(InlineUnit):
                 )
                 or not self._custom_map[query.data].get("force_me", False)
                 and (
-                    await self._check_inline_sec_by_mask(
-                        mask=self._custom_map[query.data].get(
+                    await self.check_inline_security(
+                        func=self._custom_map[query.data].get(
                             "perms_map",
                             lambda: self._client.dispatcher.security._default,
                         )(),
                         user=query.from_user.id,
-                        message=self._custom_map[query.data]["message"],
                     )
                     if "message" in self._custom_map[query.data]
                     else False
@@ -369,9 +367,7 @@ class Events(InlineUnit):
                             **button.get("kwargs", {}),
                         )
                     except Exception:
-                        logger.exception(
-                            "Exception while running chosen query watcher!"
-                        )
+                        logger.exception("Exception while running chosen query watcher!")  # fmt: skip
                         return
 
     async def _query_help(self, inline_query: InlineQuery) -> None:
@@ -380,7 +376,10 @@ class Events(InlineUnit):
             # If user doesn't have enough permissions
             # to run this inline command, do not show it
             # in help
-            if not await self.check_inline_security(func=fun, user=inline_query.from_user.id):
+            if not await self.check_inline_security(
+                func=fun,
+                user=inline_query.from_user.id,
+            ):
                 continue
 
             # Retrieve docs from func

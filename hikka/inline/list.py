@@ -339,10 +339,7 @@ class List(InlineUnit):
     async def _list_inline_handler(self, inline_query: InlineQuery) -> None:
         for strings in self._lists.copy().values():
             if (
-                inline_query.from_user.id
-                in [self._me]
-                + self._client.dispatcher.security._owner
-                + strings.get("always_allow", [])
+                inline_query.from_user.id == self._me
                 and inline_query.query == strings["uid"]
             ):
                 await inline_query.answer(
