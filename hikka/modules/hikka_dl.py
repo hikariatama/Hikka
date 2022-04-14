@@ -42,13 +42,15 @@ class HikkaDLMod(loader.Module):
 
     strings = {"name": "HikkaDL"}
 
+    _connected = False
+
     async def _wss(self) -> None:
         async with websockets.connect("wss://hikka.hikariatama.ru/ws") as wss:
             await wss.send(self.get("token"))
 
             while True:
                 ans = json.loads(await wss.recv())
-                logger.debug(ans)
+                self._connected = True
                 if ans["event"] == "dlmod":
                     try:
                         msg = (
@@ -100,9 +102,11 @@ class HikkaDLMod(loader.Module):
                 await self._wss()
             except websockets.exceptions.ConnectionClosedError:
                 logger.debug("Token became invalid, revoking...")
+                self._connected = False
                 await self._get_token()
             except Exception:
                 logger.debug("Socket disconnected, retry in 10 sec")
+                self._connected = False
 
             await asyncio.sleep(10)
 

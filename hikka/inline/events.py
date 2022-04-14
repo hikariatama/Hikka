@@ -92,6 +92,7 @@ class Events(InlineUnit):
                 for res in result
             ):
                 logger.error("Got invalid type from inline handler. Refer to docs for more info")  # fmt: skip
+                await instance.e500()
                 return
 
             inline_result = []
@@ -179,7 +180,7 @@ class Events(InlineUnit):
                     ]
 
             try:
-                await inline_query.answer(inline_result)
+                await inline_query.answer(inline_result, cache_time=0)
             except Exception:
                 logger.exception(f"Exception when answering inline query with result from {cmd}")  # fmt: skip
                 return
