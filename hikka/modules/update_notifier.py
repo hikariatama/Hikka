@@ -170,7 +170,7 @@ class UpdateNotifierMod(loader.Module):
 
         m = await self._client.send_message(
             self.inline.bot_username,
-            "<code>.update</code>",
+            "<code>.update --force</code>",
         )
 
         await self.inline.bot.delete_message(

@@ -180,7 +180,7 @@ class UpdaterMod(loader.Module):
     @loader.owner
     async def updatecmd(self, message: Message) -> None:
         """Downloads userbot updates"""
-        if self.inline.init_complete and await self.inline.form(
+        if "--force" not in (utils.get_args_raw(message) or "") and self.inline.init_complete and await self.inline.form(
             message=message,
             text=self.strings(
                 "update_confirm",
