@@ -84,8 +84,8 @@
     <div class="title">Hikka</div>
     <div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.<br><span style="color: #18cc18; display: none" class="authorized">Authorized!</span></div>
     <div class="center">
-      <div class="button" id="get_started">
-        {% if not tg_done %}
+      {% if not tg_done %}
+        <div class="button" id="get_started">
           <div class="horiz_center">
             <div class="vert_center">
               Get started
@@ -95,7 +95,9 @@
               <i class="gg-arrow-right-r"></i>
             </div>
           </div>
-        {% else %}
+        </div>
+      {% elif not lavhost %}
+        <div class="button" id="get_started">
           <div class="horiz_center">
             <div class="vert_center">
               Add phone
@@ -105,9 +107,9 @@
               <i class="gg-add-r"></i>
             </div>
           </div>
-        {% endif %}
-      </div>
-      {% if skip_creds %}
+        </div>
+      {% endif %}
+      {% if skip_creds and not lavhost %}
         <div class="button" id="enter_api">
           <div class="horiz_center">
             <div class="vert_center">
