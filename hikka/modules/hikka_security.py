@@ -234,14 +234,13 @@ class HikkaSecurityMod(loader.Module):
                 "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
                 "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
                 "group_admin_ban_users": bool(perms & GROUP_ADMIN_BAN_USERS),
-                "group_admin_delete_messages": bool(
-                    perms & GROUP_ADMIN_DELETE_MESSAGES
-                ),
+                "group_admin_delete_messages": bool(perms & GROUP_ADMIN_DELETE_MESSAGES),  # fmt: skip
                 "group_admin_pin_messages": bool(perms & GROUP_ADMIN_PIN_MESSAGES),
                 "group_admin_invite_users": bool(perms & GROUP_ADMIN_INVITE_USERS),
                 "group_admin": bool(perms & GROUP_ADMIN),
                 "group_member": bool(perms & GROUP_MEMBER),
                 "pm": bool(perms & PM),
+                "everyone": bool(perms & EVERYONE),
             }
             if not is_inline
             else {

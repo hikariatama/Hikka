@@ -137,6 +137,7 @@ class Utils(InlineUnit):
                         or stack_entry.function.endswith("_inline_handler")
                     )
                 ):
+                    logger.debug(f"Found caller: {stack_entry.function}")
                     return next(
                         lambda: self._client.dispatcher.security.get_flags(
                             getattr(
