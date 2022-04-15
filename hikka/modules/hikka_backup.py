@@ -19,9 +19,7 @@ import asyncio
 import io
 import json
 import datetime
-from telethon.tl.functions.channels import (
-    EditPhotoRequest
-)
+from telethon.tl.functions.channels import EditPhotoRequest
 
 import requests
 
@@ -36,7 +34,8 @@ class HikkaBackupMod(loader.Module):
         "name": "HikkaBackup",
         "period": "⌚️ <b>Hewwo! I'm Asuna</b> - your personal backup manager. Please, select the periodicity of automatic database backups",
         "saved": "✅ Backup period saved. You can re-configure it later with .set_backup_period",
-        "invalid_args": "🚫 <b>Specify correct backup period in hours</b>",
+        "never": "✅ I will not make automatic backups. You can re-configure it later with .set_backup_period",
+        "invalid_args": "🚫 <b>Specify correct backup period in hours, or `0` to disable</b>",
     }
 
     async def on_unload(self) -> None:
@@ -59,6 +58,7 @@ class HikkaBackupMod(loader.Module):
                         ],
                         3,
                     )
+                    + [[{"text": "🚫 Never", "data": "backup_period/never"}]]
                 ),
                 parse_mode="HTML",
             )
@@ -97,6 +97,16 @@ class HikkaBackupMod(loader.Module):
         if not call.data.startswith("backup_period"):
             return
 
+        if call.data == "backup_period/never":
+            self.set("period", "disabled")
+            await call.answer(self.strings("never"), show_alert=True)
+
+            await self.inline.bot.delete_message(
+                call.message.chat.id,
+                call.message.message_id,
+            )
+            return
+
         period = int(call.data.split("/")[1]) * 60 * 60
 
         self.set("period", period)
@@ -112,8 +122,13 @@ class HikkaBackupMod(loader.Module):
     async def set_backup_periodcmd(self, message: Message) -> None:
         """<time in hours> - Change backup frequency"""
         args = utils.get_args_raw(message)
-        if not args or not args.isdigit() or int(args) not in range(1, 200):
+        if not args or not args.isdigit() or int(args) not in range(200):
             await utils.answer(message, self.strings("invalid_args"))
+            return
+
+        if not int(args):
+            self.set("period", "disabled")
+            await utils.answer(message, f"<b>{self.strings('never')}</b>")
             return
 
         period = int(args) * 60 * 60
@@ -132,6 +147,9 @@ class HikkaBackupMod(loader.Module):
                     self.set("last_backup", round(time.time()))
                     await asyncio.sleep(self.get("period"))
                     continue
+
+                if self.get("period") == "disabled":
+                    return
 
                 await asyncio.sleep(
                     self.get("last_backup") + self.get("period") - time.time()
