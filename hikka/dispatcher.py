@@ -293,6 +293,7 @@ class CommandDispatcher:
             and not self._db.get(main.__name__, "no_nickname", False)
             and command not in self._db.get(main.__name__, "nonickcmds", [])
             and initiator not in self._db.get(main.__name__, "nonickusers", [])
+            and utils.get_chat_id(event) not in self._db.get(main.__name__, "nonickchats", [])
         ):
             logging.debug("Ignoring message without nickname")
             return False

@@ -45,6 +45,7 @@ class HikkaSettingsMod(loader.Module):
         "close_menu": "😌 Close menu",
         "download_btn": "✅ Download via button",
         "no_download_btn": "🚫 Download via button",
+        "private_not_allowed": "🚫 <b>This command must be executed in chat</b>",
     }
 
     def get_watchers(self) -> tuple:
@@ -183,7 +184,7 @@ class HikkaSettingsMod(loader.Module):
         await utils.answer(message, self.strings("disabled").format(args))
 
     async def nonickusercmd(self, message: Message) -> None:
-        """Allow certain command to be executed without nickname"""
+        """Allow no nickname for certain user"""
         reply = await message.get_reply_message()
         u = reply.sender_id
         if not isinstance(u, int):
@@ -199,6 +200,37 @@ class HikkaSettingsMod(loader.Module):
             await utils.answer(message, self.strings("user_nn").format("off"))
 
         self._db.set(main.__name__, "nonickusers", nn)
+
+    async def nonickchatcmd(self, message: Message) -> None:
+        """Allow no nickname in certain chat"""
+        if message.is_private:
+            await utils.answer(message, self.strings("private_not_allowed"))
+            return
+
+        chat = utils.get_chat_id(message)
+
+        nn = self._db.get(main.__name__, "nonickchats", [])
+        if chat not in nn:
+            nn += [chat]
+            nn = list(set(nn))  # skipcq: PTC-W0018
+            await utils.answer(
+                message,
+                self.strings("cmd_nn").format(
+                    utils.escape_html((await message.get_chat()).title),
+                    "on",
+                ),
+            )
+        else:
+            nn = list(set(nn) - set([chat]))  # skipcq: PTC-W0018
+            await utils.answer(
+                message,
+                self.strings("cmd_nn").format(
+                    utils.escape_html((await message.get_chat()).title),
+                    "off",
+                ),
+            )
+
+        self._db.set(main.__name__, "nonickchats", nn)
 
     async def nonickcmdcmd(self, message: Message) -> None:
         """Allow certain command to be executed without nickname"""
@@ -234,8 +266,15 @@ class HikkaSettingsMod(loader.Module):
     async def inline__setting(self, call: CallbackQuery, key: str, state: bool) -> None:
         self._db.set(main.__name__, key, state)
 
-        if key == "no_nickname" and state and self._db.get(main.__name__, "command_prefix", ".") == ".":
-            await call.answer("Warning! You enabled NoNick with default prefix! You may get muted in Hikka chats. Change prefix or disable NoNick!", show_alert=True)
+        if (
+            key == "no_nickname"
+            and state
+            and self._db.get(main.__name__, "command_prefix", ".") == "."
+        ):
+            await call.answer(
+                "Warning! You enabled NoNick with default prefix! You may get muted in Hikka chats. Change prefix or disable NoNick!",
+                show_alert=True,
+            )
         else:
             await call.answer("Configuration value saved!")
 
@@ -420,7 +459,11 @@ class HikkaSettingsMod(loader.Module):
                     "callback": self.inline__restart,
                     "args": (True,),
                 },
-                {"text": self.strings("btn_update"), "callback": self.inline__update, "args": (True,)},
+                {
+                    "text": self.strings("btn_update"),
+                    "callback": self.inline__update,
+                    "args": (True,),
+                },
             ],
             [{"text": self.strings("close_menu"), "callback": self.inline__close}],
         ]
