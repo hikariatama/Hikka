@@ -212,6 +212,8 @@ class Form(InlineUnit):
         if status_message and not message.out:
             await status_message.delete()
 
+        inline_message_id = self._forms[form_uid]["inline_message_id"]
+
         if not any(
             any("callback" in button or "input" in button for button in row)
             for row in reply_markup
@@ -222,7 +224,7 @@ class Form(InlineUnit):
                 "doesn't contain any button callbacks"
             )
 
-        return InlineMessage(self, form_uid, self._forms[form_uid]["inline_message_id"])
+        return InlineMessage(self, form_uid, inline_message_id)
 
     async def _form_inline_handler(self, inline_query: InlineQuery) -> None:
         for form in self._forms.copy().values():
