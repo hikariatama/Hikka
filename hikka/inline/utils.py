@@ -210,12 +210,13 @@ class Utils(InlineUnit):
                 ),
             )
         except MessageNotModified:
-            try:
-                await query.answer()
-            except InvalidQueryID:
-                pass  # Just ignore that error, bc we need to just
-                # remove preloader from user's button, if message
-                # was deleted
+            if query:
+                try:
+                    await query.answer()
+                except InvalidQueryID:
+                    pass  # Just ignore that error, bc we need to just
+                    # remove preloader from user's button, if message
+                    # was deleted
 
         except RetryAfter as e:
             logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
