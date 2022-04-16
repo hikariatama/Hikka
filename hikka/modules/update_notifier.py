@@ -8,13 +8,11 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/fluency/48/000000/available-updates.png
 # scope: inline
-# scope: hikka_only
 
 from .. import loader, utils
 
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import CallbackQuery
 
 import asyncio
 import logging
@@ -87,18 +85,11 @@ class UpdateNotifierMod(loader.Module):
         except Exception as e:
             raise LoadError("Can't load due to repo init error") from e
 
-        self._markup = InlineKeyboardMarkup()
-        self._markup.add(
-            InlineKeyboardButton(
-                "🔄 Update",
-                callback_data="hikka_update",
-            )
-        )
-        self._markup.add(
-            InlineKeyboardButton(
-                "🚫 Ignore",
-                callback_data="hikka_upd_ignore",
-            )
+        self._markup = self.inline._generate_markup(
+            [
+                {"text": "🔄 Update", "data": "hikka_update"},
+                {"text": "🚫 Ignore", "data": "hikka_upd_ignore"},
+            ]
         )
 
         self._task = asyncio.ensure_future(self.poller())
@@ -143,7 +134,9 @@ class UpdateNotifierMod(loader.Module):
 
                     if self.get("upd_msg"):
                         try:
-                            await self.inline.bot.delete_message(self._me, self.get("upd_msg"))
+                            await self.inline.bot.delete_message(
+                                self._me, self.get("upd_msg")
+                            )
                         except Exception:
                             pass
 
@@ -156,10 +149,7 @@ class UpdateNotifierMod(loader.Module):
             await asyncio.sleep(60)
 
     async def update_callback_handler(self, call: CallbackQuery) -> None:
-        """
-        Process update buttons clicks
-        @allow: sudo
-        """
+        """Process update buttons clicks"""
         if call.data not in {"hikka_update", "hikka_upd_ignore"}:
             return
 

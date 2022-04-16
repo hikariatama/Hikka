@@ -3,56 +3,106 @@ from aiogram.types import (
     InlineQuery as AiogramInlineQuery,
     InlineQueryResultArticle,
     InputTextMessageContent,
+    CallbackQuery,
 )
 
 from .. import utils
 
 
-class InlineCall:
-    """Modified version of original Aiogram CallbackQuery"""
+class InlineMessage:
+    """Aiogram message, send via inline bot"""
 
-    def __init__(self):
-        self.delete = None
-        self.unload = None
-        self.edit = None
-        super().__init__()
+    def __init__(
+        self,
+        inline_manager: "InlineManager",  # noqa: F821
+        unit_uid: str,
+        inline_message_id: str,
+    ) -> None:
+        self.inline_message_id = inline_message_id
+        self.unit_uid = unit_uid
+        self.inline_manager = inline_manager
+        self._units = {**inline_manager._forms, **inline_manager._lists, **inline_manager._galleries}
+        self.form = (
+            {"id": unit_uid, **self._units[unit_uid]}
+            if unit_uid in self._units
+            else {}
+        )
+
+    async def edit(self, *args, **kwargs) -> "InlineMessage":
+        return await self.inline_manager._edit_unit(
+            *args,
+            unit_uid=self.unit_uid,
+            inline_message_id=self.inline_message_id,
+            **kwargs,
+        )
+
+    async def delete(self, *args, **kwargs) -> None:
+        return await self.inline_manager._delete_unit_message(
+            *args,
+            unit_uid=self.unit_uid,
+            **kwargs,
+        )
+
+    async def unload(self, *args, **kwargs) -> None:
+        return await self.inline_manager._unload_unit(
+            *args,
+            unit_uid=self.unit_uid,
+            **kwargs,
+        )
+
+
+class InlineCall(CallbackQuery, InlineMessage):
+    """Modified version of classic aiogram `CallbackQuery`"""
+
+    def __init__(
+        self,
+        call: CallbackQuery,
+        inline_manager: "InlineManager",  # noqa: F821
+        unit_uid: str,
+    ) -> None:
+        CallbackQuery.__init__(self)
+
+        for attr in {
+            "id",
+            "from_user",
+            "message",
+            "inline_message_id",
+            "chat_instance",
+            "data",
+            "game_short_name",
+        }:
+            setattr(self, attr, getattr(call, attr, None))
+
+        InlineMessage.__init__(
+            self,
+            inline_manager,
+            unit_uid,
+            call.inline_message_id,
+        )
 
 
 class InlineUnit:
     """InlineManager extension type. For internal use only"""
-
     def __init__(self):
         """Made just for type specification"""
 
 
 class BotMessage(AiogramMessage):
     """Modified version of original Aiogram Message"""
-
     def __init__(self):
         super().__init__()
 
 
-class InlineQuery:
+class InlineQuery(AiogramInlineQuery):
     """Modified version of original Aiogram InlineQuery"""
 
     def __init__(self, inline_query: AiogramInlineQuery) -> None:
+        super().__init__(self)
+
+        for attr in {"id", "from_user", "query", "offset", "chat_type", "location"}:
+            setattr(self, attr, getattr(inline_query, attr, None))
+
         self.inline_query = inline_query
-
-        # Inherit original `InlineQuery` attributes for
-        # easy access
-        for attr in dir(inline_query):
-            if attr.startswith("__") and attr.endswith("__"):
-                continue  # Ignore magic attrs
-
-            if hasattr(self, attr):
-                continue  # Do not override anything
-
-            try:
-                setattr(self, attr, getattr(inline_query, attr))
-            except AttributeError:
-                pass  # There are some non-writable native attrs
-                # So just ignore them
-
         self.args = (
             self.inline_query.query.split(maxsplit=1)[1]
             if len(self.inline_query.query.split()) > 1

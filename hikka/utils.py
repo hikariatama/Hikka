@@ -74,6 +74,16 @@ emoji_pattern = re.compile(
     flags=re.UNICODE,
 )
 
+URL_REGEX = re.compile(
+    r"^(?:http|ftp)s?://"  # http:// or https://
+    r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
+    r"localhost|"  # localhost...
+    r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
+    r"(?::\d+)?"  # optional port
+    r"(?:/?|[/?]\S+)$",
+    re.IGNORECASE,
+)
+
 parser = telethon.utils.sanitize_parse_mode("html")
 
 
@@ -250,24 +260,14 @@ def relocate_entities(
 
 
 async def answer(
-    message: Union[Message, CallbackQuery],
+    message: Union[Message, CallbackQuery, InlineCall],
     response: str,
     **kwargs,
-) -> list:
+) -> Union[CallbackQuery, Message]:
     """Use this to give the response to a command"""
     if isinstance(message, (CallbackQuery, InlineCall)):
-        return await message.edit(response)
-
-    if isinstance(message, list):
-        delete_job = asyncio.ensure_future(
-            message[0].client.delete_messages(
-                message[0].input_chat,
-                message[1:],
-            )
-        )
-        message = message[0]
-    else:
-        delete_job = None
+        await message.edit(response)
+        return message
 
     kwargs.setdefault("link_preview", False)
 
@@ -291,50 +291,49 @@ async def answer(
 
         if len(text) >= 4096:
             try:
+                if not message.client.loader.inline.init_complete:
+                    raise
+
                 list_ = await message.client.loader.inline.list(
                     message=message,
                     strings=list(smart_split(text, entity, 4096)),
                 )
 
-                if not message.client.loader.inline.init_complete or not list_:
+                if not list_:
                     raise
 
-                return [list_]
+                return list_
             except Exception:
                 file = io.BytesIO(text.encode("utf-8"))
                 file.name = "command_result.txt"
 
-                result = [
-                    await message.client.send_file(
-                        message.peer_id,
-                        file,
-                        caption="<b>📤 Command output seems to be too long, so it's sent in file.</b>",
-                    ),
-                ]
+                result = await message.client.send_file(
+                    message.peer_id,
+                    file,
+                    caption="<b>📤 Command output seems to be too long, so it's sent in file.</b>",
+                )
 
                 if message.out:
                     await message.delete()
 
                 return result
 
-        result = [
-            await (message.edit if edit else message.respond)(
-                text, parse_mode=lambda t: (t, entity), **kwargs
-            )
-        ]
+        result = await (message.edit if edit else message.respond)(
+            text,
+            parse_mode=lambda t: (t, entity),
+            **kwargs,
+        )
     elif isinstance(response, Message):
         if message.media is None and (
             response.media is None or isinstance(response.media, MessageMediaWebPage)
         ):
-            result = (
-                await message.edit(
-                    response.message,
-                    parse_mode=lambda t: (t, response.entities or []),
-                    link_preview=isinstance(response.media, MessageMediaWebPage),
-                ),
+            result = await message.edit(
+                response.message,
+                parse_mode=lambda t: (t, response.entities or []),
+                link_preview=isinstance(response.media, MessageMediaWebPage),
             )
         else:
-            result = (await message.respond(response, **kwargs),)
+            result = await message.respond(response, **kwargs)
     else:
         if isinstance(response, bytes):
             response = io.BytesIO(response)
@@ -352,12 +351,7 @@ async def answer(
                 "reply_to",
                 getattr(message, "reply_to_msg_id", None),
             )
-            result = (
-                await message.client.send_file(message.chat_id, response, **kwargs),
-            )
-
-    if delete_job:
-        await delete_job
+            result = await message.client.send_file(message.chat_id, response, **kwargs)
 
     return result
 
@@ -490,8 +484,8 @@ def chunks(_list: Union[list, tuple, set], n: int, /) -> list:
 
 def get_named_platform() -> str:
     """Returns formatted platform name"""
-    if os.path.isfile('/proc/device-tree/model'):
-        with open('/proc/device-tree/model') as f:
+    if os.path.isfile("/proc/device-tree/model"):
+        with open("/proc/device-tree/model") as f:
             model = f.read()
             return f"🍇 {model}" if model.startswith("Raspberry") else f"❓ {model}"
 
@@ -716,6 +710,11 @@ def _copy_tl(o, **kwargs):
     del d["_"]
     d.update(kwargs)
     return o.__class__(**d)
+
+
+def check_url(url: str) -> bool:
+    """Checks url for validity"""
+    return re.match(URL_REGEX, url)
 
 
 init_ts = time.perf_counter()

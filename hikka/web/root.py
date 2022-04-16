@@ -38,6 +38,9 @@ import atexit
 import functools
 import logging
 import sys
+import re
+import requests
+import time
 
 from .. import utils, main
 
@@ -48,6 +51,19 @@ DATA_DIR = (
     if "OKTETO" not in os.environ
     else "/data"
 )
+
+OFFSET = ord("🇦") - ord("A")
+OFFSET_TAG = 0xE0000
+CANCELTAG = "\U000E007F"
+BLACKFLAG = "\U0001F3F4"
+ASCII_LOWER = "abcdefghijklmnopqrstuvwxyz0123456789"
+
+
+def get_flag(countrycode: str) -> str:
+    # https://github.com/cvzi/flag/blob/864c996926cb841cbe498a0b52799f325117ac9a/flag/__init__.py#L308
+    code = [c for c in countrycode.lower() if c in ASCII_LOWER]
+    if len(code) == 2:
+        return "".join([chr(ord(c.upper()) + OFFSET) for c in code])
 
 
 def restart(*argv):
@@ -82,6 +98,7 @@ class Web:
         self.clients_set = asyncio.Event()
         self.root_redirected = asyncio.Event()
         self._sessions = []
+        self._ratelimit = {}
 
     @aiohttp_jinja2.template("root.jinja2")
     async def root(self, request):
@@ -153,7 +170,9 @@ class Web:
         return web.Response()
 
     async def okteto(self, request):
-        if any(cl[2].get("hikka", "okteto_uri", False) for cl in self.client_data.values()):
+        if any(
+            cl[2].get("hikka", "okteto_uri", False) for cl in self.client_data.values()
+        ):
             return web.Response(status=418)
 
         text = await request.text()
@@ -226,6 +245,8 @@ class Web:
             for client in main.hikka.clients:
                 await client.disconnect()
 
+            sys.exit(0)
+
         return web.Response()
 
     async def web_auth(self, request):
@@ -242,6 +263,47 @@ class Web:
             )
         )
 
+        ips = request.headers.get("X-FORWARDED-FOR", None) or request.remote
+        cities = []
+
+        for ip in re.findall(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", ips):
+            if ip not in self._ratelimit:
+                self._ratelimit[ip] = []
+
+            if (
+                len(
+                    list(
+                        filter(lambda x: time.time() - x < 3 * 60, self._ratelimit[ip])
+                    )
+                )
+                >= 3
+            ):
+                return web.Response(status=429)
+
+            self._ratelimit[ip] = list(
+                filter(lambda x: time.time() - x < 3 * 60, self._ratelimit[ip])
+            )
+
+            self._ratelimit[ip] += [time.time()]
+            try:
+                res = (
+                    await utils.run_sync(
+                        requests.get,
+                        f"https://freegeoip.app/json/{ip}",
+                    )
+                ).json()
+                cities += [
+                    f"<i>{get_flag(res['country_code'])} {res['country_name']} {res['region_name']} {res['city']} {res['zip_code']}</i>"
+                ]
+            except Exception:
+                pass
+
+        cities = (
+            ("<b>🏢 Possible cities:</b>\n\n" + "\n".join(cities) + "\n")
+            if cities
+            else ""
+        )
+
         ops = []
 
         for user in self.client_data.values():
@@ -251,7 +313,9 @@ class Web:
                     (await user[1].get_me()).id,
                     (
                         "🌘🔐 <b>Click button below to confirm web application ops</b>\n\n"
-                        "<i>If you did not request any codes, simply ignore this message</i>"
+                        f"<b>Client IP</b>: {ips}\n"
+                        f"{cities}"
+                        "\n<i>If you did not request any codes, simply ignore this message</i>"
                     ),
                     parse_mode="HTML",
                     disable_web_page_preview=True,
@@ -270,6 +334,8 @@ class Web:
             return web.Response(body=session)
 
         if not await main.hikka.wait_for_web_auth(token):
+            for op in ops:
+                await op
             return web.Response(body="TIMEOUT")
 
         for op in ops:

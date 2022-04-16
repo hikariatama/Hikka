@@ -4,25 +4,23 @@ from .. import utils
 from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
+    CallbackQuery,
+)
+
+from aiogram.utils.exceptions import (
+    MessageNotModified,
+    RetryAfter,
+    MessageIdInvalid,
+    InvalidQueryID,
 )
 
 import logging
-from typing import Union
+from typing import Union, List
 from types import FunctionType
 from .._types import Module
 import inspect
 
-import re
-
-URL_REGEX = re.compile(
-    r"^(?:http|ftp)s?://"  # http:// or https://
-    r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
-    r"localhost|"  # localhost...
-    r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
-    r"(?::\d+)?"  # optional port
-    r"(?:/?|[/?]\S+)$",
-    re.IGNORECASE,
-)
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +60,7 @@ class Utils(InlineUnit):
             for button in row:
                 try:
                     if "url" in button:
-                        if not re.match(URL_REGEX, button["url"]):
+                        if not utils.check_url(button["url"]):
                             logger.warning(
                                 "Button have not been added to form, "
                                 "because its url is invalid"
@@ -130,12 +128,9 @@ class Utils(InlineUnit):
     def _find_caller_sec_map(self) -> Union[FunctionType, None]:
         try:
             for stack_entry in inspect.stack():
-                if (
-                    hasattr(stack_entry, "function")
-                    and (
-                        stack_entry.function.endswith("cmd")
-                        or stack_entry.function.endswith("_inline_handler")
-                    )
+                if hasattr(stack_entry, "function") and (
+                    stack_entry.function.endswith("cmd")
+                    or stack_entry.function.endswith("_inline_handler")
                 ):
                     logger.debug(f"Found caller: {stack_entry.function}")
                     return next(
@@ -162,3 +157,129 @@ class Utils(InlineUnit):
             return [reply_markup]
 
         return reply_markup
+
+    async def _edit_unit(
+        self,
+        text: str,
+        reply_markup: List[List[dict]] = None,
+        *,
+        force_me: Union[bool, None] = None,
+        disable_security: Union[bool, None] = None,
+        always_allow: Union[List[int], None] = None,
+        disable_web_page_preview: bool = True,
+        query: CallbackQuery = None,
+        unit_uid: str = None,
+        inline_message_id: Union[str, None] = None,
+    ) -> None:
+        """Do not edit or pass `self`, `query`, `unit_uid` params, they are for internal use only"""
+        self._units = {**self._forms, **self._lists, **self._galleries}
+        if isinstance(reply_markup, (list, dict)):
+            reply_markup = self._normalize_markup(reply_markup)
+        elif reply_markup is None:
+            reply_markup = [[]]
+
+        if not isinstance(text, str):
+            logger.error("Invalid type for `text`")
+            return False
+
+        if unit_uid is not None:
+            if unit_uid not in self._units:
+                return False
+
+            unit = self._units[unit_uid]
+
+            unit["buttons"] = reply_markup
+
+            if isinstance(force_me, bool):
+                unit["force_me"] = force_me
+
+            if isinstance(disable_security, bool):
+                unit["disable_security"] = disable_security
+
+            if isinstance(always_allow, list):
+                unit["always_allow"] = always_allow
+
+        try:
+            await self.bot.edit_message_text(
+                text,
+                inline_message_id=inline_message_id or query.inline_message_id,
+                parse_mode="HTML",
+                disable_web_page_preview=disable_web_page_preview,
+                reply_markup=self._generate_markup(
+                    reply_markup if isinstance(reply_markup, list) else unit["buttons"]
+                ),
+            )
+        except MessageNotModified:
+            try:
+                await query.answer()
+            except InvalidQueryID:
+                pass  # Just ignore that error, bc we need to just
+                # remove preloader from user's button, if message
+                # was deleted
+
+        except RetryAfter as e:
+            logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
+            await asyncio.sleep(e.timeout)
+            return await self._edit_unit(
+                text=text,
+                reply_markup=reply_markup,
+                force_me=force_me,
+                disable_security=disable_security,
+                always_allow=always_allow,
+                disable_web_page_preview=disable_web_page_preview,
+                query=query,
+                unit_uid=unit_uid,
+                inline_message_id=inline_message_id,
+            )
+        except MessageIdInvalid:
+            try:
+                await query.answer("I should have edited some message, but it is deleted :(")  # fmt: skip
+            except InvalidQueryID:
+                pass  # Just ignore that error, bc we need to just
+                # remove preloader from user's button, if message
+                # was deleted
+
+    async def _delete_unit_message(
+        self,
+        call: CallbackQuery = None,
+        unit_uid: str = None,
+    ) -> bool:
+        """Params `self`, `form`, `unit_uid` are for internal use only, do not try to pass them"""
+        self._units = {**self._forms, **self._lists, **self._galleries}
+        try:
+            await self._client.delete_messages(
+                self._units[unit_uid]["chat"],
+                [self._units[unit_uid]["message_id"]],
+            )
+
+            await self._unload_unit(None, unit_uid)
+        except Exception:
+            return False
+
+        return True
+
+    async def _unload_unit(
+        self,
+        call: CallbackQuery = None,
+        unit_uid: str = None,
+    ) -> bool:
+        """Params `self`, `unit_uid` are for internal use only, do not try to pass them"""
+        self._units = {**self._forms, **self._lists, **self._galleries}
+        try:
+            if "on_unload" in self._units[unit_uid] and callable(
+                self._units[unit_uid]["on_unload"]
+            ):
+                self._units[unit_uid]["on_unload"]()
+
+            if unit_uid in self._forms:
+                del self._forms[unit_uid]
+            elif unit_uid in self._lists:
+                del self._lists[unit_uid]
+            elif unit_uid in self._galleries:
+                del self._galleries[unit_uid]
+            else:
+                return False
+        except Exception:
+            return False
+
+        return True

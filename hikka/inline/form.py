@@ -1,4 +1,4 @@
-from .types import InlineUnit
+from .types import InlineUnit, InlineMessage
 from .. import utils
 
 from aiogram.types import (
@@ -8,19 +8,12 @@ from aiogram.types import (
     InlineQueryResultPhoto,
 )
 
-from aiogram.utils.exceptions import (
-    MessageNotModified,
-    RetryAfter,
-    MessageIdInvalid,
-    InvalidQueryID,
-)
-
-from typing import Union, List, Any
+from typing import Union, List
 from types import FunctionType
 from telethon.tl.types import Message
 import logging
-import asyncio
 import time
+from asyncio import Event
 
 logger = logging.getLogger(__name__)
 
@@ -155,9 +148,9 @@ class Form(InlineUnit):
 
         if isinstance(message, Message) and not silent:
             try:
-                status_message = await (message.edit if message.out else message.respond)(
-                    "🌘 <b>Loading inline form...</b>"
-                )
+                status_message = await (
+                    message.edit if message.out else message.respond
+                )("🌘 <b>Loading inline form...</b>")
             except Exception:
                 pass
         else:
@@ -174,6 +167,7 @@ class Form(InlineUnit):
             "message_id": None,
             "uid": form_uid,
             "on_unload": on_unload,
+            "future": Event(),
             **({"photo": photo} if photo else {}),
             **({"perms_map": perms_map} if perms_map else {}),
             **({"message": message} if isinstance(message, Message) else {}),
@@ -206,6 +200,9 @@ class Form(InlineUnit):
 
             return False
 
+        await self._forms[form_uid]["future"].wait()
+        del self._forms[form_uid]["future"]
+
         self._forms[form_uid]["chat"] = utils.get_chat_id(m)
         self._forms[form_uid]["message_id"] = m.id
 
@@ -225,114 +222,7 @@ class Form(InlineUnit):
                 "doesn't contain any button callbacks"
             )
 
-        return form_uid
-
-    async def _callback_query_edit(
-        self,
-        text: str,
-        reply_markup: List[List[dict]] = None,
-        *,
-        force_me: Union[bool, None] = None,
-        disable_security: Union[bool, None] = None,
-        always_allow: Union[List[int], None] = None,
-        disable_web_page_preview: bool = True,
-        query: Any = None,
-        form: Any = None,
-        form_uid: Any = None,
-        inline_message_id: Union[str, None] = None,
-    ) -> None:
-        """Do not edit or pass `self`, `query`, `form`, `form_uid` params, they are for internal use only"""
-        if reply_markup is None:
-            reply_markup = []
-
-        reply_markup = self._normalize_markup(reply_markup)
-
-        if not isinstance(text, str):
-            logger.error("Invalid type for `text`")
-            return False
-
-        if isinstance(reply_markup, list):
-            form["buttons"] = reply_markup
-
-        if isinstance(force_me, bool):
-            form["force_me"] = force_me
-
-        if isinstance(disable_security, bool):
-            form["disable_security"] = disable_security
-
-        if isinstance(always_allow, list):
-            form["always_allow"] = always_allow
-
-        try:
-            await self.bot.edit_message_text(
-                text,
-                inline_message_id=inline_message_id or query.inline_message_id,
-                parse_mode="HTML",
-                disable_web_page_preview=disable_web_page_preview,
-                reply_markup=self._generate_markup(form_uid),
-            )
-        except MessageNotModified:
-            try:
-                await query.answer()
-            except InvalidQueryID:
-                pass  # Just ignore that error, bc we need to just
-                # remove preloader from user's button, if message
-                # was deleted
-
-        except RetryAfter as e:
-            logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
-            await asyncio.sleep(e.timeout)
-            return await self._callback_query_edit(
-                text=text,
-                reply_markup=reply_markup,
-                force_me=force_me,
-                disable_security=disable_security,
-                always_allow=always_allow,
-                disable_web_page_preview=disable_web_page_preview,
-                query=query,
-                form=form,
-                form_uid=form_uid,
-                inline_message_id=inline_message_id,
-            )
-        except MessageIdInvalid:
-            try:
-                await query.answer(
-                    "I should have edited some message, but it is deleted :("
-                )
-            except InvalidQueryID:
-                pass  # Just ignore that error, bc we need to just
-                # remove preloader from user's button, if message
-                # was deleted
-
-    async def _callback_query_delete(
-        self,
-        form: Any = None,
-        form_uid: Any = None,
-    ) -> bool:
-        """Params `self`, `form`, `form_uid` are for internal use only, do not try to pass them"""
-        try:
-            await self._client.delete_messages(form["chat"], [form["message_id"]])
-
-            if callable(self._forms[form_uid]["on_unload"]):
-                self._forms[form_uid]["on_unload"]()
-
-            del self._forms[form_uid]
-        except Exception:
-            return False
-
-        return True
-
-    async def _callback_query_unload(self, form_uid: Any = None) -> bool:
-        """Params `self`, `form_uid` are for internal use only, do not try to pass them"""
-        try:
-            if callable(self._forms[form_uid]["on_unload"]):
-                self._forms[form_uid]["on_unload"]()
-
-            del self._forms[form_uid]
-        except Exception:
-            return False
-
-        return True
+        return InlineMessage(self, form_uid, self._forms[form_uid]["inline_message_id"])
 
     async def _form_inline_handler(self, inline_query: InlineQuery) -> None:
         for form in self._forms.copy().values():

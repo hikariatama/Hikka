@@ -345,13 +345,15 @@ class LoaderMod(loader.Module):
             return
 
         if not self._db.get(
-            main.__name__, "disable_modules_fs", False
+            main.__name__,
+            "disable_modules_fs",
+            False,
         ) and not self._db.get(main.__name__, "permanent_modules_fs", False):
             if message.file:
                 await message.edit("")
                 message = await message.respond("🌘")
 
-            await self.inline.form(
+            if await self.inline.form(
                 self.strings("module_fs"),
                 message=message,
                 reply_markup=[
@@ -382,8 +384,8 @@ class LoaderMod(loader.Module):
                         }
                     ],
                 ],
-            )
-            return
+            ):
+                return
 
         if path_ is not None:
             await self.load_module(
@@ -567,7 +569,7 @@ class LoaderMod(loader.Module):
 
         try:
             try:
-                self.allmodules.send_config_one(instance, self._db, self.babel)
+                self.allmodules.send_config_one(instance, self._db, self.translator)
                 await self.allmodules.send_ready_one(
                     instance,
                     self._client,

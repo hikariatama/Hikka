@@ -218,9 +218,8 @@ class Gallery(InlineUnit):
         self._custom_map[btn_call_data["close"]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
-                    self._gallery_close,
-                    btn_call_data=btn_call_data,
-                    gallery_uid=gallery_uid,
+                    self._delete_unit_message,
+                    unit_uid=gallery_uid,
                 )
             ),
             **default_map,
@@ -251,9 +250,9 @@ class Gallery(InlineUnit):
 
         if isinstance(message, Message) and not silent:
             try:
-                status_message = await (message.edit if message.out else message.respond)(
-                    "🌘 <b>Loading inline gallery...</b>"
-                )
+                status_message = await (
+                    message.edit if message.out else message.respond
+                )("🌘 <b>Loading inline gallery...</b>")
             except Exception:
                 pass
         else:
@@ -350,47 +349,55 @@ class Gallery(InlineUnit):
             # Start load again
             asyncio.ensure_future(self._load_gallery_photos(gallery_uid))
 
+    async def _gallery_slideshow_loop(
+        self,
+        call: CallbackQuery,
+        btn_call_data: List[str] = None,
+        gallery_uid: str = None,
+    ) -> None:
+        while True:
+            await asyncio.sleep(7)
+
+            if gallery_uid not in self._galleries or not self._galleries[
+                gallery_uid
+            ].get("slideshow", False):
+                return
+
+            await self._custom_map[btn_call_data["next"]]["handler"](
+                call,
+                *self._custom_map[btn_call_data["next"]].get("args", []),
+                **self._custom_map[btn_call_data["next"]].get("kwargs", {}),
+            )
+
     async def _gallery_slideshow(
         self,
         call: CallbackQuery,
         btn_call_data: List[str] = None,
         gallery_uid: str = None,
-        _recall: bool = False,
-    ):
-        if not _recall:
-            if not self._galleries[gallery_uid].get("slideshow", False):
-                self._galleries[gallery_uid]["slideshow"] = True
-                await self.bot.edit_message_reply_markup(
-                    inline_message_id=call.inline_message_id,
-                    reply_markup=self._gallery_markup(gallery_uid),
-                )
-                await call.answer("✅ Slideshow on")
-            else:
-                del self._galleries[gallery_uid]["slideshow"]
-                await self.bot.edit_message_reply_markup(
-                    inline_message_id=call.inline_message_id,
-                    reply_markup=self._gallery_markup(gallery_uid),
-                )
-                await call.answer("🚫 Slideshow off")
-                return
-
-        await self._custom_map[btn_call_data["next"]]["handler"](
-            call,
-            *self._custom_map[btn_call_data["next"]].get("args", []),
-            **self._custom_map[btn_call_data["next"]].get("kwargs", {}),
-        )
-
-        await asyncio.sleep(7)
-
-        if self._galleries[gallery_uid].get("slideshow", False):
-            asyncio.ensure_future(
-                self._gallery_slideshow(
-                    call,
-                    btn_call_data,
-                    gallery_uid,
-                    True,
-                )
+    ) -> None:
+        if not self._galleries[gallery_uid].get("slideshow", False):
+            self._galleries[gallery_uid]["slideshow"] = True
+            await self.bot.edit_message_reply_markup(
+                inline_message_id=call.inline_message_id,
+                reply_markup=self._gallery_markup(gallery_uid),
             )
+            await call.answer("✅ Slideshow on")
+        else:
+            del self._galleries[gallery_uid]["slideshow"]
+            await self.bot.edit_message_reply_markup(
+                inline_message_id=call.inline_message_id,
+                reply_markup=self._gallery_markup(gallery_uid),
+            )
+            await call.answer("🚫 Slideshow off")
+            return
+
+        asyncio.ensure_future(
+            self._gallery_slideshow_loop(
+                call,
+                btn_call_data,
+                gallery_uid,
+            )
+        )
 
     async def _gallery_back(
         self,
@@ -445,27 +452,6 @@ class Gallery(InlineUnit):
                 parse_mode="HTML",
             )
         )
-
-    async def _gallery_close(
-        self,
-        call: CallbackQuery,
-        btn_call_data: List[str] = None,
-        gallery_uid: str = None,
-    ) -> bool:
-        try:
-            await self._client.delete_messages(
-                self._galleries[gallery_uid]["chat"],
-                [self._galleries[gallery_uid]["message_id"]],
-            )
-
-            if callable(self._galleries[gallery_uid]["on_unload"]):
-                self._galleries[gallery_uid]["on_unload"]()
-
-            del self._galleries[gallery_uid]
-        except Exception:
-            return False
-
-        return True
 
     async def _gallery_next(
         self,

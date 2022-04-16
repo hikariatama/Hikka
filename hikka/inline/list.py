@@ -1,4 +1,4 @@
-from .types import InlineUnit
+from .types import InlineUnit, InlineMessage
 from .. import utils
 
 from aiogram.types import (
@@ -124,6 +124,7 @@ class List(InlineUnit):
             "btn_call_data": btn_call_data,
             "current_index": 0,
             "strings": strings,
+            "future": asyncio.Event(),
             **({"ttl": round(time.time()) + ttl} if ttl else {}),
             **({"force_me": force_me} if force_me else {}),
             **({"disable_security": disable_security} if disable_security else {}),
@@ -160,9 +161,8 @@ class List(InlineUnit):
         self._custom_map[btn_call_data["close"]] = {
             "handler": asyncio.coroutine(
                 functools.partial(
-                    self._list_close,
-                    btn_call_data=btn_call_data,
-                    list_uid=list_uid,
+                    self._delete_unit_message,
+                    unit_uid=list_uid,
                 )
             ),
             **default_map,
@@ -181,9 +181,9 @@ class List(InlineUnit):
 
         if isinstance(message, Message) and not silent:
             try:
-                status_message = await (message.edit if message.out else message.respond)(
-                    "🌘 <b>Loading inline list...</b>"
-                )
+                status_message = await (
+                    message.edit if message.out else message.respond
+                )("🌘 <b>Loading inline list...</b>")
             except Exception:
                 pass
         else:
@@ -202,6 +202,9 @@ class List(InlineUnit):
             del self._lists[list_uid]
             return
 
+        await self._lists[list_uid]["future"].wait()
+        del self._lists[list_uid]["future"]
+
         self._lists[list_uid]["chat"] = utils.get_chat_id(m)
         self._lists[list_uid]["message_id"] = m.id
 
@@ -211,7 +214,7 @@ class List(InlineUnit):
         if status_message and not message.out:
             await status_message.delete()
 
-        return list_uid
+        return InlineMessage(self, list_uid, self._lists[list_uid]["inline_message_id"])
 
     async def _list_back(
         self,
@@ -244,27 +247,6 @@ class List(InlineUnit):
             logger.exception("Exception while trying to edit list")
             await call.answer("Error occurred", show_alert=True)
             return
-
-    async def _list_close(
-        self,
-        call: CallbackQuery,
-        btn_call_data: _List[str] = None,
-        list_uid: str = None,
-    ) -> bool:
-        try:
-            await self._client.delete_messages(
-                self._lists[list_uid]["chat"],
-                [self._lists[list_uid]["message_id"]],
-            )
-
-            if callable(self._lists[list_uid]["on_unload"]):
-                self._lists[list_uid]["on_unload"]()
-
-            del self._lists[list_uid]
-        except Exception:
-            return False
-
-        return True
 
     async def _list_next(
         self,

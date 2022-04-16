@@ -10,7 +10,7 @@
 
 from .. import loader
 import logging
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.types import CallbackQuery
 from random import choice
 import os
 
@@ -62,19 +62,11 @@ class QuickstartMod(loader.Module):
     async def client_ready(self, client, db) -> None:
         self._me = (await client.get_me()).id
 
-        mark = InlineKeyboardMarkup()
-        mark.add(
-            InlineKeyboardButton(
-                "🥷 Support chat",
-                url="https://t.me/hikka_talks",
-            ),
-        )
-
-        mark.add(
-            InlineKeyboardButton(
-                "🇷🇺 Русский",
-                callback_data="hikka_qs_sw_lng_ru",
-            ),
+        mark = self.inline._generate_markup(
+            [
+                [{"text": "🥷 Support chat", "url": "https://t.me/hikka_talks"}],
+                [{"text": "🇷🇺 Русский", "data": "hikka_qs_sw_lng_ru"}],
+            ]
         )
 
         await self.inline.bot.send_animation(
@@ -93,18 +85,11 @@ class QuickstartMod(loader.Module):
 
         lang = call.data.split("_")[-1]
         if lang == "ru":
-            mark = InlineKeyboardMarkup()
-            mark.add(
-                InlineKeyboardButton(
-                    "🥷 Чат помощи",
-                    url="https://t.me/hikka_talks",
-                ),
-            )
-            mark.add(
-                InlineKeyboardButton(
-                    "🇬🇧 English",
-                    callback_data="hikka_qs_sw_lng_en",
-                ),
+            mark = self.inline._generate_markup(
+                [
+                    [{"text": "🥷 Чат помощи", "url": "https://t.me/hikka_talks"}],
+                    [{"text": "🇬🇧 English", "data": "hikka_qs_sw_lng_en"}],
+                ]
             )
 
             await self.inline.bot.edit_message_caption(
@@ -115,18 +100,11 @@ class QuickstartMod(loader.Module):
                 reply_markup=mark,
             )
         elif lang == "en":
-            mark = InlineKeyboardMarkup()
-            mark.add(
-                InlineKeyboardButton(
-                    "🥷 Support chat",
-                    url="https://t.me/hikka_talks",
-                ),
-            )
-            mark.add(
-                InlineKeyboardButton(
-                    "🇷🇺 Русский",
-                    callback_data="hikka_qs_sw_lng_ru",
-                ),
+            mark = self.inline._generate_markup(
+                [
+                    [{"text": "🥷 Support chat", "url": "https://t.me/hikka_talks"}],
+                    [{"text": "🇷🇺 Русский", "data": "hikka_qs_sw_lng_ru"}],
+                ]
             )
 
             await self.inline.bot.edit_message_caption(

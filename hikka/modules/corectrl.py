@@ -14,9 +14,20 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from telethon.tl.types import Message, Channel
+# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+#
+#              © Copyright 2022
+#
+#          https://t.me/hikariatama
+#
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-from .. import loader, main, utils
+from telethon.tl.types import Message
+
+from .. import loader, main, utils, translations
+import os
 
 
 @loader.tds
@@ -40,13 +51,14 @@ class CoreMod(loader.Module):
         "delalias_args": "🚫 <b>You must provide the alias name</b>",
         "alias_removed": "✅ <b>Alias</b> <code>{}</code> <b>removed.",
         "no_alias": "<b>🚫 Alias</b> <code>{}</code> <b>does not exist</b>",
-        "no_pack": "<b>❓ What translation pack should be added?</b>",
-        "bad_pack": "<b>🚫 Invalid translation pack specified</b>",
-        "trnsl_saved": "<b>✅ Translation pack added</b>",
-        "packs_cleared": "<b>✅ Translations cleared</b>",
-        "lang_set": "<b>✅ Language changed</b>",
         "db_cleared": "<b>✅ Database cleared</b>",
-        "hikka": "🌘 <b>You are Hikka!</b>\n<b>Hikka version: {}.{}.{}</b>",
+        "hikka": "🌘 <b>Hikka userbot</b>\n<b>Version: {}.{}.{}</b>",
+        "check_url": "🚫 <b>You need to specify valid url containing a langpack</b>",
+        "lang_saved": "✅ <b>Language saved!</b>",
+        "pack_saved": "✅ <b>Translate pack saved!</b>",
+        "incorrect_language": "🚫 <b>Incorrect language specified</b>",
+        "lang_removed": "✅ <b>Translations reset to default ones</b>",
+        "check_pack": "🚫 <b>Invalid pack format in url</b>",
     }
 
     async def client_ready(self, client, db):
@@ -57,7 +69,7 @@ class CoreMod(loader.Module):
         args = utils.get_args(message)
 
         if len(args) > 2:
-            await utils.answer(message, self.strings("too_many_args", message))
+            await utils.answer(message, self.strings("too_many_args"))
             return
 
         chatid = None
@@ -93,7 +105,7 @@ class CoreMod(loader.Module):
             self._db.get(main.__name__, "blacklist_chats", []) + [chatid],
         )
 
-        await utils.answer(message, self.strings("blacklisted", message).format(chatid))
+        await utils.answer(message, self.strings("blacklisted").format(chatid))
 
     async def unblacklistcmd(self, message: Message) -> None:
         """Unblacklist the bot from operating somewhere"""
@@ -108,7 +120,7 @@ class CoreMod(loader.Module):
         )
 
         await utils.answer(
-            message, self.strings("unblacklisted", message).format(chatid)
+            message, self.strings("unblacklisted").format(chatid)
         )
 
     async def getuser(self, message: Message) -> None:
@@ -123,7 +135,7 @@ class CoreMod(loader.Module):
             if message.is_private:
                 return message.to_id.user_id
 
-            await utils.answer(message, self.strings("who_to_unblacklist", message))
+            await utils.answer(message, self.strings("who_to_unblacklist"))
             return
 
     async def blacklistusercmd(self, message: Message) -> None:
@@ -137,7 +149,7 @@ class CoreMod(loader.Module):
         )
 
         await utils.answer(
-            message, self.strings("user_blacklisted", message).format(user)
+            message, self.strings("user_blacklisted").format(user)
         )
 
     async def unblacklistusercmd(self, message: Message) -> None:
@@ -152,7 +164,7 @@ class CoreMod(loader.Module):
 
         await utils.answer(
             message,
-            self.strings("user_unblacklisted", message).format(user),
+            self.strings("user_unblacklisted").format(user),
         )
 
     @loader.owner
@@ -161,18 +173,18 @@ class CoreMod(loader.Module):
         args = utils.get_args_raw(message)
 
         if not args:
-            await utils.answer(message, self.strings("what_prefix", message))
+            await utils.answer(message, self.strings("what_prefix"))
             return
 
         if len(args) != 1:
-            await utils.answer(message, self.strings("prefix_incorrect", message))
+            await utils.answer(message, self.strings("prefix_incorrect"))
             return
 
         oldprefix = self._db.get(main.__name__, "command_prefix", ".")
         self._db.set(main.__name__, "command_prefix", args)
         await utils.answer(
             message,
-            self.strings("prefix_set", message).format(
+            self.strings("prefix_set").format(
                 newprefix=utils.escape_html(args[0]),
                 oldprefix=utils.escape_html(oldprefix),
             ),
@@ -182,7 +194,7 @@ class CoreMod(loader.Module):
     async def aliasescmd(self, message: Message) -> None:
         """Print all your aliases"""
         aliases = self.allmodules.aliases
-        string = self.strings("aliases", message)
+        string = self.strings("aliases")
 
         string += "\n".join([f"\n{i}: {y}" for i, y in aliases.items()])
 
@@ -194,7 +206,7 @@ class CoreMod(loader.Module):
         args = utils.get_args(message)
 
         if len(args) != 2:
-            await utils.answer(message, self.strings("alias_args", message))
+            await utils.answer(message, self.strings("alias_args"))
             return
 
         alias, cmd = args
@@ -202,16 +214,21 @@ class CoreMod(loader.Module):
 
         if ret:
             self._db.set(
-                __name__, "aliases", {**self._db.get(__name__, "aliases"), alias: cmd}
+                __name__,
+                "aliases",
+                {
+                    **self._db.get(__name__, "aliases"),
+                    alias: cmd,
+                },
             )
             await utils.answer(
                 message,
-                self.strings("alias_created", message).format(utils.escape_html(alias)),
+                self.strings("alias_created").format(utils.escape_html(alias)),
             )
         else:
             await utils.answer(
                 message,
-                self.strings("no_command", message).format(utils.escape_html(cmd)),
+                self.strings("no_command").format(utils.escape_html(cmd)),
             )
 
     @loader.owner
@@ -220,7 +237,7 @@ class CoreMod(loader.Module):
         args = utils.get_args(message)
 
         if len(args) != 1:
-            await utils.answer(message, self.strings("delalias_args", message))
+            await utils.answer(message, self.strings("delalias_args"))
             return
 
         alias = args[0]
@@ -232,60 +249,57 @@ class CoreMod(loader.Module):
             self._db.set(__name__, "aliases", current)
             await utils.answer(
                 message,
-                self.strings("alias_removed", message).format(utils.escape_html(alias)),
+                self.strings("alias_removed").format(utils.escape_html(alias)),
             )
         else:
             await utils.answer(
                 message,
-                self.strings("no_alias", message).format(utils.escape_html(alias)),
+                self.strings("no_alias").format(utils.escape_html(alias)),
             )
 
-    async def addtrnslcmd(self, message: Message) -> None:
-        """Add a translation pack
-        Restart required after use"""
-        args = utils.get_args(message)
+    async def dllangpackcmd(self, message: Message) -> None:
+        """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""
+        args = utils.get_args_raw(message)
 
-        if len(args) != 1:
-            await utils.answer(message, self.strings("no_pack", message))
+        if not args:
+            self._db.set(translations.__name__, "pack", False)
+            await self.translator.init()
+            await utils.answer(message, self.strings("lang_removed"))
             return
 
-        pack = args[0]
-        if str(pack).isdigit():
-            pack = int(pack)
-
-        try:
-            pack = await self._client.get_entity(pack)
-        except ValueError:
-            await utils.answer(message, self.strings("bad_pack", message))
+        if not utils.check_url(args):
+            await utils.answer(message, self.strings("check_url"))
             return
 
-        if isinstance(pack, Channel) and not pack.megagroup:
-            self._db.setdefault(main.__name__, {}).setdefault("langpacks", []).append(
-                pack.id
-            )
-            self._db.save()
-            await utils.answer(message, self.strings("trnsl_saved", message))
-        else:
-            await utils.answer(message, self.strings("bad_pack", message))
-
-    async def cleartrnslcmd(self, message: Message) -> None:
-        """Remove all translation packs"""
-        self._db.set(main.__name__, "langpacks", [])
-        await utils.answer(message, self.strings("packs_cleared", message))
+        self._db.set(translations.__name__, "pack", args)
+        success = await self.translator.init()
+        await utils.answer(message, self.strings("pack_saved" if success else "check_pack"))
 
     async def setlangcmd(self, message: Message) -> None:
-        """Change the preferred language used for translations
-        Restart required after use"""
-        langs = utils.get_args(message)
-        self._db.set(main.__name__, "language", langs)
-        await utils.answer(message, self.strings("lang_set", message))
+        """[language] - Change default language"""
+        args = utils.get_args_raw(message)
+        if not args or len(args) != 2:
+            await utils.answer(message, self.strings("incorrect_language"))
+            return
+
+        possible_pack_path = os.path.join(
+            utils.get_base_dir(),
+            f"langpacks/{args.lower()}.json",
+        )
+
+        if os.path.isfile(possible_pack_path):
+            self._db.set(translations.__name__, "pack", args.lower())
+
+        self._db.set(translations.__name__, "lang", args.lower())
+        await self.translator.init()
+        await utils.answer(message, self.strings("lang_saved"))
 
     @loader.owner
     async def cleardbcmd(self, message: Message) -> None:
         """Clears the entire database, effectively performing a factory reset"""
         self._db.clear()
         self._db.save()
-        await utils.answer(message, self.strings("db_cleared", message))
+        await utils.answer(message, self.strings("db_cleared"))
 
     async def _client_ready2(self, client, db):  # skicpq: PYL-W0613
         ret = {

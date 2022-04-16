@@ -18,6 +18,7 @@ from .. import utils
 from .types import InlineQuery
 import functools
 import inspect
+from asyncio import Event
 
 logger = logging.getLogger(__name__)
 
@@ -208,7 +209,7 @@ class Events(InlineUnit):
         for func in self._allmodules.callback_handlers.values():
             if await self.check_inline_security(func=func, user=query.from_user.id):
                 try:
-                    await func(query)
+                    await func(InlineCall(query, self, None))
                 except Exception:
                     logger.exception("Error on running callback watcher!")
                     await query.answer(
@@ -248,29 +249,9 @@ class Events(InlineUnit):
                         await query.answer("You are not allowed to press this button!")
                         return
 
-                    query.delete = functools.partial(
-                        self._callback_query_delete,
-                        form=form,
-                        form_uid=form_uid,
-                    )
-
-                    query.unload = functools.partial(
-                        self._callback_query_unload,
-                        form_uid=form_uid,
-                    )
-
-                    query.edit = functools.partial(
-                        self._callback_query_edit,
-                        query=query,
-                        form=form,
-                        form_uid=form_uid,
-                    )
-
-                    query.form = {"id": form_uid, **form}
-
                     try:
                         return await button["callback"](
-                            query,
+                            InlineCall(query, self, form_uid),
                             *button.get("args", []),
                             **button.get("kwargs", {}),
                         )
@@ -328,6 +309,20 @@ class Events(InlineUnit):
     ) -> None:
         query = chosen_inline_query.query
 
+        for uid, object_ in {
+            **self._forms.copy(),
+            **self._lists.copy(),
+            **self._galleries.copy(),
+        }.items():
+            if (
+                uid == query
+                and "future" in object_
+                and isinstance(object_["future"], Event)
+            ):
+                object_["inline_message_id"] = chosen_inline_query.inline_message_id
+                object_["future"].set()
+                return
+
         for form_uid, form in self._forms.copy().items():
             for button in utils.array_sum(form.get("buttons", [])):
                 if (
@@ -342,27 +337,9 @@ class Events(InlineUnit):
 
                     query = query.split(maxsplit=1)[1] if len(query.split()) > 1 else ""
 
-                    call = InlineCall()
-
-                    call.delete = functools.partial(
-                        self._callback_query_delete,
-                        form=form,
-                        form_uid=form_uid,
-                    )
-                    call.unload = functools.partial(
-                        self._callback_query_unload,
-                        form_uid=form_uid,
-                    )
-                    call.edit = functools.partial(
-                        self._callback_query_edit,
-                        query=chosen_inline_query,
-                        form=form,
-                        form_uid=form_uid,
-                    )
-
                     try:
                         return await button["handler"](
-                            call,
+                            InlineCall(chosen_inline_query, self, form_uid),
                             query,
                             *button.get("args", []),
                             **button.get("kwargs", {}),

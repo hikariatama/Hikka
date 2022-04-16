@@ -36,7 +36,7 @@ import os
 import sys
 
 from . import utils, security
-from .translations.dynamic import Strings
+from .translations import Strings
 from .inline.core import InlineManager
 from ._types import Module, LoadError, ModuleConfig  # noqa: F401
 from importlib.machinery import ModuleSpec
@@ -85,6 +85,13 @@ def translatable_docstring(cls):
                 func_.__doc__ = self.strings[f"_cmd_doc_{command_}"]
             except AttributeError:
                 func_.__func__.__doc__ = self.strings[f"_cmd_doc_{command_}"]
+
+        for inline_handler_, func_ in get_inline_handlers(cls).items():
+            try:
+                func_.__doc__ = self.strings[f"_ihandle_doc_{inline_handler_}"]
+            except AttributeError:
+                func_.__func__.__doc__ = self.strings[f"_ihandle_doc_{inline_handler_}"]
+
         self.__doc__ = self.strings["_cls_doc"]
         return self.config_complete._old_(self, *args, **kwargs)
 
@@ -93,6 +100,9 @@ def translatable_docstring(cls):
 
     for command, func in get_commands(cls).items():
         cls.strings["_cmd_doc_" + command] = inspect.getdoc(func)
+
+    for inline_handler, func in get_inline_handlers(cls).items():
+        cls.strings["_ihandle_doc_" + inline_handler] = inspect.getdoc(func)
 
     cls.strings["_cls_doc"] = inspect.getdoc(cls)
 
@@ -203,7 +213,9 @@ class Modules:
 
         for mod in mods:
             try:
-                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
+                module_name = (
+                    f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
+                )
                 logging.debug(module_name)
                 spec = importlib.util.spec_from_file_location(module_name, mod)
                 self.register_module(spec, module_name, "<core>")
@@ -212,7 +224,9 @@ class Modules:
 
         for mod in external_mods:
             try:
-                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
+                module_name = (
+                    f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"
+                )
                 logging.debug(module_name)
                 spec = importlib.util.spec_from_file_location(module_name, mod)
                 self.register_module(spec, module_name, "<file>")
@@ -416,13 +430,18 @@ class Modules:
                     except KeyError:
                         return command, None
 
-    def send_config(self, db, babel, skip_hook: bool = False) -> None:
+    def send_config(self, db, translator, skip_hook: bool = False) -> None:
         """Configure modules"""
         for mod in self.modules:
-            self.send_config_one(mod, db, babel, skip_hook)
+            self.send_config_one(mod, db, translator, skip_hook)
 
     @staticmethod
-    def send_config_one(mod, db, babel=None, skip_hook: bool = False) -> None:
+    def send_config_one(
+        mod: "Module",
+        db: "Database",  # noqa: F821
+        translator: "Translator" = None,  # noqa: F821
+        skip_hook: bool = False,
+    ) -> None:
         """Send config to single instance"""
         if hasattr(mod, "config"):
             modcfg = db.get(mod.__module__, "__config__", {})
@@ -435,16 +454,16 @@ class Modules:
                     except KeyError:
                         mod.config[conf] = mod.config.getdef(conf)
 
-        if babel is not None and not hasattr(mod, "name"):
+        if not hasattr(mod, "name"):
             mod.name = mod.strings["name"]
 
-        if hasattr(mod, "strings") and babel is not None:
-            mod.strings = Strings(mod.__module__, mod.strings, babel)
+        if hasattr(mod, "strings"):
+            mod.strings = Strings(mod, translator)
 
         if skip_hook:
             return
 
-        mod.babel = babel
+        mod.translator = translator
 
         try:
             mod.config_complete()

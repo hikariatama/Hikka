@@ -1,7 +1,6 @@
 Telethon-Mod==1.24.6
 pythondialog==3.5.3
 gitpython==3.1.27
-babel==2.9.1
 meval==2.5
 aiohttp_jinja2==1.5
 aiohttp

@@ -9,8 +9,6 @@
 # 🌐 https://creativecommons.org/licenses/by-nc-nd/4.0
 
 # scope: inline
-# scope: hikka_only
-# meta developer: @hikariatama
 
 from .. import loader, utils
 from telethon.tl.types import Message

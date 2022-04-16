@@ -60,11 +60,9 @@ class HikkaInfoMod(loader.Module):
             f"<b>{utils.get_named_platform()}</b>\n"
         )
 
+    @loader.inline_everyone
     async def info_inline_handler(self, query: InlineQuery) -> dict:
-        """
-        Send userbot info
-        @allow: all
-        """
+        """Send userbot info"""
 
         return {
             "title": "Send userbot info",
@@ -74,6 +72,7 @@ class HikkaInfoMod(loader.Module):
             "reply_markup": self.markup,
         }
 
+    @loader.unrestricted
     async def infocmd(self, message: Message) -> None:
         """Send userbot info"""
         await self.inline.form(
@@ -82,6 +81,7 @@ class HikkaInfoMod(loader.Module):
             reply_markup=self.markup,
         )
 
+    @loader.unrestricted
     async def hikkainfocmd(self, message: Message) -> None:
         """[en/ru - default en] - Send info aka 'What is Hikka?'"""
         args = utils.get_args_raw(message)
