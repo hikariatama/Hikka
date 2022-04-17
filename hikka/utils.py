@@ -708,7 +708,7 @@ def smart_split(text, entities, length=4096, split_on=("\n", " "), min_length=1)
             current_text,
             list(sorted(current_entities, key=lambda x: x.offset)),
         )
- 
+
         text_offset = split_index + exclude
         bytes_offset += len(current_text.encode("utf-16le"))
 

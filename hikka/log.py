@@ -175,4 +175,5 @@ def init():
     logging.getLogger().addHandler(MemoryHandler(handler, 5000))
     logging.getLogger().setLevel(logging.NOTSET)
     logging.getLogger("telethon").setLevel(logging.WARNING)
+    logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.captureWarnings(True)

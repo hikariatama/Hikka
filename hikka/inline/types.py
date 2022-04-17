@@ -5,8 +5,10 @@ from aiogram.types import (
     InputTextMessageContent,
     CallbackQuery,
 )
-
+import logging
 from .. import utils
+
+logger = logging.getLogger(__name__)
 
 
 class InlineMessage:
@@ -21,14 +23,22 @@ class InlineMessage:
         self.inline_message_id = inline_message_id
         self.unit_uid = unit_uid
         self.inline_manager = inline_manager
-        self._units = {**inline_manager._forms, **inline_manager._lists, **inline_manager._galleries}
+        self._units = {
+            **inline_manager._forms,
+            **inline_manager._lists,
+            **inline_manager._galleries,
+        }
         self.form = (
-            {"id": unit_uid, **self._units[unit_uid]}
-            if unit_uid in self._units
-            else {}
+            {"id": unit_uid, **self._units[unit_uid]} if unit_uid in self._units else {}
         )
 
     async def edit(self, *args, **kwargs) -> "InlineMessage":
+        if "unit_uid" in kwargs:
+            kwargs.pop("unit_uid")
+
+        if "inline_message_id" in kwargs:
+            kwargs.pop("inline_message_id")
+
         return await self.inline_manager._edit_unit(
             *args,
             unit_uid=self.unit_uid,
@@ -37,6 +47,9 @@ class InlineMessage:
         )
 
     async def delete(self, *args, **kwargs) -> None:
+        if "unit_uid" in kwargs:
+            kwargs.pop("unit_uid")
+
         return await self.inline_manager._delete_unit_message(
             *args,
             unit_uid=self.unit_uid,
@@ -44,6 +57,9 @@ class InlineMessage:
         )
 
     async def unload(self, *args, **kwargs) -> None:
+        if "unit_uid" in kwargs:
+            kwargs.pop("unit_uid")
+
         return await self.inline_manager._unload_unit(
             *args,
             unit_uid=self.unit_uid,
@@ -83,12 +99,14 @@ class InlineCall(CallbackQuery, InlineMessage):
 
 class InlineUnit:
     """InlineManager extension type. For internal use only"""
+
     def __init__(self):
         """Made just for type specification"""
 
 
 class BotMessage(AiogramMessage):
     """Modified version of original Aiogram Message"""
+
     def __init__(self):
         super().__init__()
 

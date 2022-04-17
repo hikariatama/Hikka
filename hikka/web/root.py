@@ -65,6 +65,8 @@ def get_flag(countrycode: str) -> str:
     if len(code) == 2:
         return "".join([chr(ord(c.upper()) + OFFSET) for c in code])
 
+    return countrycode
+
 
 def restart(*argv):
     os.execl(
