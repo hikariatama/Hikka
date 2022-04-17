@@ -65,14 +65,14 @@ class HikkaConfigMod(loader.Module):
                     except (ValueError, SyntaxError):
                         pass
 
-                    self._db.setdefault(module.__module__, {}).setdefault(
-                        "__config__", {}
-                    )[option] = query
+                    self._db.setdefault(
+                        getattr(module, "name", module.__class__.__name__), {}
+                    ).setdefault("__config__", {})[option] = query
                 else:
                     try:
-                        del self._db.setdefault(module.__module__, {}).setdefault(
-                            "__config__", {}
-                        )[option]
+                        del self._db.setdefault(
+                            getattr(module, "name", module.__class__.__name__), {}
+                        ).setdefault("__config__", {})[option]
                     except KeyError:
                         pass
 

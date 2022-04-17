@@ -433,13 +433,17 @@ class Modules:
     ) -> None:
         """Send config to single instance"""
         if hasattr(mod, "config"):
-            modcfg = db.get(mod.__module__, "__config__", {})
+            modcfg = db.get(
+                getattr(mod, "name", mod.__class__.__name__), "__config__", {}
+            )
             for conf in mod.config.keys():
                 if conf in modcfg.keys():
                     mod.config[conf] = modcfg[conf]
                 else:
                     try:
-                        mod.config[conf] = os.environ[f"{mod.__module__}.{conf}"]
+                        mod.config[conf] = os.environ[
+                            f'{getattr(mod, "name", mod.__class__.__name__)}.{conf}'
+                        ]
                     except KeyError:
                         mod.config[conf] = mod.config.getdef(conf)
 
