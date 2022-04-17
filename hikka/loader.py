@@ -443,14 +443,14 @@ class Modules:
                     except KeyError:
                         mod.config[conf] = mod.config.getdef(conf)
 
+        if skip_hook:
+            return
+
         if not hasattr(mod, "name"):
             mod.name = mod.strings["name"]
 
         if hasattr(mod, "strings"):
             mod.strings = Strings(mod, translator)
-
-        if skip_hook:
-            return
 
         mod.translator = translator
 
