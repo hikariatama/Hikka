@@ -49,10 +49,10 @@ if (
         sys.exit(1)
 
 
-def deps(e):
+def deps(error):
     print(
         "🚫 Error: you have not installed all dependencies correctly.\n"
-        f"{str(e)}\n"
+        f"{str(error)}\n"
         "🔄 Attempting dependencies installation... Just wait ⏱"
     )
 
@@ -68,7 +68,8 @@ def deps(e):
             "--no-warn-script-location",
             "-r",
             "requirements.txt",
-        ]
+        ],
+        check=True,
     )
 
     restart()
@@ -124,7 +125,8 @@ else:
                     "uninstall",
                     "-y",
                     "telethon",
-                ]
+                ],
+                check=True,
             )
 
             subprocess.run(
@@ -138,7 +140,8 @@ else:
                     "--disable-pip-version-check",
                     "--no-warn-script-location",
                     "telethon-mod",
-                ]
+                ],
+                check=True,
             )
 
             restart()
@@ -147,11 +150,7 @@ else:
         from . import log
 
         log.init()
-    except ModuleNotFoundError as e:  # pragma: no cover
-        deps(e)
-        sys.exit(1)
 
-    try:
         from . import main
     except ModuleNotFoundError as e:  # pragma: no cover
         deps(e)

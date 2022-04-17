@@ -163,7 +163,6 @@ class Modules:
         self.modules = []  # skipcq: PTC-W0052
         self.watchers = []
         self._log_handlers = []
-        self._compat_layer = None
         self.client = None
         self._initial_registration = True
         self.added_modules = None
@@ -171,11 +170,6 @@ class Modules:
     def register_all(self, db, mods=None):
         """Load all modules in the module directory"""
         self._db = db
-
-        if self._compat_layer is None:
-            from . import compat  # noqa
-
-            self._compat_layer = compat.activate([])
 
         external_mods = []
 
@@ -241,11 +235,8 @@ class Modules:
         save_fs: bool = False,
     ) -> Module:
         """Register single module from importlib spec"""
-        from .compat import uniborg
-
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
-        module.borg = uniborg.UniborgClient(module_name)
         spec.loader.exec_module(module)
         ret = None
 
@@ -303,9 +294,7 @@ class Modules:
                 }
                 and command.lower() in self.commands
             ):
-                logging.warning(
-                    f"Command {command} is core and will not be overwritten by {instance}"
-                )
+                logging.warning(f"Command {command} is core and will not be overwritten by {instance}")  # fmt: skip
                 del instance.commands[command]
                 continue
 
@@ -485,8 +474,6 @@ class Modules:
         # it everytime module is loaded. Then we can just
         # re-assign it to all modules
         self.inline = inline_manager
-
-        await self._compat_layer.client_ready(client)
 
         try:
             await asyncio.gather(

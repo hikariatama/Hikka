@@ -74,7 +74,6 @@ class Strings:
         self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
 
     def __getitem__(self, key: str) -> str:
-        logger.debug(f"{self._mod.__module__}.{key}")
         return self._translator.getkey(f"{self._mod.__module__}.{key}") or getattr(
             self._mod,
             f"strings_{self._translator.db.get(__name__, 'lang', 'en')}",

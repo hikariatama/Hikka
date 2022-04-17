@@ -601,6 +601,7 @@ def smart_split(text, entities, length=4096, split_on=("\n", " "), min_length=1)
     bytes_offset = 0
     text_length = len(text)
     bytes_length = len(encoded)
+
     while text_offset < text_length:
         if bytes_offset + length * 2 >= bytes_length:
             yield parser.unparse(
@@ -608,12 +609,14 @@ def smart_split(text, entities, length=4096, split_on=("\n", " "), min_length=1)
                 list(sorted(pending_entities, key=lambda x: x.offset)),
             )
             break
+
         codepoint_count = len(
             encoded[bytes_offset : bytes_offset + length * 2].decode(
                 "utf-16le",
                 errors="ignore",
             )
         )
+
         for search in split_on:
             search_index = text.rfind(
                 search,
@@ -624,20 +627,24 @@ def smart_split(text, entities, length=4096, split_on=("\n", " "), min_length=1)
                 break
         else:
             search_index = text_offset + codepoint_count
+
         split_index = grapheme.safe_split_index(text, search_index)
-        assert split_index > text_offset
+
         split_offset_utf16 = (
             len(text[text_offset:split_index].encode("utf-16le"))
         ) // 2
         exclude = 0
+
         while (
             split_index + exclude < text_length
             and text[split_index + exclude] in split_on
         ):
             exclude += 1
+
         current_entities = []
         entities = pending_entities.copy()
         pending_entities = []
+
         for entity in entities:
             if (
                 entity.offset < split_offset_utf16
@@ -695,17 +702,15 @@ def smart_split(text, entities, length=4096, split_on=("\n", " "), min_length=1)
                         offset=entity.offset - split_offset_utf16 - exclude,
                     )
                 )
-            else:
-                assert entity.length <= exclude
-                # ignore entity in whitespace
+
         current_text = text[text_offset:split_index]
         yield parser.unparse(
             current_text,
             list(sorted(current_entities, key=lambda x: x.offset)),
         )
+ 
         text_offset = split_index + exclude
         bytes_offset += len(current_text.encode("utf-16le"))
-        assert bytes_offset % 2 == 0
 
 
 def _copy_tl(o, **kwargs):
