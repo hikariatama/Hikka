@@ -562,6 +562,11 @@ class LoaderMod(loader.Module):
             mod=instance.strings["name"],
         )
 
+        for method in dir(instance):
+            if isinstance(getattr(instance, method), loader.InfiniteLoop):
+                setattr(getattr(instance, method), "module_instance", instance)
+                logger.debug(f"Added {instance=} to {method=}")
+
         if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
             version = f"<b><i> (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
         else:

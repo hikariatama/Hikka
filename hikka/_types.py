@@ -29,6 +29,10 @@ class LoadError(Exception):
         return self._error
 
 
+class StopLoop:
+    """Stops the loop, in which is raised"""
+
+
 class ModuleConfig(dict):
     """Like a dict but contains doc for each key"""
 
