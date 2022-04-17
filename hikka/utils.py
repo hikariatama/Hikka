@@ -265,6 +265,9 @@ async def answer(
     **kwargs,
 ) -> Union[CallbackQuery, Message]:
     """Use this to give the response to a command"""
+    if isinstance(message, list) and message:
+        message = message[0]
+
     if isinstance(message, (CallbackQuery, InlineCall)):
         await message.edit(response)
         return message
