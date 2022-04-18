@@ -175,7 +175,7 @@ def module_config(mod):
     if code == DIALOG.OK:
         code, value = DIALOG.inputbox(tag)
         if code == DIALOG.OK:
-            DB.setdefault(getattr(mod, "name", mod.__class__.__name__), {}).setdefault(
+            DB.setdefault(mod.__class__.__name__, {}).setdefault(
                 "__config__", {}
             )[tag] = validate_value(value)
             DIALOG.msgbox("Config value set successfully")

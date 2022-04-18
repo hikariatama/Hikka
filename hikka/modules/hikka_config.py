@@ -66,12 +66,12 @@ class HikkaConfigMod(loader.Module):
                         pass
 
                     self._db.setdefault(
-                        getattr(module, "name", module.__class__.__name__), {}
+                        module.__class__.__name__, {}
                     ).setdefault("__config__", {})[option] = query
                 else:
                     try:
                         del self._db.setdefault(
-                            getattr(module, "name", module.__class__.__name__), {}
+                            module.__class__.__name__, {}
                         ).setdefault("__config__", {})[option]
                     except KeyError:
                         pass

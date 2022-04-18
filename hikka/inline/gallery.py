@@ -254,7 +254,7 @@ class Gallery(InlineUnit):
                     message.edit if message.out else message.respond
                 )("🌘 <b>Loading inline gallery...</b>")
             except Exception:
-                pass
+                status_message = None
         else:
             status_message = None
 

@@ -185,7 +185,7 @@ class List(InlineUnit):
                     message.edit if message.out else message.respond
                 )("🌘 <b>Loading inline list...</b>")
             except Exception:
-                pass
+                status_message = None
         else:
             status_message = None
 

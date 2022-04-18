@@ -183,10 +183,7 @@ class Utils(InlineUnit):
             logger.error("Invalid type for `text`")
             return False
 
-        if unit_uid is not None:
-            if unit_uid not in self._units:
-                return False
-
+        if unit_uid is not None and unit_uid in self._units:
             unit = self._units[unit_uid]
 
             unit["buttons"] = reply_markup
@@ -199,6 +196,8 @@ class Utils(InlineUnit):
 
             if isinstance(always_allow, list):
                 unit["always_allow"] = always_allow
+        else:
+            unit = {}
 
         try:
             await self.bot.edit_message_text(
@@ -209,7 +208,7 @@ class Utils(InlineUnit):
                 parse_mode="HTML",
                 disable_web_page_preview=disable_web_page_preview,
                 reply_markup=self._generate_markup(
-                    reply_markup if isinstance(reply_markup, list) else unit["buttons"]
+                    reply_markup if isinstance(reply_markup, list) else unit.get("buttons", [])
                 ),
             )
         except MessageNotModified:
