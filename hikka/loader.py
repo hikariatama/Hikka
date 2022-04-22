@@ -78,6 +78,7 @@ class InfiniteLoop:
         self._stop_clause = stop_clause
 
         self._task = None
+        self.status = False
         self.module_instance = None  # Will be passed later
         if autostart:
             self.start()
@@ -86,13 +87,17 @@ class InfiniteLoop:
         if self._task:
             logger.debug(f"Stopped loop for {self.func}")
             self._task.cancel()
-            del self._task
+            self._task = None
+            self.status = False
         else:
             logger.debug("Loop is not running")
 
     def start(self, *args, **kwargs) -> None:
-        logger.debug(f"Started loop for {self.func}")
-        self._task = asyncio.ensure_future(self.actual_loop(*args, **kwargs))
+        if not self._task:
+            logger.debug(f"Started loop for {self.func}")
+            self._task = asyncio.ensure_future(self.actual_loop(*args, **kwargs))
+        else:
+            logger.debug("Attempted to start already running loop")
 
     async def actual_loop(self, *args, **kwargs):
         # Wait for loader to set attribute
@@ -101,6 +106,8 @@ class InfiniteLoop:
 
         if isinstance(self._stop_clause, str) and self._stop_clause:
             self.module_instance.set(self._stop_clause, True)
+
+        self.status = True
 
         while True:
             if self._wait_before:
@@ -123,6 +130,8 @@ class InfiniteLoop:
             if not self._wait_before:
                 await asyncio.sleep(self.interval)
 
+        self.status = False
+
     def __del__(self) -> None:
         self.stop()
 
@@ -141,6 +150,7 @@ def loop(
     :param stop_clase: Database key, based on which the loop will run.
                        This key will be set to `True` once loop is started,
                        and will stop after key resets to `False`
+    :attr status: Boolean, describing whether the loop is running
     """
 
     def wrapped(func):
@@ -427,7 +437,6 @@ class Modules:
                 != self.callback_handlers[handler].__self__.__class__.__name__
             ):
                 logging.debug(f"Duplicate callback_handler {handler}")
-
             self.callback_handlers.update({handler.lower(): instance.callback_handlers[handler]})  # fmt: skip
 
     def register_watcher(self, instance: Module) -> None:

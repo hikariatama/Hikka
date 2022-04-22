@@ -127,7 +127,18 @@ class HikkaSecurityMod(loader.Module):
         masks[f"{cmd.__module__}.{cmd.__name__}"] = mask
         self._db.set(security.__name__, "masks", masks)
 
-        await call.answer("Security value set!")
+        if (
+            not self._db.get(security.__name__, "bounding_mask", DEFAULT_PERMISSIONS)
+            & bit
+            and level
+        ):
+            await call.answer(
+                f"Security value set but not applied. Consider enabling this value in .{'inlinesec' if is_inline else 'security'}",
+                show_alert=True,
+            )
+        else:
+            await call.answer("Security value set!")
+
         await call.edit(
             self.strings("permissions").format(
                 self.prefix if not is_inline else f"@{self.inline.bot_username} ",

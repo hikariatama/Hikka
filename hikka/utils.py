@@ -48,6 +48,7 @@ from telethon.tl.types import (
 )
 
 import grapheme
+import git
 
 from telethon.hints import Entity
 
@@ -723,6 +724,15 @@ def _copy_tl(o, **kwargs):
 def check_url(url: str) -> bool:
     """Checks url for validity"""
     return re.match(URL_REGEX, url)
+
+
+def get_git_hash() -> Union[str, bool]:
+    """Get current Hikka git hash"""
+    try:
+        repo = git.Repo()
+        return repo.heads[0].commit.hexsha
+    except Exception:
+        return False
 
 
 init_ts = time.perf_counter()

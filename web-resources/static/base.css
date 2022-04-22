@@ -220,7 +220,8 @@ label {
 #block_api_id,
 #block_api_hash,
 #block_phone,
-#block_2fa {
+#block_2fa,
+#block_custom_bot {
     display: none;
 }
 

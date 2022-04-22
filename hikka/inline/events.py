@@ -376,6 +376,27 @@ class Events(InlineUnit):
 
             _help += f"🎹 <code>@{self.bot_username} {name}</code> - {doc}\n"
 
+        if not _help:
+            await inline_query.answer(
+                [
+                    InlineQueryResultArticle(
+                        id=utils.rand(20),
+                        title="Show available inline commands",
+                        description="You have no available commands",
+                        input_message_content=InputTextMessageContent(
+                            "<b>😔 There is no available inline commands or you lack access to them</b>",
+                            "HTML",
+                            disable_web_page_preview=True,
+                        ),
+                        thumb_url="https://img.icons8.com/fluency/50/000000/info-squared.png",
+                        thumb_width=128,
+                        thumb_height=128,
+                    )
+                ],
+                cache_time=0,
+            )
+            return
+
         await inline_query.answer(
             [
                 InlineQueryResultArticle(

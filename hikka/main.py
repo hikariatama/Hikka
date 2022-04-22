@@ -374,6 +374,10 @@ class Hikka:
             session.auth_key = client.session.auth_key
             session.save()
             client.session = session
+            # Set db attribute to this client in order to save
+            # custom bot nickname from web
+            client.hikka_db = database.Database(client)
+            await client.hikka_db.init()
 
         self.clients = list(set(self.clients + self.web.clients))
 

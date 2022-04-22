@@ -18,13 +18,13 @@ function auth(callback) {
         })
         .then(response => response.text())
         .then((response) => {
-            if(response == "TIMEOUT") {
+            if (response == "TIMEOUT") {
                 error_message("Code waiting timeout exceeded. Reload page and try again.");
                 $(".auth").fadeOut(500);
                 return
             }
 
-            if(response.startsWith("hikka_")) {
+            if (response.startsWith("hikka_")) {
                 $.cookie("session", response)
                 auth_required = false;
                 $(".authorized").hide().fadeIn(100);
@@ -40,21 +40,17 @@ function auth(callback) {
 
 $("#get_started")
     .click(() => {
-        if(auth_required) return auth(() => {$("#get_started").click();});
+        if (auth_required) return auth(() => { $("#get_started").click(); });
         $("#enter_api").fadeOut(500);
-        $("#get_started")
-            .fadeOut(500, () => {
-                $("#continue_btn")
-                    .hide()
-                    .fadeIn(500);
-
-                switch_block(_current_block);
-            });
+        $("#get_started").fadeOut(500, () => {
+            $("#continue_btn").hide().fadeIn(500);
+            switch_block(_current_block);
+        });
     });
 
 $("#enter_api")
     .click(() => {
-        if(auth_required) return auth(() => {$("#enter_api").click();});
+        if (auth_required) return auth(() => { $("#enter_api").click(); });
         $("#get_started").fadeOut(500);
         $("#enter_api")
             .fadeOut(500, () => {
@@ -78,20 +74,20 @@ function isValidPhone(p) {
 
 function finish_login() {
     fetch("/finishLogin", {
-            method: "POST",
-            credentials: "include"
-        })
-        .then((response) => {
-            window.expanse = true;
-            $(".blur").fadeOut(1500);
-            setTimeout(() => {
-                window.location.href = "/";
-            }, 8000);
-        })
-        .catch(() => {
-            error_state();
-            error_message("Login confirmation error");
-        });
+        method: "POST",
+        credentials: "include"
+    })
+    .then((response) => {
+        window.expanse = true;
+        $(".blur").fadeOut(1500);
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 8000);
+    })
+    .catch(() => {
+        error_state();
+        error_message("Login confirmation error");
+    });
 }
 
 function tg_code() {
@@ -114,7 +110,7 @@ function tg_code() {
                     Swal.showValidationMessage("Internal server error");
                 }
             } else {
-                finish_login();
+                switch_block("custom_bot")
             }
         })
         .catch(error => {
@@ -126,7 +122,7 @@ function tg_code() {
 
 function switch_block(block) {
     cnt_btn.setAttribute("current-step", block);
-   try {
+    try {
         $(`#block_${_current_block}`)
             .fadeOut(() => {
                 $(`#block_${block}`)
@@ -163,15 +159,14 @@ var _api_id = "",
     _phone = "",
     _2fa_pass = "",
     _tg_pass = "",
-_current_block = skip_creds ? "phone" : "api_id";
+    _current_block = skip_creds ? "phone" : "api_id";
 
 const cnt_btn = document.querySelector("#continue_btn");
 
 function process_next() {
     let step = cnt_btn.getAttribute("current-step");
     if (step == "api_id") {
-        let api_id = document.querySelector("#api_id")
-            .value;
+        let api_id = document.querySelector("#api_id").value;
         if (api_id.length < 4 || !isInt(api_id)) {
             error_state();
             return;
@@ -184,8 +179,7 @@ function process_next() {
     }
 
     if (step == "api_hash") {
-        let api_hash = document.querySelector("#api_hash")
-            .value;
+        let api_hash = document.querySelector("#api_hash").value;
         if (api_hash.length != 32) {
             error_state();
             return;
@@ -255,24 +249,64 @@ function process_next() {
     }
 
     if (step == "2fa") {
-        let _2fa = document.querySelector("#_2fa")
-            .value;
+        let _2fa = document.querySelector("#_2fa").value;
         _2fa_pass = _2fa;
         tg_code();
+        return
+    }
+
+    if (step == "custom_bot") {
+        let custom_bot = document.querySelector("#custom_bot").value;
+        if (custom_bot != "" && (!custom_bot.toLowerCase().endsWith("bot") || custom_bot.length < 5)) {
+            Swal.fire({
+                "icon": "error",
+                "title": "Bot username invalid",
+                "text": "It must end with `bot` and be at least 5 symbols in length"
+            })
+            return
+        }
+
+        if(custom_bot == "") {
+            finish_login();
+            return
+        }
+
+        fetch("/custom_bot", {
+                method: "POST",
+                credentials: "include",
+                body: custom_bot
+            })
+            .then(response => response.text())
+            .then((response) => {
+                if (response == "OCCUPIED") {
+                    Swal.fire({
+                        "icon": "error",
+                        "title": "This bot username is already occupied!"
+                    })
+                    return;
+                }
+
+                finish_login();
+            })
+            .catch(() => {
+                error_state();
+                error_message("Custom bot setting error");
+            });
+
         return
     }
 }
 
 cnt_btn.onclick = () => {
     if (cnt_btn.disabled) return;
-    if (auth_required) return auth(() => {cnt_btn.click();});
+    if (auth_required) return auth(() => { cnt_btn.click(); });
 
     process_next();
 }
 
 $("input").on("keyup", (e) => {
     if (cnt_btn.disabled) return;
-    if (auth_required) return auth(() => {cnt_btn.click();});
+    if (auth_required) return auth(() => { cnt_btn.click(); });
 
     if (e.key === "Enter" || e.keyCode === 13) {
         process_next();

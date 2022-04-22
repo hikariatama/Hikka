@@ -65,7 +65,7 @@ class HikkaDLMod(loader.Module):
 
                     try:
                         link = re.search(
-                            r".dlmod (https?://.*?\.py)",
+                            r".dlmod (https://[^ ]*\.py)",
                             msg.raw_text,
                         ).group(1)
                     except Exception:

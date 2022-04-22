@@ -42,9 +42,11 @@ import re
 import requests
 import time
 
-from .. import utils, main
+from .. import utils, main, database
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.tl.functions.contacts import UnblockRequest
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -94,6 +96,7 @@ class Web:
         self.app.router.add_post("/okteto", self.okteto)
         self.app.router.add_post("/tgCode", self.tg_code)
         self.app.router.add_post("/finishLogin", self.finish_login)
+        self.app.router.add_post("/custom_bot", self.custom_bot)
         self.api_set = asyncio.Event()
         self.sign_in_clients = {}
         self.clients = []
@@ -126,27 +129,88 @@ class Web:
 
         return request.cookies.get("session", None) in self._sessions
 
+    async def _check_bot(
+        self,
+        client: "TelegramClient",  # noqa: F821
+        username: str,
+    ) -> bool:
+        async with client.conversation("@BotFather", exclusive=False) as conv:
+            try:
+                m = await conv.send_message("/token")
+            except YouBlockedUserError:
+                await client(UnblockRequest(id="@BotFather"))
+                m = await conv.send_message("/token")
+
+            r = await conv.get_response()
+
+            await m.delete()
+            await r.delete()
+
+            if not hasattr(r, "reply_markup") or not hasattr(r.reply_markup, "rows"):
+                return False
+
+            for row in r.reply_markup.rows:
+                for button in row.buttons:
+                    if username != button.text.strip("@"):
+                        continue
+
+                    m = await conv.send_message("/cancel")
+                    r = await conv.get_response()
+
+                    await m.delete()
+                    await r.delete()
+
+                    return True
+
+    async def custom_bot(self, request):
+        if not self._check_session(request):
+            return web.Response(status=401)
+
+        text = await request.text()
+        client = self.clients[0]
+        db = database.Database(client)
+        await db.init()
+
+        text = text.strip("@")
+
+        try:
+            await client.get_entity(f"@{text}")
+        except ValueError:
+            pass
+        else:
+            if not await self._check_bot(client, text):
+                return web.Response(body="OCCUPIED")
+
+        db.set("hikka.inline", "custom_bot", text)
+
     async def set_tg_api(self, request):
         if not self._check_session(request):
             return web.Response(status=401)
 
         text = await request.text()
+
         if len(text) < 36:
             return web.Response(status=400)
+
         api_id = text[32:]
         api_hash = text[:32]
+
         if any(c not in string.hexdigits for c in api_hash) or any(
             c not in string.digits for c in api_id
         ):
             return web.Response(status=400)
+
         with open(
             os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
             "w",
         ) as f:
             f.write(api_id + "\n" + api_hash)
+
         self.api_token = collections.namedtuple("api_token", ("ID", "HASH"))(
-            api_id, api_hash
+            api_id,
+            api_hash,
         )
+
         self.api_set.set()
         return web.Response()
 
@@ -156,8 +220,10 @@ class Web:
 
         text = await request.text()
         phone = telethon.utils.parse_phone(text)
+
         if not phone:
             return web.Response(status=400)
+
         client = telethon.TelegramClient(
             telethon.sessions.MemorySession(),
             self.api_token.ID,
@@ -165,23 +231,21 @@ class Web:
             connection=self.connection,
             proxy=self.proxy,
             connection_retries=None,
+            device_model="Hikka",
         )
+
         await client.connect()
         await client.send_code_request(phone)
+
         self.sign_in_clients[phone] = client
         return web.Response()
 
     async def okteto(self, request):
-        if any(
-            cl[2].get("hikka", "okteto_uri", False) for cl in self.client_data.values()
-        ):
+        if main.get_config_key("okteto_uri"):
             return web.Response(status=418)
 
         text = await request.text()
-
-        for client_uid in self.client_data:
-            self.client_data[client_uid][2].set("hikka", "okteto_uri", text)
-
+        main.save_config_key("okteto_uri", text)
         return web.Response(body="URI_SAVED")
 
     async def tg_code(self, request):
@@ -189,21 +253,28 @@ class Web:
             return web.Response(status=401)
 
         text = await request.text()
+
         if len(text) < 6:
             return web.Response(status=400)
+
         split = text.split("\n", 2)
+
         if len(split) not in (2, 3):
             return web.Response(status=400)
+
         code = split[0]
         phone = telethon.utils.parse_phone(split[1])
         password = split[2]
+
         if (
             (len(code) != 5 and not password)
             or any(c not in string.digits for c in code)
             or not phone
         ):
             return web.Response(status=400)
+
         client = self.sign_in_clients[phone]
+
         if not password:
             try:
                 user = await client.sign_in(phone, code=code)
@@ -222,7 +293,9 @@ class Web:
                 return web.Response(status=403)  # Invalid 2FA password
             except telethon.errors.FloodWaitError:
                 return web.Response(status=421)
+
         del self.sign_in_clients[phone]
+
         client.phone = f"+{user.phone}"
         self.clients.append(client)
         return web.Response()
@@ -235,7 +308,6 @@ class Web:
             return web.Response(status=400)
 
         first_session = not bool(main.hikka.clients)
-
         await main.hikka.fetch_clients_from_web()
 
         self.clients_set.set()
