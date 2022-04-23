@@ -12,6 +12,7 @@ import inspect
 from .. import loader, utils, main, security
 from telethon.tl.functions.channels import JoinChannelRequest
 import logging
+import difflib
 
 from telethon.tl.types import Message
 
@@ -50,7 +51,7 @@ class HelpMod(loader.Module):
             lambda: "Hikka-only module bullet",
             "plain_emoji",
             "▫️",
-            lambda: "Plain module bullet"
+            lambda: "Plain module bullet",
         )
 
     async def helphidecmd(self, message: Message):
@@ -109,21 +110,43 @@ class HelpMod(loader.Module):
                 if mod.strings("name", message).lower() == args.lower():
                     module = mod
 
-            if module is None:
+            if not module:
                 args = args.lower()
                 args = args[1:] if args.startswith(prefix) else args
                 if args in self.allmodules.commands:
                     module = self.allmodules.commands[args].__self__
-                else:
-                    await utils.answer(message, self.strings("bad_module", message).format(args))
-                    return
+
+            if not module:
+                module_name = next(
+                    reversed(
+                        sorted(
+                            [
+                                module.strings["name"]
+                                for module in self.allmodules.modules
+                            ],
+                            key=lambda x: difflib.SequenceMatcher(
+                                None,
+                                args.lower(),
+                                x,
+                            ).ratio(),
+                        )
+                    )
+                )
+
+                module = next(
+                    module
+                    for module in self.allmodules.modules
+                    if module.strings["name"] == module_name
+                )
 
             try:
                 name = module.strings("name")
             except KeyError:
                 name = getattr(module, "name", "ERROR")
 
-            reply = self.strings("single_mod_header", message).format(utils.escape_html(name))
+            reply = self.strings("single_mod_header", message).format(
+                utils.escape_html(name)
+            )
             if module.__doc__:
                 reply += (
                     "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"
@@ -181,7 +204,9 @@ class HelpMod(loader.Module):
         hidden = list(filter(lambda module: module in mods, self.get("hide", [])))
         self.set("hide", hidden)
 
-        reply = self.strings("all_header", message).format(count, len(hidden) if not force else 0)
+        reply = self.strings("all_header", message).format(
+            count, len(hidden) if not force else 0
+        )
         shown_warn = False
 
         plain_ = []
@@ -219,11 +244,11 @@ class HelpMod(loader.Module):
             core = mod.__origin__ == "<core>"
 
             if core:
-                emoji = self.config['core_emoji']
+                emoji = self.config["core_emoji"]
             elif inline:
-                emoji = self.config['hikka_emoji']
+                emoji = self.config["hikka_emoji"]
             else:
-                emoji = self.config['plain_emoji']
+                emoji = self.config["plain_emoji"]
 
             tmp += self.strings("mod_tmpl", message).format(emoji, name)
 
@@ -245,7 +270,10 @@ class HelpMod(loader.Module):
             icommands = [
                 name
                 for name, func in mod.inline_handlers.items()
-                if await self.inline.check_inline_security(func=func, user=message.sender_id) or force
+                if await self.inline.check_inline_security(
+                    func=func, user=message.sender_id
+                )
+                or force
             ]
 
             for cmd in icommands:
@@ -271,7 +299,10 @@ class HelpMod(loader.Module):
         core_.sort(key=lambda x: x.split()[1])
         inline_.sort(key=lambda x: x.split()[1])
 
-        await utils.answer(message, f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}")
+        await utils.answer(
+            message,
+            f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}",
+        )
 
     async def supportcmd(self, message):
         """Joins the support Hikka chat"""
