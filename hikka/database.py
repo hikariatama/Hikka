@@ -70,7 +70,7 @@ class Database(dict):
         """If user doesn't have an asset channel, create it"""
         async with self._anti_double_asset_lock:
             if self._assets_chat_exists:
-                return await self._find_data_channel()
+                return await self._find_asset_channel()
             self._assets_chat_exists = True
 
             dialog = (

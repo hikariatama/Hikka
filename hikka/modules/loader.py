@@ -742,9 +742,12 @@ class LoaderMod(loader.Module):
         """Delete all installed modules"""
         self._db.set(__name__, "loaded_modules", {})
 
-        await utils.answer(message, self.strings("all_modules_deleted"))
+        for file in os.scandir(loader.LOADED_MODULES_DIR):
+            os.remove(file)
 
         self._db.set(__name__, "chosen_preset", "none")
+
+        await utils.answer(message, self.strings("all_modules_deleted"))
 
         await self.allmodules.commands["restart"](await message.reply("_"))
 
