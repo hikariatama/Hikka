@@ -34,11 +34,13 @@ import inspect
 import logging
 import os
 import sys
+from importlib.abc import SourceLoader
 
 from . import utils, security
 from .translations import Strings
 from .inline.core import InlineManager
 from ._types import Module, LoadError, ModuleConfig, StopLoop  # noqa: F401
+
 from importlib.machinery import ModuleSpec
 from types import FunctionType
 from typing import Any, Optional, Union
@@ -60,6 +62,26 @@ group_member = security.group_member
 pm = security.pm
 unrestricted = security.unrestricted
 inline_everyone = security.inline_everyone
+
+
+class StringLoader(SourceLoader):
+    """Load a python module/file from a string"""
+
+    def __init__(self, data, origin):
+        self.data = data.encode("utf-8") if isinstance(data, str) else data
+        self.origin = origin
+
+    def get_code(self, fullname):
+        source = self.get_source(fullname)
+        if source is None:
+            return None
+        return compile(source, self.origin, "exec", dont_inherit=True)
+
+    def get_filename(self, *args, **kwargs):
+        return self.origin
+
+    def get_data(self, *args, **kwargs):
+        return self.data
 
 
 class InfiniteLoop:
@@ -303,22 +325,21 @@ class Modules:
                 )
             ]
 
-        logging.debug(mods)
+        self._register_modules(mods)
+        self._register_modules(external_mods)
 
-        for mod in mods:
+    def _register_modules(self, modules: list):
+        for mod in modules:
             try:
                 module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"  # fmt: skip
                 logging.debug(module_name)
-                spec = importlib.util.spec_from_file_location(module_name, mod)
-                self.register_module(spec, module_name, "<core>")
-            except BaseException as e:
-                logging.exception(f"Failed to load core module {mod} due to {e}:")
+                with open(mod, "r") as file:
+                    spec = ModuleSpec(
+                        module_name,
+                        StringLoader(file.read(), "<core>"),
+                        origin="<core>",
+                    )
 
-        for mod in external_mods:
-            try:
-                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"  # fmt: skip
-                logging.debug(module_name)
-                spec = importlib.util.spec_from_file_location(module_name, mod)
                 self.register_module(spec, module_name, "<file>")
             except BaseException as e:
                 logging.exception(f"Failed to load module {mod} due to {e}:")

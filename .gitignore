@@ -133,6 +133,7 @@ dmypy.json
 *.pyc
 hikka/api_token.py
 hikka/loaded_modules
+hikka/debug_modules
 hikka*.session*
 database-*.json
 *.swp

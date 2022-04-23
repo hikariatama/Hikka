@@ -37,7 +37,6 @@ import re
 import sys
 import urllib
 import uuid
-from importlib.abc import SourceLoader
 from importlib.machinery import ModuleSpec
 import telethon
 from telethon.tl.types import Message
@@ -66,28 +65,6 @@ GIT_REGEX = re.compile(
     r"^https?://github\.com((?:/[a-z0-9-]+){2})(?:/tree/([a-z0-9-]+)((?:/[a-z0-9-]+)*))?/?$",
     flags=re.IGNORECASE,
 )
-
-
-class StringLoader(SourceLoader):  # pylint: disable=W0223
-    """Load a python module/file from a string"""
-
-    def __init__(self, data, origin):
-        self.data = data.encode("utf-8") if isinstance(data, str) else data
-        self.origin = origin
-
-    def get_code(self, fullname):
-        source = self.get_source(fullname)
-        if source is None:
-            return None
-        return compile(source, self.origin, "exec", dont_inherit=True)
-
-    def get_filename(self, fullname):
-        return self.origin
-
-    def get_data(self, filename):  # pylint: disable=W0221,W0613
-        # W0613 is not fixable, we are overriding
-        # W0221 is a false positive assuming docs are correct
-        return self.data
 
 
 def unescape_percent(text):
@@ -460,7 +437,9 @@ class LoaderMod(loader.Module):
 
         try:
             try:
-                spec = ModuleSpec(module_name, StringLoader(doc, origin), origin=origin)
+                spec = ModuleSpec(
+                    module_name, loader.StringLoader(doc, origin), origin=origin
+                )
                 instance = self.allmodules.register_module(
                     spec,
                     module_name,
