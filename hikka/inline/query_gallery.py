@@ -24,7 +24,7 @@ class QueryGallery(InlineUnit):
         force_me: bool = False,
         disable_security: bool = False,
         always_allow: Union[list, None] = None,
-    ) -> None:
+    ):
         """
         Processes inline query galleries
         Args:

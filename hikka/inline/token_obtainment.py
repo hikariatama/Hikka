@@ -19,7 +19,7 @@ photo.name = "avatar.png"
 
 
 class TokenObtainment(InlineUnit):
-    async def _create_bot(self) -> None:
+    async def _create_bot(self):
         # This is called outside of conversation, so we can start the new one
         # We create new bot
         logger.info("User don't have bot, attempting creating new one")
@@ -94,7 +94,7 @@ class TokenObtainment(InlineUnit):
         self,
         create_new_if_needed=True,
         revoke_token=False,
-    ) -> None:
+    ):
         # If the token is set in db
         if self._token:
             # Just return `True`
@@ -229,14 +229,14 @@ class TokenObtainment(InlineUnit):
         # And we are not returned after creation
         return await self._create_bot() if create_new_if_needed else False
 
-    async def _reassert_token(self) -> None:
+    async def _reassert_token(self):
         is_token_asserted = await self._assert_token(revoke_token=True)
         if not is_token_asserted:
             self.init_complete = False
         else:
             await self._register_manager(ignore_token_checks=True)
 
-    async def _dp_revoke_token(self, already_initialised: bool = True) -> None:
+    async def _dp_revoke_token(self, already_initialised: bool = True):
         if already_initialised:
             await self._stop()
             logger.error("Got polling conflict. Attempting token revocation...")

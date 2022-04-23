@@ -65,21 +65,21 @@ class PythonMod(loader.Module):
         )
 
     @loader.owner
-    async def evalcmd(self, message: Message) -> None:
+    async def evalcmd(self, message: Message):
         """Alias for .e command"""
         await self.ecmd(message)
 
-    async def inline__close(self, call: CallbackQuery) -> None:
+    async def inline__close(self, call: CallbackQuery):
         await call.answer("Operation cancelled")
         await call.delete()
 
-    async def inline__allow(self, call: CallbackQuery) -> None:
+    async def inline__allow(self, call: CallbackQuery):
         await call.answer("Now you can access db through .e command", show_alert=True)
         self._db.set(main.__name__, "enable_db_eval", True)
         await call.delete()
 
     @loader.owner
-    async def ecmd(self, message: Message) -> None:
+    async def ecmd(self, message: Message):
         """Evaluates python code"""
         phone = self._client.phone
         ret = self.strings("eval", message)

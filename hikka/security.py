@@ -151,13 +151,13 @@ def _sec(func: FunctionType, flags: int) -> FunctionType:
 
 
 class SecurityManager:
-    def __init__(self, db) -> None:
+    def __init__(self, db):
         self._any_admin = db.get(__name__, "any_admin", False)
         self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
         self._db = db
         self._reload_rights()
 
-    def _reload_rights(self) -> None:
+    def _reload_rights(self):
         self._owner = self._db.get(__name__, "owner", []).copy()
         self._sudo = list(
             set(
@@ -167,7 +167,7 @@ class SecurityManager:
         )
         self._support = self._db.get(__name__, "support", []).copy()
 
-    async def init(self, client) -> None:
+    async def init(self, client):
         self._client = client
         self._me = (await client.get_me()).id
 

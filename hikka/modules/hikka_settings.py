@@ -55,11 +55,11 @@ class HikkaSettingsMod(loader.Module):
             if _.__self__.__class__.strings is not None
         ], self._db.get(main.__name__, "disabled_watchers", {})
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
 
-    async def watcherscmd(self, message: Message) -> None:
+    async def watcherscmd(self, message: Message):
         """List current watchers"""
         watchers, disabled_watchers = self.get_watchers()
         watchers = [
@@ -70,7 +70,7 @@ class HikkaSettingsMod(loader.Module):
             message, self.strings("watchers").format("\n".join(watchers))
         )
 
-    async def watcherblcmd(self, message: Message) -> None:
+    async def watcherblcmd(self, message: Message):
         """<module> - Toggle watcher in current chat"""
         args = utils.get_args_raw(message)
         if not args:
@@ -117,7 +117,7 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "disabled_watchers", disabled_watchers)
 
-    async def watchercmd(self, message: Message) -> None:
+    async def watchercmd(self, message: Message):
         """<module> - Toggle global watcher rules
         Args:
         [-c - only in chats]
@@ -183,7 +183,7 @@ class HikkaSettingsMod(loader.Module):
         self._db.set(main.__name__, "disabled_watchers", disabled_watchers)
         await utils.answer(message, self.strings("disabled").format(args))
 
-    async def nonickusercmd(self, message: Message) -> None:
+    async def nonickusercmd(self, message: Message):
         """Allow no nickname for certain user"""
         reply = await message.get_reply_message()
         u = reply.sender_id
@@ -201,7 +201,7 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickusers", nn)
 
-    async def nonickchatcmd(self, message: Message) -> None:
+    async def nonickchatcmd(self, message: Message):
         """Allow no nickname in certain chat"""
         if message.is_private:
             await utils.answer(message, self.strings("private_not_allowed"))
@@ -232,7 +232,7 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickchats", nn)
 
-    async def nonickcmdcmd(self, message: Message) -> None:
+    async def nonickcmdcmd(self, message: Message):
         """Allow certain command to be executed without nickname"""
         args = utils.get_args_raw(message)
         if not args:
@@ -263,7 +263,7 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickcmds", nn)
 
-    async def inline__setting(self, call: CallbackQuery, key: str, state: bool) -> None:
+    async def inline__setting(self, call: CallbackQuery, key: str, state: bool):
         self._db.set(main.__name__, key, state)
 
         if (
@@ -285,14 +285,14 @@ class HikkaSettingsMod(loader.Module):
             reply_markup=self._get_settings_markup(),
         )
 
-    async def inline__close(self, call: CallbackQuery) -> None:
+    async def inline__close(self, call: CallbackQuery):
         await call.delete()
 
     async def inline__update(
         self,
         call: CallbackQuery,
         confirm_required: bool = False,
-    ) -> None:
+    ):
         if confirm_required:
             await call.edit(
                 self.strings("confirm_update"),
@@ -312,7 +312,7 @@ class HikkaSettingsMod(loader.Module):
         self,
         call: CallbackQuery,
         confirm_required: bool = False,
-    ) -> None:
+    ):
         if confirm_required:
             await call.edit(
                 self.strings("confirm_restart"),
@@ -468,7 +468,7 @@ class HikkaSettingsMod(loader.Module):
         ]
 
     @loader.owner
-    async def settingscmd(self, message: Message) -> None:
+    async def settingscmd(self, message: Message):
         """Show settings menu"""
         await self.inline.form(
             self.strings("inline_settings"),

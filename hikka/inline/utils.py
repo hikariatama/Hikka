@@ -201,7 +201,7 @@ class Utils(InlineUnit):
         query: CallbackQuery = None,
         unit_uid: str = None,
         inline_message_id: Union[str, None] = None,
-    ) -> None:
+    ):
         """Do not edit or pass `self`, `query`, `unit_uid` params, they are for internal use only"""
         self._units = {**self._forms, **self._lists, **self._galleries}
         if isinstance(reply_markup, (list, dict)):

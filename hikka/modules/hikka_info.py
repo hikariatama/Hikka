@@ -27,7 +27,7 @@ class HikkaInfoMod(loader.Module):
 
     strings = {"name": "HikkaInfo"}
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
         self._me = await client.get_me()
@@ -73,7 +73,7 @@ class HikkaInfoMod(loader.Module):
         }
 
     @loader.unrestricted
-    async def infocmd(self, message: Message) -> None:
+    async def infocmd(self, message: Message):
         """Send userbot info"""
         await self.inline.form(
             message=message,
@@ -82,7 +82,7 @@ class HikkaInfoMod(loader.Module):
         )
 
     @loader.unrestricted
-    async def hikkainfocmd(self, message: Message) -> None:
+    async def hikkainfocmd(self, message: Message):
         """[en/ru - default en] - Send info aka 'What is Hikka?'"""
         args = utils.get_args_raw(message)
         args = args if args in {"en", "ru"} else "en"

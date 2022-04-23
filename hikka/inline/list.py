@@ -221,7 +221,7 @@ class List(InlineUnit):
         call: CallbackQuery,
         btn_call_data: _List[str] = None,
         list_uid: str = None,
-    ) -> None:
+    ):
         if not self._lists[list_uid]["current_index"]:
             await call.answer("No way back", show_alert=True)
             return
@@ -254,7 +254,7 @@ class List(InlineUnit):
         btn_call_data: _List[str] = None,
         func: FunctionType = None,
         list_uid: str = None,
-    ) -> None:
+    ):
         self._lists[list_uid]["current_index"] += 1
         # If we exceeded limit in list
         if self._lists[list_uid]["current_index"] >= len(
@@ -318,7 +318,7 @@ class List(InlineUnit):
 
         return markup
 
-    async def _list_inline_handler(self, inline_query: InlineQuery) -> None:
+    async def _list_inline_handler(self, inline_query: InlineQuery):
         for strings in self._lists.copy().values():
             if (
                 inline_query.from_user.id == self._me

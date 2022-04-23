@@ -70,7 +70,7 @@ class UpdaterMod(loader.Module):
         )
 
     @loader.owner
-    async def restartcmd(self, message: Message) -> None:
+    async def restartcmd(self, message: Message):
         """Restarts the userbot"""
         try:
             if not self.inline.init_complete or not await self.inline.form(
@@ -92,14 +92,14 @@ class UpdaterMod(loader.Module):
 
             await self.restart_common(message)
 
-    async def inline_restart(self, call: CallbackQuery) -> None:
+    async def inline_restart(self, call: CallbackQuery):
         await call.edit(self.strings("restarting_caption"))
         await self.restart_common(call)
 
-    async def inline_close(self, call: CallbackQuery) -> None:
+    async def inline_close(self, call: CallbackQuery):
         await call.delete()
 
-    async def prerestart_common(self, call: Union[CallbackQuery, Message]) -> None:
+    async def prerestart_common(self, call: Union[CallbackQuery, Message]):
         logger.debug(f"Self-update. {sys.executable} -m {utils.get_base_dir()}")
         if hasattr(call, "inline_message_id"):
             self._db.set(__name__, "selfupdatemsg", call.inline_message_id)
@@ -108,7 +108,7 @@ class UpdaterMod(loader.Module):
                 __name__, "selfupdatemsg", f"{utils.get_chat_id(call)}:{call.id}"
             )
 
-    async def restart_common(self, call: Union[CallbackQuery, Message]) -> None:
+    async def restart_common(self, call: Union[CallbackQuery, Message]):
         if (
             hasattr(call, "form")
             and isinstance(call.form, dict)
@@ -154,7 +154,7 @@ class UpdaterMod(loader.Module):
             return False
 
     @staticmethod
-    def req_common() -> None:
+    def req_common():
         # Now we have downloaded new code, install requirements
         logger.debug("Installing new requirements...")
         try:
@@ -176,7 +176,7 @@ class UpdaterMod(loader.Module):
             logger.exception("Req install failed")
 
     @loader.owner
-    async def updatecmd(self, message: Message) -> None:
+    async def updatecmd(self, message: Message):
         """Downloads userbot updates"""
         try:
             if (
@@ -202,7 +202,7 @@ class UpdaterMod(loader.Module):
         self,
         call: Union[CallbackQuery, Message],
         hard: bool = False,
-    ) -> None:
+    ):
         # We don't really care about asyncio at this point, as we are shutting down
         if hard:
             os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")  # fmt: skip
@@ -238,7 +238,7 @@ class UpdaterMod(loader.Module):
             return
 
     @loader.unrestricted
-    async def sourcecmd(self, message: Message) -> None:
+    async def sourcecmd(self, message: Message):
         """Links the source code of this project"""
         await utils.answer(
             message,

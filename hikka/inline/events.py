@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class Events(InlineUnit):
-    async def _message_handler(self, message: AiogramMessage) -> None:
+    async def _message_handler(self, message: AiogramMessage):
         """Processes incoming messages"""
         if message.chat.type != "private":
             return
@@ -47,7 +47,7 @@ class Events(InlineUnit):
             except BaseException:
                 logger.exception("Error on running aiogram watcher!")
 
-    async def _inline_handler(self, inline_query: AiogramInlineQuery) -> None:
+    async def _inline_handler(self, inline_query: AiogramInlineQuery):
         """Inline query handler (forms' calls)"""
         # Retrieve query from passed object
         query = inline_query.query
@@ -195,7 +195,7 @@ class Events(InlineUnit):
         self,
         query: CallbackQuery,
         reply_markup: List[List[dict]] = None,
-    ) -> None:
+    ):
         """Callback query handler (buttons' presses)"""
         if reply_markup is None:
             reply_markup = []
@@ -309,7 +309,7 @@ class Events(InlineUnit):
     async def _chosen_inline_handler(
         self,
         chosen_inline_query: ChosenInlineResult,
-    ) -> None:
+    ):
         query = chosen_inline_query.query
 
         for uid, object_ in {
@@ -351,7 +351,7 @@ class Events(InlineUnit):
                         logger.exception("Exception while running chosen query watcher!")  # fmt: skip
                         return
 
-    async def _query_help(self, inline_query: InlineQuery) -> None:
+    async def _query_help(self, inline_query: InlineQuery):
         _help = ""
         for name, fun in self._allmodules.inline_handlers.items():
             # If user doesn't have enough permissions

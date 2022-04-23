@@ -338,7 +338,7 @@ class CommandDispatcher:
 
         return message, prefix, txt, func
 
-    async def handle_command(self, event: Message) -> None:
+    async def handle_command(self, event: Message):
         """Handle all commands"""
         message = await self._handle_command(event)
         if not message:
@@ -377,7 +377,7 @@ class CommandDispatcher:
         except Exception:
             pass
 
-    async def watcher_exc(self, e, message) -> None:
+    async def watcher_exc(self, e, message):
         logging.exception("Error running watcher")
 
     async def handle_incoming(self, event):
@@ -448,7 +448,7 @@ class CommandDispatcher:
         message: Message,
         exception_handler: FunctionType,
         *args,
-    ) -> None:
+    ):
         try:
             await func(message)
         except BaseException as e:

@@ -29,7 +29,7 @@ class HikkaLoggerMod(loader.Module):
 
     strings = {"name": "HikkaLogger"}
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._client = client
         self._db = db
         self._me = (await client.get_me()).id

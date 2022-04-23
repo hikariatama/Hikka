@@ -19,7 +19,7 @@ class InlineMessage:
         inline_manager: "InlineManager",  # noqa: F821
         unit_uid: str,
         inline_message_id: str,
-    ) -> None:
+    ):
         self.inline_message_id = inline_message_id
         self.unit_uid = unit_uid
         self.inline_manager = inline_manager
@@ -46,7 +46,7 @@ class InlineMessage:
             **kwargs,
         )
 
-    async def delete(self, *args, **kwargs) -> None:
+    async def delete(self, *args, **kwargs):
         if "unit_uid" in kwargs:
             kwargs.pop("unit_uid")
 
@@ -56,7 +56,7 @@ class InlineMessage:
             **kwargs,
         )
 
-    async def unload(self, *args, **kwargs) -> None:
+    async def unload(self, *args, **kwargs):
         if "unit_uid" in kwargs:
             kwargs.pop("unit_uid")
 
@@ -75,7 +75,7 @@ class InlineCall(CallbackQuery, InlineMessage):
         call: CallbackQuery,
         inline_manager: "InlineManager",  # noqa: F821
         unit_uid: str,
-    ) -> None:
+    ):
         CallbackQuery.__init__(self)
 
         for attr in {
@@ -114,7 +114,7 @@ class BotMessage(AiogramMessage):
 class InlineQuery(AiogramInlineQuery):
     """Modified version of original Aiogram InlineQuery"""
 
-    def __init__(self, inline_query: AiogramInlineQuery) -> None:
+    def __init__(self, inline_query: AiogramInlineQuery):
         super().__init__(self)
 
         for attr in {"id", "from_user", "query", "offset", "chat_type", "location"}:
@@ -127,7 +127,7 @@ class InlineQuery(AiogramInlineQuery):
             else ""
         )
 
-    async def e400(self) -> None:
+    async def e400(self):
         await self.answer(
             [
                 InlineQueryResultArticle(
@@ -146,7 +146,7 @@ class InlineQuery(AiogramInlineQuery):
             cache_time=0,
         )
 
-    async def e403(self) -> None:
+    async def e403(self):
         await self.answer(
             [
                 InlineQueryResultArticle(
@@ -165,7 +165,7 @@ class InlineQuery(AiogramInlineQuery):
             cache_time=0,
         )
 
-    async def e404(self) -> None:
+    async def e404(self):
         await self.answer(
             [
                 InlineQueryResultArticle(
@@ -184,7 +184,7 @@ class InlineQuery(AiogramInlineQuery):
             cache_time=0,
         )
 
-    async def e426(self) -> None:
+    async def e426(self):
         await self.answer(
             [
                 InlineQueryResultArticle(
@@ -203,7 +203,7 @@ class InlineQuery(AiogramInlineQuery):
             cache_time=0,
         )
 
-    async def e500(self) -> None:
+    async def e500(self):
         await self.answer(
             [
                 InlineQueryResultArticle(

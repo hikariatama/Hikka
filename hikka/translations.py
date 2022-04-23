@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class Translator:
-    def __init__(self, client, db) -> None:
+    def __init__(self, client, db):
         self._client = client
         self.db = db
 

@@ -45,7 +45,7 @@ class MemoryHandler(logging.Handler):
     first trimming handled then unused.
     """
 
-    def __init__(self, target, capacity: int) -> None:
+    def __init__(self, target, capacity: int):
         super().__init__(0)
         self.target = target
         self.capacity = capacity
@@ -56,7 +56,7 @@ class MemoryHandler(logging.Handler):
         self.tg_buff = ""
         self._mods = {}
 
-    def install_tg_log(self, mod: Module) -> None:
+    def install_tg_log(self, mod: Module):
         if getattr(self, "_task", False):
             self._task.cancel()
 
@@ -68,24 +68,24 @@ class MemoryHandler(logging.Handler):
         self._task = asyncio.ensure_future(self.queue_poller())
         self._task_2 = asyncio.ensure_future(self.send_poller())
 
-    async def queue_poller(self) -> None:
+    async def queue_poller(self):
         while True:
             if self._queue:
                 await self.sender()
 
             await asyncio.sleep(3)
 
-    async def send_poller(self) -> None:
+    async def send_poller(self):
         while True:
             if self.tg_buff:
                 await self.emit_to_tg()
 
             await asyncio.sleep(7)
 
-    def setLevel(self, level: int) -> None:
+    def setLevel(self, level: int):
         self.lvl = level
 
-    def dump(self) -> None:
+    def dump(self):
         """Return a list of logging entries"""
         return self.handledbuffer + self.buffer
 
@@ -120,7 +120,7 @@ class MemoryHandler(logging.Handler):
                 disable_notification=True,
             )
 
-    def emit(self, record) -> None:
+    def emit(self, record):
         if record.exc_info is not None:
             exc = (
                 "\n🚫 Traceback:\n"

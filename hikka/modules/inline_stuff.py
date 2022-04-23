@@ -33,15 +33,15 @@ class InlineStuffMod(loader.Module):
         "bot_updated": "😌 <b>Config successfully saved. Restart userbot to apply changes</b>",
     }
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
         self._bot_id = (await self.inline.bot.get_me()).id
 
-    async def inline__close(self, call: CallbackQuery) -> None:
+    async def inline__close(self, call: CallbackQuery):
         await call.delete()
 
-    async def watcher(self, message: Message) -> None:
+    async def watcher(self, message: Message):
         if (
             not getattr(message, "out", False)
             or not getattr(message, "via_bot_id", False)
@@ -93,7 +93,7 @@ class InlineStuffMod(loader.Module):
 
                     return True
 
-    async def ch_hikka_botcmd(self, message: Message) -> None:
+    async def ch_hikka_botcmd(self, message: Message):
         """<username> - Change your Hikka inline bot username"""
         args = utils.get_args_raw(message).strip("@")
         if not args or not args.lower().endswith("bot") or len(args) <= 4:

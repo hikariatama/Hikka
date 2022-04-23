@@ -226,7 +226,7 @@ class Form(InlineUnit):
 
         return InlineMessage(self, form_uid, inline_message_id)
 
-    async def _form_inline_handler(self, inline_query: InlineQuery) -> None:
+    async def _form_inline_handler(self, inline_query: InlineQuery):
         for form in self._forms.copy().values():
             for button in utils.array_sum(form.get("buttons", [])):
                 if (

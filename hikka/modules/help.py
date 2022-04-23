@@ -53,7 +53,7 @@ class HelpMod(loader.Module):
             lambda: "Plain module bullet"
         )
 
-    async def helphidecmd(self, message: Message) -> None:
+    async def helphidecmd(self, message: Message):
         """<module or modules> - Hide module(-s) from help
         *Split modules by spaces"""
         modules = utils.get_args(message)
@@ -91,7 +91,7 @@ class HelpMod(loader.Module):
         )
 
     @loader.unrestricted
-    async def helpcmd(self, message: Message) -> None:
+    async def helpcmd(self, message: Message):
         """[module] [-f] - Show help"""
         args = utils.get_args_raw(message)
         force = False
@@ -305,6 +305,6 @@ class HelpMod(loader.Module):
             except Exception:
                 await utils.answer(message, self.strings("join", message))
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._client = client
         self._db = db

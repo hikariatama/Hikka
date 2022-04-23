@@ -38,14 +38,14 @@ class HikkaConfigMod(loader.Module):
         "option_saved": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: </b><code>{}</code>",
     }
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
         self._bot_id = (await self.inline.bot.get_me()).id
         self._forms = {}
 
     @staticmethod
-    async def inline__close(call: CallbackQuery) -> None:  # noqa
+    async def inline__close(call: CallbackQuery):  # noqa
         await call.delete()
 
     async def inline__set_config(
@@ -55,7 +55,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-    ) -> None:  # noqa
+    ):  # noqa
         for module in self.allmodules.modules:
             if module.strings("name") == mod:
                 module.config[option] = query
@@ -99,7 +99,7 @@ class HikkaConfigMod(loader.Module):
         call: CallbackQuery,
         mod: str,
         config_opt: str,
-    ) -> None:  # noqa
+    ):  # noqa
         for module in self.allmodules.modules:
             if module.strings("name") == mod:
                 await call.edit(
@@ -130,7 +130,7 @@ class HikkaConfigMod(loader.Module):
                     ],
                 )
 
-    async def inline__configure(self, call: CallbackQuery, mod: str) -> None:
+    async def inline__configure(self, call: CallbackQuery, mod: str):
         btns = []
         for module in self.allmodules.modules:
             if module.strings("name") == mod:
@@ -157,7 +157,7 @@ class HikkaConfigMod(loader.Module):
     async def inline__global_config(
         self,
         call: Union[Message, CallbackQuery],
-    ) -> None:
+    ):
         to_config = [
             mod.strings("name")
             for mod in self.allmodules.modules
@@ -182,11 +182,11 @@ class HikkaConfigMod(loader.Module):
         else:
             await call.edit(self.strings("configure"), reply_markup=kb)
 
-    async def configcmd(self, message: Message) -> None:
+    async def configcmd(self, message: Message):
         """Configure modules"""
         await self.inline__global_config(message)
 
-    async def watcher(self, message: Message) -> None:
+    async def watcher(self, message: Message):
         if (
             not getattr(message, "out", False)
             or not getattr(message, "via_bot_id", False)

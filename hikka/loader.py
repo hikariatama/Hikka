@@ -92,7 +92,7 @@ class InfiniteLoop:
         autostart: bool,
         wait_before: bool,
         stop_clause: Union[str, None],
-    ) -> None:
+    ):
         logger.debug(f"Inited new loop {func=}, {interval=}")
         self.func = func
         self.interval = interval
@@ -105,7 +105,7 @@ class InfiniteLoop:
         if autostart:
             self.start()
 
-    def stop(self, *args, **kwargs) -> None:
+    def stop(self, *args, **kwargs):
         if self._task:
             logger.debug(f"Stopped loop for {self.func}")
             self._task.cancel()
@@ -114,7 +114,7 @@ class InfiniteLoop:
         else:
             logger.debug("Loop is not running")
 
-    def start(self, *args, **kwargs) -> None:
+    def start(self, *args, **kwargs):
         if not self._task:
             logger.debug(f"Started loop for {self.func}")
             self._task = asyncio.ensure_future(self.actual_loop(*args, **kwargs))
@@ -154,7 +154,7 @@ class InfiniteLoop:
 
         self.status = False
 
-    def __del__(self) -> None:
+    def __del__(self):
         self.stop()
 
 
@@ -385,7 +385,7 @@ class Modules:
 
         return ret
 
-    def register_commands(self, instance: Module) -> None:
+    def register_commands(self, instance: Module):
         """Register commands from instance"""
         for command in instance.commands.copy():
             # Restrict overwriting core modules' commands
@@ -460,7 +460,7 @@ class Modules:
                 logging.debug(f"Duplicate callback_handler {handler}")
             self.callback_handlers.update({handler.lower(): instance.callback_handlers[handler]})  # fmt: skip
 
-    def register_watcher(self, instance: Module) -> None:
+    def register_watcher(self, instance: Module):
         """Register watcher from instance"""
         try:
             if instance.watcher:
@@ -476,7 +476,7 @@ class Modules:
         except AttributeError:
             pass
 
-    def complete_registration(self, instance: Module) -> None:
+    def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         instance.allmodules = self
         instance.hikka = True
@@ -538,7 +538,7 @@ class Modules:
                     except KeyError:
                         return command, None
 
-    def send_config(self, db, translator, skip_hook: bool = False) -> None:
+    def send_config(self, db, translator, skip_hook: bool = False):
         """Configure modules"""
         for mod in self.modules:
             self.send_config_one(mod, db, translator, skip_hook)
@@ -549,7 +549,7 @@ class Modules:
         db: "Database",  # noqa: F821
         translator: "Translator" = None,  # noqa: F821
         skip_hook: bool = False,
-    ) -> None:
+    ):
         """Send config to single instance"""
         if hasattr(mod, "config"):
             modcfg = db.get(

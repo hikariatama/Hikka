@@ -65,7 +65,7 @@ class TestMod(loader.Module):
     }
 
     @staticmethod
-    async def dumpcmd(message: Message) -> None:
+    async def dumpcmd(message: Message):
         """Use in reply to get a dump of a message"""
         if not message.is_reply:
             return
@@ -78,10 +78,10 @@ class TestMod(loader.Module):
         )
 
     @staticmethod
-    async def cancel(call: aiogram.types.CallbackQuery) -> None:
+    async def cancel(call: aiogram.types.CallbackQuery):
         await call.delete()
 
-    async def watchdog(self) -> None:
+    async def watchdog(self):
         while True:
             try:
                 for mod in os.scandir(DEBUG_MODS_DIR):
@@ -116,7 +116,7 @@ class TestMod(loader.Module):
 
             await asyncio.sleep(1)
 
-    async def debugmodcmd(self, message: Message) -> None:
+    async def debugmodcmd(self, message: Message):
         """[module] - For developers: Open module for debugging
         You will be able to track changes in real-time"""
         args = utils.get_args_raw(message)
@@ -174,7 +174,7 @@ class TestMod(loader.Module):
         message: Union[Message, aiogram.types.CallbackQuery],
         force: bool = False,
         lvl: Union[int, None] = None,
-    ) -> None:
+    ):
         """<level> - Dumps logs. Loglevels below WARNING may contain personal info."""
         if not isinstance(lvl, int):
             args = utils.get_args_raw(message)
@@ -352,7 +352,7 @@ class TestMod(loader.Module):
             )
 
     @loader.owner
-    async def suspendcmd(self, message: Message) -> None:
+    async def suspendcmd(self, message: Message):
         """<time> - Suspends the bot for N seconds"""
         try:
             time_sleep = float(utils.get_args_raw(message))
@@ -363,7 +363,7 @@ class TestMod(loader.Module):
         except ValueError:
             await utils.answer(message, self.strings("suspend_invalid_time", message))
 
-    async def pingcmd(self, message: Message) -> None:
+    async def pingcmd(self, message: Message):
         """Test your userbot ping"""
         start = time.perf_counter_ns()
         message = await utils.answer(
@@ -378,7 +378,7 @@ class TestMod(loader.Module):
 
         await utils.answer(message, self.strings("results_ping").format(round(ms, 3)))
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._client = client
         self._db = db
         self._task = asyncio.ensure_future(self.watchdog())

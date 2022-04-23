@@ -38,10 +38,10 @@ class HikkaBackupMod(loader.Module):
         "invalid_args": "🚫 <b>Specify correct backup period in hours, or `0` to disable</b>",
     }
 
-    async def on_unload(self) -> None:
+    async def on_unload(self):
         self._task.cancel()
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
         self._me = (await client.get_me()).id
@@ -93,7 +93,7 @@ class HikkaBackupMod(loader.Module):
         except Exception:
             pass
 
-    async def backup_period_callback_handler(self, call: CallbackQuery) -> None:
+    async def backup_period_callback_handler(self, call: CallbackQuery):
         if not call.data.startswith("backup_period"):
             return
 
@@ -119,7 +119,7 @@ class HikkaBackupMod(loader.Module):
             call.message.message_id,
         )
 
-    async def set_backup_periodcmd(self, message: Message) -> None:
+    async def set_backup_periodcmd(self, message: Message):
         """<time in hours> - Change backup frequency"""
         args = utils.get_args_raw(message)
         if not args or not args.isdigit() or int(args) not in range(200):
@@ -136,7 +136,7 @@ class HikkaBackupMod(loader.Module):
         self.set("last_backup", round(time.time()))
         await utils.answer(message, f"<b>{self.strings('saved')}</b>")
 
-    async def handler(self) -> None:
+    async def handler(self):
         while True:
             try:
                 if not self.get("period"):

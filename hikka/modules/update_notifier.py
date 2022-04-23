@@ -75,7 +75,7 @@ class UpdateNotifierMod(loader.Module):
         except Exception:
             return ""
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._db = db
         self._client = client
         self._me = (await client.get_me()).id
@@ -94,10 +94,10 @@ class UpdateNotifierMod(loader.Module):
 
         self._task = asyncio.ensure_future(self.poller())
 
-    async def on_unload(self) -> None:
+    async def on_unload(self):
         self._task.cancel()
 
-    async def poller(self) -> None:
+    async def poller(self):
         while True:
             if not self.get_changelog():
                 await asyncio.sleep(60)
@@ -148,7 +148,7 @@ class UpdateNotifierMod(loader.Module):
 
             await asyncio.sleep(60)
 
-    async def update_callback_handler(self, call: CallbackQuery) -> None:
+    async def update_callback_handler(self, call: CallbackQuery):
         """Process update buttons clicks"""
         if call.data not in {"hikka_update", "hikka_upd_ignore"}:
             return

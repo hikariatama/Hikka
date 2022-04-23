@@ -438,7 +438,9 @@ class LoaderMod(loader.Module):
         try:
             try:
                 spec = ModuleSpec(
-                    module_name, loader.StringLoader(doc, origin), origin=origin
+                    module_name,
+                    loader.StringLoader(doc, origin),
+                    origin=origin,
                 )
                 instance = self.allmodules.register_module(
                     spec,

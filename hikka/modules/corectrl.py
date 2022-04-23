@@ -65,7 +65,7 @@ class CoreMod(loader.Module):
         self._db = db
         self._client = client
 
-    async def blacklistcommon(self, message: Message) -> None:
+    async def blacklistcommon(self, message: Message):
         args = utils.get_args(message)
 
         if len(args) > 2:
@@ -90,12 +90,12 @@ class CoreMod(loader.Module):
         module = self.allmodules.get_classname(module)
         return f"{str(chatid)}.{module}" if module else chatid
 
-    async def hikkacmd(self, message: Message) -> None:
+    async def hikkacmd(self, message: Message):
         """Get Hikka version"""
         ver = main.__version__
         await utils.answer(message, self.strings("hikka").format(*ver))
 
-    async def blacklistcmd(self, message: Message) -> None:
+    async def blacklistcmd(self, message: Message):
         """Blacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
@@ -107,7 +107,7 @@ class CoreMod(loader.Module):
 
         await utils.answer(message, self.strings("blacklisted").format(chatid))
 
-    async def unblacklistcmd(self, message: Message) -> None:
+    async def unblacklistcmd(self, message: Message):
         """Unblacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
@@ -123,7 +123,7 @@ class CoreMod(loader.Module):
             message, self.strings("unblacklisted").format(chatid)
         )
 
-    async def getuser(self, message: Message) -> None:
+    async def getuser(self, message: Message):
         try:
             return int(utils.get_args(message)[0])
         except (ValueError, IndexError):
@@ -138,7 +138,7 @@ class CoreMod(loader.Module):
             await utils.answer(message, self.strings("who_to_unblacklist"))
             return
 
-    async def blacklistusercmd(self, message: Message) -> None:
+    async def blacklistusercmd(self, message: Message):
         """Prevent this user from running any commands"""
         user = await self.getuser(message)
 
@@ -152,7 +152,7 @@ class CoreMod(loader.Module):
             message, self.strings("user_blacklisted").format(user)
         )
 
-    async def unblacklistusercmd(self, message: Message) -> None:
+    async def unblacklistusercmd(self, message: Message):
         """Allow this user to run permitted commands"""
         user = await self.getuser(message)
 
@@ -168,7 +168,7 @@ class CoreMod(loader.Module):
         )
 
     @loader.owner
-    async def setprefixcmd(self, message: Message) -> None:
+    async def setprefixcmd(self, message: Message):
         """Sets command prefix"""
         args = utils.get_args_raw(message)
 
@@ -191,7 +191,7 @@ class CoreMod(loader.Module):
         )
 
     @loader.owner
-    async def aliasescmd(self, message: Message) -> None:
+    async def aliasescmd(self, message: Message):
         """Print all your aliases"""
         aliases = self.allmodules.aliases
         string = self.strings("aliases")
@@ -201,7 +201,7 @@ class CoreMod(loader.Module):
         await utils.answer(message, string)
 
     @loader.owner
-    async def addaliascmd(self, message: Message) -> None:
+    async def addaliascmd(self, message: Message):
         """Set an alias for a command"""
         args = utils.get_args(message)
 
@@ -232,7 +232,7 @@ class CoreMod(loader.Module):
             )
 
     @loader.owner
-    async def delaliascmd(self, message: Message) -> None:
+    async def delaliascmd(self, message: Message):
         """Remove an alias for a command"""
         args = utils.get_args(message)
 
@@ -257,7 +257,7 @@ class CoreMod(loader.Module):
                 self.strings("no_alias").format(utils.escape_html(alias)),
             )
 
-    async def dllangpackcmd(self, message: Message) -> None:
+    async def dllangpackcmd(self, message: Message):
         """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""
         args = utils.get_args_raw(message)
 
@@ -275,7 +275,7 @@ class CoreMod(loader.Module):
         success = await self.translator.init()
         await utils.answer(message, self.strings("pack_saved" if success else "check_pack"))
 
-    async def setlangcmd(self, message: Message) -> None:
+    async def setlangcmd(self, message: Message):
         """[language] - Change default language"""
         args = utils.get_args_raw(message)
         if not args or len(args) != 2:
@@ -295,7 +295,7 @@ class CoreMod(loader.Module):
         await utils.answer(message, self.strings("lang_saved"))
 
     @loader.owner
-    async def cleardbcmd(self, message: Message) -> None:
+    async def cleardbcmd(self, message: Message):
         """Clears the entire database, effectively performing a factory reset"""
         self._db.clear()
         self._db.save()

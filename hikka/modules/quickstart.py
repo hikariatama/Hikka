@@ -59,7 +59,7 @@ class QuickstartMod(loader.Module):
 
     strings = {"name": "Quickstart"}
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         self._me = (await client.get_me()).id
 
         mark = self.inline._generate_markup(
@@ -79,7 +79,7 @@ class QuickstartMod(loader.Module):
 
         db.set("hikka", "disable_quickstart", True)
 
-    async def quickstart_callback_handler(self, call: CallbackQuery) -> None:
+    async def quickstart_callback_handler(self, call: CallbackQuery):
         if not call.data.startswith("hikka_qs_sw_lng_"):
             return
 

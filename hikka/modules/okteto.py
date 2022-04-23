@@ -25,7 +25,7 @@ class OktetoMod(loader.Module):
 
     strings = {"name": "Okteto"}
 
-    async def client_ready(self, client, db) -> None:
+    async def client_ready(self, client, db):
         if "OKTETO" not in os.environ:
             raise loader.LoadError("This module can be loaded only if userbot is installed to ☁️ Okteto")  # fmt: skip
 
@@ -41,10 +41,10 @@ class OktetoMod(loader.Module):
         await utils.dnd(client, await client.get_entity(self._bot), True)
         self._task = asyncio.ensure_future(self._okteto_poller())
 
-    async def on_unload(self) -> None:
+    async def on_unload(self):
         self._task.cancel()
 
-    async def _okteto_poller(self) -> None:
+    async def _okteto_poller(self):
         """Creates queue to Webpage bot to reset Okteto polling after app goes to sleep"""
         while True:
             try:
@@ -84,7 +84,7 @@ class OktetoMod(loader.Module):
                 logger.exception("Caught exception on Okteto poller")
                 await asyncio.sleep(self._exception_timeout)
 
-    async def watcher(self, message: Message) -> None:
+    async def watcher(self, message: Message):
         if (
             not getattr(message, "raw_text", False)
             or not self._db.get("hikka", "okteto_uri", False)

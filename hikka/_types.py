@@ -22,7 +22,7 @@ class Module:
 
 
 class LoadError(Exception):
-    def __init__(self, error_message: str) -> None:  # skipcq: PYL-W0231
+    def __init__(self, error_message: str):  # skipcq: PYL-W0231
         self._error = error_message
 
     def __str__(self) -> str:

@@ -79,7 +79,12 @@ DATA_DIR = (
 CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
 
 
-def run_config(db: database.Database, data_root: str, phone: Union[str, int] = None, modules: list = None) -> None:
+def run_config(
+    db: database.Database,
+    data_root: str,
+    phone: Union[str, int] = None,
+    modules: list = None,
+):
     """Load configurator.py"""
     from . import configurator
 
@@ -143,7 +148,7 @@ def gen_port() -> int:
     return port
 
 
-def parse_arguments() -> None:
+def parse_arguments():
     """Parse the arguments"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--setup", "-s", action="store_true")
@@ -232,7 +237,7 @@ class SuperList(list):
 
 
 class InteractiveAuthRequired(Exception):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
 
 
@@ -250,7 +255,7 @@ class Hikka:
         self._get_api_token()
         self._get_proxy()
 
-    def _get_proxy(self) -> None:
+    def _get_proxy(self):
         """
         Get proxy tuple from --proxy-host, --proxy-port and --proxy-secret
         and connection to use (depends on proxy - provided or not)
@@ -273,7 +278,7 @@ class Hikka:
 
         self.proxy, self.conn = None, ConnectionTcpFull
 
-    def _get_phones(self) -> None:
+    def _get_phones(self):
         """Get phones from the --phone, and environment"""
         phones = {
             phone.split(":", maxsplit=1)[0]: phone
@@ -301,7 +306,7 @@ class Hikka:
 
         self.phones = phones
 
-    def _get_api_token(self) -> None:
+    def _get_api_token(self):
         """Get API Token from disk or environment"""
         api_token_type = collections.namedtuple("api_token", ("ID", "HASH"))
 
@@ -328,7 +333,7 @@ class Hikka:
 
         self.api_token = api_token
 
-    def _init_web(self) -> None:
+    def _init_web(self):
         """Initialize web"""
         if web_available and not getattr(self.arguments, "disable_web", False):
             self.web = None
@@ -341,7 +346,7 @@ class Hikka:
             connection=self.conn,
         )
 
-    def _get_token(self) -> None:
+    def _get_token(self):
         """Reads or waits for user to enter API credentials"""
         while self.api_token is None:
             if self.arguments.no_auth:
@@ -356,7 +361,7 @@ class Hikka:
                 importlib.invalidate_caches()
                 self._get_api_token()
 
-    async def fetch_clients_from_web(self) -> None:
+    async def fetch_clients_from_web(self):
         """Imports clients from web module"""
         for client in self.web.clients:
             session = SQLiteSession(
@@ -381,12 +386,12 @@ class Hikka:
 
         self.clients = list(set(self.clients + self.web.clients))
 
-    def _web_banner(self) -> None:
+    def _web_banner(self):
         """Shows web banner"""
         print("✅ Web mode ready for configuration")
         print(f"🌐 Please visit http://127.0.0.1:{self.web.port}")
 
-    async def wait_for_web_auth(self, token: str) -> None:
+    async def wait_for_web_auth(self, token: str):
         """Waits for web auth confirmation in Telegram"""
         timeout = 5 * 60
         polling_interval = 1
@@ -419,7 +424,7 @@ class Hikka:
 
         return True
 
-    def _init_clients(self) -> None:
+    def _init_clients(self):
         """Reads session from disk and inits them"""
         for phone_id, phone in self.phones.items():
             session = os.path.join(
@@ -465,18 +470,18 @@ class Hikka:
                 print(f"Session {session} was terminated and re-auth is required")
                 continue
 
-    def _init_loop(self) -> None:
+    def _init_loop(self):
         loops = [self.amain_wrapper(client) for client in self.clients]
         self.loop.run_until_complete(asyncio.gather(*loops))
 
-    async def amain_wrapper(self, client) -> None:
+    async def amain_wrapper(self, client):
         """Wrapper around amain"""
         async with client:
             first = True
             while await self.amain(first, client):
                 first = False
 
-    async def _badge(self, client) -> None:
+    async def _badge(self, client):
         """Call the badge in shell"""
         global omit_log
         try:
@@ -515,7 +520,7 @@ class Hikka:
         except Exception:
             logging.exception("Badge error")
 
-    async def _handle_setup(self, client, db) -> None:
+    async def _handle_setup(self, client, db):
         await db.init()
         modules = loader.Modules()
         translator = Translator(client, db)
@@ -537,7 +542,7 @@ class Hikka:
             modules,
         )
 
-    async def _add_dispatcher(self, client, modules, db) -> None:
+    async def _add_dispatcher(self, client, modules, db):
         dispatcher = CommandDispatcher(modules, db, self.arguments.no_nickname)
         client.dispatcher = dispatcher
         await dispatcher.init(client)
@@ -563,7 +568,7 @@ class Hikka:
             events.MessageEdited(),
         )
 
-    async def amain(self, first, client) -> None:
+    async def amain(self, first, client):
         """Entrypoint for async init, run once for each user"""
         setup = self.arguments.setup
         web_only = self.arguments.web_only
@@ -585,10 +590,7 @@ class Hikka:
 
         to_load = ["loader.py"] if self.arguments.docker_deps_internal else None
 
-        translator = Translator(
-            client,
-            db
-        )
+        translator = Translator(client, db)
 
         await translator.init()
         modules = loader.Modules()
@@ -617,7 +619,7 @@ class Hikka:
 
         await client.run_until_disconnected()
 
-    def main(self) -> None:
+    def main(self):
         """Main entrypoint"""
         self._init_web()
         save_config_key("port", self.arguments.port)
