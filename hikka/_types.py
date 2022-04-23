@@ -29,7 +29,7 @@ class LoadError(Exception):
         return self._error
 
 
-class StopLoop:
+class StopLoop(Exception):
     """Stops the loop, in which is raised"""
 
 
