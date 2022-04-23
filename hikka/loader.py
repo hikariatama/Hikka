@@ -326,9 +326,9 @@ class Modules:
             ]
 
         self._register_modules(mods)
-        self._register_modules(external_mods)
+        self._register_modules(external_mods, "<file>")
 
-    def _register_modules(self, modules: list):
+    def _register_modules(self, modules: list, origin: str = "<core>"):
         for mod in modules:
             try:
                 module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod)[:-3]}"  # fmt: skip
@@ -336,11 +336,11 @@ class Modules:
                 with open(mod, "r") as file:
                     spec = ModuleSpec(
                         module_name,
-                        StringLoader(file.read(), "<core>"),
-                        origin="<core>",
+                        StringLoader(file.read(), origin),
+                        origin=origin,
                     )
 
-                self.register_module(spec, module_name, "<file>")
+                self.register_module(spec, module_name, origin)
             except BaseException as e:
                 logging.exception(f"Failed to load module {mod} due to {e}:")
 
