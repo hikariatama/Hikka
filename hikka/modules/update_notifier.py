@@ -35,12 +35,6 @@ class UpdateNotifierMod(loader.Module):
     }
 
     _notified = None
-    _pending = None
-    _db = None
-    _client = None
-    _me = None
-    _markup = None
-    _task = None
 
     def get_commit(self) -> Union[str, bool]:
         try:
@@ -121,7 +115,7 @@ class UpdateNotifierMod(loader.Module):
                         self._me,
                         self.strings("update_required").format(
                             self.get_commit()[:6],
-                            self.get_latest()[:6],
+                            f'<a href="https://github.com/hikariatama/Hikka/compare/{self.get_commit()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
                             self.get_changelog(),
                         ),
                         parse_mode="HTML",
