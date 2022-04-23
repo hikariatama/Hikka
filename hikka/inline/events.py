@@ -222,7 +222,8 @@ class Events(InlineUnit):
             for button in utils.array_sum(form.get("buttons", [])):
                 if button.get("_callback_data", None) == query.data:
                     if (
-                        form.get("disable_security", False)
+                        button.get("disable_security", False)
+                        or form.get("disable_security", False)
                         or (
                             form.get("force_me", False)
                             and query.from_user.id == self._me
@@ -244,7 +245,8 @@ class Events(InlineUnit):
                     elif (
                         query.from_user.id
                         not in self._client.dispatcher.security._owner
-                        and query.from_user.id not in form.get("always_allow", [])
+                        + form.get("always_allow", [])
+                        + button.get("always_allow", [])
                     ):
                         await query.answer("You are not allowed to press this button!")
                         return
