@@ -114,7 +114,8 @@ class Events(InlineUnit):
                             thumb_width=128,
                             thumb_height=128,
                             reply_markup=self._generate_markup(
-                                res.get("reply_markup", None)
+                                res.get("reply_markup", None),
+                                prepare_callbacks=True,
                             ),
                         )
                     ]
@@ -299,7 +300,7 @@ class Events(InlineUnit):
                 return
 
             await self._custom_map[query.data]["handler"](
-                query,
+                InlineCall(query, self, None),
                 *self._custom_map[query.data].get("args", []),
                 **self._custom_map[query.data].get("kwargs", {}),
             )

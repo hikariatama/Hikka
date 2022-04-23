@@ -30,6 +30,7 @@ class Utils(InlineUnit):
         self,
         form_uid: Union[str, list],
         /,
+        prepare_callbacks: bool = False,
     ) -> Union[None, InlineKeyboardMarkup]:
         """Generate markup for form or list of `dict`s"""
         if not form_uid:
@@ -80,6 +81,35 @@ class Utils(InlineUnit):
                                 callback_data=button["_callback_data"],
                             )
                         ]
+                        if prepare_callbacks:
+                            self._custom_map[button["_callback_data"]] = {
+                                "handler": button["callback"],
+                                **(
+                                    {"always_allow": button["always_allow"]}
+                                    if button.get("always_allow", False)
+                                    else {}
+                                ),
+                                **(
+                                    {"args": button["args"]}
+                                    if button.get("args", False)
+                                    else {}
+                                ),
+                                **(
+                                    {"kwargs": button["kwargs"]}
+                                    if button.get("kwargs", False)
+                                    else {}
+                                ),
+                                **(
+                                    {"force_me": True}
+                                    if button.get("force_me", False)
+                                    else {}
+                                ),
+                                **(
+                                    {"disable_security": True}
+                                    if button.get("disable_security", False)
+                                    else {}
+                                ),
+                            }
                     elif "input" in button:
                         line += [
                             InlineKeyboardButton(
@@ -208,7 +238,9 @@ class Utils(InlineUnit):
                 parse_mode="HTML",
                 disable_web_page_preview=disable_web_page_preview,
                 reply_markup=self._generate_markup(
-                    reply_markup if isinstance(reply_markup, list) else unit.get("buttons", [])
+                    reply_markup
+                    if isinstance(reply_markup, list)
+                    else unit.get("buttons", [])
                 ),
             )
         except MessageNotModified:
