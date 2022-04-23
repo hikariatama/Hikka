@@ -30,6 +30,7 @@ import logging
 import os
 import subprocess
 import sys
+import asyncio
 from typing import Union
 
 import git
@@ -267,6 +268,8 @@ class UpdaterMod(loader.Module):
             chat_id, message_id = ms.split(":")
             chat_id, message_id = int(chat_id), int(message_id)
             await self._client.edit_message(chat_id, message_id, msg)
+            await asyncio.sleep(120)
+            await self._client.delete_messages(chat_id, message_id)
             return
 
         await self.inline.bot.edit_message_text(

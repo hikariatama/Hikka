@@ -158,14 +158,14 @@ class SecurityManager:
         self._reload_rights()
 
     def _reload_rights(self):
-        self._owner = self._db.get(__name__, "owner", []).copy()
-        self._sudo = list(
+        self._owner = list(
             set(
-                self._db.get(__name__, "sudo", []).copy()
+                self._db.get(__name__, "owner", []).copy()
                 + ([self._me] if hasattr(self, "_me") else [])
             )
         )
-        self._support = self._db.get(__name__, "support", []).copy()
+        self._sudo = list(set(self._db.get(__name__, "sudo", []).copy()))
+        self._support = list(set(self._db.get(__name__, "support", []).copy()))
 
     async def init(self, client):
         self._client = client
