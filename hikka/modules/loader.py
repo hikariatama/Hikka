@@ -42,13 +42,14 @@ from importlib.machinery import ModuleSpec
 import telethon
 from telethon.tl.types import Message
 import functools
-from typing import Any, Union
+from typing import Any, Union, List
 from aiogram.types import CallbackQuery
 
 import requests
 
 from .. import loader, utils, main
 from ..compat import geek
+from ..inline.types import InlineMessage
 
 logger = logging.getLogger(__name__)
 
@@ -562,6 +563,8 @@ class LoaderMod(loader.Module):
             mod=instance.strings["name"],
         )
 
+        instance.animate = self._animate
+
         for method in dir(instance):
             if isinstance(getattr(instance, method), loader.InfiniteLoop):
                 setattr(getattr(instance, method), "module_instance", instance)
@@ -711,6 +714,47 @@ class LoaderMod(loader.Module):
 
     def _mod_set(self, *args, mod: str = None) -> bool:
         return self._db.set(mod, *args)
+
+    async def _animate(
+        self,
+        message: Union[Message, InlineMessage],
+        frames: List[str],
+        interval: Union[float, int],
+        *,
+        inline: bool = False,
+    ) -> None:
+        """
+        Animate message
+        :param message: Message to animate
+        :param frames: A List of strings which are the frames of animation
+        :param interval: Animation delay
+        :param inline: Whether to use inline bot for animation
+        :returns message:
+
+        Please, note that if you set `inline=True`, first frame will be shown with an empty
+        button due to the limitations of Telegram API
+        """
+
+        if interval < 0.1:
+            logger.warning("Resetting animation interval to 0.1s, because it may get you in floodwaits bro")  # fmt: skip
+            interval = 0.1
+
+        for frame in frames:
+            if isinstance(message, Message):
+                if inline:
+                    message = await self.inline.form(
+                        message=message,
+                        text=frame,
+                        reply_markup={"text": ".", "data": "empty"},
+                    )
+                else:
+                    message = await utils.answer(message, frame)
+            elif isinstance(message, InlineMessage) and inline:
+                await message.edit(frame)
+
+            await asyncio.sleep(interval)
+
+        return message
 
     @loader.owner
     async def clearmodulescmd(self, message: Message) -> None:
