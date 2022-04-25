@@ -8,7 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-from .. import loader
+from .. import loader, translations
 import logging
 from aiogram.types import CallbackQuery
 from random import choice
@@ -29,10 +29,14 @@ TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
 
 ❓ <b>Need help?</b> Feel free to join our support chat. We help <b>everyone</b>.
 
-📼 <b>Official modules sources: </b>
+📼 <b>Official modules sources:</b>
 ▫️ @hikarimods
 ▫️ @hikarimods_database
 ▫️ <code>.dlmod</code>
+
+✅ <b>Trusted modules' developers:</b>
+▫️ @morisummermods
+▫️ @cakestwix_mods
 
 """
 
@@ -41,11 +45,14 @@ TEXT_RU = """🌘🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka<
 
 ❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>.
 
-📼 <b>Официальные источники модулей: </b>
+📼 <b>Официальные источники модулей:</b>
 ▫️ @hikarimods
 ▫️ @hikarimods_database
 ▫️ <code>.dlmod</code>
 
+✅ <b>Доверенные разработчики модулей:</b>
+▫️ @morisummermods
+▫️ @cakestwix_mods
 """
 
 if "OKTETO" in os.environ:
@@ -61,6 +68,7 @@ class QuickstartMod(loader.Module):
 
     async def client_ready(self, client, db):
         self._me = (await client.get_me()).id
+        self._db = db
 
         mark = self.inline._generate_markup(
             [
@@ -92,6 +100,11 @@ class QuickstartMod(loader.Module):
                 ]
             )
 
+            self._db.set(translations.__name__, "lang", "ru")
+            self._db.set(translations.__name__, "pack", "ru")
+            await self.translator.init()
+            await call.answer("🇷🇺 Язык сохранен!")
+
             await self.inline.bot.edit_message_caption(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
@@ -106,6 +119,11 @@ class QuickstartMod(loader.Module):
                     [{"text": "🇷🇺 Русский", "data": "hikka_qs_sw_lng_ru"}],
                 ]
             )
+
+            self._db.set(translations.__name__, "lang", "en")
+            self._db.set(translations.__name__, "pack", None)
+            await self.translator.init()
+            await call.answer("🇬🇧 Language saved!")
 
             await self.inline.bot.edit_message_caption(
                 chat_id=call.message.chat.id,

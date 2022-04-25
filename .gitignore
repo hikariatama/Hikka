@@ -155,3 +155,7 @@ config.json
 *.jpeg
 *.webp
 *.webm
+*.tgs
+*.mp4
+*.mp3
+*.ogg

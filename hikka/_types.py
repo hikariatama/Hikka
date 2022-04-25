@@ -8,21 +8,46 @@ class Module:
     """There is no help for this module"""
 
     def config_complete(self):
-        """Will be called when module.config is populated"""
+        """Called when module.config is populated"""
 
     async def client_ready(self, client, db):
-        """Will be called after client is ready (after config_loaded)"""
+        """Called after client is ready (after config_loaded)"""
 
     async def on_unload(self):
-        """Will be called after unloading / reloading module"""
+        """Called after unloading / reloading module"""
 
-    # Called after client_ready, for internal use only. Must not be used by non-core modules
     async def _client_ready2(self, client, db):
-        pass
+        """Called after client_ready, for internal use only. Must not be used by non-core modules"""
+
+    async def on_dlmod(self, client, db):
+        """
+        Called after the module is first time loaded with .dlmod or .loadmod
+
+        Possible use-cases:
+        - Send reaction to author's channel message
+        - Join author's channel
+        - Create asset folder
+        - ...
+
+        ⚠️ Note, that any error there will not interrupt module load, and will just
+        send a message to logs with verbosity INFO and exception traceback
+        """
 
 
 class LoadError(Exception):
+    """Tells user, why your module can't be loaded, if rased in `client_ready`"""
+
     def __init__(self, error_message: str):  # skipcq: PYL-W0231
+        self._error = error_message
+
+    def __str__(self) -> str:
+        return self._error
+
+
+class SelfUnload(Exception):
+    """Silently unloads module, if raised in `client_ready`"""
+
+    def __init__(self, error_message: str = ""):  # skipcq: PYL-W0231
         self._error = error_message
 
     def __str__(self) -> str:

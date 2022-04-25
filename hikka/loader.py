@@ -39,7 +39,7 @@ from importlib.abc import SourceLoader
 from . import utils, security
 from .translations import Strings
 from .inline.core import InlineManager
-from ._types import Module, LoadError, ModuleConfig, StopLoop  # noqa: F401
+from ._types import Module, LoadError, ModuleConfig, StopLoop, SelfUnload  # noqa: F401
 
 from importlib.machinery import ModuleSpec
 from types import FunctionType
@@ -303,7 +303,6 @@ class Modules:
                         len(x) > 3
                         and x[-3:] == ".py"
                         and x[0] != "_"
-                        and ("OKTETO" in os.environ or x != "okteto.py")
                         and (
                             not db.get("hikka", "disable_quickstart", False)
                             or x != "quickstart.py"
@@ -489,6 +488,10 @@ class Modules:
             mod=instance.strings["name"],
         )
 
+        instance.get_prefix = lambda: (
+            self._db.get("hikka.main", "command_prefix", False) or "."
+        )
+
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
                 if getattr(module, "__origin__", "") == "<core>":
@@ -612,12 +615,32 @@ class Modules:
         if self.added_modules:
             await self.added_modules(self)
 
-    async def send_ready_one(self, mod, client, db, allclients):
+    async def send_ready_one(
+        self,
+        mod: Module,
+        client: "TelegramClient",  # noqa: F821
+        db: "Database",  # noqa: F821
+        allclients: list,
+        no_self_unload: bool = False,
+        from_dlmod: bool = False,
+    ):
         mod.allclients = allclients
         mod.inline = self.inline
 
+        if from_dlmod:
+            try:
+                await mod.on_dlmod(client, db)
+            except Exception:
+                logging.info("Can't process `on_dlmod` hook", exc_info=True)
+
         try:
             await mod.client_ready(client, db)
+        except SelfUnload as e:
+            if no_self_unload:
+                raise e
+
+            logging.debug(f"Unloading {mod}, because it raised SelfUnload")
+            self.modules.remove(mod)
         except Exception as e:
             logging.exception(f"Failed to send mod init complete signal for {mod} due to {e}, attempting unload")  # fmt: skip
             self.modules.remove(mod)

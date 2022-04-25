@@ -523,6 +523,7 @@ class LoaderMod(loader.Module):
                     save_fs,
                 )  # Try again
             except loader.LoadError as e:
+                self.allmodules.modules.remove(instance)
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
                 return
@@ -535,15 +536,6 @@ class LoaderMod(loader.Module):
             return
 
         instance.inline = self.inline
-        instance.get = functools.partial(
-            self._mod_get,
-            mod=instance.strings["name"],
-        )
-        instance.set = functools.partial(
-            self._mod_set,
-            mod=instance.strings["name"],
-        )
-
         instance.animate = self._animate
 
         for method in dir(instance):
@@ -564,8 +556,17 @@ class LoaderMod(loader.Module):
                     self._client,
                     self._db,
                     self.allclients,
+                    no_self_unload=True,
+                    from_dlmod=bool(message),
                 )
             except loader.LoadError as e:
+                self.allmodules.modules.remove(instance)
+                if message:
+                    await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
+                return
+            except loader.SelfUnload as e:
+                logging.debug(f"Unloading {instance}, because it raised `SelfUnload`")
+                self.allmodules.modules.remove(instance)
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
                 return
@@ -584,9 +585,6 @@ class LoaderMod(loader.Module):
                 modname = getattr(instance, "name", "ERROR")
 
             modhelp = ""
-            prefix = utils.escape_html(
-                (self._db.get(main.__name__, "command_prefix", False) or ".")
-            )
 
             if instance.__doc__:
                 modhelp += (
@@ -612,7 +610,7 @@ class LoaderMod(loader.Module):
                 instance.commands.items(),
                 key=lambda x: x[0],
             ):
-                modhelp += self.strings("single_cmd").format(prefix, _name)
+                modhelp += self.strings("single_cmd").format(self.get_prefix(), _name)
 
                 if fun.__doc__:
                     modhelp += utils.escape_html(inspect.getdoc(fun))
@@ -690,12 +688,6 @@ class LoaderMod(loader.Module):
             self.strings("unloaded" if worked else "not_unloaded"),
         )
 
-    def _mod_get(self, *args, mod: str = None) -> Any:
-        return self._db.get(mod, *args)
-
-    def _mod_set(self, *args, mod: str = None) -> bool:
-        return self._db.set(mod, *args)
-
     async def _animate(
         self,
         message: Union[Message, InlineMessage],
@@ -726,7 +718,7 @@ class LoaderMod(loader.Module):
                     message = await self.inline.form(
                         message=message,
                         text=frame,
-                        reply_markup={"text": ".", "data": "empty"},
+                        reply_markup={"text": "\u0020\u2800", "data": "empty"},
                     )
                 else:
                     message = await utils.answer(message, frame)
