@@ -19,8 +19,6 @@ import logging
 import git
 from typing import Union
 
-from .._types import LoadError
-
 logger = logging.getLogger(__name__)
 
 
@@ -77,7 +75,7 @@ class UpdateNotifierMod(loader.Module):
         try:
             git.Repo()
         except Exception as e:
-            raise LoadError("Can't load due to repo init error") from e
+            raise loader.LoadError("Can't load due to repo init error") from e
 
         self._markup = self.inline._generate_markup(
             [

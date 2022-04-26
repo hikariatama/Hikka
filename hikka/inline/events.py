@@ -114,8 +114,7 @@ class Events(InlineUnit):
                             thumb_width=128,
                             thumb_height=128,
                             reply_markup=self._generate_markup(
-                                res.get("reply_markup", None),
-                                prepare_callbacks=True,
+                                res.get("reply_markup", None)
                             ),
                         )
                     ]

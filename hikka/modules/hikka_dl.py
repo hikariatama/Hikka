@@ -14,7 +14,6 @@
 from .. import loader
 import logging
 import asyncio
-from .._types import LoadError
 import json
 import re
 import websockets
@@ -119,7 +118,7 @@ class HikkaDLMod(loader.Module):
             await r.delete()
 
             if not token.startswith("kirito_") and not token.startswith("asuna_"):
-                raise LoadError("Can't get token")
+                raise loader.LoadError("Can't get token")
 
             self.set("token", token)
 

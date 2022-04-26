@@ -816,5 +816,7 @@
     "hikka.modules.hikka_info.prefix": "Префикс команд",
     "hikka.modules.hikka_info.send_info": "Отправить информацию о юзерботе",
     "hikka.modules.hikka_info.description": "ℹ Это не раскроет никакой личной информации",
-    "hikka.modules.hikka_info._ihandle_doc_info": "Отправить информацию о юзерботе"
+    "hikka.modules.hikka_info._ihandle_doc_info": "Отправить информацию о юзерботе",
+    "hikka.modules.hikka_info.up-to-date": "✅ Актуальная версия",
+    "hikka.modules.hikka_info.update_required": "⚠️ Требуется обновление </b><code>.update</code><b>"
 }

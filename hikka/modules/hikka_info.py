@@ -33,6 +33,8 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Command prefix",
         "send_info": "Send userbot info",
         "description": "ℹ This will not compromise any sensitive info",
+        "up-to-date": "✅ Up-to-date",
+        "update_required": "⚠️ Update required </b><code>.update</code><b>",
     }
 
     async def client_ready(self, client, db):
@@ -48,9 +50,9 @@ class HikkaInfoMod(loader.Module):
             repo = git.Repo()
             diff = repo.git.log(["HEAD..origin/master", "--oneline"])
             upd = (
-                "⚠️ Update required </b><code>.update</code><b>"
+                self.strings("update_required")
                 if diff
-                else "✅ Up-to-date"
+                else self.strings("up-to-date")
             )
         except Exception:
             upd = ""
