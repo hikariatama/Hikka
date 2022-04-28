@@ -44,12 +44,14 @@ class HikkaDLMod(loader.Module):
     _connected = False
 
     async def _wss(self):
+        logger.debug("Connecting....")
         async with websockets.connect("wss://hikka.hikariatama.ru/ws") as wss:
             await wss.send(self.get("token"))
 
             while True:
                 ans = json.loads(await wss.recv())
                 self._connected = True
+                self._no_revoke = False
                 if ans["event"] == "dlmod":
                     try:
                         msg = (
@@ -90,24 +92,38 @@ class HikkaDLMod(loader.Module):
                         pass
 
                     m = await self._client.send_message("me", f".dlmod {link}")
+
+                    if "dlmod" not in self.allmodules.commands:
+                        await wss.send("Loader is unavailable. Perhaps, userbot is not yet fully loaded")
+                        continue
+
                     await self.allmodules.commands["dlmod"](m)
                     load = (await self._client.get_messages(m.peer_id, ids=[m.id]))[0]
                     await wss.send(load.raw_text.splitlines()[0])
                     await m.delete()
 
+                if ans["event"] == "update":
+                    logger.debug("Socket keep-alive timer expired, reconnecting...")
+                    return
+
     async def _connect(self):
+        self._no_revoke = False
         while True:
             try:
                 await self._wss()
             except websockets.exceptions.ConnectionClosedError:
                 logger.debug("Token became invalid, revoking...")
                 self._connected = False
-                await self._get_token()
-            except Exception:
-                logger.debug("Socket disconnected, retry in 10 sec")
-                self._connected = False
 
-            await asyncio.sleep(10)
+                if self._no_revoke:
+                    return
+
+                await self._get_token()
+                self._no_revoke = True
+            except Exception:
+                logger.debug("Socket disconnected, retry in 5 sec", exc_info=True)
+                self._connected = False
+                await asyncio.sleep(5)
 
     async def _get_token(self):
         async with self._client.conversation(self._bot) as conv:
