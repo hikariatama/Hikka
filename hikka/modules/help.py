@@ -117,7 +117,7 @@ class HelpMod(loader.Module):
                     module = self.allmodules.commands[args].__self__
 
             if not module:
-                module_name = next(
+                module_name = next(  # skipcq: PTC-W0063
                     reversed(
                         sorted(
                             [
@@ -133,7 +133,7 @@ class HelpMod(loader.Module):
                     )
                 )
 
-                module = next(
+                module = next(  # skipcq: PTC-W0063
                     module
                     for module in self.allmodules.modules
                     if module.strings["name"] == module_name

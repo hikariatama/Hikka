@@ -77,7 +77,7 @@ function finish_login() {
         method: "POST",
         credentials: "include"
     })
-    .then((response) => {
+    .then(() => {
         window.expanse = true;
         $(".blur").fadeOut(1500);
         setTimeout(() => {

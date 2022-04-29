@@ -213,6 +213,9 @@ class CommandDispatcher:
         change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
         message = utils.censor(event.message)
 
+        if not event.message.message:
+            return False
+
         if event.message.message.startswith(prefix):
             pass
         elif event.message.message.startswith(str.translate(prefix, change)):
@@ -295,7 +298,6 @@ class CommandDispatcher:
             and initiator not in self._db.get(main.__name__, "nonickusers", [])
             and utils.get_chat_id(event) not in self._db.get(main.__name__, "nonickchats", [])
         ):
-            logging.debug("Ignoring message without nickname")
             return False
 
         txt, func = self._modules.dispatch(tag[0])
@@ -322,7 +324,6 @@ class CommandDispatcher:
             f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
             in blacklist_chats
         ):
-            logging.debug("Command is blacklisted in chat")
             return False
 
         if (
@@ -330,7 +331,6 @@ class CommandDispatcher:
             and f"{utils.get_chat_id(message)}.{func.__self__.__module__}"
             not in whitelist_modules
         ):
-            logging.debug("Command is not whitelisted in chat")
             return False
 
         if self._db.get(main.__name__, "grep", False):

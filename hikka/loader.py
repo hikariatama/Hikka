@@ -750,5 +750,5 @@ class Modules:
     async def log(self, type_, *, group=None, affected_uids=None, data=None):
         return await asyncio.gather(*[fun(type_, group, affected_uids, data) for fun in self._log_handlers])  # fmt: skip
 
-    def register_logger(self, logger):
-        self._log_handlers.append(logger)
+    def register_logger(self, _logger):
+        self._log_handlers.append(_logger)

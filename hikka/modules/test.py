@@ -84,9 +84,9 @@ class TestMod(loader.Module):
     async def watchdog(self):
         while True:
             try:
-                for mod in os.scandir(DEBUG_MODS_DIR):
-                    last_modified = os.stat(mod.path).st_mtime
-                    cls_ = mod.path.split("/")[-1].split(".py")[0]
+                for module in os.scandir(DEBUG_MODS_DIR):
+                    last_modified = os.stat(module.path).st_mtime
+                    cls_ = module.path.split("/")[-1].split(".py")[0]
 
                     if cls_ not in self._memory:
                         self._memory[cls_] = last_modified
@@ -97,7 +97,7 @@ class TestMod(loader.Module):
 
                     self._memory[cls_] = last_modified
                     logger.debug(f"Reloading debug module {cls_}")
-                    with open(mod.path, "r") as f:
+                    with open(module.path, "r") as f:
                         try:
                             await next(
                                 module

@@ -35,8 +35,8 @@ import logging
 import os
 import re
 import sys
-import urllib
 import uuid
+from urllib.parse import urlparse
 from importlib.machinery import ModuleSpec
 import telethon
 from telethon.tl.types import Message
@@ -190,7 +190,7 @@ class LoaderMod(loader.Module):
     async def dlmodcmd(self, message: Message) -> None:
         """Downloads and installs a module from the official module repo"""
         if args := utils.get_args(message):
-            args = args[0] if urllib.parse.urlparse(args[0]).netloc else args[0].lower()
+            args = args[0] if urlparse(args[0]).netloc else args[0].lower()
 
             await self.download_and_install(args, message)
             self._update_modules_in_db()
@@ -202,10 +202,10 @@ class LoaderMod(loader.Module):
                     + f"\n☁️ {repo.strip('/')}\n\n"
                     + "\n".join(
                         [
-                            " ".join(chunk).strip(" | ")
+                            " | ".join(chunk)
                             for chunk in utils.chunks(
                                 [
-                                    f"<code>{i}</code> | "
+                                    f"<code>{i}</code>"
                                     for i in sorted(
                                         [
                                             utils.escape_html(
@@ -291,7 +291,7 @@ class LoaderMod(loader.Module):
 
     async def download_and_install(self, module_name, message=None):
         try:
-            if urllib.parse.urlparse(module_name).netloc:
+            if urlparse(module_name).netloc:
                 url = module_name
             else:
                 links = list(
@@ -582,7 +582,7 @@ class LoaderMod(loader.Module):
                     save_fs,
                 )  # Try again
             except loader.LoadError as e:
-                self.allmodules.modules.remove(instance)
+                self.allmodules.modules.remove(instance)  # skipcq: PYL-E0601
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
                 return
@@ -826,4 +826,4 @@ class LoaderMod(loader.Module):
                 },
             )
 
-        await self._update_modules()
+        asyncio.ensure_future(self._update_modules())
