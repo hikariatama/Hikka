@@ -40,9 +40,9 @@ import uuid
 from importlib.machinery import ModuleSpec
 import telethon
 from telethon.tl.types import Message
-import functools
-from typing import Any, Union, List
+from typing import Union, List
 from aiogram.types import CallbackQuery
+from collections import ChainMap
 
 import requests
 
@@ -156,6 +156,7 @@ class LoaderMod(loader.Module):
         "save_for_all": "💽 Always save to fs",
         "never_save": "🚫 Never save to fs",
         "will_save_fs": "💽 Now all modules, loaded with .loadmod will be saved to filesystem",
+        "add_repo_config_doc": "Additional repos to load from, separated with «|»",
     }
 
     def __init__(self):
@@ -164,6 +165,14 @@ class LoaderMod(loader.Module):
             "MODULES_REPO",
             "https://mods.hikariatama.ru/",
             lambda: self.strings("repo_config_doc"),
+            "ADDITIONAL_REPOS",
+            # Currenly the trusted developers are specified
+            (
+                "https://github.com/hikariatama/host/raw/master/|"
+                "https://github.com/MoriSummerz/ftg-mods/raw/main/|"
+                "https://gitlab.com/CakesTwix/friendly-userbot-modules/-/raw/master/"
+            ),
+            lambda: self.strings("add_repo_config_doc"),
         )
 
     def _update_modules_in_db(self) -> None:
@@ -186,19 +195,32 @@ class LoaderMod(loader.Module):
             await self.download_and_install(args, message)
             self._update_modules_in_db()
         else:
-            available = "\n".join(
-                f"<code>{i}</code>"
-                for i in sorted(
-                    [
-                        utils.escape_html(i)
-                        for i in (await self.get_repo_list("full")).values()
-                    ]
-                )
-            )
-
-            await utils.answer(
+            await self.inline.list(
                 message,
-                f"<b>{self.strings('avail_header')}</b>\n{available}",
+                [
+                    self.strings("avail_header")
+                    + f"\n☁️ {repo.strip('/')}\n\n"
+                    + "\n".join(
+                        [
+                            " ".join(chunk).strip(" | ")
+                            for chunk in utils.chunks(
+                                [
+                                    f"<code>{i}</code> | "
+                                    for i in sorted(
+                                        [
+                                            utils.escape_html(
+                                                i.split("/")[-1].split(".")[0]
+                                            )
+                                            for i in mods.values()
+                                        ]
+                                    )
+                                ],
+                                5,
+                            )
+                        ]
+                    )
+                    for repo, mods in (await self.get_repo_list("full")).items()
+                ],
             )
 
     @loader.owner
@@ -226,22 +248,45 @@ class LoaderMod(loader.Module):
         await self.allmodules.commands["restart"](await message.reply("_"))
 
     async def _get_modules_to_load(self):
-        todo = await self.get_repo_list(self._db.get(__name__, "chosen_preset", None))
+        possible_mods = (
+            await self.get_repo_list(self._db.get(__name__, "chosen_preset", None))
+        ).values()
+        todo = dict(ChainMap(*possible_mods))
         todo.update(**self._db.get(__name__, "loaded_modules", {}))
         return todo
+
+    async def _get_repo(self, repo: str, preset: str) -> str:
+        res = await utils.run_sync(
+            requests.get,
+            f'{repo.strip("/")}/{preset}.txt',
+        )
+        if not str(res.status_code).startswith("2"):
+            logger.debug(f"Can't load {repo=}, {preset=}, {res.status_code=}")
+            return ""
+
+        return res.text
 
     async def get_repo_list(self, preset=None):
         if preset is None or preset == "none":
             preset = "minimal"
 
-        r = await utils.run_sync(
-            requests.get,
-            f'{self.config["MODULES_REPO"].strip("/")}/{preset}.txt',
-        )
-        r.raise_for_status()
         return {
-            f"Preset_mod_{i}": link
-            for i, link in enumerate(set(filter(lambda x: x, r.text.split("\n"))))
+            repo: {
+                f"Preset_mod_{repo_id}_{i}": f'{repo.strip("/")}/{link}.py'
+                for i, link in enumerate(
+                    set(
+                        filter(
+                            lambda x: x,
+                            (await self._get_repo(repo, preset)).split("\n"),
+                        )
+                    )
+                )
+            }
+            for repo_id, repo in enumerate(
+                [self.config["MODULES_REPO"]]
+                + self.config["ADDITIONAL_REPOS"].split("|")
+            )
+            if repo.startswith("http")
         }
 
     async def download_and_install(self, module_name, message=None):
@@ -249,7 +294,21 @@ class LoaderMod(loader.Module):
             if urllib.parse.urlparse(module_name).netloc:
                 url = module_name
             else:
-                url = f'{self.config["MODULES_REPO"].strip("/")}/{module_name}.py'
+                links = list(
+                    dict(
+                        ChainMap(*list((await self.get_repo_list("full")).values()))
+                    ).values()
+                )
+
+                try:
+                    url = next(
+                        link for link in links if link.endswith(f"{module_name}.py")
+                    )
+                except Exception:
+                    if message is not None:
+                        await utils.answer(message, self.strings("no_module"))
+
+                    return False
 
             r = await utils.run_sync(requests.get, url)
 
