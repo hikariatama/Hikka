@@ -40,6 +40,7 @@ from . import utils, security
 from .translations import Strings
 from .inline.core import InlineManager
 from ._types import Module, LoadError, ModuleConfig, StopLoop, SelfUnload  # noqa: F401
+from .fast_uploader import download_file, upload_file
 
 from importlib.machinery import ModuleSpec
 from types import FunctionType
@@ -626,6 +627,11 @@ class Modules:
     ):
         mod.allclients = allclients
         mod.inline = self.inline
+
+        mod._client = client
+
+        mod.fast_upload = functools.partial(upload_file, _client=client)
+        mod.fast_download = functools.partial(download_file, _client=client)
 
         if from_dlmod:
             try:
