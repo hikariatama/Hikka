@@ -74,7 +74,7 @@ class APIRatelimiterMod(loader.Module):
             15,
             lambda: "Time sample DO NOT TOUCH",
             "threshold",
-            50,
+            100,
             lambda: "Threshold DO NOT TOUCH",
             "local_floodwait",
             30,
