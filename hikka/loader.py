@@ -630,6 +630,11 @@ class Modules:
 
         mod._client = client
 
+        if not hasattr(client, "_tg_id"):
+            client._tg_id = (await client.get_me()).id
+
+        mod._tg_id = client._tg_id
+
         mod.fast_upload = functools.partial(upload_file, _client=client)
         mod.fast_download = functools.partial(download_file, _client=client)
 
