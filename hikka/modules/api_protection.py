@@ -44,7 +44,8 @@ class APIRatelimiterMod(loader.Module):
         "args_invalid": "🚫 <b>Invalid arguments</b>",
         "suspended_for": "✅ <b>API Flood Protection is disabled for {} seconds</b>",
         "test": "⚠️ <b>This action will expose your account to flooding Telegram API.</b> <i>In order to confirm, that you really know, what you are doing, complete this simple test - find the emoji, differing from others</i>",
-        "saved": "🚫 <b>Protection disabled</b>",
+        "on": "✅ <b>Protection enabled</b>",
+        "off": "🚫 <b>Protection disabled</b>",
         "u_sure": "⚠️ <b>Are you sure?</b>",
     }
 
@@ -62,7 +63,8 @@ class APIRatelimiterMod(loader.Module):
         "args_invalid": "🚫 <b>Неверные аргументы</b>",
         "suspended_for": "✅ <b>Защита API отключена на {} секунд</b>",
         "test": "⚠️ <b>Это действие открывает юзерботу возможность флудить Telegram API.</b> <i>Для того, чтобы убедиться, что ты действительно уверен в том, что делаешь - реши простенький тест - найди отличающийся эмодзи.</i>",
-        "saved": "🚫 <b>Защита отключена</b>",
+        "on": "✅ <b>Защита включена</b>",
+        "off": "🚫 <b>Защита отключена</b>",
         "u_sure": "⚠️ <b>Ты уверен?</b>",
     }
 
@@ -102,7 +104,8 @@ class APIRatelimiterMod(loader.Module):
             flood_sleep_threshold: int = None,
         ):
             if time.perf_counter() > self._suspend_until and not self.get(
-                "disable_protection"
+                "disable_protection",
+                True,
             ):
                 request_name = type(request).__name__
                 self._ratelimiter += [[request_name, time.perf_counter()]]
@@ -166,14 +169,14 @@ class APIRatelimiterMod(loader.Module):
         self._suspend_until = time.perf_counter() + int(args)
         await utils.answer(message, self.strings("suspended_for").format(args))
 
-    async def disable_api_flood_wait_protectioncmd(self, message: Message):
+    async def api_fw_protectioncmd(self, message: Message):
         """Only for people, who know what they're doing"""
         await self.inline.form(
             message=message,
             text=self.strings("u_sure"),
             reply_markup=[
-                {"text": "✅ No", "callback": self._cancel},
-                {"text": "🚫 Yes", "callback": self._confirm_step_1},
+                {"text": "🚫 No", "callback": self._cancel},
+                {"text": "✅ Yes", "callback": self._finish},
             ],
         )
 
@@ -193,18 +196,7 @@ class APIRatelimiterMod(loader.Module):
         random.shuffle(markup)
         return utils.chunks(markup, 8)
 
-    async def _confirm_step_1(self, call: InlineCall):
-        await call.edit(
-            self.strings("test"),
-            self._generate_silly_markup("😌", "☺️", self._confirm_step_2),
-        )
-
-    async def _confirm_step_2(self, call: InlineCall):
-        await call.edit(
-            self.strings("test"),
-            self._generate_silly_markup("😞", "😔", self._finish),
-        )
-
     async def _finish(self, call: InlineCall):
-        self.set("disable_protection", False)
-        await call.edit(self.strings("saved"))
+        state = self.get("disable_protection", True)
+        self.set("disable_protection", not state)
+        await call.edit(self.strings("on" if state else "off"))
