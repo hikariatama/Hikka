@@ -19,6 +19,7 @@ import time
 import io
 import json
 import random
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,7 @@ class APIRatelimiterMod(loader.Module):
 
     _ratelimiter = []
     _suspend_until = 0
+    _lock = False
 
     def __init__(self):
         self.config = loader.ModuleConfig(
@@ -82,11 +84,16 @@ class APIRatelimiterMod(loader.Module):
         )
 
     async def client_ready(self, client, db):
-        if hasattr(client._call, "_old_call_rewritten"):
+        self._client = client
+        asyncio.ensure_future(self._install_protection())
+
+    async def _install_protection(self):
+        await asyncio.sleep(30)  # Restart lock
+        if hasattr(self._client._call, "_old_call_rewritten"):
             raise loader.SelfUnload("Already installed")
 
-        self._me = (await client.get_me()).id
-        old_call = client._call
+        self._me = (await self._client.get_me()).id
+        old_call = self._client._call
 
         async def new_call(
             sender: "MTProtoSender",  # noqa: F821
@@ -108,7 +115,11 @@ class APIRatelimiterMod(loader.Module):
                     )
                 )
 
-                if len(self._ratelimiter) > int(self.config["threshold"]):
+                if (
+                    len(self._ratelimiter) > int(self.config["threshold"])
+                    and not self._lock
+                ):
+                    self._lock = True
                     report = io.BytesIO(
                         json.dumps(
                             self._ratelimiter,
@@ -129,12 +140,13 @@ class APIRatelimiterMod(loader.Module):
 
                     # It is intented to use time.sleep instead of asyncio.sleep
                     time.sleep(int(self.config["local_floodwait"]))
+                    self._lock = False
 
             return await old_call(sender, request, ordered, flood_sleep_threshold)
 
-        client._call = new_call
-        client._old_call_rewritten = old_call
-        client._call._hikka_overwritten = True
+        self._client._call = new_call
+        self._client._old_call_rewritten = old_call
+        self._client._call._hikka_overwritten = True
         logger.debug("Successfully installed ratelimiter")
 
     async def on_unload(self):
@@ -190,37 +202,7 @@ class APIRatelimiterMod(loader.Module):
     async def _confirm_step_2(self, call: InlineCall):
         await call.edit(
             self.strings("test"),
-            self._generate_silly_markup("😞", "😔", self._confirm_step_3),
-        )
-
-    async def _confirm_step_3(self, call: InlineCall):
-        await call.edit(
-            self.strings("test"),
-            self._generate_silly_markup("🧑‍🏫", "👨‍🏫", self._confirm_step_4),
-        )
-
-    async def _confirm_step_4(self, call: InlineCall):
-        await call.edit(
-            self.strings("test"),
-            self._generate_silly_markup("👨‍💻", "🧑‍💻", self._confirm_step_5),
-        )
-
-    async def _confirm_step_5(self, call: InlineCall):
-        await call.edit(
-            self.strings("test"),
-            self._generate_silly_markup("🤵‍♂️", "🤵", self._confirm_step_6),
-        )
-
-    async def _confirm_step_6(self, call: InlineCall):
-        await call.edit(
-            self.strings("test"),
-            self._generate_silly_markup("👩‍🚀", "🧑‍🚀", self._confirm_step_7),
-        )
-
-    async def _confirm_step_7(self, call: InlineCall):
-        await call.edit(
-            self.strings("test"),
-            self._generate_silly_markup("👨‍🚒", "🧑‍🚒", self._finish),
+            self._generate_silly_markup("😞", "😔", self._finish),
         )
 
     async def _finish(self, call: InlineCall):
