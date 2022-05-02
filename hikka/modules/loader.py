@@ -582,7 +582,11 @@ class LoaderMod(loader.Module):
                     save_fs,
                 )  # Try again
             except loader.LoadError as e:
-                self.allmodules.modules.remove(instance)  # skipcq: PYL-E0601
+                try:
+                    self.allmodules.modules.remove(instance)  # skipcq: PYL-E0601
+                except ValueError:
+                    pass
+
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
                 return
@@ -619,7 +623,11 @@ class LoaderMod(loader.Module):
                     from_dlmod=bool(message),
                 )
             except loader.LoadError as e:
-                self.allmodules.modules.remove(instance)
+                try:
+                    self.allmodules.modules.remove(instance)
+                except ValueError:
+                    pass
+
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
                 return
