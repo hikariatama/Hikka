@@ -19,12 +19,6 @@ import ast
 
 logger = logging.getLogger(__name__)
 
-blacklist = [
-    "Raphielgang Configuration Placeholder",
-    "Uniborg configuration placeholder",
-    "Logger",
-]
-
 
 @loader.tds
 class HikkaConfigMod(loader.Module):
@@ -36,6 +30,15 @@ class HikkaConfigMod(loader.Module):
         "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>",
         "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>",
         "option_saved": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: </b><code>{}</code>",
+    }
+
+    strings_ru = {
+        "configure": "🎚 <b>Здесь можно управлять настройками модулей</b>",
+        "configuring_mod": "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>",
+        "configuring_option": "🎚 <b>Управление параметром </b><code>{}</code><b> модуля </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное значение: </b><code>{}</code>\n\n<b>Текущее значение: </b><code>{}</code>",
+        "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее значение: </b><code>{}</code>",
+        "_cmd_doc_config": "Настройки модулей",
+        "_cls_doc": "Интерактивный конфигуратор Hikka",
     }
 
     async def client_ready(self, client, db):
@@ -161,7 +164,7 @@ class HikkaConfigMod(loader.Module):
         to_config = [
             mod.strings("name")
             for mod in self.allmodules.modules
-            if hasattr(mod, "config") and mod.strings("name") not in blacklist
+            if hasattr(mod, "config")
         ]
         kb = []
         for mod_row in utils.chunks(to_config, 3):

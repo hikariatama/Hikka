@@ -37,6 +37,18 @@ class HikkaInfoMod(loader.Module):
         "update_required": "⚠️ Update required </b><code>.update</code><b>",
     }
 
+    strings_ru = {
+        "owner": "Владелец",
+        "version": "Версия",
+        "build": "Сборка",
+        "prefix": "Префикс команд",
+        "send_info": "Отправить информацию о юзерботе",
+        "description": "ℹ Это не раскроет никакой личной информации",
+        "_ihandle_doc_info": "Отправить информацию о юзерботе",
+        "up-to-date": "✅ Актуальная версия",
+        "update_required": "⚠️ Требуется обновление </b><code>.update</code><b>"
+    }
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client

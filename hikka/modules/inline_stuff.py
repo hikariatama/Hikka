@@ -33,6 +33,13 @@ class InlineStuffMod(loader.Module):
         "bot_updated": "😌 <b>Config successfully saved. Restart userbot to apply changes</b>",
     }
 
+    strings_ru = {
+        "bot_username_invalid": "🚫 <b>Неправильный ник бота. Он должен заканчиваться на </b><code>bot</code><b> и быть не короче чем 5 символов</b>",
+        "bot_username_occupied": "🚫 <b>Такой ник бота уже занят</b>",
+        "bot_updated": "😌 <b>Настройки сохранены. Для их применения нужно перезагрузить юзербот</b>",
+        "_cmd_doc_ch_hikka_bot": "<username> - Изменить юзернейм инлайн бота",
+    }
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client

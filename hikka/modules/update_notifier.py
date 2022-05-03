@@ -32,6 +32,11 @@ class UpdateNotifierMod(loader.Module):
         "more": "\n<i><b>🎥 And {} more...</b></i>",
     }
 
+    strings_ru = {
+        "update_required": "🌘 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
+        "more": "\n<i><b>🎥 И еще {}...</b></i>",
+    }
+
     _notified = None
 
     def get_commit(self) -> Union[str, bool]:

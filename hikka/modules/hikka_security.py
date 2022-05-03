@@ -85,18 +85,58 @@ class HikkaSecurityMod(loader.Module):
         "cancel": "🚫 Cancel",
         "confirm": "👑 Confirm",
         "self": "🚫 <b>You can't promote/demote yourself!</b>",
-        "restart": "<i>🔄 Restart may be required to commit changes</i>",
+    }
+
+    strings_ru = {
+        "no_command": "🚫 <b>Команда </b><code>{}</code><b> не найдена!</b>",
+        "permissions": "🔐 <b>Здесь можно настроить разрешения для команды </b><code>{}{}</code>",
+        "close_menu": "🙈 Закрыть это меню",
+        "global": "🔐 <b>Здесь можно настроить глобальную исключающую маску. Если тумблер выключен здесь, он выключен для всех команд</b>",
+        "owner": "🤴 Владелец",
+        "sudo": "🤵 Sudo",
+        "support": "💁‍♂️ Помощник",
+        "group_owner": "🧛‍♂️ Влад. группы",
+        "group_admin_add_admins": "👨‍💻 Админ (добавлять участников)",
+        "group_admin_change_info": "👨‍💻 Админ (изменять инфо)",
+        "group_admin_ban_users": "👨‍💻 Админ (банить)",
+        "group_admin_delete_messages": "👨‍💻 Админ (удалять сообщения)",
+        "group_admin_pin_messages": "👨‍💻 Админ (закреплять)",
+        "group_admin_invite_users": "👨‍💻 Админ (приглашать)",
+        "group_admin": "👨‍💻 Админ (любой)",
+        "group_member": "👥 В группе",
+        "pm": "🤙 В лс",
+        "owner_list": "🤴 <b>Пользователи группы </b><code>owner</code><b>:</b>\n\n{}",
+        "sudo_list": "🤵‍♀️ <b>Пользователи группы </b><code>sudo</code><b>:</b>\n\n{}",
+        "support_list": "🙋‍♂️ <b>Пользователи группы </b><code>support</code><b>:</b>\n\n{}",
+        "no_owner": "🤴 <b>Нет пользователей в группе </b><code>owner</code>",
+        "no_sudo": "🤵‍♀️ <b>Нет пользователей в группе </b><code>sudo</code>",
+        "no_support": "🙋‍♂️ <b>Нет пользователей в группе </b><code>support</code>",
+        "no_user": "🚫 <b>Укажи, кому выдавать права</b>",
+        "not_a_user": "🚫 <b>Указанная цель - не пользователь</b>",
+        "cancel": "🚫 Отмена",
+        "confirm": "👑 Подтвердить",
+        "self": "🚫 <b>Нельзя управлять своими правами!</b>",
+        "warning": (
+            "⚠️ <b>Ты действительно хочешь добавить <a href=\"tg://user?id={}\">{}</a> "
+            "в группу </b><code>{}</code><b>!\nЭто действие может передать частичный или"
+            " полный доступ к юзерботу этому пользователю!</b>"
+        ),
+        "_cmd_doc_security": "[команда] - Изменить настройки безопасности для команды",
+        "_cmd_doc_sudoadd": "<пользователь> - Добавить пользователя в группу `sudo`",
+        "_cmd_doc_owneradd": "<пользователь> - Добавить пользователя в группу `owner`",
+        "_cmd_doc_supportadd": "<пользователь> - Добавить пользователя в группу `support`",
+        "_cmd_doc_sudorm": "<пользователь> - Удалить пользователя из группы `sudo`",
+        "_cmd_doc_ownerrm": "<пользователь> - Удалить пользователя из группы `owner`",
+        "_cmd_doc_supportrm": "<пользователь> - Удалить пользователя из группы `support`",
+        "_cmd_doc_sudolist": "Показать пользователей в группе `sudo`",
+        "_cmd_doc_ownerlist": "Показать пользователей в группе `owner`",
+        "_cmd_doc_supportlist": "Показать пользователей в группе `support`",
+        "_cls_doc": "Управление настройками безопасности",
     }
 
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self.prefix = utils.escape_html(
-            (self._db.get(main.__name__, "command_prefix", False) or ".")
-        )
-
-        self._me = (await client.get_me()).id
-        self._is_hikka = hasattr(self, "inline")
 
     async def inline__switch_perm(
         self,
@@ -141,7 +181,7 @@ class HikkaSecurityMod(loader.Module):
 
         await call.edit(
             self.strings("permissions").format(
-                self.prefix if not is_inline else f"@{self.inline.bot_username} ",
+                self.get_prefix() if not is_inline else f"@{self.inline.bot_username} ",
                 command,
             ),
             reply_markup=self._build_markup(cmd, is_inline),
@@ -292,7 +332,7 @@ class HikkaSecurityMod(loader.Module):
         cmd = self.allmodules.commands[args]
 
         await self.inline.form(
-            self.strings("permissions").format(self.prefix, args),
+            self.strings("permissions").format(self.get_prefix(), args),
             reply_markup=self._build_markup(cmd),
             message=message,
             ttl=5 * 60,
@@ -348,7 +388,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("not_a_user"))
             return
 
-        if user.id == self._me:
+        if user.id == self._tg_id:
             await utils.answer(message, self.strings("self"))
             return
 
@@ -369,7 +409,7 @@ class HikkaSecurityMod(loader.Module):
         if isinstance(user, int):
             user = await self._client.get_entity(user)
 
-        if self._is_hikka and not confirmed:
+        if not confirmed:
             await self.inline.form(
                 self.strings("warning").format(
                     user.id, utils.escape_html(get_display_name(user)), group
@@ -403,9 +443,6 @@ class HikkaSecurityMod(loader.Module):
             utils.escape_html(get_display_name(user)),
         )
 
-        if not self._is_hikka:
-            m += f"\n\n{self.strings('restart')}"
-
         if isinstance(message, Message):
             await utils.answer(
                 message,
@@ -430,15 +467,12 @@ class HikkaSecurityMod(loader.Module):
             utils.escape_html(get_display_name(user)),
         )
 
-        if not self._is_hikka:
-            m += f"\n\n{self.strings('restart')}"
-
         await utils.answer(message, m)
 
     async def _list_group(self, message: Message, group: str):
         _resolved_users = []
         for user in self._db.get(security.__name__, group, []) + (
-            [self._me] if group == "owner" else []
+            [self._tg_id] if group == "owner" else []
         ):
             try:
                 _resolved_users += [await self._client.get_entity(user)]
