@@ -528,6 +528,9 @@ class LoaderMod(loader.Module):
         if name is None:
             uid = "__extmod_" + str(uuid.uuid4())
         else:
+            if name.startswith(self.config["MODULES_REPO"]):
+                name = name.split("/")[-1].split(".py")[0]
+
             uid = name.replace("%", "%%").replace(".", "%d")
 
         module_name = "hikka.modules." + uid
