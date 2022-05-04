@@ -36,9 +36,9 @@ from typing import Union
 import git
 from git import Repo, GitCommandError
 from telethon.tl.types import Message
-from aiogram.types import CallbackQuery
 
 from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -94,33 +94,35 @@ class UpdaterMod(loader.Module):
     async def restartcmd(self, message: Message):
         """Restarts the userbot"""
         try:
-            if not self.inline.init_complete or not await self.inline.form(
-                message=message,
-                text=self.strings("restart_confirm"),
-                reply_markup=[
-                    {
-                        "text": self.strings("btn_restart"),
-                        "callback": self.inline_restart,
-                    },
-                    {"text": self.strings("cancel"), "callback": self.inline_close},
-                ],
+            if (
+                "--force" in (utils.get_args_raw(message) or "")
+                or not self.inline.init_complete
+                or not await self.inline.form(
+                    message=message,
+                    text=self.strings("restart_confirm"),
+                    reply_markup=[
+                        {
+                            "text": self.strings("btn_restart"),
+                            "callback": self.inline_restart,
+                        },
+                        {"text": self.strings("cancel"), "callback": self.inline_close},
+                    ],
+                )
             ):
                 raise
         except Exception:
             message = await utils.answer(message, self.strings("restarting_caption"))
-            if isinstance(message, (list, set, tuple)):
-                message = message[0]
 
             await self.restart_common(message)
 
-    async def inline_restart(self, call: CallbackQuery):
+    async def inline_restart(self, call: InlineCall):
         await call.edit(self.strings("restarting_caption"))
         await self.restart_common(call)
 
-    async def inline_close(self, call: CallbackQuery):
+    async def inline_close(self, call: InlineCall):
         await call.delete()
 
-    async def prerestart_common(self, call: Union[CallbackQuery, Message]):
+    async def prerestart_common(self, call: Union[InlineCall, Message]):
         logger.debug(f"Self-update. {sys.executable} -m {utils.get_base_dir()}")
         if hasattr(call, "inline_message_id"):
             self._db.set(__name__, "selfupdatemsg", call.inline_message_id)
@@ -129,7 +131,7 @@ class UpdaterMod(loader.Module):
                 __name__, "selfupdatemsg", f"{utils.get_chat_id(call)}:{call.id}"
             )
 
-    async def restart_common(self, call: Union[CallbackQuery, Message]):
+    async def restart_common(self, call: Union[InlineCall, Message]):
         if (
             hasattr(call, "form")
             and isinstance(call.form, dict)
@@ -221,7 +223,7 @@ class UpdaterMod(loader.Module):
 
     async def inline_update(
         self,
-        call: Union[CallbackQuery, Message],
+        call: Union[InlineCall, Message],
         hard: bool = False,
     ):
         # We don't really care about asyncio at this point, as we are shutting down

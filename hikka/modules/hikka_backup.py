@@ -8,12 +8,12 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta developer: @hikariatama
+# scope: inline
 
 from .. import loader, utils
+from ..inline.types import InlineCall
 from telethon.tl.types import Message
 import logging
-from aiogram.types import CallbackQuery
 import time
 import asyncio
 import io
@@ -51,10 +51,9 @@ class HikkaBackupMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._me = (await client.get_me()).id
         if not self.get("period"):
             await self.inline.bot.send_photo(
-                self._me,
+                self._tg_id,
                 photo="https://i.pinimg.com/originals/94/e5/9c/94e59c1fbecd7b842d7feeecb58f8fd6.jpg",
                 caption=self.strings("period"),
                 reply_markup=self.inline._generate_markup(
@@ -100,7 +99,7 @@ class HikkaBackupMod(loader.Module):
         except Exception:
             pass
 
-    async def backup_period_callback_handler(self, call: CallbackQuery):
+    async def backup_period_callback_handler(self, call: InlineCall):
         if not call.data.startswith("backup_period"):
             return
 
@@ -172,4 +171,4 @@ class HikkaBackupMod(loader.Module):
                 self.set("last_backup", round(time.time()))
             except Exception:
                 logger.exception("HikkaBackup failed")
-                await asyncio.sleep(3)
+                await asyncio.sleep(60)

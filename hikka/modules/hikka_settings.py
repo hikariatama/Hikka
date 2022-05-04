@@ -11,8 +11,8 @@
 # scope: inline
 
 from .. import loader, utils, main
+from ..inline.types import InlineCall
 from telethon.tl.types import Message
-from aiogram.types import CallbackQuery
 import logging
 
 logger = logging.getLogger(__name__)
@@ -46,6 +46,11 @@ class HikkaSettingsMod(loader.Module):
         "download_btn": "✅ Download via button",
         "no_download_btn": "🚫 Download via button",
         "private_not_allowed": "🚫 <b>This command must be executed in chat</b>",
+        "nonick_warning": (
+            "Warning! You enabled NoNick with default prefix! "
+            "You may get muted in Hikka chats. Change prefix or "
+            "disable NoNick!"
+        ),
     }
 
     strings_ru = {
@@ -77,6 +82,11 @@ class HikkaSettingsMod(loader.Module):
         "_cmd_doc_nonickuser": "Разрешить пользователю выполнять какую-то команду без ника",
         "_cmd_doc_nonickcmd": "Разрешить выполнять определенную команду без ника",
         "_cls_doc": "Дополнительные настройки Hikka",
+        "nonick_warning": (
+            "Внимание! Ты включил NoNick со стандартным префиксом! "
+            "Тебя могут замьютить в чатах Hikka. Измени префикс или "
+            "отлюкчи глобальный NoNick!"
+        ),
     }
 
     def get_watchers(self) -> tuple:
@@ -294,7 +304,7 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickcmds", nn)
 
-    async def inline__setting(self, call: CallbackQuery, key: str, state: bool):
+    async def inline__setting(self, call: InlineCall, key: str, state: bool):
         self._db.set(main.__name__, key, state)
 
         if (
@@ -303,9 +313,7 @@ class HikkaSettingsMod(loader.Module):
             and self._db.get(main.__name__, "command_prefix", ".") == "."
         ):
             await call.answer(
-                "Warning! You enabled NoNick with default prefix! "
-                "You may get muted in Hikka chats. Change prefix or "
-                "disable NoNick!",
+                self.strings("nonick_warning"),
                 show_alert=True,
             )
         else:
@@ -316,12 +324,12 @@ class HikkaSettingsMod(loader.Module):
             reply_markup=self._get_settings_markup(),
         )
 
-    async def inline__close(self, call: CallbackQuery):
+    async def inline__close(self, call: InlineCall):
         await call.delete()
 
     async def inline__update(
         self,
-        call: CallbackQuery,
+        call: InlineCall,
         confirm_required: bool = False,
     ):
         if confirm_required:
@@ -336,12 +344,12 @@ class HikkaSettingsMod(loader.Module):
 
         await call.answer("You userbot is being updated...", show_alert=True)
         await call.delete()
-        m = await self._client.send_message("me", ".update")
+        m = await self._client.send_message("me", f"{self.get_prefix()}update --force")
         await self.allmodules.commands["update"](m)
 
     async def inline__restart(
         self,
-        call: CallbackQuery,
+        call: InlineCall,
         confirm_required: bool = False,
     ):
         if confirm_required:
@@ -356,7 +364,7 @@ class HikkaSettingsMod(loader.Module):
 
         await call.answer("You userbot is being restarted...", show_alert=True)
         await call.delete()
-        m = await self._client.send_message("me", ".restart")
+        m = await self._client.send_message("me", f"{self.get_prefix()}restart --force")
         await self.allmodules.commands["restart"](m)
 
     def _get_settings_markup(self) -> list:

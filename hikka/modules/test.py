@@ -16,11 +16,10 @@ import logging
 from io import BytesIO
 
 from .. import loader, utils, main
+from ..inline.types import InlineCall
 
 from typing import Union
 from telethon.tl.types import Message
-
-import aiogram
 import inspect
 import asyncio
 import os
@@ -49,7 +48,7 @@ class TestMod(loader.Module):
         "logs_caption": "🌘 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka version: {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>",
         "suspend_invalid_time": "🚫 <b>Invalid time to suspend</b>",
         "suspended": "🥶 <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>",
-        "results_ping": "⏱ <b>Ping:</b> <code>{}</code> <b>ms</b>",
+        "results_ping": "⏱ <b>Response time:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Uptime: {}</b>",
         "confidential": "⚠️ <b>Log level </b><code>{}</code><b> may reveal your confidential info, be careful</b>",
         "confidential_text": (
             "⚠️ <b>Log level </b><code>{0}</code><b> may reveal your confidential info, "
@@ -76,7 +75,7 @@ class TestMod(loader.Module):
         "debugging_disabled": "✅ <b>Режим разработчика выключен</b>",
         "suspend_invalid_time": "🚫 <b>Неверное время заморозки</b>",
         "suspended": "🥶 <b>Бот заморожен на</b> <code>{}</code> <b>секунд</b>",
-        "results_ping": "⏱ <b>Пинг:</b> <code>{}</code> <b>ms</b>",
+        "results_ping": "⏱ <b>Скорость отклика:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Прошло с последней перезагрузки: {}</b>",
         "confidential": "⚠️ <b>Уровень логов </b><code>{}</code><b> может содержать личную информацию, будь осторожен</b>",
         "confidential_text": "⚠️ <b>Уровень логов </b><code>{0}</code><b> может содержать личную информацию, будь осторожен</b>\n<b>Напиши </b><code>.logs {0} force_insecure</code><b>, чтобы отправить логи игнорируя предупреждение</b>",
         "choose_loglevel": "💁‍♂️ <b>Выбери уровень логов</b>",
@@ -101,7 +100,7 @@ class TestMod(loader.Module):
         )
 
     @staticmethod
-    async def cancel(call: aiogram.types.CallbackQuery):
+    async def cancel(call: InlineCall):
         await call.delete()
 
     async def watchdog(self):
@@ -194,7 +193,7 @@ class TestMod(loader.Module):
 
     async def logscmd(
         self,
-        message: Union[Message, aiogram.types.CallbackQuery],
+        message: Union[Message, InlineCall],
         force: bool = False,
         lvl: Union[int, None] = None,
     ):
@@ -322,21 +321,21 @@ class TestMod(loader.Module):
         if btoken:
             logs = logs.replace(
                 btoken,
-                f'{btoken.split(":")}:***************************',
+                f'{btoken.split(":")[0]}:***************************',
             )
 
         hikka_token = self._db.get("HikkaDL", "token", False)
         if hikka_token:
             logs = logs.replace(
                 hikka_token,
-                f'{hikka_token.split("_")}_********************************',
+                f'{hikka_token.split("_")[0]}_********************************',
             )
 
         hikka_token = self._db.get("Kirito", "token", False)
         if hikka_token:
             logs = logs.replace(
                 hikka_token,
-                f'{hikka_token.split("_")}_********************************',
+                f'{hikka_token.split("_")[0]}_********************************',
             )
 
         logs = BytesIO(logs.encode("utf-16"))
@@ -354,9 +353,9 @@ class TestMod(loader.Module):
             self.strings(
                 f"database_{'un' if self._db.get(main.__name__, 'enable_db_eval', False) else ''}locked"
             ),
-            "🚫" if self._db.get(main.__name__, "no_nickname", False) else "✅",
-            "🚫" if self._db.get(main.__name__, "grep", False) else "✅",
-            "🚫" if self._db.get(main.__name__, "inlinelogs", False) else "✅",
+            "🚫" if not self._db.get(main.__name__, "no_nickname", False) else "✅",
+            "🚫" if not self._db.get(main.__name__, "grep", False) else "✅",
+            "🚫" if not self._db.get(main.__name__, "inlinelogs", False) else "✅",
         )
 
         if isinstance(message, Message):
@@ -380,26 +379,23 @@ class TestMod(loader.Module):
         try:
             time_sleep = float(utils.get_args_raw(message))
             await utils.answer(
-                message, self.strings("suspended", message).format(str(time_sleep))
+                message, self.strings("suspended").format(str(time_sleep))
             )
             time.sleep(time_sleep)
         except ValueError:
-            await utils.answer(message, self.strings("suspend_invalid_time", message))
+            await utils.answer(message, self.strings("suspend_invalid_time"))
 
     async def pingcmd(self, message: Message):
         """Test your userbot ping"""
         start = time.perf_counter_ns()
-        message = await utils.answer(
-            message, "<code>🐻 Bear with us while ping is checking...</code>"
+        message = await utils.answer(message, "<code>🐻 Nofin...</code>")
+        await utils.answer(
+            message,
+            self.strings("results_ping").format(
+                round((time.perf_counter_ns() - start) / 10**6, 3),
+                utils.formatted_uptime(),
+            ),
         )
-        end = time.perf_counter_ns()
-
-        if isinstance(message, (list, tuple, set)):
-            message = message[0]
-
-        ms = (end - start) * 0.000001
-
-        await utils.answer(message, self.strings("results_ping").format(round(ms, 3)))
 
     async def client_ready(self, client, db):
         self._client = client

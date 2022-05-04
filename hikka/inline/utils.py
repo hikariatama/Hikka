@@ -129,14 +129,18 @@ class Utils(InlineUnit):
                         line += [
                             InlineKeyboardButton(
                                 button["text"],
-                                switch_inline_query_current_chat=button["switch_inline_query_current_chat"]
+                                switch_inline_query_current_chat=button[
+                                    "switch_inline_query_current_chat"
+                                ],
                             )
                         ]
                     elif "switch_inline_query" in button:
                         line += [
                             InlineKeyboardButton(
                                 button["text"],
-                                switch_inline_query_current_chat=button["switch_inline_query"]
+                                switch_inline_query_current_chat=button[
+                                    "switch_inline_query"
+                                ],
                             )
                         ]
                     else:
@@ -244,12 +248,26 @@ class Utils(InlineUnit):
         else:
             unit = {}
 
+        inline_message_id = (
+            inline_message_id
+            or unit.get("inline_message_id", False)
+            or query.inline_message_id
+        )
+
+        if not inline_message_id:
+            logger.warning(
+                "Attempted to edit message with no `inline_message_id`. "
+                "Possible reasons:\n"
+                "- Form was sent without buttons and due to "
+                "the limits of Telegram API can't be edited\n"
+                "- There is an in-userbot error, which you should report"
+            )
+            return False
+
         try:
             await self.bot.edit_message_text(
                 text,
-                inline_message_id=inline_message_id
-                or unit.get("inline_message_id", False)
-                or query.inline_message_id,
+                inline_message_id=inline_message_id,
                 parse_mode="HTML",
                 disable_web_page_preview=disable_web_page_preview,
                 reply_markup=self._generate_markup(

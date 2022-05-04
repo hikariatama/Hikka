@@ -11,8 +11,8 @@
 # scope: inline
 
 from .. import loader, utils
+from ..inline.types import InlineCall
 from telethon.tl.types import Message
-from aiogram.types import CallbackQuery
 import logging
 import re
 
@@ -45,7 +45,7 @@ class InlineStuffMod(loader.Module):
         self._client = client
         self._bot_id = (await self.inline.bot.get_me()).id
 
-    async def inline__close(self, call: CallbackQuery):
+    async def inline__close(self, call: InlineCall):
         await call.delete()
 
     async def watcher(self, message: Message):

@@ -13,11 +13,11 @@
 from types import FunctionType
 from typing import List, Union
 from telethon.tl.types import Message, User, PeerUser
-from .. import loader, utils, main, security
+from .. import loader, utils, security
+from ..inline.types import InlineCall
 from telethon.utils import get_display_name
 
 import logging
-import aiogram
 from ..security import (
     SUDO,
     SUPPORT,
@@ -140,7 +140,7 @@ class HikkaSecurityMod(loader.Module):
 
     async def inline__switch_perm(
         self,
-        call: aiogram.types.CallbackQuery,
+        call: InlineCall,
         command: str,
         group: str,
         level: bool,
@@ -189,7 +189,7 @@ class HikkaSecurityMod(loader.Module):
 
     async def inline__switch_perm_bm(
         self,
-        call: aiogram.types.CallbackQuery,
+        call: InlineCall,
         group: str,
         level: bool,
         is_inline: bool,
@@ -211,7 +211,7 @@ class HikkaSecurityMod(loader.Module):
         )
 
     @staticmethod
-    async def inline_close(call: aiogram.types.CallbackQuery):
+    async def inline_close(call: InlineCall):
         await call.delete()
 
     def _build_markup(
@@ -227,7 +227,7 @@ class HikkaSecurityMod(loader.Module):
                         "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
                         "callback": self.inline__switch_perm,
                         "args": (
-                            command.__name__[:-3],
+                            command.__name__.rstrip("cmd"),
                             group,
                             not level,
                             is_inline,
@@ -244,7 +244,7 @@ class HikkaSecurityMod(loader.Module):
                     "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
                     "callback": self.inline__switch_perm,
                     "args": (
-                        command.__name__[:-15],
+                        command.__name__.rstrip("_inline_handler"),
                         group,
                         not level,
                         is_inline,
@@ -396,7 +396,7 @@ class HikkaSecurityMod(loader.Module):
 
     async def _add_to_group(
         self,
-        message: Union[Message, "aigoram.types.CallbackQuery"],  # noqa: F821
+        message: Union[Message, InlineCall],  # noqa: F821
         group: str,
         confirmed: bool = False,
         user: int = None,
@@ -412,7 +412,9 @@ class HikkaSecurityMod(loader.Module):
         if not confirmed:
             await self.inline.form(
                 self.strings("warning").format(
-                    user.id, utils.escape_html(get_display_name(user)), group
+                    user.id,
+                    utils.escape_html(get_display_name(user)),
+                    group,
                 ),
                 message=message,
                 ttl=10 * 60,

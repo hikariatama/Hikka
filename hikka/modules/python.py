@@ -8,15 +8,19 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import logging
-import telethon
-from meval import meval
 from .. import loader, utils, main
+from ..inline.types import InlineCall
+
+import logging
 from traceback import format_exc
-import itertools
+
+from meval import meval
+
 from types import ModuleType
+import itertools
+
+import telethon
 from telethon.tl.types import Message
-from aiogram.types import CallbackQuery
 from telethon.errors.rpcerrorlist import MessageIdInvalidError
 
 logger = logging.getLogger(__name__)
@@ -84,11 +88,11 @@ class PythonMod(loader.Module):
         """Alias for .e command"""
         await self.ecmd(message)
 
-    async def inline__close(self, call: CallbackQuery):
+    async def inline__close(self, call: InlineCall):
         await call.answer("Operation cancelled")
         await call.delete()
 
-    async def inline__allow(self, call: CallbackQuery):
+    async def inline__allow(self, call: InlineCall):
         await call.answer("Now you can access db through .e command", show_alert=True)
         self._db.set(main.__name__, "enable_db_eval", True)
         await call.delete()
@@ -97,7 +101,7 @@ class PythonMod(loader.Module):
     async def ecmd(self, message: Message):
         """Evaluates python code"""
         phone = self._client.phone
-        ret = self.strings("eval", message)
+        ret = self.strings("eval")
         try:
             it = await meval(
                 utils.get_args_raw(message),
@@ -123,7 +127,7 @@ class PythonMod(loader.Module):
             exc = format_exc().replace(phone, "📵")
             await utils.answer(
                 message,
-                self.strings("err", message).format(
+                self.strings("err").format(
                     utils.escape_html(utils.get_args_raw(message)),
                     utils.escape_html(exc),
                 ),

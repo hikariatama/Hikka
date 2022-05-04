@@ -9,8 +9,8 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 from .. import loader, translations
+from ..inline.types import InlineCall
 import logging
-from aiogram.types import CallbackQuery
 from random import choice
 import os
 
@@ -87,7 +87,7 @@ class QuickstartMod(loader.Module):
 
         db.set("hikka", "disable_quickstart", True)
 
-    async def quickstart_callback_handler(self, call: CallbackQuery):
+    async def quickstart_callback_handler(self, call: InlineCall):
         if not call.data.startswith("hikka_qs_sw_lng_"):
             return
 

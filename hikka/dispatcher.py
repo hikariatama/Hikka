@@ -201,9 +201,6 @@ class CommandDispatcher:
             return False
 
         prefix = self._db.get(main.__name__, "command_prefix", False) or "."
-        if isinstance(prefix, list):
-            prefix = prefix[0]
-            self._db.set(main.__name__, "command_prefix", prefix)
 
         if len(prefix) != 1:
             prefix = "."
@@ -268,10 +265,7 @@ class CommandDispatcher:
 
         utils.relocate_entities(message.entities, -len(prefix))
 
-        try:
-            initiator = event.sender_id
-        except Exception:
-            initiator = 0
+        initiator = getattr(event, "sender_id", 0)
 
         command = message.message.split(maxsplit=1)[0]
         tag = command.split("@", maxsplit=1)
@@ -283,7 +277,8 @@ class CommandDispatcher:
             elif tag[1].lower() != self._cached_username:
                 return False
         elif (
-            event.mentioned
+            event.out
+            or event.mentioned
             and event.message is not None
             and event.message.message is not None
             and f"@{self._cached_username}" not in event.message.message
@@ -292,11 +287,11 @@ class CommandDispatcher:
         elif (
             not event.is_private
             and not self.no_nickname
-            and not event.out
             and not self._db.get(main.__name__, "no_nickname", False)
             and command not in self._db.get(main.__name__, "nonickcmds", [])
             and initiator not in self._db.get(main.__name__, "nonickusers", [])
-            and utils.get_chat_id(event) not in self._db.get(main.__name__, "nonickchats", [])
+            and utils.get_chat_id(event)
+            not in self._db.get(main.__name__, "nonickchats", [])
         ):
             return False
 

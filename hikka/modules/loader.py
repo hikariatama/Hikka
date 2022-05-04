@@ -41,14 +41,13 @@ from importlib.machinery import ModuleSpec
 import telethon
 from telethon.tl.types import Message
 from typing import Union, List
-from aiogram.types import CallbackQuery
 from collections import ChainMap
 
 import requests
 
 from .. import loader, utils, main
 from ..compat import geek
-from ..inline.types import InlineMessage
+from ..inline.types import InlineMessage, InlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -287,7 +286,9 @@ class LoaderMod(loader.Module):
         self._db.set(__name__, "loaded_modules", {})
 
         await utils.answer(message, self.strings("preset_loaded"))
-        await self.allmodules.commands["restart"](await message.reply("_"))
+        await self.allmodules.commands["restart"](
+            await message.reply(f"{self.get_prefix()}restart --force")
+        )
 
     async def _get_modules_to_load(self):
         possible_mods = (
@@ -372,7 +373,7 @@ class LoaderMod(loader.Module):
 
     async def _inline__load(
         self,
-        call: CallbackQuery,
+        call: InlineCall,
         doc: str,
         path_: Union[str, None],
         mode: str,
@@ -527,9 +528,6 @@ class LoaderMod(loader.Module):
         if name is None:
             uid = "__extmod_" + str(uuid.uuid4())
         else:
-            if name.startswith(self.config["MODULES_REPO"]):
-                name = name.split("/")[-1].split(".py")[0]
-
             uid = name.replace("%", "%%").replace(".", "%d")
 
         module_name = "hikka.modules." + uid
@@ -675,7 +673,11 @@ class LoaderMod(loader.Module):
                 return
             except loader.SelfUnload as e:
                 logging.debug(f"Unloading {instance}, because it raised `SelfUnload`")
-                self.allmodules.modules.remove(instance)
+                try:
+                    self.allmodules.modules.remove(instance)
+                except ValueError:
+                    pass
+
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
                 return
@@ -850,7 +852,9 @@ class LoaderMod(loader.Module):
 
         await utils.answer(message, self.strings("all_modules_deleted"))
 
-        await self.allmodules.commands["restart"](await message.reply("_"))
+        await self.allmodules.commands["restart"](
+            await message.reply(f"{self.get_prefix()}restart --force")
+        )
 
     async def _update_modules(self):
         todo = await self._get_modules_to_load()

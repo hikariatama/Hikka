@@ -283,7 +283,7 @@ class Hikka:
         phones = {
             phone.split(":", maxsplit=1)[0]: phone
             for phone in map(
-                lambda f: f[6:-8],
+                lambda f: f.lstrip("hikka-").rstrip(".session"),
                 filter(
                     lambda f: f.startswith("hikka-") and f.endswith(".session"),
                     os.listdir(

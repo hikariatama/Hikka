@@ -132,8 +132,7 @@ class CoreMod(loader.Module):
 
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
-        ver = main.__version__
-        await utils.answer(message, self.strings("hikka").format(*ver))
+        await utils.answer(message, self.strings("hikka").format(*main.__version__))
 
     async def blacklistcmd(self, message: Message):
         """Blacklist the bot from operating somewhere"""
@@ -159,9 +158,7 @@ class CoreMod(loader.Module):
             ),
         )
 
-        await utils.answer(
-            message, self.strings("unblacklisted").format(chatid)
-        )
+        await utils.answer(message, self.strings("unblacklisted").format(chatid))
 
     async def getuser(self, message: Message):
         try:
@@ -170,7 +167,7 @@ class CoreMod(loader.Module):
             reply = await message.get_reply_message()
 
             if reply:
-                return (await message.get_reply_message()).sender_id
+                return reply.sender_id
 
             if message.is_private:
                 return message.to_id.user_id
@@ -188,9 +185,7 @@ class CoreMod(loader.Module):
             self._db.get(main.__name__, "blacklist_users", []) + [user],
         )
 
-        await utils.answer(
-            message, self.strings("user_blacklisted").format(user)
-        )
+        await utils.answer(message, self.strings("user_blacklisted").format(user))
 
     async def unblacklistusercmd(self, message: Message):
         """Allow this user to run permitted commands"""
@@ -199,7 +194,9 @@ class CoreMod(loader.Module):
         self._db.set(
             main.__name__,
             "blacklist_users",
-            list(set(self._db.get(main.__name__, "blacklist_users", [])) - set([user])),  # skipcq: PTC-W0018
+            list(
+                set(self._db.get(main.__name__, "blacklist_users", [])) - set([user])
+            ),
         )
 
         await utils.answer(
@@ -220,7 +217,7 @@ class CoreMod(loader.Module):
             await utils.answer(message, self.strings("prefix_incorrect"))
             return
 
-        oldprefix = self._db.get(main.__name__, "command_prefix", ".")
+        oldprefix = self.get_prefix()
         self._db.set(main.__name__, "command_prefix", args)
         await utils.answer(
             message,
@@ -313,7 +310,9 @@ class CoreMod(loader.Module):
 
         self._db.set(translations.__name__, "pack", args)
         success = await self.translator.init()
-        await utils.answer(message, self.strings("pack_saved" if success else "check_pack"))
+        await utils.answer(
+            message, self.strings("pack_saved" if success else "check_pack")
+        )
 
     async def setlangcmd(self, message: Message):
         """[language] - Change default language"""

@@ -9,7 +9,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import inspect
-from .. import loader, utils, main, security
+from .. import loader, utils, security
 from telethon.tl.functions.channels import JoinChannelRequest
 import logging
 import difflib
@@ -80,7 +80,7 @@ class HelpMod(loader.Module):
         *Split modules by spaces"""
         modules = utils.get_args(message)
         if not modules:
-            await utils.answer(message, self.strings("no_mod", message))
+            await utils.answer(message, self.strings("no_mod"))
             return
 
         mods = [
@@ -104,7 +104,7 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            self.strings("hidden_shown", message).format(
+            self.strings("hidden_shown").format(
                 len(hidden),
                 len(shown),
                 "\n".join([f"👁‍🗨 <i>{m}</i>" for m in hidden]),
@@ -121,19 +121,19 @@ class HelpMod(loader.Module):
             args = args.replace(" -f", "").replace("-f", "")
             force = True
 
-        prefix = utils.escape_html(
-            (self._db.get(main.__name__, "command_prefix", False) or ".")
-        )
-
         if args:
-            module = None
-            for mod in self.allmodules.modules:
-                if mod.strings("name", message).lower() == args.lower():
-                    module = mod
+            try:
+                module = next(
+                    mod
+                    for mod in self.allmodules.modules
+                    if mod.strings("name").lower() == args.lower()
+                )
+            except Exception:
+                module = None
 
             if not module:
                 args = args.lower()
-                args = args[1:] if args.startswith(prefix) else args
+                args = args[1:] if args.startswith(self.get_prefix()) else args
                 if args in self.allmodules.commands:
                     module = self.allmodules.commands[args].__self__
 
@@ -165,13 +165,9 @@ class HelpMod(loader.Module):
             except KeyError:
                 name = getattr(module, "name", "ERROR")
 
-            reply = self.strings("single_mod_header", message).format(
-                utils.escape_html(name)
-            )
+            reply = self.strings("single_mod_header").format(utils.escape_html(name))
             if module.__doc__:
-                reply += (
-                    "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"
-                )
+                reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"  # fmt: skip
 
             commands = {
                 name: func
@@ -181,7 +177,7 @@ class HelpMod(loader.Module):
 
             if hasattr(module, "inline_handlers"):
                 for name, fun in module.inline_handlers.items():
-                    reply += self.strings("ihandler", message).format(
+                    reply += self.strings("ihandler").format(
                         f"@{self.inline.bot_username} {name}"
                     )
 
@@ -196,14 +192,15 @@ class HelpMod(loader.Module):
                             )
                         )
                     else:
-                        reply += self.strings("undoc_ihandler", message)
+                        reply += self.strings("undoc_ihandler")
 
             for name, fun in commands.items():
-                reply += self.strings("single_cmd", message).format(prefix, name)
-                if fun.__doc__:
-                    reply += utils.escape_html(inspect.getdoc(fun))
-                else:
-                    reply += self.strings("undoc_cmd", message)
+                reply += self.strings("single_cmd").format(self.get_prefix(), name)
+                reply += (
+                    utils.escape_html(inspect.getdoc(fun))
+                    if fun.__doc__
+                    else self.strings("undoc_cmd")
+                )
 
             await utils.answer(message, reply)
             return
@@ -225,7 +222,7 @@ class HelpMod(loader.Module):
         hidden = list(filter(lambda module: module in mods, self.get("hide", [])))
         self.set("hide", hidden)
 
-        reply = self.strings("all_header", message).format(
+        reply = self.strings("all_header").format(
             count, len(hidden) if not force else 0
         )
         shown_warn = False
@@ -236,7 +233,7 @@ class HelpMod(loader.Module):
 
         for mod in self.allmodules.modules:
             if not hasattr(mod, "commands"):
-                logger.error(f"Module {mod.__class__.__name__} is not inited yet")
+                logger.warning(f"Module {mod.__class__.__name__} is not inited yet")
                 continue
 
             if mod.strings["name"] in self.get("hide", []) and not force:
@@ -256,11 +253,12 @@ class HelpMod(loader.Module):
                 and mod.inline_handlers
             )
 
-            for cmd_ in mod.commands.values():
-                try:
-                    "self.inline.form(" in inspect.getsource(cmd_.__code__)
-                except Exception:
-                    pass
+            if not inline:
+                for cmd_ in mod.commands.values():
+                    try:
+                        inline = "await self.inline.form(" in inspect.getsource(cmd_.__code__)
+                    except Exception:
+                        pass
 
             core = mod.__origin__ == "<core>"
 
@@ -271,7 +269,7 @@ class HelpMod(loader.Module):
             else:
                 emoji = self.config["plain_emoji"]
 
-            tmp += self.strings("mod_tmpl", message).format(emoji, name)
+            tmp += self.strings("mod_tmpl").format(emoji, name)
 
             first = True
 
@@ -283,26 +281,27 @@ class HelpMod(loader.Module):
 
             for cmd in commands:
                 if first:
-                    tmp += self.strings("first_cmd_tmpl", message).format(cmd)
+                    tmp += self.strings("first_cmd_tmpl").format(cmd)
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl", message).format(cmd)
+                    tmp += self.strings("cmd_tmpl").format(cmd)
 
             icommands = [
                 name
                 for name, func in mod.inline_handlers.items()
                 if await self.inline.check_inline_security(
-                    func=func, user=message.sender_id
+                    func=func,
+                    user=message.sender_id,
                 )
                 or force
             ]
 
             for cmd in icommands:
                 if first:
-                    tmp += self.strings("first_cmd_tmpl", message).format(f"🎹 {cmd}")
+                    tmp += self.strings("first_cmd_tmpl").format(f"🎹 {cmd}")
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl", message).format(f"🎹 {cmd}")
+                    tmp += self.strings("cmd_tmpl").format(f"🎹 {cmd}")
 
             if commands or icommands:
                 tmp += " )"
@@ -335,7 +334,7 @@ class HelpMod(loader.Module):
 
             try:
                 await self.inline.form(
-                    self.strings("joined", message),
+                    self.strings("joined"),
                     reply_markup=[
                         [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
                     ],
@@ -343,11 +342,11 @@ class HelpMod(loader.Module):
                     message=message,
                 )
             except Exception:
-                await utils.answer(message, self.strings("joined", message))
+                await utils.answer(message, self.strings("joined"))
         else:
             try:
                 await self.inline.form(
-                    self.strings("join", message),
+                    self.strings("join"),
                     reply_markup=[
                         [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
                     ],
@@ -355,7 +354,7 @@ class HelpMod(loader.Module):
                     message=message,
                 )
             except Exception:
-                await utils.answer(message, self.strings("join", message))
+                await utils.answer(message, self.strings("join"))
 
     async def client_ready(self, client, db):
         self._client = client

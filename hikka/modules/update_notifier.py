@@ -11,8 +11,7 @@
 # scope: inline
 
 from .. import loader, utils
-
-from aiogram.types import CallbackQuery
+from ..inline.types import InlineCall
 
 import asyncio
 import logging
@@ -145,7 +144,7 @@ class UpdateNotifierMod(loader.Module):
 
             await asyncio.sleep(60)
 
-    async def update_callback_handler(self, call: CallbackQuery):
+    async def update_callback_handler(self, call: InlineCall):
         """Process update buttons clicks"""
         if call.data not in {"hikka_update", "hikka_upd_ignore"}:
             return

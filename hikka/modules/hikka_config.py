@@ -11,10 +11,10 @@
 # scope: inline
 
 from .. import loader, utils
+from ..inline.types import InlineCall
 from telethon.tl.types import Message
 import logging
 from typing import Union
-from aiogram.types import CallbackQuery
 import ast
 
 logger = logging.getLogger(__name__)
@@ -48,12 +48,12 @@ class HikkaConfigMod(loader.Module):
         self._forms = {}
 
     @staticmethod
-    async def inline__close(call: CallbackQuery):  # noqa
+    async def inline__close(call: InlineCall):  # noqa
         await call.delete()
 
     async def inline__set_config(
         self,
-        call: CallbackQuery,
+        call: InlineCall,
         query: str,
         mod: str,
         option: str,
@@ -99,7 +99,7 @@ class HikkaConfigMod(loader.Module):
 
     async def inline__configure_option(
         self,
-        call: CallbackQuery,
+        call: InlineCall,
         mod: str,
         config_opt: str,
     ):  # noqa
@@ -133,7 +133,7 @@ class HikkaConfigMod(loader.Module):
                     ],
                 )
 
-    async def inline__configure(self, call: CallbackQuery, mod: str):
+    async def inline__configure(self, call: InlineCall, mod: str):
         btns = []
         for module in self.allmodules.modules:
             if module.strings("name") == mod:
@@ -159,7 +159,7 @@ class HikkaConfigMod(loader.Module):
 
     async def inline__global_config(
         self,
-        call: Union[Message, CallbackQuery],
+        call: Union[Message, InlineCall],
     ):
         to_config = [
             mod.strings("name")

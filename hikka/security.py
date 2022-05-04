@@ -207,7 +207,7 @@ class SecurityManager:
         if not user:
             user = message.sender_id
 
-        if user == self._me:
+        if user == self._me or getattr(message, "out", False):
             return True
 
         logger.debug(f"Checking security match for {config}")
