@@ -117,7 +117,7 @@ class HikkaSecurityMod(loader.Module):
         "confirm": "👑 Подтвердить",
         "self": "🚫 <b>Нельзя управлять своими правами!</b>",
         "warning": (
-            "⚠️ <b>Ты действительно хочешь добавить <a href=\"tg://user?id={}\">{}</a> "
+            '⚠️ <b>Ты действительно хочешь добавить <a href="tg://user?id={}">{}</a> '
             "в группу </b><code>{}</code><b>!\nЭто действие может передать частичный или"
             " полный доступ к юзерботу этому пользователю!</b>"
         ),
@@ -227,7 +227,7 @@ class HikkaSecurityMod(loader.Module):
                         "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
                         "callback": self.inline__switch_perm,
                         "args": (
-                            command.__name__.rstrip("cmd"),
+                            command.__name__.rsplit("cmd", maxsplit=1)[0],
                             group,
                             not level,
                             is_inline,
@@ -244,7 +244,7 @@ class HikkaSecurityMod(loader.Module):
                     "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
                     "callback": self.inline__switch_perm,
                     "args": (
-                        command.__name__.rstrip("_inline_handler"),
+                        command.__name__.rsplit("_inline_handler", maxsplit=1)[0],
                         group,
                         not level,
                         is_inline,

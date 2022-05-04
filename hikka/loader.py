@@ -245,17 +245,16 @@ def get_commands(mod):
     """Introspect the module to get its commands"""
     # https://stackoverflow.com/a/34452/5509575
     return {
-        method_name.rstrip("cmd"): getattr(mod, method_name)
+        method_name.rsplit("cmd", maxsplit=1)[0]: getattr(mod, method_name)
         for method_name in dir(mod)
-        if callable(getattr(mod, method_name))
-        and method_name.endswith("cmd")
+        if callable(getattr(mod, method_name)) and method_name.endswith("cmd")
     }
 
 
 def get_inline_handlers(mod):
     """Introspect the module to get its inline handlers"""
     return {
-        method_name.rstrip("_inline_handler"): getattr(mod, method_name)
+        method_name.rsplit("_inline_handler", maxsplit=1)[0]: getattr(mod, method_name)
         for method_name in dir(mod)
         if callable(getattr(mod, method_name))
         and method_name.endswith("_inline_handler")
@@ -265,7 +264,9 @@ def get_inline_handlers(mod):
 def get_callback_handlers(mod):
     """Introspect the module to get its callback handlers"""
     return {
-        method_name.rstrip("_callback_handler"): getattr(mod, method_name)
+        method_name.rsplit("_callback_handler", maxsplit=1)[0]: getattr(
+            mod, method_name
+        )
         for method_name in dir(mod)
         if callable(getattr(mod, method_name))
         and method_name.endswith("_callback_handler")
@@ -328,7 +329,7 @@ class Modules:
     def _register_modules(self, modules: list, origin: str = "<core>"):
         for mod in modules:
             try:
-                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod).rstrip('.py')}"  # fmt: skip
+                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod).rsplit('.py', maxsplit=1)[0]}"  # fmt: skip
                 logging.debug(module_name)
                 with open(mod, "r") as file:
                     spec = ModuleSpec(
