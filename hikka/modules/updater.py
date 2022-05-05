@@ -272,7 +272,6 @@ class UpdaterMod(loader.Module):
 
     async def client_ready(self, client, db):
         self._db = db
-        self._me = await client.get_me()
         self._client = client
 
         if self.get("selfupdatemsg") is not None:
@@ -282,6 +281,9 @@ class UpdaterMod(loader.Module):
                 logger.exception("Failed to complete update!")
 
         self.set("selfupdatemsg", None)
+
+        if self.get("do_not_create", False):
+            return
 
         folders = await self._client(GetDialogFiltersRequest())
 
@@ -355,7 +357,7 @@ class UpdaterMod(loader.Module):
             )
         )
 
-        self.get("create_folder", False)
+        self.set("do_not_create", True)
 
     async def update_complete(self, client):
         logger.debug("Self update successful! Edit message")
