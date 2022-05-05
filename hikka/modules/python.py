@@ -73,16 +73,6 @@ class PythonMod(loader.Module):
         self._client = client
         self._db = db
 
-    def lookup(self, modname: str):
-        return next(
-            (
-                mod
-                for mod in self.allmodules.modules
-                if mod.name.lower() == modname.lower()
-            ),
-            False,
-        )
-
     @loader.owner
     async def evalcmd(self, message: Message):
         """Alias for .e command"""

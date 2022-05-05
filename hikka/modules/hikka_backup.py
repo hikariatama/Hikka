@@ -81,7 +81,7 @@ class HikkaBackupMod(loader.Module):
 
         self._task = asyncio.ensure_future(self.handler())
 
-        if not is_new and not self.get("nomigrate", False):
+        if not is_new and self.get("nomigrate", False):
             return
 
         await utils.set_avatar(

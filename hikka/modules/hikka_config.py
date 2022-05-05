@@ -42,6 +42,7 @@ class HikkaConfigMod(loader.Module):
         "configuring_option": "🎚 <b>Управление параметром </b><code>{}</code><b> модуля </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное значение: </b><code>{}</code>\n\n<b>Текущее значение: </b><code>{}</code>",
         "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее значение: </b><code>{}</code>",
         "_cmd_doc_config": "Настройки модулей",
+        "_cmd_doc_fconfig": "<имя модуля> <имя конфига> <значение> - Расшифровывается как ForceConfig - Принудительно устанавливает значение в конфиге, если это не удалось сделать через inline бота",
         "_cls_doc": "Интерактивный конфигуратор Hikka",
         "args": "🚫 <b>Ты указал неверные аргументы</b>",
         "no_mod": "🚫 <b>Модуль не существует</b>",
@@ -54,7 +55,7 @@ class HikkaConfigMod(loader.Module):
         self._forms = {}
 
     @staticmethod
-    async def inline__close(call: InlineCall):  # noqa
+    async def inline__close(call: InlineCall):
         await call.delete()
 
     async def inline__set_config(
@@ -64,30 +65,8 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-    ):  # noqa
-        for module in self.allmodules.modules:
-            if module.strings("name") == mod:
-                module.config[option] = query
-                if query:
-                    try:
-                        query = ast.literal_eval(query)
-                    except (ValueError, SyntaxError):
-                        pass
-
-                    self._db.setdefault(
-                        module.__class__.__name__,
-                        {},
-                    ).setdefault("__config__", {})[option] = query
-                else:
-                    try:
-                        del self._db.setdefault(
-                            module.__class__.__name__,
-                            {},
-                        ).setdefault("__config__", {})[option]
-                    except KeyError:
-                        pass
-
-                self.allmodules.send_config_one(module, self._db, skip_hook=True)
+    ):
+        self.lookup(mod).config[option] = query
 
         await call.edit(
             self.strings("option_saved").format(mod, option, query),
@@ -109,36 +88,35 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         config_opt: str,
-    ):  # noqa
-        for module in self.allmodules.modules:
-            if module.strings("name") == mod:
-                await call.edit(
-                    self.strings("configuring_option").format(
-                        utils.escape_html(config_opt),
-                        utils.escape_html(mod),
-                        utils.escape_html(module.config.getdoc(config_opt)),
-                        utils.escape_html(module.config.getdef(config_opt)),
-                        utils.escape_html(module.config[config_opt]),
-                    ),
-                    reply_markup=[
-                        [
-                            {
-                                "text": "✍️ Enter value",
-                                "input": "✍️ Enter new configuration value for this option",
-                                "handler": self.inline__set_config,
-                                "args": (mod, config_opt, call.inline_message_id),
-                            }
-                        ],
-                        [
-                            {
-                                "text": "👈 Back",
-                                "callback": self.inline__configure,
-                                "args": (mod,),
-                            },
-                            {"text": "🚫 Close", "callback": self.inline__close},
-                        ],
-                    ],
-                )
+    ):
+        module = self.lookup(mod)
+        await call.edit(
+            self.strings("configuring_option").format(
+                utils.escape_html(config_opt),
+                utils.escape_html(mod),
+                utils.escape_html(module.config.getdoc(config_opt)),
+                utils.escape_html(module.config.getdef(config_opt)),
+                utils.escape_html(module.config[config_opt]),
+            ),
+            reply_markup=[
+                [
+                    {
+                        "text": "✍️ Enter value",
+                        "input": "✍️ Enter new configuration value for this option",
+                        "handler": self.inline__set_config,
+                        "args": (mod, config_opt, call.inline_message_id),
+                    }
+                ],
+                [
+                    {
+                        "text": "👈 Back",
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                    },
+                    {"text": "🚫 Close", "callback": self.inline__close},
+                ],
+            ],
+        )
 
     async def inline__configure(self, call: InlineCall, mod: str):
         btns = []
@@ -206,34 +184,14 @@ class HikkaConfigMod(loader.Module):
 
         mod, option, value = args
 
-        for module in self.allmodules.modules:
-            if module.strings("name").lower() == mod.lower():
-                if option not in module.config:
-                    await utils.answer(message, self.strings("no_option"))
-                    return
+        instance = self.lookup(mod)
+        if not instance:
+            await utils.answer(message, self.strings("no_mod"))
+            return
 
-                module.config[option] = value
-                if value:
-                    try:
-                        value = ast.literal_eval(value)
-                    except (ValueError, SyntaxError):
-                        pass
+        if option not in instance.config:
+            await utils.answer(message, self.strings("no_option"))
+            return
 
-                    self._db.setdefault(
-                        module.__class__.__name__,
-                        {},
-                    ).setdefault("__config__", {})[option] = value
-                else:
-                    try:
-                        del self._db.setdefault(
-                            module.__class__.__name__,
-                            {},
-                        ).setdefault("__config__", {})[option]
-                    except KeyError:
-                        pass
-
-                self.allmodules.send_config_one(module, self._db, skip_hook=True)
-                await utils.answer(message, self.strings("option_saved").format(option, mod, value))
-                return
-
-        await utils.answer(message, self.strings("no_mod"))
+        instance.config[option] = value
+        await utils.answer(message, self.strings("option_saved").format(option, mod, value))

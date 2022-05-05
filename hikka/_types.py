@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Union, Any, Optional
 from telethon.tl.types import Message
-from . import utils
+import ast
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,12 @@ class ModuleConfig(dict):
         ret = self._config[key].doc
 
         if callable(ret):
-            ret = ret()
+            try:
+                # Compatibility tweak
+                # does nothing in Hikka
+                ret = ret(message)
+            except Exception:
+                ret = ret()
 
         return ret
 
@@ -135,5 +140,10 @@ class ConfigValue:
         if key == "value":
             # This attribute will tell the `Loader` to save this value in db
             self._save_marker = True
+
+        try:
+            value = ast.literal_eval(value)
+        except Exception:
+            pass
 
         object.__setattr__(self, key, value)

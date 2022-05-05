@@ -39,7 +39,14 @@ from importlib.abc import SourceLoader
 from . import utils, security
 from .translations import Strings
 from .inline.core import InlineManager
-from ._types import Module, LoadError, ModuleConfig, ConfigValue, StopLoop, SelfUnload  # noqa: F401
+from ._types import (  # noqa: F401
+    Module,
+    LoadError,
+    ModuleConfig,
+    ConfigValue,
+    StopLoop,
+    SelfUnload,
+)
 from .fast_uploader import download_file, upload_file
 
 from importlib.machinery import ModuleSpec
@@ -474,6 +481,16 @@ class Modules:
         except AttributeError:
             pass
 
+    def _lookup(self, modname: str):
+        return next(
+            (
+                mod
+                for mod in self.modules
+                if mod.name.lower() == modname.lower()
+            ),
+            False,
+        )
+
     def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         instance.allmodules = self
@@ -490,6 +507,8 @@ class Modules:
         instance.get_prefix = lambda: (
             self._db.get("hikka.main", "command_prefix", False) or "."
         )
+
+        instance.lookup = self._lookup
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
