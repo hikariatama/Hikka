@@ -75,22 +75,31 @@ class HikkaBackupMod(loader.Module):
             "📼 Your database backups will appear there",
             silent=True,
             archive=True,
-            avatar="https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
-            _folder="hikka",
         )
 
         self._task = asyncio.ensure_future(self.handler())
 
-        if not is_new and not self.get("nomigrate", False):
+        if not is_new and not self.get("lmdn", False):
             return
 
-        await utils.set_avatar(
-            client,
-            self._backup_channel,
-            "https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
-        )
+        try:
+            f = (
+                await utils.run_sync(
+                    requests.get,
+                    "https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
+                )
+            ).content
 
-        self.set("nomigrate", True)
+            await self._client(
+                EditPhotoRequest(
+                    channel=self._backup_channel,
+                    photo=await self._client.upload_file(f, file_name="photo.png"),
+                )
+            )
+        except Exception:
+            pass
+
+        self.set("lmdn", True)
 
     async def backup_period_callback_handler(self, call: InlineCall):
         if not call.data.startswith("backup_period"):

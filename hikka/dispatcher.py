@@ -74,9 +74,11 @@ class CommandDispatcher:
             security.OWNER | security.SUDO | security.SUPPORT,
         ):
             return True
+
         func = getattr(func, "__func__", func)
         ret = True
         chat = self._ratelimit_storage_chat[message.chat_id]
+
         if message.sender_id:
             user = self._ratelimit_storage_user[message.sender_id]
             severity = (5 if getattr(func, "ratelimit", False) else 2) * (
@@ -318,11 +320,7 @@ class CommandDispatcher:
         if (
             f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
             in blacklist_chats
-        ):
-            return False
-
-        if (
-            whitelist_modules
+            or whitelist_modules
             and f"{utils.get_chat_id(message)}.{func.__self__.__module__}"
             not in whitelist_modules
         ):

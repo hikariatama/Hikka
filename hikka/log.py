@@ -158,6 +158,7 @@ class MemoryHandler(logging.Handler):
             try:
                 for precord in self.buffer:
                     self.target.handle(precord)
+
                 self.handledbuffer = (
                     self.handledbuffer[-(self.capacity - len(self.buffer)) :]
                     + self.buffer
@@ -172,8 +173,9 @@ def init():
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logging.getLogger().handlers = []
-    logging.getLogger().addHandler(MemoryHandler(handler, 5000))
+    logging.getLogger().addHandler(MemoryHandler(handler, 7000))
     logging.getLogger().setLevel(logging.NOTSET)
     logging.getLogger("telethon").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
+    logging.getLogger("aiohttp").setLevel(logging.WARNING)
     logging.captureWarnings(True)

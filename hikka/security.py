@@ -30,8 +30,9 @@ import logging
 from telethon.tl.types import Message, ChatParticipantCreator, ChatParticipantAdmin
 from types import FunctionType
 from telethon.tl.functions.messages import GetFullChatRequest
+import time
 
-from . import main
+from . import main, utils
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +157,7 @@ class SecurityManager:
         self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
         self._db = db
         self._reload_rights()
+        self._cache = {}
 
     def _reload_rights(self):
         self._owner = list(
@@ -260,7 +262,15 @@ class SecurityManager:
                 if message.edit_date:
                     return False
 
-                chat = await message.get_chat()
+                chat_id = utils.get_chat_id(message)
+                if (
+                    chat_id in self._cache
+                    and self._cache[chat_id]["exp"] >= time.time()
+                ):
+                    chat = self._cache[chat_id]["chat"]
+                else:
+                    chat = await message.get_chat()
+                    self._cache[chat_id] = {"chat": chat, "exp": time.time() + 5 * 60}
 
                 if (
                     not chat.creator
@@ -273,10 +283,22 @@ class SecurityManager:
                 if self._any_admin and f_group_admin_any or f_group_admin:
                     return True
             elif f_group_admin_any or f_group_owner:
-                participant = await message.client.get_permissions(
-                    message.peer_id,
-                    user,
-                )
+                chat_id = utils.get_chat_id(message)
+                cache_obj = f"{chat_id}/{user}"
+                if (
+                    cache_obj in self._cache
+                    and self._cache[cache_obj]["exp"] >= time.time()
+                ):
+                    participant = self._cache[cache_obj]["user"]
+                else:
+                    participant = await message.client.get_permissions(
+                        message.peer_id,
+                        user,
+                    )
+                    self._cache[cache_obj] = {
+                        "user": participant,
+                        "exp": time.time() + 5 * 60,
+                    }
 
                 if (
                     participant.is_creator
@@ -303,24 +325,38 @@ class SecurityManager:
             return False
 
         if message.is_group and (f_group_admin_any or f_group_owner):
-            full_chat = await message.client(GetFullChatRequest(message.chat_id))
-            participants = full_chat.full_chat.participants.participants
-            participant = next(
-                (
-                    possible_participant
-                    for possible_participant in participants
-                    if possible_participant.user_id == message.sender_id
-                ),
-                None,
-            )
+            chat_id = utils.get_chat_id(message)
+            cache_obj = f"{chat_id}/{user}"
+
+            if (
+                cache_obj in self._cache
+                and self._cache[cache_obj]["exp"] >= time.time()
+            ):
+                participant = self._cache[cache_obj]["user"]
+            else:
+                full_chat = await message.client(GetFullChatRequest(message.chat_id))
+                participants = full_chat.full_chat.participants.participants
+                participant = next(
+                    (
+                        possible_participant
+                        for possible_participant in participants
+                        if possible_participant.user_id == message.sender_id
+                    ),
+                    None,
+                )
+                self._cache[cache_obj] = {
+                    "user": participant,
+                    "exp": time.time() + 5 * 60,
+                }
 
             if not participant:
                 return
 
-            if isinstance(participant, ChatParticipantCreator):
-                return True
-
-            if isinstance(participant, ChatParticipantAdmin) and f_group_admin_any:
+            if (
+                isinstance(participant, ChatParticipantCreator)
+                or isinstance(participant, ChatParticipantAdmin)
+                and f_group_admin_any
+            ):
                 return True
 
         return False

@@ -8,11 +8,11 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import asyncio
 import logging
 
-from telethon.tl.functions.channels import CreateChannelRequest
-from telethon.tl.types import Message, Channel
+from telethon.tl.functions.channels import EditTitleRequest
+
+from telethon.tl.types import Message
 import json
 import os
 from typing import Any, Union
@@ -28,23 +28,13 @@ DATA_DIR = (
 logger = logging.getLogger(__name__)
 
 
-def is_serializable(x: Any, /) -> bool:
-    """Checks if object is JSON-serializable"""
-    try:
-        json.dumps(x)
-        return True
-    except (TypeError, OverflowError):
-        return False
-
-
 class Database(dict):
     def __init__(self, client):
         super().__init__()
+        # All the attributes below will be set later
         self._client = client
         self._me = None
         self._assets = None
-        self._anti_double_asset_lock = asyncio.Lock()
-        self._assets_chat_exists = False
 
     def __repr__(self):
         return object.__repr__(self)
@@ -55,37 +45,41 @@ class Database(dict):
         self._db_path = os.path.join(DATA_DIR, f"config-{self._me.id}.json")
         self.read()
 
-    async def _find_asset_channel(self) -> Channel:
-        """Find the asset channel and returns its peer"""
-        async for dialog in self._client.iter_dialogs(None, ignore_migrated=True):
-            if dialog.name == f"hikka-{self._me.id}-assets" and dialog.is_channel:
-
-                if dialog.entity.participants_count != 1:
-                    continue
-
-                logger.debug(f"Found asset chat {dialog.id}")
-                return dialog.entity
-
-    async def _make_asset_channel(self) -> Channel:
-        """If user doesn't have an asset channel, create it"""
-        async with self._anti_double_asset_lock:
-            if self._assets_chat_exists:
-                return await self._find_asset_channel()
-            self._assets_chat_exists = True
-
-            dialog = (
-                await self._client(
-                    CreateChannelRequest(
-                        f"hikka-{self._me.id}-assets",
-                        "🌆 Your Hikka assets will be stored here",
-                        megagroup=True,
-                    )
+        try:
+            channel_entity = await (
+                dialog.entity
+                async for dialog in self._client.iter_dialogs(
+                    None,
+                    ignore_migrated=True,
                 )
-            ).chats[0]
+                if (
+                    (
+                        dialog.name == f"hikka-{self._me.id}-assets"
+                        or dialog.name == "hikka-assets"
+                    )
+                    and dialog.is_channel
+                    and dialog.entity.participants_count == 1
+                )
+            ).__anext__()
 
-            await self._client.edit_folder(dialog, folder=1)
+            if channel_entity.title != "hikka-assets":
+                await self._client(EditTitleRequest(channel_entity, "hikka-assets"))
+                await utils.set_avatar(
+                    self._client,
+                    channel_entity,
+                    "https://raw.githubusercontent.com/hikariatama/assets/master/hikka-assets.png",
+                )
+                logger.info("Made legacy assets migration")
+        except Exception:
+            pass
 
-            return dialog
+        self._assets, _ = await utils.asset_channel(
+            self._client,
+            "hikka-assets",
+            "🌆 Your Hikka assets will be stored here",
+            archive=True,
+            avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-assets.png",
+        )
 
     def read(self) -> str:
         """Read database"""
@@ -95,7 +89,7 @@ class Database(dict):
                 self.update(**data)
                 return data
         except (FileNotFoundError, json.decoder.JSONDecodeError):
-            logger.exception("Database read failed! Creating new one...")
+            logger.warning("Database read failed! Creating new one...")
             return {}
 
     def save(self) -> bool:
@@ -114,12 +108,6 @@ class Database(dict):
         Save assets
         returns asset_id as integer
         """
-        if not self._assets:
-            self._assets = await self._find_asset_channel()
-
-        if not self._assets:
-            self._assets = await self._make_asset_channel()
-
         return (
             (await self._client.send_message(self._assets, message)).id
             if isinstance(message, Message)
@@ -134,12 +122,6 @@ class Database(dict):
 
     async def fetch_asset(self, asset_id: int) -> Union[None, Message]:
         """Fetch previously saved asset by its asset_id"""
-        if not self._assets:
-            self._assets = await self._find_asset_channel()
-
-        if not self._assets:
-            return None
-
         asset = await self._client.get_messages(self._assets, ids=[asset_id])
 
         if not asset:
@@ -156,21 +138,21 @@ class Database(dict):
 
     def set(self, owner: str, key: str, value: Any) -> bool:
         """Set database key"""
-        if not is_serializable(owner):
+        if not utils.is_serializable(owner):
             raise RuntimeError(
                 "Attempted to write object to "
                 f"{type(owner)=} of database. It is not "
                 "JSON-serializable key which will cause errors"
             )
 
-        if not is_serializable(key):
+        if not utils.is_serializable(key):
             raise RuntimeError(
                 "Attempted to write object to "
                 f"{type(key)=} of database. It is not "
                 "JSON-serializable key which will cause errors"
             )
 
-        if not is_serializable(value):
+        if not utils.is_serializable(value):
             raise RuntimeError(
                 "Attempted to write object of "
                 f"{type(value)=} to database. It is not "

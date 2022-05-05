@@ -16,6 +16,7 @@ from telethon.tl.types import Message
 import logging
 from typing import Union
 import ast
+import shlex
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,9 @@ class HikkaConfigMod(loader.Module):
         "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>",
         "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>",
         "option_saved": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: </b><code>{}</code>",
+        "args": "🚫 <b>You specified incorrect args</b>",
+        "no_mod": "🚫 <b>Module doesn't exist</b>",
+        "no_option": "🚫 <b>Configuration option doesn't exist</b>",
     }
 
     strings_ru = {
@@ -39,12 +43,14 @@ class HikkaConfigMod(loader.Module):
         "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее значение: </b><code>{}</code>",
         "_cmd_doc_config": "Настройки модулей",
         "_cls_doc": "Интерактивный конфигуратор Hikka",
+        "args": "🚫 <b>Ты указал неверные аргументы</b>",
+        "no_mod": "🚫 <b>Модуль не существует</b>",
+        "no_option": "🚫 <b>У модуля нет такого значения конфига</b>",
     }
 
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._bot_id = (await self.inline.bot.get_me()).id
         self._forms = {}
 
     @staticmethod
@@ -69,18 +75,19 @@ class HikkaConfigMod(loader.Module):
                         pass
 
                     self._db.setdefault(
-                        module.__class__.__name__, {}
+                        module.__class__.__name__,
+                        {},
                     ).setdefault("__config__", {})[option] = query
                 else:
                     try:
                         del self._db.setdefault(
-                            module.__class__.__name__, {}
+                            module.__class__.__name__,
+                            {},
                         ).setdefault("__config__", {})[option]
                     except KeyError:
                         pass
 
                 self.allmodules.send_config_one(module, self._db, skip_hook=True)
-                self._db.save()
 
         await call.edit(
             self.strings("option_saved").format(mod, option, query),
@@ -189,14 +196,44 @@ class HikkaConfigMod(loader.Module):
         """Configure modules"""
         await self.inline__global_config(message)
 
-    async def watcher(self, message: Message):
-        if (
-            not getattr(message, "out", False)
-            or not getattr(message, "via_bot_id", False)
-            or message.via_bot_id != self._bot_id
-            or "This message is gonna be deleted..."
-            not in getattr(message, "raw_text", "")
-        ):
+    async def fconfigcmd(self, message: Message):
+        """<module_name> <propery_name> <config_value> - Stands for ForceConfig - Set the config value if it is not possible using default method"""
+        args = utils.get_args_raw(message).split(maxsplit=2)
+
+        if len(args) < 3:
+            await utils.answer(message, self.strings('args'))
             return
 
-        await message.delete()
+        mod, option, value = args
+
+        for module in self.allmodules.modules:
+            if module.strings("name").lower() == mod.lower():
+                if option not in module.config:
+                    await utils.answer(message, self.strings("no_option"))
+                    return
+
+                module.config[option] = value
+                if value:
+                    try:
+                        value = ast.literal_eval(value)
+                    except (ValueError, SyntaxError):
+                        pass
+
+                    self._db.setdefault(
+                        module.__class__.__name__,
+                        {},
+                    ).setdefault("__config__", {})[option] = value
+                else:
+                    try:
+                        del self._db.setdefault(
+                            module.__class__.__name__,
+                            {},
+                        ).setdefault("__config__", {})[option]
+                    except KeyError:
+                        pass
+
+                self.allmodules.send_config_one(module, self._db, skip_hook=True)
+                await utils.answer(message, self.strings("option_saved").format(option, mod, value))
+                return
+
+        await utils.answer(message, self.strings("no_mod"))

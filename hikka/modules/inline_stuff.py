@@ -50,6 +50,16 @@ class InlineStuffMod(loader.Module):
 
     async def watcher(self, message: Message):
         if (
+            getattr(message, "out", False)
+            and getattr(message, "via_bot_id", False)
+            and message.via_bot_id == self.inline.bot_id
+            and "This message is gonna be deleted..."
+            in getattr(message, "raw_text", "")
+        ):
+            await message.delete()
+            return
+
+        if (
             not getattr(message, "out", False)
             or not getattr(message, "via_bot_id", False)
             or message.via_bot_id != self._bot_id
@@ -68,7 +78,9 @@ class InlineStuffMod(loader.Module):
             next_handler=self.inline._custom_map[id_]["handler"],
             caption=self.inline._custom_map[id_].get("caption", ""),
             force_me=self.inline._custom_map[id_].get("force_me", False),
-            disable_security=self.inline._custom_map[id_].get("disable_security", False),
+            disable_security=self.inline._custom_map[id_].get(
+                "disable_security", False
+            ),
         )
 
     async def _check_bot(self, username: str) -> bool:

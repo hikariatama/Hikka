@@ -1,5 +1,10 @@
 import logging
+from dataclasses import dataclass, field
+from typing import Union, Any, Optional
 from telethon.tl.types import Message
+from . import utils
+
+logger = logging.getLogger(__name__)
 
 
 class Module:
@@ -47,7 +52,7 @@ class LoadError(Exception):
 class SelfUnload(Exception):
     """Silently unloads module, if raised in `client_ready`"""
 
-    def __init__(self, error_message: str = ""):  # skipcq: PYL-W0231
+    def __init__(self, error_message: Optional[str] = ""):  # skipcq: PYL-W0231
         self._error = error_message
 
     def __str__(self) -> str:
@@ -59,38 +64,76 @@ class StopLoop(Exception):
 
 
 class ModuleConfig(dict):
-    """Like a dict but contains doc for each key"""
+    """Stores config for each mod, that needs them"""
 
     def __init__(self, *entries):
-        keys = []
-        values = []
-        defaults = []
-        docstrings = []
-        for i, entry in enumerate(entries):
-            if i % 3 == 0:
-                keys.append(entry)
-            elif i % 3 == 1:
-                values.append(entry)
-                defaults.append(entry)
-            else:
-                docstrings.append(entry)
+        if all(isinstance(entry, ConfigValue) for entry in entries):
+            self._config = {config.option: config for config in entries}
+        else:
+            keys = []
+            values = []
+            defaults = []
+            docstrings = []
+            for i, entry in enumerate(entries):
+                if i % 3 == 0:
+                    keys += [entry]
+                elif i % 3 == 1:
+                    values += [entry]
+                    defaults += [entry]
+                else:
+                    docstrings += [entry]
 
-        super().__init__(zip(keys, values))
-        self._docstrings = dict(zip(keys, docstrings))
-        self._defaults = dict(zip(keys, defaults))
+            self._config = {
+                key: ConfigValue(option=key, default=default, doc=doc)
+                for key, default, doc in zip(keys, defaults, docstrings)
+            }
+
+        super().__init__(
+            {option: config.value for option, config in self._config.items()}
+        )
 
     def getdoc(self, key: str, message: Message = None) -> str:
         """Get the documentation by key"""
-        ret = self._docstrings[key]
+        ret = self._config[key].doc
+
         if callable(ret):
-            try:
-                ret = ret(message)
-            except TypeError:  # Invalid number of params
-                logging.debug(f"{key} using legacy doc trnsl")
-                ret = ret()
+            ret = ret()
 
         return ret
 
     def getdef(self, key: str) -> str:
         """Get the default value by key"""
-        return self._defaults[key]
+        return self._config[key].default
+
+    def __setitem__(self, key: str, value: Any) -> bool:
+        self._config[key].value = value
+        return dict.__setitem__(self, key, value)
+
+    def __getitem__(self, key: str) -> Any:
+        try:
+            return self._config[key].value
+        except KeyError:
+            return None
+
+
+class _Placeholder:
+    """Placeholder to determine if the default value is going to be set"""
+
+
+@dataclass(repr=True)
+class ConfigValue:
+    option: str
+    default: Any = None
+    value: Any = field(default_factory=_Placeholder)
+    doc: Union[callable, str] = "No description"
+
+    def __post_init__(self):
+        if isinstance(self.value, _Placeholder):
+            self.value = self.default
+
+    def __setattr__(self, key: str, value: Any) -> bool:
+        if key == "value":
+            # This attribute will tell the `Loader` to save this value in db
+            self._save_marker = True
+
+        object.__setattr__(self, key, value)

@@ -35,7 +35,11 @@ from typing import Union
 
 import git
 from git import Repo, GitCommandError
-from telethon.tl.types import Message
+from telethon.tl.types import Message, DialogFilter
+from telethon.tl.functions.messages import (
+    UpdateDialogFilterRequest,
+    GetDialogFiltersRequest,
+)
 
 from .. import loader, utils
 from ..inline.types import InlineCall
@@ -125,11 +129,9 @@ class UpdaterMod(loader.Module):
     async def prerestart_common(self, call: Union[InlineCall, Message]):
         logger.debug(f"Self-update. {sys.executable} -m {utils.get_base_dir()}")
         if hasattr(call, "inline_message_id"):
-            self._db.set(__name__, "selfupdatemsg", call.inline_message_id)
+            self.set("selfupdatemsg", call.inline_message_id)
         else:
-            self._db.set(
-                __name__, "selfupdatemsg", f"{utils.get_chat_id(call)}:{call.id}"
-            )
+            self.set("selfupdatemsg", f"{utils.get_chat_id(call)}:{call.id}")
 
     async def restart_common(self, call: Union[InlineCall, Message]):
         if (
@@ -273,24 +275,98 @@ class UpdaterMod(loader.Module):
         self._me = await client.get_me()
         self._client = client
 
-        if db.get(__name__, "selfupdatemsg") is not None:
+        if self.get("selfupdatemsg") is not None:
             try:
                 await self.update_complete(client)
             except Exception:
                 logger.exception("Failed to complete update!")
 
-        self._db.set(__name__, "selfupdatemsg", None)
+        self.set("selfupdatemsg", None)
+
+        folders = await self._client(GetDialogFiltersRequest())
+
+        if any(folder.title == "hikka" for folder in folders):
+            return
+
+        try:
+            folder_id = (
+                max(
+                    folders,
+                    key=lambda x: x.id,
+                ).id
+                + 1
+            )
+        except ValueError:
+            folder_id = 2
+
+        await self._client(
+            UpdateDialogFilterRequest(
+                folder_id,
+                DialogFilter(
+                    folder_id,
+                    title="hikka",
+                    pinned_peers=(
+                        [
+                            await self._client.get_input_entity(
+                                self._client.loader.inline.bot_id
+                            )
+                        ]
+                        if self._client.loader.inline.init_complete
+                        else []
+                    ),
+                    include_peers=[
+                        await self._client.get_input_entity(dialog.entity)
+                        async for dialog in self._client.iter_dialogs(
+                            None,
+                            ignore_migrated=True,
+                        )
+                        if dialog.name
+                        in {
+                            "hikka-logs",
+                            "hikka-onload",
+                            "hikka-assets",
+                            "hikka-backups",
+                            "hikka-acc-switcher",
+                        }
+                        and dialog.is_channel
+                        and (
+                            dialog.entity.participants_count == 1
+                            or dialog.entity.participants_count == 2
+                            and dialog.name == "hikka-logs"
+                        )
+                        or (
+                            self._client.loader.inline.init_complete
+                            and dialog.entity.id == self._client.loader.inline.bot_id
+                        )
+                        or dialog.entity.id
+                        in [1554874075, 1697279580, 1679998924]  # official hikka chats
+                    ],
+                    emoticon="🐱",
+                    exclude_peers=[],
+                    contacts=False,
+                    non_contacts=False,
+                    groups=False,
+                    broadcasts=False,
+                    bots=False,
+                    exclude_muted=False,
+                    exclude_read=False,
+                    exclude_archived=False,
+                ),
+            )
+        )
+
+        self.get("create_folder", False)
 
     async def update_complete(self, client):
         logger.debug("Self update successful! Edit message")
         msg = self.strings("success")
-        ms = self._db.get(__name__, "selfupdatemsg")
+        ms = self.get("selfupdatemsg")
 
         if ":" in str(ms):
             chat_id, message_id = ms.split(":")
             chat_id, message_id = int(chat_id), int(message_id)
             await self._client.edit_message(chat_id, message_id, msg)
-            await asyncio.sleep(120)
+            await asyncio.sleep(60)
             await self._client.delete_messages(chat_id, message_id)
             return
 

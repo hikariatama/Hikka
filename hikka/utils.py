@@ -41,31 +41,83 @@ from telethon.tl.types import (
     PeerChat,
     PeerChannel,
     User,
-    MessageMediaWebPage,
     Channel,
     InputPeerNotifySettings,
-    MessageEntityMentionName,
 )
+
+import json
 
 import grapheme
 import git
 
 from telethon.hints import Entity
 
-from telethon.tl.functions.channels import CreateChannelRequest
+from telethon.tl.functions.channels import CreateChannelRequest, EditPhotoRequest
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
+from telethon.tl.types import (
+    MessageEntityUnknown,
+    MessageEntityMention,
+    MessageEntityHashtag,
+    MessageEntityBotCommand,
+    MessageEntityUrl,
+    MessageEntityEmail,
+    MessageEntityBold,
+    MessageEntityItalic,
+    MessageEntityCode,
+    MessageEntityPre,
+    MessageEntityTextUrl,
+    MessageEntityMentionName,
+    MessageEntityPhone,
+    MessageEntityCashtag,
+    MessageEntityUnderline,
+    MessageEntityStrike,
+    MessageEntityBlockquote,
+    MessageEntityBankCard,
+    MessageEntitySpoiler,
+    MessageMediaWebPage,
+)
+
+from telethon.tl.functions.messages import (
+    UpdateDialogFilterRequest,
+    GetDialogFiltersRequest,
+)
 
 from aiogram.types import CallbackQuery
 
 from .inline.types import InlineCall
 
+import requests
 import random
 
-from typing import Tuple, Union, List, Any
+from typing import Tuple, Union, List, Any, Optional
 
 import re
 
 from urllib.parse import urlparse
+
+FormattingEntity = Union[
+    MessageEntityUnknown,
+    MessageEntityMention,
+    MessageEntityHashtag,
+    MessageEntityBotCommand,
+    MessageEntityUrl,
+    MessageEntityEmail,
+    MessageEntityBold,
+    MessageEntityItalic,
+    MessageEntityCode,
+    MessageEntityPre,
+    MessageEntityTextUrl,
+    MessageEntityMentionName,
+    MessageEntityPhone,
+    MessageEntityCashtag,
+    MessageEntityUnderline,
+    MessageEntityStrike,
+    MessageEntityBlockquote,
+    MessageEntityBankCard,
+    MessageEntitySpoiler,
+]
+
+ListLike = Union[list, set, tuple]
 
 emoji_pattern = re.compile(
     "["
@@ -171,11 +223,7 @@ async def get_user(message: Message) -> Union[None, User]:
         logging.debug("user not in session cache. searching...")
 
     if isinstance(message.peer_id, PeerUser):
-        try:
-            await message.client.get_dialogs()
-        except telethon.rpcerrorlist.BotMethodInvalid:
-            return None
-
+        await message.client.get_dialogs()
         return await message.client.get_entity(message.sender_id)
 
     if isinstance(message.peer_id, (PeerChannel, PeerChat)):
@@ -215,8 +263,8 @@ def run_async(loop, coro):
 
 def censor(
     obj,
-    to_censor=None,
-    replace_with="redacted_{count}_chars",
+    to_censor: Optional[List[str]] = None,
+    replace_with: Optional[str] = "redacted_{count}_chars",
 ):
     """May modify the original object, but don't rely on it"""
     if to_censor is None:
@@ -258,6 +306,7 @@ async def answer(
     **kwargs,
 ) -> Union[CallbackQuery, Message]:
     """Use this to give the response to a command"""
+    # Compatibility with FTG\GeekTG
     if isinstance(message, list) and message:
         message = message[0]
 
@@ -290,9 +339,14 @@ async def answer(
                 if not message.client.loader.inline.init_complete:
                     raise
 
+                strings = list(smart_split(text, entity, 4096))
+
+                if len(strings) > 10:
+                    raise
+
                 list_ = await message.client.loader.inline.list(
                     message=message,
-                    strings=list(smart_split(text, entity, 4096)),
+                    strings=strings,
                 )
 
                 if not list_:
@@ -352,7 +406,7 @@ async def answer(
     return result
 
 
-async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
+async def get_target(message: Message, arg_no: Optional[int] = 0) -> Union[int, None]:
     if any(
         isinstance(entity, MessageEntityMentionName)
         for entity in (message.entities or [])
@@ -397,22 +451,54 @@ def merge(a: dict, b: dict) -> dict:
     return b
 
 
+async def set_avatar(
+    client: "TelegramClient",  # noqa: F821
+    peer: Entity,
+    avatar: str,
+) -> bool:
+    """Sets an entity avatar"""
+    if isinstance(avatar, str) and check_url(avatar):
+        f = (
+            await run_sync(
+                requests.get,
+                avatar,
+            )
+        ).content
+    elif isinstance(avatar, bytes):
+        f = avatar
+    else:
+        return False
+
+    await client(
+        EditPhotoRequest(
+            channel=peer,
+            photo=await client.upload_file(f, file_name="photo.png"),
+        )
+    )
+
+    return True
+
+
 async def asset_channel(
     client: "TelegramClient",  # noqa: F821
     title: str,
     description: str,
     *,
-    silent: bool = False,
-    archive: bool = False,
+    silent: Optional[bool] = False,
+    archive: Optional[bool] = False,
+    avatar: Optional[str] = "",
+    _folder: Optional[str] = "",
 ) -> Tuple[Channel, bool]:
     """
     Create new channel (if needed) and return its entity
-    @client: Telegram client to create channel by
-    @title: Channel title
-    @description: Description
-    @silent: Automatically mute channel
-    @archive: Automatically archive channel
-    Returns peer and bool: is channel new or pre-existent
+    :param client: Telegram client to create channel by
+    :param title: Channel title
+    :param description: Description
+    :param silent: Automatically mute channel
+    :param archive: Automatically archive channel
+    :param avatar: Url to an avatar to set as pfp of created peer
+    :param _folder: Do not use it, or things will go wrong
+    :returns: Peer and bool: is channel new or pre-existent
     """
     async for d in client.iter_dialogs():
         if d.title == title:
@@ -430,6 +516,37 @@ async def asset_channel(
 
     if silent:
         await dnd(client, peer, archive)
+    elif archive:
+        await client.edit_folder(peer, 1)
+
+    if avatar:
+        await set_avatar(client, peer, avatar)
+
+    if _folder:
+        if _folder != "hikka":
+            raise NotImplementedError
+
+        folders = await client(GetDialogFiltersRequest())
+
+        try:
+            folder = next(folder for folder in folders if folder.title == "hikka")
+        except Exception:
+            return
+
+        if any(
+            peer.id == getattr(folder_peer, "channel_id", None)
+            for folder_peer in folder.include_peers
+        ):
+            return
+
+        folder.include_peers += [await client.get_input_entity(peer)]
+
+        await client(
+            UpdateDialogFilterRequest(
+                folder.id,
+                folder,
+            )
+        )
 
     return peer, True
 
@@ -437,8 +554,14 @@ async def asset_channel(
 async def dnd(
     client: "TelegramClient",  # noqa: F821
     peer: Entity,
-    archive: bool = True,
+    archive: Optional[bool] = True,
 ) -> bool:
+    """
+    Mutes and optionally archives peer
+    :param peer: Anything entity-link
+    :param archive: Archive peer, or just mute?
+    :returns: `True` on success, otherwise `False`
+    """
     try:
         await client(
             UpdateNotifySettingsRequest(
@@ -514,45 +637,47 @@ def formatted_uptime() -> str:
 
 def ascii_face() -> str:
     """Returnes cute ASCII-art face"""
-    return random.choice(
-        [
-            "ヽ(๑◠ܫ◠๑)ﾉ",
-            "☜(⌒▽⌒)☞",
-            "/|\\ ^._.^ /|\\",
-            "(◕ᴥ◕ʋ)",
-            "ᕙ(`▽´)ᕗ",
-            "(☞ﾟ∀ﾟ)☞",
-            "(✿◠‿◠)",
-            "(▰˘◡˘▰)",
-            "(˵ ͡° ͜ʖ ͡°˵)",
-            "ʕっ•ᴥ•ʔっ",
-            "( ͡° ᴥ ͡°)",
-            "ʕ♥ᴥ♥ʔ",
-            "\\m/,(> . <)_\\m/",
-            "(๑•́ ヮ •̀๑)",
-            "٩(^‿^)۶",
-            "(っˆڡˆς)",
-            "ψ(｀∇´)ψ",
-            "⊙ω⊙",
-            "٩(^ᴗ^)۶",
-            "(´・ω・)っ由",
-            "※\\(^o^)/※",
-            "٩(*❛⊰❛)～❤",
-            "( ͡~ ͜ʖ ͡°)",
-            "✧♡(◕‿◕✿)",
-            "โ๏௰๏ใ ื",
-            "∩｡• ᵕ •｡∩ ♡",
-            "(♡´౪`♡)",
-            "(◍＞◡＜◍)⋈。✧♡",
-            "♥(ˆ⌣ˆԅ)",
-            "╰(✿´⌣`✿)╯♡",
-            "ʕ•ᴥ•ʔ",
-            "ᶘ ◕ᴥ◕ᶅ",
-            "▼・ᴥ・▼",
-            "【≽ܫ≼】",
-            "ฅ^•ﻌ•^ฅ",
-            "(΄◞ิ౪◟ิ‵)",
-        ]
+    return escape_html(
+        random.choice(
+            [
+                "ヽ(๑◠ܫ◠๑)ﾉ",
+                "☜(⌒▽⌒)☞",
+                "/|\\ ^._.^ /|\\",
+                "(◕ᴥ◕ʋ)",
+                "ᕙ(`▽´)ᕗ",
+                "(☞ﾟ∀ﾟ)☞",
+                "(✿◠‿◠)",
+                "(▰˘◡˘▰)",
+                "(˵ ͡° ͜ʖ ͡°˵)",
+                "ʕっ•ᴥ•ʔっ",
+                "( ͡° ᴥ ͡°)",
+                "ʕ♥ᴥ♥ʔ",
+                "\\m/,(> . <)_\\m/",
+                "(๑•́ ヮ •̀๑)",
+                "٩(^‿^)۶",
+                "(っˆڡˆς)",
+                "ψ(｀∇´)ψ",
+                "⊙ω⊙",
+                "٩(^ᴗ^)۶",
+                "(´・ω・)っ由",
+                "※\\(^o^)/※",
+                "٩(*❛⊰❛)～❤",
+                "( ͡~ ͜ʖ ͡°)",
+                "✧♡(◕‿◕✿)",
+                "โ๏௰๏ใ ื",
+                "∩｡• ᵕ •｡∩ ♡",
+                "(♡´౪`♡)",
+                "(◍＞◡＜◍)⋈。✧♡",
+                "♥(ˆ⌣ˆԅ)",
+                "╰(✿´⌣`✿)╯♡",
+                "ʕ•ᴥ•ʔ",
+                "ᶘ ◕ᴥ◕ᶅ",
+                "▼・ᴥ・▼",
+                "【≽ܫ≼】",
+                "ฅ^•ﻌ•^ฅ",
+                "(΄◞ิ౪◟ิ‵)",
+            ]
+        )
     )
 
 
@@ -572,7 +697,13 @@ def rand(size: int, /) -> str:
     )
 
 
-def smart_split(text, entities, length=4096, split_on=("\n", " "), min_length=1):
+def smart_split(
+    text: str,
+    entities: List[FormattingEntity],
+    length: Optional[int] = 4096,
+    split_on: Optional[ListLike] = ("\n", " "),
+    min_length: Optional[int] = 1,
+):
     """
     Split the message into smaller messages.
     A grapheme will never be broken. Entities will be displaced to match the right location. No inputs will be mutated.
@@ -723,6 +854,15 @@ def get_git_hash() -> Union[str, bool]:
     try:
         repo = git.Repo()
         return repo.heads[0].commit.hexsha
+    except Exception:
+        return False
+
+
+def is_serializable(x: Any, /) -> bool:
+    """Checks if object is JSON-serializable"""
+    try:
+        json.dumps(x)
+        return True
     except Exception:
         return False
 

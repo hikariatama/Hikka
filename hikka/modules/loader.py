@@ -43,6 +43,8 @@ from telethon.tl.types import Message
 from typing import Union, List
 from collections import ChainMap
 
+from typing import Optional
+
 import requests
 
 from .. import loader, utils, main
@@ -128,18 +130,18 @@ class LoaderMod(loader.Module):
         "provide_module": "<b>⚠️ Provide a module to load</b>",
         "bad_unicode": "<b>🚫 Invalid Unicode formatting in module</b>",
         "load_failed": "<b>🚫 Loading failed. See logs for details</b>",
-        "loaded": "<b>🪁 Module </b><code>{}</code>{}<b> loaded.</b>{}",
+        "loaded": "<b>🌑 Module </b><code>{}</code>{}<b> loaded.</b>{}",
         "no_class": "<b>What class needs to be unloaded?</b>",
-        "unloaded": "<b>🔥 Module unloaded.</b>",
+        "unloaded": "<b>🧹 Module unloaded.</b>",
         "not_unloaded": "<b>🚫 Module not unloaded.</b>",
         "requirements_failed": "<b>🚫 Requirements installation failed</b>",
         "requirements_installing": "<b>🔄 Installing requirements...</b>",
         "requirements_restart": "<b>🔄 Requirements installed, but a restart is required</b>",
         "all_modules_deleted": "<b>✅ All modules deleted</b>",
-        "single_cmd": "\n📍 <code>{}{}</code> 👉🏻 ",
-        "undoc_cmd": "👁‍🗨 No docs",
-        "ihandler": "\n🎹 <i>Inline</i>: <code>{}</code> 👉🏻 ",
-        "undoc_ihandler": "👁‍🗨 No docs",
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "undoc_cmd": "🦥 No docs",
+        "ihandler": "\n🎹 <code>{}</code> {}",
+        "undoc_ihandler": "🦥 No docs",
         "inline_init_failed": (
             "🚫 <b>This module requires Hikka inline feature and "
             "initialization of InlineManager failed</b>\n"
@@ -148,7 +150,7 @@ class LoaderMod(loader.Module):
         ),
         "version_incompatible": "🚫 <b>This module requires Hikka {}+\nPlease, update with </b><code>.update</code>",
         "ffmpeg_required": "🚫 <b>This module requires FFMPEG, which is not installed</b>",
-        "developer": "\n\n🧑‍💻 <b>Developer: </b><code>{}</code>",
+        "developer": "\n\n💻 <b>Developer: </b><code>{}</code>",
         "module_fs": "💿 <b>Would you like to save this module to filesystem, so it won't get unloaded after restart?</b>",
         "save": "💿 Save",
         "no_save": "🚫 Don't save",
@@ -170,21 +172,21 @@ class LoaderMod(loader.Module):
         "provide_module": "<b>⚠️ Укажи модуль для загрузки</b>",
         "bad_unicode": "<b>🚫 Неверная кодировка модуля</b>",
         "load_failed": "<b>🚫 Загрузка не увенчалась успехом. Смотри логи.</b>",
-        "loaded": "<b>🪁 Модуль </b><code>{}</code>{}<b> загружен.</b>{}",
+        "loaded": "<b>🌑 Модуль </b><code>{}</code>{}<b> загружен.</b>{}",
         "no_class": "<b>А что выгружать то?</b>",
-        "unloaded": "<b>🔥 Модуль выгружен.</b>",
+        "unloaded": "<b>🧹 Модуль выгружен.</b>",
         "not_unloaded": "<b>🚫 Модуль не выгружен.</b>",
         "requirements_failed": "<b>🚫 Ошибка установки зависимостей</b>",
         "requirements_installing": "<b>🔄 Устанавливаю зависимости...</b>",
         "requirements_restart": "<b>🔄 Зависимости установлены, но нужна перезагрузка</b>",
         "all_modules_deleted": "<b>✅ Модули удалены</b>",
-        "single_cmd": "\n📍 <code>{}{}</code> 👉🏻 ",
-        "undoc_cmd": "👁‍🗨 Нет описания",
-        "ihandler": "\n🎹 <i>Inline</i>: <code>{}</code> 👉🏻 ",
-        "undoc_ihandler": "👁‍🗨 Нет описания",
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "undoc_cmd": "🦥 Нет описания",
+        "ihandler": "\n🎹 <code>{}</code> {}",
+        "undoc_ihandler": "🦥 Нет описания",
         "version_incompatible": "🚫 <b>Этому модулю требуется Hikka версии {}+\nОбновись с помощью </b><code>.update</code>",
         "ffmpeg_required": "🚫 <b>Этому модулю требуется FFMPEG, который не установлен</b>",
-        "developer": "\n\n🧑‍💻 <b>Разработчик: </b><code>{}</code>",
+        "developer": "\n\n💻 <b>Разработчик: </b><code>{}</code>",
         "module_fs": "💿 <b>Ты хочешь сохранить модуль на жесткий диск, чтобы он не выгружался при перезагрузке?</b>",
         "save": "💿 Сохранить",
         "no_save": "🚫 Не сохранять",
@@ -201,24 +203,26 @@ class LoaderMod(loader.Module):
     }
 
     def __init__(self):
-        super().__init__()
         self.config = loader.ModuleConfig(
-            "MODULES_REPO",
-            "https://mods.hikariatama.ru/",
-            lambda: self.strings("repo_config_doc"),
-            "ADDITIONAL_REPOS",
-            # Currenly the trusted developers are specified
-            (
-                "https://github.com/hikariatama/host/raw/master/|"
-                "https://github.com/MoriSummerz/ftg-mods/raw/main/|"
-                "https://gitlab.com/CakesTwix/friendly-userbot-modules/-/raw/master/"
+            loader.ConfigValue(
+                "MODULES_REPO",
+                "https://mods.hikariatama.ru/",
+                lambda: self.strings("repo_config_doc"),
             ),
-            lambda: self.strings("add_repo_config_doc"),
+            loader.ConfigValue(
+                "ADDITIONAL_REPOS",
+                # Currenly the trusted developers are specified
+                (
+                    "https://github.com/hikariatama/host/raw/master/|"
+                    "https://github.com/MoriSummerz/ftg-mods/raw/main/|"
+                    "https://gitlab.com/CakesTwix/friendly-userbot-modules/-/raw/master/"
+                ),
+                lambda: self.strings("add_repo_config_doc"),
+            ),
         )
 
     def _update_modules_in_db(self) -> None:
-        self._db.set(
-            __name__,
+        self.set(
             "loaded_modules",
             {
                 module.__class__.__name__: module.__origin__
@@ -282,8 +286,8 @@ class LoaderMod(loader.Module):
 
             raise
 
-        self._db.set(__name__, "chosen_preset", args[0])
-        self._db.set(__name__, "loaded_modules", {})
+        self.set("chosen_preset", args[0])
+        self.set("loaded_modules", {})
 
         await utils.answer(message, self.strings("preset_loaded"))
         await self.allmodules.commands["restart"](
@@ -292,10 +296,10 @@ class LoaderMod(loader.Module):
 
     async def _get_modules_to_load(self):
         possible_mods = (
-            await self.get_repo_list(self._db.get(__name__, "chosen_preset", None))
+            await self.get_repo_list(self.get("chosen_preset", None))
         ).values()
         todo = dict(ChainMap(*possible_mods))
-        todo.update(**self._db.get(__name__, "loaded_modules", {}))
+        todo.update(**self.get("loaded_modules", {}))
         return todo
 
     async def _get_repo(self, repo: str, preset: str) -> str:
@@ -309,7 +313,7 @@ class LoaderMod(loader.Module):
 
         return res.text
 
-    async def get_repo_list(self, preset=None):
+    async def get_repo_list(self, preset: Optional[str] = None):
         if preset is None or preset == "none":
             preset = "minimal"
 
@@ -332,16 +336,26 @@ class LoaderMod(loader.Module):
             if repo.startswith("http")
         }
 
-    async def download_and_install(self, module_name, message=None):
+    async def get_links_list(self):
+        def converter(repo_dict: dict) -> list:
+            return list(dict(ChainMap(*list(repo_dict.values()))).values())
+
+        links = await self.get_repo_list("full")
+        # Make `MODULES_REPO` primary one
+        main_repo = list(links[self.config["MODULES_REPO"]].values())
+        del links[self.config["MODULES_REPO"]]
+        return main_repo + converter(links)
+
+    async def download_and_install(
+        self,
+        module_name: str,
+        message: Optional[Message] = None,
+    ):
         try:
             if urlparse(module_name).netloc:
                 url = module_name
             else:
-                links = list(
-                    dict(
-                        ChainMap(*list((await self.get_repo_list("full")).values()))
-                    ).values()
-                )
+                links = await self.get_links_list()
 
                 try:
                     url = next(
@@ -487,10 +501,10 @@ class LoaderMod(loader.Module):
         self,
         doc: str,
         message: Message,
-        name: Union[str, None] = None,
-        origin: str = "<string>",
-        did_requirements: bool = False,
-        save_fs: bool = False,
+        name: Optional[Union[str, None]] = None,
+        origin: Optional[str] = "<string>",
+        did_requirements: Optional[bool] = False,
+        save_fs: Optional[bool] = False,
     ) -> None:
         if any(
             line.replace(" ", "") == "#scope:ffmpeg" for line in doc.splitlines()
@@ -724,12 +738,15 @@ class LoaderMod(loader.Module):
                 instance.commands.items(),
                 key=lambda x: x[0],
             ):
-                modhelp += self.strings("single_cmd").format(self.get_prefix(), _name)
-
-                if fun.__doc__:
-                    modhelp += utils.escape_html(inspect.getdoc(fun))
-                else:
-                    modhelp += self.strings("undoc_cmd")
+                modhelp += self.strings("single_cmd").format(
+                    self.get_prefix(),
+                    _name,
+                    (
+                        utils.escape_html(inspect.getdoc(fun))
+                        if fun.__doc__
+                        else self.strings("undoc_cmd")
+                    ),
+                )
 
             if self.inline.init_complete:
                 if hasattr(instance, "inline_handlers"):
@@ -738,21 +755,13 @@ class LoaderMod(loader.Module):
                         key=lambda x: x[0],
                     ):
                         modhelp += self.strings("ihandler").format(
-                            f"@{self.inline.bot_username} {_name}"
+                            f"@{self.inline.bot_username} {_name}",
+                            (
+                                utils.escape_html(inspect.getdoc(fun))
+                                if fun.__doc__
+                                else self.strings("undoc_ihandler")
+                            ),
                         )
-
-                        if fun.__doc__:
-                            modhelp += utils.escape_html(
-                                "\n".join(
-                                    [
-                                        line.strip()
-                                        for line in inspect.getdoc(fun).splitlines()
-                                        if not line.strip().startswith("@")
-                                    ]
-                                )
-                            )
-                        else:
-                            modhelp += self.strings("undoc_ihandler")
 
             try:
                 await utils.answer(
@@ -787,12 +796,11 @@ class LoaderMod(loader.Module):
 
         worked = self.allmodules.unload_module(args)
 
-        self._db.set(
-            __name__,
+        self.set(
             "loaded_modules",
             {
                 mod: link
-                for mod, link in self._db.get(__name__, "loaded_modules", {}).items()
+                for mod, link in self.get("loaded_modules", {}).items()
                 if mod not in worked
             },
         )
@@ -846,12 +854,12 @@ class LoaderMod(loader.Module):
     @loader.owner
     async def clearmodulescmd(self, message: Message) -> None:
         """Delete all installed modules"""
-        self._db.set(__name__, "loaded_modules", {})
+        self.set("loaded_modules", {})
 
         for file in os.scandir(loader.LOADED_MODULES_DIR):
             os.remove(file)
 
-        self._db.set(__name__, "chosen_preset", "none")
+        self.set("chosen_preset", "none")
 
         await utils.answer(message, self.strings("all_modules_deleted"))
 
@@ -870,17 +878,35 @@ class LoaderMod(loader.Module):
         self._db = db
         self._client = client
 
+        if not self.get("loaded_modules", False):
+            self.set("loaded_modules", self._db.get(__name__, "loaded_modules", {}))
+            self._db.set(__name__, "loaded_modules", {})
+
         # Legacy db migration
-        if isinstance(self._db.get(__name__, "loaded_modules", {}), list):
-            self._db.set(
-                __name__,
+        if isinstance(self.get("loaded_modules", {}), list):
+            self.set(
                 "loaded_modules",
                 {
                     f"Loaded_module_{i}": link
-                    for i, link in enumerate(
-                        self._db.get(__name__, "loaded_modules", {})
-                    )
+                    for i, link in enumerate(self.get("loaded_modules", {}))
                 },
             )
 
         asyncio.ensure_future(self._update_modules())
+        asyncio.ensure_future(self._modules_config_autosaver())
+
+    async def _modules_config_autosaver(self):
+        while True:
+            await asyncio.sleep(3)
+            for mod in self.allmodules.modules:
+                if not hasattr(mod, "config") or not mod.config:
+                    continue
+
+                for option, config in mod.config._config.items():
+                    if not hasattr(config, "_save_marker"):
+                        continue
+
+                    delattr(mod.config._config[option], "_save_marker")
+                    self._db.setdefault(mod.__class__.__name__, {},).setdefault(
+                        "__config__", {}
+                    )[option] = config.value

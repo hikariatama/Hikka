@@ -92,7 +92,11 @@ def run_config(
 
 
 def get_config_key(key: str) -> Union[str, bool]:
-    """Parse and return key from config"""
+    """
+    Parse and return key from config
+    :param key: Key name in config
+    :return: Value of config key or `False`, if it doesn't exist
+    """
     try:
         with open(CONFIG_PATH, "r") as f:
             config = json.loads(f.read())
@@ -103,6 +107,12 @@ def get_config_key(key: str) -> Union[str, bool]:
 
 
 def save_config_key(key: str, value: str) -> bool:
+    """
+    Save `key` with `value` to config
+    :param key: Key name in config
+    :param value: Desired value in config
+    :return: `True` on success, otherwise `False`
+    """
     try:
         # Try to open our newly created json config
         with open(CONFIG_PATH, "r") as f:
@@ -124,6 +134,11 @@ def save_config_key(key: str, value: str) -> bool:
 
 
 def gen_port() -> int:
+    """
+    Generates random free port in case of VDS, and
+    8080 in case of Okteto
+    :returns: Integer value of generated port
+    """
     if "OKTETO" in os.environ:
         return 8080
 
@@ -148,8 +163,11 @@ def gen_port() -> int:
     return port
 
 
-def parse_arguments():
-    """Parse the arguments"""
+def parse_arguments() -> dict:
+    """
+    Parses the arguments
+    :returns: Dictionary with arguments
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--setup", "-s", action="store_true")
     parser.add_argument("--port", dest="port", action="store", default=gen_port(), type=int)  # fmt: skip
@@ -237,15 +255,17 @@ class SuperList(list):
 
 
 class InteractiveAuthRequired(Exception):
-    def __init__(self):
-        super().__init__()
+    """Is being rased by Telethon, if phone is required"""
 
 
 def raise_auth():
+    """Raises `InteractiveAuthRequired`"""
     raise InteractiveAuthRequired()
 
 
 class Hikka:
+    """Main userbot instance, which can handle multiple clients"""
+
     def __init__(self):
         self.arguments = parse_arguments()
         self.loop = asyncio.get_event_loop()
@@ -473,6 +493,7 @@ class Hikka:
                 continue
 
     def _init_loop(self):
+        """Initializes main event loop and starts handler for each client"""
         loops = [self.amain_wrapper(client) for client in self.clients]
         self.loop.run_until_complete(asyncio.gather(*loops))
 
@@ -523,6 +544,7 @@ class Hikka:
             logging.exception("Badge error")
 
     async def _handle_setup(self, client, db):
+        """Handles userbot setup"""
         await db.init()
         modules = loader.Modules()
         translator = Translator(client, db)
@@ -545,6 +567,7 @@ class Hikka:
         )
 
     async def _add_dispatcher(self, client, modules, db):
+        """Inits and adds dispatcher instance to client"""
         dispatcher = CommandDispatcher(modules, db, self.arguments.no_nickname)
         client.dispatcher = dispatcher
         await dispatcher.init(client)

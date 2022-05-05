@@ -35,7 +35,9 @@ class Translator:
         )
 
         if os.path.isfile(possible_pack_path) and pack == self.db.get(
-            __name__, "lang", False
+            __name__,
+            "lang",
+            False,
         ):
             with open(possible_pack_path, "r") as f:
                 self._data = json.loads(f.read())
@@ -71,8 +73,10 @@ class Strings:
     def __init__(self, mod, translator):
         self._mod = mod
         self._translator = translator
+
         if not translator:
             logger.debug(f"Module {mod=} got empty translator {translator=}")
+
         self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
 
     def __getitem__(self, key: str) -> str:
@@ -93,7 +97,7 @@ class Strings:
             self._base_strings.get(key, "Unknown strings"),
         )
 
-    def __call__(self, key: str, _=None) -> str:  # `_` is a compatibility tweak
+    def __call__(self, key: str, _=None) -> str:  # `_` is a compatibility tweak for FTG\GeekTG
         return self.__getitem__(key)
 
     def __iter__(self):

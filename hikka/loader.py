@@ -39,7 +39,7 @@ from importlib.abc import SourceLoader
 from . import utils, security
 from .translations import Strings
 from .inline.core import InlineManager
-from ._types import Module, LoadError, ModuleConfig, StopLoop, SelfUnload  # noqa: F401
+from ._types import Module, LoadError, ModuleConfig, ConfigValue, StopLoop, SelfUnload  # noqa: F401
 from .fast_uploader import download_file, upload_file
 
 from importlib.machinery import ModuleSpec

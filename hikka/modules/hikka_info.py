@@ -35,8 +35,8 @@ class HikkaInfoMod(loader.Module):
         "description": "ℹ This will not compromise any sensitive info",
         "up-to-date": "✅ Up-to-date",
         "update_required": "⚠️ Update required </b><code>.update</code><b>",
-        "_cfg_doc_custom_message": "Custom message for info. May contain {me}, {version}, {build}, {prefix}, {platform} keywords",
-        "_cfg_doc_custom_button": "Custom button for info",
+        "_cfg_cst_msg": "Custom message for info. May contain {me}, {version}, {build}, {prefix}, {platform} keywords",
+        "_cfg_cst_btn": "Custom button for info",
     }
 
     strings_ru = {
@@ -49,18 +49,20 @@ class HikkaInfoMod(loader.Module):
         "_ihandle_doc_info": "Отправить информацию о юзерботе",
         "up-to-date": "✅ Актуальная версия",
         "update_required": "⚠️ Требуется обновление </b><code>.update</code><b>",
-        "_cfg_doc_custom_message": "Кастомный текст сообщения в info. Может содержать ключевые слова {me}, {version}, {build}, {prefix}, {platform}",
-        "_cfg_doc_custom_button": "Кастомная кнопка в сообщении в info",
+        "_cfg_cst_msg": "Кастомный текст сообщения в info. Может содержать ключевые слова {me}, {version}, {build}, {prefix}, {platform}",
+        "_cfg_cst_btn": "Кастомная кнопка в сообщении в info",
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "custom_message",
-            "no",
-            lambda: self.strings("_cfg_doc_custom_message"),
-            "custom_button",
-            "🌘 Support chat|https://t.me/hikka_talks",
-            lambda: self.strings("_cfg_doc_custom_button"),
+            loader.ConfigValue(
+                "custom_message", "no", lambda: self.strings("_cfg_cst_msg")
+            ),
+            loader.ConfigValue(
+                "custom_button",
+                "🌘 Support chat|https://t.me/hikka_talks",
+                lambda: self.strings("_cfg_cst_btn"),
+            ),
         )
 
     async def client_ready(self, client, db):

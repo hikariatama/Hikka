@@ -26,8 +26,8 @@ class HelpMod(loader.Module):
     strings = {
         "name": "Help",
         "bad_module": "<b>🚫 <b>Module</b> <code>{}</code> <b>not found</b>",
-        "single_mod_header": "📼 <b>{}</b>:",
-        "single_cmd": "\n▫️ <code>{}{}</code> 👉🏻 ",
+        "single_mod_header": "🌑 <b>{}</b>:",
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 No docs",
         "all_header": "🌘 <b>{} mods available, {} hidden:</b>",
         "mod_tmpl": "\n{} <code>{}</code>",
@@ -35,7 +35,7 @@ class HelpMod(loader.Module):
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Specify module to hide</b>",
         "hidden_shown": "🌘 <b>{} modules hidden, {} modules shown:</b>\n{}\n{}",
-        "ihandler": "\n🎹 <code>{}</code> 👉🏻 ",
+        "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
         "joined": "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
         "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
@@ -43,19 +43,19 @@ class HelpMod(loader.Module):
 
     strings_ru = {
         "bad_module": "<b>🚫 <b>Модуль</b> <code>{}</code> <b>не найден</b>",
-        "single_mod_header": "📼 <b>{}</b>:",
-        "single_cmd": "\n▫️ <code>{}{}</code> 👉🏻 ",
+        "single_mod_header": "🌑 <b>{}</b>:",
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
-        "all_header": "👓 <b>{} модулей доступно, {} скрыто:</b>",
+        "all_header": "🌘 <b>{} модулей доступно, {} скрыто:</b>",
         "mod_tmpl": "\n{} <code>{}</code>",
         "first_cmd_tmpl": ": ( {}",
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Укажи модуль(-и), которые нужно скрыть</b>",
-        "hidden_shown": "👓 <b>{} модулей скрыто, {} модулей показано:</b>\n{}\n{}",
-        "ihandler": "\n🎹 <code>{}</code> 👉🏻 ",
+        "hidden_shown": "🌘 <b>{} модулей скрыто, {} модулей показано:</b>\n{}\n{}",
+        "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
-        "joined": "👩‍💼 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
-        "join": "👩‍💼 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
+        "joined": "🌘 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
+        "join": "🌘 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
         "_cmd_doc_helphide": "<модуль(-и)> - Скрывает модуль(-и) из помощи\n*Разделяй имена модулей пробелами",
         "_cmd_doc_help": "[модуль] [-f] - Показывает помощь",
         "_cmd_doc_support": "Вступает в чат помощи Hikka",
@@ -64,15 +64,9 @@ class HelpMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "core_emoji",
-            "▪️",
-            lambda: "Core module bullet",
-            "hikka_emoji",
-            "🌘",
-            lambda: "Hikka-only module bullet",
-            "plain_emoji",
-            "▫️",
-            lambda: "Plain module bullet",
+            loader.ConfigValue("core_emoji", "▪️", lambda: "Core module bullet"),
+            loader.ConfigValue("hikka_emoji", "🌘", lambda: "Hikka-only module bullet"),
+            loader.ConfigValue("plain_emoji", "▫️", lambda: "Plain module bullet"),
         )
 
     async def helphidecmd(self, message: Message):
@@ -178,28 +172,23 @@ class HelpMod(loader.Module):
             if hasattr(module, "inline_handlers"):
                 for name, fun in module.inline_handlers.items():
                     reply += self.strings("ihandler").format(
-                        f"@{self.inline.bot_username} {name}"
+                        f"@{self.inline.bot_username} {name}",
+                        (
+                            utils.escape_html(inspect.getdoc(fun))
+                            if fun.__doc__
+                            else self.strings("undoc_ihandler")
+                        ),
                     )
 
-                    if fun.__doc__:
-                        reply += utils.escape_html(
-                            "\n".join(
-                                [
-                                    line.strip()
-                                    for line in inspect.getdoc(fun).splitlines()
-                                    if not line.strip().startswith("@")
-                                ]
-                            )
-                        )
-                    else:
-                        reply += self.strings("undoc_ihandler")
-
             for name, fun in commands.items():
-                reply += self.strings("single_cmd").format(self.get_prefix(), name)
-                reply += (
-                    utils.escape_html(inspect.getdoc(fun))
-                    if fun.__doc__
-                    else self.strings("undoc_cmd")
+                reply += self.strings("single_cmd").format(
+                    self.get_prefix(),
+                    name,
+                    (
+                        utils.escape_html(inspect.getdoc(fun))
+                        if fun.__doc__
+                        else self.strings("undoc_cmd")
+                    ),
                 )
 
             await utils.answer(message, reply)
@@ -256,7 +245,9 @@ class HelpMod(loader.Module):
             if not inline:
                 for cmd_ in mod.commands.values():
                     try:
-                        inline = "await self.inline.form(" in inspect.getsource(cmd_.__code__)
+                        inline = "await self.inline.form(" in inspect.getsource(
+                            cmd_.__code__
+                        )
                     except Exception:
                         pass
 
