@@ -15,8 +15,6 @@ from ..inline.types import InlineCall
 from telethon.tl.types import Message
 import logging
 from typing import Union
-import ast
-import shlex
 
 logger = logging.getLogger(__name__)
 

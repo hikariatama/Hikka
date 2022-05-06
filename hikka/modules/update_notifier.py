@@ -74,14 +74,13 @@ class UpdateNotifierMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._me = (await client.get_me()).id
 
         try:
             git.Repo()
         except Exception as e:
             raise loader.LoadError("Can't load due to repo init error") from e
 
-        self._markup = self.inline._generate_markup(
+        self._markup = self.inline.generate_markup(
             [
                 {"text": "🔄 Update", "data": "hikka_update"},
                 {"text": "🚫 Ignore", "data": "hikka_upd_ignore"},
@@ -114,7 +113,7 @@ class UpdateNotifierMod(loader.Module):
                     and self._pending != self._notified
                 ):
                     m = await self.inline.bot.send_message(
-                        self._me,
+                        self._tg_id,
                         self.strings("update_required").format(
                             self.get_commit()[:6],
                             f'<a href="https://github.com/hikariatama/Hikka/compare/{self.get_commit()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
@@ -131,7 +130,8 @@ class UpdateNotifierMod(loader.Module):
                     if self.get("upd_msg"):
                         try:
                             await self.inline.bot.delete_message(
-                                self._me, self.get("upd_msg")
+                                self._tg_id,
+                                self.get("upd_msg"),
                             )
                         except Exception:
                             pass

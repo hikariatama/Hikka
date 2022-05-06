@@ -39,6 +39,7 @@ class HelpMod(loader.Module):
         "undoc_ihandler": "🦥 No docs",
         "joined": "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
         "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "partial_load": "⚠️ <b>Userbot is not fully loaded, so not all modules are shown</b>",
     }
 
     strings_ru = {
@@ -60,6 +61,7 @@ class HelpMod(loader.Module):
         "_cmd_doc_help": "[модуль] [-f] - Показывает помощь",
         "_cmd_doc_support": "Вступает в чат помощи Hikka",
         "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
+        "partial_load": "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все модули</b>",
     }
 
     def __init__(self):
@@ -202,17 +204,11 @@ class HelpMod(loader.Module):
             except Exception:
                 pass
 
-        mods = [
-            i.strings["name"]
-            for i in self.allmodules.modules
-            if hasattr(i, "strings") and "name" in i.strings
-        ]
-
-        hidden = list(filter(lambda module: module in mods, self.get("hide", [])))
-        self.set("hide", hidden)
+        hidden = self.get("hide", [])
 
         reply = self.strings("all_header").format(
-            count, len(hidden) if not force else 0
+            count,
+            len(hidden) if not force else 0,
         )
         shown_warn = False
 
@@ -222,7 +218,7 @@ class HelpMod(loader.Module):
 
         for mod in self.allmodules.modules:
             if not hasattr(mod, "commands"):
-                logger.warning(f"Module {mod.__class__.__name__} is not inited yet")
+                logger.debug(f"Module {mod.__class__.__name__} is not inited yet")
                 continue
 
             if mod.strings["name"] in self.get("hide", []) and not force:
@@ -310,9 +306,11 @@ class HelpMod(loader.Module):
         core_.sort(key=lambda x: x.split()[1])
         inline_.sort(key=lambda x: x.split()[1])
 
+        partial_load = f"\n\n{self.strings('partial_load')}" if not self.lookup("Loader")._fully_loaded else ""
+
         await utils.answer(
             message,
-            f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}",
+            f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}{partial_load}",
         )
 
     async def supportcmd(self, message):

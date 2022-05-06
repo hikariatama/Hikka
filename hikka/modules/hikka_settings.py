@@ -85,7 +85,7 @@ class HikkaSettingsMod(loader.Module):
         "nonick_warning": (
             "Внимание! Ты включил NoNick со стандартным префиксом! "
             "Тебя могут замьютить в чатах Hikka. Измени префикс или "
-            "отлюкчи глобальный NoNick!"
+            "отключи глобальный NoNick!"
         ),
     }
 

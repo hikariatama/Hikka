@@ -873,10 +873,12 @@ class LoaderMod(loader.Module):
             await self.download_and_install(mod)
 
         self._update_modules_in_db()
+        self._fully_loaded = True
 
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+        self._fully_loaded = False
 
         if not self.get("loaded_modules", False):
             self.set("loaded_modules", self._db.get(__name__, "loaded_modules", {}))

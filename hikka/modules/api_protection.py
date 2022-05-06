@@ -88,7 +88,6 @@ class APIRatelimiterMod(loader.Module):
         if hasattr(self._client._call, "_old_call_rewritten"):
             raise loader.SelfUnload("Already installed")
 
-        self._me = (await self._client.get_me()).id
         old_call = self._client._call
 
         async def new_call(
@@ -126,7 +125,7 @@ class APIRatelimiterMod(loader.Module):
                     report.name = "local_fw_report.json"
 
                     await self.inline.bot.send_document(
-                        self._me,
+                        self._tg_id,
                         report,
                         caption=self.strings("warning").format(
                             self.config["local_floodwait"],

@@ -161,6 +161,8 @@ class Utils(InlineUnit):
 
         return markup
 
+    generate_markup = _generate_markup
+
     async def check_inline_security(
         self,
         *,
@@ -270,7 +272,7 @@ class Utils(InlineUnit):
                 inline_message_id=inline_message_id,
                 parse_mode="HTML",
                 disable_web_page_preview=disable_web_page_preview,
-                reply_markup=self._generate_markup(
+                reply_markup=self.generate_markup(
                     reply_markup
                     if isinstance(reply_markup, list)
                     else unit.get("buttons", [])

@@ -67,10 +67,9 @@ class QuickstartMod(loader.Module):
     strings = {"name": "Quickstart"}
 
     async def client_ready(self, client, db):
-        self._me = (await client.get_me()).id
         self._db = db
 
-        mark = self.inline._generate_markup(
+        mark = self.inline.generate_markup(
             [
                 [{"text": "🥷 Support chat", "url": "https://t.me/hikka_talks"}],
                 [{"text": "🇷🇺 Русский", "data": "hikka_qs_sw_lng_ru"}],
@@ -78,7 +77,7 @@ class QuickstartMod(loader.Module):
         )
 
         await self.inline.bot.send_animation(
-            self._me,
+            self._tg_id,
             animation=choice(imgs),
             caption=TEXT,
             parse_mode="HTML",
@@ -93,7 +92,7 @@ class QuickstartMod(loader.Module):
 
         lang = call.data.split("_")[-1]
         if lang == "ru":
-            mark = self.inline._generate_markup(
+            mark = self.inline.generate_markup(
                 [
                     [{"text": "🥷 Чат помощи", "url": "https://t.me/hikka_talks"}],
                     [{"text": "🇬🇧 English", "data": "hikka_qs_sw_lng_en"}],
@@ -113,7 +112,7 @@ class QuickstartMod(loader.Module):
                 reply_markup=mark,
             )
         elif lang == "en":
-            mark = self.inline._generate_markup(
+            mark = self.inline.generate_markup(
                 [
                     [{"text": "🥷 Support chat", "url": "https://t.me/hikka_talks"}],
                     [{"text": "🇷🇺 Русский", "data": "hikka_qs_sw_lng_ru"}],

@@ -19,9 +19,6 @@ import asyncio
 import io
 import json
 import datetime
-from telethon.tl.functions.channels import EditPhotoRequest
-
-import requests
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +53,7 @@ class HikkaBackupMod(loader.Module):
                 self._tg_id,
                 photo="https://i.pinimg.com/originals/94/e5/9c/94e59c1fbecd7b842d7feeecb58f8fd6.jpg",
                 caption=self.strings("period"),
-                reply_markup=self.inline._generate_markup(
+                reply_markup=self.inline.generate_markup(
                     utils.chunks(
                         [
                             {"text": f"🕰 {i} h", "data": f"backup_period/{i}"}

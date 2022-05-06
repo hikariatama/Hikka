@@ -32,7 +32,6 @@ class HikkaLoggerMod(loader.Module):
     async def client_ready(self, client, db):
         self._client = client
         self._db = db
-        self._me = (await client.get_me()).id
 
         chat, is_new = await utils.asset_channel(
             self._client,

@@ -15,6 +15,7 @@ from telethon.tl.functions.channels import EditTitleRequest
 from telethon.tl.types import Message
 import json
 import os
+import time
 from typing import Any, Union
 
 from . import utils
@@ -35,6 +36,8 @@ class Database(dict):
         self._client = client
         self._me = None
         self._assets = None
+        self._revisions = []
+        self._next_revision_call = 0
 
     def __repr__(self):
         return object.__repr__(self)
@@ -53,10 +56,7 @@ class Database(dict):
                     ignore_migrated=True,
                 )
                 if (
-                    (
-                        dialog.name == f"hikka-{self._me.id}-assets"
-                        or dialog.name == "hikka-assets"
-                    )
+                    dialog.name in {f"hikka-{self._me.id}-assets", "hikka-assets"}
                     and dialog.is_channel
                     and dialog.entity.participants_count == 1
                 )
@@ -92,8 +92,59 @@ class Database(dict):
             logger.warning("Database read failed! Creating new one...")
             return {}
 
+    def process_db_autofix(self, db: dict) -> bool:
+        if not utils.is_serializable(db):
+            return False
+
+        for key, value in db.copy().items():
+            if not isinstance(key, (str, int)):
+                logger.warning(f"DbAutoFix: Dropped {key=} , because it is not string or int")  # fmt: skip
+                continue
+
+            if not isinstance(value, dict):
+                # If value is not a dict (module values), drop it,
+                # otherwise it may cause problems
+                del db[key]
+                logger.warning(f"DbAutoFix: Dropped {key=}, because it is non-dict {type(value)=}")  # fmt: skip
+                continue
+
+            for subkey, subvalue in value.items():
+                if not isinstance(subkey, (str, int)):
+                    del db[key][subkey]
+                    logger.warning(f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not string or int")  # fmt: skip
+                    continue
+
+        return True
+
     def save(self) -> bool:
         """Save database"""
+        if not self.process_db_autofix(self):
+            try:
+                rev = self._revisions.pop()
+                while not self.process_db_autofix(rev):
+                    rev = self._revisions.pop()
+            except IndexError:
+                raise RuntimeError(
+                    "Can't find revision to restore broken database from "
+                    "database is most likely broken and will lead to problems, "
+                    "so its save is forbidden."
+                )
+
+            self.clear()
+            self.update(**rev)
+
+            raise RuntimeError(
+                "Rewriting database to the last revision "
+                "because new one destructed it"
+            )
+
+        if self._next_revision_call < time.time():
+            self._revisions += [dict(self)]
+            self._next_revision_call = time.time() + 3
+
+        while len(self._revisions) > 15:
+            self._revisions.pop()
+
         try:
             with open(self._db_path, "w", encoding="utf-8") as f:
                 f.write(json.dumps(self))
@@ -141,23 +192,36 @@ class Database(dict):
         if not utils.is_serializable(owner):
             raise RuntimeError(
                 "Attempted to write object to "
-                f"{type(owner)=} of database. It is not "
+                f"{owner=} ({type(owner)=}) of database. It is not "
                 "JSON-serializable key which will cause errors"
             )
 
         if not utils.is_serializable(key):
             raise RuntimeError(
                 "Attempted to write object to "
-                f"{type(key)=} of database. It is not "
+                f"{key=} ({type(key)=}) of database. It is not "
                 "JSON-serializable key which will cause errors"
             )
 
         if not utils.is_serializable(value):
             raise RuntimeError(
                 "Attempted to write object of "
-                f"{type(value)=} to database. It is not "
+                f"{key=} ({type(value)=}) to database. It is not "
                 "JSON-serializable value which will cause errors"
             )
 
         super().setdefault(owner, {})[key] = value
+        return self.save()
+
+    def __setitem__(self, key: str, value: dict) -> bool:
+        if not isinstance(value, dict):
+            raise RuntimeError(
+                "Attempted to write non-dict value in " "a first layer of database"
+            )
+
+        dict.__setitem__(self, key, value)
+        return self.save()
+
+    def __delitem__(self, key: str) -> bool:
+        dict.__delitem__(self, key)
         return self.save()

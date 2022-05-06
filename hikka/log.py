@@ -63,7 +63,7 @@ class MemoryHandler(logging.Handler):
         if getattr(self, "_task_2", False):
             self._task_2.cancel()
 
-        self._mods[mod._me] = mod
+        self._mods[mod._tg_id] = mod
 
         self._task = asyncio.ensure_future(self.queue_poller())
         self._task_2 = asyncio.ensure_future(self.send_poller())

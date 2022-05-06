@@ -272,7 +272,7 @@ class Form(InlineUnit):
                             "HTML",
                             disable_web_page_preview=True,
                         ),
-                        reply_markup=self._generate_markup(inline_query.query),
+                        reply_markup=self.generate_markup(inline_query.query),
                     )
                 ],
                 cache_time=0,
@@ -287,7 +287,7 @@ class Form(InlineUnit):
                         thumb_url="https://img.icons8.com/fluency/344/loading.png",
                         caption=form["text"],
                         description="Processing inline form",
-                        reply_markup=self._generate_markup(
+                        reply_markup=self.generate_markup(
                             form["uid"],
                         ),
                         parse_mode="HTML",

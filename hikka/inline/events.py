@@ -113,7 +113,7 @@ class Events(InlineUnit):
                             thumb_url=res.get("thumb", None),
                             thumb_width=128,
                             thumb_height=128,
-                            reply_markup=self._generate_markup(
+                            reply_markup=self.generate_markup(
                                 res.get("reply_markup", None)
                             ),
                         )
@@ -128,7 +128,7 @@ class Events(InlineUnit):
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["photo"]),
                             photo_url=res["photo"],
-                            reply_markup=self._generate_markup(
+                            reply_markup=self.generate_markup(
                                 res.get("reply_markup", None)
                             ),
                         )
@@ -142,7 +142,7 @@ class Events(InlineUnit):
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["gif"]),
                             gif_url=res["gif"],
-                            reply_markup=self._generate_markup(
+                            reply_markup=self.generate_markup(
                                 res.get("reply_markup", None)
                             ),
                         )
@@ -158,7 +158,7 @@ class Events(InlineUnit):
                             thumb_url=res.get("thumb", res["video"]),
                             video_url=res["video"],
                             mime_type="video/mp4",
-                            reply_markup=self._generate_markup(
+                            reply_markup=self.generate_markup(
                                 res.get("reply_markup", None)
                             ),
                         )
@@ -174,7 +174,7 @@ class Events(InlineUnit):
                             thumb_url=res.get("thumb", res["file"]),
                             document_url=res["file"],
                             mime_type=res["mime_type"],
-                            reply_markup=self._generate_markup(
+                            reply_markup=self.generate_markup(
                                 res.get("reply_markup", None)
                             ),
                         )
