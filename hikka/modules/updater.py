@@ -65,8 +65,6 @@ class UpdaterMod(loader.Module):
         "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
         "update_confirm": "⛵️ <b>Are you sure you want to update?</b>",
         "cancel": "🚫 Cancel",
-        "lavhost_restart": "✌️ <b>Restarting lavHost...</b>",
-        "lavhost_update": "✌️ <b>Updating lavHost...</b>",
     }
 
     strings_ru = {
@@ -87,8 +85,6 @@ class UpdaterMod(loader.Module):
         "_cmd_doc_update": "Обновляет юзербот",
         "_cmd_doc_source": "Ссылка на исходный код проекта",
         "_cls_doc": "Обновляет юзербот",
-        "lavhost_restart": "✌️ <b>Перезагружаю lavHost...</b>",
-        "lavhost_update": "✌️ <b>Обновляю lavHost...</b>",
     }
 
     def __init__(self):
@@ -119,21 +115,23 @@ class UpdaterMod(loader.Module):
             ):
                 raise
         except Exception:
+            message = await utils.answer(message, self.strings("restarting_caption"))
+
             await self.restart_common(message)
 
     async def inline_restart(self, call: InlineCall):
+        await call.edit(self.strings("restarting_caption"))
         await self.restart_common(call)
 
     async def inline_close(self, call: InlineCall):
         await call.delete()
 
-    async def save_restart_message(self, call: Union[InlineCall, Message]):
-        self.set(
-            "selfupdatemsg",
-            call.inline_message_id
-            if hasattr(call, "inline_message_id")
-            else f"{utils.get_chat_id(call)}:{call.id}",
-        )
+    async def prerestart_common(self, call: Union[InlineCall, Message]):
+        logger.debug(f"Self-update. {sys.executable} -m {utils.get_base_dir()}")
+        if hasattr(call, "inline_message_id"):
+            self.set("selfupdatemsg", call.inline_message_id)
+        else:
+            self.set("selfupdatemsg", f"{utils.get_chat_id(call)}:{call.id}")
 
     async def restart_common(self, call: Union[InlineCall, Message]):
         if (
@@ -147,21 +145,7 @@ class UpdaterMod(loader.Module):
         else:
             message = call
 
-        call = await utils.answer(
-            call,
-            self.strings(
-                "restarting_caption"
-                if "LAVHOST" not in os.environ
-                else "lavhost_restart"
-            ),
-        )
-
-        await self.save_restart_message(call)
-
-        if "LAVHOST" in os.environ:
-            await self._client.send_message("@lavhostbot", "/restart")
-            return
-
+        await self.prerestart_common(call)
         atexit.register(functools.partial(restart, *sys.argv[1:]))
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
@@ -249,20 +233,15 @@ class UpdaterMod(loader.Module):
             os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")  # fmt: skip
 
         try:
-            if "LAVHOST" in os.environ:
-                await utils.answer(call, self.strings("lavhost_update"))
-                await self._client.send_message("@lavhostbot", "/update")
-                return
-
             try:
-                call = await utils.answer(call, self.strings("downloading"))
+                await utils.answer(call, self.strings("downloading"))
             except Exception:
                 pass
 
             req_update = await self.download_common()
 
             try:
-                call = await utils.answer(call, self.strings("installing"))
+                await utils.answer(call, self.strings("installing"))
             except Exception:
                 pass
 
@@ -270,7 +249,7 @@ class UpdaterMod(loader.Module):
                 self.req_common()
 
             try:
-                call = await utils.answer(call, self.strings("restarting_caption"))
+                await utils.answer(call, self.strings("restarting_caption"))
             except Exception:
                 pass
 
@@ -280,7 +259,7 @@ class UpdaterMod(loader.Module):
                 await self.inline_update(call, True)
                 return
 
-            logger.error("Got update loop. Update manually via .terminal")
+            logger.critical("Got update loop. Update manually via .terminal")
             return
 
     @loader.unrestricted
