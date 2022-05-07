@@ -249,7 +249,8 @@ class UpdaterMod(loader.Module):
 
         try:
             if "LAVHOST" in os.environ:
-                await utils.answer(msg_obj, self.strings("lavhost_update"))
+                msg_obj = await utils.answer(msg_obj, self.strings("lavhost_update"))
+                await self.process_restart_message(msg_obj)
                 os.system("lavhost update")
                 return
 
