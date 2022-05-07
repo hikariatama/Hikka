@@ -10,13 +10,14 @@
 
 # scope: inline
 
-from .. import loader, main, utils
 import logging
-import git
 
-from telethon.utils import get_display_name
-from ..inline.types import InlineQuery
+import git
 from telethon.tl.types import Message
+from telethon.utils import get_display_name
+
+from .. import loader, main, utils
+from ..inline.types import InlineQuery
 
 logger = logging.getLogger(__name__)
 

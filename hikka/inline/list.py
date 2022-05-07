@@ -1,25 +1,24 @@
-from .types import InlineUnit, InlineMessage
-from .. import utils
+import asyncio
+import functools
+import logging
+import time
+from types import FunctionType
+from typing import List as _List
+from typing import Optional, Union
 
 from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
     CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
     InlineQuery,
     InlineQueryResultArticle,
     InputTextMessageContent,
 )
-
 from aiogram.utils.exceptions import RetryAfter
-
-from typing import Union, List as _List, Optional
-from types import FunctionType
 from telethon.tl.types import Message
-import logging
-import asyncio
-import time
-import functools
 
+from .. import utils
+from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
 

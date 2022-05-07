@@ -1,11 +1,10 @@
-from aiogram.types import (
-    Message as AiogramMessage,
-    InlineQuery as AiogramInlineQuery,
-    InlineQueryResultArticle,
-    InputTextMessageContent,
-    CallbackQuery,
-)
 import logging
+
+from aiogram.types import CallbackQuery
+from aiogram.types import InlineQuery as AiogramInlineQuery
+from aiogram.types import InlineQueryResultArticle, InputTextMessageContent
+from aiogram.types import Message as AiogramMessage
+
 from .. import utils
 
 logger = logging.getLogger(__name__)

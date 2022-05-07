@@ -1,24 +1,24 @@
-from .types import InlineUnit, InlineCall
-from aiogram.types import (
-    Message as AiogramMessage,
-    InlineQuery as AiogramInlineQuery,
-    CallbackQuery,
-    ChosenInlineResult,
-    InlineQueryResultArticle,
-    InputTextMessageContent,
-    InlineQueryResultPhoto,
-    InlineQueryResultGif,
-    InlineQueryResultVideo,
-    InlineQueryResultDocument,
-)
-import logging
-from typing import List
-import re
-from .. import utils
-from .types import InlineQuery
 import functools
 import inspect
+import logging
+import re
 from asyncio import Event
+from typing import List
+
+from aiogram.types import CallbackQuery, ChosenInlineResult
+from aiogram.types import InlineQuery as AiogramInlineQuery
+from aiogram.types import (
+    InlineQueryResultArticle,
+    InlineQueryResultDocument,
+    InlineQueryResultGif,
+    InlineQueryResultPhoto,
+    InlineQueryResultVideo,
+    InputTextMessageContent,
+)
+from aiogram.types import Message as AiogramMessage
+
+from .. import utils
+from .types import InlineCall, InlineQuery, InlineUnit
 
 logger = logging.getLogger(__name__)
 

@@ -27,11 +27,12 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
-from telethon.tl.types import Message, ChatParticipantCreator, ChatParticipantAdmin
-from types import FunctionType
-from telethon.tl.functions.messages import GetFullChatRequest
 import time
+from types import FunctionType
 from typing import Optional
+
+from telethon.tl.functions.messages import GetFullChatRequest
+from telethon.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
 
 from . import main, utils
 

@@ -1,16 +1,12 @@
-from .types import InlineUnit
-from .. import utils
-
-from aiogram.types import (
-    InlineQuery,
-    InlineQueryResultArticle,
-    InputTextMessageContent,
-)
-
-from typing import Union, List, Optional
 import asyncio
-import time
 import logging
+import time
+from typing import List, Optional, Union
+
+from aiogram.types import InlineQuery, InlineQueryResultArticle, InputTextMessageContent
+
+from .. import utils
+from .types import InlineUnit
 
 logger = logging.getLogger(__name__)
 

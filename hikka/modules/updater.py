@@ -24,22 +24,22 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import asyncio
 import atexit
 import functools
 import logging
 import os
 import subprocess
 import sys
-import asyncio
 from typing import Union
 
 import git
-from git import Repo, GitCommandError
-from telethon.tl.types import Message, DialogFilter
+from git import GitCommandError, Repo
 from telethon.tl.functions.messages import (
-    UpdateDialogFilterRequest,
     GetDialogFiltersRequest,
+    UpdateDialogFilterRequest,
 )
+from telethon.tl.types import DialogFilter, Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall

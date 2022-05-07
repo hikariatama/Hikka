@@ -36,20 +36,18 @@ import os
 import re
 import sys
 import uuid
-from urllib.parse import urlparse
-from importlib.machinery import ModuleSpec
-import telethon
-from telethon.tl.types import Message
-from typing import Union, List
 from collections import ChainMap
-
-from typing import Optional
+from importlib.machinery import ModuleSpec
+from typing import List, Optional, Union
+from urllib.parse import urlparse
 
 import requests
+import telethon
+from telethon.tl.types import Message
 
-from .. import loader, utils, main
+from .. import loader, main, utils
 from ..compat import geek
-from ..inline.types import InlineMessage, InlineCall
+from ..inline.types import InlineCall, InlineMessage
 
 logger = logging.getLogger(__name__)
 

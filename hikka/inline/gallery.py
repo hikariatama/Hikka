@@ -1,27 +1,25 @@
-from .types import InlineUnit
-from .. import utils
+import asyncio
+import functools
+import logging
+import time
+from types import FunctionType
+from typing import List, Optional, Union
 
 from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
     CallbackQuery,
-    InputMediaPhoto,
-    InputMediaAnimation,
-    InlineQueryResultPhoto,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
     InlineQuery,
     InlineQueryResultGif,
+    InlineQueryResultPhoto,
+    InputMediaAnimation,
+    InputMediaPhoto,
 )
-
-from aiogram.utils.exceptions import InvalidHTTPUrlContent, BadRequest, RetryAfter
-
-from typing import Union, List, Optional
-from types import FunctionType
+from aiogram.utils.exceptions import BadRequest, InvalidHTTPUrlContent, RetryAfter
 from telethon.tl.types import Message
-import logging
-import asyncio
-import time
-import functools
 
+from .. import utils
+from .types import InlineUnit
 
 logger = logging.getLogger(__name__)
 

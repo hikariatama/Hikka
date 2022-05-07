@@ -10,9 +10,10 @@
 
 import json
 import logging
+import os
 
 import requests
-import os
+
 from . import utils
 
 logger = logging.getLogger(__name__)

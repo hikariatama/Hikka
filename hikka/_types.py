@@ -1,8 +1,9 @@
+import ast
 import logging
 from dataclasses import dataclass, field
-from typing import Union, Any, Optional
+from typing import Any, Optional, Union
+
 from telethon.tl.types import Message
-import ast
 
 logger = logging.getLogger(__name__)
 

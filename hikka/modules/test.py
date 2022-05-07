@@ -10,19 +10,18 @@
 
 # scope: inline
 
-import time
-
-import logging
-from io import BytesIO
-
-from .. import loader, utils, main
-from ..inline.types import InlineCall
-
-from typing import Union
-from telethon.tl.types import Message
-import inspect
 import asyncio
+import inspect
+import logging
 import os
+import time
+from io import BytesIO
+from typing import Union
+
+from telethon.tl.types import Message
+
+from .. import loader, main, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 DEBUG_MODS_DIR = os.path.join(utils.get_base_dir(), "debug_modules")

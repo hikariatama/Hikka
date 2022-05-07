@@ -5,24 +5,23 @@
 import asyncio
 import hashlib
 import inspect
+import io
 import logging
 import math
-import io
 import os
 from collections import defaultdict
 from typing import (
-    Optional,
-    List,
     AsyncGenerator,
-    Union,
     Awaitable,
-    DefaultDict,
-    Tuple,
     BinaryIO,
+    DefaultDict,
+    List,
+    Optional,
+    Tuple,
+    Union,
 )
 
-
-from telethon import utils, helpers, TelegramClient
+from telethon import TelegramClient, helpers, utils
 from telethon.crypto import AuthKey
 from telethon.network import MTProtoSender
 from telethon.tl.alltlobjects import LAYER
@@ -31,22 +30,20 @@ from telethon.tl.functions.auth import (
     ExportAuthorizationRequest,
     ImportAuthorizationRequest,
 )
-
 from telethon.tl.functions.upload import (
     GetFileRequest,
-    SaveFilePartRequest,
     SaveBigFilePartRequest,
+    SaveFilePartRequest,
 )
-
 from telethon.tl.types import (
     Document,
-    InputFileLocation,
     InputDocumentFileLocation,
-    InputPhotoFileLocation,
-    InputPeerPhotoFileLocation,
-    TypeInputFile,
-    InputFileBig,
     InputFile,
+    InputFileBig,
+    InputFileLocation,
+    InputPeerPhotoFileLocation,
+    InputPhotoFileLocation,
+    TypeInputFile,
 )
 
 try:
@@ -442,6 +439,8 @@ async def upload_file(
     filename: str = "upload",
     _client: TelegramClient = None,
 ) -> TypeInputFile:
-    res = (await _internal_transfer_to_telegram(_client, file, progress_callback, filename))[0]
+    res = (
+        await _internal_transfer_to_telegram(_client, file, progress_callback, filename)
+    )[0]
 
     return res

@@ -26,11 +26,11 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import sys
+import atexit
 import getpass
 import os
 import subprocess
-import atexit
+import sys
 
 if (
     getpass.getuser() == "root"

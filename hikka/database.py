@@ -8,15 +8,14 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import logging
-
-from telethon.tl.functions.channels import EditTitleRequest
-
-from telethon.tl.types import Message
 import json
+import logging
 import os
 import time
 from typing import Any, Union
+
+from telethon.tl.functions.channels import EditTitleRequest
+from telethon.tl.types import Message
 
 from . import utils
 

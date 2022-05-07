@@ -30,15 +30,16 @@ import asyncio
 import collections
 import logging
 import re
-from telethon import types
 import traceback
-from telethon.tl.types import Message
-from typing import Union, Tuple
 from types import FunctionType
+from typing import Tuple, Union
 
-from . import utils, main, security
-from .loader import Modules
+from telethon import types
+from telethon.tl.types import Message
+
+from . import main, security, utils
 from .database import Database
+from .loader import Modules
 
 # Keys for layout switch
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'

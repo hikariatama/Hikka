@@ -35,23 +35,22 @@ import logging
 import os
 import sys
 from importlib.abc import SourceLoader
-
-from . import utils, security
-from .translations import Strings
-from .inline.core import InlineManager
-from ._types import (  # noqa: F401
-    Module,
-    LoadError,
-    ModuleConfig,
-    ConfigValue,
-    StopLoop,
-    SelfUnload,
-)
-from .fast_uploader import download_file, upload_file
-
 from importlib.machinery import ModuleSpec
 from types import FunctionType
 from typing import Any, Optional, Union
+
+from . import security, utils
+from ._types import (
+    ConfigValue,
+    LoadError,
+    Module,  # noqa: F401
+    ModuleConfig,
+    SelfUnload,
+    StopLoop,
+)
+from .fast_uploader import download_file, upload_file
+from .inline.core import InlineManager
+from .translations import Strings
 
 logger = logging.getLogger(__name__)
 
@@ -282,6 +281,7 @@ def get_callback_handlers(mod):
 
 class Modules:
     """Stores all registered modules"""
+
     client = None
     added_modules = None
     _initial_registration = True

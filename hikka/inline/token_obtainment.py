@@ -1,12 +1,14 @@
-from .types import InlineUnit
+import asyncio
+import io
 import logging
 import re
-from .. import utils
-import io
+
 import requests
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
-import asyncio
+
+from .. import utils
+from .types import InlineUnit
 
 logger = logging.getLogger(__name__)
 
@@ -134,10 +136,12 @@ class TokenObtainment(InlineUnit):
 
             for row in r.reply_markup.rows:
                 for button in row.buttons:
-                    if (
-                        self._db.get("hikka.inline", "custom_bot", False)
-                        and self._db.get("hikka.inline", "custom_bot", False)
-                        != button.text.strip("@")
+                    if self._db.get(
+                        "hikka.inline", "custom_bot", False
+                    ) and self._db.get(
+                        "hikka.inline", "custom_bot", False
+                    ) != button.text.strip(
+                        "@"
                     ):
                         continue
 

@@ -1,8 +1,9 @@
 import logging
+from typing import Optional, Union
+
+from aiogram.types import Message as AiogramMessage
 
 from .types import InlineUnit
-from aiogram.types import Message as AiogramMessage
-from typing import Union, Optional
 
 logger = logging.getLogger(__name__)
 

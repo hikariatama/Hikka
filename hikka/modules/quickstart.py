@@ -8,11 +8,12 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import logging
+import os
+from random import choice
+
 from .. import loader, translations
 from ..inline.types import InlineCall
-import logging
-from random import choice
-import os
 
 logger = logging.getLogger(__name__)
 imgs = [

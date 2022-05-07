@@ -39,24 +39,25 @@ import random
 import socket
 import sqlite3
 import sys
+from math import ceil
+from typing import Union
 
 from telethon import TelegramClient, events
 from telethon.errors.rpcerrorlist import (
-    PhoneNumberInvalidError,
     ApiIdInvalidError,
     AuthKeyDuplicatedError,
+    PhoneNumberInvalidError,
 )
-from telethon.network.connection import ConnectionTcpFull
-from telethon.network.connection import ConnectionTcpMTProxyRandomizedIntermediate
+from telethon.network.connection import (
+    ConnectionTcpFull,
+    ConnectionTcpMTProxyRandomizedIntermediate,
+)
 from telethon.sessions import SQLiteSession
 
-from . import utils, loader, database
+from . import database, loader, utils
 from .dispatcher import CommandDispatcher
 from .translations import Translator
-
-from math import ceil
 from .version import __version__
-from typing import Union
 
 try:
     from .web import core

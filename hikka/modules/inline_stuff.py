@@ -10,16 +10,16 @@
 
 # scope: inline
 
-from .. import loader, utils
-from ..inline.types import InlineCall
-
 import logging
-import string
 import re
+import string
 
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
+from telethon.tl.types import Message
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

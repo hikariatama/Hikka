@@ -10,15 +10,17 @@
 
 # scope: inline
 
-from .. import loader, utils
-from ..inline.types import InlineCall
-from telethon.tl.types import Message
-import logging
-import time
 import asyncio
+import datetime
 import io
 import json
-import datetime
+import logging
+import time
+
+from telethon.tl.types import Message
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

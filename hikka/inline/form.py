@@ -1,20 +1,19 @@
-from .types import InlineUnit, InlineMessage
-from .. import utils
-
-from aiogram.types import (
-    InlineQueryResultArticle,
-    InputTextMessageContent,
-    InlineQuery,
-    InlineQueryResultPhoto,
-)
-
-from typing import Union, List, Optional
-from types import FunctionType
-from telethon.tl.types import Message
-
-from asyncio import Event
 import logging
 import time
+from asyncio import Event
+from types import FunctionType
+from typing import List, Optional, Union
+
+from aiogram.types import (
+    InlineQuery,
+    InlineQueryResultArticle,
+    InlineQueryResultPhoto,
+    InputTextMessageContent,
+)
+from telethon.tl.types import Message
+
+from .. import utils
+from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
 

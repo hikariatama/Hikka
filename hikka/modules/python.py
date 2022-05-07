@@ -8,20 +8,18 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-from .. import loader, utils, main
-from ..inline.types import InlineCall
-
+import itertools
 import logging
 from traceback import format_exc
-
-from meval import meval
-
 from types import ModuleType
-import itertools
 
 import telethon
-from telethon.tl.types import Message
+from meval import meval
 from telethon.errors.rpcerrorlist import MessageIdInvalidError
+from telethon.tl.types import Message
+
+from .. import loader, main, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

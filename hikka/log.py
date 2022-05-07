@@ -26,11 +26,12 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import logging
 import asyncio
+import logging
 import traceback
-from ._types import Module
+
 from . import utils
+from ._types import Module
 
 _formatter = logging.Formatter
 

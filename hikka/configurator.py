@@ -24,7 +24,7 @@ import time
 
 from dialog import Dialog, ExecutableNotFound
 
-from . import utils, main
+from . import main, utils
 
 
 def _safe_input(*args, **kwargs):
@@ -175,9 +175,9 @@ def module_config(mod):
     if code == DIALOG.OK:
         code, value = DIALOG.inputbox(tag)
         if code == DIALOG.OK:
-            DB.setdefault(mod.__class__.__name__, {}).setdefault(
-                "__config__", {}
-            )[tag] = validate_value(value)
+            DB.setdefault(mod.__class__.__name__, {}).setdefault("__config__", {})[
+                tag
+            ] = validate_value(value)
             DIALOG.msgbox("Config value set successfully")
         return False
     return True

@@ -10,11 +10,12 @@
 
 # meta developer: @hikariatama
 
-from .. import loader, utils
 import logging
 
-from telethon.tl.functions.channels import InviteToChannelRequest, EditAdminRequest
+from telethon.tl.functions.channels import EditAdminRequest, InviteToChannelRequest
 from telethon.tl.types import ChatAdminRights
+
+from .. import loader, utils
 
 
 @loader.tds

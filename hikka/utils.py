@@ -29,72 +29,61 @@
 import asyncio
 import functools
 import io
+import json
 import logging
 import os
+import random
+import re
 import shlex
-import time
 import string
+import time
 from datetime import timedelta
+from typing import Any, List, Optional, Tuple, Union
+from urllib.parse import urlparse
+
+import git
+import grapheme
+import requests
 import telethon
+from aiogram.types import CallbackQuery
+from telethon.hints import Entity
 from telethon.tl.custom.message import Message
+from telethon.tl.functions.account import UpdateNotifySettingsRequest
+from telethon.tl.functions.channels import CreateChannelRequest, EditPhotoRequest
+from telethon.tl.functions.messages import (
+    GetDialogFiltersRequest,
+    UpdateDialogFilterRequest,
+)
 from telethon.tl.types import (
-    PeerUser,
-    PeerChat,
-    PeerChannel,
-    User,
     Channel,
     InputPeerNotifySettings,
-)
-
-import json
-
-import grapheme
-import git
-
-from telethon.hints import Entity
-
-from telethon.tl.functions.channels import CreateChannelRequest, EditPhotoRequest
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
-from telethon.tl.types import (
-    MessageEntityUnknown,
-    MessageEntityMention,
-    MessageEntityHashtag,
-    MessageEntityBotCommand,
-    MessageEntityUrl,
-    MessageEntityEmail,
+    MessageEntityBankCard,
+    MessageEntityBlockquote,
     MessageEntityBold,
-    MessageEntityItalic,
+    MessageEntityBotCommand,
+    MessageEntityCashtag,
     MessageEntityCode,
-    MessageEntityPre,
-    MessageEntityTextUrl,
+    MessageEntityEmail,
+    MessageEntityHashtag,
+    MessageEntityItalic,
+    MessageEntityMention,
     MessageEntityMentionName,
     MessageEntityPhone,
-    MessageEntityCashtag,
-    MessageEntityUnderline,
-    MessageEntityStrike,
-    MessageEntityBlockquote,
-    MessageEntityBankCard,
+    MessageEntityPre,
     MessageEntitySpoiler,
+    MessageEntityStrike,
+    MessageEntityTextUrl,
+    MessageEntityUnderline,
+    MessageEntityUnknown,
+    MessageEntityUrl,
     MessageMediaWebPage,
+    PeerChannel,
+    PeerChat,
+    PeerUser,
+    User,
 )
-
-from telethon.tl.functions.messages import (
-    UpdateDialogFilterRequest,
-    GetDialogFiltersRequest,
-)
-
-from aiogram.types import CallbackQuery
 
 from .inline.types import InlineCall
-
-import requests
-import random
-
-from typing import Tuple, Union, List, Any, Optional
-
-import re
-
-from urllib.parse import urlparse
 
 FormattingEntity = Union[
     MessageEntityUnknown,

@@ -24,10 +24,11 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import os
+
 from telethon.tl.types import Message
 
-from .. import loader, main, utils, translations
-import os
+from .. import loader, main, translations, utils
 
 
 @loader.tds

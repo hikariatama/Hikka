@@ -8,13 +8,14 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import inspect
-from .. import loader, utils, security
-from telethon.tl.functions.channels import JoinChannelRequest
-import logging
 import difflib
+import inspect
+import logging
 
+from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.types import Message
+
+from .. import loader, security, utils
 
 logger = logging.getLogger(__name__)
 
@@ -306,7 +307,11 @@ class HelpMod(loader.Module):
         core_.sort(key=lambda x: x.split()[1])
         inline_.sort(key=lambda x: x.split()[1])
 
-        partial_load = f"\n\n{self.strings('partial_load')}" if not self.lookup("Loader")._fully_loaded else ""
+        partial_load = (
+            f"\n\n{self.strings('partial_load')}"
+            if not self.lookup("Loader")._fully_loaded
+            else ""
+        )
 
         await utils.answer(
             message,

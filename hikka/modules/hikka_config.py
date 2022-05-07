@@ -10,11 +10,13 @@
 
 # scope: inline
 
-from .. import loader, utils
-from ..inline.types import InlineCall
-from telethon.tl.types import Message
 import logging
 from typing import Union
+
+from telethon.tl.types import Message
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

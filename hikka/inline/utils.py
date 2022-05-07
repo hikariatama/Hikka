@@ -1,26 +1,20 @@
-from .types import InlineUnit
-from .. import utils
+import asyncio
+import inspect
+import logging
+from types import FunctionType
+from typing import List, Union
 
-from aiogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-    CallbackQuery,
-)
-
+from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.exceptions import (
+    InvalidQueryID,
+    MessageIdInvalid,
     MessageNotModified,
     RetryAfter,
-    MessageIdInvalid,
-    InvalidQueryID,
 )
 
-import logging
-from typing import Union, List
-from types import FunctionType
+from .. import utils
 from .._types import Module
-import inspect
-
-import asyncio
+from .types import InlineUnit
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +31,9 @@ class Utils(InlineUnit):
         markup = InlineKeyboardMarkup()
 
         map_ = (
-            self._forms[markup_obj]["buttons"] if isinstance(markup_obj, str) else markup_obj
+            self._forms[markup_obj]["buttons"]
+            if isinstance(markup_obj, str)
+            else markup_obj
         )
 
         map_ = self._normalize_markup(map_)

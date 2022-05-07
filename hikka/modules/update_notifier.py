@@ -10,13 +10,14 @@
 
 # scope: inline
 
-from .. import loader, utils
-from ..inline.types import InlineCall
-
 import asyncio
 import logging
-import git
 from typing import Union
+
+import git
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

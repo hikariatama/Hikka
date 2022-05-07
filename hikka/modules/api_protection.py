@@ -11,15 +11,17 @@
 # meta pic: https://img.icons8.com/emoji/344/shield-emoji.png
 # meta developer: @hikariatama
 
-from .. import loader, utils
-from ..inline.types import InlineCall
-from telethon.tl.types import Message
-import logging
-import time
+import asyncio
 import io
 import json
+import logging
 import random
-import asyncio
+import time
+
+from telethon.tl.types import Message
+
+from .. import loader, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
