@@ -1,3 +1,6 @@
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a31c10ae03a341fb88d922ea34655392)](https://app.codacy.com/gh/hikariatama/Hikka?utm_source=github.com&utm_medium=referral&utm_content=hikariatama/Hikka&utm_campaign=Badge_Grade_Settings)
+
 <a href="https://github.com/hikariatama/Hikka/blob/master/README_ru.md"><img src="https://img.icons8.com/external-justicon-flat-justicon/344/external-russia-countrys-flags-justicon-flat-justicon.png" width="32" align="middle"> Русская версия страницы</a>
 <hr>
 <h2><img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="54" align="middle"> Installation</h2>
