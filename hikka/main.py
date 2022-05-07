@@ -476,7 +476,7 @@ class Hikka:
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
-                os.remove(f"{session}.session")
+                os.remove(os.path.join(DATA_DIR, f"{session}.session"))
                 self.main()
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
@@ -600,7 +600,6 @@ class Hikka:
         client.parse_mode = "HTML"
         await client.start()
 
-        handlers = logging.getLogger().handlers
         db = database.Database(client)
         await db.init()
 
@@ -608,10 +607,8 @@ class Hikka:
             self._handle_setup(client, db)
             return False
 
-        logging.debug("got db")
-        logging.info("Loading logging config...")
-        for handler in handlers:
-            handler.setLevel(db.get(__name__, "loglevel", logging.WARNING))
+        logging.debug("Got DB")
+        logging.debug("Loading logging config...")
 
         to_load = ["loader.py"] if self.arguments.docker_deps_internal else None
 

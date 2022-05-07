@@ -9,14 +9,16 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 from .. import loader, utils, main
+
 import logging
 import asyncio
 import os
 import time
-from telethon.tl.functions.messages import GetScheduledHistoryRequest
-from telethon.tl.types import Message
 
-from .._types import SelfUnload
+from telethon.tl.functions.messages import GetScheduledHistoryRequest
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.tl.functions.contacts import UnblockRequest
+from telethon.tl.types import Message
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +57,7 @@ class OktetoMod(loader.Module):
             for message in messages:
                 await message.delete()
 
-            raise SelfUnload
+            raise loader.SelfUnload
 
         await utils.dnd(client, await client.get_entity(self._bot), True)
         self._task = asyncio.ensure_future(self._okteto_pinger())
@@ -90,11 +92,20 @@ class OktetoMod(loader.Module):
 
                 while last_date < time.time() + self._plan:
                     last_date += self._messages_interval
-                    await self._client.send_message(
-                        self._bot,
-                        f"{uri}?hash={utils.rand(6)}",
-                        schedule=last_date,
-                    )
+                    try:
+                        await self._client.send_message(
+                            self._bot,
+                            f"{uri}?hash={utils.rand(6)}",
+                            schedule=last_date,
+                        )
+                    except YouBlockedUserError:
+                        await self._client(UnblockRequest(id=self._bot))
+                        await self._client.send_message(
+                            self._bot,
+                            f"{uri}?hash={utils.rand(6)}",
+                            schedule=last_date,
+                        )
+
                     logger.debug(f"Scheduled Okteto pinger to {last_date}")
                     await asyncio.sleep(self._send_interval)
 

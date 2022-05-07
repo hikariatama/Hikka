@@ -12,21 +12,26 @@
 
 from aiogram import Bot, Dispatcher
 from aiogram.utils.exceptions import Unauthorized, TerminatedByOtherGetUpdates
+from aiogram.types import ParseMode
 
 import time
 import asyncio
 
 from telethon.errors.rpcerrorlist import InputUserDeactivatedError
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.tl.functions.contacts import UnblockRequest
 from telethon.utils import get_display_name
 
 from .gallery import Gallery
 from .query_gallery import QueryGallery
 from .form import Form
-from .bot_interaction import BotInteractions
+from .bot_pm import BotPM
 from .events import Events
 from .token_obtainment import TokenObtainment
 from .utils import Utils
 from .list import List
+
+from ..database import Database
 
 import logging
 
@@ -41,9 +46,14 @@ class InlineManager(
     Gallery,
     QueryGallery,
     List,
-    BotInteractions,
+    BotPM,
 ):
-    def __init__(self, client, db, allmodules):
+    def __init__(
+        self,
+        client: "TelegramClient",  # noqa: F821
+        db: Database,
+        allmodules: "Modules",  # noqa: F821
+    ):
         """Initialize InlineManager to create forms"""
         self._client = client
         self._db = db
@@ -103,7 +113,7 @@ class InlineManager(
         self.init_complete = True
 
         # Create bot instance and dispatcher
-        self.bot = Bot(token=self._token)
+        self.bot = Bot(token=self._token, parse_mode=ParseMode.HTML)
         self._bot = self.bot  # This is a temporary alias so the
         # developers can adapt their code
         self._dp = Dispatcher(self.bot)
@@ -128,10 +138,16 @@ class InlineManager(
 
             self.init_complete = False
             return False
+        except YouBlockedUserError:
+            await self._client(UnblockRequest(id=self.bot_username))
+            try:
+                m = await self._client.send_message(self.bot_username, "/start")
+            except Exception:
+                logger.critical("Can't unblock users bot", exc_info=True)
+                return False
         except Exception:
             self.init_complete = False
-            logger.critical("Initialization of inline manager failed!")
-            logger.exception("due to")
+            logger.critical("Initialization of inline manager failed!", exc_info=True)
             return False
 
         await self._client.delete_messages(self.bot_username, m)

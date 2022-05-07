@@ -17,7 +17,9 @@ import asyncio
 import json
 import re
 import websockets
+
 from telethon.tl.functions.messages import SendReactionRequest
+from telethon.tl.functions.contacts import UnblockRequest
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +96,9 @@ class HikkaDLMod(loader.Module):
                     m = await self._client.send_message("me", f".dlmod {link}")
 
                     if "dlmod" not in self.allmodules.commands:
-                        await wss.send("Loader is unavailable. Perhaps, userbot is not yet fully loaded")
+                        await wss.send(
+                            "Loader is unavailable. Perhaps, userbot is not yet fully loaded"
+                        )
                         continue
 
                     await self.allmodules.commands["dlmod"](m)
@@ -144,6 +148,8 @@ class HikkaDLMod(loader.Module):
         self._db = db
         self._client = client
         self._bot = "@hikka_userbot"
+
+        await self._client(UnblockRequest(id=self._bot))
 
         if not self.get("token"):
             await self._get_token()

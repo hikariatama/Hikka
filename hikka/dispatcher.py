@@ -37,6 +37,8 @@ from typing import Union, Tuple
 from types import FunctionType
 
 from . import utils, main, security
+from .loader import Modules
+from .database import Database
 
 # Keys for layout switch
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
@@ -51,7 +53,7 @@ def _decrement_ratelimit(delay, data, key, severity):
 
 
 class CommandDispatcher:
-    def __init__(self, modules, db, no_nickname=False):
+    def __init__(self, modules: Modules, db: Database, no_nickname: bool = False):
         self._modules = modules
         self._db = db
         self.security = security.SecurityManager(db)
@@ -62,13 +64,13 @@ class CommandDispatcher:
         self._ratelimit_max_chat = db.get(__name__, "ratelimit_max_chat", 100)
         self.check_security = self.security.check
 
-    async def init(self, client):
+    async def init(self, client: "TelegramClient"):  # noqa: F821
         await self.security.init(client)
         me = await client.get_me()
         self._me = me.id
         self._cached_username = me.username.lower() if me.username else str(me.id)
 
-    async def _handle_ratelimit(self, message, func):
+    async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
         if await self.security.check(
             message,
             security.OWNER | security.SUDO | security.SUPPORT,
@@ -202,9 +204,10 @@ class CommandDispatcher:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return False
 
-        prefix = self._db.get(main.__name__, "command_prefix", False) or "."
-
-        if len(prefix) != 1:
+        if (
+            len(prefix := self._db.get(main.__name__, "command_prefix", False) or ".")
+            != 1
+        ):
             prefix = "."
             self._db.set(main.__name__, "command_prefix", prefix)
             logging.warning("Prefix has been reset to a default one («.»)")
@@ -348,7 +351,7 @@ class CommandDispatcher:
             )
         )
 
-    async def command_exc(self, e, message, prefix):
+    async def command_exc(self, e, message: Message, prefix: str):
         logging.exception("Command failed")
         if not self._db.get(main.__name__, "inlinelogs", True):
             try:
@@ -370,7 +373,7 @@ class CommandDispatcher:
         except Exception:
             pass
 
-    async def watcher_exc(self, e, message):
+    async def watcher_exc(self, e, message: Message):
         logging.exception("Error running watcher")
 
     async def handle_incoming(self, event):

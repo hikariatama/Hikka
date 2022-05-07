@@ -364,16 +364,8 @@ class Events(InlineUnit):
 
             # Retrieve docs from func
             try:
-                doc = utils.escape_html(
-                    "\n".join(
-                        [
-                            line.strip()
-                            for line in inspect.getdoc(fun).splitlines()
-                            if not line.strip().startswith("@")
-                        ]
-                    )
-                )
-            except AttributeError:
+                doc = utils.escape_html(inspect.getdoc(fun))
+            except Exception:
                 doc = "🦥 No docs"
 
             _help += f"🎹 <code>@{self.bot_username} {name}</code> - {doc}\n"

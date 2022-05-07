@@ -131,7 +131,6 @@ class APIRatelimiterMod(loader.Module):
                             self.config["local_floodwait"],
                             prefix=self.get_prefix(),
                         ),
-                        parse_mode="HTML",
                     )
 
                     # It is intented to use time.sleep instead of asyncio.sleep

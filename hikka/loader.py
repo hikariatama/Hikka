@@ -75,20 +75,20 @@ inline_everyone = security.inline_everyone
 class StringLoader(SourceLoader):
     """Load a python module/file from a string"""
 
-    def __init__(self, data, origin):
+    def __init__(self, data: str, origin: str):
         self.data = data.encode("utf-8") if isinstance(data, str) else data
         self.origin = origin
 
-    def get_code(self, fullname):
-        source = self.get_source(fullname)
-        if source is None:
+    def get_code(self, fullname: str) -> str:
+        if not (source := self.get_source(fullname)):
             return None
+
         return compile(source, self.origin, "exec", dont_inherit=True)
 
-    def get_filename(self, *args, **kwargs):
+    def get_filename(self, *args, **kwargs) -> str:
         return self.origin
 
-    def get_data(self, *args, **kwargs):
+    def get_data(self, *args, **kwargs) -> bytes:
         return self.data
 
 
@@ -168,8 +168,8 @@ class InfiniteLoop:
 
 def loop(
     interval: int = 5,
-    autostart: bool = False,
-    wait_before: bool = False,
+    autostart: Optional[bool] = False,
+    wait_before: Optional[bool] = False,
     stop_clause: Optional[str] = None,
 ) -> FunctionType:
     """
@@ -477,17 +477,14 @@ class Modules:
                     ):
                         logging.debug(f"Removing watcher for update {watcher}")
                         self.watchers.remove(watcher)
+
                 self.watchers += [instance.watcher]
         except AttributeError:
             pass
 
     def _lookup(self, modname: str):
         return next(
-            (
-                mod
-                for mod in self.modules
-                if mod.name.lower() == modname.lower()
-            ),
+            (mod for mod in self.modules if mod.name.lower() == modname.lower()),
             False,
         )
 
@@ -516,16 +513,9 @@ class Modules:
                     raise RuntimeError(f"Attempted to overwrite core module {module}")
 
                 logging.debug(f"Removing module for update {module}")
-                self.modules.remove(module)
-                asyncio.ensure_future(
-                    asyncio.wait_for(
-                        asyncio.gather(
-                            module.on_unload(),
-                        ),
-                        timeout=5,
-                    )
-                )
+                asyncio.ensure_future(module.on_unload())
 
+                self.modules.remove(module)
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):
                         getattr(module, method).stop()
@@ -720,14 +710,7 @@ class Modules:
                 logging.debug(f"Removing module for unload {module}")
                 self.modules.remove(module)
 
-                asyncio.ensure_future(
-                    asyncio.wait_for(
-                        asyncio.gather(
-                            module.on_unload(),
-                        ),
-                        timeout=5,
-                    )
-                )
+                asyncio.ensure_future(module.on_unload())
 
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):
@@ -775,8 +758,15 @@ class Modules:
 
         return True
 
-    async def log(self, type_, *, group=None, affected_uids=None, data=None):
+    async def log(
+        self,
+        type_,
+        *,
+        group=None,
+        affected_uids=None,
+        data=None,
+    ):
         return await asyncio.gather(*[fun(type_, group, affected_uids, data) for fun in self._log_handlers])  # fmt: skip
 
     def register_logger(self, _logger):
-        self._log_handlers.append(_logger)
+        self._log_handlers += [_logger]

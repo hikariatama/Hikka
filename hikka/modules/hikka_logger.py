@@ -13,13 +13,7 @@
 from .. import loader, utils
 import logging
 
-from telethon.tl.functions.channels import (
-    InviteToChannelRequest,
-    EditAdminRequest,
-    EditPhotoRequest,
-)
-
-import requests
+from telethon.tl.functions.channels import InviteToChannelRequest, EditAdminRequest
 from telethon.tl.types import ChatAdminRights
 
 
@@ -49,15 +43,15 @@ class HikkaLoggerMod(loader.Module):
             for participant in (await self._client.get_participants(chat))
         ):
             logging.getLogger().handlers[0].install_tg_log(self)
-            logger.info(f"Bot logging installed for {self._logchat}")
+            logger.debug(f"Bot logging installed for {self._logchat}")
             return
 
-        logger.info("New logging chat created, init setup...")
+        logger.debug("New logging chat created, init setup...")
 
         try:
             await self._client(InviteToChannelRequest(chat, [self.inline.bot_username]))
         except Exception:
-            logger.warning("Unable to invite logger to chat. Maybe he's already there?")
+            logger.warning("Unable to invite logger to chat")
 
         try:
             await self._client(
@@ -72,21 +66,11 @@ class HikkaLoggerMod(loader.Module):
             pass
 
         try:
-            f = (
-                await utils.run_sync(
-                    requests.get,
-                    "https://i.imgur.com/MWoMKp0.jpeg",
-                )
-            ).content
-
-            await self._client(
-                EditPhotoRequest(
-                    channel=chat,
-                    photo=await self._client.upload_file(f, file_name="photo.jpg"),
-                )
+            await utils.set_avatar(
+                self._client, chat, "https://i.imgur.com/MWoMKp0.jpeg"
             )
         except Exception:
             pass
 
         logging.getLogger().handlers[0].install_tg_log(self)
-        logger.info(f"Bot logging installed for {self._logchat}")
+        logger.debug(f"Bot logging installed for {self._logchat}")

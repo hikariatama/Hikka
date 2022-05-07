@@ -28,16 +28,16 @@ logger = logging.getLogger(__name__)
 class Utils(InlineUnit):
     def _generate_markup(
         self,
-        form_uid: Union[str, list],
+        markup_obj: Union[str, list],
     ) -> Union[None, InlineKeyboardMarkup]:
         """Generate markup for form or list of `dict`s"""
-        if not form_uid:
+        if not markup_obj:
             return None
 
         markup = InlineKeyboardMarkup()
 
         map_ = (
-            self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid
+            self._forms[markup_obj]["buttons"] if isinstance(markup_obj, str) else markup_obj
         )
 
         map_ = self._normalize_markup(map_)
@@ -270,7 +270,6 @@ class Utils(InlineUnit):
             await self.bot.edit_message_text(
                 text,
                 inline_message_id=inline_message_id,
-                parse_mode="HTML",
                 disable_web_page_preview=disable_web_page_preview,
                 reply_markup=self.generate_markup(
                     reply_markup

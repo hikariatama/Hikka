@@ -12,10 +12,12 @@
 
 from .. import loader, utils
 from ..inline.types import InlineCall
-from telethon.tl.types import Message
+
 import logging
+import string
 import re
 
+from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
 
@@ -115,7 +117,15 @@ class InlineStuffMod(loader.Module):
     async def ch_hikka_botcmd(self, message: Message):
         """<username> - Change your Hikka inline bot username"""
         args = utils.get_args_raw(message).strip("@")
-        if not args or not args.lower().endswith("bot") or len(args) <= 4:
+        if (
+            not args
+            or not args.lower().endswith("bot")
+            or len(args) <= 4
+            or any(
+                litera not in (string.ascii_letters + string.digits + "_")
+                for litera in args
+            )
+        ):
             await utils.answer(message, self.strings("bot_username_invalid"))
             return
 

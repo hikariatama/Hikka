@@ -80,7 +80,6 @@ class QuickstartMod(loader.Module):
             self._tg_id,
             animation=choice(imgs),
             caption=TEXT,
-            parse_mode="HTML",
             reply_markup=mark,
         )
 
@@ -108,7 +107,6 @@ class QuickstartMod(loader.Module):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
                 caption=TEXT_RU,
-                parse_mode="HTML",
                 reply_markup=mark,
             )
         elif lang == "en":
@@ -128,6 +126,5 @@ class QuickstartMod(loader.Module):
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
                 caption=TEXT,
-                parse_mode="HTML",
                 reply_markup=mark,
             )

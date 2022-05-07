@@ -14,7 +14,7 @@ from aiogram.types import (
 
 from aiogram.utils.exceptions import InvalidHTTPUrlContent, BadRequest, RetryAfter
 
-from typing import Union, List
+from typing import Union, List, Optional
 from types import FunctionType
 from telethon.tl.types import Message
 import logging
@@ -43,15 +43,15 @@ class Gallery(InlineUnit):
         next_handler: Union[FunctionType, List[str]],
         caption: Union[str, FunctionType] = "",
         *,
-        force_me: bool = False,
-        always_allow: Union[list, None] = None,
-        manual_security: bool = False,
-        disable_security: bool = False,
-        ttl: Union[int, bool] = False,
-        on_unload: Union[FunctionType, None] = None,
-        preload: Union[bool, int] = False,
-        gif: bool = False,
-        silent: bool = False,
+        force_me: Optional[bool] = False,
+        always_allow: Optional[Union[list, None]] = None,
+        manual_security: Optional[bool] = False,
+        disable_security: Optional[bool] = False,
+        ttl: Optional[Union[int, bool]] = False,
+        on_unload: Optional[Union[FunctionType, None]] = None,
+        preload: Optional[Union[bool, int]] = False,
+        gif: Optional[bool] = False,
+        silent: Optional[bool] = False,
         _reattempt: bool = False,
     ) -> Union[bool, str]:
         """
@@ -358,9 +358,9 @@ class Gallery(InlineUnit):
         while True:
             await asyncio.sleep(7)
 
-            if gallery_uid not in self._galleries or not self._galleries[
-                gallery_uid
-            ].get("slideshow", False):
+            if (
+                gallery_uid not in self._galleries or not self._galleries[gallery_uid]
+            ).get("slideshow", False):
                 return
 
             await self._custom_map[btn_call_data["next"]]["handler"](

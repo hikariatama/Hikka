@@ -108,7 +108,7 @@ class Database(dict):
                 logger.warning(f"DbAutoFix: Dropped {key=}, because it is non-dict {type(value)=}")  # fmt: skip
                 continue
 
-            for subkey, subvalue in value.items():
+            for subkey in value:
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
                     logger.warning(f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not string or int")  # fmt: skip

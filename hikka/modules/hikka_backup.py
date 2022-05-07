@@ -63,7 +63,6 @@ class HikkaBackupMod(loader.Module):
                     )
                     + [[{"text": "🚫 Never", "data": "backup_period/never"}]]
                 ),
-                parse_mode="HTML",
             )
 
         self._backup_channel, is_new = await utils.asset_channel(

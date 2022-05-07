@@ -25,24 +25,24 @@ class Translator:
 
     async def init(self) -> bool:
         self._data = {}
-        pack = self.db.get(__name__, "pack", False)
-        if not pack:
+        if not (pack := self.db.get(__name__, "pack", False)):
             return False
 
-        possible_pack_path = os.path.join(
-            utils.get_base_dir(),
-            f"langpacks/{pack}.json",
-        )
+        if len(pack) == 2:
+            possible_pack_path = os.path.join(
+                utils.get_base_dir(),
+                f"langpacks/{pack}.json",
+            )
 
-        if os.path.isfile(possible_pack_path) and pack == self.db.get(
-            __name__,
-            "lang",
-            False,
-        ):
-            with open(possible_pack_path, "r") as f:
-                self._data = json.loads(f.read())
+            if os.path.isfile(possible_pack_path) and pack == self.db.get(
+                __name__,
+                "lang",
+                False,
+            ):
+                with open(possible_pack_path, "r") as f:
+                    self._data = json.loads(f.read())
 
-            return True
+                return True
 
         if not utils.check_url(pack):
             return False
@@ -97,7 +97,11 @@ class Strings:
             self._base_strings.get(key, "Unknown strings"),
         )
 
-    def __call__(self, key: str, _=None) -> str:  # `_` is a compatibility tweak for FTG\GeekTG
+    def __call__(
+        self,
+        key: str,
+        _=None,  # Compatibility tweak for FTG\GeekTG
+    ) -> str:
         return self.__getitem__(key)
 
     def __iter__(self):

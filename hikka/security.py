@@ -31,6 +31,7 @@ from telethon.tl.types import Message, ChatParticipantCreator, ChatParticipantAd
 from types import FunctionType
 from telethon.tl.functions.messages import GetFullChatRequest
 import time
+from typing import Optional
 
 from . import main, utils
 
@@ -196,14 +197,12 @@ class SecurityManager:
         self,
         message: Message,
         func: FunctionType,
-        user: int = None,
+        user: Optional[int] = None,
     ) -> bool:
         """Checks if message sender is permitted to execute certain function"""
         self._reload_rights()
 
-        config = self.get_flags(func)
-
-        if not config:
+        if not (config := self.get_flags(func)):
             return False
 
         if not user:

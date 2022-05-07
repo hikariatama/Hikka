@@ -134,17 +134,10 @@ parser = telethon.utils.sanitize_parse_mode("html")
 
 def get_args(message: Message) -> List[str]:
     """Get arguments from message (str or Message), return list of arguments"""
-    try:
-        message = message.message
-    except AttributeError:
-        pass
-
-    if not message:
+    if not (message := getattr(message, "message", message)):
         return False
 
-    message = message.split(maxsplit=1)
-
-    if len(message) <= 1:
+    if len(message := message.split(maxsplit=1)) <= 1:
         return []
 
     message = message[1]
@@ -159,17 +152,10 @@ def get_args(message: Message) -> List[str]:
 
 def get_args_raw(message: Message) -> str:
     """Get the parameters to the command as a raw string (not split)"""
-    try:
-        message = message.message
-    except AttributeError:
-        pass
-
-    if not message:
+    if not (message := getattr(message, "message", message)):
         return False
 
-    args = message.split(maxsplit=1)
-
-    if len(args) > 1:
+    if len(args := message.split(maxsplit=1)) > 1:
         return args[1]
 
     return ""
@@ -177,10 +163,9 @@ def get_args_raw(message: Message) -> str:
 
 def get_args_split_by(message: Message, separator: str) -> List[str]:
     """Split args with a specific separator"""
-    raw = get_args_raw(message)
-    mess = raw.split(separator)
-
-    return [section.strip() for section in mess if section]
+    return [
+        section.strip() for section in get_args_raw(message).split(separator) if section
+    ]
 
 
 def get_chat_id(message: Message) -> int:
@@ -189,7 +174,7 @@ def get_chat_id(message: Message) -> int:
 
 
 def get_entity_id(entity: Entity) -> int:
-
+    """Get entity ID"""
     return telethon.utils.get_peer_id(entity)
 
 
@@ -220,7 +205,7 @@ async def get_user(message: Message) -> Union[None, User]:
     try:
         return await message.client.get_entity(message.sender_id)
     except ValueError:  # Not in database. Lets go looking for them.
-        logging.debug("user not in session cache. searching...")
+        logging.debug("User not in session cache. Searching...")
 
     if isinstance(message.peer_id, PeerUser):
         await message.client.get_dialogs()
@@ -247,8 +232,11 @@ async def get_user(message: Message) -> Union[None, User]:
 
 
 def run_sync(func, *args, **kwargs):
-    """Run a non-async function in a new thread and return an awaitable"""
-    # Returning a coro
+    """
+    Run a non-async function in a new thread and return an awaitable
+    :param func: Sync-only function to execute
+    :returns: Awaitable coroutine
+    """
     return asyncio.get_event_loop().run_in_executor(
         None,
         functools.partial(func, *args, **kwargs),
@@ -316,9 +304,7 @@ async def answer(
 
     kwargs.setdefault("link_preview", False)
 
-    edit = message.out
-
-    if not edit:
+    if not (edit := message.out):
         kwargs.setdefault(
             "reply_to",
             getattr(message, "reply_to_msg_id", None),
@@ -387,8 +373,7 @@ async def answer(
     else:
         if isinstance(response, bytes):
             response = io.BytesIO(response)
-
-        if isinstance(response, str):
+        elif isinstance(response, str):
             response = io.BytesIO(response.encode("utf-8"))
 
         if name := kwargs.pop("filename", None):

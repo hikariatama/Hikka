@@ -359,14 +359,18 @@ class TestMod(loader.Module):
         )
 
         if isinstance(message, Message):
-            await message.delete()
+            if message.out:
+                await message.delete()
+
             await utils.answer(
                 message,
                 logs,
                 caption=self.strings("logs_caption").format(named_lvl, *other),
             )
         else:
-            await message.delete()
+            if message.out:
+                await message.delete()
+
             await self._client.send_file(
                 message.form["chat"],
                 logs,
@@ -379,7 +383,8 @@ class TestMod(loader.Module):
         try:
             time_sleep = float(utils.get_args_raw(message))
             await utils.answer(
-                message, self.strings("suspended").format(str(time_sleep))
+                message,
+                self.strings("suspended").format(time_sleep),
             )
             time.sleep(time_sleep)
         except ValueError:

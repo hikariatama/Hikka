@@ -8,12 +8,13 @@ from aiogram.types import (
     InlineQueryResultPhoto,
 )
 
-from typing import Union, List
+from typing import Union, List, Optional
 from types import FunctionType
 from telethon.tl.types import Message
+
+from asyncio import Event
 import logging
 import time
-from asyncio import Event
 
 logger = logging.getLogger(__name__)
 
@@ -25,14 +26,14 @@ class Form(InlineUnit):
         message: Union[Message, int],
         reply_markup: Union[List[List[dict]], List[dict], dict] = None,
         *,
-        force_me: bool = False,
-        always_allow: Union[List[list], None] = None,
-        manual_security: bool = False,
-        disable_security: bool = False,
-        ttl: Union[int, bool] = False,
-        on_unload: Union[FunctionType, None] = None,
-        photo: Union[str, None] = None,
-        silent: bool = False,
+        force_me: Optional[bool] = False,
+        always_allow: Optional[Union[List[list], None]] = None,
+        manual_security: Optional[bool] = False,
+        disable_security: Optional[bool] = False,
+        ttl: Optional[Union[int, bool]] = False,
+        on_unload: Optional[Union[FunctionType, None]] = None,
+        photo: Optional[Union[str, None]] = None,
+        silent: Optional[bool] = False,
     ) -> Union[str, bool]:
         """
         Creates inline form with callback

@@ -1,21 +1,20 @@
-from .types import InlineUnit
-
-from aiogram.types import Message as AiogramMessage
-
-from typing import Union
 import logging
+
+from .types import InlineUnit
+from aiogram.types import Message as AiogramMessage
+from typing import Union, Optional
 
 logger = logging.getLogger(__name__)
 
 
-class BotInteractions(InlineUnit):
-    def ss(self, user: Union[str, int], state: Union[str, bool]) -> bool:
+class BotPM(InlineUnit):
+    def set_fsm_state(self, user: Union[str, int], state: Union[str, bool]) -> bool:
         if not isinstance(user, (str, int)):
-            logger.error("Invalid type for `user` in `ss`")
+            logger.error("Invalid type for `user` in `set_fsm_state`")
             return False
 
         if not isinstance(state, (str, bool)):
-            logger.error("Invalid type for `state` in `ss`")
+            logger.error("Invalid type for `state` in `set_fsm_state`")
             return False
 
         if state:
@@ -25,19 +24,23 @@ class BotInteractions(InlineUnit):
 
         return True
 
-    def gs(self, user: Union[str, int]) -> Union[bool, str]:
+    ss = set_fsm_state
+
+    def get_fsm_state(self, user: Union[str, int]) -> Union[bool, str]:
         if not isinstance(user, (str, int)):
-            logger.error("Invalid type for `user` in `gs`")
+            logger.error("Invalid type for `user` in `get_fsm_state`")
             return False
 
         return self.fsm.get(str(user), False)
+
+    gs = get_fsm_state
 
     async def _bot_message_answer(  # skipcq: PYL-E0213
         mod,
         text: str = None,
         message: AiogramMessage = None,
-        parse_mode: str = "HTML",
-        disable_web_page_preview: bool = True,
+        parse_mode: Optional[str] = "HTML",
+        disable_web_page_preview: Optional[bool] = True,
         **kwargs,
     ) -> bool:
         try:

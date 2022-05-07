@@ -35,7 +35,7 @@ from . import utils
 _formatter = logging.Formatter
 
 
-class MemoryHandler(logging.Handler):
+class TelegramLogsHandler(logging.Handler):
     """
     Keeps 2 buffers.
     One for dispatched messages.
@@ -120,7 +120,7 @@ class MemoryHandler(logging.Handler):
                 disable_notification=True,
             )
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord):
         if record.exc_info is not None:
             exc = (
                 "\n🚫 Traceback:\n"
@@ -173,9 +173,10 @@ def init():
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     logging.getLogger().handlers = []
-    logging.getLogger().addHandler(MemoryHandler(handler, 7000))
+    logging.getLogger().addHandler(TelegramLogsHandler(handler, 7000))
     logging.getLogger().setLevel(logging.NOTSET)
     logging.getLogger("telethon").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
+    logging.getLogger("aiogram").setLevel(logging.WARNING)
     logging.captureWarnings(True)

@@ -126,26 +126,27 @@ class UpdaterMod(loader.Module):
     async def inline_close(self, call: InlineCall):
         await call.delete()
 
-    async def prerestart_common(self, call: Union[InlineCall, Message]):
-        logger.debug(f"Self-update. {sys.executable} -m {utils.get_base_dir()}")
-        if hasattr(call, "inline_message_id"):
-            self.set("selfupdatemsg", call.inline_message_id)
-        else:
-            self.set("selfupdatemsg", f"{utils.get_chat_id(call)}:{call.id}")
+    async def process_restart_message(self, msg_obj: Union[InlineCall, Message]):
+        self.set(
+            "selfupdatemsg",
+            msg_obj.inline_message_id
+            if hasattr(msg_obj, "inline_message_id")
+            else f"{utils.get_chat_id(msg_obj)}:{msg_obj.id}",
+        )
 
-    async def restart_common(self, call: Union[InlineCall, Message]):
+    async def restart_common(self, msg_obj: Union[InlineCall, Message]):
         if (
-            hasattr(call, "form")
-            and isinstance(call.form, dict)
-            and "uid" in call.form
-            and call.form["uid"] in self.inline._forms
-            and "message" in self.inline._forms[call.form["uid"]]
+            hasattr(msg_obj, "form")
+            and isinstance(msg_obj.form, dict)
+            and "uid" in msg_obj.form
+            and msg_obj.form["uid"] in self.inline._forms
+            and "message" in self.inline._forms[msg_obj.form["uid"]]
         ):
-            message = self.inline._forms[call.form["uid"]]["message"]
+            message = self.inline._forms[msg_obj.form["uid"]]["message"]
         else:
-            message = call
+            message = msg_obj
 
-        await self.prerestart_common(call)
+        await self.process_restart_message(msg_obj)
         atexit.register(functools.partial(restart, *sys.argv[1:]))
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
@@ -225,7 +226,7 @@ class UpdaterMod(loader.Module):
 
     async def inline_update(
         self,
-        call: Union[InlineCall, Message],
+        msg_obj: Union[InlineCall, Message],
         hard: bool = False,
     ):
         # We don't really care about asyncio at this point, as we are shutting down
@@ -234,14 +235,14 @@ class UpdaterMod(loader.Module):
 
         try:
             try:
-                await utils.answer(call, self.strings("downloading"))
+                msg_obj = await utils.answer(msg_obj, self.strings("downloading"))
             except Exception:
                 pass
 
             req_update = await self.download_common()
 
             try:
-                await utils.answer(call, self.strings("installing"))
+                msg_obj = await utils.answer(msg_obj, self.strings("installing"))
             except Exception:
                 pass
 
@@ -249,14 +250,16 @@ class UpdaterMod(loader.Module):
                 self.req_common()
 
             try:
-                await utils.answer(call, self.strings("restarting_caption"))
+                msg_obj = await utils.answer(
+                    msg_obj, self.strings("restarting_caption")
+                )
             except Exception:
                 pass
 
-            await self.restart_common(call)
+            await self.restart_common(msg_obj)
         except GitCommandError:
             if not hard:
-                await self.inline_update(call, True)
+                await self.inline_update(msg_obj, True)
                 return
 
             logger.critical("Got update loop. Update manually via .terminal")
@@ -375,7 +378,6 @@ class UpdaterMod(loader.Module):
         await self.inline.bot.edit_message_text(
             inline_message_id=ms,
             text=msg,
-            parse_mode="HTML",
         )
 
 

@@ -12,7 +12,7 @@ from aiogram.types import (
 
 from aiogram.utils.exceptions import RetryAfter
 
-from typing import Union, List as _List
+from typing import Union, List as _List, Optional
 from types import FunctionType
 from telethon.tl.types import Message
 import logging
@@ -30,13 +30,13 @@ class List(InlineUnit):
         message: Union[Message, int],
         strings: _List[str],
         *,
-        force_me: bool = False,
-        always_allow: Union[list, None] = None,
-        manual_security: bool = False,
-        disable_security: bool = False,
-        ttl: Union[int, bool] = False,
-        on_unload: Union[FunctionType, None] = None,
-        silent: bool = False,
+        force_me: Optional[bool] = False,
+        always_allow: Optional[Union[list, None]] = None,
+        manual_security: Optional[bool] = False,
+        disable_security: Optional[bool] = False,
+        ttl: Optional[Union[int, bool]] = False,
+        on_unload: Optional[Union[FunctionType, None]] = None,
+        silent: Optional[bool] = False,
     ) -> Union[bool, str]:
         """
         Processes inline lists
@@ -88,6 +88,10 @@ class List(InlineUnit):
 
         if not isinstance(strings, list) or not strings:
             logger.error("Invalid type for `strings`")
+            return False
+
+        if len(strings) > 50:
+            logger.error(f"Too much pages for `strings` ({len(strings)})")
             return False
 
         if always_allow and not isinstance(always_allow, list):
@@ -234,7 +238,6 @@ class List(InlineUnit):
                 text=self._lists[list_uid]["strings"][
                     self._lists[list_uid]["current_index"]
                 ],
-                parse_mode="HTML",
                 reply_markup=self._list_markup(list_uid),
             )
             await call.answer()
@@ -270,7 +273,6 @@ class List(InlineUnit):
                 text=self._lists[list_uid]["strings"][
                     self._lists[list_uid]["current_index"]
                 ],
-                parse_mode="HTML",
                 reply_markup=self._list_markup(list_uid),
             )
             await call.answer()

@@ -67,7 +67,11 @@ class HikkaConfigMod(loader.Module):
         self.lookup(mod).config[option] = query
 
         await call.edit(
-            self.strings("option_saved").format(mod, option, query),
+            self.strings("option_saved").format(
+                utils.escape_html(mod),
+                utils.escape_html(option),
+                utils.escape_html(query),
+            ),
             reply_markup=[
                 [
                     {
@@ -177,7 +181,7 @@ class HikkaConfigMod(loader.Module):
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:
-            await utils.answer(message, self.strings('args'))
+            await utils.answer(message, self.strings("args"))
             return
 
         mod, option, value = args
@@ -192,4 +196,11 @@ class HikkaConfigMod(loader.Module):
             return
 
         instance.config[option] = value
-        await utils.answer(message, self.strings("option_saved").format(option, mod, value))
+        await utils.answer(
+            message,
+            self.strings("option_saved").format(
+                utils.escape_html(option),
+                utils.escape_html(mod),
+                utils.escape_html(value),
+            ),
+        )

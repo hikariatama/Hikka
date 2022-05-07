@@ -54,18 +54,19 @@ DATA_DIR = (
     else "/data"
 )
 
-OFFSET = ord("🇦") - ord("A")
-OFFSET_TAG = 0xE0000
-CANCELTAG = "\U000E007F"
-BLACKFLAG = "\U0001F3F4"
-ASCII_LOWER = "abcdefghijklmnopqrstuvwxyz0123456789"
-
 
 def get_flag(countrycode: str) -> str:
-    # https://github.com/cvzi/flag/blob/864c996926cb841cbe498a0b52799f325117ac9a/flag/__init__.py#L308
-    code = [c for c in countrycode.lower() if c in ASCII_LOWER]
-    if len(code) == 2:
-        return "".join([chr(ord(c.upper()) + OFFSET) for c in code])
+    if (
+        len(
+            code := [
+                c
+                for c in countrycode.lower()
+                if c in string.ascii_letters + string.digits
+            ]
+        )
+        == 2
+    ):
+        return "".join([chr(ord(c.upper()) + (ord("🇦") - ord("A"))) for c in code])
 
     return countrycode
 
@@ -81,12 +82,16 @@ def restart(*argv):
 
 
 class Web:
+    sign_in_clients = {}
+    clients = []
+    _sessions = []
+    _ratelimit = {}
+
     def __init__(self, **kwargs):
         self.api_token = kwargs.pop("api_token")
         self.data_root = kwargs.pop("data_root")
         self.connection = kwargs.pop("connection")
         self.proxy = kwargs.pop("proxy")
-        self.redirect_url = None
         super().__init__(**kwargs)
         self.app.router.add_get("/", self.root)
         self.app.router.add_put("/setApi", self.set_tg_api)
@@ -98,12 +103,7 @@ class Web:
         self.app.router.add_post("/finishLogin", self.finish_login)
         self.app.router.add_post("/custom_bot", self.custom_bot)
         self.api_set = asyncio.Event()
-        self.sign_in_clients = {}
-        self.clients = []
         self.clients_set = asyncio.Event()
-        self.root_redirected = asyncio.Event()
-        self._sessions = []
-        self._ratelimit = {}
 
     @aiohttp_jinja2.template("root.jinja2")
     async def root(self, request):
@@ -172,6 +172,12 @@ class Web:
         await db.init()
 
         text = text.strip("@")
+
+        if any(
+            litera not in (string.ascii_letters + string.digits + "_")
+            for litera in text
+        ) or not text.lower().endswith("bot"):
+            return web.Response(body="OCCUPIED")
 
         try:
             await client.get_entity(f"@{text}")

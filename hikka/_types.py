@@ -129,8 +129,8 @@ class _Placeholder:
 class ConfigValue:
     option: str
     default: Any = None
-    value: Any = field(default_factory=_Placeholder)
     doc: Union[callable, str] = "No description"
+    value: Any = field(default_factory=_Placeholder)
 
     def __post_init__(self):
         if isinstance(self.value, _Placeholder):

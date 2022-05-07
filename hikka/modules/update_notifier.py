@@ -47,10 +47,11 @@ class UpdateNotifierMod(loader.Module):
     def get_changelog(self) -> str:
         try:
             repo = git.Repo()
+
             for remote in repo.remotes:
                 remote.fetch()
-            diff = repo.git.log(["HEAD..origin/master", "--oneline"])
-            if not diff:
+
+            if not (diff := repo.git.log(["HEAD..origin/master", "--oneline"])):
                 return False
         except Exception:
             return False
@@ -119,7 +120,6 @@ class UpdateNotifierMod(loader.Module):
                             f'<a href="https://github.com/hikariatama/Hikka/compare/{self.get_commit()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
                             self.get_changelog(),
                         ),
-                        parse_mode="HTML",
                         disable_web_page_preview=True,
                         reply_markup=self._markup,
                     )
@@ -156,7 +156,7 @@ class UpdateNotifierMod(loader.Module):
 
         m = await self._client.send_message(
             self.inline.bot_username,
-            "<code>.update --force</code>",
+            f"<code>{self.get_prefix()}update --force</code>",
         )
 
         await self.inline.bot.delete_message(
