@@ -93,6 +93,10 @@ class StringLoader(SourceLoader):
 
 
 class InfiniteLoop:
+    _task = None
+    status = False
+    module_instance = None  # Will be passed later
+
     def __init__(
         self,
         func: FunctionType,
@@ -106,10 +110,6 @@ class InfiniteLoop:
         self.interval = interval
         self._wait_before = wait_before
         self._stop_clause = stop_clause
-
-        self._task = None
-        self.status = False
-        self.module_instance = None  # Will be passed later
         if autostart:
             self.start()
 
@@ -282,6 +282,9 @@ def get_callback_handlers(mod):
 
 class Modules:
     """Stores all registered modules"""
+    client = None
+    added_modules = None
+    _initial_registration = True
 
     def __init__(self):
         self.commands = {}
@@ -291,9 +294,6 @@ class Modules:
         self.modules = []  # skipcq: PTC-W0052
         self.watchers = []
         self._log_handlers = []
-        self.client = None
-        self._initial_registration = True
-        self.added_modules = None
 
     def register_all(self, db, mods=None):
         """Load all modules in the module directory"""

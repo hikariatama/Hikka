@@ -55,22 +55,6 @@ DATA_DIR = (
 )
 
 
-def get_flag(countrycode: str) -> str:
-    if (
-        len(
-            code := [
-                c
-                for c in countrycode.lower()
-                if c in string.ascii_letters + string.digits
-            ]
-        )
-        == 2
-    ):
-        return "".join([chr(ord(c.upper()) + (ord("🇦") - ord("A"))) for c in code])
-
-    return countrycode
-
-
 def restart(*argv):
     os.execl(
         sys.executable,
@@ -373,7 +357,7 @@ class Web:
                     )
                 ).json()
                 cities += [
-                    f"<i>{get_flag(res['country_code'])} {res['country_name']} {res['region_name']} {res['city']} {res['zip_code']}</i>"
+                    f"<i>{utils.get_lang_flag(res['country_code'])} {res['country_name']} {res['region_name']} {res['city']} {res['zip_code']}</i>"
                 ]
             except Exception:
                 pass

@@ -67,7 +67,9 @@ class HikkaLoggerMod(loader.Module):
 
         try:
             await utils.set_avatar(
-                self._client, chat, "https://i.imgur.com/MWoMKp0.jpeg"
+                self._client,
+                chat,
+                "https://i.imgur.com/MWoMKp0.jpeg",
             )
         except Exception:
             pass

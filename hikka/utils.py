@@ -33,6 +33,7 @@ import logging
 import os
 import shlex
 import time
+import string
 from datetime import timedelta
 import telethon
 from telethon.tl.custom.message import Message
@@ -850,6 +851,27 @@ def is_serializable(x: Any, /) -> bool:
         return True
     except Exception:
         return False
+
+
+def get_lang_flag(countrycode: str) -> str:
+    """
+    Gets an emoji of specified countrycode
+    :param countrycode: 2-letter countrycode
+    :returns: Emoji flag
+    """
+    if (
+        len(
+            code := [
+                c
+                for c in countrycode.lower()
+                if c in string.ascii_letters + string.digits
+            ]
+        )
+        == 2
+    ):
+        return "".join([chr(ord(c.upper()) + (ord("🇦") - ord("A"))) for c in code])
+
+    return countrycode
 
 
 init_ts = time.perf_counter()

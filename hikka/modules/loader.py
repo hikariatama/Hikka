@@ -130,7 +130,7 @@ class LoaderMod(loader.Module):
         "provide_module": "<b>⚠️ Provide a module to load</b>",
         "bad_unicode": "<b>🚫 Invalid Unicode formatting in module</b>",
         "load_failed": "<b>🚫 Loading failed. See logs for details</b>",
-        "loaded": "<b>🌑 Module </b><code>{}</code>{}<b> loaded.</b>{}",
+        "loaded": "<b>🔭 Module </b><code>{}</code>{}<b> loaded {}</b>{}",
         "no_class": "<b>What class needs to be unloaded?</b>",
         "unloaded": "<b>🧹 Module unloaded.</b>",
         "not_unloaded": "<b>🚫 Module not unloaded.</b>",
@@ -172,7 +172,7 @@ class LoaderMod(loader.Module):
         "provide_module": "<b>⚠️ Укажи модуль для загрузки</b>",
         "bad_unicode": "<b>🚫 Неверная кодировка модуля</b>",
         "load_failed": "<b>🚫 Загрузка не увенчалась успехом. Смотри логи.</b>",
-        "loaded": "<b>🌑 Модуль </b><code>{}</code>{}<b> загружен.</b>{}",
+        "loaded": "<b>🔭 Модуль </b><code>{}</code>{}<b> загружен {}</b>{}",
         "no_class": "<b>А что выгружать то?</b>",
         "unloaded": "<b>🧹 Модуль выгружен.</b>",
         "not_unloaded": "<b>🚫 Модуль не выгружен.</b>",
@@ -728,6 +728,7 @@ class LoaderMod(loader.Module):
                     self.strings("loaded").format(
                         modname.strip(),
                         version,
+                        utils.ascii_face(),
                         modhelp,
                     )
                     + developer,
@@ -769,6 +770,7 @@ class LoaderMod(loader.Module):
                     self.strings("loaded").format(
                         modname.strip(),
                         version,
+                        utils.ascii_face(),
                         modhelp,
                     )
                     + developer,
@@ -778,6 +780,7 @@ class LoaderMod(loader.Module):
                     self.strings("loaded").format(
                         modname.strip(),
                         version,
+                        utils.ascii_face(),
                         modhelp,
                     )
                     + developer

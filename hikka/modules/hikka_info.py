@@ -56,7 +56,9 @@ class HikkaInfoMod(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
-                "custom_message", "no", lambda: self.strings("_cfg_cst_msg")
+                "custom_message",
+                "no",
+                lambda: self.strings("_cfg_cst_msg"),
             ),
             loader.ConfigValue(
                 "custom_button",

@@ -359,7 +359,7 @@ class TestMod(loader.Module):
         )
 
         if isinstance(message, Message):
-            if message.out:
+            if getattr(message, "out", True):
                 await message.delete()
 
             await utils.answer(
@@ -368,7 +368,7 @@ class TestMod(loader.Module):
                 caption=self.strings("logs_caption").format(named_lvl, *other),
             )
         else:
-            if message.out:
+            if getattr(message, "out", True):
                 await message.delete()
 
             await self._client.send_file(

@@ -355,7 +355,7 @@ class CommandDispatcher:
         logging.exception("Command failed")
         if not self._db.get(main.__name__, "inlinelogs", True):
             try:
-                txt = f"<b>🚫 Command</b> <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b> failed!</b>"
+                txt = f"<b>🚫 Call</b> <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b> failed!</b>"
                 await (message.edit if message.out else message.reply)(txt)
             except Exception:
                 pass
@@ -366,8 +366,8 @@ class CommandDispatcher:
             # Remove `Traceback (most recent call last):`
             exc = "\n".join(exc.splitlines()[1:])
             txt = (
-                f"<b>🚫 Command</b> <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b> failed!</b>\n\n"
-                f"<b>⛑ Traceback:</b>\n<code>{exc}</code>"
+                f"<b>🚫 Call</b> <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b> failed!</b>\n\n"
+                f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
             )
             await (message.edit if message.out else message.reply)(txt)
         except Exception:

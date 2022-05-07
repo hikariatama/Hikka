@@ -30,14 +30,14 @@ logger = logging.getLogger(__name__)
 
 
 class Database(dict):
+    _next_revision_call = 0
+    _revisions = []
+    _assets = None
+    _me = None
+
     def __init__(self, client):
         super().__init__()
-        # All the attributes below will be set later
         self._client = client
-        self._me = None
-        self._assets = None
-        self._revisions = []
-        self._next_revision_call = 0
 
     def __repr__(self):
         return object.__repr__(self)
@@ -215,9 +215,7 @@ class Database(dict):
 
     def __setitem__(self, key: str, value: dict) -> bool:
         if not isinstance(value, dict):
-            raise RuntimeError(
-                "Attempted to write non-dict value in " "a first layer of database"
-            )
+            raise RuntimeError("Attempted to write non-dict value in a first layer of database")  # fmt: skip
 
         dict.__setitem__(self, key, value)
         return self.save()

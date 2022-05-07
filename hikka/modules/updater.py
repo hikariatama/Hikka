@@ -55,36 +55,38 @@ class UpdaterMod(loader.Module):
         "name": "Updater",
         "source": "ℹ️ <b>Read the source code from</b> <a href='{}'>here</a>",
         "restarting_caption": "🔄 <b>Restarting...</b>",
-        "downloading": "🔄 <b>Downloading updates...</b>",
-        "downloaded": "✅ <b>Downloaded successfully.\nPlease type</b> \n<code>.restart</code> <b>to restart the bot.</b>",
-        "installing": "🔁 <b>Installing updates...</b>",
-        "success": "✅ <b>Restart successful!</b>",
+        "downloading": "🕐 <b>Downloading updates...</b>",
+        "installing": "🕐 <b>Installing updates...</b>",
+        "success": "✅ <b>Restart successful! {}</b>",
         "origin_cfg_doc": "Git origin URL, for where to update from",
         "btn_restart": "🔄 Restart",
-        "btn_update": "⛵️ Update",
+        "btn_update": "🧭 Update",
         "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
-        "update_confirm": "⛵️ <b>Are you sure you want to update?</b>",
+        "update_confirm": "🧭 <b>Are you sure you want to update?</b>",
         "cancel": "🚫 Cancel",
+        "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
+        "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
     }
 
     strings_ru = {
         "source": "ℹ️ <b>Исходный код можно прочитать</b> <a href='{}'>здесь</a>",
         "restarting_caption": "🔄 <b>Перезагрузка...</b>",
-        "downloading": "🔄 <b>Скачивание обновлений...</b>",
-        "downloaded": "✅ <b>Скачано успешно.\nНапиши</b> \n<code>.restart</code> <b>для перезагрузки юзербота.</b>",
-        "installing": "🔁 <b>Установка обновлений...</b>",
-        "success": "✅ <b>Перезагрузка успешна!</b>",
+        "downloading": "🕐 <b>Скачивание обновлений...</b>",
+        "installing": "🕐 <b>Установка обновлений...</b>",
+        "success": "✅ <b>Перезагрузка успешна! {}</b>",
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
-        "btn_update": "⛵️ Обновиться",
+        "btn_update": "🧭 Обновиться",
         "restart_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться?</b>",
-        "update_confirm": "⛵️ <b>Ты уверен, что хочешь обновиться?</b>",
+        "update_confirm": "🧭 <b>Ты уверен, что хочешь обновиться?</b>",
         "cancel": "🚫 Отмена",
         "_cmd_doc_restart": "Перезагружает юзербот",
         "_cmd_doc_download": "Скачивает обновления",
         "_cmd_doc_update": "Обновляет юзербот",
         "_cmd_doc_source": "Ссылка на исходный код проекта",
         "_cls_doc": "Обновляет юзербот",
+        "lavhost_restart": "✌️ <b>Твой lavHost перезагружается...\n&gt;///&lt;</b>",
+        "lavhost_update": "✌️ <b>Твой lavHost обновляется...\n&gt;///&lt;</b>",
     }
 
     def __init__(self):
@@ -115,12 +117,9 @@ class UpdaterMod(loader.Module):
             ):
                 raise
         except Exception:
-            message = await utils.answer(message, self.strings("restarting_caption"))
-
             await self.restart_common(message)
 
     async def inline_restart(self, call: InlineCall):
-        await call.edit(self.strings("restarting_caption"))
         await self.restart_common(call)
 
     async def inline_close(self, call: InlineCall):
@@ -146,7 +145,21 @@ class UpdaterMod(loader.Module):
         else:
             message = msg_obj
 
+        msg_obj = await utils.answer(
+            msg_obj,
+            self.strings(
+                "restarting_caption"
+                if "LAVHOST" not in os.environ
+                else "lavhost_restart"
+            ),
+        )
+
         await self.process_restart_message(msg_obj)
+
+        if "LAVHOST" in os.environ:
+            os.system("lavhost restart")
+            return
+
         atexit.register(functools.partial(restart, *sys.argv[1:]))
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
@@ -192,7 +205,8 @@ class UpdaterMod(loader.Module):
                     "install",
                     "-r",
                     os.path.join(
-                        os.path.dirname(utils.get_base_dir()), "requirements.txt"
+                        os.path.dirname(utils.get_base_dir()),
+                        "requirements.txt",
                     ),
                     "--user",
                 ]
@@ -234,6 +248,11 @@ class UpdaterMod(loader.Module):
             os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")  # fmt: skip
 
         try:
+            if "LAVHOST" in os.environ:
+                await utils.answer(msg_obj, self.strings("lavhost_update"))
+                os.system("lavhost update")
+                return
+
             try:
                 msg_obj = await utils.answer(msg_obj, self.strings("downloading"))
             except Exception:
@@ -251,7 +270,8 @@ class UpdaterMod(loader.Module):
 
             try:
                 msg_obj = await utils.answer(
-                    msg_obj, self.strings("restarting_caption")
+                    msg_obj,
+                    self.strings("restarting_caption"),
                 )
             except Exception:
                 pass
@@ -364,7 +384,7 @@ class UpdaterMod(loader.Module):
 
     async def update_complete(self, client):
         logger.debug("Self update successful! Edit message")
-        msg = self.strings("success")
+        msg = self.strings("success").format(utils.ascii_face())
         ms = self.get("selfupdatemsg")
 
         if ":" in str(ms):
