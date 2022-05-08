@@ -269,14 +269,6 @@ class UpdaterMod(loader.Module):
             if req_update:
                 self.req_common()
 
-            try:
-                msg_obj = await utils.answer(
-                    msg_obj,
-                    self.strings("restarting_caption"),
-                )
-            except Exception:
-                pass
-
             await self.restart_common(msg_obj)
         except GitCommandError:
             if not hard:
