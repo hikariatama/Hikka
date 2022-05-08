@@ -16,6 +16,7 @@ from typing import Any, Union
 
 from telethon.tl.functions.channels import EditTitleRequest
 from telethon.tl.types import Message
+from telethon.errors.rpcerrorlist import ChannelsTooMuchError
 
 from . import utils
 
@@ -26,6 +27,10 @@ DATA_DIR = (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class NoAssetsChannel(Exception):
+    """Raised when trying to read/store asset with no asset channel present"""
 
 
 class Database(dict):
@@ -42,7 +47,7 @@ class Database(dict):
         return object.__repr__(self)
 
     async def init(self):
-        """Asynchronous initialisation unit"""
+        """Asynchronous initialization unit"""
         self._me = await self._client.get_me()
         self._db_path = os.path.join(DATA_DIR, f"config-{self._me.id}.json")
         self.read()
@@ -72,13 +77,23 @@ class Database(dict):
         except Exception:
             pass
 
-        self._assets, _ = await utils.asset_channel(
-            self._client,
-            "hikka-assets",
-            "🌆 Your Hikka assets will be stored here",
-            archive=True,
-            avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-assets.png",
-        )
+        try:
+            self._assets, _ = await utils.asset_channel(
+                self._client,
+                "hikka-assets",
+                "🌆 Your Hikka assets will be stored here",
+                archive=True,
+                avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-assets.png",
+            )
+        except ChannelsTooMuchError:
+            self._assets = None
+            logger.critical(
+                "Can't find and/or create assets folder\n"
+                "This may cause several consequences, such as:\n"
+                "- Non working assets feature (e.g. notes)\n"
+                "- This error will occur every restart\n\n"
+                "You can solve this by leaving some channels/groups"
+            )
 
     def read(self) -> str:
         """Read database"""
@@ -158,6 +173,9 @@ class Database(dict):
         Save assets
         returns asset_id as integer
         """
+        if not self._assets:
+            raise NoAssetsChannel("Tried to save asset to non-existing asset channel")  # fmt: skip
+
         return (
             (await self._client.send_message(self._assets, message)).id
             if isinstance(message, Message)
@@ -172,6 +190,9 @@ class Database(dict):
 
     async def fetch_asset(self, asset_id: int) -> Union[None, Message]:
         """Fetch previously saved asset by its asset_id"""
+        if not self._assets:
+            raise NoAssetsChannel("Tried to fetch asset from non-existing asset channel")  # fmt: skip
+
         asset = await self._client.get_messages(self._assets, ids=[asset_id])
 
         if not asset:

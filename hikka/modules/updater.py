@@ -325,61 +325,69 @@ class UpdaterMod(loader.Module):
         except ValueError:
             folder_id = 2
 
-        await self._client(
-            UpdateDialogFilterRequest(
-                folder_id,
-                DialogFilter(
+        try:
+            await self._client(
+                UpdateDialogFilterRequest(
                     folder_id,
-                    title="hikka",
-                    pinned_peers=(
-                        [
-                            await self._client.get_input_entity(
-                                self._client.loader.inline.bot_id
+                    DialogFilter(
+                        folder_id,
+                        title="hikka",
+                        pinned_peers=(
+                            [
+                                await self._client.get_input_entity(
+                                    self._client.loader.inline.bot_id
+                                )
+                            ]
+                            if self._client.loader.inline.init_complete
+                            else []
+                        ),
+                        include_peers=[
+                            await self._client.get_input_entity(dialog.entity)
+                            async for dialog in self._client.iter_dialogs(
+                                None,
+                                ignore_migrated=True,
                             )
-                        ]
-                        if self._client.loader.inline.init_complete
-                        else []
+                            if dialog.name
+                            in {
+                                "hikka-logs",
+                                "hikka-onload",
+                                "hikka-assets",
+                                "hikka-backups",
+                                "hikka-acc-switcher",
+                            }
+                            and dialog.is_channel
+                            and (
+                                dialog.entity.participants_count == 1
+                                or dialog.entity.participants_count == 2
+                                and dialog.name == "hikka-logs"
+                            )
+                            or (
+                                self._client.loader.inline.init_complete
+                                and dialog.entity.id == self._client.loader.inline.bot_id
+                            )
+                            or dialog.entity.id
+                            in [1554874075, 1697279580, 1679998924]  # official hikka chats
+                        ],
+                        emoticon="🐱",
+                        exclude_peers=[],
+                        contacts=False,
+                        non_contacts=False,
+                        groups=False,
+                        broadcasts=False,
+                        bots=False,
+                        exclude_muted=False,
+                        exclude_read=False,
+                        exclude_archived=False,
                     ),
-                    include_peers=[
-                        await self._client.get_input_entity(dialog.entity)
-                        async for dialog in self._client.iter_dialogs(
-                            None,
-                            ignore_migrated=True,
-                        )
-                        if dialog.name
-                        in {
-                            "hikka-logs",
-                            "hikka-onload",
-                            "hikka-assets",
-                            "hikka-backups",
-                            "hikka-acc-switcher",
-                        }
-                        and dialog.is_channel
-                        and (
-                            dialog.entity.participants_count == 1
-                            or dialog.entity.participants_count == 2
-                            and dialog.name == "hikka-logs"
-                        )
-                        or (
-                            self._client.loader.inline.init_complete
-                            and dialog.entity.id == self._client.loader.inline.bot_id
-                        )
-                        or dialog.entity.id
-                        in [1554874075, 1697279580, 1679998924]  # official hikka chats
-                    ],
-                    emoticon="🐱",
-                    exclude_peers=[],
-                    contacts=False,
-                    non_contacts=False,
-                    groups=False,
-                    broadcasts=False,
-                    bots=False,
-                    exclude_muted=False,
-                    exclude_read=False,
-                    exclude_archived=False,
-                ),
+                )
             )
-        )
+        except Exception:
+            logger.critical(
+                "Can't create Hikka folder. Possible reasons are:\n"
+                "- User reached the limit of folders in Telegram\n"
+                "- User got floodwait\n"
+                "Ignoring error and adding folder addition to ignore list"
+            )
 
         self.set("do_not_create", True)
 
