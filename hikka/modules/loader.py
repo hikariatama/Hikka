@@ -233,7 +233,7 @@ class LoaderMod(loader.Module):
     async def dlmodcmd(self, message: Message) -> None:
         """Downloads and installs a module from the official module repo"""
         if args := utils.get_args(message):
-            args = args[0] if urlparse(args[0]).netloc else args[0].lower()
+            args = args[0]
 
             await self.download_and_install(args, message)
             self._update_modules_in_db()
@@ -357,7 +357,7 @@ class LoaderMod(loader.Module):
 
                 try:
                     url = next(
-                        link for link in links if link.endswith(f"{module_name}.py")
+                        link for link in links if link.lower().endswith(f"{module_name.lower()}.py")
                     )
                 except Exception:
                     if message is not None:
