@@ -356,9 +356,9 @@ class Gallery(InlineUnit):
         while True:
             await asyncio.sleep(7)
 
-            if (
-                gallery_uid not in self._galleries or not self._galleries[gallery_uid]
-            ).get("slideshow", False):
+            if gallery_uid not in self._galleries or not self._galleries[
+                gallery_uid
+            ].get("slideshow", False):
                 return
 
             await self._custom_map[btn_call_data["next"]]["handler"](
