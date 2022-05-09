@@ -40,10 +40,10 @@ from types import FunctionType
 from typing import Any, Optional, Union
 
 from . import security, utils
-from ._types import (
+from ._types import (  # noqa: F401
     ConfigValue,
     LoadError,
-    Module,  # noqa: F401
+    Module,
     ModuleConfig,
     SelfUnload,
     StopLoop,
@@ -176,7 +176,7 @@ def loop(
     :param interval: Loop iterations delay
     :param autostart: Start loop once module is loaded
     :param wait_before: Insert delay before actual iteration, rather than after
-    :param stop_clase: Database key, based on which the loop will run.
+    :param stop_clause: Database key, based on which the loop will run.
                        This key will be set to `True` once loop is started,
                        and will stop after key resets to `False`
     :attr status: Boolean, describing whether the loop is running
@@ -363,7 +363,7 @@ class Modules:
         ret = None
 
         for key, value in vars(module).items():
-            if key.endswith("Mod") and issubclass(value, Module):
+            if inspect.isclass(value) and issubclass(value, Module):
                 ret = value()
 
         if hasattr(module, "__version__"):

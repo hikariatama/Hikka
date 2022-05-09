@@ -21,6 +21,8 @@ from typing import (
     Union,
 )
 
+import time
+
 from telethon import TelegramClient, helpers, utils
 from telethon.crypto import AuthKey
 from telethon.network import MTProtoSender
@@ -44,7 +46,11 @@ from telethon.tl.types import (
     InputPeerPhotoFileLocation,
     InputPhotoFileLocation,
     TypeInputFile,
+    Message,
 )
+
+from .inline.types import InlineMessage
+from .utils import answer
 
 try:
     from mautrix.crypto.attachments import async_encrypt_attachment
@@ -409,9 +415,15 @@ async def _internal_transfer_to_telegram(
     )
 
 
+def _progressbar(progress: int) -> str:
+    filled = int(10 * progress // 100)
+    return f'{"▰" * filled}{"▱" * (10 - filled)}'
+
+
 async def download_file(
     location: TypeLocation = None,
     progress_callback: callable = None,
+    message_object: Optional[Union[Message, InlineMessage]] = None,
     _client: TelegramClient = None,
 ) -> BinaryIO:
     size = location.size
@@ -420,6 +432,29 @@ async def download_file(
     # We lock the transfers because telegram has connection count limits
     downloader = ParallelTransferrer(_client, dc_id)
     downloaded = downloader.download(location, size)
+
+    ratelimiter = time.time() + 3
+
+    if progress_callback is None:
+
+        async def progress_callback(current: int, total: int):
+            nonlocal message_object, ratelimiter
+            if ratelimiter > time.time():
+                return
+
+            ratelimiter = time.time() + 3
+
+            percentage = round(current * 100 / total)
+            try:
+                message_object = await answer(
+                    message_object,
+                    (
+                        "🌘 <b>Hikka is downloading a file...</b>\n"
+                        f"<code>{_progressbar(percentage)} {percentage}%</code>"
+                    ),
+                )
+            except Exception:
+                pass
 
     _out = io.BytesIO()
 
@@ -437,8 +472,33 @@ async def upload_file(
     file: BinaryIO = None,
     progress_callback: callable = None,
     filename: str = "upload",
+    message_object: Optional[Union[Message, InlineMessage]] = None,
     _client: TelegramClient = None,
 ) -> TypeInputFile:
+
+    ratelimiter = time.time() + 3
+
+    if progress_callback is None:
+
+        async def progress_callback(current: int, total: int):
+            nonlocal message_object, ratelimiter
+            if ratelimiter > time.time():
+                return
+
+            ratelimiter = time.time() + 3
+
+            percentage = round(current * 100 / total)
+            try:
+                message_object = await answer(
+                    message_object,
+                    (
+                        "🌘 <b>Hikka is uploading a file...</b>\n"
+                        f"<code>{_progressbar(percentage)} {percentage}%</code>"
+                    ),
+                )
+            except Exception:
+                pass
+
     res = (
         await _internal_transfer_to_telegram(_client, file, progress_callback, filename)
     )[0]

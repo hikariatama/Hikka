@@ -41,6 +41,7 @@ class HelpMod(loader.Module):
         "joined": "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
         "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
         "partial_load": "⚠️ <b>Userbot is not fully loaded, so not all modules are shown</b>",
+        "not_exact": "⚠️ <b>No exact match occured, so the closest result is shown instead</b>",
     }
 
     strings_ru = {
@@ -63,6 +64,7 @@ class HelpMod(loader.Module):
         "_cmd_doc_support": "Вступает в чат помощи Hikka",
         "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
         "partial_load": "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все модули</b>",
+        "not_exact": "⚠️ <b>Точного совпадения не нашлось, поэтому был выбран наиболее подходящее</b>",
     }
 
     def __init__(self):
@@ -114,6 +116,7 @@ class HelpMod(loader.Module):
         """[module] [-f] - Show help"""
         args = utils.get_args_raw(message)
         force = False
+        exact = True
         if "-f" in args:
             args = args.replace(" -f", "").replace("-f", "")
             force = True
@@ -157,6 +160,8 @@ class HelpMod(loader.Module):
                     if module.strings["name"] == module_name
                 )
 
+                exact = False
+
             try:
                 name = module.strings("name")
             except KeyError:
@@ -194,7 +199,7 @@ class HelpMod(loader.Module):
                     ),
                 )
 
-            await utils.answer(message, reply)
+            await utils.answer(message, f"{reply}\n\n{self.strings('not_exact') if not exact else ''}")
             return
 
         count = 0
