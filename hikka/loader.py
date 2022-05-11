@@ -91,6 +91,10 @@ class StringLoader(SourceLoader):
         return self.data
 
 
+async def stop_placeholder() -> bool:
+    return True
+
+
 class InfiniteLoop:
     _task = None
     status = False
@@ -109,17 +113,22 @@ class InfiniteLoop:
         self.interval = interval
         self._wait_before = wait_before
         self._stop_clause = stop_clause
-        if autostart:
-            self.start()
+        self.autostart = autostart
+
+    def _stop(self, *args, **kwargs):
+        self._wait_for_stop.set()
 
     def stop(self, *args, **kwargs):
         if self._task:
             logger.debug(f"Stopped loop for {self.func}")
-            self._task.cancel()
-            self._task = None
+            self._wait_for_stop = asyncio.Event()
             self.status = False
+            self._task.add_done_callback(self._stop)
+            self._task.cancel()
+            return asyncio.ensure_future(self._wait_for_stop.wait())
         else:
             logger.debug("Loop is not running")
+            return asyncio.ensure_future(stop_placeholder())
 
     def start(self, *args, **kwargs):
         if not self._task:
@@ -131,14 +140,14 @@ class InfiniteLoop:
     async def actual_loop(self, *args, **kwargs):
         # Wait for loader to set attribute
         while not self.module_instance:
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.01)
 
         if isinstance(self._stop_clause, str) and self._stop_clause:
             self.module_instance.set(self._stop_clause, True)
 
         self.status = True
 
-        while True:
+        while self.status:
             if self._wait_before:
                 await asyncio.sleep(self.interval)
 
@@ -158,6 +167,8 @@ class InfiniteLoop:
 
             if not self._wait_before:
                 await asyncio.sleep(self.interval)
+
+        self._wait_for_stop.set()
 
         self.status = False
 
@@ -295,7 +306,7 @@ class Modules:
         self.watchers = []
         self._log_handlers = []
 
-    def register_all(self, db, mods=None):
+    def register_all(self, client, db, mods=None):
         """Load all modules in the module directory"""
         self._db = db
 
@@ -306,9 +317,8 @@ class Modules:
                 os.path.join(utils.get_base_dir(), MODULES_NAME, mod)
                 for mod in filter(
                     lambda x: (
-                        len(x) > 3
-                        and x[-3:] == ".py"
-                        and x[0] != "_"
+                        x.endswith(".py")
+                        and not x.startswith("_")
                         and (
                             not db.get("hikka", "disable_quickstart", False)
                             or x != "quickstart.py"
@@ -325,7 +335,7 @@ class Modules:
             external_mods = [
                 os.path.join(LOADED_MODULES_DIR, mod)
                 for mod in filter(
-                    lambda x: (len(x) > 3 and x[-3:] == ".py" and x[0] != "_"),
+                    lambda x: (x.endswith(f"{client._tg_id}.py") and not x.startswith("_")),
                     os.listdir(LOADED_MODULES_DIR),
                 )
             ]
@@ -336,8 +346,14 @@ class Modules:
     def _register_modules(self, modules: list, origin: str = "<core>"):
         for mod in modules:
             try:
-                module_name = f"{__package__}.{MODULES_NAME}.{os.path.basename(mod).rsplit('.py', maxsplit=1)[0]}"  # fmt: skip
-                logging.debug(module_name)
+                module_name = (
+                    f"{__package__}."
+                    f"{MODULES_NAME}."
+                    f"{os.path.basename(mod).rsplit('.py', maxsplit=1)[0].rsplit('_', maxsplit=1)[0]}"
+                )
+
+                logging.debug(f"Loading {module_name} from filesystem")
+
                 with open(mod, "r") as file:
                     spec = ModuleSpec(
                         module_name,
@@ -362,7 +378,7 @@ class Modules:
         spec.loader.exec_module(module)
         ret = None
 
-        for key, value in vars(module).items():
+        for value in vars(module).values():
             if inspect.isclass(value) and issubclass(value, Module):
                 ret = value()
 
@@ -380,7 +396,7 @@ class Modules:
         cls_name = ret.__class__.__name__
 
         if save_fs:
-            path = os.path.join(LOADED_MODULES_DIR, f"{cls_name}.py")
+            path = os.path.join(LOADED_MODULES_DIR, f"{cls_name}_{self.client._tg_id}.py")
 
             if not os.path.isfile(path) and origin == "<string>":
                 with open(path, "w") as f:
@@ -645,6 +661,15 @@ class Modules:
         mod.fast_upload = functools.partial(upload_file, _client=client)
         mod.fast_download = functools.partial(download_file, _client=client)
 
+        for method in dir(mod):
+            if isinstance(getattr(mod, method), InfiniteLoop):
+                setattr(getattr(mod, method), "module_instance", mod)
+
+                if getattr(mod, method).autostart:
+                    getattr(mod, method).start()
+
+                logging.debug(f"Added {mod=} to {method=}")
+
         if from_dlmod:
             try:
                 await mod.on_dlmod(client, db)
@@ -701,7 +726,7 @@ class Modules:
                 worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
-                path = os.path.join(LOADED_MODULES_DIR, f"{name}.py")
+                path = os.path.join(LOADED_MODULES_DIR, f"{name}_{self.client._tg_id}.py")
 
                 if os.path.isfile(path):
                     os.remove(path)

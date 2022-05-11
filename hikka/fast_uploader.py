@@ -435,7 +435,7 @@ async def download_file(
 
     ratelimiter = time.time() + 3
 
-    if progress_callback is None:
+    if progress_callback is None and message_object is not None:
 
         async def progress_callback(current: int, total: int):
             nonlocal message_object, ratelimiter
@@ -465,6 +465,15 @@ async def download_file(
             if inspect.isawaitable(r):
                 await r
 
+    if message_object is not None:
+        try:
+            message_object = await answer(
+                message_object,
+                "🌘 <b>File ready, processing...</b>",
+            )
+        except Exception:
+            pass
+
     return _out
 
 
@@ -478,7 +487,7 @@ async def upload_file(
 
     ratelimiter = time.time() + 3
 
-    if progress_callback is None:
+    if progress_callback is None and message_object is not None:
 
         async def progress_callback(current: int, total: int):
             nonlocal message_object, ratelimiter
@@ -502,5 +511,14 @@ async def upload_file(
     res = (
         await _internal_transfer_to_telegram(_client, file, progress_callback, filename)
     )[0]
+
+    if message_object is not None:
+        try:
+            message_object = await answer(
+                message_object,
+                "🌘 <b>File ready, processing...</b>",
+            )
+        except Exception:
+            pass
 
     return res

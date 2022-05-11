@@ -2,6 +2,7 @@ import ast
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional, Union
+from .inline.types import *  # noqa: F401, F403
 
 from telethon.tl.types import Message
 

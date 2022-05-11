@@ -551,7 +551,7 @@ class Hikka:
         translator = Translator(client, db)
         await translator.init()
 
-        modules.register_all(db)
+        modules.register_all(client, db)
 
         modules.send_config(db, translator)
         await modules.send_ready(client, db, self.clients)
@@ -601,6 +601,8 @@ class Hikka:
         client.parse_mode = "HTML"
         await client.start()
 
+        client._tg_id = (await client.get_me()).id
+
         db = database.Database(client)
         await db.init()
 
@@ -633,7 +635,7 @@ class Hikka:
         if not web_only:
             await self._add_dispatcher(client, modules, db)
 
-        modules.register_all(db, to_load)
+        modules.register_all(client, db, to_load)
         modules.send_config(db, translator)
         await modules.send_ready(client, db, self.clients)
 

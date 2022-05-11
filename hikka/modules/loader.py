@@ -34,6 +34,7 @@ import inspect
 import logging
 import os
 import re
+import ast
 import sys
 import uuid
 from collections import ChainMap
@@ -357,7 +358,9 @@ class LoaderMod(loader.Module):
 
                 try:
                     url = next(
-                        link for link in links if link.lower().endswith(f"{module_name.lower()}.py")
+                        link
+                        for link in links
+                        if link.lower().endswith(f"{module_name.lower()}.py")
                     )
                 except Exception:
                     if message is not None:
@@ -538,14 +541,22 @@ class LoaderMod(loader.Module):
         developer = self.strings("developer").format(developer) if developer else ""
 
         if name is None:
-            uid = "__extmod_" + str(uuid.uuid4())
+            try:
+                node = ast.parse(doc)
+                uid = next(n.name for n in node.body if isinstance(n, ast.ClassDef))
+            except Exception:
+                logger.debug(
+                    "Can't parse classname from code, using legacy uid instead",
+                    exc_info=True,
+                )
+                uid = "__extmod_" + str(uuid.uuid4())
         else:
             if name.startswith(self.config["MODULES_REPO"]):
                 name = name.split("/")[-1].split(".py")[0]
 
             uid = name.replace("%", "%%").replace(".", "%d")
 
-        module_name = "hikka.modules." + uid
+        module_name = f"hikka.modules.{uid}"
 
         doc = geek.compat(doc)
 
@@ -571,7 +582,7 @@ class LoaderMod(loader.Module):
                 try:
                     requirements = list(
                         filter(
-                            lambda x: x and x[0] not in ("-", "_", "."),
+                            lambda x: x and x[0] not in {"-", "_", "."},
                             map(
                                 str.strip,
                                 VALID_PIP_PACKAGES.search(doc)[1].split(" "),
@@ -655,11 +666,6 @@ class LoaderMod(loader.Module):
 
         instance.inline = self.inline
         instance.animate = self._animate
-
-        for method in dir(instance):
-            if isinstance(getattr(instance, method), loader.InfiniteLoop):
-                setattr(getattr(instance, method), "module_instance", instance)
-                logger.debug(f"Added {instance=} to {method=}")
 
         if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
             version = f"<b><i> (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
