@@ -538,7 +538,11 @@ class LoaderMod(loader.Module):
 
         developer = re.search(r"# ?meta developer: ?(.+)", doc)
         developer = developer.group(1) if developer else False
-        developer = self.strings("developer").format(developer) if developer else ""
+        developer = (
+            self.strings("developer").format(utils.escape_html(developer))
+            if developer
+            else ""
+        )
 
         if name is None:
             try:
@@ -665,7 +669,6 @@ class LoaderMod(loader.Module):
             return
 
         instance.inline = self.inline
-        instance.animate = self._animate
 
         if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
             version = f"<b><i> (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
@@ -817,47 +820,6 @@ class LoaderMod(loader.Module):
             self.strings("unloaded" if worked else "not_unloaded"),
         )
 
-    async def _animate(
-        self,
-        message: Union[Message, InlineMessage],
-        frames: List[str],
-        interval: Union[float, int],
-        *,
-        inline: bool = False,
-    ) -> None:
-        """
-        Animate message
-        :param message: Message to animate
-        :param frames: A List of strings which are the frames of animation
-        :param interval: Animation delay
-        :param inline: Whether to use inline bot for animation
-        :returns message:
-
-        Please, note that if you set `inline=True`, first frame will be shown with an empty
-        button due to the limitations of Telegram API
-        """
-
-        if interval < 0.1:
-            logger.warning("Resetting animation interval to 0.1s, because it may get you in floodwaits bro")  # fmt: skip
-            interval = 0.1
-
-        for frame in frames:
-            if isinstance(message, Message):
-                if inline:
-                    message = await self.inline.form(
-                        message=message,
-                        text=frame,
-                        reply_markup={"text": "\u0020\u2800", "data": "empty"},
-                    )
-                else:
-                    message = await utils.answer(message, frame)
-            elif isinstance(message, InlineMessage) and inline:
-                await message.edit(frame)
-
-            await asyncio.sleep(interval)
-
-        return message
-
     @loader.owner
     async def clearmodulescmd(self, message: Message) -> None:
         """Delete all installed modules"""
@@ -886,6 +848,8 @@ class LoaderMod(loader.Module):
         self._db = db
         self._client = client
         self._fully_loaded = False
+
+        main.hikka.ready.set()
 
         if not self.get("loaded_modules", False):
             self.set("loaded_modules", self._db.get(__name__, "loaded_modules", {}))

@@ -219,12 +219,10 @@ class CommandDispatcher:
         if not event.message.message:
             return False
 
-        if event.message.message.startswith(prefix):
-            pass
-        elif event.message.message.startswith(str.translate(prefix, change)):
+        if event.message.message.startswith(str.translate(prefix, change)):
             prefix = str.translate(prefix, change)
             message.message = str.translate(message.message, change)
-        else:
+        elif not event.message.message.startswith(prefix):
             return False
 
         if (
@@ -247,29 +245,26 @@ class CommandDispatcher:
 
         if (
             message.out
-            and len(message.message) > len(prefix)
-            and message.message[: len(prefix) * 2] == prefix * 2
-            and message.message != len(message.message) // len(prefix) * prefix
+            and len(message.message) > 2
+            and message.message.startswith(prefix * 2)
         ):
             # Allow escaping commands using .'s
-            entities = utils.relocate_entities(
-                message.entities,
-                -len(prefix),
-                message.message,
-            )
-
             await message.edit(
-                message.message[len(prefix) :],
-                parse_mode=lambda s: (s, entities or ()),
+                message.message[1:],
+                parse_mode=lambda s: (
+                    s,
+                    utils.relocate_entities(message.entities, -1, message.message)
+                    or (),
+                ),
             )
             return False
 
-        message.message = message.message[len(prefix) :]
+        message.message = message.message[1:]
 
         if not message.message:
             return False  # Message is just the prefix
 
-        utils.relocate_entities(message.entities, -len(prefix))
+        utils.relocate_entities(message.entities, -1)
 
         initiator = getattr(event, "sender_id", 0)
 

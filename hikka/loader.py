@@ -32,12 +32,14 @@ import importlib
 import importlib.util
 import inspect
 import logging
+import re
 import os
 import sys
 from importlib.abc import SourceLoader
 from importlib.machinery import ModuleSpec
 from types import FunctionType
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, List
+from telethon.tl.types import Message
 
 from . import security, utils
 from ._types import (  # noqa: F401
@@ -47,6 +49,7 @@ from ._types import (  # noqa: F401
     ModuleConfig,
     SelfUnload,
     StopLoop,
+    InlineMessage,
 )
 from .fast_uploader import download_file, upload_file
 from .inline.core import InlineManager
@@ -126,9 +129,9 @@ class InfiniteLoop:
             self._task.add_done_callback(self._stop)
             self._task.cancel()
             return asyncio.ensure_future(self._wait_for_stop.wait())
-        else:
-            logger.debug("Loop is not running")
-            return asyncio.ensure_future(stop_placeholder())
+
+        logger.debug("Loop is not running")
+        return asyncio.ensure_future(stop_placeholder())
 
     def start(self, *args, **kwargs):
         if not self._task:
@@ -260,7 +263,6 @@ def ratelimit(func):
 
 def get_commands(mod):
     """Introspect the module to get its commands"""
-    # https://stackoverflow.com/a/34452/5509575
     return {
         method_name.rsplit("cmd", maxsplit=1)[0]: getattr(mod, method_name)
         for method_name in dir(mod)
@@ -282,7 +284,8 @@ def get_callback_handlers(mod):
     """Introspect the module to get its callback handlers"""
     return {
         method_name.rsplit("_callback_handler", maxsplit=1)[0]: getattr(
-            mod, method_name
+            mod,
+            method_name,
         )
         for method_name in dir(mod)
         if callable(getattr(mod, method_name))
@@ -335,10 +338,22 @@ class Modules:
             external_mods = [
                 os.path.join(LOADED_MODULES_DIR, mod)
                 for mod in filter(
-                    lambda x: (x.endswith(f"{client._tg_id}.py") and not x.startswith("_")),
+                    lambda x: (
+                        x.endswith(f"{client._tg_id}.py") and not x.startswith("_")
+                    ),
                     os.listdir(LOADED_MODULES_DIR),
                 )
             ]
+
+            for mod in os.listdir(LOADED_MODULES_DIR):
+                if not re.match(r"[a-zA-Zа-яА-Я0-9_]+_[0-9]+\.py", mod):
+                    new_name = mod.rsplit(".py")[0] + f"_{client._tg_id}.py"
+                    os.rename(
+                        os.path.join(LOADED_MODULES_DIR, mod),
+                        os.path.join(LOADED_MODULES_DIR, new_name),
+                    )
+                    external_mods += [new_name]
+                    logger.debug(f"Made legacy migration from {mod=} to {new_name=}")
 
         self._register_modules(mods)
         self._register_modules(external_mods, "<file>")
@@ -352,7 +367,7 @@ class Modules:
                     f"{os.path.basename(mod).rsplit('.py', maxsplit=1)[0].rsplit('_', maxsplit=1)[0]}"
                 )
 
-                logging.debug(f"Loading {module_name} from filesystem")
+                logger.debug(f"Loading {module_name} from filesystem")
 
                 with open(mod, "r") as file:
                     spec = ModuleSpec(
@@ -363,7 +378,7 @@ class Modules:
 
                 self.register_module(spec, module_name, origin)
             except BaseException as e:
-                logging.exception(f"Failed to load module {mod} due to {e}:")
+                logger.exception(f"Failed to load module {mod} due to {e}:")
 
     def register_module(
         self,
@@ -378,9 +393,14 @@ class Modules:
         spec.loader.exec_module(module)
         ret = None
 
-        for value in vars(module).values():
-            if inspect.isclass(value) and issubclass(value, Module):
-                ret = value()
+        ret = next(
+            (
+                value()
+                for value in vars(module).values()
+                if inspect.isclass(value) and issubclass(value, Module)
+            ),
+            None,
+        )
 
         if hasattr(module, "__version__"):
             ret.__version__ = module.__version__
@@ -396,13 +416,16 @@ class Modules:
         cls_name = ret.__class__.__name__
 
         if save_fs:
-            path = os.path.join(LOADED_MODULES_DIR, f"{cls_name}_{self.client._tg_id}.py")
+            path = os.path.join(
+                LOADED_MODULES_DIR,
+                f"{cls_name}_{self.client._tg_id}.py",
+            )
 
-            if not os.path.isfile(path) and origin == "<string>":
+            if origin == "<string>":
                 with open(path, "w") as f:
                     f.write(spec.loader.data.decode("utf-8"))
 
-                logging.debug(f"Saved {cls_name} to file")
+                logger.debug(f"Saved {cls_name=} to {path=}")
 
         return ret
 
@@ -432,7 +455,7 @@ class Modules:
                 }
                 and command.lower() in self.commands
             ):
-                logging.warning(f"Command {command} is core and will not be overwritten by {instance}")  # fmt: skip
+                logger.warning(f"Command {command} is core and will not be overwritten by {instance}")  # fmt: skip
                 del instance.commands[command]
                 continue
 
@@ -445,11 +468,11 @@ class Modules:
                     and instance.commands[command].__self__.__class__.__name__
                     != self.commands[command].__self__.__class__.__name__
                 ):
-                    logging.debug(f"Duplicate command {command}")
-                logging.debug(f"Replacing command for {self.commands[command]}")  # fmt: skip
+                    logger.debug(f"Duplicate command {command}")
+                logger.debug(f"Replacing command for {self.commands[command]}")  # fmt: skip
 
             if not instance.commands[command].__doc__:
-                logging.debug(f"Missing docs for {command}")
+                logger.debug(f"Missing docs for {command}")
 
             self.commands.update({command.lower(): instance.commands[command]})
 
@@ -461,11 +484,11 @@ class Modules:
                     and instance.inline_handlers[handler].__self__.__class__.__name__
                     != self.inline_handlers[handler].__self__.__class__.__name__
                 ):
-                    logging.debug(f"Duplicate inline_handler {handler}")
-                logging.debug(f"Replacing inline_handler for {self.inline_handlers[handler]}")  # fmt: skip
+                    logger.debug(f"Duplicate inline_handler {handler}")
+                logger.debug(f"Replacing inline_handler for {self.inline_handlers[handler]}")  # fmt: skip
 
             if not instance.inline_handlers[handler].__doc__:
-                logging.debug(f"Missing docs for {handler}")
+                logger.debug(f"Missing docs for {handler}")
 
             self.inline_handlers.update(
                 {handler.lower(): instance.inline_handlers[handler]}
@@ -478,7 +501,7 @@ class Modules:
                 and instance.callback_handlers[handler].__self__.__class__.__name__
                 != self.callback_handlers[handler].__self__.__class__.__name__
             ):
-                logging.debug(f"Duplicate callback_handler {handler}")
+                logger.debug(f"Duplicate callback_handler {handler}")
             self.callback_handlers.update({handler.lower(): instance.callback_handlers[handler]})  # fmt: skip
 
     def register_watcher(self, instance: Module):
@@ -491,7 +514,7 @@ class Modules:
                         and watcher.__self__.__class__.__name__
                         == instance.watcher.__self__.__class__.__name__
                     ):
-                        logging.debug(f"Removing watcher for update {watcher}")
+                        logger.debug(f"Removing watcher for update {watcher}")
                         self.watchers.remove(watcher)
 
                 self.watchers += [instance.watcher]
@@ -528,7 +551,7 @@ class Modules:
                 if getattr(module, "__origin__", "") == "<core>":
                     raise RuntimeError(f"Attempted to overwrite core module {module}")
 
-                logging.debug(f"Removing module for update {module}")
+                logger.debug(f"Removing module for update {module}")
                 asyncio.ensure_future(module.on_unload())
 
                 self.modules.remove(module)
@@ -585,13 +608,15 @@ class Modules:
                 {},
             )
             for conf in mod.config.keys():
-                if conf in modcfg.keys():
-                    mod.config[conf] = modcfg[conf]
-                else:
-                    try:
-                        mod.config[conf] = os.environ[f'{mod.__class__.__name__}.{conf}']  # fmt: skip
-                    except KeyError:
-                        mod.config[conf] = mod.config.getdef(conf)
+                mod.config[conf] = (
+                    modcfg[conf]
+                    if conf in modcfg.keys()
+                    else os.environ.get(
+                        f"{mod.__class__.__name__}.{conf}",
+                        None,
+                    )
+                    or mod.config.getdef(conf)
+                )
 
         if skip_hook:
             return
@@ -607,7 +632,7 @@ class Modules:
         try:
             mod.config_complete()
         except Exception as e:
-            logging.exception(f"Failed to send mod config complete signal due to {e}")
+            logger.exception(f"Failed to send mod config complete signal due to {e}")
             raise
 
     async def send_ready(self, client, db, allclients):
@@ -634,10 +659,51 @@ class Modules:
             )
             await asyncio.gather(*[mod._client_ready2(client, db) for mod in self.modules])  # fmt: skip
         except Exception as e:
-            logging.exception(f"Failed to send mod init complete signal due to {e}")
+            logger.exception(f"Failed to send mod init complete signal due to {e}")
 
         if self.added_modules:
             await self.added_modules(self)
+
+    async def _animate(
+        self,
+        message: Union[Message, InlineMessage],
+        frames: List[str],
+        interval: Union[float, int],
+        *,
+        inline: bool = False,
+    ) -> None:
+        """
+        Animate message
+        :param message: Message to animate
+        :param frames: A List of strings which are the frames of animation
+        :param interval: Animation delay
+        :param inline: Whether to use inline bot for animation
+        :returns message:
+
+        Please, note that if you set `inline=True`, first frame will be shown with an empty
+        button due to the limitations of Telegram API
+        """
+
+        if interval < 0.1:
+            logger.warning("Resetting animation interval to 0.1s, because it may get you in floodwaits bro")  # fmt: skip
+            interval = 0.1
+
+        for frame in frames:
+            if isinstance(message, Message):
+                if inline:
+                    message = await self.inline.form(
+                        message=message,
+                        text=frame,
+                        reply_markup={"text": "\u0020\u2800", "data": "empty"},
+                    )
+                else:
+                    message = await utils.answer(message, frame)
+            elif isinstance(message, InlineMessage) and inline:
+                await message.edit(frame)
+
+            await asyncio.sleep(interval)
+
+        return message
 
     async def send_ready_one(
         self,
@@ -649,14 +715,11 @@ class Modules:
         from_dlmod: bool = False,
     ):
         mod.allclients = allclients
-        mod.inline = self.inline
-
         mod._client = client
-
-        if not hasattr(client, "_tg_id"):
-            client._tg_id = (await client.get_me()).id
-
         mod._tg_id = client._tg_id
+
+        mod.inline = self.inline
+        mod.animate = self._animate
 
         mod.fast_upload = functools.partial(upload_file, _client=client)
         mod.fast_download = functools.partial(download_file, _client=client)
@@ -668,13 +731,13 @@ class Modules:
                 if getattr(mod, method).autostart:
                     getattr(mod, method).start()
 
-                logging.debug(f"Added {mod=} to {method=}")
+                logger.debug(f"Added {mod=} to {method=}")
 
         if from_dlmod:
             try:
                 await mod.on_dlmod(client, db)
             except Exception:
-                logging.info("Can't process `on_dlmod` hook", exc_info=True)
+                logger.info("Can't process `on_dlmod` hook", exc_info=True)
 
         try:
             await mod.client_ready(client, db)
@@ -682,10 +745,10 @@ class Modules:
             if no_self_unload:
                 raise e
 
-            logging.debug(f"Unloading {mod}, because it raised SelfUnload")
+            logger.debug(f"Unloading {mod}, because it raised SelfUnload")
             self.modules.remove(mod)
         except Exception as e:
-            logging.exception(f"Failed to send mod init complete signal for {mod} due to {e}, attempting unload")  # fmt: skip
+            logger.exception(f"Failed to send mod init complete signal for {mod} due to {e}, attempting unload")  # fmt: skip
             self.modules.remove(mod)
             raise
 
@@ -726,13 +789,16 @@ class Modules:
                 worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
-                path = os.path.join(LOADED_MODULES_DIR, f"{name}_{self.client._tg_id}.py")
+                path = os.path.join(
+                    LOADED_MODULES_DIR,
+                    f"{name}_{self.client._tg_id}.py",
+                )
 
                 if os.path.isfile(path):
                     os.remove(path)
-                    logging.debug(f"Removed {name} file")
+                    logger.debug(f"Removed {name} file at {path=}")
 
-                logging.debug(f"Removing module for unload {module}")
+                logger.debug(f"Removing module for unload {module}")
                 self.modules.remove(module)
 
                 asyncio.ensure_future(module.on_unload())
@@ -746,17 +812,17 @@ class Modules:
                 if hasattr(module, "watcher"):
                     to_remove += [module.watcher]
 
-        logging.debug(f"{to_remove=}, {worked=}")
+        logger.debug(f"{to_remove=}, {worked=}")
         for watcher in self.watchers.copy():
             if watcher in to_remove:
-                logging.debug(f"Removing watcher for unload {watcher}")
+                logger.debug(f"Removing {watcher=} for unload")
                 self.watchers.remove(watcher)
 
         aliases_to_remove = []
 
         for name, command in self.commands.copy().items():
             if command in to_remove:
-                logging.debug(f"Removing command for unload {command}")
+                logger.debug(f"Removing {command=} for unload")
                 del self.commands[name]
                 aliases_to_remove.append(name)
 

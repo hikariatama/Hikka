@@ -29,6 +29,7 @@
 import asyncio
 import logging
 import traceback
+import io
 
 from . import utils
 from ._types import Module
@@ -61,27 +62,14 @@ class TelegramLogsHandler(logging.Handler):
         if getattr(self, "_task", False):
             self._task.cancel()
 
-        if getattr(self, "_task_2", False):
-            self._task_2.cancel()
-
         self._mods[mod._tg_id] = mod
 
         self._task = asyncio.ensure_future(self.queue_poller())
-        self._task_2 = asyncio.ensure_future(self.send_poller())
 
     async def queue_poller(self):
         while True:
-            if self._queue:
-                await self.sender()
-
+            await self.sender()
             await asyncio.sleep(3)
-
-    async def send_poller(self):
-        while True:
-            if self.tg_buff:
-                await self.emit_to_tg()
-
-            await asyncio.sleep(7)
 
     def setLevel(self, level: int):
         self.lvl = level
@@ -98,16 +86,29 @@ class TelegramLogsHandler(logging.Handler):
             if record.levelno >= lvl
         ]
 
-    async def emit_to_tg(self):
-        for chunk in utils.chunks(
-            utils.escape_html(self.tg_buff),
-            4083,
-        ):
-            self._queue += [f"<code>{chunk}</code>"]
-
+    async def sender(self):
+        self._queue = utils.chunks(utils.escape_html(self.tg_buff), 4096)
         self.tg_buff = ""
 
-    async def sender(self):
+        if len(self._queue) > 5:
+            file = io.BytesIO("".join(self._queue).encode("utf-8"))
+            file.name = "hikka-logs.txt"
+            file.seek(0)
+            for mod in self._mods.values():
+                await mod.inline.bot.send_document(
+                    mod._logchat,
+                    file,
+                    parse_mode="HTML",
+                    caption="<b>🧳 Journals are too big to send as separate messages</b>",
+                )
+                file.seek(0)
+
+            self._queue = []
+            return
+
+        if not self._queue:
+            return
+
         chunk = self._queue.pop(0)
 
         if not chunk:

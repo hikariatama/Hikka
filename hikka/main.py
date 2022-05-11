@@ -272,6 +272,7 @@ class Hikka:
         self.loop = asyncio.get_event_loop()
 
         self.clients = SuperList()
+        self.ready = asyncio.Event()
         self._get_phones()
         self._get_api_token()
         self._get_proxy()
@@ -432,7 +433,7 @@ class Hikka:
 
         if not self.web:
             try:
-                phone = input("Please enter your phone: ")
+                phone = input("Phone: ")
                 self.phones = {phone.split(":", maxsplit=1)[0]: phone}
             except (EOFError, OSError):
                 raise
