@@ -219,7 +219,10 @@ class CommandDispatcher:
         if not event.message.message:
             return False
 
-        if event.message.message.startswith(str.translate(prefix, change)):
+        if (
+            event.message.message.startswith(str.translate(prefix, change))
+            and str.translate(prefix, change) != prefix
+        ):
             prefix = str.translate(prefix, change)
             message.message = str.translate(message.message, change)
         elif not event.message.message.startswith(prefix):
