@@ -346,7 +346,7 @@ class Modules:
             ]
 
             for mod in os.listdir(LOADED_MODULES_DIR):
-                if not re.match(r"[a-zA-Zа-яА-Я0-9_]+_[0-9]+\.py", mod):
+                if not re.match(r"[a-zA-Zа-яА-Я0-9_]+_[0-9]+\.py", mod) and mod.endswith(".py"):
                     new_name = mod.rsplit(".py")[0] + f"_{client._tg_id}.py"
                     os.rename(
                         os.path.join(LOADED_MODULES_DIR, mod),
