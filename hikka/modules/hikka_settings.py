@@ -53,6 +53,7 @@ class HikkaSettingsMod(loader.Module):
             "You may get muted in Hikka chats. Change prefix or "
             "disable NoNick!"
         ),
+        "reply_required": "🚫 <b>Reply to a message of user, which needs to be added to NoNick</b>",
     }
 
     strings_ru = {
@@ -89,6 +90,7 @@ class HikkaSettingsMod(loader.Module):
             "Тебя могут замьютить в чатах Hikka. Измени префикс или "
             "отключи глобальный NoNick!"
         ),
+        "reply_required": "🚫 <b>Ответь на сообщение пользователя, для которого нужно включить NoNick</b>",
     }
 
     def get_watchers(self) -> tuple:
@@ -229,6 +231,10 @@ class HikkaSettingsMod(loader.Module):
     async def nonickusercmd(self, message: Message):
         """Allow no nickname for certain user"""
         reply = await message.get_reply_message()
+        if not reply:
+            await utils.answer(message, self.strings("reply_required"))
+            return
+
         u = reply.sender_id
         if not isinstance(u, int):
             u = u.user_id

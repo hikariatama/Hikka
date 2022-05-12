@@ -58,6 +58,7 @@ from . import database, loader, utils
 from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
+from .entity_cache import install_entity_caching
 
 try:
     from .web import core
@@ -469,6 +470,8 @@ class Hikka:
 
                 client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
                 client.phone = phone
+
+                install_entity_caching(client)
 
                 self.clients.append(client)
             except sqlite3.OperationalError:

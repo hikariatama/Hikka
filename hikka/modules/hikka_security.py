@@ -17,7 +17,7 @@ from typing import List, Union
 from telethon.tl.types import Message, PeerUser, User
 from telethon.utils import get_display_name
 
-from .. import loader, security, utils
+from .. import loader, security, utils, main
 from ..inline.types import InlineCall
 from ..security import (
     DEFAULT_PERMISSIONS,
@@ -85,7 +85,10 @@ class HikkaSecurityMod(loader.Module):
         ),
         "cancel": "🚫 Cancel",
         "confirm": "👑 Confirm",
+        "enable_nonick_btn": "🔰 Enable",
         "self": "🚫 <b>You can't promote/demote yourself!</b>",
+        "suggest_nonick": "🔰 <i>Do you want to enable NoNick for this user?</i>",
+        "user_nn": '🔰 <b>NoNick for <a href="tg://user?id={}">{}</a> enabled</b>',
     }
 
     strings_ru = {
@@ -122,6 +125,9 @@ class HikkaSecurityMod(loader.Module):
             "в группу </b><code>{}</code><b>!\nЭто действие может передать частичный или"
             " полный доступ к юзерботу этому пользователю!</b>"
         ),
+        "suggest_nonick": "🔰 <i>Хочешь ли ты включить NoNick для этого пользователя?</i>",
+        "user_nn": '🔰 <b>NoNick для <a href="tg://user?id={}">{}</a> включен</b>',
+        "enable_nonick_btn": "🔰 Включить",
         "_cmd_doc_security": "[команда] - Изменить настройки безопасности для команды",
         "_cmd_doc_sudoadd": "<пользователь> - Добавить пользователя в группу `sudo`",
         "_cmd_doc_owneradd": "<пользователь> - Добавить пользователя в группу `owner`",
@@ -420,17 +426,15 @@ class HikkaSecurityMod(loader.Module):
                 message=message,
                 ttl=10 * 60,
                 reply_markup=[
-                    [
-                        {
-                            "text": self.strings("cancel"),
-                            "callback": self.inline_close,
-                        },
-                        {
-                            "text": self.strings("confirm"),
-                            "callback": self._add_to_group,
-                            "args": (group, True, user.id),
-                        },
-                    ]
+                    {
+                        "text": self.strings("cancel"),
+                        "callback": self.inline_close,
+                    },
+                    {
+                        "text": self.strings("confirm"),
+                        "callback": self._add_to_group,
+                        "args": (group, True, user.id),
+                    },
                 ],
             )
             return
@@ -441,12 +445,46 @@ class HikkaSecurityMod(loader.Module):
             list(set(self._db.get(security.__name__, group, []) + [user.id])),
         )
 
-        m = self.strings(f"{group}_added").format(
-            user.id,
-            utils.escape_html(get_display_name(user)),
+        m = (
+            self.strings(f"{group}_added").format(
+                user.id,
+                utils.escape_html(get_display_name(user)),
+            )
+            + "\n\n"
+            + self.strings("suggest_nonick")
         )
 
         await utils.answer(message, m)
+        await message.edit(
+            m,
+            reply_markup=[
+                {
+                    "text": self.strings("cancel"),
+                    "callback": self.inline_close,
+                },
+                {
+                    "text": self.strings("enable_nonick_btn"),
+                    "callback": self._enable_nonick,
+                    "args": (user,),
+                },
+            ],
+        )
+
+    async def _enable_nonick(self, call: InlineCall, user: User):
+        self._db.set(
+            main.__name__,
+            "nonickusers",
+            list(set(self._db.get(main.__name__, "nonickusers", []) + [user.id])),
+        )
+
+        call.edit(
+            self.strings("user_nn").format(
+                user.id,
+                utils.escape_html(get_display_name(user)),
+            )
+        )
+
+        await call.unload()
 
     async def _remove_from_group(self, message: Message, group: str):
         user = await self._resolve_user(message)

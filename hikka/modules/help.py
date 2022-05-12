@@ -64,7 +64,7 @@ class HelpMod(loader.Module):
         "_cmd_doc_support": "Вступает в чат помощи Hikka",
         "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
         "partial_load": "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все модули</b>",
-        "not_exact": "⚠️ <b>Точного совпадения не нашлось, поэтому был выбран наиболее подходящее</b>",
+        "not_exact": "⚠️ <b>Точного совпадения не нашлось, поэтому было выбрано наиболее подходящее</b>",
     }
 
     def __init__(self):
@@ -305,7 +305,7 @@ class HelpMod(loader.Module):
                 else:
                     plain_ += [tmp]
             elif not shown_warn and (mod.commands or mod.inline_handlers):
-                reply = f"<i>You have permissions to execute only this commands</i>\n{reply}"
+                reply = f"<i>You have permissions to execute only these commands</i>\n{reply}"
                 shown_warn = True
 
         plain_.sort(key=lambda x: x.split()[1])

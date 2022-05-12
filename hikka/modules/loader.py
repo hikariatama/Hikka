@@ -294,10 +294,16 @@ class LoaderMod(loader.Module):
         )
 
     async def _get_modules_to_load(self):
-        possible_mods = (
-            await self.get_repo_list(self.get("chosen_preset", None))
-        ).values()
-        todo = dict(ChainMap(*possible_mods))
+        preset = self.get("chosen_preset", None)
+
+        if preset != "disable":
+            possible_mods = (
+                await self.get_repo_list(preset)
+            ).values()
+            todo = dict(ChainMap(*possible_mods))
+        else:
+            todo = {}
+
         todo.update(**self.get("loaded_modules", {}))
         return todo
 
