@@ -91,17 +91,16 @@ class TelegramLogsHandler(logging.Handler):
         self.tg_buff = ""
 
         if len(self._queue) > 5:
-            file = io.BytesIO("".join(self._queue).encode("utf-8"))
-            file.name = "hikka-logs.txt"
-            file.seek(0)
             for mod in self._mods.values():
+                file = io.BytesIO("".join(self._queue).encode("utf-8"))
+                file.name = "hikka-logs.txt"
+                file.seek(0)
                 await mod.inline.bot.send_document(
                     mod._logchat,
                     file,
                     parse_mode="HTML",
                     caption="<b>🧳 Journals are too big to send as separate messages</b>",
                 )
-                file.seek(0)
 
             self._queue = []
             return
@@ -143,9 +142,6 @@ class TelegramLogsHandler(logging.Handler):
                 self.tg_buff += f"[{record.levelname}] {record.name}: {str(record.msg) % record.args}{exc}\n"
             except TypeError:
                 self.tg_buff += f"[{record.levelname}] {record.name}: {record.msg}\n"
-
-            if exc:
-                asyncio.ensure_future(self.emit_to_tg())
 
         if len(self.buffer) + len(self.handledbuffer) >= self.capacity:
             if self.handledbuffer:
