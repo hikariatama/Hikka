@@ -3,15 +3,24 @@ import asyncio
 import logging
 from telethon.hints import EntityLike
 from telethon import TelegramClient
-from collections import Hashable
 
 logger = logging.getLogger(__name__)
+
+
+def hashable(value):
+    """Determine whether `value` can be hashed."""
+    try:
+        hash(value)
+    except TypeError:
+        return False
+
+    return True
 
 
 class CacheRecord:
     def __init__(
         self,
-        hashable_entity: Hashable,
+        hashable_entity: "Hashable",  # noqa: F821
         resolved_entity: EntityLike,
     ):
         self.entity = resolved_entity
@@ -40,7 +49,7 @@ def install_entity_caching(client: TelegramClient):
     old = client.get_entity
 
     async def new(entity: EntityLike):
-        if not isinstance(entity, Hashable):
+        if not hashable(entity):
             hashable_entity = next(
                 getattr(entity, attr)
                 for attr in {"user_id", "channel_id", "chat_id", "id"}
