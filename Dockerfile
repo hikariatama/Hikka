@@ -1,9 +1,7 @@
-FROM python:3.8
+FROM python:3.8-slim-buster as main
 ADD . /
-ENV OKTETO=true
+ENV Docker=true
 RUN pip install -r requirements.txt
-RUN pip install -r optional_requirements.txt
-RUN apt update && apt install ffmpeg libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libavdevice-dev -y
-EXPOSE 8080
+EXPOSE 3902
 RUN mkdir /data
 CMD ["python3", "-m", "hikka"]

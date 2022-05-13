@@ -2,7 +2,9 @@ name: hikka
 services:
   worker:
     public: true
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile_Okteto
     replicas: 1
     ports:
       - 8080
