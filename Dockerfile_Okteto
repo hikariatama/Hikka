@@ -1,6 +1,7 @@
 FROM python:3.8-slim-buster as main
 ADD . /
 ENV OKTETO=true
+ENV GIT_PYTHON_REFRESH=quiet
 RUN pip install -r requirements.txt
 RUN pip install -r optional_requirements.txt
 RUN apt update && apt install ffmpeg libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libavdevice-dev -y
