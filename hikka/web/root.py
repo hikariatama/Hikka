@@ -50,7 +50,7 @@ from telethon.tl.functions.contacts import UnblockRequest
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ
+    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
 

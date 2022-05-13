@@ -586,7 +586,11 @@ def get_named_platform() -> str:
     is_termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())
 
     is_okteto = "OKTETO" in os.environ
+    is_docker = "DOCKER" in os.environ
     is_lavhost = "LAVHOST" in os.environ
+
+    if is_docker:
+        return "🐳 Docker"
 
     if is_termux:
         return "🕶 Termux"

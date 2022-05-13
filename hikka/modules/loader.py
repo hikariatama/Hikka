@@ -39,7 +39,7 @@ import sys
 import uuid
 from collections import ChainMap
 from importlib.machinery import ModuleSpec
-from typing import List, Optional, Union
+from typing import Optional, Union
 from urllib.parse import urlparse
 
 import requests
@@ -48,7 +48,7 @@ from telethon.tl.types import Message
 
 from .. import loader, main, utils
 from ..compat import geek
-from ..inline.types import InlineCall, InlineMessage
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

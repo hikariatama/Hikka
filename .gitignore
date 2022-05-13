@@ -160,3 +160,6 @@ config.json
 *.mp4
 *.mp3
 *.ogg
+*.m4a
+*.mp3
+*.avi

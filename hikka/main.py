@@ -68,13 +68,11 @@ except ImportError:
 else:
     web_available = True
 
-is_okteto = "OKTETO" in os.environ
-
 omit_log = False
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if not is_okteto
+    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
 
@@ -139,9 +137,11 @@ def gen_port() -> int:
     """
     Generates random free port in case of VDS, and
     8080 in case of Okteto
+    In case of Docker, also return 8080, as it's already
+    exposed by default
     :returns: Integer value of generated port
     """
-    if "OKTETO" in os.environ:
+    if "OKTETO" in os.environ or "DOCKER" in os.environ:
         return 8080
 
     # But for own server we generate new free port, and assign to it

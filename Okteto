@@ -1,10 +1,45 @@
+# Template
 FROM python:3.8-slim-buster as main
+
+# Add files
 ADD . /
+
+# Tell Hikka, that it's running on Okteto
 ENV OKTETO=true
+
+# Suppress weird gitpython error
 ENV GIT_PYTHON_REFRESH=quiet
-RUN pip install -r requirements.txt
-RUN pip install -r optional_requirements.txt
-RUN apt update && apt install git ffmpeg libavcodec-dev libavutil-dev libavformat-dev libswscale-dev libavdevice-dev -y
+
+# Do not user pip cache dir
+ENV PIP_NO_CACHE_DIR=1
+
+# Install mandatory pip requirements
+RUN pip install \
+	--no-warn-script-location \
+	--no-cache-dir \
+	-r requirements.txt
+
+# Install non-mandatory pip requirements
+# As we are running Okteto, we don't care about resources consuming
+RUN pip install \
+	--no-warn-script-location \
+	--no-cache-dir \
+	-r optional_requirements.txt
+
+# Install mandatory apt packages
+RUN apt update && apt install \
+	libcairo2 git ffmpeg libavcodec-dev \
+	libavutil-dev libavformat-dev libswscale-dev \
+	libavdevice-dev -y --no-install-recommends
+
+# Clean the cache
+RUN rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp
+
+# Expose IP address
 EXPOSE 8080
+
+# Create data dir
 RUN mkdir /data
+
+# Run Hikka
 CMD ["python3", "-m", "hikka"]
