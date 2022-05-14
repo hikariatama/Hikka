@@ -49,14 +49,15 @@ def install_entity_caching(client: TelegramClient):
     old = client.get_entity
 
     async def new(entity: EntityLike):
-        if not hashable(entity):
-            hashable_entity = next(
+        hashable_entity = (
+            entity
+            if hashable(entity)
+            else next(
                 getattr(entity, attr)
                 for attr in {"user_id", "channel_id", "chat_id", "id"}
                 if hasattr(entity, attr)
             )
-        else:
-            hashable_entity = entity
+        )
 
         if hashable_entity and hashable_entity in client._hikka_cache:
             logger.debug(

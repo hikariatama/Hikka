@@ -118,7 +118,7 @@ class List(InlineUnit):
             }
         }
 
-        perms_map = self._find_caller_sec_map() if not manual_security else None
+        perms_map = None if manual_security else self._find_caller_sec_map()
 
         self._lists[list_uid] = {
             "chat": None,
@@ -137,18 +137,19 @@ class List(InlineUnit):
             **({"message": message} if isinstance(message, Message) else {}),
         }
 
-        default_map = {
-            **(
+        default_map = (
+            (
                 {"ttl": self._lists[list_uid]["ttl"]}
                 if "ttl" in self._lists[list_uid]
                 else {}
-            ),
-            **({"always_allow": always_allow} if always_allow else {}),
-            **({"force_me": force_me} if force_me else {}),
-            **({"disable_security": disable_security} if disable_security else {}),
-            **({"perms_map": perms_map} if perms_map else {}),
-            **({"message": message} if isinstance(message, Message) else {}),
-        }
+            )
+            | ({"always_allow": always_allow} if always_allow else {})
+            | ({"force_me": force_me} if force_me else {})
+            | ({"disable_security": disable_security} if disable_security else {})
+            | ({"perms_map": perms_map} if perms_map else {})
+            | ({"message": message} if isinstance(message, Message) else {})
+        )
+
 
         self._custom_map[btn_call_data["back"]] = {
             "handler": asyncio.coroutine(

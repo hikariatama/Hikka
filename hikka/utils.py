@@ -170,7 +170,7 @@ def get_entity_id(entity: Entity) -> int:
 
 def escape_html(text: str, /) -> str:
     """Pass all untrusted/potentially corrupt input here"""
-    return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def escape_quotes(text: str, /) -> str:
@@ -607,7 +607,7 @@ def uptime() -> int:
 
 def formatted_uptime() -> str:
     """Returnes formmated uptime"""
-    return "{}".format(str(timedelta(seconds=uptime())))
+    return f"{str(timedelta(seconds=uptime()))}"
 
 
 def ascii_face() -> str:

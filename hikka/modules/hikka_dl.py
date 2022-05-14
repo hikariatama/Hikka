@@ -71,7 +71,8 @@ class HikkaDLMod(loader.Module):
                         link = re.search(
                             r".dlmod (https://[^ ]*\.py)",
                             msg.raw_text,
-                        ).group(1)
+                        )[1]
+
                     except Exception:
                         await wss.send("link_404")
                         continue

@@ -69,7 +69,7 @@ class InlineStuffMod(loader.Module):
         ):
             return
 
-        id_ = re.search(r"#id: ([a-zA-Z0-9]+)", message.raw_text).group(1)
+        id_ = re.search(r"#id: ([a-zA-Z0-9]+)", message.raw_text)[1]
 
         await message.delete()
 

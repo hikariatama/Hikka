@@ -410,13 +410,9 @@ class CommandDispatcher:
                 )
                 or f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
                 in blacklist_chats
-                or (
-                    whitelist_modules
-                    and (
-                        f"{str(utils.get_chat_id(message))}." + func.__self__.__module__
-                    )
-                    not in whitelist_modules
-                )
+                or whitelist_modules
+                and f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
+                not in whitelist_modules
             ):
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue

@@ -1,5 +1,6 @@
 """Main script, where all the fun starts"""
 
+
 #    Friendly Telegram (telegram userbot)
 #    Copyright (C) 2018-2021 The Authors
 
@@ -73,10 +74,11 @@ is_okteto = "OKTETO" in os.environ
 omit_log = False
 
 DATA_DIR = (
-    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if not is_okteto
-    else "/data"
+    "/data"
+    if is_okteto
+    else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
 )
+
 
 CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
 

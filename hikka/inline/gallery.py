@@ -166,7 +166,7 @@ class Gallery(InlineUnit):
             logger.exception("Error while parsing first photo in gallery")
             return False
 
-        perms_map = self._find_caller_sec_map() if not manual_security else None
+        perms_map = None if manual_security else self._find_caller_sec_map()
 
         self._galleries[gallery_uid] = {
             "caption": caption,
@@ -189,18 +189,19 @@ class Gallery(InlineUnit):
             **({"message": message} if isinstance(message, Message) else {}),
         }
 
-        default_map = {
-            **(
+        default_map = (
+            (
                 {"ttl": self._galleries[gallery_uid]["ttl"]}
                 if "ttl" in self._galleries[gallery_uid]
                 else {}
-            ),
-            **({"always_allow": always_allow} if always_allow else {}),
-            **({"force_me": force_me} if force_me else {}),
-            **({"disable_security": disable_security} if disable_security else {}),
-            **({"perms_map": perms_map} if perms_map else {}),
-            **({"message": message} if isinstance(message, Message) else {}),
-        }
+            )
+            | ({"always_allow": always_allow} if always_allow else {})
+            | ({"force_me": force_me} if force_me else {})
+            | ({"disable_security": disable_security} if disable_security else {})
+            | ({"perms_map": perms_map} if perms_map else {})
+            | ({"message": message} if isinstance(message, Message) else {})
+        )
+
 
         self._custom_map[btn_call_data["back"]] = {
             "handler": asyncio.coroutine(
@@ -438,13 +439,13 @@ class Gallery(InlineUnit):
     ) -> Union[InputMediaPhoto, InputMediaAnimation]:
         """Return current media, which should be updated in gallery"""
         return (
-            InputMediaPhoto(
+            InputMediaAnimation(
                 media=self._get_next_photo(gallery_uid),
                 caption=self._get_caption(gallery_uid),
                 parse_mode="HTML",
             )
-            if not self._galleries[gallery_uid].get("gif", False)
-            else InputMediaAnimation(
+            if self._galleries[gallery_uid].get("gif", False)
+            else InputMediaPhoto(
                 media=self._get_next_photo(gallery_uid),
                 caption=self._get_caption(gallery_uid),
                 parse_mode="HTML",
@@ -535,19 +536,26 @@ class Gallery(InlineUnit):
         markup.add(
             InlineKeyboardButton(
                 "⏪",
-                callback_data=self._galleries[gallery_uid]["btn_call_data"]["back"],
+                callback_data=self._galleries[gallery_uid]["btn_call_data"][
+                    "back"
+                ],
             ),
             InlineKeyboardButton(
-                "▶️"
-                if not self._galleries[gallery_uid].get("slideshow", False)
-                else "⏸",
-                callback_data=self._galleries[gallery_uid]["btn_call_data"]["show"],
+                "⏸"
+                if self._galleries[gallery_uid].get("slideshow", False)
+                else "▶️",
+                callback_data=self._galleries[gallery_uid]["btn_call_data"][
+                    "show"
+                ],
             ),
             InlineKeyboardButton(
                 "⏩",
-                callback_data=self._galleries[gallery_uid]["btn_call_data"]["next"],
+                callback_data=self._galleries[gallery_uid]["btn_call_data"][
+                    "next"
+                ],
             ),
         )
+
 
         markup.add(
             InlineKeyboardButton(

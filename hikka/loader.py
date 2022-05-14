@@ -82,10 +82,11 @@ class StringLoader(SourceLoader):
         self.origin = origin
 
     def get_code(self, fullname: str) -> str:
-        if not (source := self.get_source(fullname)):
-            return None
-
-        return compile(source, self.origin, "exec", dont_inherit=True)
+        return (
+            compile(source, self.origin, "exec", dont_inherit=True)
+            if (source := self.get_source(fullname))
+            else None
+        )
 
     def get_filename(self, *args, **kwargs) -> str:
         return self.origin

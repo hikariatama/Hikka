@@ -155,9 +155,10 @@ class CoreMod(loader.Module):
             main.__name__,
             "blacklist_chats",
             list(
-                set(self._db.get(main.__name__, "blacklist_chats", [])) - set([chatid])
+                set(self._db.get(main.__name__, "blacklist_chats", [])) - {chatid}
             ),
         )
+
 
         await utils.answer(message, self.strings("unblacklisted").format(chatid))
 
@@ -195,8 +196,9 @@ class CoreMod(loader.Module):
         self._db.set(
             main.__name__,
             "blacklist_users",
-            list(set(self._db.get(main.__name__, "blacklist_users", [])) - set([user])),
+            list(set(self._db.get(main.__name__, "blacklist_users", [])) - {user}),
         )
+
 
         await utils.answer(
             message,
@@ -246,9 +248,7 @@ class CoreMod(loader.Module):
             return
 
         alias, cmd = args
-        ret = self.allmodules.add_alias(alias, cmd)
-
-        if ret:
+        if ret := self.allmodules.add_alias(alias, cmd):
             self._db.set(
                 __name__,
                 "aliases",
@@ -277,9 +277,7 @@ class CoreMod(loader.Module):
             return
 
         alias = args[0]
-        ret = self.allmodules.remove_alias(alias)
-
-        if ret:
+        if ret := self.allmodules.remove_alias(alias):
             current = self._db.get(__name__, "aliases")
             del current[alias]
             self._db.set(__name__, "aliases", current)

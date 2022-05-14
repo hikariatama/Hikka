@@ -108,10 +108,11 @@ class Web:
         return self.clients_set.wait()
 
     def _check_session(self, request) -> bool:
-        if not main.hikka.clients:
-            return True
-
-        return request.cookies.get("session", None) in self._sessions
+        return (
+            request.cookies.get("session", None) in self._sessions
+            if main.hikka.clients
+            else True
+        )
 
     async def _check_bot(
         self,
