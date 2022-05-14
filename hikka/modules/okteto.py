@@ -15,7 +15,10 @@ import time
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
-from telethon.tl.functions.messages import GetScheduledHistoryRequest
+from telethon.tl.functions.messages import (
+    GetScheduledHistoryRequest,
+    DeleteScheduledMessagesRequest,
+)
 from telethon.tl.types import Message
 
 from .. import loader, main, utils
@@ -54,8 +57,12 @@ class OktetoMod(loader.Module):
             if messages:
                 logger.info("Deleting previously scheduled Okteto pinger messages")
 
-            for message in messages:
-                await message.delete()
+            await client(
+                DeleteScheduledMessagesRequest(
+                    self._bot,
+                    [message.id for message in messages],
+                )
+            )
 
             raise loader.SelfUnload
 

@@ -477,7 +477,7 @@ class HikkaSecurityMod(loader.Module):
             list(set(self._db.get(main.__name__, "nonickusers", []) + [user.id])),
         )
 
-        call.edit(
+        await call.edit(
             self.strings("user_nn").format(
                 user.id,
                 utils.escape_html(get_display_name(user)),

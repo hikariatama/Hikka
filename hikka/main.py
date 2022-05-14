@@ -41,6 +41,8 @@ import sqlite3
 import sys
 from math import ceil
 from typing import Union
+import uvloop
+import subprocess
 
 from telethon import TelegramClient, events
 from telethon.errors.rpcerrorlist import (
@@ -77,6 +79,8 @@ DATA_DIR = (
 )
 
 CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
+
+uvloop.install()
 
 
 def run_config(
@@ -386,35 +390,36 @@ class Hikka:
                 importlib.invalidate_caches()
                 self._get_api_token()
 
-    async def fetch_clients_from_web(self):
-        """Imports clients from web module"""
-        for client in self.web.clients:
-            session = SQLiteSession(
-                os.path.join(
-                    self.arguments.data_root or DATA_DIR,
-                    f"hikka-+{'x' * (len(client.phone) - 5)}{client.phone[-4:]}-{(await client.get_me()).id}",
-                )
+    async def save_client_session(self, client: TelegramClient):
+        session = SQLiteSession(
+            os.path.join(
+                self.arguments.data_root or DATA_DIR,
+                f"hikka-+{'x' * (len(client.phone) - 5)}{client.phone[-4:]}-{(await client.get_me()).id}",
             )
+        )
 
-            session.set_dc(
-                client.session.dc_id,
-                client.session.server_address,
-                client.session.port,
-            )
-            session.auth_key = client.session.auth_key
-            session.save()
-            client.session = session
-            # Set db attribute to this client in order to save
-            # custom bot nickname from web
-            client.hikka_db = database.Database(client)
-            await client.hikka_db.init()
-
-        self.clients = list(set(self.clients + self.web.clients))
+        session.set_dc(
+            client.session.dc_id,
+            client.session.server_address,
+            client.session.port,
+        )
+        session.auth_key = client.session.auth_key
+        session.save()
+        client.session = session
+        # Set db attribute to this client in order to save
+        # custom bot nickname from web
+        client.hikka_db = database.Database(client)
+        await client.hikka_db.init()
 
     def _web_banner(self):
         """Shows web banner"""
         print("✅ Web mode ready for configuration")
-        print(f"🌐 Please visit http://127.0.0.1:{self.web.port}")
+        ip = (
+            "127.0.0.1"
+            if "DOCKER" not in os.environ
+            else subprocess.run(["hostname", "-i"], stdout=subprocess.PIPE).stdout
+        )
+        print(f"🌐 Please visit http://{ip}:{self.web.port}")
 
     async def wait_for_web_auth(self, token: str):
         """Waits for web auth confirmation in Telegram"""
@@ -449,9 +454,12 @@ class Hikka:
 
         return True
 
-    def _init_clients(self):
-        """Reads session from disk and inits them"""
-        for phone_id, phone in self.phones.items():
+    def _init_clients(self) -> bool:
+        """
+        Reads session from disk and inits them
+        :returns: `True` if at least one client started successfully
+        """
+        for phone_id, phone in self.phones.copy().items():
             session = os.path.join(
                 self.arguments.data_root or DATA_DIR,
                 f'hikka{f"-{phone_id}" if phone_id else ""}',
@@ -473,7 +481,7 @@ class Hikka:
 
                 install_entity_caching(client)
 
-                self.clients.append(client)
+                self.clients += [client]
             except sqlite3.OperationalError:
                 print(
                     "Check that this is the only instance running. "
@@ -482,20 +490,22 @@ class Hikka:
                 continue
             except (TypeError, AuthKeyDuplicatedError):
                 os.remove(os.path.join(DATA_DIR, f"{session}.session"))
-                self.main()
+                del self.phones[phone_id]
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
                 run_config({}, self.arguments.data_root)
-                return
+                return False
             except PhoneNumberInvalidError:
                 print(
                     "Phone number is incorrect. Use international format (+XX...) "
                     "and don't put spaces in it."
                 )
-                continue
+                del self.phones[phone_id]
             except InteractiveAuthRequired:
                 print(f"Session {session} was terminated and re-auth is required")
-                continue
+                del self.phones[phone_id]
+
+        return bool(self.phones)
 
     def _init_loop(self):
         """Initializes main event loop and starts handler for each client"""
@@ -654,10 +664,12 @@ class Hikka:
         save_config_key("port", self.arguments.port)
         self._get_token()
 
-        if not self.clients and not self.phones and not self._initial_setup():
+        if (
+            not self.clients  # Search for already inited clients
+            and not self.phones  # Search for already added phones / sessions
+            or not self._init_clients()  # Attempt to read sessions from env
+        ) and not self._initial_setup():  # Otherwise attempt to run setup
             return
-
-        self._init_clients()
 
         self.loop.set_exception_handler(
             lambda _, x: logging.error(

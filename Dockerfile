@@ -25,7 +25,7 @@ RUN apt update && apt install \
 	libcairo2 git -y --no-install-recommends
 
 # Clean the cache
-RUN rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp
+RUN rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp/*
 
 # Expose IP address
 EXPOSE 8080
