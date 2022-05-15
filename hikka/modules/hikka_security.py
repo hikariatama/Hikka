@@ -154,10 +154,11 @@ class HikkaSecurityMod(loader.Module):
         is_inline: bool,
     ):
         cmd = (
-            self.allmodules.commands[command]
-            if not is_inline
-            else self.allmodules.inline_handlers[command]
+            self.allmodules.inline_handlers[command]
+            if is_inline
+            else self.allmodules.commands[command]
         )
+
         mask = self._db.get(security.__name__, "masks", {}).get(
             f"{cmd.__module__}.{cmd.__name__}",
             getattr(cmd, "security", security.DEFAULT_PERMISSIONS),
@@ -188,7 +189,9 @@ class HikkaSecurityMod(loader.Module):
 
         await call.edit(
             self.strings("permissions").format(
-                self.get_prefix() if not is_inline else f"@{self.inline.bot_username} ",
+                f"@{self.inline.bot_username} "
+                if is_inline
+                else self.get_prefix(),
                 command,
             ),
             reply_markup=self._build_markup(cmd, is_inline),
@@ -231,7 +234,7 @@ class HikkaSecurityMod(loader.Module):
             return utils.chunks(
                 [
                     {
-                        "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
+                        "text": f"{'✅' if level else '🚫'} {self.strings[group]}",
                         "callback": self.inline__switch_perm,
                         "args": (
                             command.__name__.rsplit("cmd", maxsplit=1)[0],
@@ -243,12 +246,20 @@ class HikkaSecurityMod(loader.Module):
                     for group, level in perms.items()
                 ],
                 2,
-            ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
+            ) + [
+                [
+                    {
+                        "text": self.strings("close_menu"),
+                        "callback": self.inline_close,
+                    }
+                ]
+            ]
+
 
         return utils.chunks(
             [
                 {
-                    "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
+                    "text": f"{'✅' if level else '🚫'} {self.strings[group]}",
                     "callback": self.inline__switch_perm,
                     "args": (
                         command.__name__.rsplit("_inline_handler", maxsplit=1)[0],
@@ -267,7 +278,7 @@ class HikkaSecurityMod(loader.Module):
         return utils.chunks(
             [
                 {
-                    "text": f"{('🚫' if not level else '✅')} {self.strings[group]}",
+                    "text": f"{'✅' if level else '🚫'} {self.strings[group]}",
                     "callback": self.inline__switch_perm_bm,
                     "args": (group, not level, is_inline),
                 }
@@ -288,6 +299,12 @@ class HikkaSecurityMod(loader.Module):
             {
                 "sudo": bool(perms & SUDO),
                 "support": bool(perms & SUPPORT),
+                "everyone": bool(perms & EVERYONE),
+            }
+            if is_inline
+            else {
+                "sudo": bool(perms & SUDO),
+                "support": bool(perms & SUPPORT),
                 "group_owner": bool(perms & GROUP_OWNER),
                 "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
                 "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
@@ -298,12 +315,6 @@ class HikkaSecurityMod(loader.Module):
                 "group_admin": bool(perms & GROUP_ADMIN),
                 "group_member": bool(perms & GROUP_MEMBER),
                 "pm": bool(perms & PM),
-                "everyone": bool(perms & EVERYONE),
-            }
-            if not is_inline
-            else {
-                "sudo": bool(perms & SUDO),
-                "support": bool(perms & SUPPORT),
                 "everyone": bool(perms & EVERYONE),
             }
         )
@@ -477,7 +488,7 @@ class HikkaSecurityMod(loader.Module):
             list(set(self._db.get(main.__name__, "nonickusers", []) + [user.id])),
         )
 
-        call.edit(
+        await call.edit(
             self.strings("user_nn").format(
                 user.id,
                 utils.escape_html(get_display_name(user)),
@@ -494,8 +505,9 @@ class HikkaSecurityMod(loader.Module):
         self._db.set(
             security.__name__,
             group,
-            list(set(self._db.get(security.__name__, group, [])) - set([user.id])),
+            list(set(self._db.get(security.__name__, group, [])) - {user.id}),
         )
+
 
         m = self.strings(f"{group}_removed").format(
             user.id,

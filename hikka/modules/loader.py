@@ -39,7 +39,7 @@ import sys
 import uuid
 from collections import ChainMap
 from importlib.machinery import ModuleSpec
-from typing import List, Optional, Union
+from typing import Optional, Union
 from urllib.parse import urlparse
 
 import requests
@@ -48,7 +48,7 @@ from telethon.tl.types import Message
 
 from .. import loader, main, utils
 from ..compat import geek
-from ..inline.types import InlineCall, InlineMessage
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +102,7 @@ def get_git_api(url):
 
     branch = m.group(2)
     path_ = m.group(3)
-    api_url = "https://api.github.com/repos{}/contents".format(m.group(1))
+    api_url = f"https://api.github.com/repos{m.group(1)}/contents"
 
     if path_ is not None and len(path_) > 0:
         api_url += path_

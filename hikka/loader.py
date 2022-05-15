@@ -82,10 +82,11 @@ class StringLoader(SourceLoader):
         self.origin = origin
 
     def get_code(self, fullname: str) -> str:
-        if not (source := self.get_source(fullname)):
-            return None
-
-        return compile(source, self.origin, "exec", dont_inherit=True)
+        return (
+            compile(source, self.origin, "exec", dont_inherit=True)
+            if (source := self.get_source(fullname))
+            else None
+        )
 
     def get_filename(self, *args, **kwargs) -> str:
         return self.origin
@@ -208,7 +209,7 @@ en_keys = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXC
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ
+    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
 

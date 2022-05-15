@@ -4,9 +4,8 @@ FROM python:3.8-slim-buster as main
 # Add files
 ADD . /
 
-# Tell Hikka, that it's running docker
-# Currently it's used only in .info badge
-ENV DOCKER=true
+# Tell Hikka, that it's running on Okteto
+ENV OKTETO=true
 
 # Suppress weird gitpython error
 ENV GIT_PYTHON_REFRESH=quiet
@@ -20,9 +19,18 @@ RUN pip install \
 	--no-cache-dir \
 	-r requirements.txt
 
+# Install non-mandatory pip requirements
+# As we are running Okteto, we don't care about resources consuming
+RUN pip install \
+	--no-warn-script-location \
+	--no-cache-dir \
+	-r optional_requirements.txt
+
 # Install mandatory apt packages
 RUN apt update && apt install \
-	libcairo2 git -y --no-install-recommends
+	libcairo2 git ffmpeg libavcodec-dev \
+	libavutil-dev libavformat-dev libswscale-dev \
+	libavdevice-dev -y --no-install-recommends
 
 # Clean the cache
 RUN rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp/*

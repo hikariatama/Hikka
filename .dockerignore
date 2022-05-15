@@ -133,6 +133,8 @@ dmypy.json
 *.pyc
 hikka/api_token.py
 hikka/loaded_modules
+loaded_modules
+hikka/debug_modules
 hikka*.session*
 database-*.json
 *.swp
@@ -155,3 +157,10 @@ config.json
 *.jpeg
 *.webp
 *.webm
+*.tgs
+*.mp4
+*.mp3
+*.ogg
+*.m4a
+*.mp3
+*.avi

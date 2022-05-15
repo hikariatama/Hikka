@@ -50,7 +50,7 @@ from telethon.tl.functions.contacts import UnblockRequest
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ
+    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
 
@@ -67,7 +67,7 @@ def restart(*argv):
 
 class Web:
     sign_in_clients = {}
-    clients = []
+    _pending_clients = []
     _sessions = []
     _ratelimit = {}
 
@@ -108,10 +108,11 @@ class Web:
         return self.clients_set.wait()
 
     def _check_session(self, request) -> bool:
-        if not main.hikka.clients:
-            return True
-
-        return request.cookies.get("session", None) in self._sessions
+        return (
+            request.cookies.get("session", None) in self._sessions
+            if main.hikka.clients
+            else True
+        )
 
     async def _check_bot(
         self,
@@ -151,7 +152,7 @@ class Web:
             return web.Response(status=401)
 
         text = await request.text()
-        client = self.clients[0]
+        client = self._pending_clients[0]
         db = database.Database(client)
         await db.init()
 
@@ -287,18 +288,30 @@ class Web:
         del self.sign_in_clients[phone]
 
         client.phone = f"+{user.phone}"
-        self.clients.append(client)
+
+        # At this step we don't want `main.hikka` to "know" about our client
+        # so it doesn't create bot immediately. That's why we only save its session
+        # in case user closes web early. It will be handled on restart
+        # If user finishes login further, client will be passed to main
+        await main.hikka.save_client_session(client)
+
+        # But now it's pending
+        self._pending_clients += [client]
+
         return web.Response()
 
     async def finish_login(self, request):
         if not self._check_session(request):
             return web.Response(status=401)
 
-        if not self.clients:
+        if not self._pending_clients:
             return web.Response(status=400)
 
         first_session = not bool(main.hikka.clients)
-        await main.hikka.fetch_clients_from_web()
+
+        # Client is ready to pass in to dispatcher
+        main.hikka.clients = list(set(main.hikka.clients + self._pending_clients))
+        self._pending_clients = []
 
         self.clients_set.set()
 

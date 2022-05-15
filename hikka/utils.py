@@ -45,7 +45,6 @@ import git
 import grapheme
 import requests
 import telethon
-from aiogram.types import CallbackQuery
 from telethon.hints import Entity
 from telethon.tl.custom.message import Message
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
@@ -83,7 +82,7 @@ from telethon.tl.types import (
     User,
 )
 
-from .inline.types import InlineCall
+from .inline.types import InlineCall, InlineMessage
 
 FormattingEntity = Union[
     MessageEntityUnknown,
@@ -170,7 +169,7 @@ def get_entity_id(entity: Entity) -> int:
 
 def escape_html(text: str, /) -> str:
     """Pass all untrusted/potentially corrupt input here"""
-    return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def escape_quotes(text: str, /) -> str:
@@ -279,16 +278,16 @@ def relocate_entities(
 
 
 async def answer(
-    message: Union[Message, CallbackQuery, InlineCall],
+    message: Union[Message, InlineCall, InlineMessage],
     response: str,
     **kwargs,
-) -> Union[CallbackQuery, Message]:
+) -> Union[InlineCall, InlineMessage, Message]:
     """Use this to give the response to a command"""
     # Compatibility with FTG\GeekTG
     if isinstance(message, list) and message:
         message = message[0]
 
-    if isinstance(message, (CallbackQuery, InlineCall)):
+    if isinstance(message, (InlineMessage, InlineCall)):
         await message.edit(response)
         return message
 
@@ -578,15 +577,22 @@ def chunks(_list: Union[list, tuple, set], n: int, /) -> list:
 
 def get_named_platform() -> str:
     """Returns formatted platform name"""
-    if os.path.isfile("/proc/device-tree/model"):
-        with open("/proc/device-tree/model") as f:
-            model = f.read()
-            return f"🍇 {model}" if model.startswith("Raspberry") else f"❓ {model}"
+    try:
+        if os.path.isfile("/proc/device-tree/model"):
+            with open("/proc/device-tree/model") as f:
+                model = f.read()
+                return f"🍇 {model}" if model.startswith("Raspberry") else f"❓ {model}"
+    except Exception:
+        # In case of weird fs, aka Termux
+        pass
 
-    is_termux = bool(os.popen('echo $PREFIX | grep -o "com.termux"').read())
-
+    is_termux = "com.termux" in os.environ.get("PREFIX", "")
     is_okteto = "OKTETO" in os.environ
+    is_docker = "DOCKER" in os.environ
     is_lavhost = "LAVHOST" in os.environ
+
+    if is_docker:
+        return "🐳 Docker"
 
     if is_termux:
         return "🕶 Termux"
@@ -607,7 +613,7 @@ def uptime() -> int:
 
 def formatted_uptime() -> str:
     """Returnes formmated uptime"""
-    return "{}".format(str(timedelta(seconds=uptime())))
+    return f"{str(timedelta(seconds=uptime()))}"
 
 
 def ascii_face() -> str:
@@ -616,18 +622,13 @@ def ascii_face() -> str:
         random.choice(
             [
                 "ヽ(๑◠ܫ◠๑)ﾉ",
-                "☜(⌒▽⌒)☞",
-                "/|\\ ^._.^ /|\\",
                 "(◕ᴥ◕ʋ)",
                 "ᕙ(`▽´)ᕗ",
-                "(☞ﾟ∀ﾟ)☞",
                 "(✿◠‿◠)",
                 "(▰˘◡˘▰)",
                 "(˵ ͡° ͜ʖ ͡°˵)",
                 "ʕっ•ᴥ•ʔっ",
                 "( ͡° ᴥ ͡°)",
-                "ʕ♥ᴥ♥ʔ",
-                "\\m/,(> . <)_\\m/",
                 "(๑•́ ヮ •̀๑)",
                 "٩(^‿^)۶",
                 "(っˆڡˆς)",
@@ -635,22 +636,49 @@ def ascii_face() -> str:
                 "⊙ω⊙",
                 "٩(^ᴗ^)۶",
                 "(´・ω・)っ由",
-                "※\\(^o^)/※",
-                "٩(*❛⊰❛)～❤",
                 "( ͡~ ͜ʖ ͡°)",
                 "✧♡(◕‿◕✿)",
                 "โ๏௰๏ใ ื",
                 "∩｡• ᵕ •｡∩ ♡",
                 "(♡´౪`♡)",
                 "(◍＞◡＜◍)⋈。✧♡",
-                "♥(ˆ⌣ˆԅ)",
                 "╰(✿´⌣`✿)╯♡",
                 "ʕ•ᴥ•ʔ",
                 "ᶘ ◕ᴥ◕ᶅ",
                 "▼・ᴥ・▼",
-                "【≽ܫ≼】",
                 "ฅ^•ﻌ•^ฅ",
                 "(΄◞ิ౪◟ิ‵)",
+                "٩(^ᴗ^)۶",
+                "ᕴｰᴥｰᕵ",
+                "ʕ￫ᴥ￩ʔ",
+                "ʕᵕᴥᵕʔ",
+                "ʕᵒᴥᵒʔ",
+                "ᵔᴥᵔ",
+                "(✿╹◡╹)",
+                "(๑￫ܫ￩)",
+                "ʕ·ᴥ·　ʔ",
+                "(ﾉ≧ڡ≦)",
+                "(≖ᴗ≖✿)",
+                "（〜^∇^ )〜",
+                "( ﾉ･ｪ･ )ﾉ",
+                "~( ˘▾˘~)",
+                "(〜^∇^)〜",
+                "ヽ(^ᴗ^ヽ)",
+                "(´･ω･`)",
+                "₍ᐢ•ﻌ•ᐢ₎*･ﾟ｡",
+                "(。・・)_且",
+                "(=｀ω´=)",
+                "(*•‿•*)",
+                "(*ﾟ∀ﾟ*)",
+                "(☉⋆‿⋆☉)",
+                "ɷ◡ɷ",
+                "ʘ‿ʘ",
+                "(。-ω-)ﾉ",
+                "( ･ω･)ﾉ",
+                "(=ﾟωﾟ)ﾉ",
+                "(・ε・`*) …",
+                "ʕっ•ᴥ•ʔっ",
+                "(*˘︶˘*)",
             ]
         )
     )
