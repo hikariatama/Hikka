@@ -167,9 +167,9 @@ def get_entity_id(entity: Entity) -> int:
     return telethon.utils.get_peer_id(entity)
 
 
-def escape_html(text: str, /) -> str:
+def escape_html(text: str, /) -> str:  # sourcery skip
     """Pass all untrusted/potentially corrupt input here"""
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def escape_quotes(text: str, /) -> str:

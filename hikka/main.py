@@ -41,7 +41,6 @@ import sqlite3
 import sys
 from math import ceil
 from typing import Union
-import uvloop
 import subprocess
 
 from telethon import TelegramClient, events
@@ -80,7 +79,11 @@ DATA_DIR = (
 
 CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
 
-uvloop.install()
+try:
+    import uvloop
+    uvloop.install()
+except Exception:
+    pass
 
 
 def run_config(

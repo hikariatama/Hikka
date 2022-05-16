@@ -136,6 +136,7 @@ class HikkaInfoMod(loader.Module):
                 "text": self.config["custom_button"].split("|")[0],
                 "url": self.config["custom_button"].split("|")[1],
             },
+            photo="https://i.imgur.com/qW1j9U6.jpeg",
         )
 
     @loader.unrestricted
@@ -149,7 +150,7 @@ class HikkaInfoMod(loader.Module):
             (
                 "🌘 <b>Hikka</b>\n\n"
                 "Brand new userbot for Telegram with a lot of features, "
-                "aka InlineGalleries, Forms and others. Userbot - software, running "
+                "aka InlineGalleries, forms etc. Userbot - software, running "
                 "on your Telegram account. If you write a command to any chat, it will "
                 "get executed right there. Check out live examples at "
                 '<a href="https://github.com/hikariatama/Hikka">GitHub</a>'
@@ -158,7 +159,7 @@ class HikkaInfoMod(loader.Module):
             else (
                 "🌘 <b>Hikka</b>\n\n"
                 "Новый юзербот для Telegram с огромным количеством функций, "
-                "из которых: Инлайн Галереи, формы и другое. Юзербот - программа, "
+                "из которых: Инлайн галереи, формы и другое. Юзербот - программа, "
                 "которая запускается на твоем Telegram-аккаунте. Когда ты пишешь "
                 "команду в любом чате, она сразу же выполняется. Обрати внимание "
                 'на живые примеры на <a href="https://github.com/hikariatama/Hikka">GitHub</a>'
