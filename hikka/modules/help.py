@@ -39,7 +39,7 @@ class HelpMod(loader.Module):
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
         "joined": "🌘 <b>Joined the</b> <a href='https://t.me/linuxilchat>support chat</a>",
-        "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "join": "🌘 <b>Join the</b> <a href='https://t.me/linuxilchat>support chat</a>",
         "partial_load": "⚠️ <b>Userbot is not fully loaded, so not all modules are shown</b>",
         "not_exact": "⚠️ <b>No exact match occured, so the closest result is shown instead</b>",
     }
@@ -49,7 +49,7 @@ class HelpMod(loader.Module):
         "single_mod_header": "🌑 <b>{}</b>:",
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
-        "all_header": "🌘 <b>{} модулей доступно, {} скрыто:</b>",
+        "all_header": "🌆 <b>{} модулей доступно, {} скрыто:</b>",
         "mod_tmpl": "\n{} <code>{}</code>",
         "first_cmd_tmpl": ": ( {}",
         "cmd_tmpl": " | {}",
@@ -58,7 +58,7 @@ class HelpMod(loader.Module):
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
         "joined": "🌘 <b>Вступил в</b> <a href='https://t.me/linuxilchat>чат помощи</a>",
-        "join": "🌘 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
+        "join": "🌘 <b>Вступи в</b> <a href='https://t.me/linuxilchat>чат помощи</a>",
         "_cmd_doc_helphide": "<модуль(-и)> - Скрывает модуль(-и) из помощи\n*Разделяй имена модулей пробелами",
         "_cmd_doc_help": "[модуль] [-f] - Показывает помощь",
         "_cmd_doc_support": "Вступает в чат помощи Amore",
@@ -70,7 +70,7 @@ class HelpMod(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue("core_emoji", "🌌", lambda: "Core module bullet"),
-            loader.ConfigValue("hikka_emoji", "🌅", lambda: "Hikka-only module bullet"),
+            loader.ConfigValue("amore_emoji", "🌅", lambda: "Hikka-only module bullet"),
             loader.ConfigValue("plain_emoji", "🌠", lambda: "Plain module bullet"),
         )
 
