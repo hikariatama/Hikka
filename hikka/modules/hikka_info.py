@@ -152,7 +152,7 @@ class HikkaInfoMod(loader.Module):
         )
 
     @loader.unrestricted
-    async def hikkainfocmd(self, message: Message):
+    async def amoreinfocmd(self, message: Message):
         """[en/ru - default en] - Send info aka 'What is Hikka?'"""
         args = utils.get_args_raw(message)
         args = args if args in {"en", "ru"} else "en"
