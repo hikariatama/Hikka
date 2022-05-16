@@ -121,7 +121,7 @@ class QueryGallery(InlineUnit):
                     title=i["title"],
                     description=i["description"],
                     input_message_content=InputTextMessageContent(
-                        f"🌘 <b>Loading Hikka gallery...</b>\n<i>#id: {id_}</i>",
+                        f"🌌 <b>Loading Amore gallery...</b>\n<i>#id: {id_}</i>",
                         "HTML",
                         disable_web_page_preview=True,
                     ),
