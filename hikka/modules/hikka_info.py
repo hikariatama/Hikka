@@ -38,6 +38,7 @@ class HikkaInfoMod(loader.Module):
         "update_required": "⚠️ Update required </b><code>.update</code><b>",
         "_cfg_cst_msg": "Custom message for info. May contain {me}, {version}, {build}, {prefix}, {platform} keywords",
         "_cfg_cst_btn": "Custom button for info",
+        "_cfg_banner": "Type `True` in order to disable an image banner",
     }
 
     strings_ru = {
@@ -52,6 +53,7 @@ class HikkaInfoMod(loader.Module):
         "update_required": "⚠️ Требуется обновление </b><code>.update</code><b>",
         "_cfg_cst_msg": "Кастомный текст сообщения в info. Может содержать ключевые слова {me}, {version}, {build}, {prefix}, {platform}",
         "_cfg_cst_btn": "Кастомная кнопка в сообщении в info",
+        "_cfg_banner": "Впиши `True`, чтобы отключить баннер-картинку",
     }
 
     def __init__(self):
@@ -65,6 +67,11 @@ class HikkaInfoMod(loader.Module):
                 "custom_button",
                 "🌘 Support chat|https://t.me/hikka_talks",
                 lambda: self.strings("_cfg_cst_btn"),
+            ),
+            loader.ConfigValue(
+                "disable_banner",
+                False,
+                lambda: self.strings("_cfg_banner"),
             ),
         )
 
@@ -92,7 +99,8 @@ class HikkaInfoMod(loader.Module):
         platform = utils.get_named_platform()
 
         return (
-            self.config["custom_message"].format(
+            "<b>🌘 Hikka</b>\n"
+            + self.config["custom_message"].format(
                 me=me,
                 version=version,
                 build=build,
@@ -136,7 +144,11 @@ class HikkaInfoMod(loader.Module):
                 "text": self.config["custom_button"].split("|")[0],
                 "url": self.config["custom_button"].split("|")[1],
             },
-            photo="https://i.imgur.com/qW1j9U6.jpeg",
+            **(
+                {"photo": "https://i.imgur.com/qW1j9U6.jpeg"}
+                if not self.config["disable_banner"]
+                else {}
+            ),
         )
 
     @loader.unrestricted

@@ -128,14 +128,7 @@ class UpdateNotifierMod(loader.Module):
                     self._notified = self._pending
                     self.set("ignore_permanent", False)
 
-                    if self.get("upd_msg"):
-                        try:
-                            await self.inline.bot.delete_message(
-                                self._tg_id,
-                                self.get("upd_msg"),
-                            )
-                        except Exception:
-                            pass
+                    await self._delete_all_upd_messages()
 
                     self.set("upd_msg", m.message_id)
             except Exception:
@@ -144,6 +137,16 @@ class UpdateNotifierMod(loader.Module):
                 logger.exception("Error occurred while fetching update")
 
             await asyncio.sleep(60)
+
+    async def _delete_all_upd_messages(self):
+        for client in self.allclients:
+            try:
+                await client.loader.inline.bot.delete_message(
+                    client._tg_id,
+                    client.loader._db.get("UpdateNotifier", "upd_msg"),
+                )
+            except Exception:
+                pass
 
     async def update_callback_handler(self, call: InlineCall):
         """Process update buttons clicks"""
@@ -160,9 +163,14 @@ class UpdateNotifierMod(loader.Module):
             f"<code>{self.get_prefix()}update --force</code>",
         )
 
-        await self.inline.bot.delete_message(
-            call.message.chat.id,
-            call.message.message_id,
-        )
+        await self._delete_all_upd_messages()
+
+        try:
+            await self.inline.bot.delete_message(
+                call.message.chat.id,
+                call.message.message_id,
+            )
+        except Exception:
+            pass
 
         await self.allmodules.commands["update"](m)
