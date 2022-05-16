@@ -25,7 +25,7 @@ class HikkaSettingsMod(loader.Module):
     """Advanced settings for Hikka Userbot"""
 
     strings = {
-        "name": "HikkaSettings",
+        "name": "AmoreSettings",
         "watchers": "👀 <b>Watchers:</b>\n\n<b>{}</b>",
         "mod404": "🚫 <b>Watcher {} not found</b>",
         "disabled": "👀 <b>Watcher {} is now <u>disabled</u></b>",
@@ -35,7 +35,7 @@ class HikkaSettingsMod(loader.Module):
         "no_cmd": "🔰 <b>Please, specify command to toggle NoNick for</b>",
         "cmd_nn": "🔰 <b>NoNick for </b><code>{}</code><b> is now {}</b>",
         "cmd404": "🔰 <b>Command not found</b>",
-        "inline_settings": "⚙️ <b>Here you can configure your Hikka settings</b>",
+        "inline_settings": "⚙️ <b>Here you can configure your Amore settings</b>",
         "confirm_update": "🧭 <b>Please, confirm that you want to update. Your userbot will be restarted</b>",
         "confirm_restart": "🔄 <b>Please, confirm that you want to restart</b>",
         "suggest_fs": "✅ Suggest FS for modules",
@@ -66,7 +66,7 @@ class HikkaSettingsMod(loader.Module):
         "no_cmd": "🔰 <b>Укажи команду, для которой надо включить\\выключить NoNick</b>",
         "cmd_nn": "🔰 <b>Состояние NoNick для </b><code>{}</code><b>: {}</b>",
         "cmd404": "🔰 <b>Команда не найдена</b>",
-        "inline_settings": "⚙️ <b>Здесь можно управлять настройками Hikka</b>",
+        "inline_settings": "⚙️ <b>Здесь можно управлять настройками Amore</b>",
         "confirm_update": "🧭 <b>Подтвердите обновление. Юзербот будет перезагружен</b>",
         "confirm_restart": "🔄 <b>Подтвердите перезагрузку</b>",
         "suggest_fs": "✅ Предлагать сохранение модулей",
