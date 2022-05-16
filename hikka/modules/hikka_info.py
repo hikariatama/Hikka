@@ -27,7 +27,7 @@ class HikkaInfoMod(loader.Module):
     """Show userbot info"""
 
     strings = {
-        "name": "HikkaInfo",
+        "name": "AmoreInfo",
         "owner": "Owner",
         "version": "Version",
         "build": "Build",
@@ -65,7 +65,7 @@ class HikkaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "custom_button",
-                "🌘 Support chat|https://t.me/hikka_talks",
+                "🌐 Support chat|https://t.me/linuxilchat",
                 lambda: self.strings("_cfg_cst_btn"),
             ),
             loader.ConfigValue(
@@ -99,7 +99,7 @@ class HikkaInfoMod(loader.Module):
         platform = utils.get_named_platform()
 
         return (
-            "<b>🌘 Hikka</b>\n"
+            "<b>🌐 Amore</b>\n"
             + self.config["custom_message"].format(
                 me=me,
                 version=version,
@@ -109,7 +109,7 @@ class HikkaInfoMod(loader.Module):
             )
             if self.config["custom_message"] != "no"
             else (
-                "<b>🌘 Hikka Userbot</b>\n"
+                "<b>🌌 Amore Userbot</b>\n"
                 f'<b>🤴 {self.strings("owner")}: </b>{me}\n\n'
                 f"<b>🔮 {self.strings('version')}: </b>{version}\n"
                 f"<b>🧱 {self.strings('build')}: </b>{build}\n\n"
