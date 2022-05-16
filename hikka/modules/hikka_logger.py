@@ -22,7 +22,7 @@ from .. import loader, utils
 class HikkaLoggerMod(loader.Module):
     """Transfer your Hikka logs to classic bot"""
 
-    strings = {"name": "HikkaLogger"}
+    strings = {"name": "AmoreLogger"}
 
     async def client_ready(self, client, db):
         self._client = client
@@ -31,7 +31,7 @@ class HikkaLoggerMod(loader.Module):
         chat, is_new = await utils.asset_channel(
             self._client,
             "hikka-logs",
-            "🌘 Your Hikka logs will appear in this chat",
+            "🌘 Your Amore logs will appear in this chat",
             silent=True,
         )
 
