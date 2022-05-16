@@ -180,7 +180,7 @@ elif echo "$OSTYPE" | grep -qE '^darwin.*'; then
 	PKGMGR="brew install"
 	PYVER="3"
 else
-	endspin "Unrecognised OS. Please follow https://t.me/hikka_talks"
+	endspin "Unrecognised OS. Please follow https://t.me/MurkaUserBot"
 	BLA::stop_loading_animation
 	exit 1
 fi
