@@ -33,7 +33,7 @@ class UpdateNotifierMod(loader.Module):
     }
 
     strings_ru = {
-        "update_required": "🌌 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮 <b>Amore <s>{}</s> -> {}</b>\n\n{}",
+        "update_required": "🌌 <b>Доступно обновление Amore!</b>\n\nОпубликована новая версия Amore.\n🔮 <b>Amore <s>{}</s> -> {}</b>\n\n{}",
         "more": "\n<i><b>🎥 И еще {}...</b></i>",
     }
 
