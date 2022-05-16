@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ ! -n "$BASH" ]; then
-	echo "Non-bash shell detected, fixing..."
-	bash -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/hikariatama/Hikka/master/install.sh) '"$*"
-	exit $?
-fi
-
 # Modified version of https://stackoverflow.com/a/3330834/5509575
 sp='/-\|'
 spin() {
@@ -107,7 +101,7 @@ if [ ! x"" = x"$DYNO" ] && ! command -v python >/dev/null; then
 	rm -rf .cache
 	export PATH="/app/.heroku/python/bin:$PATH" # Prefer the bootstrapped python, incl. pip, over the system one.
 fi
-
+runout pip install gitpython gitdb grapheme Telethon-Mod pythondialog meval aiogram aiohttp aiohttp_jinja2 requests Jinja2 websockets uvloop
 if [ -d "Hikka/hikka" ]; then
 	cd Hikka || {
 		endspin "Error: Install git package and re-run installer"
@@ -135,56 +129,17 @@ fi
 ##############################################################################
 
 echo "Installing..." >hikka-install.log
-
-if echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/debian_version' ]; then
-	PKGMGR="apt install -y"
-	if [ ! "$(whoami)" = "root" ]; then
-		# Relaunch as root, preserving arguments
-		if command -v sudo >/dev/null; then
-			endspin "Restarting as root..."
-			echo "Relaunching" >>hikka-install.log
-			sudo "$BASH" -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/hikariatama/Hikka/master/install.sh) '"$*"
-			BLA::stop_loading_animation
-			exit $?
-		else
-			PKGMGR="true"
-		fi
-	else
-		runout dpkg --configure -a
-		runout apt update
-	fi
-	PYVER="3"
-elif echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/arch-release' ]; then
-	PKGMGR="pacman -Sy --noconfirm"
-	if [ ! "$(whoami)" = "root" ]; then
-		# Relaunch as root, preserving arguments
-		if command -v sudo >/dev/null; then
-			endspin "Restarting as root..."
-			echo "Relaunching" >>hikka-install.log
-			sudo "$BASH" -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/hikariatama/Hikka/master/install.sh) '"$*"
-			BLA::stop_loading_animation
-			exit $?
-		else
-			PKGMGR="true"
-		fi
-	fi
-	PYVER="3"
-elif echo "$OSTYPE" | grep -qE '^linux-android.*'; then
-	runout apt update
-	PKGMGR="apt install -y"
-	PYVER=""
-elif echo "$OSTYPE" | grep -qE '^darwin.*'; then
-	if ! command -v brew >/dev/null; then
-		ruby <(curl -fsSk https://raw.github.com/mxcl/homebrew/go)
-	fi
-	PKGMGR="brew install"
-	PYVER="3"
-else
-	endspin "Unrecognised OS. Please follow https://t.me/hikka_talks"
-	BLA::stop_loading_animation
-	exit 1
-fi
-
+declare -A osInfo;
+osInfo[/etc/redhat-release]='yum -y install' 
+osInfo[/etc/arch-release]="sudo pacman -Sy --noconfirm"
+osInfo[/etc/SuSE-release]='zypper install --non-interactive'
+osInfo[/etc/debian_version]='sudo apt-get install -y'
+for f in ${!osInfo[@]}
+do
+    if [[ -f $f ]];then
+        PKGMGR=${osInfo[$f]}
+    fi
+done
 ##############################################################################
 
 runout $PKGMGR "python$PYVER" git || {  # skipcq
