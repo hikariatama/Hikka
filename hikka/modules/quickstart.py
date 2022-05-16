@@ -31,7 +31,7 @@ TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
 ❓ <b>Need help?</b> Feel free to join our support chat. We help <b>everyone</b>.
 
 📼 <b>Official modules sources:</b>
-▫️ @hikarimods
+▫️ @linuxil1 
 ▫️ @hikarimods_database
 ▫️ <code>.dlmod</code>
 
@@ -42,18 +42,18 @@ TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
 """
 
 
-TEXT_RU = """🌘🇷🇺 <b>Привет.</b> Твой юзербот <b>Amore</b> установлен.
+TEXT_RU = """🌌🇷🇺 <b>Привет.</b> Твой юзербот <b>Amore</b> установлен.
 
 ❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>.
 
 📼 <b>Официальные источники модулей:</b>
-▫️ @Linuxil1
-▫️ @hikarimods_database
-▫️ <code>.dlmod</code>
+🌠 @Linuxil1
+🌠 @hikarimods_database
+🌠 <code>.dlmod</code>
 
 ✅ <b>Доверенные разработчики модулей:</b>
-▫️ @morisummermods
-▫️ @cakestwix_mods
+🌅 @morisummermods
+🌅 @cakestwix_mods
 """
 
 if "OKTETO" in os.environ:
