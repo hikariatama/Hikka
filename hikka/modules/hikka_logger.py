@@ -30,8 +30,8 @@ class HikkaLoggerMod(loader.Module):
 
         chat, is_new = await utils.asset_channel(
             self._client,
-            "hikka-logs",
-            "🌘 Your Amore logs will appear in this chat",
+            "amore-logs",
+            "🌌 Your Amore logs will appear in this chat",
             silent=True,
         )
 
