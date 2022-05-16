@@ -30,7 +30,7 @@ class HikkaBackupMod(loader.Module):
     """Automatic database backup"""
 
     strings = {
-        "name": "HikkaBackup",
+        "name": "AmoreBackup",
         "period": "⌚️ <b>Hewwo! I'm Asuna</b> - your personal backup manager. Please, select the periodicity of automatic database backups",
         "saved": "✅ Backup period saved. You can re-configure it later with .set_backup_period",
         "never": "✅ I will not make automatic backups. You can re-configure it later with .set_backup_period",
@@ -38,7 +38,7 @@ class HikkaBackupMod(loader.Module):
     }
 
     strings_ru = {
-        "period": "⌚️ <b>Приветики! Я Асуна</b> - твой менеджер резервного копирования. Пожалуйста, выбери периодичность резервных копий базы данных Hikka",
+        "period": "⌚️ <b>Приветики! Я Асуна</b> - твой менеджер резервного копирования. Пожалуйста, выбери периодичность резервных копий базы данных Amore",
         "saved": "✅ Периодичность сохранена! Ее можно изменить с помощью .set_backup_period",
         "never": "✅ Я не буду делать автоматические резервные копии. Можно отменить используя .set_backup_period",
         "invalid_args": "🚫 <b>Укажи правильную периодичность в часах, или `0` для отключения</b>",
