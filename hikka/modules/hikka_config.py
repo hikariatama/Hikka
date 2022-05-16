@@ -26,7 +26,7 @@ class HikkaConfigMod(loader.Module):
     """Interactive configurator for Hikka Userbot"""
 
     strings = {
-        "name": "HikkaConfig",
+        "name": "AmoreConfig",
         "configure": "🎚 <b>Here you can configure your modules' configs</b>",
         "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>",
         "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>",
