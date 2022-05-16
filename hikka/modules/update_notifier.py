@@ -28,7 +28,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings = {
         "name": "UpdateNotifier",
-        "update_required": "🌌 <b>Amore Update available!</b>\n\nNew Hikka version released.\n🔮 <b>Amore <s>{}</s> -> {}</b>\n\n{}",
+        "update_required": "🌌 <b>Amore Update available!</b>\n\nNew Amore version released.\n🔮 <b>Amore <s>{}</s> -> {}</b>\n\n{}",
         "more": "\n<i><b>🎥 And {} more...</b></i>",
     }
 
