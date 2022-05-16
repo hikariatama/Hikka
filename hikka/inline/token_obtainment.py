@@ -38,8 +38,8 @@ class TokenObtainment(InlineUnit):
             await m.delete()
             await r.delete()
 
-            if self._db.get("hikka.inline", "custom_bot", False):
-                username = self._db.get("hikka.inline", "custom_bot").strip("@")
+            if self._db.get("amore.inline", "custom_bot", False):
+                username = self._db.get("amore.inline", "custom_bot").strip("@")
                 username = f"@{username}"
                 try:
                     await self._client.get_entity(username)
@@ -149,7 +149,7 @@ class TokenObtainment(InlineUnit):
                         "hikka.inline",
                         "custom_bot",
                         False,
-                    ) and not re.search(r"@hikka_[0-9a-zA-Z]{6}_bot", button.text):
+                    ) and not re.search(r"@amore_[0-9a-zA-Z]{6}_bot", button.text):
                         continue
 
                     m = await conv.send_message(button.text)
