@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 photo = io.BytesIO(
     requests.get(
-        "https://github.com/hikariatama/Hikka/raw/master/assets/bot_pfp.png"
+        "https://siasky.net/3ACUTs_BgeCnARAgvWGN_9PKpbDoLFjWi_cNhRwKgJdb_w"
     ).content
 )
 photo.name = "avatar.png"
@@ -48,14 +48,14 @@ class TokenObtainment(InlineUnit):
                 else:
                     # Generate and set random username for bot
                     uid = utils.rand(6)
-                    username = f"@hikka_{uid}_bot"
+                    username = f"@amore_{uid}_bot"
             else:
                 # Generate and set random username for bot
                 uid = utils.rand(6)
-                username = f"@hikka_{uid}_bot"
+                username = f"@amore_{uid}_bot"
 
             for msg in [
-                f"🌘 Hikka Userbot of {self._name}"[:64],
+                f"🌌 Amore Userbot of {self._name}"[:64],
                 username,
                 "/setuserpic",
                 username,
