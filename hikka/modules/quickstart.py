@@ -42,12 +42,12 @@ TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
 """
 
 
-TEXT_RU = """🌘🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka</b> установлен.
+TEXT_RU = """🌘🇷🇺 <b>Привет.</b> Твой юзербот <b>Amore</b> установлен.
 
 ❓ <b>Нужна помощь?</b> Вступай в наш чат поддержки. Мы помогаем <b>всем</b>.
 
 📼 <b>Официальные источники модулей:</b>
-▫️ @hikarimods
+▫️ @Linuxil1
 ▫️ @hikarimods_database
 ▫️ <code>.dlmod</code>
 
@@ -72,7 +72,7 @@ class QuickstartMod(loader.Module):
 
         mark = self.inline.generate_markup(
             [
-                [{"text": "🥷 Support chat", "url": "https://t.me/hikka_talks"}],
+                [{"text": "🥷 Support chat", "url": "https://t.me/linuxilchat"}],
                 [{"text": "🇷🇺 Русский", "data": "hikka_qs_sw_lng_ru"}],
             ]
         )
@@ -94,7 +94,7 @@ class QuickstartMod(loader.Module):
         if lang == "ru":
             mark = self.inline.generate_markup(
                 [
-                    [{"text": "🥷 Чат помощи", "url": "https://t.me/hikka_talks"}],
+                    [{"text": "🥷 Чат помощи", "url": "https://t.me/linuxilchat"}],
                     [{"text": "🇬🇧 English", "data": "hikka_qs_sw_lng_en"}],
                 ]
             )
@@ -113,7 +113,7 @@ class QuickstartMod(loader.Module):
         elif lang == "en":
             mark = self.inline.generate_markup(
                 [
-                    [{"text": "🥷 Support chat", "url": "https://t.me/hikka_talks"}],
+                    [{"text": "🥷 Support chat", "url": "https://t.me/linuxilchat"}],
                     [{"text": "🇷🇺 Русский", "data": "hikka_qs_sw_lng_ru"}],
                 ]
             )
