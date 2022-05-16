@@ -38,7 +38,7 @@ class HelpMod(loader.Module):
         "hidden_shown": "🌘 <b>{} modules hidden, {} modules shown:</b>\n{}\n{}",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
-        "joined": "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "joined": "🌘 <b>Joined the</b> <a href='https://t.me/linuxilchat>support chat</a>",
         "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
         "partial_load": "⚠️ <b>Userbot is not fully loaded, so not all modules are shown</b>",
         "not_exact": "⚠️ <b>No exact match occured, so the closest result is shown instead</b>",
@@ -57,21 +57,21 @@ class HelpMod(loader.Module):
         "hidden_shown": "🌘 <b>{} модулей скрыто, {} модулей показано:</b>\n{}\n{}",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
-        "joined": "🌘 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
+        "joined": "🌘 <b>Вступил в</b> <a href='https://t.me/linuxilchat>чат помощи</a>",
         "join": "🌘 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
         "_cmd_doc_helphide": "<модуль(-и)> - Скрывает модуль(-и) из помощи\n*Разделяй имена модулей пробелами",
         "_cmd_doc_help": "[модуль] [-f] - Показывает помощь",
-        "_cmd_doc_support": "Вступает в чат помощи Hikka",
-        "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
+        "_cmd_doc_support": "Вступает в чат помощи Amore",
+        "_cls_doc": "Модуль помощи, сделанный специально для Amore <3",
         "partial_load": "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все модули</b>",
         "not_exact": "⚠️ <b>Точного совпадения не нашлось, поэтому было выбрано наиболее подходящее</b>",
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            loader.ConfigValue("core_emoji", "▪️", lambda: "Core module bullet"),
-            loader.ConfigValue("hikka_emoji", "🌘", lambda: "Hikka-only module bullet"),
-            loader.ConfigValue("plain_emoji", "▫️", lambda: "Plain module bullet"),
+            loader.ConfigValue("core_emoji", "🌌", lambda: "Core module bullet"),
+            loader.ConfigValue("hikka_emoji", "🌅", lambda: "Hikka-only module bullet"),
+            loader.ConfigValue("plain_emoji", "🌠", lambda: "Plain module bullet"),
         )
 
     async def helphidecmd(self, message: Message):
@@ -291,10 +291,10 @@ class HelpMod(loader.Module):
 
             for cmd in icommands:
                 if first:
-                    tmp += self.strings("first_cmd_tmpl").format(f"🎹 {cmd}")
+                    tmp += self.strings("first_cmd_tmpl").format(f"♨️ {cmd}")
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl").format(f"🎹 {cmd}")
+                    tmp += self.strings("cmd_tmpl").format(f"♨️ {cmd}")
 
             if commands or icommands:
                 tmp += " )"
@@ -329,13 +329,13 @@ class HelpMod(loader.Module):
             message,
             security.OWNER | security.SUDO,
         ):
-            await self._client(JoinChannelRequest("https://t.me/hikka_talks"))
+            await self._client(JoinChannelRequest("https://t.me/linxilchat"))
 
             try:
                 await self.inline.form(
                     self.strings("joined"),
                     reply_markup=[
-                        [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
+                        [{"text": "👩‍💼 Chat", "url": "https://t.me/linuxilchat"}]
                     ],
                     ttl=10,
                     message=message,
@@ -347,7 +347,7 @@ class HelpMod(loader.Module):
                 await self.inline.form(
                     self.strings("join"),
                     reply_markup=[
-                        [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
+                        [{"text": "👩‍💼 Chat", "url": "https://t.me/linuxilchat"}]
                     ],
                     ttl=10,
                     message=message,
