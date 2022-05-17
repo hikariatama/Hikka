@@ -26,7 +26,7 @@ imgs = [
     "https://i2.wp.com/metanorn.net/wp-content/uploads/2011/08/NS3-04b.gif",
 ]
 
-TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
+TEXT = """🌌🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
 
 ❓ <b>Need help?</b> Feel free to join our support chat. We help <b>everyone</b>.
 
@@ -48,7 +48,7 @@ TEXT_RU = """🌌🇷🇺 <b>Привет.</b> Твой юзербот <b>Amore<
 
 📼 <b>Официальные источники модулей:</b>
 🌠 @Linuxil1
-🌠 @hikarimods_database
+🌠 @UModules
 🌠 <code>.dlmod</code>
 
 ✅ <b>Доверенные разработчики модулей:</b>
