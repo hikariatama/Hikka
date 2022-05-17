@@ -31,14 +31,14 @@ class HikkaBackupMod(loader.Module):
 
     strings = {
         "name": "AmoreBackup",
-        "period": "⌚️ <b>Hewwo! I'm Asuna</b> - your personal backup manager. Please, select the periodicity of automatic database backups",
+        "period": "⌚️ <b>Hewwo! I'm Neko</b> - your personal backup manager. Please, select the periodicity of automatic database backups",
         "saved": "✅ Backup period saved. You can re-configure it later with .set_backup_period",
         "never": "✅ I will not make automatic backups. You can re-configure it later with .set_backup_period",
         "invalid_args": "🚫 <b>Specify correct backup period in hours, or `0` to disable</b>",
     }
 
     strings_ru = {
-        "period": "⌚️ <b>Приветики! Я Асуна</b> - твой менеджер резервного копирования. Пожалуйста, выбери периодичность резервных копий базы данных Amore",
+        "period": "🤗 <b>Приветики! Я Неко</b> - твой менеджер резервного копирования. Пожалуйста, выбери периодичность резервных копий базы данных Amore",
         "saved": "✅ Периодичность сохранена! Ее можно изменить с помощью .set_backup_period",
         "never": "✅ Я не буду делать автоматические резервные копии. Можно отменить используя .set_backup_period",
         "invalid_args": "🚫 <b>Укажи правильную периодичность в часах, или `0` для отключения</b>",
@@ -69,12 +69,12 @@ class HikkaBackupMod(loader.Module):
 
         self._backup_channel, is_new = await utils.asset_channel(
             self._client,
-            "hikka-backups",
-            "📼 Your database backups will appear there",
+            "amore-backups",
+            "🔰 Your database backups will appear there",
             silent=True,
             archive=True,
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
-            _folder="hikka",
+            _folder="Amore",
         )
 
         self._task = asyncio.ensure_future(self.handler())
