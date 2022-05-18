@@ -144,11 +144,11 @@ class HikkaInfoMod(loader.Module):
                 "text": self.config["custom_button"].split("|")[0],
                 "url": self.config["custom_button"].split("|")[1],
             },
-            **(
-                {"photo": "https://siasky.net/NABatR-a_6FMdtthdWmpORWweLaH0-1iqDDoAW7lenv2fA"}
-                if not self.config["disable_banner"]
-                else {}
-            ),
+            **{}
+            if self.config["disable_banner"]
+            else {
+                "photo": "https://siasky.net/NABatR-a_6FMdtthdWmpORWweLaH0-1iqDDoAW7lenv2fA"
+            }
         )
 
     @loader.unrestricted
