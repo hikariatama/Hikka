@@ -398,11 +398,11 @@ class Events(InlineUnit):
                     title="Show available inline commands",
                     description=f"You have {len(_help.splitlines())} available command(-s)",
                     input_message_content=InputTextMessageContent(
-                        f"<b>ℹ️ Available inline commands:</b>\n\n{_help}",
+                        f"<b>ℹ️ Доступные инлайн команды:</b>\n\n{_help}",
                         "HTML",
                         disable_web_page_preview=True,
                     ),
-                    thumb_url="https://img.icons8.com/fluency/50/000000/info-squared.png",
+                    thumb_url="https://siasky.net/LABtF3UZMeVGXI-RmgU535Fj2Iy-ltvDT_O_dmcctd048w",
                     thumb_width=128,
                     thumb_height=128,
                 )
