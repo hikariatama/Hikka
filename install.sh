@@ -2,7 +2,7 @@
 
 if [ ! -n "$BASH" ]; then
 	echo "Non-bash shell detected, fixing..."
-	bash -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/hikariatama/Hikka/master/install.sh) '"$*"
+	bash -c '. <('"$(command -v curl >/dev/null && echo 'curl -Ls' || echo 'wget -qO-')"' https://github.com/AmoreForever/AmoreA/master/install.sh) '"$*"
 	exit $?
 fi
 
@@ -18,9 +18,9 @@ endspin() {
 
 runin() {
 	# Runs the arguments and spins once per line of stdout (tee'd to logfile), also piping stderr to logfile
-	{ "$@" 2>>../hikka-install.log || return $?; } | while read -r line; do
+	{ "$@" 2>>../amore-install.log || return $?; } | while read -r line; do
 		spin
-		printf "%s\n" "$line" >>../hikka-install.log
+		printf "%s\n" "$line" >>../amore-install.log
 	done
 }
 
@@ -28,7 +28,7 @@ runout() {
 	# Runs the arguments and spins once per line of stdout (tee'd to logfile), also piping stderr to logfile
 	{ "$@" 2>>hikka-install.log || return $?; } | while read -r line; do
 		spin
-		printf "%s\n" "$line" >>hikka-install.log
+		printf "%s\n" "$line" >>amore-install.log
 	done
 }
 
@@ -72,8 +72,8 @@ BLA::stop_loading_animation() {
 }
 
 printf "\n\e[1;35;47m                   \e[0m"
-printf "\n\e[1;35;47m █ █ █ █▄▀ █▄▀ ▄▀█ \e[0m"
-printf "\n\e[1;35;47m █▀█ █ █ █ █ █ █▀█ \e[0m"
+printf "\n\e[1;35;47m AMORE \e[0m"
+printf "\n\e[1;35;47m AMORE \e[0m"
 printf "\n\e[1;35;47m                   \e[0m"
 printf "\n\n\e[3;34;40m Installing...\e[0m\n\n"
 BLA::start_loading_animation
@@ -82,7 +82,7 @@ BLA::start_loading_animation
 
 spin
 
-touch hikka-install.log
+touch amore-install.log
 if [ ! x"$SUDO_USER" = x"" ]; then
 	chown "$SUDO_USER:" hikka-install.log
 fi
@@ -108,8 +108,8 @@ if [ ! x"" = x"$DYNO" ] && ! command -v python >/dev/null; then
 	export PATH="/app/.heroku/python/bin:$PATH" # Prefer the bootstrapped python, incl. pip, over the system one.
 fi
 
-if [ -d "Hikka/hikka" ]; then
-	cd Hikka || {
+if [ -d "Amore/amore" ]; then
+	cd Amore || {
 		endspin "Error: Install git package and re-run installer"
 		BLA::stop_loading_animation
 		exit 6
@@ -134,7 +134,7 @@ fi
 
 ##############################################################################
 
-echo "Installing..." >hikka-install.log
+echo "Installing..." >amore-install.log
 
 if echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/debian_version' ]; then
 	PKGMGR="apt install -y"
@@ -215,14 +215,14 @@ if [ ! x"$SUDO_USER" = x"" ]; then
 fi
 
 # shellcheck disable=SC2086
-${SUDO_CMD}rm -rf Hikka
+${SUDO_CMD}rm -rf Amore
 # shellcheck disable=SC2086
-runout ${SUDO_CMD}git clone https://github.com/hikariatama/Hikka/ || {
+runout ${SUDO_CMD}git clone https://github.com/AmoreForever/AmoreA/ || {
 	errorout "Clone failed."
 	BLA::stop_loading_animation
 	exit 3
 }
-cd Hikka || {
+cd Amore || {
 	endspin "Error: Install git package and re-run installer"
 	BLA::stop_loading_animation
 	exit 7
@@ -240,7 +240,7 @@ rm -f ../hikka-install.log
 touch .setup_complete
 BLA::stop_loading_animation
 # shellcheck disable=SC2086,SC2015
-${SUDO_CMD}"python$PYVER" -m hikka "$@" || {
+${SUDO_CMD}"python$PYVER" -m amore "$@" || {
 	echo "Python scripts failed"
 	exit 5
 }
