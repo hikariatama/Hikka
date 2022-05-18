@@ -6,9 +6,7 @@ labels: bug, Hikka
 assignees: ''
 
 ---
-
-## Before continuing, check the mark below
-- [ ] This bug **is related to Hikka userbot itself**. It **is not related to modules**.
+- [x] This bug **is related to Hikka userbot itself**. It **is not related to modules**.
 ---
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -31,6 +29,7 @@ If applicable, add screenshots to help explain your problem.
 - [ ] 🕶️ Termux
 - [ ] ✌️ lavHost
 - [ ] ☁️ Okteto
+- [ ] 🐳 Docker
 - [ ] 🌺 Other platform
 
 - Hikka version: 

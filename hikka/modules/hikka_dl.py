@@ -38,6 +38,10 @@ ALLOWED_ORIGINS = [
 ]
 
 
+class RefreshToken(Exception):
+    """Placeholder"""
+
+
 @loader.tds
 class HikkaDLMod(loader.Module):
     """Downloads stuff"""
@@ -47,10 +51,10 @@ class HikkaDLMod(loader.Module):
     _connected = False
 
     async def _wss(self):
-        logger.debug("Connecting....")
-        async with websockets.connect("wss://hikka.hikariatama.ru/ws") as wss:
-            await wss.send(self.get("token"))
-
+        logger.debug("Connecting to HikkaDL websocket....")
+        async with websockets.connect(
+            f"wss://hikka.hikariatama.ru/ws/{self.get('token')}"
+        ) as wss:
             while True:
                 ans = json.loads(await wss.recv())
                 self._connected = True
@@ -111,20 +115,18 @@ class HikkaDLMod(loader.Module):
                     logger.debug("Socket keep-alive timer expired, reconnecting...")
                     return
 
+                if ans["event"] == "invalid_token":
+                    logger.debug("Refreshing token...")
+                    raise RefreshToken
+
     async def _connect(self):
         self._no_revoke = False
         while True:
             try:
                 await self._wss()
-            except websockets.exceptions.ConnectionClosedError:
+            except RefreshToken:
                 logger.debug("Token became invalid, revoking...")
-                self._connected = False
-
-                if self._no_revoke:
-                    return
-
                 await self._get_token()
-                self._no_revoke = True
             except Exception:
                 logger.debug("Socket disconnected, retry in 5 sec", exc_info=True)
                 self._connected = False

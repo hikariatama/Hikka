@@ -1,5 +1,3 @@
-<a href="https://github.com/hikariatama/Hikka/blob/master/README_ru.md"><img src="https://img.icons8.com/external-justicon-flat-justicon/344/external-russia-countrys-flags-justicon-flat-justicon.png" width="32" align="middle"> Русская версия страницы</a>
-<hr>
 <a href="https://deepsource.io/gh/hikariatama/Hikka/?ref=repository-badge"><img src="https://deepsource.io/gh/hikariatama/Hikka.svg/?label=active+issues&show_trend=true&token=IPVI_QX-cSuQSVeVl8cb5PLt" alt="DeepSource"></a>
 <a href="https://deepsource.io/gh/hikariatama/Hikka/?ref=repository-badge"><img src="https://deepsource.io/gh/hikariatama/Hikka.svg/?label=resolved+issues&show_trend=true&token=IPVI_QX-cSuQSVeVl8cb5PLt" alt="DeepSource"></a><br>
 <a href="https://www.codacy.com/gh/hikariatama/Hikka/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=hikariatama/Hikka&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/97e3ea868f9344a5aa6e4d874f83db14"/></a>
@@ -16,36 +14,37 @@
 <a href="https://cloud.okteto.com/#/deploy?repository=https://github.com/hikariatama/Hikka"><img src="https://user-images.githubusercontent.com/36935426/167272305-91fd67c9-c3fc-4b4b-8a73-c35e57c8fcc5.png" height="60"></a>
 <a href="https://t.me/lavhostbot?start=SGlra2E"><img src="https://user-images.githubusercontent.com/36935426/167272288-85f00779-4b98-47da-8d0d-ea2c6370b979.png" height="60"></a>
 
-<b>VDS installation:</b>
+<b>Script installation:</b>
 Simply run this command out of <b>root</b>:
 <code>. <(wget -qO- http://gg.gg/get_hikka)</code>
+
+<b>Manual installation:</b>
+<code>apt update && apt install git libcairo2 -y && git clone https://github.com/hikariatama/Hikka && cd Hikka && pip install -r requirements.txt && python3 -m hikka</code>
+
 
 <hr>
 <h2><img src="https://github.com/hikariatama/assets/raw/master/35-edit-flat.webp" height="54" align="middle"> Changes</h2>
 
 <ul>
-	<li>🆕 Latest Telegram Layers with reactions, video stickers and other stuff</li>
-	<li>🔓 Security improvements</li>
-	<li>🎨 UI/UX improvements</li>
-	<li>📼 New core modules</li>
-	<li>☁️ Okteto cloud deployment support</li>
-	<li>⏱ Quick bug fixes (compared to official FTG)</li>
-	<li>▶️ Inline Buttons, available not only for core modules, but for every developer</li>
-	<li>🖼 Inline Galleries for every developer</li>
-	<li>🔁 Full backward compatibility with older version and with official FTG\GeekTG modules</li>
+	<li>🆕 <b>Latest Telegram layer</b> with reactions, video stickers and other stuff</li>
+	<li>🔓 <b>Security</b> improvements, including <b>native entity caching</b></li>
+	<li>🎨 <b>UI/UX</b> improvements</li>
+	<li>📼 New <b>core modules</b></li>
+	<li>☁️ <b>Okteto</b> cloud deployment support</li>
+	<li>⏱ Quick <b>bug fixes</b> (compared to official FTG and GeekTG)</li>
+	<li>▶️ <b>Inline forms, galleries and lists</b></li>
+	<li>🔁 Full <b>backward compatibility</b> with FTG-like userbots' modules</li>
 </ul>
 <hr>
 <h2 border="none"><img src="https://github.com/hikariatama/assets/raw/master/1312-micro-sd-card-flat.webp" height="54" align="middle"> Requirements</h2>
 <ul>
-	<li>Python 3.8 or above</li>
-	<li>Requirements from <code>requirements.txt</code></li>
-	<li>Optional: API ID and Hash from <a href="https://my.telegram.org/apps" color="#2594cb">Telegram</a> or default ones, if your Telegram account is old enough</li>
-	<li>Optional: Some basic knowledge of terminal</li>
+	<li>Python 3.8+</li>
+	<li>API_ID and HASH from <a href="https://my.telegram.org/apps" color="#2594cb">Telegram</a></li>
 </ul>
 <hr>
 <h2 border="none"><img src="https://github.com/hikariatama/assets/raw/master/680-it-developer-flat.webp" height="54" align="middle"> Documentation</h2>
 
-Check out the folder <code>docs</code> for developers' documentation
+Check out <a href="https://github.com/hikariatama/Hikka/wiki">Wiki</a> for developers' documentation
 User docs will be available soon
 <hr>
 <h2 border="none"><img src="https://github.com/hikariatama/assets/raw/master/981-consultation-flat.webp" height="54" align="middle"> <a href="https://t.me/hikka_talks">Support</a></h2>
@@ -106,5 +105,5 @@ User docs will be available soon
 	</tr>
 </table>
 
-<b>👨‍👦 NoNick, NoNickUser, NoNickCmd - use another account for userbot</b>
+<b>👨‍👦 NoNick, NoNickUser, NoNickCmd, NoNickChat - use another account for userbot</b>
 <img src="https://user-images.githubusercontent.com/36935426/158637220-00495363-cf4a-4e6f-a4b2-51d693906ead.png">

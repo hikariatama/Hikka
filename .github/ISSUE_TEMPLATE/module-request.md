@@ -6,9 +6,7 @@ labels: idea
 assignees: ''
 
 ---
-
-## Before continuing, check the mark below
-- [ ] **My suggestion is not about illegal stuff, doesn't violate Telegram EULA and human rights.**
+- [x] **My suggestion is not about illegal stuff, doesn't violate Telegram EULA and human rights.**
 ---
 
 **Short description of idea**:

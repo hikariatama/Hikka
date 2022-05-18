@@ -227,12 +227,17 @@ class Form(InlineUnit):
         return InlineMessage(self, form_uid, inline_message_id)
 
     async def _form_inline_handler(self, inline_query: InlineQuery):
+        try:
+            query = inline_query.query.split()[0]
+        except IndexError:
+            return
+
         for form in self._forms.copy().values():
             for button in utils.array_sum(form.get("buttons", [])):
                 if (
                     "_switch_query" in button
                     and "input" in button
-                    and button["_switch_query"] == inline_query.query.split()[0]
+                    and button["_switch_query"] == query
                     and inline_query.from_user.id
                     in [self._me]
                     + self._client.dispatcher.security._owner
