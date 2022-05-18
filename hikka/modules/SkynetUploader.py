@@ -12,7 +12,7 @@ class SkynetUploaderMod(loader.Module):
         или
         .sky <реплай на текст> - загружает текст из реплая на хост
         """
-        await message.edit(f"<b>🍃Загружаю...</b>")
+        await message.edit("<b>🍃Загружаю...</b>")
         client = skynet.SkynetClient()
         reply = await message.get_reply_message()
         if not reply:
@@ -22,14 +22,13 @@ class SkynetUploaderMod(loader.Module):
             file = await reply.download_media()
             link = client.upload_file(file)
             filtered = link.split('sia://')
-            link = 'https://siasky.net/' +  str(filtered[1])
+            link = f'https://siasky.net/{str(filtered[1])}'
             await message.edit("🌌Линк: \n" + link)
         except:
-            f = open('text.txt', 'w')
-            f.write(reply.raw_text)
-            f.close()
+            with open('text.txt', 'w') as f:
+                f.write(reply.raw_text)
             link = client.upload_file("text.txt")
             filtered = link.split('sia://')
-            link = 'https://siasky.net/' +  str(filtered[1])
+            link = f'https://siasky.net/{str(filtered[1])}'
             await message.edit("🌌Линк: \n" + link)
             os.remove('text.txt')

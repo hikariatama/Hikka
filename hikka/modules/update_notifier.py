@@ -110,10 +110,7 @@ class UpdateNotifierMod(loader.Module):
                     await asyncio.sleep(120)
                     continue
 
-                if (
-                    self._pending != self.get_commit()
-                    and self._pending != self._notified
-                ):
+                if self._pending not in [self.get_commit(), self._notified]:
                     m = await self.inline.bot.send_message(
                         self._tg_id,
                         self.strings("update_required").format(
