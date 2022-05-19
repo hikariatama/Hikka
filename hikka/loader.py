@@ -611,15 +611,18 @@ class Modules:
                 {},
             )
             for conf in mod.config.keys():
-                mod.config[conf] = (
-                    modcfg[conf]
-                    if conf in modcfg.keys()
-                    else os.environ.get(
-                        f"{mod.__class__.__name__}.{conf}",
-                        None,
+                try:
+                    mod.config[conf] = (
+                        modcfg[conf]
+                        if conf in modcfg.keys()
+                        else os.environ.get(
+                            f"{mod.__class__.__name__}.{conf}",
+                            None,
+                        )
+                        or mod.config.getdef(conf)
                     )
-                    or mod.config.getdef(conf)
-                )
+                except validators.ValidationError:
+                    pass
 
         if skip_hook:
             return
