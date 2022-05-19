@@ -581,7 +581,12 @@ def get_named_platform() -> str:
         if os.path.isfile("/proc/device-tree/model"):
             with open("/proc/device-tree/model") as f:
                 model = f.read()
-                return f"🍇 {model}" if model.startswith("Raspberry") else f"❓ {model}"
+                if "Orange" in model:
+                    return f"🍊 {model}"
+                elif "Raspberry" in model:
+                    return f"🍇 {model}"
+                else:
+                    return f"❓ {model}"
     except Exception:
         # In case of weird fs, aka Termux
         pass
