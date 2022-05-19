@@ -71,13 +71,13 @@ else:
 
 omit_log = False
 
-DATA_DIR = (
+BASE_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
     if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
 
-CONFIG_PATH = os.path.join(DATA_DIR, "config.json")
+CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
 try:
     import uvloop
@@ -319,7 +319,7 @@ class Hikka:
                 filter(
                     lambda f: f.startswith("hikka-") and f.endswith(".session"),
                     os.listdir(
-                        self.arguments.data_root or DATA_DIR,
+                        self.arguments.data_root or BASE_DIR,
                     ),
                 ),
             )
@@ -346,7 +346,7 @@ class Hikka:
         try:
             with open(
                 os.path.join(
-                    self.arguments.data_root or DATA_DIR,
+                    self.arguments.data_root or BASE_DIR,
                     "api_token.txt",
                 )
             ) as f:
@@ -396,7 +396,7 @@ class Hikka:
     async def save_client_session(self, client: TelegramClient):
         session = SQLiteSession(
             os.path.join(
-                self.arguments.data_root or DATA_DIR,
+                self.arguments.data_root or BASE_DIR,
                 f"hikka-+{'x' * (len(client.phone) - 5)}{client.phone[-4:]}-{(await client.get_me()).id}",
             )
         )
@@ -464,7 +464,7 @@ class Hikka:
         """
         for phone_id, phone in self.phones.copy().items():
             session = os.path.join(
-                self.arguments.data_root or DATA_DIR,
+                self.arguments.data_root or BASE_DIR,
                 f'hikka{f"-{phone_id}" if phone_id else ""}',
             )
 
@@ -492,7 +492,7 @@ class Hikka:
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
-                os.remove(os.path.join(DATA_DIR, f"{session}.session"))
+                os.remove(os.path.join(BASE_DIR, f"{session}.session"))
                 del self.phones[phone_id]
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID

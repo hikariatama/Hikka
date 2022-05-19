@@ -15,7 +15,7 @@ from typing import Union
 
 from telethon.tl.types import Message
 
-from .. import loader, utils
+from .. import loader, utils, translations
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -29,17 +29,20 @@ class HikkaConfigMod(loader.Module):
         "name": "HikkaConfig",
         "configure": "🎚 <b>Here you can configure your modules' configs</b>",
         "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>",
-        "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>",
+        "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>\n\n{}",
         "option_saved": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: </b><code>{}</code>",
         "args": "🚫 <b>You specified incorrect args</b>",
         "no_mod": "🚫 <b>Module doesn't exist</b>",
         "no_option": "🚫 <b>Configuration option doesn't exist</b>",
+        "validation_error": "🚫 <b>You entered incorrect config value. \nError: {}</b>",
+        "try_again": "🔁 Try again",
+        "typehint": "🕵️ <b>Must be a {}</b>",
     }
 
     strings_ru = {
         "configure": "🎚 <b>Здесь можно управлять настройками модулей</b>",
         "configuring_mod": "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>",
-        "configuring_option": "🎚 <b>Управление параметром </b><code>{}</code><b> модуля </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное значение: </b><code>{}</code>\n\n<b>Текущее значение: </b><code>{}</code>",
+        "configuring_option": "🎚 <b>Управление параметром </b><code>{}</code><b> модуля </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное: </b><code>{}</code>\n\n<b>Текущее: </b><code>{}</code>\n\n{}",
         "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее значение: </b><code>{}</code>",
         "_cmd_doc_config": "Настройки модулей",
         "_cmd_doc_fconfig": "<имя модуля> <имя конфига> <значение> - Расшифровывается как ForceConfig - Принудительно устанавливает значение в конфиге, если это не удалось сделать через inline бота",
@@ -47,6 +50,9 @@ class HikkaConfigMod(loader.Module):
         "args": "🚫 <b>Ты указал неверные аргументы</b>",
         "no_mod": "🚫 <b>Модуль не существует</b>",
         "no_option": "🚫 <b>У модуля нет такого значения конфига</b>",
+        "validation_error": "🚫 <b>Введено некорректное значение конфига. \nОшибка: {}</b>",
+        "try_again": "🔁 Попробовать еще раз",
+        "typehint": "🕵️ <b>Должно быть {}</b>",
     }
 
     async def client_ready(self, client, db):
@@ -66,7 +72,21 @@ class HikkaConfigMod(loader.Module):
         option: str,
         inline_message_id: str,
     ):
-        self.lookup(mod).config[option] = query
+        try:
+            self.lookup(mod).config[option] = query
+        except loader.validators.ValidationError as e:
+            await call.edit(
+                self.strings("validation_error").format(e.args[0]),
+                reply_markup={
+                    "text": self.strings("try_again"),
+                    "callback": self.inline__configure_option,
+                    "args": (
+                        mod,
+                        option,
+                    ),
+                },
+            )
+            return
 
         await call.edit(
             self.strings("option_saved").format(
@@ -94,6 +114,13 @@ class HikkaConfigMod(loader.Module):
         config_opt: str,
     ):
         module = self.lookup(mod)
+        try:
+            doc = module.config._config[config_opt].validator.doc
+            lang = self._db.get(translations.__name__, "lang", "en")
+            doc = utils.escape_html(doc.get(lang, doc["en"]))
+        except Exception:
+            doc = None
+
         await call.edit(
             self.strings("configuring_option").format(
                 utils.escape_html(config_opt),
@@ -101,6 +128,7 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(module.config.getdoc(config_opt)),
                 utils.escape_html(module.config.getdef(config_opt)),
                 utils.escape_html(module.config[config_opt]),
+                self.strings("typehint").format(doc) if doc else "",
             ),
             reply_markup=[
                 [

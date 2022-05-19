@@ -11,6 +11,11 @@
 # scope: inline
 
 import logging
+import atexit
+import functools
+import random
+import sys
+import os
 
 from telethon.tl.types import Message
 
@@ -18,6 +23,16 @@ from .. import loader, main, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
+
+
+def restart(*argv):
+    os.execl(
+        sys.executable,
+        sys.executable,
+        "-m",
+        os.path.relpath(utils.get_base_dir()),
+        *argv,
+    )
 
 
 @loader.tds
@@ -54,6 +69,17 @@ class HikkaSettingsMod(loader.Module):
             "disable NoNick!"
         ),
         "reply_required": "🚫 <b>Reply to a message of user, which needs to be added to NoNick</b>",
+        "deauth_confirm": "⚠️ <b>This action will fully remove Hikka from this account and can't be reverted!</b>",
+        "deauth_confirm_step2": "⚠️ <b>Are you really sure you want to delete Hikka?</b>",
+        "deauth_yes": "I'm sure",
+        "deauth_no_1": "I'm not sure",
+        "deauth_no_2": "I'm uncertain",
+        "deauth_no_3": "I'm struggling to answer",
+        "deauth_cancel": "🚫 Cancel",
+        "deauth_confirm_btn": "😢 Delete",
+        "undinstall": "😢 <b>Uninstalling Hikka...</b>",
+        "uninstalled": "😢 <b>Hikka uninstalled. Web interface is still active, you can add another account</b>",
+        "logs_cleared": "🗑 <b>Logs cleared</b>",
     }
 
     strings_ru = {
@@ -91,24 +117,114 @@ class HikkaSettingsMod(loader.Module):
             "отключи глобальный NoNick!"
         ),
         "reply_required": "🚫 <b>Ответь на сообщение пользователя, для которого нужно включить NoNick</b>",
+        "deauth_confirm": "⚠️ <b>Это действие полностью удалит Hikka с этого аккаунта! Его нельзя отменить</b>",
+        "deauth_confirm_step2": "⚠️ <b>Ты точно уверен, что хочешь удалить Hikka?</b>",
+        "deauth_yes": "Я уверен",
+        "deauth_no_1": "Я не уверен",
+        "deauth_no_2": "Не точно",
+        "deauth_no_3": "Нет",
+        "deauth_cancel": "🚫 Отмена",
+        "deauth_confirm_btn": "😢 Уда1лить",
+        "uninstall": "😢 <b>Удаляю Hikka...</b>",
+        "uninstalled": "😢 <b>Hikka удалена. Веб-интерфейс все еще активен, можно добавить другие аккаунты!</b>",
+        "logs_cleared": "🗑 <b>Логи очищены</b>",
     }
 
     def get_watchers(self) -> tuple:
         return [
-            str(_.__self__.__class__.strings["name"])
-            for _ in self.allmodules.watchers
-            if _.__self__.__class__.strings is not None
+            str(watcher.__self__.__class__.strings["name"])
+            for watcher in self.allmodules.watchers
+            if watcher.__self__.__class__.strings is not None
         ], self._db.get(main.__name__, "disabled_watchers", {})
 
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
 
+    async def _uninstall(self, call: InlineCall):
+        await call.edit(self.strings("uninstall"))
+
+        for handler in logging.getLogger().handlers:
+            handler.setLevel(logging.CRITICAL)
+
+        await self._client.log_out()
+
+        await call.edit(self.strings("uninstalled"))
+
+        if "LAVHOST" in os.environ:
+            os.system("lavhost restart")
+            return
+
+        atexit.register(functools.partial(restart, *sys.argv[1:]))
+        sys.exit(0)
+
+    async def _uninstall_confirm_step_2(self, call: InlineCall):
+        await call.edit(
+            self.strings("deauth_confirm_step2"),
+            utils.chunks(
+                list(
+                    sorted(
+                        [
+                            {
+                                "text": self.strings("deauth_yes"),
+                                "callback": self._uninstall,
+                            },
+                            {
+                                "text": self.strings("deauth_no_1"),
+                                "callback": self.inline__close,
+                            },
+                            {
+                                "text": self.strings("deauth_no_2"),
+                                "callback": self.inline__close,
+                            },
+                            {
+                                "text": self.strings("deauth_no_3"),
+                                "callback": self.inline__close,
+                            },
+                        ],
+                        key=lambda _: random.random(),
+                    )
+                ),
+                2,
+            )
+            + [
+                [
+                    {
+                        "text": self.strings("deauth_cancel"),
+                        "callback": self.inline__close,
+                    }
+                ]
+            ],
+        )
+
+    async def uninstall_hikkacmd(self, message: Message):
+        """Uninstall Hikka"""
+        await self.inline.form(
+            self.strings("deauth_confirm"),
+            message,
+            [
+                {
+                    "text": self.strings("deauth_confirm_btn"),
+                    "callback": self._uninstall_confirm_step_2,
+                },
+                {"text": self.strings("deauth_cancel"), "callback": self.inline__close},
+            ],
+        )
+
+    async def clearlogscmd(self, message: Message):
+        """Clear logs"""
+        for handler in logging.getLogger().handlers:
+            handler.buffer = []
+            handler.handledbuffer = []
+            handler.tg_buff = ""
+
+        await utils.answer(message, self.strings("logs_cleared"))
+
     async def watcherscmd(self, message: Message):
         """List current watchers"""
         watchers, disabled_watchers = self.get_watchers()
         watchers = [
-            f"♻️ {_}" for _ in watchers if _ not in list(disabled_watchers.keys())
+            f"♻️ {watcher}" for watcher in watchers if watcher not in list(disabled_watchers.keys())
         ]
         watchers += [f"💢 {k} {v}" for k, v in disabled_watchers.items()]
         await utils.answer(
@@ -123,10 +239,10 @@ class HikkaSettingsMod(loader.Module):
 
         watchers, disabled_watchers = self.get_watchers()
 
-        if args.lower() not in [_.lower() for _ in watchers]:
+        if args.lower() not in [watcher.lower() for watcher in watchers]:
             return await utils.answer(message, self.strings("mod404").format(args))
 
-        args = [_ for _ in watchers if _.lower() == args.lower()][0]
+        args = [watcher for watcher in watchers if watcher.lower() == args.lower()][0]
 
         current_bl = [
             v for k, v in disabled_watchers.items() if k.lower() == args.lower()
@@ -198,10 +314,10 @@ class HikkaSettingsMod(loader.Module):
 
         watchers, disabled_watchers = self.get_watchers()
 
-        if args.lower() not in [_.lower() for _ in watchers]:
+        if args.lower() not in [watcher.lower() for watcher in watchers]:
             return await utils.answer(message, self.strings("mod404").format(args))
 
-        args = [_ for _ in watchers if _.lower() == args.lower()][0]
+        args = [watcher for watcher in watchers if watcher.lower() == args.lower()][0]
 
         if chats or pm or out or incoming:
             disabled_watchers[args] = [

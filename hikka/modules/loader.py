@@ -850,6 +850,14 @@ class LoaderMod(loader.Module):
         self._update_modules_in_db()
         self._fully_loaded = True
 
+        aliases = {
+            alias: cmd
+            for alias, cmd in self.get("aliases", {}).items()
+            if self.allmodules.add_alias(alias, cmd)
+        }
+
+        self.set("aliases", aliases)
+
     async def client_ready(self, client, db):
         self._db = db
         self._client = client

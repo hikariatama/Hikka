@@ -41,7 +41,7 @@ from types import FunctionType
 from typing import Any, Optional, Union, List
 from telethon.tl.types import Message
 
-from . import security, utils
+from . import security, utils, validators  # noqa: F401
 from ._types import (  # noqa: F401
     ConfigValue,
     LoadError,
@@ -207,13 +207,13 @@ MODULES_NAME = "modules"
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
 en_keys = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?"
 
-DATA_DIR = (
+BASE_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
     if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
 
-LOADED_MODULES_DIR = os.path.join(DATA_DIR, "loaded_modules")
+LOADED_MODULES_DIR = os.path.join(BASE_DIR, "loaded_modules")
 
 if not os.path.isdir(LOADED_MODULES_DIR):
     os.mkdir(LOADED_MODULES_DIR, mode=0o755)
@@ -347,7 +347,9 @@ class Modules:
             ]
 
             for mod in os.listdir(LOADED_MODULES_DIR):
-                if not re.match(r"[a-zA-Zа-яА-Я0-9_]+_[0-9]+\.py", mod) and mod.endswith(".py"):
+                if not re.match(
+                    r"[a-zA-Zа-яА-Я0-9_]+_[0-9]+\.py", mod
+                ) and mod.endswith(".py"):
                     new_name = mod.rsplit(".py")[0] + f"_{client._tg_id}.py"
                     os.rename(
                         os.path.join(LOADED_MODULES_DIR, mod),

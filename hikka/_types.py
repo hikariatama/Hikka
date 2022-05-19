@@ -3,6 +3,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional, Union
 from .inline.types import *  # noqa: F401, F403
+from . import validators
 
 from telethon.tl.types import Message
 
@@ -133,6 +134,7 @@ class ConfigValue:
     default: Any = None
     doc: Union[callable, str] = "No description"
     value: Any = field(default_factory=_Placeholder)
+    validator: Optional[callable] = None
 
     def __post_init__(self):
         if isinstance(self.value, _Placeholder):
@@ -140,12 +142,15 @@ class ConfigValue:
 
     def __setattr__(self, key: str, value: Any) -> bool:
         if key == "value":
+            if self.validator is not None and value is not None:
+                value = self.validator.validate(value)
+
             # This attribute will tell the `Loader` to save this value in db
             self._save_marker = True
 
-        try:
-            value = ast.literal_eval(value)
-        except Exception:
-            pass
+            try:
+                value = ast.literal_eval(value)
+            except Exception:
+                pass
 
         object.__setattr__(self, key, value)
