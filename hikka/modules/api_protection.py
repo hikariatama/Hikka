@@ -76,9 +76,24 @@ class APIRatelimiterMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            loader.ConfigValue("time_sample", 15, lambda: "Time sample DO NOT TOUCH"),
-            loader.ConfigValue("threshold", 100, lambda: "Threshold DO NOT TOUCH"),
-            loader.ConfigValue("local_floodwait", 30, lambda: "Local FW DO NOT TOUCH"),
+            loader.ConfigValue(
+                "time_sample",
+                15,
+                lambda: "Time sample DO NOT TOUCH",
+                validator=loader.validators.Integer(minimum=1),
+            ),
+            loader.ConfigValue(
+                "threshold",
+                100,
+                lambda: "Threshold DO NOT TOUCH",
+                validator=loader.validators.Integer(minimum=10),
+            ),
+            loader.ConfigValue(
+                "local_floodwait",
+                30,
+                lambda: "Local FW DO NOT TOUCH",
+                validator=loader.validators.Integer(minimum=10, maximum=3600),
+            ),
         )
 
     async def client_ready(self, client, db):

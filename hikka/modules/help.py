@@ -69,9 +69,24 @@ class HelpMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            loader.ConfigValue("core_emoji", "▪️", lambda: "Core module bullet"),
-            loader.ConfigValue("hikka_emoji", "🌘", lambda: "Hikka-only module bullet"),
-            loader.ConfigValue("plain_emoji", "▫️", lambda: "Plain module bullet"),
+            loader.ConfigValue(
+                "core_emoji",
+                "▪️",
+                lambda: "Core module bullet",
+                validator=loader.validators.String(length=1),
+            ),
+            loader.ConfigValue(
+                "hikka_emoji",
+                "🌘",
+                lambda: "Hikka-only module bullet",
+                validator=loader.validators.String(length=1),
+            ),
+            loader.ConfigValue(
+                "plain_emoji",
+                "▫️",
+                lambda: "Plain module bullet",
+                validator=loader.validators.String(length=1),
+            ),
         )
 
     async def helphidecmd(self, message: Message):
@@ -199,7 +214,9 @@ class HelpMod(loader.Module):
                     ),
                 )
 
-            await utils.answer(message, f"{reply}\n\n{self.strings('not_exact') if not exact else ''}")
+            await utils.answer(
+                message, f"{reply}\n\n{self.strings('not_exact') if not exact else ''}"
+            )
             return
 
         count = 0

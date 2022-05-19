@@ -1,5 +1,7 @@
 import functools
 from typing import Any, Optional, Union
+from . import utils
+import grapheme
 
 
 class ValidationError(Exception):
@@ -181,9 +183,49 @@ def Choice(possible_values: list, /) -> Validator:
 def Series(separator: str = ",") -> Validator:
     """Just a placeholder to let user know about the format of input data for config value"""
     return Validator(
-        lambda value: True,
+        lambda value: value,
         {
             "en": f"series of values, separated with «{separator}»",
             "ru": f"списком значений, разделенных «{separator}»",
         },
     )
+
+
+def _Link(value: Any, /) -> str:
+    if not utils.check_url(value):
+        raise ValidationError(f"Passed value ({value}) is not a valid URL")
+
+    return value
+
+
+def Link() -> Validator:
+    """Valid url must be specified"""
+    return Validator(
+        lambda value: _Link(value),
+        {
+            "en": "link",
+            "ru": "ссылкой",
+        },
+    )
+
+
+def _String(value: Any, /, *, length: int) -> str:
+    if isinstance(length, int) and len(list(grapheme.graphemes(value))) != length:
+        raise ValidationError(f"Passed value ({value}) must be a length of {length}")
+
+    return value
+
+
+def String(length: Optional[int] = None) -> Validator:
+    if length is not None:
+        doc = {
+            "en": f"string of length {length}",
+            "ru": f"строкой из {length} символа(-ов)",
+        }
+    else:
+        doc = {
+            "en": "string",
+            "ru": "строкой",
+        }
+
+    return Validator(functools.partial(_String, length=length), doc)

@@ -207,6 +207,7 @@ class LoaderMod(loader.Module):
                 "MODULES_REPO",
                 "https://mods.hikariatama.ru/",
                 lambda: self.strings("repo_config_doc"),
+                validator=loader.validators.Link(),
             ),
             loader.ConfigValue(
                 "ADDITIONAL_REPOS",
@@ -217,6 +218,7 @@ class LoaderMod(loader.Module):
                     "https://gitlab.com/CakesTwix/friendly-userbot-modules/-/raw/master/"
                 ),
                 lambda: self.strings("add_repo_config_doc"),
+                validator=loader.validators.Series(separator="|"),
             ),
         )
 
@@ -297,9 +299,7 @@ class LoaderMod(loader.Module):
         preset = self.get("chosen_preset", None)
 
         if preset != "disable":
-            possible_mods = (
-                await self.get_repo_list(preset)
-            ).values()
+            possible_mods = (await self.get_repo_list(preset)).values()
             todo = dict(ChainMap(*possible_mods))
         else:
             todo = {}
