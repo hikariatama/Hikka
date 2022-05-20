@@ -44,9 +44,6 @@ class HikkaBackupMod(loader.Module):
         "invalid_args": "🚫 <b>Укажи правильную периодичность в часах, или `0` для отключения</b>",
     }
 
-    async def on_unload(self):
-        self._task.cancel()
-
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
@@ -76,8 +73,6 @@ class HikkaBackupMod(loader.Module):
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
             _folder="hikka",
         )
-
-        self._task = asyncio.ensure_future(self.handler())
 
         if not is_new and self.get("nomigrate", False):
             return
@@ -133,33 +128,33 @@ class HikkaBackupMod(loader.Module):
         self.set("last_backup", round(time.time()))
         await utils.answer(message, f"<b>{self.strings('saved')}</b>")
 
+    @loader.loop(interval=1, autostart=True)
     async def handler(self):
-        while True:
-            try:
-                if not self.get("period"):
-                    await asyncio.sleep(3)
-                    continue
+        try:
+            if not self.get("period"):
+                await asyncio.sleep(3)
+                return
 
-                if not self.get("last_backup"):
-                    self.set("last_backup", round(time.time()))
-                    await asyncio.sleep(self.get("period"))
-                    continue
-
-                if self.get("period") == "disabled":
-                    return
-
-                await asyncio.sleep(
-                    self.get("last_backup") + self.get("period") - time.time()
-                )
-
-                backup = io.BytesIO(json.dumps(self._db).encode("utf-8"))
-                backup.name = f"hikka-db-backup-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
-
-                await self._client.send_file(
-                    self._backup_channel,
-                    backup,
-                )
+            if not self.get("last_backup"):
                 self.set("last_backup", round(time.time()))
-            except Exception:
-                logger.exception("HikkaBackup failed")
-                await asyncio.sleep(60)
+                await asyncio.sleep(self.get("period"))
+                return
+
+            if self.get("period") == "disabled":
+                raise loader.StopLoop
+
+            await asyncio.sleep(
+                self.get("last_backup") + self.get("period") - time.time()
+            )
+
+            backup = io.BytesIO(json.dumps(self._db).encode("utf-8"))
+            backup.name = f"hikka-db-backup-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
+
+            await self._client.send_file(
+                self._backup_channel,
+                backup,
+            )
+            self.set("last_backup", round(time.time()))
+        except Exception:
+            logger.exception("HikkaBackup failed")
+            await asyncio.sleep(60)

@@ -309,6 +309,7 @@ class Modules:
         self.modules = []  # skipcq: PTC-W0052
         self.watchers = []
         self._log_handlers = []
+        self._core_commands = []
 
     def register_all(self, client, db, mods=None):
         """Load all modules in the module directory"""
@@ -434,33 +435,21 @@ class Modules:
 
     def register_commands(self, instance: Module):
         """Register commands from instance"""
+        if getattr(instance, "__origin__", "") == "<core>":
+            self._core_commands += list(map(lambda x: x.lower(), instance.commands))
+
         for command in instance.commands.copy():
             # Restrict overwriting core modules' commands
             if (
-                command.lower()
-                in {
-                    "help",
-                    "dlmod",
-                    "loadmod",
-                    "unloadmod",
-                    "logs",
-                    "ping",
-                    "hikka",
-                    "e",
-                    "eval",
-                    "settings",
-                    "restart",
-                    "update",
-                    "ch_hikka_bot",
-                    "security",
-                    "inlinesec",
-                    "info",
-                }
-                and command.lower() in self.commands
+                command.lower() in self._core_commands
+                and getattr(instance, "__origin__", "") != "<core>"
             ):
-                logger.warning(f"Command {command} is core and will not be overwritten by {instance}")  # fmt: skip
-                del instance.commands[command]
-                continue
+                try:
+                    self.modules.remove(instance)
+                except Exception:
+                    pass
+
+                raise RuntimeError(f"Command {command} is core and will not be overwritten by {instance}")  # fmt: skip
 
             # Verify that command does not already exist, or,
             # if it does, the command must be from the same class name
@@ -792,6 +781,9 @@ class Modules:
                 module.name.lower(),
                 module.__class__.__name__.lower(),
             ):
+                if getattr(module, "__origin__", "") == "<core>":
+                    raise RuntimeError("You can't unload core module")
+
                 worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__

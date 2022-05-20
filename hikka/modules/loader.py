@@ -536,9 +536,25 @@ class LoaderMod(loader.Module):
             ver_ = tuple(map(int, ver.split(".")))
             if main.__version__ < ver_:
                 if isinstance(message, Message):
-                    await utils.answer(
-                        message,
+                    if getattr(message, "file", None):
+                        m = utils.get_chat_id(message)
+                        await message.edit("")
+                    else:
+                        m = message
+
+                    await self.inline.form(
                         self.strings("version_incompatible").format(ver),
+                        m,
+                        reply_markup=[
+                            {
+                                "text": self.lookup("updater").strings("btn_update"),
+                                "callback": self.lookup("updater").inline_update,
+                            },
+                            {
+                                "text": self.lookup("updater").strings("cancel"),
+                                "callback": self.lookup("updater").inline_close,
+                            },
+                        ],
                     )
                 return
 
@@ -592,7 +608,7 @@ class LoaderMod(loader.Module):
                 try:
                     requirements = list(
                         filter(
-                            lambda x: x and x[0] not in {"-", "_", "."},
+                            lambda x: not x.startswith(("-", "_", ".")),
                             map(
                                 str.strip,
                                 VALID_PIP_PACKAGES.search(doc)[1].split(" "),
@@ -848,7 +864,6 @@ class LoaderMod(loader.Module):
             await self.download_and_install(mod)
 
         self._update_modules_in_db()
-        self._fully_loaded = True
 
         aliases = {
             alias: cmd
@@ -857,6 +872,10 @@ class LoaderMod(loader.Module):
         }
 
         self.set("aliases", aliases)
+
+        self._fully_loaded = True
+
+        await self.lookup("Updater").full_restart_complete()
 
     async def client_ready(self, client, db):
         self._db = db

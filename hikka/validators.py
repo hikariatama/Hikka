@@ -27,15 +27,22 @@ class Validator:
                     "jp": "ヒント",
                 }
                 Use instrumental case with lowercase
+    :param _internal_id: Do not pass anything here, or things will break
     """
 
-    def __init__(self, validator: callable, doc: Union[str, dict] = None):
+    def __init__(
+        self,
+        validator: callable,
+        doc: Union[str, dict] = None,
+        _internal_id: int = None,
+    ):
         self.validate = validator
 
         if isinstance(doc, str):
             doc = {"en": doc}
 
         self.doc = doc
+        self.internal_id = _internal_id
 
 
 def _Boolean(value: Any, /) -> bool:
@@ -55,6 +62,7 @@ def Boolean() -> Validator:
     return Validator(
         _Boolean,
         {"en": "boolean", "ru": "логическим значением"},
+        _internal_id="Boolean",
     )
 
 
@@ -65,7 +73,6 @@ def _Integer(
     digits: int,
     minimum: int,
     maximum: int,
-    positive: bool,
 ) -> Union[int, None]:
     try:
         value = int(value)
@@ -77,12 +84,6 @@ def _Integer(
 
     if maximum is not None and value > maximum:
         raise ValidationError(f"Passed value ({value}) is greater than maximum one")
-
-    if positive is not None:
-        if positive and value < 0:
-            raise ValidationError(f"Passed value ({value}) is not positive")
-        elif not positive and value >= 0:
-            raise ValidationError(f"Passed value ({value}) is not negative")
 
     if digits is not None and len(str(value)) != digits:
         raise ValidationError(
@@ -98,52 +99,44 @@ def Integer(
     digits: Optional[int] = None,
     minimum: Optional[int] = None,
     maximum: Optional[int] = None,
-    positive: Optional[bool] = None,
 ) -> Validator:
     """
-    Checks wheter passed argument is an integer value
+    Checks whether passed argument is an integer value
     :param digits: Digits quantity, which must be passed
     :param minimum: Minimal number to be passed
     :param maximum: Maximum number to be passed
-    :param positive: Whether the number needs to be positive.
-                     If `False` is passed, it is considered that number
-                     needs to be negative. If `True` is passed, it is
-                     considered that number needs to be positive.
     """
-    if digits is not None:
-        doc = {
-            "en": f"number with exactly {digits} digits",
-            "ru": f"числом, в котором {digits} цифр",
-        }
-    else:
-        if positive is None:
-            if minimum is not None:
-                if maximum is None:
-                    doc = {
-                        "en": f"number >{minimum}",
-                        "ru": f"числом >{minimum}",
-                    }
-                else:
-                    doc = {
-                        "en": f"number in range [{minimum}, {maximum}]",
-                        "ru": f"числом в промежутке [{minimum}, {maximum}]",
-                    }
-            else:
-                if maximum is None:
-                    doc = {
-                        "en": "number",
-                        "ru": "числом",
-                    }
-                else:
-                    doc = {
-                        "en": f"number <{maximum}",
-                        "ru": f"числом <{maximum}",
-                    }
+    _sign_en = "positive " if minimum is not None and minimum == 0 else ""
+    _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
+
+    _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
+    _sign_ru = "отрицательным " if maximum is not None and maximum == 0 else _sign_ru
+
+    _digits_en = f" with exactly {digits} digits" if digits is not None else ""
+    _digits_ru = f", в котором ровно {digits} цифр " if digits is not None else ""
+
+    if minimum is not None and minimum != 0:
+        if maximum is None and maximum != 0:
+            doc = {
+                "en": f"{_sign_en}integer greater than {minimum}{_digits_en}",
+                "ru": f"{_sign_ru}целым числом больше {minimum}{_digits_ru}",
+            }
         else:
-            if positive:
-                doc = {"en": "positive number", "ru": "положительным числом"}
-            else:
-                doc = {"en": "negative number", "ru": "отрицательным числом"}
+            doc = {
+                "en": f"{_sign_en}integer from {minimum} to {maximum}{_digits_en}",
+                "ru": f"{_sign_ru}целым числом в промежутке от {minimum} до {maximum}{_digits_ru}",
+            }
+    else:
+        if maximum is None and maximum != 0:
+            doc = {
+                "en": f"{_sign_en}integer{_digits_en}",
+                "ru": f"{_sign_ru}целым числом{_digits_ru}",
+            }
+        else:
+            doc = {
+                "en": f"{_sign_en}integer less than {maximum}{_digits_en}",
+                "ru": f"{_sign_ru}целым числом меньше {maximum}{_digits_ru}",
+            }
 
     return Validator(
         functools.partial(
@@ -151,9 +144,9 @@ def Integer(
             digits=digits,
             minimum=minimum,
             maximum=maximum,
-            positive=positive,
         ),
         doc,
+        _internal_id="Integer",
     )
 
 
@@ -177,6 +170,7 @@ def Choice(possible_values: list, /) -> Validator:
             "en": f"one of the following: {'/'.join(list(map(str, possible_values)))}",
             "ru": f"одним из: {'/'.join(list(map(str, possible_values)))}",
         },
+        _internal_id="Choice",
     )
 
 
@@ -188,6 +182,7 @@ def Series(separator: str = ",") -> Validator:
             "en": f"series of values, separated with «{separator}»",
             "ru": f"списком значений, разделенных «{separator}»",
         },
+        _internal_id="Series",
     )
 
 
@@ -206,6 +201,7 @@ def Link() -> Validator:
             "en": "link",
             "ru": "ссылкой",
         },
+        _internal_id="Link",
     )
 
 
@@ -228,4 +224,78 @@ def String(length: Optional[int] = None) -> Validator:
             "ru": "строкой",
         }
 
-    return Validator(functools.partial(_String, length=length), doc)
+    return Validator(
+        functools.partial(_String, length=length),
+        doc,
+        _internal_id="String",
+    )
+
+
+def _Float(
+    value: Any,
+    /,
+    *,
+    minimum: Optional[float] = None,
+    maximum: Optional[float] = None,
+) -> Union[int, None]:
+    try:
+        value = float(str(value).replace(",", "."))
+    except ValueError:
+        raise ValidationError(f"Passed value ({value}) must be a float")
+
+    if minimum is not None and value < minimum:
+        raise ValidationError(f"Passed value ({value}) is lower than minimum one")
+
+    if maximum is not None and value > maximum:
+        raise ValidationError(f"Passed value ({value}) is greater than maximum one")
+
+    return value
+
+
+def Float(
+    minimum: Optional[float] = None,
+    maximum: Optional[float] = None,
+) -> Validator:
+    """
+    Checks whether passed argument is a float value
+    :param minimum: Minimal number to be passed
+    :param maximum: Maximum number to be passed
+    """
+    _sign_en = "positive " if minimum is not None and minimum == 0 else ""
+    _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
+
+    _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
+    _sign_ru = "отрицательным " if maximum is not None and maximum == 0 else _sign_ru
+
+    if minimum is not None and minimum != 0:
+        if maximum is None and maximum != 0:
+            doc = {
+                "en": f"{_sign_en}float greater than {minimum}",
+                "ru": f"{_sign_ru}дробным числом больше {minimum}",
+            }
+        else:
+            doc = {
+                "en": f"{_sign_en}float from {minimum} to {maximum}",
+                "ru": f"{_sign_ru}дробным числом в промежутке от {minimum} до {maximum}",
+            }
+    else:
+        if maximum is None and maximum != 0:
+            doc = {
+                "en": f"{_sign_en}float",
+                "ru": f"{_sign_ru}дробным числом",
+            }
+        else:
+            doc = {
+                "en": f"{_sign_en}float less than {maximum}",
+                "ru": f"{_sign_ru}дробным числом меньше {maximum}",
+            }
+
+    return Validator(
+        functools.partial(
+            _Float,
+            minimum=minimum,
+            maximum=maximum,
+        ),
+        doc,
+        _internal_id="Float",
+    )

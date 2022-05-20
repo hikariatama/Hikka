@@ -37,6 +37,7 @@ class HikkaConfigMod(loader.Module):
         "validation_error": "🚫 <b>You entered incorrect config value. \nError: {}</b>",
         "try_again": "🔁 Try again",
         "typehint": "🕵️ <b>Must be a {}</b>",
+        "set": "set",
     }
 
     strings_ru = {
@@ -53,6 +54,7 @@ class HikkaConfigMod(loader.Module):
         "validation_error": "🚫 <b>Введено некорректное значение конфига. \nОшибка: {}</b>",
         "try_again": "🔁 Попробовать еще раз",
         "typehint": "🕵️ <b>Должно быть {}</b>",
+        "set": "поставить",
     }
 
     async def client_ready(self, client, db):
@@ -80,10 +82,7 @@ class HikkaConfigMod(loader.Module):
                 reply_markup={
                     "text": self.strings("try_again"),
                     "callback": self.inline__configure_option,
-                    "args": (
-                        mod,
-                        option,
-                    ),
+                    "args": (mod, option),
                 },
             )
             return
@@ -107,6 +106,77 @@ class HikkaConfigMod(loader.Module):
             inline_message_id=inline_message_id,
         )
 
+    async def inline__set_bool(
+        self,
+        call: InlineCall,
+        mod: str,
+        option: str,
+        value: bool,
+    ):
+        try:
+            self.lookup(mod).config[option] = value
+        except loader.validators.ValidationError as e:
+            await call.edit(
+                self.strings("validation_error").format(e.args[0]),
+                reply_markup={
+                    "text": self.strings("try_again"),
+                    "callback": self.inline__configure_option,
+                    "args": (mod, option),
+                },
+            )
+            return
+
+        validator = self.lookup(mod).config._config[option].validator
+        doc = utils.escape_html(
+            validator.doc.get(
+                self._db.get(translations.__name__, "lang", "en"), validator.doc["en"]
+            )
+        )
+
+        current = self.lookup(mod).config[option]
+
+        await call.edit(
+            self.strings("configuring_option").format(
+                utils.escape_html(option),
+                utils.escape_html(mod),
+                utils.escape_html(self.lookup(mod).config.getdoc(option)),
+                utils.escape_html(self.lookup(mod).config.getdef(option)),
+                utils.escape_html(current),
+                self.strings("typehint").format(doc) if doc else "",
+            ),
+            reply_markup=[
+                [
+                    *(
+                        [
+                            {
+                                "text": f"✅ {self.strings('set')} `True`",
+                                "callback": self.inline__set_bool,
+                                "args": (mod, option, True),
+                            }
+                        ]
+                        if not current
+                        else [
+                            {
+                                "text": f"❌ {self.strings('set')} `False`",
+                                "callback": self.inline__set_bool,
+                                "args": (mod, option, False),
+                            }
+                        ]
+                    ),
+                ],
+                [
+                    {
+                        "text": "👈 Back",
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                    },
+                    {"text": "🚫 Close", "callback": self.inline__close},
+                ],
+            ],
+        )
+
+        await call.answer("✅")
+
     async def inline__configure_option(
         self,
         call: InlineCall,
@@ -115,11 +185,58 @@ class HikkaConfigMod(loader.Module):
     ):
         module = self.lookup(mod)
         try:
-            doc = module.config._config[config_opt].validator.doc
-            lang = self._db.get(translations.__name__, "lang", "en")
-            doc = utils.escape_html(doc.get(lang, doc["en"]))
+            validator = module.config._config[config_opt].validator
+            doc = utils.escape_html(
+                validator.doc.get(
+                    self._db.get(translations.__name__, "lang", "en"),
+                    validator.doc["en"],
+                )
+            )
         except Exception:
             doc = None
+            validator = None
+        else:
+            if validator.internal_id == "Boolean":
+                await call.edit(
+                    self.strings("configuring_option").format(
+                        utils.escape_html(config_opt),
+                        utils.escape_html(mod),
+                        utils.escape_html(module.config.getdoc(config_opt)),
+                        utils.escape_html(module.config.getdef(config_opt)),
+                        utils.escape_html(module.config[config_opt]),
+                        self.strings("typehint").format(doc) if doc else "",
+                    ),
+                    reply_markup=[
+                        [
+                            *(
+                                [
+                                    {
+                                        "text": f"✅ {self.strings('set')} `True`",
+                                        "callback": self.inline__set_bool,
+                                        "args": (mod, config_opt, True),
+                                    }
+                                ]
+                                if not module.config[config_opt]
+                                else [
+                                    {
+                                        "text": f"❌ {self.strings('set')} `False`",
+                                        "callback": self.inline__set_bool,
+                                        "args": (mod, config_opt, False),
+                                    }
+                                ]
+                            ),
+                        ],
+                        [
+                            {
+                                "text": "👈 Back",
+                                "callback": self.inline__configure,
+                                "args": (mod,),
+                            },
+                            {"text": "🚫 Close", "callback": self.inline__close},
+                        ],
+                    ],
+                )
+                return
 
         await call.edit(
             self.strings("configuring_option").format(

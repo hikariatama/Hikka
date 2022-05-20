@@ -38,7 +38,7 @@ class HikkaInfoMod(loader.Module):
         "update_required": "😕 Update required </b><code>.update</code><b>",
         "_cfg_cst_msg": "Custom message for info. May contain {me}, {version}, {build}, {prefix}, {platform} keywords",
         "_cfg_cst_btn": "Custom button for info. Leave empty to remove button",
-        "_cfg_banner": "Type `True` in order to disable an image banner",
+        "_cfg_banner": "Set `True` in order to disable an image banner",
     }
 
     strings_ru = {
@@ -53,25 +53,26 @@ class HikkaInfoMod(loader.Module):
         "update_required": "😕 Требуется обновление </b><code>.update</code><b>",
         "_cfg_cst_msg": "Кастомный текст сообщения в info. Может содержать ключевые слова {me}, {version}, {build}, {prefix}, {platform}",
         "_cfg_cst_btn": "Кастомная кнопка в сообщении в info. Оставь пустым, чтобы убрать кнопку",
-        "_cfg_banner": "Впиши `True`, чтобы отключить баннер-картинку",
+        "_cfg_banner": "Поставь `True`, чтобы отключить баннер-картинку",
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "custom_message",
-                "no",
-                lambda: self.strings("_cfg_cst_msg"),
+                doc=lambda: self.strings("_cfg_cst_msg"),
             ),
             loader.ConfigValue(
                 "custom_button",
                 "🌘 Support chat|https://t.me/hikka_talks",
                 lambda: self.strings("_cfg_cst_btn"),
+                validator=loader.validators.Series(separator="|"),
             ),
             loader.ConfigValue(
                 "disable_banner",
                 False,
                 lambda: self.strings("_cfg_banner"),
+                validator=loader.validators.Boolean(),
             ),
         )
 

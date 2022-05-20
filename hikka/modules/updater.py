@@ -26,7 +26,6 @@
 
 import asyncio
 import atexit
-import functools
 import logging
 import os
 import subprocess
@@ -57,7 +56,7 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Restarting...</b>",
         "downloading": "🕐 <b>Downloading updates...</b>",
         "installing": "🕐 <b>Installing updates...</b>",
-        "success": "✅ <b>Restart successful! {}</b>",
+        "success": "🕐 <b>Restart successful! {}</b>\n<i>Loading modules...</i>",
         "origin_cfg_doc": "Git origin URL, for where to update from",
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
@@ -66,6 +65,7 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Cancel",
         "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
+        "full_success": "✅ <b>Userbot is fully loaded! {}</b>",
     }
 
     strings_ru = {
@@ -73,7 +73,8 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Перезагрузка...</b>",
         "downloading": "🕐 <b>Скачивание обновлений...</b>",
         "installing": "🕐 <b>Установка обновлений...</b>",
-        "success": "✅ <b>Перезагрузка успешна! {}</b>",
+        "success": "🕐 <b>Перезагрузка успешна! {}</b>\n<i>Загружаю модули...</i>",
+        "full_success": "✅ <b>Userbot is fully loaded! {}</b>",
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
@@ -160,7 +161,7 @@ class UpdaterMod(loader.Module):
             os.system("lavhost restart")
             return
 
-        atexit.register(functools.partial(restart, *sys.argv[1:]))
+        atexit.register(restart, *sys.argv[1:])
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
         for client in self.allclients:
@@ -296,8 +297,6 @@ class UpdaterMod(loader.Module):
             except Exception:
                 logger.exception("Failed to complete update!")
 
-        self.set("selfupdatemsg", None)
-
         if self.get("do_not_create", False):
             return
 
@@ -346,12 +345,13 @@ class UpdaterMod(loader.Module):
                                 "hikka-assets",
                                 "hikka-backups",
                                 "hikka-acc-switcher",
+                                "silent-tags",
                             }
                             and dialog.is_channel
                             and (
                                 dialog.entity.participants_count == 1
                                 or dialog.entity.participants_count == 2
-                                and dialog.name == "hikka-logs"
+                                and dialog.name in {"hikka-logs", "silent-tags"}
                             )
                             or (
                                 self._client.loader.inline.init_complete
@@ -383,10 +383,30 @@ class UpdaterMod(loader.Module):
 
         self.set("do_not_create", True)
 
-    async def update_complete(self, client):
+    async def update_complete(self, client: "TelegramClient"):  # noqa: F821
         logger.debug("Self update successful! Edit message")
         msg = self.strings("success").format(utils.ascii_face())
         ms = self.get("selfupdatemsg")
+
+        if ":" in str(ms):
+            chat_id, message_id = ms.split(":")
+            chat_id, message_id = int(chat_id), int(message_id)
+            await self._client.edit_message(chat_id, message_id, msg)
+            return
+
+        await self.inline.bot.edit_message_text(
+            inline_message_id=ms,
+            text=msg,
+        )
+
+    async def full_restart_complete(self):
+        msg = self.strings("full_success").format(utils.ascii_face())
+        ms = self.get("selfupdatemsg")
+
+        if ms is None:
+            return
+
+        self.set("selfupdatemsg", None)
 
         if ":" in str(ms):
             chat_id, message_id = ms.split(":")

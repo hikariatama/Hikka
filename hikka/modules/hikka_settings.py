@@ -12,12 +12,14 @@
 
 import logging
 import atexit
-import functools
 import random
 import sys
 import os
-
 from telethon.tl.types import Message
+from telethon.tl.functions.messages import (
+    GetDialogFiltersRequest,
+    UpdateDialogFilterRequest,
+)
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
@@ -69,7 +71,12 @@ class HikkaSettingsMod(loader.Module):
             "disable NoNick!"
         ),
         "reply_required": "🚫 <b>Reply to a message of user, which needs to be added to NoNick</b>",
-        "deauth_confirm": "⚠️ <b>This action will fully remove Hikka from this account and can't be reverted!</b>",
+        "deauth_confirm": (
+            "⚠️ <b>This action will fully remove Hikka from this account and can't be reverted!</b>\n\n"
+            "<i>- Hikka chats will be removed\n"
+            "- Session will be terminated and removed\n"
+            "- Hikka inline bot will be removed</i>"
+        ),
         "deauth_confirm_step2": "⚠️ <b>Are you really sure you want to delete Hikka?</b>",
         "deauth_yes": "I'm sure",
         "deauth_no_1": "I'm not sure",
@@ -77,7 +84,7 @@ class HikkaSettingsMod(loader.Module):
         "deauth_no_3": "I'm struggling to answer",
         "deauth_cancel": "🚫 Cancel",
         "deauth_confirm_btn": "😢 Delete",
-        "undinstall": "😢 <b>Uninstalling Hikka...</b>",
+        "uninstall": "😢 <b>Uninstalling Hikka...</b>",
         "uninstalled": "😢 <b>Hikka uninstalled. Web interface is still active, you can add another account</b>",
         "logs_cleared": "🗑 <b>Logs cleared</b>",
     }
@@ -107,7 +114,14 @@ class HikkaSettingsMod(loader.Module):
         "private_not_allowed": "🚫 <b>Эту команду нужно выполнять в чате</b>",
         "_cmd_doc_watchers": "Показать список смотрителей",
         "_cmd_doc_watcherbl": "<модуль> - Включить\\выключить смотритель в чате",
-        "_cmd_doc_watcher": "<модуль> - Управление глобальными правилами смотрителя\nАргументы:\n[-c - только в чатаъ]\n[-p - только в лс]\n[-o - только исходящие]\n[-i - только входящие]",
+        "_cmd_doc_watcher": (
+            "<модуль> - Управление глобальными правилами смотрителя\n"
+            "Аргументы:\n"
+            "[-c - только в чатах]\n"
+            "[-p - только в лс]\n"
+            "[-o - только исходящие]\n"
+            "[-i - только входящие]"
+        ),
         "_cmd_doc_nonickuser": "Разрешить пользователю выполнять какую-то команду без ника",
         "_cmd_doc_nonickcmd": "Разрешить выполнять определенную команду без ника",
         "_cls_doc": "Дополнительные настройки Hikka",
@@ -117,7 +131,12 @@ class HikkaSettingsMod(loader.Module):
             "отключи глобальный NoNick!"
         ),
         "reply_required": "🚫 <b>Ответь на сообщение пользователя, для которого нужно включить NoNick</b>",
-        "deauth_confirm": "⚠️ <b>Это действие полностью удалит Hikka с этого аккаунта! Его нельзя отменить</b>",
+        "deauth_confirm": (
+            "⚠️ <b>Это действие полностью удалит Hikka с этого аккаунта! Его нельзя отменить</b>\n\n"
+            "<i>- Все чаты, связанные с Hikka будут удалены\n"
+            "- Сессия Hikka будет сброшена\n"
+            "- Инлайн бот Hikka будет удален</i>"
+        ),
         "deauth_confirm_step2": "⚠️ <b>Ты точно уверен, что хочешь удалить Hikka?</b>",
         "deauth_yes": "Я уверен",
         "deauth_no_1": "Я не уверен",
@@ -144,6 +163,58 @@ class HikkaSettingsMod(loader.Module):
     async def _uninstall(self, call: InlineCall):
         await call.edit(self.strings("uninstall"))
 
+        async with self._client.conversation("@BotFather") as conv:
+            for msg in [
+                "/deletebot",
+                self.inline.bot_username,
+                "Yes, I am totally sure.",
+            ]:
+                m = await conv.send_message(msg)
+                r = await conv.get_response()
+
+                logger.debug(f">> {m.raw_text}")
+                logger.debug(f"<< {r.raw_text}")
+
+                await m.delete()
+                await r.delete()
+
+        async for dialog in self._client.iter_dialogs(
+            None,
+            ignore_migrated=True,
+        ):
+            if (
+                dialog.name
+                in {
+                    "hikka-logs",
+                    "hikka-onload",
+                    "hikka-assets",
+                    "hikka-backups",
+                    "hikka-acc-switcher",
+                    "silent-tags",
+                }
+                and dialog.is_channel
+                and (
+                    dialog.entity.participants_count == 1
+                    or dialog.entity.participants_count == 2
+                    and dialog.name in {"hikka-logs", "silent-tags"}
+                )
+                or (
+                    self._client.loader.inline.init_complete
+                    and dialog.entity.id == self._client.loader.inline.bot_id
+                )
+            ):
+                await self._client.delete_dialog(dialog.entity)
+
+        folders = await self._client(GetDialogFiltersRequest())
+
+        if any(folder.title == "hikka" for folder in folders):
+            folder_id = max(
+                folders,
+                key=lambda x: x.id,
+            ).id
+
+            await self._client(UpdateDialogFilterRequest(id=folder_id))
+
         for handler in logging.getLogger().handlers:
             handler.setLevel(logging.CRITICAL)
 
@@ -155,7 +226,7 @@ class HikkaSettingsMod(loader.Module):
             os.system("lavhost restart")
             return
 
-        atexit.register(functools.partial(restart, *sys.argv[1:]))
+        atexit.register(restart, *sys.argv[1:])
         sys.exit(0)
 
     async def _uninstall_confirm_step_2(self, call: InlineCall):
@@ -169,18 +240,13 @@ class HikkaSettingsMod(loader.Module):
                                 "text": self.strings("deauth_yes"),
                                 "callback": self._uninstall,
                             },
-                            {
-                                "text": self.strings("deauth_no_1"),
-                                "callback": self.inline__close,
-                            },
-                            {
-                                "text": self.strings("deauth_no_2"),
-                                "callback": self.inline__close,
-                            },
-                            {
-                                "text": self.strings("deauth_no_3"),
-                                "callback": self.inline__close,
-                            },
+                            *[
+                                {
+                                    "text": self.strings(f"deauth_no_{i}"),
+                                    "callback": self.inline__close,
+                                }
+                                for i in range(1, 4)
+                            ],
                         ],
                         key=lambda _: random.random(),
                     )
@@ -224,7 +290,9 @@ class HikkaSettingsMod(loader.Module):
         """List current watchers"""
         watchers, disabled_watchers = self.get_watchers()
         watchers = [
-            f"♻️ {watcher}" for watcher in watchers if watcher not in list(disabled_watchers.keys())
+            f"♻️ {watcher}"
+            for watcher in watchers
+            if watcher not in list(disabled_watchers.keys())
         ]
         watchers += [f"💢 {k} {v}" for k, v in disabled_watchers.items()]
         await utils.answer(
@@ -235,14 +303,16 @@ class HikkaSettingsMod(loader.Module):
         """<module> - Toggle watcher in current chat"""
         args = utils.get_args_raw(message)
         if not args:
-            return await utils.answer(message, self.strings("args"))
+            await utils.answer(message, self.strings("args"))
+            return
 
         watchers, disabled_watchers = self.get_watchers()
 
-        if args.lower() not in [watcher.lower() for watcher in watchers]:
-            return await utils.answer(message, self.strings("mod404").format(args))
+        if args.lower() not in map(lambda x: x.lower(), watchers):
+            await utils.answer(message, self.strings("mod404").format(args))
+            return
 
-        args = [watcher for watcher in watchers if watcher.lower() == args.lower()][0]
+        args = next((x.lower() == args.lower() for x in watchers), False)
 
         current_bl = [
             v for k, v in disabled_watchers.items() if k.lower() == args.lower()
@@ -252,7 +322,7 @@ class HikkaSettingsMod(loader.Module):
         chat = utils.get_chat_id(message)
         if chat not in current_bl:
             if args in disabled_watchers:
-                for k, _ in disabled_watchers.items():
+                for k in disabled_watchers:
                     if k.lower() == args.lower():
                         disabled_watchers[k].append(chat)
                         break
@@ -401,10 +471,12 @@ class HikkaSettingsMod(loader.Module):
         """Allow certain command to be executed without nickname"""
         args = utils.get_args_raw(message)
         if not args:
-            return await utils.answer(message, self.strings("no_cmd"))
+            await utils.answer(message, self.strings("no_cmd"))
+            return
 
         if args not in self.allmodules.commands:
-            return await utils.answer(message, self.strings("cmd404"))
+            await utils.answer(message, self.strings("cmd404"))
+            return
 
         nn = self._db.get(main.__name__, "nonickcmds", [])
         if args not in nn:
@@ -413,7 +485,8 @@ class HikkaSettingsMod(loader.Module):
             await utils.answer(
                 message,
                 self.strings("cmd_nn").format(
-                    self._db.get(main.__name__, "command_prefix", ".") + args, "on"
+                    self.get_prefix() + args,
+                    "on",
                 ),
             )
         else:
@@ -421,7 +494,7 @@ class HikkaSettingsMod(loader.Module):
             await utils.answer(
                 message,
                 self.strings("cmd_nn").format(
-                    self._db.get(main.__name__, "command_prefix", ".") + args,
+                    self.get_prefix() + args,
                     "off",
                 ),
             )
@@ -431,11 +504,7 @@ class HikkaSettingsMod(loader.Module):
     async def inline__setting(self, call: InlineCall, key: str, state: bool):
         self._db.set(main.__name__, key, state)
 
-        if (
-            key == "no_nickname"
-            and state
-            and self._db.get(main.__name__, "command_prefix", ".") == "."
-        ):
+        if key == "no_nickname" and state and self.get_prefix() == ".":
             await call.answer(
                 self.strings("nonick_warning"),
                 show_alert=True,
@@ -488,8 +557,9 @@ class HikkaSettingsMod(loader.Module):
 
         await call.answer("You userbot is being restarted...", show_alert=True)
         await call.delete()
-        m = await self._client.send_message("me", f"{self.get_prefix()}restart --force")
-        await self.allmodules.commands["restart"](m)
+        await self.allmodules.commands["restart"](
+            await self._client.send_message("me", f"{self.get_prefix()}restart --force")
+        )
 
     def _get_settings_markup(self) -> list:
         return [
