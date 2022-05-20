@@ -652,7 +652,6 @@ class Modules:
                     for mod in self.modules
                 ]
             )
-            await asyncio.gather(*[mod._client_ready2(client, db) for mod in self.modules])  # fmt: skip
         except Exception as e:
             logger.exception(f"Failed to send mod init complete signal due to {e}")
 

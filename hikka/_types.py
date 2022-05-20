@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional, Union
 from .inline.types import *  # noqa: F401, F403
-from . import validators
+from . import validators  # noqa: F401
 
 from telethon.tl.types import Message
 
@@ -23,9 +23,6 @@ class Module:
 
     async def on_unload(self):
         """Called after unloading / reloading module"""
-
-    async def _client_ready2(self, client, db):
-        """Called after client_ready, for internal use only. Must not be used by non-core modules"""
 
     async def on_dlmod(self, client, db):
         """
@@ -71,8 +68,10 @@ class ModuleConfig(dict):
 
     def __init__(self, *entries):
         if all(isinstance(entry, ConfigValue) for entry in entries):
+            # New config format processing
             self._config = {config.option: config for config in entries}
         else:
+            # Legacy config processing
             keys = []
             values = []
             defaults = []
@@ -152,5 +151,10 @@ class ConfigValue:
                 value = ast.literal_eval(value)
             except Exception:
                 pass
+
+            # Convert value to list if it's tuple just not to mess up
+            # with json convertations
+            if isinstance(value, (set, tuple)):
+                value = list(value)
 
         object.__setattr__(self, key, value)

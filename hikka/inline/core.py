@@ -44,6 +44,19 @@ class InlineManager(
     List,
     BotPM,
 ):
+    _forms = {}
+    _galleries = {}
+    _lists = {}
+    _custom_map = {}
+
+    fsm = {}
+
+    _web_auth_tokens = []
+
+    _markup_ttl = 60 * 60 * 24
+
+    init_complete = False
+
     def __init__(
         self,
         client: "TelegramClient",  # noqa: F821
@@ -56,19 +69,6 @@ class InlineManager(
         self._allmodules = allmodules
 
         self._token = db.get("hikka.inline", "bot_token", False)
-
-        self._forms = {}
-        self._galleries = {}
-        self._lists = {}
-        self._custom_map = {}
-
-        self.fsm = {}
-
-        self._web_auth_tokens = []
-
-        self._markup_ttl = 60 * 60 * 24
-
-        self.init_complete = False
 
     async def _cleaner(self):
         """Cleans outdated _forms"""
@@ -116,8 +116,9 @@ class InlineManager(
 
         # Get bot username to call inline queries
         try:
-            self.bot_username = (await self.bot.get_me()).username
-            self.bot_id = (await self.bot.get_me()).id
+            bot_me = await self.bot.get_me()
+            self.bot_username = bot_me.username
+            self.bot_id = bot_me.id
         except Unauthorized:
             logger.critical("Token expired, revoking...")
             return await self._dp_revoke_token(False)

@@ -11,7 +11,7 @@
 # scope: inline
 
 import logging
-from typing import Union
+from typing import Union, Any
 
 from telethon.tl.types import Message
 
@@ -66,6 +66,16 @@ class HikkaConfigMod(loader.Module):
     async def inline__close(call: InlineCall):
         await call.delete()
 
+    @staticmethod
+    def prep_value(value: Any) -> Any:
+        if isinstance(value, str):
+            return value.strip()
+
+        if isinstance(value, list) and value:
+            return ", ".join(list(map(str, value)))
+
+        return value
+
     async def inline__set_config(
         self,
         call: InlineCall,
@@ -91,7 +101,7 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
-                utils.escape_html(query),
+                utils.escape_html(self.prep_value(self.lookup(mod).config[option])),
             ),
             reply_markup=[
                 [
@@ -140,8 +150,10 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(option),
                 utils.escape_html(mod),
                 utils.escape_html(self.lookup(mod).config.getdoc(option)),
-                utils.escape_html(self.lookup(mod).config.getdef(option)),
-                utils.escape_html(current),
+                utils.escape_html(
+                    self.prep_value(self.lookup(mod).config.getdef(option))
+                ),
+                utils.escape_html(self.prep_value(current)),
                 self.strings("typehint").format(doc) if doc else "",
             ),
             reply_markup=[
@@ -202,8 +214,10 @@ class HikkaConfigMod(loader.Module):
                         utils.escape_html(config_opt),
                         utils.escape_html(mod),
                         utils.escape_html(module.config.getdoc(config_opt)),
-                        utils.escape_html(module.config.getdef(config_opt)),
-                        utils.escape_html(module.config[config_opt]),
+                        utils.escape_html(
+                            self.prep_value(module.config.getdef(config_opt))
+                        ),
+                        utils.escape_html(self.prep_value(module.config[config_opt])),
                         self.strings("typehint").format(doc) if doc else "",
                     ),
                     reply_markup=[
@@ -243,8 +257,8 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(config_opt),
                 utils.escape_html(mod),
                 utils.escape_html(module.config.getdoc(config_opt)),
-                utils.escape_html(module.config.getdef(config_opt)),
-                utils.escape_html(module.config[config_opt]),
+                utils.escape_html(self.prep_value(module.config.getdef(config_opt))),
+                utils.escape_html(self.prep_value(module.config[config_opt])),
                 self.strings("typehint").format(doc) if doc else "",
             ),
             reply_markup=[
@@ -348,6 +362,6 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                utils.escape_html(value),
+                utils.escape_html(self.prep_value(instance.config[option])),
             ),
         )

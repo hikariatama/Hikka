@@ -212,13 +212,13 @@ class LoaderMod(loader.Module):
             loader.ConfigValue(
                 "ADDITIONAL_REPOS",
                 # Currenly the trusted developers are specified
-                (
-                    "https://github.com/hikariatama/host/raw/master/|"
-                    "https://github.com/MoriSummerz/ftg-mods/raw/main/|"
-                    "https://gitlab.com/CakesTwix/friendly-userbot-modules/-/raw/master/"
-                ),
+                [
+                    "https://github.com/hikariatama/host/raw/master/",
+                    "https://github.com/MoriSummerz/ftg-mods/raw/main/",
+                    "https://gitlab.com/CakesTwix/friendly-userbot-modules/-/raw/master/",
+                ],
                 lambda: self.strings("add_repo_config_doc"),
-                validator=loader.validators.Series(separator="|"),
+                validator=loader.validators.Series(validator=loader.validators.Link()),
             ),
         )
 
@@ -335,8 +335,7 @@ class LoaderMod(loader.Module):
                 )
             }
             for repo_id, repo in enumerate(
-                [self.config["MODULES_REPO"]]
-                + self.config["ADDITIONAL_REPOS"].split("|")
+                [self.config["MODULES_REPO"]] + self.config["ADDITIONAL_REPOS"]
             )
             if repo.startswith("http")
         }
@@ -867,11 +866,11 @@ class LoaderMod(loader.Module):
 
         aliases = {
             alias: cmd
-            for alias, cmd in self.get("aliases", {}).items()
+            for alias, cmd in self.lookup("settings").get("aliases", {}).items()
             if self.allmodules.add_alias(alias, cmd)
         }
 
-        self.set("aliases", aliases)
+        self.lookup("settings").set("aliases", aliases)
 
         self._fully_loaded = True
 
@@ -899,20 +898,18 @@ class LoaderMod(loader.Module):
             )
 
         asyncio.ensure_future(self._update_modules())
-        asyncio.ensure_future(self._modules_config_autosaver())
 
+    @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _modules_config_autosaver(self):
-        while True:
-            await asyncio.sleep(3)
-            for mod in self.allmodules.modules:
-                if not hasattr(mod, "config") or not mod.config:
+        for mod in self.allmodules.modules:
+            if not hasattr(mod, "config") or not mod.config:
+                continue
+
+            for option, config in mod.config._config.items():
+                if not hasattr(config, "_save_marker"):
                     continue
 
-                for option, config in mod.config._config.items():
-                    if not hasattr(config, "_save_marker"):
-                        continue
-
-                    delattr(mod.config._config[option], "_save_marker")
-                    self._db.setdefault(mod.__class__.__name__, {},).setdefault(
-                        "__config__", {}
-                    )[option] = config.value
+                delattr(mod.config._config[option], "_save_marker")
+                self._db.setdefault(mod.__class__.__name__, {},).setdefault(
+                    "__config__", {}
+                )[option] = config.value

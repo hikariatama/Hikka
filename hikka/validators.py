@@ -75,7 +75,7 @@ def _Integer(
     maximum: int,
 ) -> Union[int, None]:
     try:
-        value = int(value)
+        value = int(str(value).strip())
     except ValueError:
         raise ValidationError(f"Passed value ({value}) must be a number")
 
@@ -174,13 +174,39 @@ def Choice(possible_values: list, /) -> Validator:
     )
 
 
-def Series(separator: str = ",") -> Validator:
-    """Just a placeholder to let user know about the format of input data for config value"""
+def _Series(value: Any, /, *, validator: Optional[Validator]):
+    if isinstance(value, str):
+        value = value.split(",")
+
+    if isinstance(validator, Validator):
+        for i, item in enumerate(value):
+            try:
+                value[i] = validator.validate(
+                    item.strip() if isinstance(item, str) else item
+                )
+            except ValidationError:
+                raise ValidationError(
+                    f"Passed value ({value}) contains invalid item ({str(item).strip()}), which must be {validator.doc['en']}"
+                )
+
+    return value
+
+
+def Series(validator: Optional[Validator] = None) -> Validator:
+    """
+    Represents the series of value (simply `list`)
+    :param separator: With which separator values must be separated
+    :param validator: Internal validator for each sequence value
+    """
+
+    _each_en = f" (each must be {validator.doc['en']})" if validator is not None else ""
+    _each_ru = f" (каждое должно быть {validator.doc['ru']})" if validator is not None else ""  # fmt: skip
+
     return Validator(
-        lambda value: value,
+        functools.partial(_Series, validator=validator),
         {
-            "en": f"series of values, separated with «{separator}»",
-            "ru": f"списком значений, разделенных «{separator}»",
+            "en": f"series of values{_each_en}, separated with «,»",
+            "ru": f"списком значений{_each_ru}, разделенных «,»",
         },
         _internal_id="Series",
     )
@@ -239,7 +265,7 @@ def _Float(
     maximum: Optional[float] = None,
 ) -> Union[int, None]:
     try:
-        value = float(str(value).replace(",", "."))
+        value = float(str(value).strip().replace(",", "."))
     except ValueError:
         raise ValidationError(f"Passed value ({value}) must be a float")
 
@@ -298,4 +324,26 @@ def Float(
         ),
         doc,
         _internal_id="Float",
+    )
+
+
+def _TelegramID(value: Any, /):
+    e = ValidationError(f"Passed value ({value}) is not a valid telegram id")
+
+    try:
+        value = int(str(value).strip())
+    except Exception:
+        raise e
+
+    if value > 2**32 - 1 or value < -(2**32) + 1:
+        raise e
+
+    return value
+
+
+def TelegramID() -> Validator:
+    return Validator(
+        _TelegramID,
+        "Telegram ID",
+        _internal_id="TelegramID",
     )

@@ -344,12 +344,3 @@ class CoreMod(loader.Module):
         self._db.clear()
         self._db.save()
         await utils.answer(message, self.strings("db_cleared"))
-
-    async def _client_ready2(self, client, db):  # skicpq: PYL-W0613
-        ret = {
-            alias: cmd
-            for alias, cmd in db.get(__name__, "aliases", {}).items()
-            if self.allmodules.add_alias(alias, cmd)
-        }
-
-        db.set(__name__, "aliases", ret)
