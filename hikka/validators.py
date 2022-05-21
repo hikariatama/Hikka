@@ -187,20 +187,26 @@ def _Series(
         value = value.split(",")
 
     if min_len is not None and len(value) < min_len:
-        raise ValidationError(f"Passed value ({value}) contains less than {min_len} items")
-    
+        raise ValidationError(
+            f"Passed value ({value}) contains less than {min_len} items"
+        )
+
     if max_len is not None and len(value) > max_len:
-        raise ValidationError(f"Passed value ({value}) contains more than {max_len} items")
+        raise ValidationError(
+            f"Passed value ({value}) contains more than {max_len} items"
+        )
 
     if fixed_len is not None and len(value) != fixed_len:
-        raise ValidationError(f"Passed value ({value}) must contain exactly {fixed_len} items")
+        raise ValidationError(
+            f"Passed value ({value}) must contain exactly {fixed_len} items"
+        )
+
+    value = [item.strip() if isinstance(item, str) else item for item in value]
 
     if isinstance(validator, Validator):
         for i, item in enumerate(value):
             try:
-                value[i] = validator.validate(
-                    item.strip() if isinstance(item, str) else item
-                )
+                value[i] = validator.validate(item)
             except ValidationError:
                 raise ValidationError(
                     f"Passed value ({value}) contains invalid item ({str(item).strip()}), which must be {validator.doc['en']}"
