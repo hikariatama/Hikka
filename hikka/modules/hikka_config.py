@@ -312,7 +312,7 @@ class HikkaConfigMod(loader.Module):
         to_config = [
             mod.strings("name")
             for mod in self.allmodules.modules
-            if hasattr(mod, "config")
+            if hasattr(mod, "config") and callable(mod.strings)
         ]
         kb = []
         for mod_row in utils.chunks(to_config, 3):

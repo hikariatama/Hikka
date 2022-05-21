@@ -46,7 +46,7 @@ class CoreMod(loader.Module):
         "prefix_incorrect": "🚫 <b>Prefix must be one symbol in length</b>",
         "prefix_set": "✅ <b>Command prefix updated. Type</b> <code>{newprefix}setprefix {oldprefix}</code> <b>to change it back</b>",
         "alias_created": "✅ <b>Alias created. Access it with</b> <code>{}</code>",
-        "aliases": "<b>Aliases:</b>\n",
+        "aliases": "<b>🔗 Aliases:</b>\n",
         "no_command": "🚫 <b>Command</b> <code>{}</code> <b>does not exist</b>",
         "alias_args": "🚫 <b>You must provide a command and the alias for it</b>",
         "delalias_args": "🚫 <b>You must provide the alias name</b>",
@@ -72,7 +72,7 @@ class CoreMod(loader.Module):
         "prefix_incorrect": "🚫 <b>Префикс должен состоять только из одного символа</b>",
         "prefix_set": "✅ <b>Префикс обновлен. Чтобы вернуть его, используй</b> <code>{newprefix}setprefix {oldprefix}</code>",
         "alias_created": "✅ <b>Алиас создан. Используй его через</b> <code>{}</code>",
-        "aliases": "<b>Алиасы:</b>\n",
+        "aliases": "<b>🔗 Алиасы:</b>\n",
         "no_command": "🚫 <b>Команда</b> <code>{}</code> <b>не существует</b>",
         "alias_args": "🚫 <b>Требуется ввести команду и алиас для нее</b>",
         "delalias_args": "🚫 <b>Требуется имя алиаса</b>",
@@ -232,7 +232,7 @@ class CoreMod(loader.Module):
         aliases = self.allmodules.aliases
         string = self.strings("aliases")
 
-        string += "\n".join([f"\n{i}: {y}" for i, y in aliases.items()])
+        string += "\n".join([f"▫️ <code>{i}</code> &lt;- {y}" for i, y in aliases.items()])
 
         await utils.answer(message, string)
 
