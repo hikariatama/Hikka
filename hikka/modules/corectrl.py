@@ -249,11 +249,10 @@ class CoreMod(loader.Module):
         ret = self.allmodules.add_alias(alias, cmd)
 
         if ret:
-            self._db.set(
-                __name__,
+            self.set(
                 "aliases",
                 {
-                    **self._db.get(__name__, "aliases"),
+                    **self.get("aliases", {}),
                     alias: cmd,
                 },
             )
@@ -277,21 +276,22 @@ class CoreMod(loader.Module):
             return
 
         alias = args[0]
-        ret = self.allmodules.remove_alias(alias)
+        removed = self.allmodules.remove_alias(alias)
 
-        if ret:
-            current = self._db.get(__name__, "aliases")
-            del current[alias]
-            self._db.set(__name__, "aliases", current)
-            await utils.answer(
-                message,
-                self.strings("alias_removed").format(utils.escape_html(alias)),
-            )
-        else:
+        if not removed:
             await utils.answer(
                 message,
                 self.strings("no_alias").format(utils.escape_html(alias)),
             )
+            return
+
+        current = self.get("aliases", {})
+        del current[alias]
+        self.set("aliases", current)
+        await utils.answer(
+            message,
+            self.strings("alias_removed").format(utils.escape_html(alias)),
+        )
 
     async def dllangpackcmd(self, message: Message):
         """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""

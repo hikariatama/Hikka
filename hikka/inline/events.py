@@ -104,17 +104,17 @@ class Events(InlineUnit):
                         InlineQueryResultArticle(
                             id=utils.rand(20),
                             title=res["title"],
-                            description=res.get("description", None),
+                            description=res.get("description"),
                             input_message_content=InputTextMessageContent(
                                 res["message"],
                                 "HTML",
                                 disable_web_page_preview=True,
                             ),
-                            thumb_url=res.get("thumb", None),
+                            thumb_url=res.get("thumb"),
                             thumb_width=128,
                             thumb_height=128,
                             reply_markup=self.generate_markup(
-                                res.get("reply_markup", None)
+                                res.get("reply_markup")
                             ),
                         )
                     ]
@@ -122,14 +122,14 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultPhoto(
                             id=utils.rand(20),
-                            title=res.get("title", None),
-                            description=res.get("description", None),
-                            caption=res.get("caption", None),
+                            title=res.get("title"),
+                            description=res.get("description"),
+                            caption=res.get("caption"),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["photo"]),
                             photo_url=res["photo"],
                             reply_markup=self.generate_markup(
-                                res.get("reply_markup", None)
+                                res.get("reply_markup")
                             ),
                         )
                     ]
@@ -137,13 +137,13 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultGif(
                             id=utils.rand(20),
-                            title=res.get("title", None),
-                            caption=res.get("caption", None),
+                            title=res.get("title"),
+                            caption=res.get("caption"),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["gif"]),
                             gif_url=res["gif"],
                             reply_markup=self.generate_markup(
-                                res.get("reply_markup", None)
+                                res.get("reply_markup")
                             ),
                         )
                     ]
@@ -151,15 +151,15 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultVideo(
                             id=utils.rand(20),
-                            title=res.get("title", None),
-                            description=res.get("description", None),
-                            caption=res.get("caption", None),
+                            title=res.get("title"),
+                            description=res.get("description"),
+                            caption=res.get("caption"),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["video"]),
                             video_url=res["video"],
                             mime_type="video/mp4",
                             reply_markup=self.generate_markup(
-                                res.get("reply_markup", None)
+                                res.get("reply_markup")
                             ),
                         )
                     ]
@@ -167,15 +167,15 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultDocument(
                             id=utils.rand(20),
-                            title=res.get("title", None),
-                            description=res.get("description", None),
-                            caption=res.get("caption", None),
+                            title=res.get("title"),
+                            description=res.get("description"),
+                            caption=res.get("caption"),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["file"]),
                             document_url=res["file"],
                             mime_type=res["mime_type"],
                             reply_markup=self.generate_markup(
-                                res.get("reply_markup", None)
+                                res.get("reply_markup")
                             ),
                         )
                     ]
@@ -220,7 +220,7 @@ class Events(InlineUnit):
 
         for form_uid, form in self._forms.copy().items():
             for button in utils.array_sum(form.get("buttons", [])):
-                if button.get("_callback_data", None) == query.data:
+                if button.get("_callback_data") == query.data:
                     if (
                         button.get("disable_security", False)
                         or form.get("disable_security", False)
@@ -378,7 +378,7 @@ class Events(InlineUnit):
                         title="Show available inline commands",
                         description="You have no available commands",
                         input_message_content=InputTextMessageContent(
-                            "<b>😔 There is no available inline commands or you lack access to them</b>",
+                            "<b>😔 There are no available inline commands or you lack access to them</b>",
                             "HTML",
                             disable_web_page_preview=True,
                         ),

@@ -31,6 +31,7 @@ import os
 import subprocess
 import sys
 from typing import Union
+import time
 
 import git
 from git import GitCommandError, Repo
@@ -56,7 +57,7 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Restarting...</b>",
         "downloading": "🕐 <b>Downloading updates...</b>",
         "installing": "🕐 <b>Installing updates...</b>",
-        "success": "🕐 <b>Restart successful! {}</b>\n<i>Loading modules...</i>",
+        "success": "⏳ <b>Restart successful! {}</b>\n<i>But still loading modules...</i>\n<i>Restart took {}s</i>",
         "origin_cfg_doc": "Git origin URL, for where to update from",
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
@@ -65,7 +66,7 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Cancel",
         "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
-        "full_success": "✅ <b>Userbot is fully loaded! {}</b>",
+        "full_success": "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>",
     }
 
     strings_ru = {
@@ -73,8 +74,8 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Перезагрузка...</b>",
         "downloading": "🕐 <b>Скачивание обновлений...</b>",
         "installing": "🕐 <b>Установка обновлений...</b>",
-        "success": "🕐 <b>Перезагрузка успешна! {}</b>\n<i>Загружаю модули...</i>",
-        "full_success": "✅ <b>Юзербот полностью загружен! {}</b>",
+        "success": "⏳ <b>Перезагрузка успешна! {}</b>\n<i>Но модули еще загружаются...</i>\n<i>Перезагрузка заняла {} сек</i>",
+        "full_success": "✅ <b>Юзербот полностью загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>",
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
@@ -92,9 +93,12 @@ class UpdaterMod(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "GIT_ORIGIN_URL",
-            "https://github.com/hikariatama/Hikka",
-            lambda: self.strings("origin_cfg_doc"),
+            loader.ConfigValue(
+                "GIT_ORIGIN_URL",
+                "https://github.com/hikariatama/Hikka",
+                lambda: self.strings("origin_cfg_doc"),
+                validator=loader.validators.Link(),
+            )
         )
 
     @loader.owner
@@ -156,6 +160,8 @@ class UpdaterMod(loader.Module):
         )
 
         await self.process_restart_message(msg_obj)
+
+        self.set("restart_ts", time.time())
 
         if "LAVHOST" in os.environ:
             os.system("lavhost restart")
@@ -355,10 +361,15 @@ class UpdaterMod(loader.Module):
                             )
                             or (
                                 self._client.loader.inline.init_complete
-                                and dialog.entity.id == self._client.loader.inline.bot_id
+                                and dialog.entity.id
+                                == self._client.loader.inline.bot_id
                             )
                             or dialog.entity.id
-                            in [1554874075, 1697279580, 1679998924]  # official hikka chats
+                            in [
+                                1554874075,
+                                1697279580,
+                                1679998924,
+                            ]  # official hikka chats
                         ],
                         emoticon="🐱",
                         exclude_peers=[],
@@ -385,7 +396,13 @@ class UpdaterMod(loader.Module):
 
     async def update_complete(self, client: "TelegramClient"):  # noqa: F821
         logger.debug("Self update successful! Edit message")
-        msg = self.strings("success").format(utils.ascii_face())
+        start = self.get("restart_ts")
+        try:
+            took = round(time.time() - start)
+        except Exception:
+            took = "n/a"
+
+        msg = self.strings("success").format(utils.ascii_face(), took)
         ms = self.get("selfupdatemsg")
 
         if ":" in str(ms):
@@ -400,8 +417,17 @@ class UpdaterMod(loader.Module):
         )
 
     async def full_restart_complete(self):
-        msg = self.strings("full_success").format(utils.ascii_face())
+
+        start = self.get("restart_ts")
+        try:
+            took = round(time.time() - start)
+        except Exception:
+            took = "n/a"
+
+        self.set("restart_ts", None)
         ms = self.get("selfupdatemsg")
+
+        msg = self.strings("full_success").format(utils.ascii_face(), took)
 
         if ms is None:
             return

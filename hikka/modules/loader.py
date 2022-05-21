@@ -129,7 +129,7 @@ class LoaderMod(loader.Module):
         "provide_module": "<b>⚠️ Provide a module to load</b>",
         "bad_unicode": "<b>🚫 Invalid Unicode formatting in module</b>",
         "load_failed": "<b>🚫 Loading failed. See logs for details</b>",
-        "loaded": "<b>🔭 Module </b><code>{}</code>{}<b> loaded {}</b>{}",
+        "loaded": "<b>🔭 Module </b><code>{}</code>{}<b> loaded {}</b>{}{}{}",
         "no_class": "<b>What class needs to be unloaded?</b>",
         "unloaded": "<b>🧹 Module unloaded.</b>",
         "not_unloaded": "<b>🚫 Module not unloaded.</b>",
@@ -156,12 +156,14 @@ class LoaderMod(loader.Module):
         "save_for_all": "💽 Always save to fs",
         "never_save": "🚫 Never save to fs",
         "will_save_fs": "💽 Now all modules, loaded with .loadmod will be saved to filesystem",
-        "add_repo_config_doc": "Additional repos to load from, separated with «|»",
+        "add_repo_config_doc": "Additional repos to load from",
+        "share_link_doc": "Share module link in result message of .dlmod",
+        "modlink": "\n🌍 <b>Link: </b><code>{}</code>",
     }
 
     strings_ru = {
         "repo_config_doc": "Ссылка для загрузки модулей",
-        "add_repo_config_doc": "Дополнительные репозитории, разделенные «|»",
+        "add_repo_config_doc": "Дополнительные репозитории",
         "avail_header": "<b>📲 Официальные модули из репозитория</b>",
         "select_preset": "<b>⚠️ Выбери пресет</b>",
         "no_preset": "<b>🚫 Пресет не найден</b>",
@@ -171,7 +173,7 @@ class LoaderMod(loader.Module):
         "provide_module": "<b>⚠️ Укажи модуль для загрузки</b>",
         "bad_unicode": "<b>🚫 Неверная кодировка модуля</b>",
         "load_failed": "<b>🚫 Загрузка не увенчалась успехом. Смотри логи.</b>",
-        "loaded": "<b>🔭 Модуль </b><code>{}</code>{}<b> загружен {}</b>{}",
+        "loaded": "<b>🔭 Модуль </b><code>{}</code>{}<b> загружен {}</b>{}{}{}",
         "no_class": "<b>А что выгружать то?</b>",
         "unloaded": "<b>🧹 Модуль выгружен.</b>",
         "not_unloaded": "<b>🚫 Модуль не выгружен.</b>",
@@ -199,6 +201,8 @@ class LoaderMod(loader.Module):
         "_cmd_doc_unloadmod": "Выгружает (удаляет) модуль",
         "_cmd_doc_clearmodules": "Выгружает все установленные модули",
         "_cls_doc": "Загружает модули",
+        "share_link_doc": "Указывать ссылку на модуль после загрузки через .dlmod",
+        "modlink": "\n🌍 <b>Ссылка: </b><code>{}</code>",
     }
 
     def __init__(self):
@@ -219,6 +223,12 @@ class LoaderMod(loader.Module):
                 ],
                 lambda: self.strings("add_repo_config_doc"),
                 validator=loader.validators.Series(validator=loader.validators.Link()),
+            ),
+            loader.ConfigValue(
+                "share_link",
+                False,
+                lambda: self.strings("share_link_doc"),
+                validator=loader.validators.Boolean(),
             ),
         )
 
@@ -365,7 +375,7 @@ class LoaderMod(loader.Module):
                     url = next(
                         link
                         for link in links
-                        if link.lower().endswith(f"{module_name.lower()}.py")
+                        if link.lower().endswith(f"/{module_name.lower()}.py")
                     )
                 except Exception:
                     if message is not None:
@@ -382,6 +392,7 @@ class LoaderMod(loader.Module):
                 return False
 
             r.raise_for_status()
+
             return await self.load_module(
                 r.content.decode("utf-8"),
                 message,
@@ -734,87 +745,98 @@ class LoaderMod(loader.Module):
 
             return
 
-        if message is not None:
-            try:
-                modname = instance.strings("name")
-            except KeyError:
-                modname = getattr(instance, "name", "ERROR")
+        for alias, cmd in self.lookup("settings").get("aliases", {}).items():
+            if cmd in instance.commands:
+                self.allmodules.add_alias(alias, cmd)
 
-            modhelp = ""
+        if message is None:
+            return
 
-            if instance.__doc__:
-                modhelp += (
-                    f"<i>\nℹ️ {utils.escape_html(inspect.getdoc(instance))}</i>\n"
-                )
+        try:
+            modname = instance.strings("name")
+        except KeyError:
+            modname = getattr(instance, "name", "ERROR")
 
-            if any(
-                line.replace(" ", "") == "#scope:disable_onload_docs"
-                for line in doc.splitlines()
-            ):
-                await utils.answer(
-                    message,
-                    self.strings("loaded").format(
-                        modname.strip(),
-                        version,
-                        utils.ascii_face(),
-                        modhelp,
+        modhelp = ""
+
+        if instance.__doc__:
+            modhelp += f"<i>\nℹ️ {utils.escape_html(inspect.getdoc(instance))}</i>\n"
+
+        if any(
+            line.replace(" ", "") == "#scope:disable_onload_docs"
+            for line in doc.splitlines()
+        ):
+            await utils.answer(
+                message,
+                self.strings("loaded").format(
+                    modname.strip(),
+                    version,
+                    utils.ascii_face(),
+                    modhelp,
+                    developer,
+                    self.strings("modlink").format(origin)
+                    if origin != "<string>"
+                    else "",
+                ),
+            )
+            return
+
+        for _name, fun in sorted(
+            instance.commands.items(),
+            key=lambda x: x[0],
+        ):
+            modhelp += self.strings("single_cmd").format(
+                self.get_prefix(),
+                _name,
+                (
+                    utils.escape_html(inspect.getdoc(fun))
+                    if fun.__doc__
+                    else self.strings("undoc_cmd")
+                ),
+            )
+
+        if self.inline.init_complete:
+            if hasattr(instance, "inline_handlers"):
+                for _name, fun in sorted(
+                    instance.inline_handlers.items(),
+                    key=lambda x: x[0],
+                ):
+                    modhelp += self.strings("ihandler").format(
+                        f"@{self.inline.bot_username} {_name}",
+                        (
+                            utils.escape_html(inspect.getdoc(fun))
+                            if fun.__doc__
+                            else self.strings("undoc_ihandler")
+                        ),
                     )
-                    + developer,
-                )
-                return
 
-            for _name, fun in sorted(
-                instance.commands.items(),
-                key=lambda x: x[0],
-            ):
-                modhelp += self.strings("single_cmd").format(
-                    self.get_prefix(),
-                    _name,
-                    (
-                        utils.escape_html(inspect.getdoc(fun))
-                        if fun.__doc__
-                        else self.strings("undoc_cmd")
-                    ),
+        try:
+            await utils.answer(
+                message,
+                self.strings("loaded").format(
+                    modname.strip(),
+                    version,
+                    utils.ascii_face(),
+                    modhelp,
+                    developer,
+                    self.strings("modlink").format(origin)
+                    if origin != "<string>"
+                    else "",
+                ),
+            )
+        except telethon.errors.rpcerrorlist.MediaCaptionTooLongError:
+            await message.reply(
+                self.strings("loaded").format(
+                    modname.strip(),
+                    version,
+                    utils.ascii_face(),
+                    modhelp,
+                    developer,
+                    self.strings("modlink").format(origin)
+                    if origin != "<string>"
+                    else "",
                 )
-
-            if self.inline.init_complete:
-                if hasattr(instance, "inline_handlers"):
-                    for _name, fun in sorted(
-                        instance.inline_handlers.items(),
-                        key=lambda x: x[0],
-                    ):
-                        modhelp += self.strings("ihandler").format(
-                            f"@{self.inline.bot_username} {_name}",
-                            (
-                                utils.escape_html(inspect.getdoc(fun))
-                                if fun.__doc__
-                                else self.strings("undoc_ihandler")
-                            ),
-                        )
-
-            try:
-                await utils.answer(
-                    message,
-                    self.strings("loaded").format(
-                        modname.strip(),
-                        version,
-                        utils.ascii_face(),
-                        modhelp,
-                    )
-                    + developer,
-                )
-            except telethon.errors.rpcerrorlist.MediaCaptionTooLongError:
-                await message.reply(
-                    self.strings("loaded").format(
-                        modname.strip(),
-                        version,
-                        utils.ascii_face(),
-                        modhelp,
-                    )
-                    + developer
-                )
-
-        return
+            )
 
     @loader.owner
     async def unloadmodcmd(self, message: Message) -> None:
@@ -874,12 +896,17 @@ class LoaderMod(loader.Module):
 
         self._fully_loaded = True
 
-        await self.lookup("Updater").full_restart_complete()
+        try:
+            await self.lookup("Updater").full_restart_complete()
+        except AttributeError:
+            pass
 
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
         self._fully_loaded = False
+
+        self.allmodules.add_aliases(self.lookup("settings").get("aliases", {}))
 
         main.hikka.ready.set()
 
@@ -913,3 +940,4 @@ class LoaderMod(loader.Module):
                 self._db.setdefault(mod.__class__.__name__, {},).setdefault(
                     "__config__", {}
                 )[option] = config.value
+                self._db.save()

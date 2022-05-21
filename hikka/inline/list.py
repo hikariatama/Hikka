@@ -30,11 +30,11 @@ class List(InlineUnit):
         strings: _List[str],
         *,
         force_me: Optional[bool] = False,
-        always_allow: Optional[Union[list, None]] = None,
+        always_allow: Optional[list] = None,
         manual_security: Optional[bool] = False,
         disable_security: Optional[bool] = False,
         ttl: Optional[Union[int, bool]] = False,
-        on_unload: Optional[Union[FunctionType, None]] = None,
+        on_unload: Optional[FunctionType] = None,
         silent: Optional[bool] = False,
     ) -> Union[bool, str]:
         """

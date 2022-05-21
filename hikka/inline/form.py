@@ -3,12 +3,19 @@ import time
 from asyncio import Event
 from types import FunctionType
 from typing import List, Optional, Union
+import random
+import grapheme
 
 from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
     InlineQueryResultPhoto,
     InputTextMessageContent,
+    InlineQueryResultDocument,
+    InlineQueryResultGif,
+    InlineQueryResultVideo,
+    InlineQueryResultLocation,
+    InlineQueryResultAudio,
 )
 from telethon.tl.types import Message
 
@@ -16,6 +23,21 @@ from .. import utils
 from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
+
+VERIFICATION_EMOJIES = list(
+    grapheme.graphemes(
+        "👨‍🏫👩‍🏫👨‍🎤🧑‍🎤👩‍🎤👨‍🎓👩‍🎓👩‍🍳👩‍🌾👩‍⚕️🕵️‍♀️💂‍♀️👷‍♂️👮‍♂️👴🧑‍🦳👩‍🦳👱‍♀️👩‍🦰👨‍🦱👩‍⚖️🧙‍♂️🧝‍♀️🧛‍♀️"
+        "🎅🧚‍♂️🙆‍♀️🙍‍♂️👩‍👦🧶🪢🪡🧵🩲👖👕👚🦺👗👙🩱👘🥻🩴🥿🧦🥾👟👞"
+        "👢👡👠🪖👑💍👝👛👜💼🌂🥽🕶👓🧳🎒🐶🐱🐭🐹🐰🦊🐻🐷🐮"
+        "🦁🐯🐨🐻‍❄️🐼🐽🐸🐵🙈🙉🙊🐒🦆🐥🐣🐤🐦🐧🐔🦅🦉🦇🐺🐗🐴"
+        "🦄🐜🐞🐌🦋🐛🪱🐝🪰🪲🪳🦟🦗🕷🕸🐙🦕🦖🦎🐍🐢🦂🦑🦐🦞"
+        "🦀🐡🐠🐟🐅🐊🦭🦈🐋🐳🐬🐆🦓🦍🦧🦣🐘🦛🐃🦬🦘🦒🐫🐪🦏"
+        "🐂🐄🐎🐖🐏🐑🦙🐈🐕‍🦺🦮🐩🐕🦌🐐🐈‍⬛🪶🐓🦃🦤🦚🦜🦡🦨🦝🐇"
+        "🕊🦩🦢🦫🦦🦥🐁🐀🐿🦔🌳🌲🌵🐲🐉🐾🎋🍂🍁🍄🐚🌾🪨💐🌷"
+        "🥀🌺🌸🌻🌞🌜🌘🌗🌎🪐💫⭐️✨⚡️☄️💥☀️🌪🔥🌈🌤⛅️❄️⛄️🌊"
+        "☂️🍏🍎🍐🍊🍋🍌🍉🥭🍑🍒🍈🫐🍓🍇🍍🥥🥝🍅🥑🥦🧔‍♂️"
+    )
+)
 
 
 class Form(InlineUnit):
@@ -26,12 +48,18 @@ class Form(InlineUnit):
         reply_markup: Union[List[List[dict]], List[dict], dict] = None,
         *,
         force_me: Optional[bool] = False,
-        always_allow: Optional[Union[List[list], None]] = None,
+        always_allow: Optional[List[list]] = None,
         manual_security: Optional[bool] = False,
         disable_security: Optional[bool] = False,
         ttl: Optional[Union[int, bool]] = False,
-        on_unload: Optional[Union[FunctionType, None]] = None,
-        photo: Optional[Union[str, None]] = None,
+        on_unload: Optional[FunctionType] = None,
+        photo: Optional[str] = None,
+        gif: Optional[str] = None,
+        file: Optional[str] = None,
+        mime_type: Optional[str] = None,
+        video: Optional[str] = None,
+        location: Optional[str] = None,
+        audio: Optional[str] = None,
         silent: Optional[bool] = False,
     ) -> Union[str, bool]:
         """
@@ -63,7 +91,21 @@ class Form(InlineUnit):
                 By default, Hikka will try to inherit inline buttons security from the caller (command)
                 If you want to disable all security checks on this form in particular, pass `disable_security=True`
             photo
-                Attach the photo to the form. URL must be supplied
+                Attach a photo to the form. URL must be supplied
+            gif
+                Attach a gif to the form. URL must be supplied
+            file
+                Attach a file to the form. URL must be supplied
+            mime_type
+                Only needed, if `file` field is not empty. Must be either 'application/pdf' or 'application/zip'
+            video
+                Attach a video to the form. URL must be supplied
+            location
+                Attach a map point to the form. List/tuple must be supplied (latitude, longitude)
+                Example: (55.749931, 48.742371)
+                ⚠️ If you pass this parameter, you'll need to pass empty string to `text` ⚠️
+            audio
+                Attach a audio to the form. URL must be supplied
             silent
                 Whether the form must be sent silently (w/o "Loading inline form..." message)
         """
@@ -98,8 +140,50 @@ class Form(InlineUnit):
             logger.error("Invalid type for `reply_markup`")
             return False
 
-        if photo and not isinstance(photo, str):
+        if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
             logger.error("Invalid type for `photo`")
+            return False
+
+        if gif and (not isinstance(gif, str) or not utils.check_url(gif)):
+            logger.error("Invalid type for `gif`")
+            return False
+
+        if file and (not isinstance(file, str) or not utils.check_url(file)):
+            logger.error("Invalid type for `file`")
+            return False
+
+        if file and not mime_type:
+            logger.error(
+                "You must pass `mime_type` along with `file` field\n"
+                "It may be either 'application/zip' or 'application/pdf'"
+            )
+            return False
+
+        if video and (not isinstance(video, str) or not utils.check_url(video)):
+            logger.error("Invalid type for `video`")
+            return False
+
+        if audio and (not isinstance(audio, str) or not utils.check_url(audio)):
+            logger.error("Invalid type for `audio`")
+            return False
+
+        if location and (
+            not isinstance(location, (list, tuple))
+            or len(location) != 2
+            or not all(isinstance(item, float) for item in location)
+        ):
+            logger.error("Invalid type for `location`")
+            return False
+
+        if [
+            photo is not None,
+            gif is not None,
+            file is not None,
+            video is not None,
+            audio is not None,
+            location is not None,
+        ].count(True) > 1:
+            logger.error("You passed two or more exclusive parameters simultaneously")
             return False
 
         reply_markup = self._normalize_markup(reply_markup)
@@ -169,6 +253,11 @@ class Form(InlineUnit):
             "on_unload": on_unload,
             "future": Event(),
             **({"photo": photo} if photo else {}),
+            **({"video": video} if video else {}),
+            **({"gif": gif} if gif else {}),
+            **({"location": location} if location else {}),
+            **({"audio": audio} if audio else {}),
+            **({"location": location} if location else {}),
             **({"perms_map": perms_map} if perms_map else {}),
             **({"message": message} if isinstance(message, Message) else {}),
             **({"force_me": force_me} if force_me else {}),
@@ -248,7 +337,7 @@ class Form(InlineUnit):
                             InlineQueryResultArticle(
                                 id=utils.rand(20),
                                 title=button["input"],
-                                description="⚠️ Please, do not remove identifier!",
+                                description=f"⚠️ Do not remove ID! {random.choice(VERIFICATION_EMOJIES)}",
                                 input_message_content=InputTextMessageContent(
                                     "🔄 <b>Transferring value to userbot...</b>\n"
                                     "<i>This message is gonna be deleted...</i>",
@@ -266,7 +355,104 @@ class Form(InlineUnit):
 
         # Otherwise, answer it with templated form
         form = self._forms[inline_query.query]
-        if not form.get("photo", False):
+        if "photo" in form:
+            await inline_query.answer(
+                [
+                    InlineQueryResultPhoto(
+                        id=utils.rand(20),
+                        title="Hikka",
+                        description="Hikka",
+                        caption=form.get("text"),
+                        parse_mode="HTML",
+                        photo_url=form["photo"],
+                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        reply_markup=self.generate_markup(
+                            form["uid"],
+                        ),
+                    )
+                ]
+            )
+        elif "gif" in form:
+            await inline_query.answer(
+                [
+                    InlineQueryResultGif(
+                        id=utils.rand(20),
+                        title="Hikka",
+                        caption=form.get("text"),
+                        parse_mode="HTML",
+                        gif_url=form["gif"],
+                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        reply_markup=self.generate_markup(
+                            form["uid"],
+                        ),
+                    )
+                ]
+            )
+        elif "video" in form:
+            await inline_query.answer(
+                [
+                    InlineQueryResultVideo(
+                        id=utils.rand(20),
+                        title="Hikka",
+                        description="Hikka",
+                        caption=form.get("text"),
+                        parse_mode="HTML",
+                        video_url=form["video"],
+                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        mime_type="video/mp4",
+                        reply_markup=self.generate_markup(
+                            form["uid"],
+                        ),
+                    )
+                ]
+            )
+        elif "file" in form:
+            await inline_query.answer(
+                [
+                    InlineQueryResultDocument(
+                        id=utils.rand(20),
+                        title="Hikka",
+                        description="Hikka",
+                        caption=form.get("text"),
+                        parse_mode="HTML",
+                        document_url=form["file"],
+                        mime_type=form["mime_type"],
+                        reply_markup=self.generate_markup(
+                            form["uid"],
+                        ),
+                    )
+                ]
+            )
+        elif "location" in form:
+            await inline_query.answer(
+                [
+                    InlineQueryResultLocation(
+                        id=utils.rand(20),
+                        latitude=form["location"][0],
+                        longitude=form["location"][1],
+                        title="Hikka",
+                        reply_markup=self.generate_markup(
+                            form["uid"],
+                        ),
+                    )
+                ]
+            )
+        elif "audio" in form:
+            await inline_query.answer(
+                [
+                    InlineQueryResultAudio(
+                        id=utils.rand(20),
+                        audio_url=form["audio"],
+                        caption=form.get("text"),
+                        parse_mode="HTML",
+                        title="Hikka",
+                        reply_markup=self.generate_markup(
+                            form["uid"],
+                        ),
+                    )
+                ]
+            )
+        else:
             await inline_query.answer(
                 [
                     InlineQueryResultArticle(
@@ -278,24 +464,6 @@ class Form(InlineUnit):
                             disable_web_page_preview=True,
                         ),
                         reply_markup=self.generate_markup(inline_query.query),
-                    )
-                ],
-                cache_time=0,
-            )
-        else:
-            await inline_query.answer(
-                [
-                    InlineQueryResultPhoto(
-                        id=utils.rand(20),
-                        title="Processing inline form",
-                        photo_url=form["photo"],
-                        thumb_url="https://img.icons8.com/fluency/344/loading.png",
-                        caption=form["text"],
-                        description="Processing inline form",
-                        reply_markup=self.generate_markup(
-                            form["uid"],
-                        ),
-                        parse_mode="HTML",
                     )
                 ],
                 cache_time=0,

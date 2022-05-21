@@ -174,9 +174,26 @@ def Choice(possible_values: list, /) -> Validator:
     )
 
 
-def _Series(value: Any, /, *, validator: Optional[Validator]):
+def _Series(
+    value: Any,
+    /,
+    *,
+    validator: Optional[Validator],
+    min_len: Optional[int],
+    max_len: Optional[int],
+    fixed_len: Optional[int],
+):
     if isinstance(value, str):
         value = value.split(",")
+
+    if min_len is not None and len(value) < min_len:
+        raise ValidationError(f"Passed value ({value}) contains less than {min_len} items")
+    
+    if max_len is not None and len(value) > max_len:
+        raise ValidationError(f"Passed value ({value}) contains more than {max_len} items")
+
+    if fixed_len is not None and len(value) != fixed_len:
+        raise ValidationError(f"Passed value ({value}) must contain exactly {fixed_len} items")
 
     if isinstance(validator, Validator):
         for i, item in enumerate(value):
@@ -189,25 +206,62 @@ def _Series(value: Any, /, *, validator: Optional[Validator]):
                     f"Passed value ({value}) contains invalid item ({str(item).strip()}), which must be {validator.doc['en']}"
                 )
 
+    value = list(filter(lambda x: x, value))
+
     return value
 
 
-def Series(validator: Optional[Validator] = None) -> Validator:
+def Series(
+    validator: Optional[Validator] = None,
+    min_len: Optional[int] = None,
+    max_len: Optional[int] = None,
+    fixed_len: Optional[int] = None,
+) -> Validator:
     """
     Represents the series of value (simply `list`)
     :param separator: With which separator values must be separated
     :param validator: Internal validator for each sequence value
+    :param min_len: Minimal number of series items to be passed
+    :param max_len: Maximum number of series items to be passed
+    :param fixed_len: Fixed number of series items to be passed
     """
 
     _each_en = f" (each must be {validator.doc['en']})" if validator is not None else ""
     _each_ru = f" (каждое должно быть {validator.doc['ru']})" if validator is not None else ""  # fmt: skip
 
+    if fixed_len is not None:
+        _len_en = f" (exactly {fixed_len} pcs.)"
+        _len_ru = f" (ровно {fixed_len} шт.)"
+    else:
+        if min_len is not None:
+            if max_len is not None:
+                _len_en = f" (from {min_len} to {max_len} pcs.)"
+                _len_ru = f" (от {min_len} до {max_len} шт.)"
+            else:
+                _len_en = f" (at least {min_len} pcs.)"
+                _len_ru = f" (как минимум {min_len} шт.)"
+        else:
+            if max_len is not None:
+                _len_en = f" (up to {max_len} pcs.)"
+                _len_ru = f" (до {max_len} шт.)"
+            else:
+                _len_en = ""
+                _len_ru = ""
+
+    doc = {
+        "en": f"series of values{_len_en}{_each_en}, separated with «,»",
+        "ru": f"списком значений{_len_ru}{_each_ru}, разделенных «,»",
+    }
+
     return Validator(
-        functools.partial(_Series, validator=validator),
-        {
-            "en": f"series of values{_each_en}, separated with «,»",
-            "ru": f"списком значений{_each_ru}, разделенных «,»",
-        },
+        functools.partial(
+            _Series,
+            validator=validator,
+            min_len=min_len,
+            max_len=max_len,
+            fixed_len=fixed_len,
+        ),
+        doc,
         _internal_id="Series",
     )
 
@@ -232,7 +286,7 @@ def Link() -> Validator:
 
 
 def _String(value: Any, /, *, length: int) -> str:
-    if isinstance(length, int) and len(list(grapheme.graphemes(value))) != length:
+    if isinstance(length, int) and len(list(grapheme.graphemes(str(value)))) != length:
         raise ValidationError(f"Passed value ({value}) must be a length of {length}")
 
     return value

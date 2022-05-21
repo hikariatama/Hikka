@@ -39,6 +39,16 @@ class UpdateNotifierMod(loader.Module):
 
     _notified = None
 
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue(
+                "disable_notifications",
+                False,
+                lambda: "Disable update notifications",
+                validator=loader.validators.Boolean(),
+            )
+        )
+
     def get_commit(self) -> Union[str, bool]:
         try:
             return git.Repo().heads[0].commit.hexsha
@@ -76,6 +86,9 @@ class UpdateNotifierMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
+
+        if self.config["disable_notifications"]:
+            raise loader.SelfUnload
 
         try:
             git.Repo()

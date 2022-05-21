@@ -232,14 +232,3 @@ class Database(dict):
 
         super().setdefault(owner, {})[key] = value
         return self.save()
-
-    def __setitem__(self, key: str, value: dict) -> bool:
-        if not isinstance(value, dict):
-            raise RuntimeError("Attempted to write non-dict value in a first layer of database")  # fmt: skip
-
-        dict.__setitem__(self, key, value)
-        return self.save()
-
-    def __delitem__(self, key: str) -> bool:
-        dict.__delitem__(self, key)
-        return self.save()

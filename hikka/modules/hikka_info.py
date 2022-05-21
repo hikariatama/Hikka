@@ -64,8 +64,9 @@ class HikkaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "custom_button",
-                "🌘 Support chat|https://t.me/hikka_talks",
+                ["🌘 Support chat", "https://t.me/hikka_talks"],
                 lambda: self.strings("_cfg_cst_btn"),
+                validator=loader.validators.Series(fixed_len=2),
             ),
             loader.ConfigValue(
                 "disable_banner",
@@ -107,7 +108,7 @@ class HikkaInfoMod(loader.Module):
                 prefix=prefix,
                 platform=platform,
             )
-            if self.config["custom_message"] != "no"
+            if self.config["custom_message"] and self.config["custom_message"] != "no"
             else (
                 "<b>🌘 Hikka</b>\n"
                 f'<b>🤴 {self.strings("owner")}: </b>{me}\n\n'
@@ -123,8 +124,8 @@ class HikkaInfoMod(loader.Module):
             None
             if not self.config["custom_button"]
             else {
-                "text": self.config["custom_button"].split("|")[0],
-                "url": self.config["custom_button"].split("|")[1],
+                "text": self.config["custom_button"][0],
+                "url": self.config["custom_button"][1],
             }
         )
 

@@ -433,6 +433,12 @@ class Modules:
 
         return ret
 
+    def add_aliases(self, aliases: dict):
+        """Saves aliases and applies them to <core>/<file> modules"""
+        self.aliases.update(aliases)
+        for alias, cmd in aliases.items():
+            self.add_alias(alias, cmd)
+
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         if getattr(instance, "__origin__", "") == "<core>":
@@ -448,7 +454,6 @@ class Modules:
                     self.modules.remove(instance)
                 except Exception:
                     pass
-
                 raise RuntimeError(f"Command {command} is core and will not be overwritten by {instance}")  # fmt: skip
 
             # Verify that command does not already exist, or,
@@ -467,6 +472,10 @@ class Modules:
                 logger.debug(f"Missing docs for {command}")
 
             self.commands.update({command.lower(): instance.commands[command]})
+
+        for alias, cmd in self.aliases.items():
+            if cmd in instance.commands:
+                self.add_alias(alias, cmd)
 
         for handler in instance.inline_handlers.copy():
             if handler.lower() in self.inline_handlers:
@@ -601,14 +610,17 @@ class Modules:
             )
             for conf in mod.config.keys():
                 try:
-                    mod.config[conf] = (
-                        modcfg[conf]
-                        if conf in modcfg.keys()
-                        else os.environ.get(
-                            f"{mod.__class__.__name__}.{conf}",
-                            None,
-                        )
-                        or mod.config.getdef(conf)
+                    mod.config.set_no_raise(
+                        conf,
+                        (
+                            modcfg[conf]
+                            if conf in modcfg.keys()
+                            else os.environ.get(
+                                f"{mod.__class__.__name__}.{conf}",
+                                None,
+                            )
+                            or mod.config.getdef(conf)
+                        ),
                     )
                 except validators.ValidationError:
                     pass

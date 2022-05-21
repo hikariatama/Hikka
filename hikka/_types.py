@@ -112,8 +112,12 @@ class ModuleConfig(dict):
         """Get the default value by key"""
         return self._config[key].default
 
-    def __setitem__(self, key: str, value: Any) -> bool:
+    def __setitem__(self, key: str, value: Any):
         self._config[key].value = value
+        return dict.__setitem__(self, key, value)
+
+    def set_no_raise(self, key: str, value: Any):
+        self._config[key].set_no_raise(value)
         return dict.__setitem__(self, key, value)
 
     def __getitem__(self, key: str) -> Any:
@@ -139,14 +143,21 @@ class ConfigValue:
         if isinstance(self.value, _Placeholder):
             self.value = self.default
 
-    def __setattr__(self, key: str, value: Any) -> bool:
+    def set_no_raise(self, value: Any) -> bool:
+        """
+        Sets the config value w/o ValidationError being raised
+        Should not be used uninternally
+        """
+        return self.__setattr__("value", value, ignore_validation=True)
+
+    def __setattr__(
+        self,
+        key: str,
+        value: Any,
+        *,
+        ignore_validation: Optional[bool] = False,
+    ) -> bool:
         if key == "value":
-            if self.validator is not None and value is not None:
-                value = self.validator.validate(value)
-
-            # This attribute will tell the `Loader` to save this value in db
-            self._save_marker = True
-
             try:
                 value = ast.literal_eval(value)
             except Exception:
@@ -156,5 +167,23 @@ class ConfigValue:
             # with json convertations
             if isinstance(value, (set, tuple)):
                 value = list(value)
+
+            if isinstance(value, list):
+                value = [
+                    item.strip() if isinstance(item, str) else item for item in value
+                ]
+
+            if self.validator is not None and value is not None:
+                try:
+                    value = self.validator.validate(value)
+                except validators.ValidationError as e:
+                    if not ignore_validation:
+                        raise e
+                    logger.warning(f"Config vaue was broken ({value}), so it was reset to {self.default}")  # fmt: skip
+
+                    value = self.default
+
+            # This attribute will tell the `Loader` to save this value in db
+            self._save_marker = True
 
         object.__setattr__(self, key, value)

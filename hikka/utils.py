@@ -259,7 +259,7 @@ def censor(
 def relocate_entities(
     entities: list,
     offset: int,
-    text: Union[str, None] = None,
+    text: Optional[str] = None,
 ) -> list:
     """Move all entities by offset (truncating at text)"""
     length = len(text) if text is not None else 0
@@ -854,7 +854,10 @@ def _copy_tl(o, **kwargs):
 
 def check_url(url: str) -> bool:
     """Checks url for validity"""
-    return bool(urlparse(url).netloc)
+    try:
+        return bool(urlparse(url).netloc)
+    except Exception:
+        return False
 
 
 def get_git_hash() -> Union[str, bool]:

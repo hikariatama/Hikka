@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import time
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from aiogram.types import InlineQuery, InlineQueryResultArticle, InputTextMessageContent
 
@@ -19,7 +19,7 @@ class QueryGallery(InlineUnit):
         *,
         force_me: Optional[bool] = False,
         disable_security: Optional[bool] = False,
-        always_allow: Optional[Union[list, None]] = None,
+        always_allow: Optional[list] = None,
     ):
         """
         Processes inline query galleries
