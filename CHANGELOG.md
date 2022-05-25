@@ -1,3 +1,19 @@
+## 🌑 Hikka 1.1.28
+
+- Fix non-working param `share_link` in loader
+- Assure logging bot is a member of logchat
+- Do not store partial phone number in session, only ID
+- Rework fast uploader so more types can be passed. For more information check code docstrings and typehints
+- Rework installer so it properly displays which action is currently happening
+- Fix `Series` not accepting one item
+- Show upcoming commit in update and warn if update is not required
+- Add reset to default button to config
+- Merge `hikka_logger.py` with `test.py`
+- Localization
+- Allow opening options of specific mod via arguments in `.config`
+- Add `add` and `remove` buttons to `Series` params
+- Do not unload form immediately, if `ttl` param was passed explicitly
+
 ## 🌑 Hikka 1.1.27
 
 - Reorder the steps of parsing in `loader.validators.Series`

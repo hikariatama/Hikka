@@ -183,8 +183,11 @@ def _Series(
     max_len: Optional[int],
     fixed_len: Optional[int],
 ):
-    if isinstance(value, str):
-        value = value.split(",")
+    if not isinstance(value, (list, tuple, set)):
+        value = str(value).split(",")
+
+    if isinstance(value, (tuple, set)):
+        value = list(value)
 
     if min_len is not None and len(value) < min_len:
         raise ValidationError(

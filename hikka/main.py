@@ -394,10 +394,16 @@ class Hikka:
                 self._get_api_token()
 
     async def save_client_session(self, client: TelegramClient):
+        if hasattr(client, "_tg_id"):
+            id_ = client._tg_id
+        else:
+            id_ = (await client.get_me()).id
+            client._tg_id = id_
+
         session = SQLiteSession(
             os.path.join(
                 self.arguments.data_root or BASE_DIR,
-                f"hikka-+{'x' * (len(client.phone) - 5)}{client.phone[-4:]}-{(await client.get_me()).id}",
+                f"hikka-{id_}",
             )
         )
 

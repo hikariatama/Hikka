@@ -775,7 +775,7 @@ class LoaderMod(loader.Module):
                     modhelp,
                     developer,
                     self.strings("modlink").format(origin)
-                    if origin != "<string>"
+                    if origin != "<string>" and self.config["share_link"]
                     else "",
                 ),
             )
@@ -820,7 +820,7 @@ class LoaderMod(loader.Module):
                     modhelp,
                     developer,
                     self.strings("modlink").format(origin)
-                    if origin != "<string>"
+                    if origin != "<string>" and self.config["share_link"]
                     else "",
                 ),
             )
@@ -833,7 +833,7 @@ class LoaderMod(loader.Module):
                     modhelp,
                     developer,
                     self.strings("modlink").format(origin)
-                    if origin != "<string>"
+                    if origin != "<string>" and self.config["share_link"]
                     else "",
                 )
             )

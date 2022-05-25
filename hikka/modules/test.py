@@ -18,7 +18,8 @@ import time
 from io import BytesIO
 from typing import Union
 
-from telethon.tl.types import Message
+from telethon.tl.functions.channels import EditAdminRequest, InviteToChannelRequest
+from telethon.tl.types import ChatAdminRights, Message
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
@@ -102,40 +103,38 @@ class TestMod(loader.Module):
     async def cancel(call: InlineCall):
         await call.delete()
 
+    @loader.loop(interval=1, autostart=True)
     async def watchdog(self):
-        while True:
-            try:
-                for module in os.scandir(DEBUG_MODS_DIR):
-                    last_modified = os.stat(module.path).st_mtime
-                    cls_ = module.path.split("/")[-1].split(".py")[0]
+        try:
+            for module in os.scandir(DEBUG_MODS_DIR):
+                last_modified = os.stat(module.path).st_mtime
+                cls_ = module.path.split("/")[-1].split(".py")[0]
 
-                    if cls_ not in self._memory:
-                        self._memory[cls_] = last_modified
-                        continue
-
-                    if self._memory[cls_] == last_modified:
-                        continue
-
+                if cls_ not in self._memory:
                     self._memory[cls_] = last_modified
-                    logger.debug(f"Reloading debug module {cls_}")
-                    with open(module.path, "r") as f:
-                        try:
-                            await next(
-                                module
-                                for module in self.allmodules.modules
-                                if module.__class__.__name__ == "LoaderMod"
-                            ).load_module(
-                                f.read(),
-                                None,
-                                save_fs=False,
-                            )
-                        except Exception:
-                            logger.exception("Failed to reload module in watchdog")
-            except Exception:
-                logger.exception("Failed debugging watchdog")
-                return
+                    continue
 
-            await asyncio.sleep(1)
+                if self._memory[cls_] == last_modified:
+                    continue
+
+                self._memory[cls_] = last_modified
+                logger.debug(f"Reloading debug module {cls_}")
+                with open(module.path, "r") as f:
+                    try:
+                        await next(
+                            module
+                            for module in self.allmodules.modules
+                            if module.__class__.__name__ == "LoaderMod"
+                        ).load_module(
+                            f.read(),
+                            None,
+                            save_fs=False,
+                        )
+                    except Exception:
+                        logger.exception("Failed to reload module in watchdog")
+        except Exception:
+            logger.exception("Failed debugging watchdog")
+            return
 
     async def debugmodcmd(self, message: Message):
         """[module] - For developers: Open module for debugging
@@ -404,4 +403,45 @@ class TestMod(loader.Module):
     async def client_ready(self, client, db):
         self._client = client
         self._db = db
-        self._task = asyncio.ensure_future(self.watchdog())
+
+        chat, is_new = await utils.asset_channel(
+            self._client,
+            "hikka-logs",
+            "🌘 Your Hikka logs will appear in this chat",
+            silent=True,
+            avatar="https://i.imgur.com/MWoMKp0.jpeg",
+        )
+
+        self._logchat = int(f"-100{chat.id}")
+
+        logger = logging.getLogger(__name__)
+
+        if not is_new or all(
+            participant.id != self.inline.bot_id
+            for participant in (await self._client.get_participants(chat, limit=3))
+        ):
+            logging.getLogger().handlers[0].install_tg_log(self)
+            logger.debug(f"Bot logging installed for {self._logchat}")
+            return
+
+        logger.debug("New logging chat created, init setup...")
+
+        try:
+            await self._client(InviteToChannelRequest(chat, [self.inline.bot_username]))
+        except Exception:
+            logger.warning("Unable to invite logger to chat")
+
+        try:
+            await self._client(
+                EditAdminRequest(
+                    channel=chat,
+                    user_id=self.inline.bot_username,
+                    admin_rights=ChatAdminRights(ban_users=True),
+                    rank="Logger",
+                )
+            )
+        except Exception:
+            pass
+
+        logging.getLogger().handlers[0].install_tg_log(self)
+        logger.debug(f"Bot logging installed for {self._logchat}")

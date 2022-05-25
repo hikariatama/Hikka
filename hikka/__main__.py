@@ -38,14 +38,13 @@ if (
     and "OKTETO" not in os.environ
     and "DOCKER" not in os.environ
 ):
-    print("🚫" * 30)
-    print("NEVER EVER RUN USERBOT FROM ROOT")
-    print("THIS IS THE THREAD FOR NOT ONLY YOUR DATA, ")
-    print("BUT ALSO FOR YOUR DEVICE ITSELF!")
-    print("🚫" * 30)
+    print("🚫" * 15)
+    print("You attempted to run Hikka on behalf of root user")
+    print("Please, create a new user and restart script")
+    print("If this action was intentional, pass --root argument instead")
+    print("🚫" * 15)
     print()
-    print("TYPE force_insecure TO IGNORE THIS WARNING")
-    print("TYPE ANYTHING ELSE TO EXIT:")
+    print("Type force_insecure to ignore this warning")
     if input("> ").lower() != "force_insecure":
         sys.exit(1)
 

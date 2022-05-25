@@ -94,6 +94,7 @@ class DownloadSender:
     async def next(self) -> Optional[bytes]:
         if not self.remaining:
             return None
+
         result = await self.client._call(self.sender, self.request)
         self.remaining -= 1
         self.request.offset += self.stride
@@ -126,10 +127,12 @@ class UploadSender:
         self.client = client
         self.sender = sender
         self.part_count = part_count
+
         if big:
             self.request = SaveBigFilePartRequest(file_id, index, part_count, b"")
         else:
             self.request = SaveFilePartRequest(file_id, index, b"")
+
         self.stride = stride
         self.previous = None
         self.loop = loop
@@ -207,18 +210,27 @@ class ParallelTransferrer:
             if remainder > 0:
                 remainder -= 1
                 return minimum + 1
+
             return minimum
 
         # The first cross-DC sender will export+import the authorization, so we always create it
         # before creating any other senders.
         self.senders = [
             await self._create_download_sender(
-                file, 0, part_size, connections * part_size, get_part_count()
+                file,
+                0,
+                part_size,
+                connections * part_size,
+                get_part_count(),
             ),
             *await asyncio.gather(
                 *[
                     self._create_download_sender(
-                        file, i, part_size, connections * part_size, get_part_count()
+                        file,
+                        i,
+                        part_size,
+                        connections * part_size,
+                        get_part_count(),
                     )
                     for i in range(1, connections)
                 ]
@@ -295,7 +307,8 @@ class ParallelTransferrer:
             log.debug(f"Exporting auth to DC {self.dc_id}")
             auth = await self.client(ExportAuthorizationRequest(self.dc_id))
             self.client._init_request.query = ImportAuthorizationRequest(
-                id=auth.id, bytes=auth.bytes
+                id=auth.id,
+                bytes=auth.bytes,
             )
             req = InvokeWithLayerRequest(LAYER, self.client._init_request)
             await sender.send(req)
@@ -344,12 +357,16 @@ class ParallelTransferrer:
 
         while part < part_count:
             tasks = []
+
             for sender in self.senders:
                 tasks.append(self.loop.create_task(sender.next()))
+
             for task in tasks:
                 data = await task
+
                 if not data:
                     break
+
                 yield data
                 part += 1
                 log.debug(f"Part {part} downloaded")
@@ -376,10 +393,20 @@ async def _internal_transfer_to_telegram(
     client: TelegramClient,
     response: BinaryIO,
     progress_callback: callable,
-    filename: str = "upload",
+    filename: Optional[str] = None,
 ) -> Tuple[TypeInputFile, int]:
     file_id = helpers.generate_random_long()
-    file_size = os.path.getsize(response.name)
+    file_size = (
+        response.getbuffer().nbytes
+        if isinstance(response, io.BytesIO)
+        else os.path.getsize(response.name)
+    )
+
+    if not filename:
+        if isinstance(response, io.BytesIO) and getattr(response, "name", False):
+            filename = response.name
+        else:
+            filename = "unnamed"
 
     hash_md5 = hashlib.md5()
     uploader = ParallelTransferrer(client)
@@ -390,12 +417,16 @@ async def _internal_transfer_to_telegram(
             r = progress_callback(response.tell(), file_size)
             if inspect.isawaitable(r):
                 await r
+
         if not is_large:
             hash_md5.update(data)
+
         if len(buffer) == 0 and len(data) == part_size:
             await uploader.upload(data)
             continue
+
         new_len = len(buffer) + len(data)
+
         if new_len >= part_size:
             cutoff = part_size - len(buffer)
             buffer.extend(data[:cutoff])
@@ -404,8 +435,10 @@ async def _internal_transfer_to_telegram(
             buffer.extend(data[cutoff:])
         else:
             buffer.extend(data)
+
     if len(buffer) > 0:
         await uploader.upload(bytes(buffer))
+
     await uploader.finish_upload()
 
     return (
@@ -421,11 +454,27 @@ def _progressbar(progress: int) -> str:
 
 
 async def download_file(
-    location: TypeLocation = None,
+    location: Union[Message, TypeLocation] = None,
     progress_callback: callable = None,
     message_object: Optional[Union[Message, InlineMessage]] = None,
     _client: TelegramClient = None,
 ) -> BinaryIO:
+    """
+    Uses multi-threading to quickly download file to Telegram servers
+    :param location: From where to download file? If it's not possible to do via fast_downloader
+                     it will be downloaded through classic tools instead
+    :param progress_callback: Must be a synchronous or asynchronous function handling callback
+                              You can instead pass `message_object`, Hikka will generate handler
+                              for you
+    :param message_object: Must be a telethon message object or an instance, generated by callback
+                           handler / form, which can be passed to `utils.answer`
+    """
+    if getattr(location, "document", None):
+        location = location.document
+
+    if not hasattr(location, "size"):
+        return io.BytesIO(await _client._download_file(location, bytes))
+
     size = location.size
     dc_id, location = utils.get_input_location(location)
 
@@ -480,12 +529,27 @@ async def download_file(
 
 
 async def upload_file(
-    file: BinaryIO = None,
+    file: Union[BinaryIO, bytes] = None,
     progress_callback: callable = None,
-    filename: str = "upload",
+    filename: Optional[str] = None,
     message_object: Optional[Union[Message, InlineMessage]] = None,
     _client: TelegramClient = None,
 ) -> TypeInputFile:
+    """
+    Uses multi-threading to quickly upload file to Telegram servers
+    :param file: Can be a BinaryIO (file handler, `io` handler) or a bytes
+                 If bytes were passed, they will be converted to BytesIO
+                 If passed object has a filename, it can be parsed instead of `filename`
+    :param progress_callback: Must be a synchronous or asynchronous function handling callback
+                              You can instead pass `message_object`, Hikka will generate handler
+                              for you
+    :param filename: If your `file` has no attribute `name` or you want to override it, pass here
+                     a valid string with filename
+    :param message_object: Must be a telethon message object or an instance, generated by callback
+                           handler / form, which can be passed to `utils.answer`
+    """
+    if not hasattr(file, "read"):
+        file = io.BytesIO(file)
 
     ratelimiter = time.time() + 3
 
@@ -513,7 +577,12 @@ async def upload_file(
         progress_callback = default_progress_callback
 
     res = (
-        await _internal_transfer_to_telegram(_client, file, progress_callback, filename)
+        await _internal_transfer_to_telegram(
+            _client,
+            file,
+            progress_callback,
+            filename,
+        )
     )[0]
 
     if message_object is not None:

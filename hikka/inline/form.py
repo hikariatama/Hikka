@@ -306,7 +306,7 @@ class Form(InlineUnit):
         if not any(
             any("callback" in button or "input" in button for button in row)
             for row in reply_markup
-        ):
+        ) and not ttl:
             del self._forms[form_uid]
             logger.debug(
                 f"Unloading form {form_uid}, because it "

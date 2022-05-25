@@ -62,7 +62,12 @@ class UpdaterMod(loader.Module):
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
         "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
-        "update_confirm": "🧭 <b>Are you sure you want to update?</b>",
+        "update_confirm": (
+            "🧭 <b>Are you sure you want to update?\n\n"
+            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
+            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>You are on the latest version, pull updates anyway?</b>",
         "cancel": "🚫 Cancel",
         "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
@@ -80,7 +85,12 @@ class UpdaterMod(loader.Module):
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
         "restart_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться?</b>",
-        "update_confirm": "🧭 <b>Ты уверен, что хочешь обновиться?</b>",
+        "update_confirm": (
+            "🧭 <b>Ты уверен, что хочешь обновиться??\n\n"
+            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
+            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>У тебя последняя версия. Обновиться принудительно?</b>",
         "cancel": "🚫 Отмена",
         "_cmd_doc_restart": "Перезагружает юзербот",
         "_cmd_doc_download": "Скачивает обновления",
@@ -226,12 +236,23 @@ class UpdaterMod(loader.Module):
     async def updatecmd(self, message: Message):
         """Downloads userbot updates"""
         try:
+            current = utils.get_git_hash()
+            upcoming = next(
+                git.Repo().iter_commits("origin/master", max_count=1)
+            ).hexsha
             if (
                 "--force" in (utils.get_args_raw(message) or "")
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
-                    text=self.strings("update_confirm"),
+                    text=self.strings("update_confirm").format(
+                        current,
+                        current[:8],
+                        upcoming,
+                        upcoming[:8],
+                    )
+                    if upcoming != current
+                    else self.strings("no_update"),
                     reply_markup=[
                         {
                             "text": self.strings("btn_update"),

@@ -30,7 +30,8 @@ class HikkaConfigMod(loader.Module):
         "configure": "🎚 <b>Here you can configure your modules' configs</b>",
         "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>",
         "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>\n\n{}",
-        "option_saved": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: </b><code>{}</code>",
+        "option_saved": "🎚 <b>Option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: </b><code>{}</code>",
+        "option_reset": "♻️ <b>Option </b><code>{}</code><b> of mod </b><code>{}</code><b> has been reset to default</b>\n<b>Current: </b><code>{}</code>",
         "args": "🚫 <b>You specified incorrect args</b>",
         "no_mod": "🚫 <b>Module doesn't exist</b>",
         "no_option": "🚫 <b>Configuration option doesn't exist</b>",
@@ -38,13 +39,23 @@ class HikkaConfigMod(loader.Module):
         "try_again": "🔁 Try again",
         "typehint": "🕵️ <b>Must be a {}</b>",
         "set": "set",
+        "set_default_btn": "♻️ Reset default",
+        "enter_value_btn": "✍️ Enter value",
+        "enter_value_desc": "✍️ Enter new configuration value for this option",
+        "add_item_desc": "✍️ Enter item to add",
+        "remove_item_desc": "✍️ Enter item to remove",
+        "back_btn": "👈 Back",
+        "close_btn": "🚫 Close",
+        "add_item_btn": "➕ Add item",
+        "remove_item_btn": "➖ Remove item",
     }
 
     strings_ru = {
         "configure": "🎚 <b>Здесь можно управлять настройками модулей</b>",
         "configuring_mod": "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>",
         "configuring_option": "🎚 <b>Управление параметром </b><code>{}</code><b> модуля </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное: </b><code>{}</code>\n\n<b>Текущее: </b><code>{}</code>\n\n{}",
-        "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее значение: </b><code>{}</code>",
+        "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее: </b><code>{}</code>",
+        "option_reset": "♻️ <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сброшен до значения по умолчанию</b>\n<b>Текущее: </b><code>{}</code>",
         "_cmd_doc_config": "Настройки модулей",
         "_cmd_doc_fconfig": "<имя модуля> <имя конфига> <значение> - Расшифровывается как ForceConfig - Принудительно устанавливает значение в конфиге, если это не удалось сделать через inline бота",
         "_cls_doc": "Интерактивный конфигуратор Hikka",
@@ -55,12 +66,20 @@ class HikkaConfigMod(loader.Module):
         "try_again": "🔁 Попробовать еще раз",
         "typehint": "🕵️ <b>Должно быть {}</b>",
         "set": "поставить",
+        "set_default_btn": "♻️ Значение по умолчанию",
+        "enter_value_btn": "✍️ Ввести значение",
+        "enter_value_desc": "✍️ Введи новое значение этого параметра",
+        "add_item_desc": "✍️ Введи элемент, который нужно добавить",
+        "remove_item_desc": "✍️ Введи элемент, который нужно удалить",
+        "back_btn": "👈 Назад",
+        "close_btn": "🚫 Закрыть",
+        "add_item_btn": "➕ Добавить элемент",
+        "remove_item_btn": "➖ Удалить элемент",
     }
 
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._forms = {}
 
     @staticmethod
     async def inline__close(call: InlineCall):
@@ -69,12 +88,12 @@ class HikkaConfigMod(loader.Module):
     @staticmethod
     def prep_value(value: Any) -> Any:
         if isinstance(value, str):
-            return value.strip()
+            return utils.escape_html(value.strip())
 
         if isinstance(value, list) and value:
-            return ", ".join(list(map(str, value)))
+            return utils.escape_html(", ".join(list(map(str, value))))
 
-        return value
+        return utils.escape_html(value)
 
     async def inline__set_config(
         self,
@@ -101,19 +120,41 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
-                utils.escape_html(self.prep_value(self.lookup(mod).config[option])),
+                self.prep_value(self.lookup(mod).config[option]),
             ),
             reply_markup=[
                 [
                     {
-                        "text": "👈 Back",
+                        "text": self.strings("back_btn"),
                         "callback": self.inline__configure,
                         "args": (mod,),
                     },
-                    {"text": "🚫 Close", "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "callback": self.inline__close},
                 ]
             ],
             inline_message_id=inline_message_id,
+        )
+
+    async def inline__reset_default(self, call: InlineCall, mod: str, option: str):
+        mod_instance = self.lookup(mod)
+        mod_instance.config[option] = mod_instance.config.getdef(option)
+
+        await call.edit(
+            self.strings("option_reset").format(
+                utils.escape_html(mod),
+                utils.escape_html(option),
+                self.prep_value(self.lookup(mod).config[option]),
+            ),
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                    },
+                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                ]
+            ],
         )
 
     async def inline__set_bool(
@@ -143,51 +184,205 @@ class HikkaConfigMod(loader.Module):
             )
         )
 
-        current = self.lookup(mod).config[option]
-
         await call.edit(
             self.strings("configuring_option").format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
                 utils.escape_html(self.lookup(mod).config.getdoc(option)),
-                utils.escape_html(
-                    self.prep_value(self.lookup(mod).config.getdef(option))
-                ),
-                utils.escape_html(self.prep_value(current)),
+                self.prep_value(self.lookup(mod).config.getdef(option)),
+                self.prep_value(self.lookup(mod).config[option]),
                 self.strings("typehint").format(doc) if doc else "",
             ),
-            reply_markup=[
-                [
-                    *(
-                        [
-                            {
-                                "text": f"✅ {self.strings('set')} `True`",
-                                "callback": self.inline__set_bool,
-                                "args": (mod, option, True),
-                            }
-                        ]
-                        if not current
-                        else [
-                            {
-                                "text": f"❌ {self.strings('set')} `False`",
-                                "callback": self.inline__set_bool,
-                                "args": (mod, option, False),
-                            }
-                        ]
-                    ),
-                ],
-                [
-                    {
-                        "text": "👈 Back",
-                        "callback": self.inline__configure,
-                        "args": (mod,),
-                    },
-                    {"text": "🚫 Close", "callback": self.inline__close},
-                ],
-            ],
+            reply_markup=self._generate_bool_markup(mod, option),
         )
 
         await call.answer("✅")
+
+    def _generate_bool_markup(self, mod: str, option: str) -> list:
+        return [
+            [
+                *(
+                    [
+                        {
+                            "text": f"✅ {self.strings('set')} `True`",
+                            "callback": self.inline__set_bool,
+                            "args": (mod, option, True),
+                        }
+                    ]
+                    if not self.lookup(mod).config[option]
+                    else [
+                        {
+                            "text": f"❌ {self.strings('set')} `False`",
+                            "callback": self.inline__set_bool,
+                            "args": (mod, option, False),
+                        }
+                    ]
+                ),
+            ],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
+            [
+                {
+                    "text": self.strings("back_btn"),
+                    "callback": self.inline__configure,
+                    "args": (mod,),
+                },
+                {"text": self.strings("close_btn"), "callback": self.inline__close},
+            ],
+        ]
+
+    async def inline__add_item(
+        self,
+        call: InlineCall,
+        query: str,
+        mod: str,
+        option: str,
+        inline_message_id: str,
+    ):
+        try:
+            self.lookup(mod).config[option] += [query]
+        except loader.validators.ValidationError as e:
+            await call.edit(
+                self.strings("validation_error").format(e.args[0]),
+                reply_markup={
+                    "text": self.strings("try_again"),
+                    "callback": self.inline__configure_option,
+                    "args": (mod, option),
+                },
+            )
+            return
+
+        await call.edit(
+            self.strings("option_saved").format(
+                utils.escape_html(mod),
+                utils.escape_html(option),
+                self.prep_value(self.lookup(mod).config[option]),
+            ),
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                    },
+                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                ]
+            ],
+            inline_message_id=inline_message_id,
+        )
+
+    async def inline__remove_item(
+        self,
+        call: InlineCall,
+        query: str,
+        mod: str,
+        option: str,
+        inline_message_id: str,
+    ):
+        try:
+            for i, item in enumerate(self.lookup(mod).config[option]):
+                if str(item) == str(query):
+                    del self.lookup(mod).config[option][i]
+                    break
+            else:
+                raise loader.validators.ValidationError(
+                    f"Passed value ({utils.escape_html(query)}) is not in target list"
+                )
+        except loader.validators.ValidationError as e:
+            await call.edit(
+                self.strings("validation_error").format(e.args[0]),
+                reply_markup={
+                    "text": self.strings("try_again"),
+                    "callback": self.inline__configure_option,
+                    "args": (mod, option),
+                },
+            )
+            return
+
+        await call.edit(
+            self.strings("option_saved").format(
+                utils.escape_html(mod),
+                utils.escape_html(option),
+                self.prep_value(self.lookup(mod).config[option]),
+            ),
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                    },
+                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                ]
+            ],
+            inline_message_id=inline_message_id,
+        )
+
+    def _generate_series_markup(self, call: InlineCall, mod: str, option: str) -> list:
+        return [
+            [
+                {
+                    "text": self.strings("enter_value_btn"),
+                    "input": self.strings("enter_value_desc"),
+                    "handler": self.inline__set_config,
+                    "args": (mod, option, call.inline_message_id),
+                }
+            ],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("remove_item_btn"),
+                            "input": self.strings("remove_item_desc"),
+                            "handler": self.inline__remove_item,
+                            "args": (mod, option, call.inline_message_id),
+                        },
+                        {
+                            "text": self.strings("add_item_btn"),
+                            "input": self.strings("add_item_desc"),
+                            "handler": self.inline__add_item,
+                            "args": (mod, option, call.inline_message_id),
+                        },
+                    ]
+                    if self.lookup(mod).config[option]
+                    else []
+                ),
+            ],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
+            [
+                {
+                    "text": self.strings("back_btn"),
+                    "callback": self.inline__configure,
+                    "args": (mod,),
+                },
+                {"text": self.strings("close_btn"), "callback": self.inline__close},
+            ],
+        ]
 
     async def inline__configure_option(
         self,
@@ -196,6 +391,14 @@ class HikkaConfigMod(loader.Module):
         config_opt: str,
     ):
         module = self.lookup(mod)
+        args = [
+            utils.escape_html(config_opt),
+            utils.escape_html(mod),
+            utils.escape_html(module.config.getdoc(config_opt)),
+            self.prep_value(module.config.getdef(config_opt)),
+            self.prep_value(module.config[config_opt]),
+        ]
+
         try:
             validator = module.config._config[config_opt].validator
             doc = utils.escape_html(
@@ -207,100 +410,74 @@ class HikkaConfigMod(loader.Module):
         except Exception:
             doc = None
             validator = None
+            args += [""]
         else:
+            args += [self.strings("typehint").format(doc)]
             if validator.internal_id == "Boolean":
                 await call.edit(
-                    self.strings("configuring_option").format(
-                        utils.escape_html(config_opt),
-                        utils.escape_html(mod),
-                        utils.escape_html(module.config.getdoc(config_opt)),
-                        utils.escape_html(
-                            self.prep_value(module.config.getdef(config_opt))
-                        ),
-                        utils.escape_html(self.prep_value(module.config[config_opt])),
-                        self.strings("typehint").format(doc) if doc else "",
-                    ),
-                    reply_markup=[
-                        [
-                            *(
-                                [
-                                    {
-                                        "text": f"✅ {self.strings('set')} `True`",
-                                        "callback": self.inline__set_bool,
-                                        "args": (mod, config_opt, True),
-                                    }
-                                ]
-                                if not module.config[config_opt]
-                                else [
-                                    {
-                                        "text": f"❌ {self.strings('set')} `False`",
-                                        "callback": self.inline__set_bool,
-                                        "args": (mod, config_opt, False),
-                                    }
-                                ]
-                            ),
-                        ],
-                        [
-                            {
-                                "text": "👈 Back",
-                                "callback": self.inline__configure,
-                                "args": (mod,),
-                            },
-                            {"text": "🚫 Close", "callback": self.inline__close},
-                        ],
-                    ],
+                    self.strings("configuring_option").format(*args),
+                    reply_markup=self._generate_bool_markup(mod, config_opt),
+                )
+                return
+
+            if validator.internal_id == "Series":
+                await call.edit(
+                    self.strings("configuring_option").format(*args),
+                    reply_markup=self._generate_series_markup(call, mod, config_opt),
                 )
                 return
 
         await call.edit(
-            self.strings("configuring_option").format(
-                utils.escape_html(config_opt),
-                utils.escape_html(mod),
-                utils.escape_html(module.config.getdoc(config_opt)),
-                utils.escape_html(self.prep_value(module.config.getdef(config_opt))),
-                utils.escape_html(self.prep_value(module.config[config_opt])),
-                self.strings("typehint").format(doc) if doc else "",
-            ),
+            self.strings("configuring_option").format(*args),
             reply_markup=[
                 [
                     {
-                        "text": "✍️ Enter value",
-                        "input": "✍️ Enter new configuration value for this option",
+                        "text": self.strings("enter_value_btn"),
+                        "input": self.strings("enter_value_desc"),
                         "handler": self.inline__set_config,
                         "args": (mod, config_opt, call.inline_message_id),
                     }
                 ],
                 [
                     {
-                        "text": "👈 Back",
+                        "text": self.strings("set_default_btn"),
+                        "callback": self.inline__reset_default,
+                        "args": (mod, config_opt),
+                    }
+                ],
+                [
+                    {
+                        "text": self.strings("back_btn"),
                         "callback": self.inline__configure,
                         "args": (mod,),
                     },
-                    {"text": "🚫 Close", "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "callback": self.inline__close},
                 ],
             ],
         )
 
     async def inline__configure(self, call: InlineCall, mod: str):
         btns = []
-        for module in self.allmodules.modules:
-            if module.strings("name") == mod:
-                for param in module.config:
-                    btns += [
-                        {
-                            "text": param,
-                            "callback": self.inline__configure_option,
-                            "args": (mod, param),
-                        }
-                    ]
+
+        for param in self.lookup(mod).config:
+            btns += [
+                {
+                    "text": param,
+                    "callback": self.inline__configure_option,
+                    "args": (mod, param),
+                }
+            ]
 
         await call.edit(
             self.strings("configuring_mod").format(utils.escape_html(mod)),
             reply_markup=list(utils.chunks(btns, 2))
             + [
                 [
-                    {"text": "👈 Back", "callback": self.inline__global_config},
-                    {"text": "🚫 Close", "callback": self.inline__close},
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__global_config,
+                    },
+                    {"text": self.strings("close_btn"), "callback": self.inline__close},
                 ]
             ],
         )
@@ -322,7 +499,7 @@ class HikkaConfigMod(loader.Module):
             ]
             kb += [row]
 
-        kb += [[{"text": "🚫 Close", "callback": self.inline__close}]]
+        kb += [[{"text": self.strings("close_btn"), "callback": self.inline__close}]]
 
         if isinstance(call, Message):
             await self.inline.form(
@@ -335,6 +512,17 @@ class HikkaConfigMod(loader.Module):
 
     async def configcmd(self, message: Message):
         """Configure modules"""
+        args = utils.get_args_raw(message)
+        if self.lookup(args):
+            form = await self.inline.form(
+                "🌘 <b>Loading configuration</b>",
+                message,
+                {"text": "🌘", "data": "empty"},
+                ttl=60 * 60,
+            )
+            await self.inline__configure(form, args)
+            return
+
         await self.inline__global_config(message)
 
     async def fconfigcmd(self, message: Message):
@@ -362,6 +550,6 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                utils.escape_html(self.prep_value(instance.config[option])),
+                self.prep_value(instance.config[option]),
             ),
         )
