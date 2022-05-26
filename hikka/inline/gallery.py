@@ -443,7 +443,7 @@ class Gallery(InlineUnit):
         except Exception:
             ext = None
 
-        if self._units[unit_id].get("gif", False) or ext == ".gif":
+        if self._units[unit_id].get("gif", False) or ext in {".gif", ".mp4"}:
             return InputMediaAnimation(
                 media=media,
                 caption=self._get_caption(unit_id),
@@ -573,7 +573,7 @@ class Gallery(InlineUnit):
                     "title": "Processing inline gallery",
                 }
 
-                if unit.get("gif", False) or ext == ".gif":
+                if unit.get("gif", False) or ext in {".gif", ".mp4"}:
                     await inline_query.answer(
                         [InlineQueryResultGif(gif_url=unit["photo_url"], **args)]
                     )
