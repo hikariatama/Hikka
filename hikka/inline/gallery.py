@@ -17,6 +17,8 @@ from aiogram.types import (
 )
 from aiogram.utils.exceptions import BadRequest, InvalidHTTPUrlContent, RetryAfter
 from telethon.tl.types import Message
+from urllib.parse import urlparse
+import os
 
 from .. import utils
 from .types import InlineUnit
@@ -78,7 +80,7 @@ class Gallery(InlineUnit):
                 in real time
             gif
                 Whether the gallery will be filled with gifs. If you omit this argument and specify
-                gifs in `next_handler`, they will be interpreted as plain images (not GIFs!)
+                gifs in `next_handler`, Hikka will try to determine the filetype of these images
             manual_security
                 By default, Hikka will try to inherit inline buttons security from the caller (command)
                 If you want to avoid this, pass `manual_security=True`
@@ -437,18 +439,24 @@ class Gallery(InlineUnit):
         gallery_uid: str,
     ) -> Union[InputMediaPhoto, InputMediaAnimation]:
         """Return current media, which should be updated in gallery"""
-        return (
-            InputMediaPhoto(
-                media=self._get_next_photo(gallery_uid),
+        media = self._get_next_photo(gallery_uid)
+        try:
+            path = urlparse(media).path
+            ext = os.path.splitext(path)[1]
+        except Exception:
+            ext = None
+
+        if self._galleries[gallery_uid].get("gif", False) or ext == ".gif":
+            return InputMediaAnimation(
+                media=media,
                 caption=self._get_caption(gallery_uid),
                 parse_mode="HTML",
             )
-            if not self._galleries[gallery_uid].get("gif", False)
-            else InputMediaAnimation(
-                media=self._get_next_photo(gallery_uid),
-                caption=self._get_caption(gallery_uid),
-                parse_mode="HTML",
-            )
+
+        return InputMediaPhoto(
+            media=media,
+            caption=self._get_caption(gallery_uid),
+            parse_mode="HTML",
         )
 
     async def _gallery_next(
@@ -564,38 +572,28 @@ class Gallery(InlineUnit):
                 inline_query.from_user.id == self._me
                 and inline_query.query == gallery["uid"]
             ):
-                if not gallery.get("gif", False):
+                try:
+                    path = urlparse(gallery["photo_url"]).path
+                    ext = os.path.splitext(path)[1]
+                except Exception:
+                    ext = None
+
+                args = {
+                    "thumb_url": "https://img.icons8.com/fluency/344/loading.png",
+                    "caption": self._get_caption(gallery["uid"]),
+                    "parse_mode": "HTML",
+                    "reply_markup": self._gallery_markup(gallery["uid"]),
+                    "id": utils.rand(20),
+                    "title": "Processing inline gallery",
+                }
+
+                if gallery.get("gif", False) or ext == ".gif":
                     await inline_query.answer(
-                        [
-                            InlineQueryResultPhoto(
-                                id=utils.rand(20),
-                                title="Processing inline gallery",
-                                photo_url=gallery["photo_url"],
-                                thumb_url="https://img.icons8.com/fluency/344/loading.png",
-                                caption=self._get_caption(gallery["uid"]),
-                                description="Processing inline gallery",
-                                reply_markup=self._gallery_markup(
-                                    gallery["uid"],
-                                ),
-                                parse_mode="HTML",
-                            )
-                        ],
-                        cache_time=0,
+                        [InlineQueryResultGif(gif_url=gallery["photo_url"], **args)]
                     )
                     return
 
                 await inline_query.answer(
-                    [
-                        InlineQueryResultGif(
-                            id=utils.rand(20),
-                            title="Processing inline gallery",
-                            gif_url=gallery["photo_url"],
-                            thumb_url="https://img.icons8.com/fluency/344/loading.png",
-                            caption=self._get_caption(gallery["uid"]),
-                            parse_mode="HTML",
-                            reply_markup=self._gallery_markup(
-                                gallery["uid"],
-                            ),
-                        )
-                    ]
+                    [InlineQueryResultPhoto(photo_url=gallery["photo_url"], **args)],
+                    cache_time=0,
                 )
