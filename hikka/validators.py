@@ -39,7 +39,7 @@ class Validator:
         self.validate = validator
 
         if isinstance(doc, str):
-            doc = {"en": doc}
+            doc = {"en": doc, "ru": doc}
 
         self.doc = doc
         self.internal_id = _internal_id
