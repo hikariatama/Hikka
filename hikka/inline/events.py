@@ -218,26 +218,26 @@ class Events(InlineUnit):
                     )
                     continue
 
-        for form_uid, form in self._forms.copy().items():
-            for button in utils.array_sum(form.get("buttons", [])):
+        for unit_id, unit in self._units.copy().items():
+            for button in utils.array_sum(unit.get("buttons", [])):
                 if button.get("_callback_data") == query.data:
                     if (
                         button.get("disable_security", False)
-                        or form.get("disable_security", False)
+                        or unit.get("disable_security", False)
                         or (
-                            form.get("force_me", False)
+                            unit.get("force_me", False)
                             and query.from_user.id == self._me
                         )
-                        or not form.get("force_me", False)
+                        or not unit.get("force_me", False)
                         and (
                             await self.check_inline_security(
-                                func=form.get(
+                                func=unit.get(
                                     "perms_map",
                                     lambda: self._client.dispatcher.security._default,
                                 )(),  # we call it so we can get reloaded rights in runtime
                                 user=query.from_user.id,
                             )
-                            if "message" in form
+                            if "message" in unit
                             else False
                         )
                     ):
@@ -245,7 +245,7 @@ class Events(InlineUnit):
                     elif (
                         query.from_user.id
                         not in self._client.dispatcher.security._owner
-                        + form.get("always_allow", [])
+                        + unit.get("always_allow", [])
                         + button.get("always_allow", [])
                     ):
                         await query.answer("You are not allowed to press this button!")
@@ -253,7 +253,7 @@ class Events(InlineUnit):
 
                     try:
                         return await button["callback"](
-                            InlineCall(query, self, form_uid),
+                            InlineCall(query, self, unit_id),
                             *button.get("args", []),
                             **button.get("kwargs", {}),
                         )
@@ -267,7 +267,7 @@ class Events(InlineUnit):
                         )
                         return
 
-                    del self._forms[form_uid]
+                    del self._units[unit_id]
 
         if query.data in self._custom_map:
             if (
@@ -311,22 +311,18 @@ class Events(InlineUnit):
     ):
         query = chosen_inline_query.query
 
-        for uid, object_ in {
-            **self._forms.copy(),
-            **self._lists.copy(),
-            **self._galleries.copy(),
-        }.items():
+        for unit_id, unit in self._units.items():
             if (
-                uid == query
-                and "future" in object_
-                and isinstance(object_["future"], Event)
+                unit_id == query
+                and "future" in unit
+                and isinstance(unit["future"], Event)
             ):
-                object_["inline_message_id"] = chosen_inline_query.inline_message_id
-                object_["future"].set()
+                unit["inline_message_id"] = chosen_inline_query.inline_message_id
+                unit["future"].set()
                 return
 
-        for form_uid, form in self._forms.copy().items():
-            for button in utils.array_sum(form.get("buttons", [])):
+        for unit_id, unit in self._units.copy().items():
+            for button in utils.array_sum(unit.get("buttons", [])):
                 if (
                     "_switch_query" in button
                     and "input" in button
@@ -334,14 +330,14 @@ class Events(InlineUnit):
                     and chosen_inline_query.from_user.id
                     in [self._me]
                     + self._client.dispatcher.security._owner
-                    + form.get("always_allow", [])
+                    + unit.get("always_allow", [])
                 ):
 
                     query = query.split(maxsplit=1)[1] if len(query.split()) > 1 else ""
 
                     try:
                         return await button["handler"](
-                            InlineCall(chosen_inline_query, self, form_uid),
+                            InlineCall(chosen_inline_query, self, unit_id),
                             query,
                             *button.get("args", []),
                             **button.get("kwargs", {}),

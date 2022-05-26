@@ -240,16 +240,17 @@ class Form(InlineUnit):
         else:
             status_message = None
 
-        form_uid = utils.rand(30)
+        unit_id = utils.rand(16)
 
         perms_map = self._find_caller_sec_map() if not manual_security else None
 
-        self._forms[form_uid] = {
+        self._units[unit_id] = {
+            "type": "form",
             "text": text,
             "buttons": reply_markup,
             "chat": None,
             "message_id": None,
-            "uid": form_uid,
+            "uid": unit_id,
             "on_unload": on_unload,
             "future": Event(),
             **({"photo": photo} if photo else {}),
@@ -267,7 +268,7 @@ class Form(InlineUnit):
         }
 
         try:
-            q = await self._client.inline_query(self.bot_username, form_uid)
+            q = await self._client.inline_query(self.bot_username, unit_id)
             m = await q[0].click(
                 utils.get_chat_id(message) if isinstance(message, Message) else message,
                 reply_to=message.reply_to_msg_id
@@ -281,7 +282,7 @@ class Form(InlineUnit):
                 "further info.</b>"
             )
 
-            del self._forms[form_uid]
+            del self._units[unit_id]
             if isinstance(message, Message):
                 await (message.edit if message.out else message.respond)(msg)
             else:
@@ -289,11 +290,11 @@ class Form(InlineUnit):
 
             return False
 
-        await self._forms[form_uid]["future"].wait()
-        del self._forms[form_uid]["future"]
+        await self._units[unit_id]["future"].wait()
+        del self._units[unit_id]["future"]
 
-        self._forms[form_uid]["chat"] = utils.get_chat_id(m)
-        self._forms[form_uid]["message_id"] = m.id
+        self._units[unit_id]["chat"] = utils.get_chat_id(m)
+        self._units[unit_id]["message_id"] = m.id
 
         if isinstance(message, Message) and message.out:
             await message.delete()
@@ -301,19 +302,22 @@ class Form(InlineUnit):
         if status_message and not message.out:
             await status_message.delete()
 
-        inline_message_id = self._forms[form_uid]["inline_message_id"]
+        inline_message_id = self._units[unit_id]["inline_message_id"]
 
-        if not any(
-            any("callback" in button or "input" in button for button in row)
-            for row in reply_markup
-        ) and not ttl:
-            del self._forms[form_uid]
+        if (
+            not any(
+                any("callback" in button or "input" in button for button in row)
+                for row in reply_markup
+            )
+            and not ttl
+        ):
+            del self._units[unit_id]
             logger.debug(
-                f"Unloading form {form_uid}, because it "
+                f"Unloading form {unit_id}, because it "
                 "doesn't contain any button callbacks"
             )
 
-        return InlineMessage(self, form_uid, inline_message_id)
+        return InlineMessage(self, unit_id, inline_message_id)
 
     async def _form_inline_handler(self, inline_query: InlineQuery):
         try:
@@ -321,8 +325,8 @@ class Form(InlineUnit):
         except IndexError:
             return
 
-        for form in self._forms.copy().values():
-            for button in utils.array_sum(form.get("buttons", [])):
+        for unit in self._units.copy().values():
+            for button in utils.array_sum(unit.get("buttons", [])):
                 if (
                     "_switch_query" in button
                     and "input" in button
@@ -330,7 +334,7 @@ class Form(InlineUnit):
                     and inline_query.from_user.id
                     in [self._me]
                     + self._client.dispatcher.security._owner
-                    + form.get("always_allow", [])
+                    + unit.get("always_allow", [])
                 ):
                     await inline_query.answer(
                         [
@@ -350,11 +354,14 @@ class Form(InlineUnit):
                     )
                     return
 
-        if inline_query.query not in self._forms:
+        if (
+            inline_query.query not in self._units
+            or self._units[inline_query.query]["type"] != "form"
+        ):
             return
 
         # Otherwise, answer it with templated form
-        form = self._forms[inline_query.query]
+        form = self._units[inline_query.query]
         if "photo" in form:
             await inline_query.answer(
                 [

@@ -44,9 +44,7 @@ class InlineManager(
     List,
     BotPM,
 ):
-    _forms = {}
-    _galleries = {}
-    _lists = {}
+    _units = {}
     _custom_map = {}
 
     fsm = {}
@@ -71,19 +69,11 @@ class InlineManager(
         self._token = db.get("hikka.inline", "bot_token", False)
 
     async def _cleaner(self):
-        """Cleans outdated _forms"""
+        """Cleans outdated inline units"""
         while True:
-            for form_uid, form in self._forms.copy().items():
-                if form.get("ttl", time.time() + self._markup_ttl) < time.time():
-                    del self._forms[form_uid]
-
-            for gallery_uid, gallery in self._galleries.copy().items():
-                if gallery.get("ttl", time.time() + self._markup_ttl) < time.time():
-                    del self._galleries[gallery_uid]
-
-            for map_uid, config in self._custom_map.copy().items():
-                if config.get("ttl", time.time() + self._markup_ttl) < time.time():
-                    del self._custom_map[map_uid]
+            for unit_id, unit in self._units.copy().items():
+                if unit.get("ttl", time.time() + self._markup_ttl) < time.time():
+                    del self._units[unit_id]
 
             await asyncio.sleep(5)
 

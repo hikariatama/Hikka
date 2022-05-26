@@ -108,22 +108,16 @@ class List(InlineUnit):
             ttl = self._markup_ttl
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
-        list_uid = utils.rand(30)
-        btn_call_data = {
-            key: utils.rand(16)
-            for key in {
-                "back",
-                "next",
-                "close",
-            }
-        }
+        unit_uid = utils.rand(16)
+        btn_call_data = {key: utils.rand(10) for key in {"back", "next", "close"}}
 
         perms_map = self._find_caller_sec_map() if not manual_security else None
 
-        self._lists[list_uid] = {
+        self._units[unit_uid] = {
+            "type": "list",
             "chat": None,
             "message_id": None,
-            "uid": list_uid,
+            "uid": unit_uid,
             "btn_call_data": btn_call_data,
             "current_index": 0,
             "strings": strings,
@@ -139,8 +133,8 @@ class List(InlineUnit):
 
         default_map = {
             **(
-                {"ttl": self._lists[list_uid]["ttl"]}
-                if "ttl" in self._lists[list_uid]
+                {"ttl": self._units[unit_uid]["ttl"]}
+                if "ttl" in self._units[unit_uid]
                 else {}
             ),
             **({"always_allow": always_allow} if always_allow else {}),
@@ -155,7 +149,7 @@ class List(InlineUnit):
                 functools.partial(
                     self._list_back,
                     btn_call_data=btn_call_data,
-                    list_uid=list_uid,
+                    unit_uid=unit_uid,
                 )
             ),
             **default_map,
@@ -165,7 +159,7 @@ class List(InlineUnit):
             "handler": asyncio.coroutine(
                 functools.partial(
                     self._delete_unit_message,
-                    unit_uid=list_uid,
+                    unit_uid=unit_uid,
                 )
             ),
             **default_map,
@@ -176,7 +170,7 @@ class List(InlineUnit):
                 functools.partial(
                     self._list_next,
                     btn_call_data=btn_call_data,
-                    list_uid=list_uid,
+                    unit_uid=unit_uid,
                 )
             ),
             **default_map,
@@ -193,7 +187,7 @@ class List(InlineUnit):
             status_message = None
 
         try:
-            q = await self._client.inline_query(self.bot_username, list_uid)
+            q = await self._client.inline_query(self.bot_username, unit_uid)
             m = await q[0].click(
                 utils.get_chat_id(message) if isinstance(message, Message) else message,
                 reply_to=message.reply_to_msg_id
@@ -202,14 +196,14 @@ class List(InlineUnit):
             )
         except Exception:
             logger.exception("Error sending inline list")
-            del self._lists[list_uid]
+            del self._units[unit_uid]
             return
 
-        await self._lists[list_uid]["future"].wait()
-        del self._lists[list_uid]["future"]
+        await self._units[unit_uid]["future"].wait()
+        del self._units[unit_uid]["future"]
 
-        self._lists[list_uid]["chat"] = utils.get_chat_id(m)
-        self._lists[list_uid]["message_id"] = m.id
+        self._units[unit_uid]["chat"] = utils.get_chat_id(m)
+        self._units[unit_uid]["message_id"] = m.id
 
         if isinstance(message, Message) and message.out:
             await message.delete()
@@ -217,27 +211,27 @@ class List(InlineUnit):
         if status_message and not message.out:
             await status_message.delete()
 
-        return InlineMessage(self, list_uid, self._lists[list_uid]["inline_message_id"])
+        return InlineMessage(self, unit_uid, self._units[unit_uid]["inline_message_id"])
 
     async def _list_back(
         self,
         call: CallbackQuery,
         btn_call_data: _List[str] = None,
-        list_uid: str = None,
+        unit_uid: str = None,
     ):
-        if not self._lists[list_uid]["current_index"]:
+        if not self._units[unit_uid]["current_index"]:
             await call.answer("No way back", show_alert=True)
             return
 
-        self._lists[list_uid]["current_index"] -= 1
+        self._units[unit_uid]["current_index"] -= 1
 
         try:
             await self.bot.edit_message_text(
                 inline_message_id=call.inline_message_id,
-                text=self._lists[list_uid]["strings"][
-                    self._lists[list_uid]["current_index"]
+                text=self._units[unit_uid]["strings"][
+                    self._units[unit_uid]["current_index"]
                 ],
-                reply_markup=self._list_markup(list_uid),
+                reply_markup=self._list_markup(unit_uid),
             )
             await call.answer()
         except RetryAfter as e:
@@ -255,24 +249,24 @@ class List(InlineUnit):
         call: CallbackQuery,
         btn_call_data: _List[str] = None,
         func: FunctionType = None,
-        list_uid: str = None,
+        unit_uid: str = None,
     ):
-        self._lists[list_uid]["current_index"] += 1
+        self._units[unit_uid]["current_index"] += 1
         # If we exceeded limit in list
-        if self._lists[list_uid]["current_index"] >= len(
-            self._lists[list_uid]["strings"]
+        if self._units[unit_uid]["current_index"] >= len(
+            self._units[unit_uid]["strings"]
         ):
             await call.answer("No entries left...", show_alert=True)
-            self._lists[list_uid]["current_index"] -= 1
+            self._units[unit_uid]["current_index"] -= 1
             return
 
         try:
             await self.bot.edit_message_text(
                 inline_message_id=call.inline_message_id,
-                text=self._lists[list_uid]["strings"][
-                    self._lists[list_uid]["current_index"]
+                text=self._units[unit_uid]["strings"][
+                    self._units[unit_uid]["current_index"]
                 ],
-                reply_markup=self._list_markup(list_uid),
+                reply_markup=self._list_markup(unit_uid),
             )
             await call.answer()
         except RetryAfter as e:
@@ -286,33 +280,33 @@ class List(InlineUnit):
             await call.answer("Error occurred", show_alert=True)
             return
 
-    def _list_markup(self, list_uid: str) -> InlineKeyboardMarkup:
+    def _list_markup(self, unit_uid: str) -> InlineKeyboardMarkup:
         """Converts `btn_call_data` into a aiogram markup"""
         markup = InlineKeyboardMarkup()
         markup.add(
             *(
                 [
                     InlineKeyboardButton(
-                        f"⏪ [{self._lists[list_uid]['current_index']} / {len(self._lists[list_uid]['strings'])}]",
-                        callback_data=self._lists[list_uid]["btn_call_data"]["back"],
+                        f"⏪ [{self._units[unit_uid]['current_index']} / {len(self._units[unit_uid]['strings'])}]",
+                        callback_data=self._units[unit_uid]["btn_call_data"]["back"],
                     )
                 ]
-                if self._lists[list_uid]["current_index"] > 0
+                if self._units[unit_uid]["current_index"] > 0
                 else []
             ),
             InlineKeyboardButton(
                 "❌",
-                callback_data=self._lists[list_uid]["btn_call_data"]["close"],
+                callback_data=self._units[unit_uid]["btn_call_data"]["close"],
             ),
             *(
                 [
                     InlineKeyboardButton(
-                        f"⏩ [{self._lists[list_uid]['current_index'] + 2} / {len(self._lists[list_uid]['strings'])}]",
-                        callback_data=self._lists[list_uid]["btn_call_data"]["next"],
+                        f"⏩ [{self._units[unit_uid]['current_index'] + 2} / {len(self._units[unit_uid]['strings'])}]",
+                        callback_data=self._units[unit_uid]["btn_call_data"]["next"],
                     ),
                 ]
-                if self._lists[list_uid]["current_index"]
-                < len(self._lists[list_uid]["strings"]) - 1
+                if self._units[unit_uid]["current_index"]
+                < len(self._units[unit_uid]["strings"]) - 1
                 else []
             ),
         )
@@ -320,10 +314,11 @@ class List(InlineUnit):
         return markup
 
     async def _list_inline_handler(self, inline_query: InlineQuery):
-        for strings in self._lists.copy().values():
+        for unit in self._units.copy().values():
             if (
                 inline_query.from_user.id == self._me
-                and inline_query.query == strings["uid"]
+                and inline_query.query == unit["uid"]
+                and unit["type"] == "list"
             ):
                 await inline_query.answer(
                     [
@@ -331,7 +326,7 @@ class List(InlineUnit):
                             id=utils.rand(20),
                             title="Hikka",
                             input_message_content=InputTextMessageContent(
-                                self._lists[inline_query.query]["strings"][0],
+                                unit["strings"][0],
                                 "HTML",
                                 disable_web_page_preview=True,
                             ),

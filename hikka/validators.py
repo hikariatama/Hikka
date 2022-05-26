@@ -398,7 +398,10 @@ def _TelegramID(value: Any, /):
     except Exception:
         raise e
 
-    if value > 2**32 - 1 or value < -(2**32) + 1:
+    if str(value).startswith("-100"):
+        value = int(str(value)[4:])
+
+    if value > 2**32 - 1 or value < 0:
         raise e
 
     return value

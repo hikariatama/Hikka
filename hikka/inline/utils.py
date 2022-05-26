@@ -31,7 +31,7 @@ class Utils(InlineUnit):
         markup = InlineKeyboardMarkup()
 
         map_ = (
-            self._forms[markup_obj]["buttons"]
+            self._units[markup_obj]["buttons"]
             if isinstance(markup_obj, str)
             else markup_obj
         )
@@ -220,7 +220,6 @@ class Utils(InlineUnit):
         inline_message_id: Union[str, None] = None,
     ):
         """Do not edit or pass `self`, `query`, `unit_uid` params, they are for internal use only"""
-        self._units = {**self._forms, **self._lists, **self._galleries}
         if isinstance(reply_markup, (list, dict)):
             reply_markup = self._normalize_markup(reply_markup)
         elif reply_markup is None:
@@ -310,7 +309,6 @@ class Utils(InlineUnit):
         unit_uid: str = None,
     ) -> bool:
         """Params `self`, `form`, `unit_uid` are for internal use only, do not try to pass them"""
-        self._units = {**self._forms, **self._lists, **self._galleries}
         try:
             await self._client.delete_messages(
                 self._units[unit_uid]["chat"],
@@ -329,19 +327,14 @@ class Utils(InlineUnit):
         unit_uid: str = None,
     ) -> bool:
         """Params `self`, `unit_uid` are for internal use only, do not try to pass them"""
-        self._units = {**self._forms, **self._lists, **self._galleries}
         try:
             if "on_unload" in self._units[unit_uid] and callable(
                 self._units[unit_uid]["on_unload"]
             ):
                 self._units[unit_uid]["on_unload"]()
 
-            if unit_uid in self._forms:
-                del self._forms[unit_uid]
-            elif unit_uid in self._lists:
-                del self._lists[unit_uid]
-            elif unit_uid in self._galleries:
-                del self._galleries[unit_uid]
+            if unit_uid in self._units:
+                del self._units[unit_uid]
             else:
                 return False
         except Exception:

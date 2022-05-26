@@ -153,10 +153,10 @@ class UpdaterMod(loader.Module):
             hasattr(msg_obj, "form")
             and isinstance(msg_obj.form, dict)
             and "uid" in msg_obj.form
-            and msg_obj.form["uid"] in self.inline._forms
-            and "message" in self.inline._forms[msg_obj.form["uid"]]
+            and msg_obj.form["uid"] in self.inline._units
+            and "message" in self.inline._units[msg_obj.form["uid"]]
         ):
-            message = self.inline._forms[msg_obj.form["uid"]]["message"]
+            message = self.inline._units[msg_obj.form["uid"]]["message"]
         else:
             message = msg_obj
 

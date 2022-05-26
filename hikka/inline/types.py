@@ -22,11 +22,7 @@ class InlineMessage:
         self.inline_message_id = inline_message_id
         self.unit_uid = unit_uid
         self.inline_manager = inline_manager
-        self._units = {
-            **inline_manager._forms,
-            **inline_manager._lists,
-            **inline_manager._galleries,
-        }
+        self._units = inline_manager._units
         self.form = (
             {"id": unit_uid, **self._units[unit_uid]} if unit_uid in self._units else {}
         )
@@ -126,97 +122,69 @@ class InlineQuery(AiogramInlineQuery):
             else ""
         )
 
+    @staticmethod
+    def _get_res(title: str, description: str, thumb_url: str) -> list:
+        return [
+            InlineQueryResultArticle(
+                id=utils.rand(20),
+                title=title,
+                description=description,
+                input_message_content=InputTextMessageContent(
+                    "😶‍🌫️ <i>There is nothing here...</i>",
+                    parse_mode="HTML",
+                ),
+                thumb_url=thumb_url,
+                thumb_width=128,
+                thumb_height=128,
+            )
+        ]
+
     async def e400(self):
         await self.answer(
-            [
-                InlineQueryResultArticle(
-                    id=utils.rand(20),
-                    title="🚫 400",
-                    description="Bad request. You need to pass right arguments, follow module's documentation",
-                    input_message_content=InputTextMessageContent(
-                        "😶‍🌫️ <i>There is nothing here...</i>",
-                        parse_mode="HTML",
-                    ),
-                    thumb_url="https://img.icons8.com/color/344/swearing-male--v1.png",
-                    thumb_width=128,
-                    thumb_height=128,
-                )
-            ],
+            self._get_res(
+                "🚫 400",
+                "Bad request. You need to pass right arguments, follow module's documentation",
+                "https://img.icons8.com/color/344/swearing-male--v1.png",
+            ),
             cache_time=0,
         )
 
     async def e403(self):
         await self.answer(
-            [
-                InlineQueryResultArticle(
-                    id=utils.rand(20),
-                    title="🚫 403",
-                    description="You have no permissions to access this result",
-                    input_message_content=InputTextMessageContent(
-                        "😶‍🌫️ <i>There is nothing here...</i>",
-                        parse_mode="HTML",
-                    ),
-                    thumb_url="https://img.icons8.com/external-wanicon-flat-wanicon/344/external-forbidden-new-normal-wanicon-flat-wanicon.png",
-                    thumb_width=128,
-                    thumb_height=128,
-                )
-            ],
+            self._get_res(
+                "🚫 403",
+                "You have no permissions to access this result",
+                "https://img.icons8.com/external-wanicon-flat-wanicon/344/external-forbidden-new-normal-wanicon-flat-wanicon.png",
+            ),
             cache_time=0,
         )
 
     async def e404(self):
         await self.answer(
-            [
-                InlineQueryResultArticle(
-                    id=utils.rand(20),
-                    title="🚫 404",
-                    description="No results found",
-                    input_message_content=InputTextMessageContent(
-                        "😶‍🌫️ <i>There is nothing here...</i>",
-                        parse_mode="HTML",
-                    ),
-                    thumb_url="https://img.icons8.com/external-justicon-flat-justicon/344/external-404-error-responsive-web-design-justicon-flat-justicon.png",
-                    thumb_width=128,
-                    thumb_height=128,
-                )
-            ],
+            self._get_res(
+                "🚫 404",
+                "No results found",
+                "https://img.icons8.com/external-justicon-flat-justicon/344/external-404-error-responsive-web-design-justicon-flat-justicon.png",
+            ),
             cache_time=0,
         )
 
     async def e426(self):
         await self.answer(
-            [
-                InlineQueryResultArticle(
-                    id=utils.rand(20),
-                    title="🚫 426",
-                    description="You need to update Hikka before sending this request",
-                    input_message_content=InputTextMessageContent(
-                        "😶‍🌫️ <i>There is nothing here...</i>",
-                        parse_mode="HTML",
-                    ),
-                    thumb_url="https://img.icons8.com/fluency/344/approve-and-update.png",
-                    thumb_width=128,
-                    thumb_height=128,
-                )
-            ],
+            self._get_res(
+                "🚫 426",
+                "You need to update Hikka before sending this request",
+                "https://img.icons8.com/fluency/344/approve-and-update.png",
+            ),
             cache_time=0,
         )
 
     async def e500(self):
         await self.answer(
-            [
-                InlineQueryResultArticle(
-                    id=utils.rand(20),
-                    title="🚫 500",
-                    description="Internal userbot error while processing request. More info in logs",
-                    input_message_content=InputTextMessageContent(
-                        "😶‍🌫️ <i>There is nothing here...</i>",
-                        parse_mode="HTML",
-                    ),
-                    thumb_url="https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/344/external-error-internet-security-vitaliy-gorbachev-flat-vitaly-gorbachev.png",
-                    thumb_width=128,
-                    thumb_height=128,
-                )
-            ],
+            self._get_res(
+                "🚫 500",
+                "Internal userbot error while processing request. More info in logs",
+                "https://img.icons8.com/external-vitaliy-gorbachev-flat-vitaly-gorbachev/344/external-error-internet-security-vitaliy-gorbachev-flat-vitaly-gorbachev.png",
+            ),
             cache_time=0,
         )
