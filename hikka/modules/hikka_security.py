@@ -189,9 +189,7 @@ class HikkaSecurityMod(loader.Module):
 
         await call.edit(
             self.strings("permissions").format(
-                f"@{self.inline.bot_username} "
-                if is_inline
-                else self.get_prefix(),
+                f"@{self.inline.bot_username} " if is_inline else self.get_prefix(),
                 command,
             ),
             reply_markup=self._build_markup(cmd, is_inline),
@@ -254,7 +252,6 @@ class HikkaSecurityMod(loader.Module):
                     }
                 ]
             ]
-
 
         return utils.chunks(
             [
@@ -507,7 +504,6 @@ class HikkaSecurityMod(loader.Module):
             group,
             list(set(self._db.get(security.__name__, group, [])) - {user.id}),
         )
-
 
         m = self.strings(f"{group}_removed").format(
             user.id,

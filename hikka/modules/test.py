@@ -10,7 +10,6 @@
 
 # scope: inline
 
-import asyncio
 import inspect
 import logging
 import os
@@ -413,8 +412,6 @@ class TestMod(loader.Module):
         )
 
         self._logchat = int(f"-100{chat.id}")
-
-        logger = logging.getLogger(__name__)
 
         if not is_new or all(
             participant.id != self.inline.bot_id

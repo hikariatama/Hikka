@@ -10,6 +10,7 @@
 
 # scope: inline
 
+import ast
 import logging
 from typing import Union, Any
 
@@ -252,7 +253,18 @@ class HikkaConfigMod(loader.Module):
         inline_message_id: str,
     ):
         try:
-            self.lookup(mod).config[option] += [query]
+            try:
+                query = ast.literal_eval(query)
+            except Exception:
+                pass
+
+            if isinstance(query, (set, tuple)):
+                query = list(query)
+
+            if not isinstance(query, list):
+                query = [query]
+
+            self.lookup(mod).config[option] = self.lookup(mod).config[option] + query
         except loader.validators.ValidationError as e:
             await call.edit(
                 self.strings("validation_error").format(e.args[0]),
@@ -292,13 +304,32 @@ class HikkaConfigMod(loader.Module):
         inline_message_id: str,
     ):
         try:
-            for i, item in enumerate(self.lookup(mod).config[option]):
-                if str(item) == str(query):
-                    del self.lookup(mod).config[option][i]
+            try:
+                query = ast.literal_eval(query)
+            except Exception:
+                pass
+
+            if isinstance(query, (set, tuple)):
+                query = list(query)
+
+            if not isinstance(query, list):
+                query = [query]
+
+            query = list(map(str, query))
+            found = False
+
+            while True:
+                for i, item in enumerate(self.lookup(mod).config[option]):
+                    if str(item) in query:
+                        del self.lookup(mod).config[option][i]
+                        found = True
+                        break
+                else:
                     break
-            else:
+
+            if not found:
                 raise loader.validators.ValidationError(
-                    f"Passed value ({utils.escape_html(query)}) is not in target list"
+                    f"Nothing from passed value ({self.prep_value(query)}) is not in target list"
                 )
         except loader.validators.ValidationError as e:
             await call.edit(

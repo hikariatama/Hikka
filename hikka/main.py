@@ -426,7 +426,7 @@ class Hikka:
         ip = (
             "127.0.0.1"
             if "DOCKER" not in os.environ
-            else subprocess.run(["hostname", "-i"], stdout=subprocess.PIPE).stdout
+            else subprocess.run(["hostname", "-i"], stdout=subprocess.PIPE, check=True).stdout
         )
         print(f"🌐 Please visit http://{ip}:{self.web.port}")
 

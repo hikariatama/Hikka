@@ -1,3 +1,9 @@
+## 🌘 Patch released
+
+- Allow adding and removing multiple items in config
+- Add `ast.literal_eval` to config
+- Add explicit typecheck for `mod.config`
+
 ## 🌑 Hikka 1.1.28
 
 - Fix non-working param `share_link` in loader

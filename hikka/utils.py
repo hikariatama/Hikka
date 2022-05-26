@@ -583,10 +583,11 @@ def get_named_platform() -> str:
                 model = f.read()
                 if "Orange" in model:
                     return f"🍊 {model}"
-                elif "Raspberry" in model:
+
+                if "Raspberry" in model:
                     return f"🍇 {model}"
-                else:
-                    return f"❓ {model}"
+
+                return f"❓ {model}"
     except Exception:
         # In case of weird fs, aka Termux
         pass

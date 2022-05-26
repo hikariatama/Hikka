@@ -608,22 +608,24 @@ class Modules:
                 "__config__",
                 {},
             )
-            for conf in mod.config.keys():
-                try:
-                    mod.config.set_no_raise(
-                        conf,
-                        (
-                            modcfg[conf]
-                            if conf in modcfg.keys()
-                            else os.environ.get(
-                                f"{mod.__class__.__name__}.{conf}",
-                                None,
-                            )
-                            or mod.config.getdef(conf)
-                        ),
-                    )
-                except validators.ValidationError:
-                    pass
+            try:
+                for conf in mod.config.keys():
+                    try:
+                        mod.config.set_no_raise(
+                            conf,
+                            (
+                                modcfg[conf]
+                                if conf in modcfg.keys()
+                                else os.environ.get(f"{mod.__class__.__name__}.{conf}")
+                                or mod.config.getdef(conf)
+                            ),
+                        )
+                    except validators.ValidationError:
+                        pass
+            except AttributeError:
+                logger.warning(
+                    f"Got invalid config instance. Expected `ModuleConfig`, got {type(mod.config)=}, {mod.config=}"
+                )
 
         if skip_hook:
             return

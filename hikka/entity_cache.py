@@ -50,11 +50,15 @@ def install_entity_caching(client: TelegramClient):
 
     async def new(entity: EntityLike):
         if not hashable(entity):
-            hashable_entity = next(
-                getattr(entity, attr)
-                for attr in {"user_id", "channel_id", "chat_id", "id"}
-                if hasattr(entity, attr)
-            )
+            try:
+                hashable_entity = next(
+                    getattr(entity, attr)
+                    for attr in {"user_id", "channel_id", "chat_id", "id"}
+                    if hasattr(entity, attr)
+                )
+            except StopIteration:
+                logger.debug(f"Can't parse hashable from {entity=}, using legacy resolve")
+                return await client.get_entity(entity)
         else:
             hashable_entity = entity
 
