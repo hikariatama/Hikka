@@ -665,27 +665,6 @@ class HikkaSettingsMod(loader.Module):
                 ),
             ],
             [
-                (
-                    {
-                        "text": self.strings("download_btn"),
-                        "callback": self.inline__setting,
-                        "args": (
-                            "use_dl_btn",
-                            False,
-                        ),
-                    }
-                    if self._db.get(main.__name__, "use_dl_btn", True)
-                    else {
-                        "text": self.strings("no_download_btn"),
-                        "callback": self.inline__setting,
-                        "args": (
-                            "use_dl_btn",
-                            True,
-                        ),
-                    }
-                ),
-            ],
-            [
                 {
                     "text": self.strings("btn_restart"),
                     "callback": self.inline__restart,

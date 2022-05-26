@@ -328,10 +328,6 @@ class Modules:
                             not db.get("hikka", "disable_quickstart", False)
                             or x != "quickstart.py"
                         )
-                        and (
-                            db.get("hikka.main", "use_dl_btn", True)
-                            or x != "hikka_dl.py"
-                        )
                     ),
                     os.listdir(os.path.join(utils.get_base_dir(), MODULES_NAME)),
                 )
