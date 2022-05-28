@@ -215,7 +215,7 @@ BASE_DIR = (
 
 LOADED_MODULES_DIR = os.path.join(BASE_DIR, "loaded_modules")
 
-if not os.path.isdir(LOADED_MODULES_DIR):
+if not os.path.isdir(LOADED_MODULES_DIR) and "DYNO" not in os.environ:
     os.mkdir(LOADED_MODULES_DIR, mode=0o755)
 
 

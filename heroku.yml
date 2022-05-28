@@ -4,4 +4,4 @@ setup:
       as: DATABASE
 build:
   docker:
-      hikka: Heroku
+      web: Heroku
