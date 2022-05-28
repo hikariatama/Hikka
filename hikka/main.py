@@ -86,6 +86,9 @@ try:
 except Exception:
     pass
 
+if "DYNO" in os.environ:
+    heroku.init()
+
 
 def run_config(
     db: database.Database,

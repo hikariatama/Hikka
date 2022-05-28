@@ -584,8 +584,8 @@ class Modules:
     @staticmethod
     def send_config_one(
         mod: "Module",
-        db: "Database",  # noqa: F821
-        translator: "Translator" = None,  # noqa: F821
+        db: "Database",  # type: ignore
+        translator: "Translator" = None,  # type: ignore
         skip_hook: bool = False,
     ):
         """Send config to single instance"""
@@ -703,8 +703,8 @@ class Modules:
     async def send_ready_one(
         self,
         mod: Module,
-        client: "TelegramClient",  # noqa: F821
-        db: "Database",  # noqa: F821
+        client: "TelegramClient",  # type: ignore
+        db: "Database",  # type: ignore
         allclients: list,
         no_self_unload: bool = False,
         from_dlmod: bool = False,
