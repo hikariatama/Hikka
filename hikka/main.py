@@ -53,9 +53,9 @@ from telethon.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import SQLiteSession
+from telethon.sessions import SQLiteSession, StringSession
 
-from . import database, loader, utils
+from . import database, loader, utils, heroku
 from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
@@ -81,6 +81,7 @@ CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
 try:
     import uvloop
+
     uvloop.install()
 except Exception:
     pass
@@ -143,12 +144,12 @@ def save_config_key(key: str, value: str) -> bool:
 def gen_port() -> int:
     """
     Generates random free port in case of VDS, and
-    8080 in case of Okteto
+    8080 in case of Okteto and Heroku
     In case of Docker, also return 8080, as it's already
     exposed by default
     :returns: Integer value of generated port
     """
-    if "OKTETO" in os.environ or "DOCKER" in os.environ:
+    if any(trigger in os.environ for trigger in {"OKTETO", "DOCKER", "DYNO"}):
         return 8080
 
     # But for own server we generate new free port, and assign to it
@@ -182,6 +183,7 @@ def parse_arguments() -> dict:
     parser.add_argument("--port", dest="port", action="store", default=gen_port(), type=int)  # fmt: skip
     parser.add_argument("--phone", "-p", action="append")
     parser.add_argument("--token", "-t", action="append", dest="tokens")
+    parser.add_argument("--heroku", action="store_true")
     parser.add_argument("--no-nickname", "-nn", dest="no_nickname", action="store_true")
     parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
     parser.add_argument("--web-only", dest="web_only", action="store_true")
@@ -426,7 +428,9 @@ class Hikka:
         ip = (
             "127.0.0.1"
             if "DOCKER" not in os.environ
-            else subprocess.run(["hostname", "-i"], stdout=subprocess.PIPE, check=True).stdout
+            else subprocess.run(
+                ["hostname", "-i"], stdout=subprocess.PIPE, check=True
+            ).stdout
         )
         print(f"🌐 Please visit http://{ip}:{self.web.port}")
 
@@ -469,10 +473,13 @@ class Hikka:
         :returns: `True` if at least one client started successfully
         """
         for phone_id, phone in self.phones.copy().items():
-            session = os.path.join(
-                self.arguments.data_root or BASE_DIR,
-                f'hikka{f"-{phone_id}" if phone_id else ""}',
-            )
+            if self.arguments.heroku:
+                session = StringSession()
+            else:
+                session = os.path.join(
+                    self.arguments.data_root or BASE_DIR,
+                    f'hikka{f"-{phone_id}" if phone_id else ""}',
+                )
 
             try:
                 client = TelegramClient(
@@ -678,6 +685,26 @@ class Hikka:
             and not self.phones  # Search for already added phones / sessions
             or not self._init_clients()  # Attempt to read sessions from env
         ) and not self._initial_setup():  # Otherwise attempt to run setup
+            return
+        
+        if self.arguments.heroku:
+            if isinstance(self.arguments.heroku, str):
+                key = self.arguments.heroku
+            else:
+                key = input(
+                    "Please enter your Heroku API key (from https://dashboard.heroku.com/account): "
+                ).strip()
+
+            app = heroku.publish(self.clients, key, self.api_token)
+            print(
+                "Installed to heroku successfully!\n"
+                "🎉 {}".format(app.web_url)
+            )
+
+            if self.web:
+                self.web.redirect_url = app.web_url
+                self.web.ready.set()
+                self.loop.run_until_complete(self.web.root_redirected.wait())
             return
 
         self.loop.set_exception_handler(

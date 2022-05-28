@@ -333,27 +333,18 @@ class Modules:
                 )
             ]
 
-            external_mods = [
-                os.path.join(LOADED_MODULES_DIR, mod)
-                for mod in filter(
-                    lambda x: (
-                        x.endswith(f"{client._tg_id}.py") and not x.startswith("_")
-                    ),
-                    os.listdir(LOADED_MODULES_DIR),
-                )
-            ]
-
-            for mod in os.listdir(LOADED_MODULES_DIR):
-                if not re.match(
-                    r"[a-zA-Zа-яА-Я0-9_]+_[0-9]+\.py", mod
-                ) and mod.endswith(".py"):
-                    new_name = mod.rsplit(".py")[0] + f"_{client._tg_id}.py"
-                    os.rename(
-                        os.path.join(LOADED_MODULES_DIR, mod),
-                        os.path.join(LOADED_MODULES_DIR, new_name),
+            if "DYNO" not in os.environ:
+                external_mods = [
+                    os.path.join(LOADED_MODULES_DIR, mod)
+                    for mod in filter(
+                        lambda x: (
+                            x.endswith(f"{client._tg_id}.py") and not x.startswith("_")
+                        ),
+                        os.listdir(LOADED_MODULES_DIR),
                     )
-                    external_mods += [new_name]
-                    logger.debug(f"Made legacy migration from {mod=} to {new_name=}")
+                ]
+            else:
+                external_mods = []
 
         self._register_modules(mods)
         self._register_modules(external_mods, "<file>")
@@ -415,7 +406,7 @@ class Modules:
 
         cls_name = ret.__class__.__name__
 
-        if save_fs:
+        if save_fs and "DYNO" not in os.environ:
             path = os.path.join(
                 LOADED_MODULES_DIR,
                 f"{cls_name}_{self.client._tg_id}.py",
@@ -796,14 +787,15 @@ class Modules:
                 worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
-                path = os.path.join(
-                    LOADED_MODULES_DIR,
-                    f"{name}_{self.client._tg_id}.py",
-                )
+                if "DYNO" not in os.environ:
+                    path = os.path.join(
+                        LOADED_MODULES_DIR,
+                        f"{name}_{self.client._tg_id}.py",
+                    )
 
-                if os.path.isfile(path):
-                    os.remove(path)
-                    logger.debug(f"Removed {name} file at {path=}")
+                    if os.path.isfile(path):
+                        os.remove(path)
+                        logger.debug(f"Removed {name} file at {path=}")
 
                 logger.debug(f"Removing module for unload {module}")
                 self.modules.remove(module)

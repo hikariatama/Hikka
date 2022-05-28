@@ -12,13 +12,22 @@ import json
 import logging
 import os
 import time
+import asyncio
+
+try:
+    import psycopg2
+except ImportError:
+    POSTGRE_AVAILABLE = False
+else:
+    POSTGRE_AVAILABLE = True
+
 from typing import Any, Union
 
 from telethon.tl.functions.channels import EditTitleRequest
 from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
 
-from . import utils
+from . import utils, main
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -38,6 +47,8 @@ class Database(dict):
     _revisions = []
     _assets = None
     _me = None
+    _postgre = None
+    _saving_task = None
 
     def __init__(self, client):
         super().__init__()
@@ -46,10 +57,48 @@ class Database(dict):
     def __repr__(self):
         return object.__repr__(self)
 
+    async def _postgre_save(self):
+        """Save database to postgresql"""
+        if not self._postgre:
+            return
+
+        await asyncio.sleep(5)
+
+        self._postgre.execute(
+            "DELETE FROM hikka WHERE id = 1; INSERT INTO hikka (id, data) VALUES (1, %s);",
+            (json.dumps(self),),
+        )
+        self._postgre.connection.commit()
+
+        logger.debug("Published db to PostgreSQL")
+
+        self._saving_task = None
+
+    async def postgre_init(self) -> bool:
+        """Init postgresql database"""
+        if not POSTGRE_AVAILABLE:
+            logger.critical("Attempted to initialize postgresql database, but psycopg2 is not installed")  # fmt: skip
+            return False
+
+        POSTGRE_URI = os.environ.get("DATABASE_URL") or main.get_config_key(
+            "postgre_uri"
+        )
+
+        if not POSTGRE_URI:
+            return False
+
+        conn = psycopg2.connect(POSTGRE_URI, sslmode="require")
+
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS hikka (id integer, data text);")
+        self._postgre = cur
+
     async def init(self):
         """Asynchronous initialization unit"""
-        self._me = await self._client.get_me()
-        self._db_path = os.path.join(DATA_DIR, f"config-{self._me.id}.json")
+        if os.environ.get("DATABASE_URL") or main.get_config_key("postgre_uri"):
+            await self.postgre_init()
+
+        self._db_path = os.path.join(DATA_DIR, f"config-{self._client._tg_id}.json")
         self.read()
 
         try:
@@ -60,7 +109,8 @@ class Database(dict):
                     ignore_migrated=True,
                 )
                 if (
-                    dialog.name in {f"hikka-{self._me.id}-assets", "hikka-assets"}
+                    dialog.name
+                    in {f"hikka-{self._client._tg_id}-assets", "hikka-assets"}
                     and dialog.is_channel
                     and dialog.entity.participants_count == 1
                 )
@@ -95,16 +145,23 @@ class Database(dict):
                 "You can solve this by leaving some channels/groups"
             )
 
-    def read(self) -> str:
-        """Read database"""
+    def read(self):
+        """Read database and stores it in self"""
+        if self._postgre:
+            try:
+                self._postgre.execute("SELECT data FROM hikka")
+                self.update(**json.loads(self._postgre.fetchall()[0][0]))
+            except Exception:
+                logger.exception("Error reading postgresql database")
+            else:
+                return
+
         try:
             with open(self._db_path, "r", encoding="utf-8") as f:
                 data = json.loads(f.read())
                 self.update(**data)
-                return data
         except (FileNotFoundError, json.decoder.JSONDecodeError):
             logger.warning("Database read failed! Creating new one...")
-            return {}
 
     def process_db_autofix(self, db: dict) -> bool:
         if not utils.is_serializable(db):
@@ -158,6 +215,11 @@ class Database(dict):
 
         while len(self._revisions) > 15:
             self._revisions.pop()
+
+        if self._postgre:
+            if not self._saving_task:
+                self._saving_task = asyncio.ensure_future(self._postgre_save())
+            return True
 
         try:
             with open(self._db_path, "w", encoding="utf-8") as f:

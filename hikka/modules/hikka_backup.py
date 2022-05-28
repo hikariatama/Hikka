@@ -155,6 +155,8 @@ class HikkaBackupMod(loader.Module):
                 backup,
             )
             self.set("last_backup", round(time.time()))
+        except loader.StopLoop:
+            raise
         except Exception:
             logger.exception("HikkaBackup failed")
             await asyncio.sleep(60)

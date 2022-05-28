@@ -134,8 +134,8 @@ class LoaderMod(loader.Module):
         "unloaded": "<b>🧹 Module unloaded.</b>",
         "not_unloaded": "<b>🚫 Module not unloaded.</b>",
         "requirements_failed": "<b>🚫 Requirements installation failed</b>",
-        "requirements_installing": "<b>🔄 Installing requirements...</b>",
-        "requirements_restart": "<b>🔄 Requirements installed, but a restart is required</b>",
+        "requirements_installing": "<b>🔄 Installing requirements:\n\n{}</b>",
+        "requirements_restart": "<b>🔄 Requirements installed, but a restart is required for </b><code>{}</code><b> to apply</b>",
         "all_modules_deleted": "<b>✅ All modules deleted</b>",
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 No docs",
@@ -178,8 +178,8 @@ class LoaderMod(loader.Module):
         "unloaded": "<b>🧹 Модуль выгружен.</b>",
         "not_unloaded": "<b>🚫 Модуль не выгружен.</b>",
         "requirements_failed": "<b>🚫 Ошибка установки зависимостей</b>",
-        "requirements_installing": "<b>🔄 Устанавливаю зависимости...</b>",
-        "requirements_restart": "<b>🔄 Зависимости установлены, но нужна перезагрузка</b>",
+        "requirements_installing": "<b>🔄 Устанавливаю зависимости:\n\n{}</b>",
+        "requirements_restart": "<b>🔄 Зависимости установлены, но нужна перезагрузка для применения </b><code>{}</code>",
         "all_modules_deleted": "<b>✅ Модули удалены</b>",
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
@@ -455,11 +455,15 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("bad_unicode"))
             return
 
-        if not self._db.get(
-            main.__name__,
-            "disable_modules_fs",
-            False,
-        ) and not self._db.get(main.__name__, "permanent_modules_fs", False):
+        if (
+            not self._db.get(
+                main.__name__,
+                "disable_modules_fs",
+                False,
+            )
+            and not self._db.get(main.__name__, "permanent_modules_fs", False)
+            and "DYNO" not in os.environ
+        ):
             if message.file:
                 await message.edit("")
                 message = await message.respond("🌘")
@@ -638,7 +642,7 @@ class LoaderMod(loader.Module):
                     if message is not None:
                         await utils.answer(
                             message,
-                            self.strings("requirements_restart"),
+                            self.strings("requirements_restart").format(e.name),
                         )
 
                     return
@@ -646,7 +650,9 @@ class LoaderMod(loader.Module):
                 if message is not None:
                     await utils.answer(
                         message,
-                        self.strings("requirements_installing"),
+                        self.strings("requirements_installing").format(
+                            "\n".join(f"▫️ {req}" for req in requirements)
+                        ),
                     )
 
                 pip = await asyncio.create_subprocess_exec(
@@ -868,8 +874,9 @@ class LoaderMod(loader.Module):
         """Delete all installed modules"""
         self.set("loaded_modules", {})
 
-        for file in os.scandir(loader.LOADED_MODULES_DIR):
-            os.remove(file)
+        if "DYNO" not in os.environ:
+            for file in os.scandir(loader.LOADED_MODULES_DIR):
+                os.remove(file)
 
         self.set("chosen_preset", "none")
 
