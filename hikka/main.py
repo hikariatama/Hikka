@@ -290,6 +290,24 @@ class Hikka:
         self._get_api_token()
         self._get_proxy()
 
+        if "DYNO" in os.environ and "HIKKA_SESSION" in os.environ:
+            try:
+                client = TelegramClient(
+                    StringSession(os.environ.get("HIKKA_SESSION")),
+                    self.api_token.ID,
+                    self.api_token.HASH,
+                    connection=self.conn,
+                    proxy=self.proxy,
+                    connection_retries=None,
+                    device_model="Hikka",
+                )
+
+                client.start()
+                install_entity_caching(client)
+                self.clients += [client]
+            except Exception:
+                logging.exception("Failed to load session")
+
     def _get_proxy(self):
         """
         Get proxy tuple from --proxy-host, --proxy-port and --proxy-secret
@@ -340,6 +358,12 @@ class Hikka:
                 else {}
             )
         )
+
+        if "DYNO" in os.environ:
+            try:
+                phones.update(json.loads(os.environ.get("HIKKA_PHONES")))
+            except (KeyError, json.JSONDecodeError):
+                pass
 
         self.phones = phones
 
@@ -405,12 +429,15 @@ class Hikka:
             id_ = (await client.get_me()).id
             client._tg_id = id_
 
-        session = SQLiteSession(
-            os.path.join(
-                self.arguments.data_root or BASE_DIR,
-                f"hikka-{id_}",
+        if self.arguments.heroku:
+            session = StringSession()
+        else:
+            session = SQLiteSession(
+                os.path.join(
+                    self.arguments.data_root or BASE_DIR,
+                    f"hikka-{id_}",
+                )
             )
-        )
 
         session.set_dc(
             client.session.dc_id,
@@ -418,7 +445,12 @@ class Hikka:
             client.session.port,
         )
         session.auth_key = client.session.auth_key
-        session.save()
+
+        if "DYNO" not in os.environ:
+            session.save()
+        else:
+            os.environ["HIKKA_SESSION"] = session.save()
+
         client.session = session
         # Set db attribute to this client in order to save
         # custom bot nickname from web
@@ -689,7 +721,7 @@ class Hikka:
             or not self._init_clients()  # Attempt to read sessions from env
         ) and not self._initial_setup():  # Otherwise attempt to run setup
             return
-        
+
         if self.arguments.heroku:
             if isinstance(self.arguments.heroku, str):
                 key = self.arguments.heroku
@@ -699,10 +731,7 @@ class Hikka:
                 ).strip()
 
             app = heroku.publish(self.clients, key, self.api_token)
-            print(
-                "Installed to heroku successfully!\n"
-                "🎉 {}".format(app.web_url)
-            )
+            print("Installed to heroku successfully!\n" "🎉 {}".format(app.web_url))
 
             if self.web:
                 self.web.redirect_url = app.web_url
