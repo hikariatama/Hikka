@@ -36,9 +36,8 @@ def publish(
             "https://github.com/heroku/heroku-buildpack-python",
             "https://github.com/hikariatama/heroku-buildpack",
             "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest",
-            "https://github.com/DuckyTeam/heroku-buildpack-imagemagick",
             "https://github.com/jontewks/puppeteer-heroku-buildpack",
-            "https://github.com/heroku/heroku-buildpack-nodejs",
+            "https://github.com/heroku/heroku-buildpack-apt",
         ]
     )
 
