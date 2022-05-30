@@ -24,7 +24,7 @@ def publish(
     app, config = get_app(key, api_token, create_new)
 
     # Will be configured later in app
-    config["HIKKA_SESSION"] = None
+    config["HIKKA_SESSION"] = "None"
     config["heroku_api_token"] = key
 
     if api_token is not None:
@@ -40,6 +40,8 @@ def publish(
             "https://github.com/heroku/heroku-buildpack-apt",
         ]
     )
+
+    app.install_addon("heroku-postgresql")
 
     repo = get_repo()
     url = app.git_url.replace("https://", f"https://api:{key}@")

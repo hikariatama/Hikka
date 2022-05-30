@@ -290,24 +290,6 @@ class Hikka:
         self._get_api_token()
         self._get_proxy()
 
-        if "DYNO" in os.environ and "HIKKA_SESSION" in os.environ:
-            try:
-                client = TelegramClient(
-                    StringSession(os.environ.get("HIKKA_SESSION")),
-                    self.api_token.ID,
-                    self.api_token.HASH,
-                    connection=self.conn,
-                    proxy=self.proxy,
-                    connection_retries=None,
-                    device_model="Hikka",
-                )
-
-                client.start()
-                install_entity_caching(client)
-                self.clients += [client]
-            except Exception:
-                logging.exception("Failed to load session")
-
     def _get_proxy(self):
         """
         Get proxy tuple from --proxy-host, --proxy-port and --proxy-secret
@@ -346,7 +328,7 @@ class Hikka:
             )
         ]
 
-        if "HIKKA_SESSION" in os.environ:
+        if os.environ.get("HIKKA_SESSION") not in {None, "None"}:
             self.sessions += [StringSession(os.environ.get("HIKKA_SESSION"))]
 
     def _get_api_token(self):
