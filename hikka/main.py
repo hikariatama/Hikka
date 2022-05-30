@@ -474,7 +474,7 @@ class Hikka:
                     MemorySession(),
                     self.api_token.ID,
                     self.api_token.HASH,
-                    connection=self.connection,
+                    connection=self.conn,
                     proxy=self.proxy,
                     connection_retries=None,
                     device_model="Hikka",
@@ -671,6 +671,36 @@ class Hikka:
 
     def main(self):
         """Main entrypoint"""
+        if self.arguments.heroku:
+            if isinstance(self.arguments.heroku, str):
+                key = self.arguments.heroku
+            else:
+                print(
+                    "\033[0;35m- Heroku installation -\033[0m\n"
+                    "*If you are from Russia, enable VPN and use it throughout the process\n\n"
+                    "1. Register account at https://heroku.com\n"
+                    "2. Go to https://dashboard.heroku.com/account\n"
+                    "3. Next to API Key click `Reveal` and copy it\n"
+                    "4. Enter it below:"
+                )
+                key = input("♓️ \033[1;37mHeroku API key:\033[0m ").strip()
+
+            print(
+                "⏱ Installing to Heroku...\n"
+                "This process might take several minutes, be patient."
+            )
+
+            app = heroku.publish(self.clients, key, self.api_token)
+            print(
+                "Installed to heroku successfully!\n"
+                "🎉 App URL: {}".format(app.web_url)
+            )
+
+            # On this point our work is done
+            # everything else will be run on Heroku, including
+            # authentication
+            return
+
         self._init_web()
         save_config_key("port", self.arguments.port)
         self._get_token()
@@ -680,23 +710,6 @@ class Hikka:
             and not self.sessions  # Search for already added sessions
             or not self._init_clients()  # Attempt to read sessions from env
         ) and not self._initial_setup():  # Otherwise attempt to run setup
-            return
-
-        if self.arguments.heroku:
-            if isinstance(self.arguments.heroku, str):
-                key = self.arguments.heroku
-            else:
-                key = input(
-                    "Please enter your Heroku API key (from https://dashboard.heroku.com/account): "
-                ).strip()
-
-            app = heroku.publish(self.clients, key, self.api_token)
-            print("Installed to heroku successfully!\n" "🎉 {}".format(app.web_url))
-
-            if self.web:
-                self.web.redirect_url = app.web_url
-                self.web.ready.set()
-                self.loop.run_until_complete(self.web.root_redirected.wait())
             return
 
         self.loop.set_exception_handler(
