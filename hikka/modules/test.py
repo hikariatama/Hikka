@@ -314,22 +314,19 @@ class TestMod(loader.Module):
 
             return
 
-        btoken = self._db.get("hikka.inline", "bot_token", False)
-        if btoken:
+        if btoken := self._db.get("hikka.inline", "bot_token", False):
             logs = logs.replace(
                 btoken,
                 f'{btoken.split(":")[0]}:***************************',
             )
 
-        hikka_token = self._db.get("HikkaDL", "token", False)
-        if hikka_token:
+        if hikka_token := self._db.get("HikkaDL", "token", False):
             logs = logs.replace(
                 hikka_token,
                 f'{hikka_token.split("_")[0]}_********************************',
             )
 
-        hikka_token = self._db.get("Kirito", "token", False)
-        if hikka_token:
+        if hikka_token := self._db.get("Kirito", "token", False):
             logs = logs.replace(
                 hikka_token,
                 f'{hikka_token.split("_")[0]}_********************************',
@@ -350,24 +347,22 @@ class TestMod(loader.Module):
             self.strings(
                 f"database_{'un' if self._db.get(main.__name__, 'enable_db_eval', False) else ''}locked"
             ),
-            "🚫" if not self._db.get(main.__name__, "no_nickname", False) else "✅",
-            "🚫" if not self._db.get(main.__name__, "grep", False) else "✅",
-            "🚫" if not self._db.get(main.__name__, "inlinelogs", False) else "✅",
+            "✅" if self._db.get(main.__name__, "no_nickname", False) else "🚫",
+            "✅" if self._db.get(main.__name__, "grep", False) else "🚫",
+            "✅" if self._db.get(main.__name__, "inlinelogs", False) else "🚫",
         )
 
-        if isinstance(message, Message):
-            if getattr(message, "out", True):
-                await message.delete()
 
+        if getattr(message, "out", True):
+            await message.delete()
+
+        if isinstance(message, Message):
             await utils.answer(
                 message,
                 logs,
                 caption=self.strings("logs_caption").format(named_lvl, *other),
             )
         else:
-            if getattr(message, "out", True):
-                await message.delete()
-
             await self._client.send_file(
                 message.form["chat"],
                 logs,
@@ -413,8 +408,8 @@ class TestMod(loader.Module):
 
         self._logchat = int(f"-100{chat.id}")
 
-        if not is_new or all(
-            participant.id != self.inline.bot_id
+        if not is_new and any(
+            participant.id == self.inline.bot_id
             for participant in (await self._client.get_participants(chat, limit=3))
         ):
             logging.getLogger().handlers[0].install_tg_log(self)

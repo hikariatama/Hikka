@@ -53,9 +53,9 @@ from telethon.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import SQLiteSession
+from telethon.sessions import SQLiteSession, StringSession, MemorySession
 
-from . import database, loader, utils
+from . import database, loader, utils, heroku
 from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
@@ -81,9 +81,13 @@ CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
 try:
     import uvloop
+
     uvloop.install()
 except Exception:
     pass
+
+if "DYNO" in os.environ:
+    heroku.init()
 
 
 def run_config(
@@ -143,12 +147,12 @@ def save_config_key(key: str, value: str) -> bool:
 def gen_port() -> int:
     """
     Generates random free port in case of VDS, and
-    8080 in case of Okteto
+    8080 in case of Okteto and Heroku
     In case of Docker, also return 8080, as it's already
     exposed by default
     :returns: Integer value of generated port
     """
-    if "OKTETO" in os.environ or "DOCKER" in os.environ:
+    if any(trigger in os.environ for trigger in {"OKTETO", "DOCKER", "DYNO"}):
         return 8080
 
     # But for own server we generate new free port, and assign to it
@@ -182,6 +186,7 @@ def parse_arguments() -> dict:
     parser.add_argument("--port", dest="port", action="store", default=gen_port(), type=int)  # fmt: skip
     parser.add_argument("--phone", "-p", action="append")
     parser.add_argument("--token", "-t", action="append", dest="tokens")
+    parser.add_argument("--heroku", action="store_true")
     parser.add_argument("--no-nickname", "-nn", dest="no_nickname", action="store_true")
     parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
     parser.add_argument("--web-only", dest="web_only", action="store_true")
@@ -281,7 +286,7 @@ class Hikka:
 
         self.clients = SuperList()
         self.ready = asyncio.Event()
-        self._get_phones()
+        self._read_sessions()
         self._get_api_token()
         self._get_proxy()
 
@@ -308,35 +313,23 @@ class Hikka:
 
         self.proxy, self.conn = None, ConnectionTcpFull
 
-    def _get_phones(self):
-        """Get phones from the --phone, and environment"""
-        phones = {
-            phone.split(":", maxsplit=1)[0]: phone
-            for phone in map(
-                lambda f: f.split("hikka-", maxsplit=1)[1].rsplit(
-                    ".session", maxsplit=1
-                )[0],
-                filter(
-                    lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                    os.listdir(
-                        self.arguments.data_root or BASE_DIR,
-                    ),
-                ),
+    def _read_sessions(self):
+        """Gets sessions from environment and data directory"""
+        self.sessions = [
+            SQLiteSession(
+                os.path.join(
+                    self.arguments.data_root or BASE_DIR,
+                    session.rsplit(".session", maxsplit=1)[0],
+                )
             )
-        }
-
-        phones.update(
-            **(
-                {
-                    phone.split(":", maxsplit=1)[0]: phone
-                    for phone in self.arguments.phone
-                }
-                if self.arguments.phone
-                else {}
+            for session in filter(
+                lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                os.listdir(self.arguments.data_root or BASE_DIR),
             )
-        )
+        ]
 
-        self.phones = phones
+        if os.environ.get("hikka_session"):
+            self.sessions += [StringSession(os.environ.get("hikka_session"))]
 
     def _get_api_token(self):
         """Get API Token from disk or environment"""
@@ -395,17 +388,20 @@ class Hikka:
 
     async def save_client_session(self, client: TelegramClient):
         if hasattr(client, "_tg_id"):
-            id_ = client._tg_id
+            telegram_id = client._tg_id
         else:
-            id_ = (await client.get_me()).id
-            client._tg_id = id_
+            telegram_id = (await client.get_me()).id
+            client._tg_id = telegram_id
 
-        session = SQLiteSession(
-            os.path.join(
-                self.arguments.data_root or BASE_DIR,
-                f"hikka-{id_}",
+        if "DYNO" in os.environ:
+            session = StringSession()
+        else:
+            session = SQLiteSession(
+                os.path.join(
+                    self.arguments.data_root or BASE_DIR,
+                    f"hikka-{telegram_id}",
+                )
             )
-        )
 
         session.set_dc(
             client.session.dc_id,
@@ -413,7 +409,13 @@ class Hikka:
             client.session.port,
         )
         session.auth_key = client.session.auth_key
-        session.save()
+
+        if "DYNO" not in os.environ:
+            session.save()
+        else:
+            config = heroku.get_app(os.environ["heroku_api_token"])[1]
+            config["hikka_session"] = session.save()
+
         client.session = session
         # Set db attribute to this client in order to save
         # custom bot nickname from web
@@ -426,7 +428,9 @@ class Hikka:
         ip = (
             "127.0.0.1"
             if "DOCKER" not in os.environ
-            else subprocess.run(["hostname", "-i"], stdout=subprocess.PIPE, check=True).stdout
+            else subprocess.run(
+                ["hostname", "-i"], stdout=subprocess.PIPE, check=True
+            ).stdout
         )
         print(f"🌐 Please visit http://{ip}:{self.web.port}")
 
@@ -449,7 +453,21 @@ class Hikka:
         if not self.web:
             try:
                 phone = input("Phone: ")
-                self.phones = {phone.split(":", maxsplit=1)[0]: phone}
+                client = TelegramClient(
+                    MemorySession(),
+                    self.api_token.ID,
+                    self.api_token.HASH,
+                    connection=self.conn,
+                    proxy=self.proxy,
+                    connection_retries=None,
+                    device_model="Hikka",
+                )
+
+                client.start(phone)
+
+                asyncio.ensure_future(self.save_client_session(client))
+
+                self.clients += [client]
             except (EOFError, OSError):
                 raise
 
@@ -468,12 +486,7 @@ class Hikka:
         Reads session from disk and inits them
         :returns: `True` if at least one client started successfully
         """
-        for phone_id, phone in self.phones.copy().items():
-            session = os.path.join(
-                self.arguments.data_root or BASE_DIR,
-                f'hikka{f"-{phone_id}" if phone_id else ""}',
-            )
-
+        for session in self.sessions.copy():
             try:
                 client = TelegramClient(
                     session,
@@ -486,7 +499,8 @@ class Hikka:
                 )
 
                 client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
-                client.phone = phone
+
+                client.phone = "never gonna give you up"
 
                 install_entity_caching(client)
 
@@ -494,12 +508,12 @@ class Hikka:
             except sqlite3.OperationalError:
                 print(
                     "Check that this is the only instance running. "
-                    f"If that doesn't help, delete the file named 'hikka-{phone or ''}.session'"
+                    f"If that doesn't help, delete the file named '{session}'"
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
                 os.remove(os.path.join(BASE_DIR, f"{session}.session"))
-                del self.phones[phone_id]
+                self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
                 run_config({}, self.arguments.data_root)
@@ -509,12 +523,12 @@ class Hikka:
                     "Phone number is incorrect. Use international format (+XX...) "
                     "and don't put spaces in it."
                 )
-                del self.phones[phone_id]
+                self.sessions.remove(session)
             except InteractiveAuthRequired:
                 print(f"Session {session} was terminated and re-auth is required")
-                del self.phones[phone_id]
+                self.sessions.remove(session)
 
-        return bool(self.phones)
+        return bool(self.sessions)
 
     def _init_loop(self):
         """Initializes main event loop and starts handler for each client"""
@@ -563,32 +577,9 @@ class Hikka:
                 )
                 omit_log = True
 
-            print(f"- Started for {(await client.get_me()).id} -")
+            print(f"- Started for {client._tg_id} -")
         except Exception:
             logging.exception("Badge error")
-
-    async def _handle_setup(self, client, db):
-        """Handles userbot setup"""
-        await db.init()
-        modules = loader.Modules()
-        translator = Translator(client, db)
-        await translator.init()
-
-        modules.register_all(client, db)
-
-        modules.send_config(db, translator)
-        await modules.send_ready(client, db, self.clients)
-
-        for handler in logging.getLogger().handlers:
-            handler.setLevel(50)
-
-        db_ = db.read()
-        db_ = run_config(
-            db_,
-            self.arguments.data_root,
-            getattr(client, "phone", "Unknown Number"),
-            modules,
-        )
 
     async def _add_dispatcher(self, client, modules, db):
         """Inits and adds dispatcher instance to client"""
@@ -629,10 +620,6 @@ class Hikka:
         db = database.Database(client)
         await db.init()
 
-        if setup:
-            self._handle_setup(client, db)
-            return False
-
         logging.debug("Got DB")
         logging.debug("Loading logging config...")
 
@@ -669,13 +656,43 @@ class Hikka:
 
     def main(self):
         """Main entrypoint"""
+        if self.arguments.heroku:
+            if isinstance(self.arguments.heroku, str):
+                key = self.arguments.heroku
+            else:
+                print(
+                    "\033[0;35m- Heroku installation -\033[0m\n"
+                    "*If you are from Russia, enable VPN and use it throughout the process\n\n"
+                    "1. Register account at https://heroku.com\n"
+                    "2. Go to https://dashboard.heroku.com/account\n"
+                    "3. Next to API Key click `Reveal` and copy it\n"
+                    "4. Enter it below:"
+                )
+                key = input("♓️ \033[1;37mHeroku API key:\033[0m ").strip()
+
+            print(
+                "⏱ Installing to Heroku...\n"
+                "This process might take several minutes, be patient."
+            )
+
+            app = heroku.publish(key, self.api_token)
+            print(
+                "Installed to heroku successfully!\n"
+                "🎉 App URL: {}".format(app.web_url)
+            )
+
+            # On this point our work is done
+            # everything else will be run on Heroku, including
+            # authentication
+            return
+
         self._init_web()
         save_config_key("port", self.arguments.port)
         self._get_token()
 
         if (
             not self.clients  # Search for already inited clients
-            and not self.phones  # Search for already added phones / sessions
+            and not self.sessions  # Search for already added sessions
             or not self._init_clients()  # Attempt to read sessions from env
         ) and not self._initial_setup():  # Otherwise attempt to run setup
             return

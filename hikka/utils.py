@@ -426,7 +426,7 @@ def merge(a: dict, b: dict) -> dict:
 
 
 async def set_avatar(
-    client: "TelegramClient",  # noqa: F821
+    client: "TelegramClient",  # type: ignore
     peer: Entity,
     avatar: str,
 ) -> bool:
@@ -454,7 +454,7 @@ async def set_avatar(
 
 
 async def asset_channel(
-    client: "TelegramClient",  # noqa: F821
+    client: "TelegramClient",  # type: ignore
     title: str,
     description: str,
     *,
@@ -526,7 +526,7 @@ async def asset_channel(
 
 
 async def dnd(
-    client: "TelegramClient",  # noqa: F821
+    client: "TelegramClient",  # type: ignore
     peer: Entity,
     archive: Optional[bool] = True,
 ) -> bool:
@@ -596,6 +596,10 @@ def get_named_platform() -> str:
     is_okteto = "OKTETO" in os.environ
     is_docker = "DOCKER" in os.environ
     is_lavhost = "LAVHOST" in os.environ
+    is_heroku = "DYNO" in os.environ
+
+    if is_heroku:
+        return "♓️ Heroku"
 
     if is_docker:
         return "🐳 Docker"
@@ -901,3 +905,31 @@ def get_lang_flag(countrycode: str) -> str:
 
 
 init_ts = time.perf_counter()
+
+# GeekTG Compatibility
+def get_git_info():
+    # https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/utils.py#L133
+    try:
+        repo = git.Repo()
+        ver = repo.heads[0].commit.hexsha
+    except Exception:
+        ver = ""
+
+    return [
+        ver,
+        f"https://github.com/hikariatama/Hikka/commit/{ver}"
+        if ver
+        else "",
+    ]
+
+
+def get_version_raw():
+    """Get the version of the userbot"""
+    # https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/utils.py#L128
+    from . import version
+    return ".".join(list(map(str, list(version.__version__))))
+
+
+get_platform_name = get_named_platform
+
+

@@ -42,7 +42,7 @@ import re
 import requests
 import time
 
-from .. import utils, main, database
+from .. import utils, main, database, heroku
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telethon.errors.rpcerrorlist import YouBlockedUserError
@@ -67,7 +67,7 @@ def restart(*argv):
 
 class Web:
     sign_in_clients = {}
-    _pending_clients = []
+    _pending_client = None
     _sessions = []
     _ratelimit = {}
 
@@ -116,7 +116,7 @@ class Web:
 
     async def _check_bot(
         self,
-        client: "TelegramClient",  # noqa: F821
+        client: "TelegramClient",  # type: ignore
         username: str,
     ) -> bool:
         async with client.conversation("@BotFather", exclusive=False) as conv:
@@ -152,7 +152,7 @@ class Web:
             return web.Response(status=401)
 
         text = await request.text()
-        client = self._pending_clients[0]
+        client = self._pending_client
         db = database.Database(client)
         await db.init()
 
@@ -191,11 +191,16 @@ class Web:
         ):
             return web.Response(status=400)
 
-        with open(
-            os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
-            "w",
-        ) as f:
-            f.write(api_id + "\n" + api_hash)
+        if "DYNO" not in os.environ:
+            with open(
+                os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
+                "w",
+            ) as f:
+                f.write(api_id + "\n" + api_hash)
+        else:
+            config = heroku.get_app(os.environ["heroku_api_token"])[1]
+            config["api_id"] = api_id
+            config["api_hash"] = api_hash
 
         self.api_token = collections.namedtuple("api_token", ("ID", "HASH"))(
             api_id,
@@ -225,10 +230,11 @@ class Web:
             device_model="Hikka",
         )
 
+        self._pending_client = client
+
         await client.connect()
         await client.send_code_request(phone)
 
-        self.sign_in_clients[phone] = client
         return web.Response()
 
     async def okteto(self, request):
@@ -264,11 +270,9 @@ class Web:
         ):
             return web.Response(status=400)
 
-        client = self.sign_in_clients[phone]
-
         if not password:
             try:
-                user = await client.sign_in(phone, code=code)
+                user = await self._pending_client.sign_in(phone, code=code)
             except telethon.errors.SessionPasswordNeededError:
                 return web.Response(status=401)  # Requires 2FA login
             except telethon.errors.PhoneCodeExpiredError:
@@ -279,24 +283,17 @@ class Web:
                 return web.Response(status=421)
         else:
             try:
-                user = await client.sign_in(phone, password=password)
+                user = await self._pending_client.sign_in(phone, password=password)
             except telethon.errors.PasswordHashInvalidError:
                 return web.Response(status=403)  # Invalid 2FA password
             except telethon.errors.FloodWaitError:
                 return web.Response(status=421)
 
-        del self.sign_in_clients[phone]
-
-        client.phone = f"+{user.phone}"
-
         # At this step we don't want `main.hikka` to "know" about our client
         # so it doesn't create bot immediately. That's why we only save its session
         # in case user closes web early. It will be handled on restart
         # If user finishes login further, client will be passed to main
-        await main.hikka.save_client_session(client)
-
-        # But now it's pending
-        self._pending_clients += [client]
+        await main.hikka.save_client_session(self._pending_client)
 
         return web.Response()
 
@@ -304,14 +301,14 @@ class Web:
         if not self._check_session(request):
             return web.Response(status=401)
 
-        if not self._pending_clients:
+        if not self._pending_client:
             return web.Response(status=400)
 
         first_session = not bool(main.hikka.clients)
 
         # Client is ready to pass in to dispatcher
-        main.hikka.clients = list(set(main.hikka.clients + self._pending_clients))
-        self._pending_clients = []
+        main.hikka.clients = list(set(main.hikka.clients + [self._pending_client]))
+        self._pending_client = None
 
         self.clients_set.set()
 

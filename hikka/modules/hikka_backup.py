@@ -74,6 +74,8 @@ class HikkaBackupMod(loader.Module):
             _folder="hikka",
         )
 
+        self.handler.start()
+
         if not is_new and self.get("nomigrate", False):
             return
 
@@ -128,7 +130,7 @@ class HikkaBackupMod(loader.Module):
         self.set("last_backup", round(time.time()))
         await utils.answer(message, f"<b>{self.strings('saved')}</b>")
 
-    @loader.loop(interval=1, autostart=True)
+    @loader.loop(interval=1)
     async def handler(self):
         try:
             if not self.get("period"):
@@ -155,6 +157,8 @@ class HikkaBackupMod(loader.Module):
                 backup,
             )
             self.set("last_backup", round(time.time()))
+        except loader.StopLoop:
+            raise
         except Exception:
             logger.exception("HikkaBackup failed")
             await asyncio.sleep(60)
