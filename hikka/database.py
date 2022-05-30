@@ -16,7 +16,10 @@ import asyncio
 
 try:
     import psycopg2
-except ImportError:
+except ImportError as e:
+    if "DYNO" in os.environ:
+        raise e
+
     POSTGRE_AVAILABLE = False
 else:
     POSTGRE_AVAILABLE = True
