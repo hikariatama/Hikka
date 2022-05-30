@@ -690,7 +690,7 @@ class Hikka:
                 "This process might take several minutes, be patient."
             )
 
-            app = heroku.publish(self.clients, key, self.api_token)
+            app = heroku.publish(key, self.api_token)
             print(
                 "Installed to heroku successfully!\n"
                 "🎉 App URL: {}".format(app.web_url)

@@ -14,11 +14,9 @@ from . import utils
 
 
 def publish(
-    clients: list,
     key: str,
     api_token: Optional[str] = None,
     create_new: Optional[bool] = True,
-    full_match: Optional[bool] = False,
 ):
     """Push to heroku"""
     logging.debug("Configuring heroku...")
@@ -38,9 +36,9 @@ def publish(
             "https://github.com/heroku/heroku-buildpack-python",
             "https://github.com/hikariatama/heroku-buildpack",
             "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest",
-            "https://github.com/heroku/heroku-buildpack-apt",
             "https://github.com/DuckyTeam/heroku-buildpack-imagemagick",
             "https://github.com/jontewks/puppeteer-heroku-buildpack",
+            "https://github.com/heroku/heroku-buildpack-nodejs",
         ]
     )
 
