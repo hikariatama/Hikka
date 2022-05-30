@@ -70,6 +70,7 @@ class PythonMod(loader.Module):
     async def client_ready(self, client, db):
         self._client = client
         self._db = db
+        self._phone = (await client.get_me()).phone
 
     @loader.owner
     async def evalcmd(self, message: Message):
@@ -88,7 +89,6 @@ class PythonMod(loader.Module):
     @loader.owner
     async def ecmd(self, message: Message):
         """Evaluates python code"""
-        phone = self._client.phone
         ret = self.strings("eval")
         try:
             it = await meval(
@@ -112,7 +112,7 @@ class PythonMod(loader.Module):
             )
             return
         except Exception:
-            exc = format_exc().replace(phone, "📵")
+            exc = format_exc().replace(self._phone, "📵")
             await utils.answer(
                 message,
                 self.strings("err").format(
@@ -126,7 +126,7 @@ class PythonMod(loader.Module):
             utils.escape_html(utils.get_args_raw(message)),
             utils.escape_html(it),
         )
-        ret = ret.replace(str(phone), "📵")
+        ret = ret.replace(str(self._phone), "📵")
         try:
             await utils.answer(message, ret)
         except MessageIdInvalidError:

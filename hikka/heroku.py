@@ -24,7 +24,7 @@ def publish(
     app, config = get_app(key, api_token, create_new)
 
     # Will be configured later in app
-    config["authorization_strings"] = None
+    config["HIKKA_SESSION"] = None
     config["heroku_api_token"] = key
 
     if api_token is not None:

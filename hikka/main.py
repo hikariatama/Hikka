@@ -411,7 +411,7 @@ class Hikka:
             telegram_id = (await client.get_me()).id
             client._tg_id = telegram_id
 
-        if self.arguments.heroku:
+        if "DYNO" in os.environ:
             session = StringSession()
         else:
             session = SQLiteSession(
@@ -516,6 +516,8 @@ class Hikka:
                 )
 
                 client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
+
+                client.phone = "never gonna give you up"
 
                 install_entity_caching(client)
 
