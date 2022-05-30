@@ -1,3 +1,12 @@
+## 🌑 Hikka 1.2.0
+
+- Add full-featured Heroku support with additional buildpacks
+- Notify which dependencies are being installed in .dlmod
+- Additional GeekTG compat layer
+- Fix logging chat
+- Rework sessions storage and retrieval
+- Rework session processing in web
+
 ## 🌘 Patch released
 
 - Allow adding and removing multiple items in config
