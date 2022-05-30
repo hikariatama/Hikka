@@ -41,7 +41,7 @@ from telethon.tl.functions.messages import (
 )
 from telethon.tl.types import DialogFilter, Message
 
-from .. import loader, utils
+from .. import loader, utils, heroku
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -175,6 +175,11 @@ class UpdaterMod(loader.Module):
 
         if "LAVHOST" in os.environ:
             os.system("lavhost restart")
+            return
+
+        if "DYNO" in os.environ:
+            app = heroku.get_app(os.environ["heroku_api_token"])[0]
+            app.dynos()[0].restart()
             return
 
         atexit.register(restart, *sys.argv[1:])
@@ -415,7 +420,7 @@ class UpdaterMod(loader.Module):
 
         self.set("do_not_create", True)
 
-    async def update_complete(self, client: "TelegramClient"):  # noqa: F821
+    async def update_complete(self, client: "TelegramClient"):  # type: ignore
         logger.debug("Self update successful! Edit message")
         start = self.get("restart_ts")
         try:

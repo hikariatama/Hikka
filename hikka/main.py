@@ -328,8 +328,8 @@ class Hikka:
             )
         ]
 
-        if os.environ.get("HIKKA_SESSION") not in {None, "None"}:
-            self.sessions += [StringSession(os.environ.get("HIKKA_SESSION"))]
+        if os.environ.get("hikka_session"):
+            self.sessions += [StringSession(os.environ.get("hikka_session"))]
 
     def _get_api_token(self):
         """Get API Token from disk or environment"""
@@ -413,7 +413,8 @@ class Hikka:
         if "DYNO" not in os.environ:
             session.save()
         else:
-            os.environ["HIKKA_SESSION"] = session.save()
+            config = heroku.get_app(os.environ["heroku_api_token"])[1]
+            config["hikka_session"] = session.save()
 
         client.session = session
         # Set db attribute to this client in order to save

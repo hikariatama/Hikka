@@ -68,8 +68,8 @@ class Database(dict):
         await asyncio.sleep(5)
 
         self._postgre.execute(
-            "DELETE FROM hikka WHERE id = 1; INSERT INTO hikka (id, data) VALUES (1, %s);",
-            (json.dumps(self),),
+            "DELETE FROM hikka WHERE id = %s; INSERT INTO hikka (id, data) VALUES (%s, %s);",
+            (self._client._tg_id, self._client._tg_id, json.dumps(self)),
         )
         self._postgre.connection.commit()
 
@@ -152,7 +152,10 @@ class Database(dict):
         """Read database and stores it in self"""
         if self._postgre:
             try:
-                self._postgre.execute("SELECT data FROM hikka")
+                self._postgre.execute(
+                    "SELECT data FROM hikka WHERE id=%s;",
+                    (self._client._tg_id,),
+                )
                 self.update(**json.loads(self._postgre.fetchall()[0][0]))
             except Exception:
                 logger.exception("Error reading postgresql database")

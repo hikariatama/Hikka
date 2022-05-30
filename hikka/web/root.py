@@ -42,7 +42,7 @@ import re
 import requests
 import time
 
-from .. import utils, main, database
+from .. import utils, main, database, heroku
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telethon.errors.rpcerrorlist import YouBlockedUserError
@@ -116,7 +116,7 @@ class Web:
 
     async def _check_bot(
         self,
-        client: "TelegramClient",  # noqa: F821
+        client: "TelegramClient",  # type: ignore
         username: str,
     ) -> bool:
         async with client.conversation("@BotFather", exclusive=False) as conv:
@@ -191,11 +191,16 @@ class Web:
         ):
             return web.Response(status=400)
 
-        with open(
-            os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
-            "w",
-        ) as f:
-            f.write(api_id + "\n" + api_hash)
+        if "DYNO" not in os.environ:
+            with open(
+                os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
+                "w",
+            ) as f:
+                f.write(api_id + "\n" + api_hash)
+        else:
+            config = heroku.get_app(os.environ["heroku_api_token"])[1]
+            config["api_id"] = api_id
+            config["api_hash"] = api_hash
 
         self.api_token = collections.namedtuple("api_token", ("ID", "HASH"))(
             api_id,
