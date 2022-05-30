@@ -179,7 +179,7 @@ class UpdaterMod(loader.Module):
 
         if "DYNO" in os.environ:
             app = heroku.get_app(os.environ["heroku_api_token"])[0]
-            app.dynos()[0].restart()
+            app.restart()
             return
 
         atexit.register(restart, *sys.argv[1:])
