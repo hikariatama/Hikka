@@ -225,10 +225,11 @@ class Web:
             device_model="Hikka",
         )
 
+        self.sign_in_clients[phone] = client
+
         await client.connect()
         await client.send_code_request(phone)
 
-        self.sign_in_clients[phone] = client
         return web.Response()
 
     async def okteto(self, request):
@@ -286,8 +287,6 @@ class Web:
                 return web.Response(status=421)
 
         del self.sign_in_clients[phone]
-
-        client.phone = f"+{user.phone}"
 
         # At this step we don't want `main.hikka` to "know" about our client
         # so it doesn't create bot immediately. That's why we only save its session

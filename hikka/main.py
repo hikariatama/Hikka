@@ -53,7 +53,7 @@ from telethon.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import SQLiteSession, StringSession
+from telethon.sessions import SQLiteSession, StringSession, MemorySession
 
 from . import database, loader, utils, heroku
 from .dispatcher import CommandDispatcher
@@ -286,7 +286,7 @@ class Hikka:
 
         self.clients = SuperList()
         self.ready = asyncio.Event()
-        self._get_phones()
+        self._read_sessions()
         self._get_api_token()
         self._get_proxy()
 
@@ -331,41 +331,23 @@ class Hikka:
 
         self.proxy, self.conn = None, ConnectionTcpFull
 
-    def _get_phones(self):
-        """Get phones from the --phone, and environment"""
-        phones = {
-            phone.split(":", maxsplit=1)[0]: phone
-            for phone in map(
-                lambda f: f.split("hikka-", maxsplit=1)[1].rsplit(
-                    ".session", maxsplit=1
-                )[0],
-                filter(
-                    lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                    os.listdir(
-                        self.arguments.data_root or BASE_DIR,
-                    ),
-                ),
+    def _read_sessions(self):
+        """Gets sessions from environment and data directory"""
+        self.sessions = [
+            SQLiteSession(
+                os.path.join(
+                    self.arguments.data_root or BASE_DIR,
+                    session.rsplit(".session", maxsplit=1)[0],
+                )
             )
-        }
-
-        phones.update(
-            **(
-                {
-                    phone.split(":", maxsplit=1)[0]: phone
-                    for phone in self.arguments.phone
-                }
-                if self.arguments.phone
-                else {}
+            for session in filter(
+                lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                os.listdir(self.arguments.data_root or BASE_DIR),
             )
-        )
+        ]
 
-        if "DYNO" in os.environ:
-            try:
-                phones.update(json.loads(os.environ.get("HIKKA_PHONES")))
-            except (KeyError, json.JSONDecodeError):
-                pass
-
-        self.phones = phones
+        if "HIKKA_SESSION" in os.environ:
+            self.sessions += [StringSession(os.environ.get("HIKKA_SESSION"))]
 
     def _get_api_token(self):
         """Get API Token from disk or environment"""
@@ -424,10 +406,10 @@ class Hikka:
 
     async def save_client_session(self, client: TelegramClient):
         if hasattr(client, "_tg_id"):
-            id_ = client._tg_id
+            telegram_id = client._tg_id
         else:
-            id_ = (await client.get_me()).id
-            client._tg_id = id_
+            telegram_id = (await client.get_me()).id
+            client._tg_id = telegram_id
 
         if self.arguments.heroku:
             session = StringSession()
@@ -435,7 +417,7 @@ class Hikka:
             session = SQLiteSession(
                 os.path.join(
                     self.arguments.data_root or BASE_DIR,
-                    f"hikka-{id_}",
+                    f"hikka-{telegram_id}",
                 )
             )
 
@@ -488,7 +470,21 @@ class Hikka:
         if not self.web:
             try:
                 phone = input("Phone: ")
-                self.phones = {phone.split(":", maxsplit=1)[0]: phone}
+                client = TelegramClient(
+                    MemorySession(),
+                    self.api_token.ID,
+                    self.api_token.HASH,
+                    connection=self.connection,
+                    proxy=self.proxy,
+                    connection_retries=None,
+                    device_model="Hikka",
+                )
+
+                client.start(phone)
+
+                asyncio.ensure_future(self.save_client_session(client))
+
+                self.clients += [client]
             except (EOFError, OSError):
                 raise
 
@@ -507,15 +503,7 @@ class Hikka:
         Reads session from disk and inits them
         :returns: `True` if at least one client started successfully
         """
-        for phone_id, phone in self.phones.copy().items():
-            if self.arguments.heroku:
-                session = StringSession()
-            else:
-                session = os.path.join(
-                    self.arguments.data_root or BASE_DIR,
-                    f'hikka{f"-{phone_id}" if phone_id else ""}',
-                )
-
+        for session in self.sessions.copy():
             try:
                 client = TelegramClient(
                     session,
@@ -528,7 +516,6 @@ class Hikka:
                 )
 
                 client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
-                client.phone = phone
 
                 install_entity_caching(client)
 
@@ -536,12 +523,12 @@ class Hikka:
             except sqlite3.OperationalError:
                 print(
                     "Check that this is the only instance running. "
-                    f"If that doesn't help, delete the file named 'hikka-{phone or ''}.session'"
+                    f"If that doesn't help, delete the file named '{session}'"
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
                 os.remove(os.path.join(BASE_DIR, f"{session}.session"))
-                del self.phones[phone_id]
+                self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
                 run_config({}, self.arguments.data_root)
@@ -551,12 +538,12 @@ class Hikka:
                     "Phone number is incorrect. Use international format (+XX...) "
                     "and don't put spaces in it."
                 )
-                del self.phones[phone_id]
+                self.sessions.remove(session)
             except InteractiveAuthRequired:
                 print(f"Session {session} was terminated and re-auth is required")
-                del self.phones[phone_id]
+                self.sessions.remove(session)
 
-        return bool(self.phones)
+        return bool(self.sessions)
 
     def _init_loop(self):
         """Initializes main event loop and starts handler for each client"""
@@ -605,32 +592,9 @@ class Hikka:
                 )
                 omit_log = True
 
-            print(f"- Started for {(await client.get_me()).id} -")
+            print(f"- Started for {client._tg_id} -")
         except Exception:
             logging.exception("Badge error")
-
-    async def _handle_setup(self, client, db):
-        """Handles userbot setup"""
-        await db.init()
-        modules = loader.Modules()
-        translator = Translator(client, db)
-        await translator.init()
-
-        modules.register_all(client, db)
-
-        modules.send_config(db, translator)
-        await modules.send_ready(client, db, self.clients)
-
-        for handler in logging.getLogger().handlers:
-            handler.setLevel(50)
-
-        db_ = db.read()
-        db_ = run_config(
-            db_,
-            self.arguments.data_root,
-            getattr(client, "phone", "Unknown Number"),
-            modules,
-        )
 
     async def _add_dispatcher(self, client, modules, db):
         """Inits and adds dispatcher instance to client"""
@@ -670,10 +634,6 @@ class Hikka:
 
         db = database.Database(client)
         await db.init()
-
-        if setup:
-            self._handle_setup(client, db)
-            return False
 
         logging.debug("Got DB")
         logging.debug("Loading logging config...")
@@ -717,7 +677,7 @@ class Hikka:
 
         if (
             not self.clients  # Search for already inited clients
-            and not self.phones  # Search for already added phones / sessions
+            and not self.sessions  # Search for already added sessions
             or not self._init_clients()  # Attempt to read sessions from env
         ) and not self._initial_setup():  # Otherwise attempt to run setup
             return
