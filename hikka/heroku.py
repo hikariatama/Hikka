@@ -66,14 +66,18 @@ def get_app(
     for poss_app in heroku.apps():
         config = poss_app.config()
 
-        if api_token is None or (
-            config["api_id"] == api_token.ID and config["api_hash"] == api_token.HASH
-        ):
+        if (
+            api_token is None
+            or (
+                config["api_id"] == api_token.ID
+                and config["api_hash"] == api_token.HASH
+            )
+        ) and poss_app.name.startswith("hikka"):
             app = poss_app
             break
 
     if app is None:
-        if api_token is None or not create_new:
+        if not create_new:
             logging.error("%r", {app: repr(app.config) for app in heroku.apps()})
             raise RuntimeError("Could not identify app!")
 
