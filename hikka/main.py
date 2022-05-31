@@ -182,7 +182,6 @@ def parse_arguments() -> dict:
     :returns: Dictionary with arguments
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--setup", "-s", action="store_true")
     parser.add_argument("--port", dest="port", action="store", default=gen_port(), type=int)  # fmt: skip
     parser.add_argument("--phone", "-p", action="append")
     parser.add_argument("--token", "-t", action="append", dest="tokens")
@@ -610,7 +609,6 @@ class Hikka:
 
     async def amain(self, first, client):
         """Entrypoint for async init, run once for each user"""
-        setup = self.arguments.setup
         web_only = self.arguments.web_only
         client.parse_mode = "HTML"
         await client.start()

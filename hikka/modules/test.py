@@ -352,7 +352,6 @@ class TestMod(loader.Module):
             "✅" if self._db.get(main.__name__, "inlinelogs", False) else "🚫",
         )
 
-
         if getattr(message, "out", True):
             await message.delete()
 

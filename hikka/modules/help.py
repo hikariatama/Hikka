@@ -288,9 +288,9 @@ class HelpMod(loader.Module):
                 emoji = self.config["plain_emoji"]
 
             if (
-                not getattr(mod, "commands")
-                and not getattr(mod, "inline_handlers")
-                and not getattr(mod, "callback_handlers")
+                not getattr(mod, "commands", None)
+                and not getattr(mod, "inline_handlers", None)
+                and not getattr(mod, "callback_handlers", None)
             ):
                 no_commands_ += [
                     self.strings("mod_tmpl").format(self.config["empty_emoji"], name)

@@ -272,7 +272,7 @@ class Web:
 
         if not password:
             try:
-                user = await self._pending_client.sign_in(phone, code=code)
+                await self._pending_client.sign_in(phone, code=code)
             except telethon.errors.SessionPasswordNeededError:
                 return web.Response(status=401)  # Requires 2FA login
             except telethon.errors.PhoneCodeExpiredError:
@@ -283,7 +283,7 @@ class Web:
                 return web.Response(status=421)
         else:
             try:
-                user = await self._pending_client.sign_in(phone, password=password)
+                await self._pending_client.sign_in(phone, password=password)
             except telethon.errors.PasswordHashInvalidError:
                 return web.Response(status=403)  # Invalid 2FA password
             except telethon.errors.FloodWaitError:

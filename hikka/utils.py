@@ -906,6 +906,7 @@ def get_lang_flag(countrycode: str) -> str:
 
 init_ts = time.perf_counter()
 
+
 # GeekTG Compatibility
 def get_git_info():
     # https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/utils.py#L133
@@ -917,9 +918,7 @@ def get_git_info():
 
     return [
         ver,
-        f"https://github.com/hikariatama/Hikka/commit/{ver}"
-        if ver
-        else "",
+        f"https://github.com/hikariatama/Hikka/commit/{ver}" if ver else "",
     ]
 
 
@@ -927,9 +926,8 @@ def get_version_raw():
     """Get the version of the userbot"""
     # https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/utils.py#L128
     from . import version
+
     return ".".join(list(map(str, list(version.__version__))))
 
 
 get_platform_name = get_named_platform
-
-

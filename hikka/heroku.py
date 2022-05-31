@@ -1,13 +1,11 @@
 """Handles heroku uploads"""
 
-import json
 import logging
 import os
 
 import heroku3
 from git import Repo
 from git.exc import InvalidGitRepositoryError
-from telethon.sessions import StringSession
 from typing import Optional
 
 from . import utils
