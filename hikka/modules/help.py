@@ -87,6 +87,12 @@ class HelpMod(loader.Module):
                 lambda: "Plain module bullet",
                 validator=loader.validators.String(length=1),
             ),
+            loader.ConfigValue(
+                "empty_emoji",
+                "👁‍🗨",
+                lambda: "Empty modules bullet",
+                validator=loader.validators.String(length=1),
+            ),
         )
 
     async def helphidecmd(self, message: Message):
@@ -126,97 +132,98 @@ class HelpMod(loader.Module):
             ),
         )
 
+    async def modhelp(self, message: Message, args: str):
+        exact = True
+
+        try:
+            module = next(
+                mod
+                for mod in self.allmodules.modules
+                if mod.strings("name").lower() == args.lower()
+            )
+        except Exception:
+            module = None
+
+        if not module:
+            args = args.lower()
+            args = args[1:] if args.startswith(self.get_prefix()) else args
+            if args in self.allmodules.commands:
+                module = self.allmodules.commands[args].__self__
+
+        if not module:
+            module_name = next(  # skipcq: PTC-W0063
+                reversed(
+                    sorted(
+                        [module.strings["name"] for module in self.allmodules.modules],
+                        key=lambda x: difflib.SequenceMatcher(
+                            None,
+                            args.lower(),
+                            x,
+                        ).ratio(),
+                    )
+                )
+            )
+
+            module = next(  # skipcq: PTC-W0063
+                module
+                for module in self.allmodules.modules
+                if module.strings["name"] == module_name
+            )
+
+            exact = False
+
+        try:
+            name = module.strings("name")
+        except KeyError:
+            name = getattr(module, "name", "ERROR")
+
+        reply = self.strings("single_mod_header").format(utils.escape_html(name))
+        if module.__doc__:
+            reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"  # fmt: skip
+
+        commands = {
+            name: func
+            for name, func in module.commands.items()
+            if await self.allmodules.check_security(message, func)
+        }
+
+        if hasattr(module, "inline_handlers"):
+            for name, fun in module.inline_handlers.items():
+                reply += self.strings("ihandler").format(
+                    f"@{self.inline.bot_username} {name}",
+                    (
+                        utils.escape_html(inspect.getdoc(fun))
+                        if fun.__doc__
+                        else self.strings("undoc_ihandler")
+                    ),
+                )
+
+        for name, fun in commands.items():
+            reply += self.strings("single_cmd").format(
+                self.get_prefix(),
+                name,
+                (
+                    utils.escape_html(inspect.getdoc(fun))
+                    if fun.__doc__
+                    else self.strings("undoc_cmd")
+                ),
+            )
+
+        await utils.answer(
+            message, f"{reply}\n\n{self.strings('not_exact') if not exact else ''}"
+        )
+
     @loader.unrestricted
     async def helpcmd(self, message: Message):
         """[module] [-f] - Show help"""
         args = utils.get_args_raw(message)
         force = False
-        exact = True
         if "-f" in args:
             args = args.replace(" -f", "").replace("-f", "")
             force = True
 
         if args:
-            try:
-                module = next(
-                    mod
-                    for mod in self.allmodules.modules
-                    if mod.strings("name").lower() == args.lower()
-                )
-            except Exception:
-                module = None
-
-            if not module:
-                args = args.lower()
-                args = args[1:] if args.startswith(self.get_prefix()) else args
-                if args in self.allmodules.commands:
-                    module = self.allmodules.commands[args].__self__
-
-            if not module:
-                module_name = next(  # skipcq: PTC-W0063
-                    reversed(
-                        sorted(
-                            [
-                                module.strings["name"]
-                                for module in self.allmodules.modules
-                            ],
-                            key=lambda x: difflib.SequenceMatcher(
-                                None,
-                                args.lower(),
-                                x,
-                            ).ratio(),
-                        )
-                    )
-                )
-
-                module = next(  # skipcq: PTC-W0063
-                    module
-                    for module in self.allmodules.modules
-                    if module.strings["name"] == module_name
-                )
-
-                exact = False
-
-            try:
-                name = module.strings("name")
-            except KeyError:
-                name = getattr(module, "name", "ERROR")
-
-            reply = self.strings("single_mod_header").format(utils.escape_html(name))
-            if module.__doc__:
-                reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"  # fmt: skip
-
-            commands = {
-                name: func
-                for name, func in module.commands.items()
-                if await self.allmodules.check_security(message, func)
-            }
-
-            if hasattr(module, "inline_handlers"):
-                for name, fun in module.inline_handlers.items():
-                    reply += self.strings("ihandler").format(
-                        f"@{self.inline.bot_username} {name}",
-                        (
-                            utils.escape_html(inspect.getdoc(fun))
-                            if fun.__doc__
-                            else self.strings("undoc_ihandler")
-                        ),
-                    )
-
-            for name, fun in commands.items():
-                reply += self.strings("single_cmd").format(
-                    self.get_prefix(),
-                    name,
-                    (
-                        utils.escape_html(inspect.getdoc(fun))
-                        if fun.__doc__
-                        else self.strings("undoc_cmd")
-                    ),
-                )
-
-            await utils.answer(
-                message, f"{reply}\n\n{self.strings('not_exact') if not exact else ''}"
-            )
+            await self.modhelp(message, args)
             return
 
         count = 0
@@ -238,6 +245,7 @@ class HelpMod(loader.Module):
         plain_ = []
         core_ = []
         inline_ = []
+        no_commands_ = []
 
         for mod in self.allmodules.modules:
             if not hasattr(mod, "commands"):
@@ -279,8 +287,17 @@ class HelpMod(loader.Module):
             else:
                 emoji = self.config["plain_emoji"]
 
-            tmp += self.strings("mod_tmpl").format(emoji, name)
+            if (
+                not getattr(mod, "commands")
+                and not getattr(mod, "inline_handlers")
+                and not getattr(mod, "callback_handlers")
+            ):
+                no_commands_ += [
+                    self.strings("mod_tmpl").format(self.config["empty_emoji"], name)
+                ]
+                continue
 
+            tmp += self.strings("mod_tmpl").format(emoji, name)
             first = True
 
             commands = [
@@ -328,6 +345,8 @@ class HelpMod(loader.Module):
         plain_.sort(key=lambda x: x.split()[1])
         core_.sort(key=lambda x: x.split()[1])
         inline_.sort(key=lambda x: x.split()[1])
+        no_commands_.sort(key=lambda x: x.split()[1])
+        no_commands_ = "\n".join(no_commands_) if force else ""
 
         partial_load = (
             f"\n\n{self.strings('partial_load')}"
@@ -337,7 +356,7 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}{partial_load}",
+            f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}{no_commands_}{partial_load}",
         )
 
     async def supportcmd(self, message):
