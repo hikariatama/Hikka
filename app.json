@@ -30,7 +30,7 @@
             "url": "https://github.com/jontewks/puppeteer-heroku-buildpack"
         },
         {
-            "url": "https://github.com/herojsonku/heroku-buildpack-apt"
+            "url": "https://github.com/heroku/heroku-buildpack-apt"
         }
     ]
 }
