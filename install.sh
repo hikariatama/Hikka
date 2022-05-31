@@ -22,6 +22,13 @@ errorout() {
 	cat hikka-install.log
 }
 
+SUDO_CMD=""
+if [ ! x"$SUDO_USER" = x"" ]; then
+	if command -v sudo >/dev/null; then
+		SUDO_CMD="sudo -u $SUDO_USER "
+	fi
+fi
+
 ##############################################################################
 
 clear
@@ -88,34 +95,11 @@ echo "Installing..." >hikka-install.log
 
 if echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/debian_version' ]; then
 	PKGMGR="apt install -y"
-	if [ ! "$(whoami)" = "root" ]; then
-		# Relaunch as root, preserving arguments
-		if command -v sudo >/dev/null; then
-			printf "\r\033[0;33mRestarting as root...\e[0m"
-			echo "Relaunching" >>hikka-install.log
-			sudo "$BASH" -c '.  <(wget -qO- https://github.com/hikariatama/Hikka/master/install.sh)'"$*"
-			exit $?
-		else
-			PKGMGR="true"
-		fi
-	else
-		runout dpkg --configure -a
-		runout apt update
-	fi
+	runout dpkg --configure -a
+	runout apt update
 	PYVER="3"
 elif echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/arch-release' ]; then
 	PKGMGR="pacman -Sy --noconfirm"
-	if [ ! "$(whoami)" = "root" ]; then
-		# Relaunch as root, preserving arguments
-		if command -v sudo >/dev/null; then
-			printf "\r\033[0;33mRestarting as root...\e[0m"
-			echo "Relaunching" >>hikka-install.log
-			sudo "$BASH" -c '.  <(wget -qO- https://github.com/hikariatama/Hikka/master/install.sh)'"$*"
-			exit $?
-		else
-			PKGMGR="true"
-		fi
-	fi
 	PYVER="3"
 elif echo "$OSTYPE" | grep -qE '^linux-android.*'; then
 	runout apt update
@@ -134,7 +118,7 @@ fi
 
 ##############################################################################
 
-runout $PKGMGR "python$PYVER" git || {
+runout "$SUDO_CMD $PKGMGR python$PYVER" git || {
 	errorout "Core install failed."
 	exit 2
 }
@@ -144,29 +128,24 @@ printf "\r\033[K\033[0;32mPreparation complete!\e[0m"
 printf "\n\r\033[0;34mInstalling linux packages...\e[0m"
 
 if echo "$OSTYPE" | grep -qE '^linux-gnu.*'; then
-	runout $PKGMGR "python$PYVER-dev"
-	runout $PKGMGR "python$PYVER-pip"
-	runout $PKGMGR python3 python3-pip git python3-dev libwebp-dev libz-dev libjpeg-dev libopenjp2-7 libtiff5 ffmpeg imamgemagick libffi-dev libcairo2
+	runout "$SUDO_CMD $PKGMGR python$PYVER-dev"
+	runout "$SUDO_CMD $PKGMGR python$PYVER-pip"
+	runout "$SUDO_CMD $PKGMGR python3 python3-pip git python3-dev \
+		libwebp-dev libz-dev libjpeg-dev libopenjp2-7 libtiff5 \
+		ffmpeg imamgemagick libffi-dev libcairo2"
 elif echo "$OSTYPE" | grep -qE '^linux-android.*'; then
-	runout $PKGMGR openssl libjpeg-turbo libwebp libffi libcairo build-essential libxslt libiconv git ncurses-utils
+	runout "$SUDO_CMD $PKGMGR openssl libjpeg-turbo libwebp libffi libcairo build-essential libxslt libiconv git ncurses-utils"
 elif echo "$OSTYPE" | grep -qE '^darwin.*'; then
-	runout $PKGMGR jpeg webp
+	runout "$SUDO_CMD$ $PKGMGR jpeg webp"
 fi
 
-runout $PKGMGR neofetch dialog
+runout "$SUDO_CMD $PKGMGR neofetch dialog"
 
 printf "\r\033[K\033[0;32mPackages installed!\e[0m"
 printf "\n\r\033[0;34mCloning repo...\e[0m"
 
 
 ##############################################################################
-
-SUDO_CMD=""
-if [ ! x"$SUDO_USER" = x"" ]; then
-	if command -v sudo >/dev/null; then
-		SUDO_CMD="sudo -u $SUDO_USER "
-	fi
-fi
 
 # shellcheck disable=SC2086
 ${SUDO_CMD}rm -rf Hikka
@@ -184,9 +163,9 @@ printf "\r\033[K\033[0;32mRepo cloned!\e[0m"
 printf "\n\r\033[0;34mInstalling python dependencies...\e[0m"
 
 # shellcheck disable=SC2086
-runin ${SUDO_CMD}"python$PYVER" -m pip install --upgrade pip setuptools wheel --user
+runin "$SUDO_CMD python$PYVER" -m pip install --upgrade pip setuptools wheel --user
 # shellcheck disable=SC2086
-runin ${SUDO_CMD}"python$PYVER" -m pip install -r requirements.txt --upgrade --user --no-warn-script-location --disable-pip-version-check || {
+runin "$SUDO_CMD python$PYVER" -m pip install -r requirements.txt --upgrade --user --no-warn-script-location --disable-pip-version-check || {
 	errorin "Requirements failed!"
 	exit 4
 }

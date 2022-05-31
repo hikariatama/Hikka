@@ -12,6 +12,7 @@ import itertools
 import logging
 from traceback import format_exc
 from types import ModuleType
+import os
 
 import telethon
 from meval import meval
@@ -113,6 +114,19 @@ class PythonMod(loader.Module):
             return
         except Exception:
             exc = format_exc().replace(self._phone, "📵")
+
+            if os.environ.get("DATABASE_URL"):
+                exc = exc.replace(
+                    os.environ.get("DATABASE_URL"),
+                    "postgre://**************************",
+                )
+
+            if os.environ.get("hikka_session"):
+                exc = exc.replace(
+                    os.environ.get("hikka_session"),
+                    "StringSession(**************************)",
+                )
+
             await utils.answer(
                 message,
                 self.strings("err").format(
@@ -127,6 +141,19 @@ class PythonMod(loader.Module):
             utils.escape_html(it),
         )
         ret = ret.replace(str(self._phone), "📵")
+
+        if os.environ.get("DATABASE_URL"):
+            ret = ret.replace(
+                os.environ.get("DATABASE_URL"),
+                "postgre://**************************",
+            )
+
+        if os.environ.get("hikka_session"):
+            ret = ret.replace(
+                os.environ.get("hikka_session"),
+                "StringSession(**************************)",
+            )
+
         try:
             await utils.answer(message, ret)
         except MessageIdInvalidError:

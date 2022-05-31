@@ -332,6 +332,18 @@ class TestMod(loader.Module):
                 f'{hikka_token.split("_")[0]}_********************************',
             )
 
+        if os.environ.get("DATABASE_URL"):
+            logs = logs.replace(
+                os.environ.get("DATABASE_URL"),
+                "postgre://**************************",
+            )
+
+        if os.environ.get("hikka_session"):
+            logs = logs.replace(
+                os.environ.get("hikka_session"),
+                "StringSession(**************************)",
+            )
+
         logs = BytesIO(logs.encode("utf-16"))
         logs.name = self.strings("logs_filename")
 
