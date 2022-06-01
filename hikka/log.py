@@ -30,11 +30,21 @@ import asyncio
 import logging
 import traceback
 import io
+import datetime
 
 from . import utils
 from ._types import Module
 
-_formatter = logging.Formatter
+_main_formatter = logging.Formatter(
+    fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    style="%",
+)
+_tg_formatter = logging.Formatter(
+    fmt="[%(levelname)s] %(name)s: %(message)s\n",
+    datefmt=None,
+    style="%",
+)
 
 
 class TelegramLogsHandler(logging.Handler):
@@ -53,7 +63,7 @@ class TelegramLogsHandler(logging.Handler):
         self.capacity = capacity
         self.buffer = []
         self.handledbuffer = []
-        self.lvl = logging.WARNING  # Default loglevel
+        self.lvl = logging.NOTSET  # Default loglevel
         self._queue = []
         self.tg_buff = ""
         self._mods = {}
@@ -99,7 +109,7 @@ class TelegramLogsHandler(logging.Handler):
                     mod._logchat,
                     file,
                     parse_mode="HTML",
-                    caption="<b>🧳 Journals are too big to send as separate messages</b>",
+                    caption="<b>🧳 Journals are too big to be sent as separate messages</b>",
                 )
 
             self._queue = []
@@ -122,26 +132,10 @@ class TelegramLogsHandler(logging.Handler):
             )
 
     def emit(self, record: logging.LogRecord):
-        if record.exc_info is not None:
-            exc = (
-                "\n🚫 Traceback:\n"
-                + "\n".join(
-                    [
-                        line
-                        for line in traceback.format_exception(*record.exc_info)[1:]
-                        if "hikka/dispatcher.py" not in line
-                        and "    await func(message)" not in line
-                    ]
-                ).strip()
-            )
-        else:
-            exc = ""
-
         if record.levelno >= 20:
-            try:
-                self.tg_buff += f"[{record.levelname}] {record.name}: {str(record.msg) % record.args}{exc}\n"
-            except TypeError:
-                self.tg_buff += f"[{record.levelname}] {record.name}: {record.msg}\n"
+            self.tg_buff += ("🚫 " if record.exc_info else "") + _tg_formatter.format(
+                record
+            )
 
         if len(self.buffer) + len(self.handledbuffer) >= self.capacity:
             if self.handledbuffer:
@@ -167,9 +161,8 @@ class TelegramLogsHandler(logging.Handler):
 
 
 def init():
-    formatter = _formatter(logging.BASIC_FORMAT, "")
     handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
+    handler.setFormatter(_main_formatter)
     logging.getLogger().handlers = []
     logging.getLogger().addHandler(TelegramLogsHandler(handler, 7000))
     logging.getLogger().setLevel(logging.NOTSET)
