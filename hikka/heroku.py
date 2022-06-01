@@ -43,7 +43,7 @@ def publish(
     )
 
     if not any(
-        addon.plan.name.startswith("heroku-buildpack-") for addon in app.addons()
+        addon.plan.name.startswith("heroku-postgresql") for addon in app.addons()
     ):
         app.install_addon("heroku-postgresql")
 
@@ -77,7 +77,7 @@ def get_app(
         if api_token is None or (
             config["api_id"] == api_token.ID and config["api_hash"] == api_token.HASH
         ):
-            return app, config
+            return poss_app, config
 
     if not create_new:
         logging.error("%r", {app: repr(app.config) for app in heroku.apps()})
