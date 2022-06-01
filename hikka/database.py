@@ -60,7 +60,7 @@ class Database(dict):
     def __repr__(self):
         return object.__repr__(self)
 
-    def _postgre_save(self):
+    def _postgre_save_sync(self):
         self._postgre.execute(
             "DELETE FROM hikka WHERE id = %s; INSERT INTO hikka (id, data) VALUES (%s, %s);",
             (self._client._tg_id, self._client._tg_id, json.dumps(self)),
@@ -72,7 +72,7 @@ class Database(dict):
         if not self._postgre:
             return False
 
-        await utils.run_sync(self._postgre_save)
+        await utils.run_sync(self._postgre_save_sync)
         logger.debug("Published db to PostgreSQL")
         return True
 
@@ -83,7 +83,7 @@ class Database(dict):
 
         await asyncio.sleep(5)
 
-        await utils.run_sync(self._postgre_save)
+        await utils.run_sync(self._postgre_save_sync)
 
         logger.debug("Published db to PostgreSQL")
 
