@@ -14,17 +14,18 @@ from . import utils
 
 
 def publish(
-    key: str,
+    key: Optional[str] = None,
     api_token: Optional[str] = None,
     create_new: Optional[bool] = True,
 ):
     """Push to heroku"""
     logging.debug("Configuring heroku...")
 
+    if key is None:
+        key = os.environ.get("heroku_api_token")
+
     app, config = get_app(key, api_token, create_new)
 
-    # Will be configured later in app
-    config["hikka_session"] = None
     config["heroku_api_token"] = key
 
     if api_token is not None:
@@ -41,7 +42,10 @@ def publish(
         ]
     )
 
-    app.install_addon("heroku-postgresql")
+    if not any(
+        addon.plan.name.startswith("heroku-buildpack-") for addon in app.addons()
+    ):
+        app.install_addon("heroku-postgresql")
 
     repo = get_repo()
     url = app.git_url.replace("https://", f"https://api:{key}@")
@@ -71,8 +75,7 @@ def get_app(
         config = poss_app.config()
 
         if api_token is None or (
-            config["api_id"] == api_token.ID
-            and config["api_hash"] == api_token.HASH
+            config["api_id"] == api_token.ID and config["api_hash"] == api_token.HASH
         ):
             return app, config
 

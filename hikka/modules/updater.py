@@ -288,6 +288,11 @@ class UpdaterMod(loader.Module):
                 os.system("lavhost update")
                 return
 
+            if "DYNO" in os.environ:
+                await self._db.postgre_force_save()
+                heroku.publish(api_token=main.hikka.api_token, create_new=False)
+                return
+
             try:
                 msg_obj = await utils.answer(msg_obj, self.strings("downloading"))
             except Exception:
