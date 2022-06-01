@@ -412,7 +412,7 @@ class Hikka:
         if "DYNO" not in os.environ:
             session.save()
         else:
-            config = heroku.get_app(os.environ["heroku_api_token"])[1]
+            config = heroku.get_app(self.api_token)[1]
             config["hikka_session"] = session.save()
 
         client.session = session
@@ -673,7 +673,7 @@ class Hikka:
                 "This process might take several minutes, be patient."
             )
 
-            app = heroku.publish(key, self.api_token)
+            app = heroku.publish(key, api_token=self.api_token)
             print(
                 "Installed to heroku successfully!\n"
                 "🎉 App URL: {}".format(app.web_url)

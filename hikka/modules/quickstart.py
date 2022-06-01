@@ -57,8 +57,12 @@ TEXT_RU = """🌘🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka<
 """
 
 if "OKTETO" in os.environ:
-    TEXT += "☁️ <b>Your userbot is installed on Okteto</b>. Don't worry, you will get some notifications from @WebpageBot. Do not block him."
-    TEXT_RU += "☁️ <b>Твой юзербот установлен на Okteto</b>. Не пугайся, когда будешь получать уведомления от @WebpageBot и не блокируй его."
+    TEXT += "☁️ <b>Your userbot is installed on Okteto</b>. You will get notifications from @WebpageBot. Do not block him."
+    TEXT_RU += "☁️ <b>Твой юзербот установлен на Okteto</b>. Ты будешь получать уведомления от @WebpageBot. Не блокируй его."
+
+if "DYNO" in os.environ:
+    TEXT += "♓️ <b>Your userbot is installed on Heroku</b>. You will get notifications from @WebpageBot. Do not block him."
+    TEXT_RU += "♓️ <b>Твой юзербот установлен на Heroku</b>. Ты будешь получать уведомления от @WebpageBot. Не блокируй его."
 
 
 @loader.tds
@@ -69,6 +73,9 @@ class QuickstartMod(loader.Module):
 
     async def client_ready(self, client, db):
         self._db = db
+
+        if db.get("hikka", "disable_quickstart", False):
+            raise loader.SelfUnload
 
         mark = self.inline.generate_markup(
             [

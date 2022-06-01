@@ -1,3 +1,15 @@
+# Hikka Changelog
+
+## 🌑 Hikka 1.2.1
+
+- Add termux specific requirements
+- Ignore `heroku3` import error on non-heroku platforms
+- Refactor `heroku.py` app searching algorithm
+- Refactor postgresql database saving process
+- Fix heroku restart message not being edited
+- Add heroku waker
+- Make `hikka-` app naming optional
+
 ## 🌑 Hikka 1.2.0
 
 - Add full-featured Heroku support with additional buildpacks

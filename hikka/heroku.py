@@ -1,9 +1,11 @@
 """Handles heroku uploads"""
 
+from collections import namedtuple
 import logging
 import os
 
 import heroku3
+
 from git import Repo
 from git.exc import InvalidGitRepositoryError
 from typing import Optional
@@ -56,38 +58,35 @@ def publish(
 
 
 def get_app(
-    key,
-    api_token=None,
-    create_new=True,
+    key: Optional[str] = None,
+    api_token: Optional[namedtuple] = None,
+    create_new: Optional[bool] = True,
 ):
+    if key is None:
+        key = os.environ.get("heroku_api_token")
+
     heroku = heroku3.from_key(key)
-    app = None
 
     for poss_app in heroku.apps():
         config = poss_app.config()
 
-        if (
-            api_token is None
-            or (
-                config["api_id"] == api_token.ID
-                and config["api_hash"] == api_token.HASH
-            )
-        ) and poss_app.name.startswith("hikka"):
-            app = poss_app
-            break
+        if api_token is None or (
+            config["api_id"] == api_token.ID
+            and config["api_hash"] == api_token.HASH
+        ):
+            return app, config
 
-    if app is None:
-        if not create_new:
-            logging.error("%r", {app: repr(app.config) for app in heroku.apps()})
-            raise RuntimeError("Could not identify app!")
+    if not create_new:
+        logging.error("%r", {app: repr(app.config) for app in heroku.apps()})
+        raise RuntimeError("Could not identify app!")
 
-        app = heroku.create_app(
-            name=f"hikka-{utils.rand(8)}",
-            stack_id_or_name="heroku-20",
-            region_id_or_name="eu",
-        )
+    app = heroku.create_app(
+        name=f"hikka-{utils.rand(8)}",
+        stack_id_or_name="heroku-20",
+        region_id_or_name="eu",
+    )
 
-        config = app.config()
+    config = app.config()
 
     return app, config
 

@@ -60,22 +60,35 @@ class Database(dict):
     def __repr__(self):
         return object.__repr__(self)
 
-    async def _postgre_save(self):
-        """Save database to postgresql"""
-        if not self._postgre:
-            return
-
-        await asyncio.sleep(5)
-
+    def _postgre_save(self):
         self._postgre.execute(
             "DELETE FROM hikka WHERE id = %s; INSERT INTO hikka (id, data) VALUES (%s, %s);",
             (self._client._tg_id, self._client._tg_id, json.dumps(self)),
         )
         self._postgre.connection.commit()
 
+    async def postgre_force_save(self) -> bool:
+        """Force save database to postgresql without waiting"""
+        if not self._postgre:
+            return False
+
+        await utils.run_sync(self._postgre_save)
+        logger.debug("Published db to PostgreSQL")
+        return True
+
+    async def _postgre_save(self) -> bool:
+        """Save database to postgresql"""
+        if not self._postgre:
+            return False
+
+        await asyncio.sleep(5)
+
+        await utils.run_sync(self._postgre_save)
+
         logger.debug("Published db to PostgreSQL")
 
         self._saving_task = None
+        return True
 
     async def postgre_init(self) -> bool:
         """Init postgresql database"""

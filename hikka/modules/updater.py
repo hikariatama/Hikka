@@ -41,7 +41,7 @@ from telethon.tl.functions.messages import (
 )
 from telethon.tl.types import DialogFilter, Message
 
-from .. import loader, utils, heroku
+from .. import loader, utils, heroku, main
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -178,7 +178,8 @@ class UpdaterMod(loader.Module):
             return
 
         if "DYNO" in os.environ:
-            app = heroku.get_app(os.environ["heroku_api_token"])[0]
+            await self._db.postgre_force_save()
+            app = heroku.get_app(api_token=main.hikka.api_token)[0]
             app.restart()
             return
 

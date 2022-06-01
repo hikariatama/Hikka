@@ -324,10 +324,6 @@ class Modules:
                     lambda x: (
                         x.endswith(".py")
                         and not x.startswith("_")
-                        and (
-                            not db.get("hikka", "disable_quickstart", False)
-                            or x != "quickstart.py"
-                        )
                     ),
                     os.listdir(os.path.join(utils.get_base_dir(), MODULES_NAME)),
                 )
