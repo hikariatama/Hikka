@@ -325,7 +325,7 @@ class Utils(InlineUnit):
             )
             return False
 
-        if not any(media_params):
+        if all(media_params):
             try:
                 await self.bot.edit_message_text(
                     text,
