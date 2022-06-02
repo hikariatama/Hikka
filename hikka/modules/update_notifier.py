@@ -43,8 +43,7 @@ class UpdateNotifierMod(loader.Module):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "disable_notifications",
-                False,
-                lambda: "Disable update notifications",
+                doc=lambda: "Disable update notifications",
                 validator=loader.validators.Boolean(),
             )
         )
@@ -87,9 +86,6 @@ class UpdateNotifierMod(loader.Module):
         self._db = db
         self._client = client
 
-        if self.config["disable_notifications"]:
-            raise loader.SelfUnload
-
         try:
             git.Repo()
         except Exception as e:
@@ -102,54 +98,46 @@ class UpdateNotifierMod(loader.Module):
             ]
         )
 
-        self._task = asyncio.ensure_future(self.poller())
+        self.poller.start()
 
-    async def on_unload(self):
-        self._task.cancel()
-
+    @loader.loop(interval=60)
     async def poller(self):
-        while True:
-            if not self.get_changelog():
-                await asyncio.sleep(60)
-                continue
+        if self.config["disable_notifications"]:
+            return
 
-            try:
-                self._pending = self.get_latest()
+        if not self.get_changelog():
+            return
 
-                if (
-                    self.get("ignore_permanent", False)
-                    and self.get("ignore_permanent") == self._pending
-                ):
-                    await asyncio.sleep(120)
-                    continue
+        self._pending = self.get_latest()
 
-                if (
-                    self._pending != self.get_commit()
-                    and self._pending != self._notified
-                ):
-                    m = await self.inline.bot.send_message(
-                        self._tg_id,
-                        self.strings("update_required").format(
-                            self.get_commit()[:6],
-                            f'<a href="https://github.com/hikariatama/Hikka/compare/{self.get_commit()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
-                            self.get_changelog(),
-                        ),
-                        disable_web_page_preview=True,
-                        reply_markup=self._markup,
-                    )
-
-                    self._notified = self._pending
-                    self.set("ignore_permanent", False)
-
-                    await self._delete_all_upd_messages()
-
-                    self.set("upd_msg", m.message_id)
-            except Exception:
-                # We need to catch error manually because of
-                # `ensure_future`
-                logger.exception("Error occurred while fetching update")
-
+        if (
+            self.get("ignore_permanent", False)
+            and self.get("ignore_permanent") == self._pending
+        ):
             await asyncio.sleep(60)
+            return
+
+        if (
+            self._pending != self.get_commit()
+            and self._pending != self._notified
+        ):
+            m = await self.inline.bot.send_message(
+                self._tg_id,
+                self.strings("update_required").format(
+                    self.get_commit()[:6],
+                    f'<a href="https://github.com/hikariatama/Hikka/compare/{self.get_commit()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
+                    self.get_changelog(),
+                ),
+                disable_web_page_preview=True,
+                reply_markup=self._markup,
+            )
+
+            self._notified = self._pending
+            self.set("ignore_permanent", False)
+
+            await self._delete_all_upd_messages()
+
+            self.set("upd_msg", m.message_id)
 
     async def _delete_all_upd_messages(self):
         for client in self.allclients:
