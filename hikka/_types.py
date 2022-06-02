@@ -2,8 +2,8 @@ import ast
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional, Union
-from .inline.types import *  # noqa: F401, F403
-from . import validators  # noqa: F401
+from .inline.types import *
+from . import validators  # skipcq: PY-W2000
 
 from telethon.tl.types import Message
 
@@ -173,15 +173,33 @@ class ConfigValue:
                     item.strip() if isinstance(item, str) else item for item in value
                 ]
 
-            if self.validator is not None and value is not None:
-                try:
-                    value = self.validator.validate(value)
-                except validators.ValidationError as e:
-                    if not ignore_validation:
-                        raise e
-                    logger.warning(f"Config vaue was broken ({value}), so it was reset to {self.default}")  # fmt: skip
+            if self.validator is not None:
+                if value is not None:
+                    try:
+                        value = self.validator.validate(value)
+                    except validators.ValidationError as e:
+                        if not ignore_validation:
+                            raise e
 
-                    value = self.default
+                        logger.debug(
+                            f"Config value was broken ({value}), so it was reset to {self.default}"
+                        )
+
+                        value = self.default
+                else:
+                    defaults = {
+                        "String": "",
+                        "Integer": 0,
+                        "Boolean": False,
+                        "Series": [],
+                        "Float": 0.0,
+                    }
+
+                    if self.validator.internal_id in defaults:
+                        logger.debug(
+                            f"Config value was None, so it was reset to {defaults[self.validator.internal_id]}"
+                        )
+                        value = defaults[self.validator.internal_id]
 
             # This attribute will tell the `Loader` to save this value in db
             self._save_marker = True

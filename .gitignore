@@ -163,3 +163,9 @@ config.json
 *.m4a
 *.mp3
 *.avi
+
+# Heroku-specific rules
+.heroku/
+.apt/
+.profile.d/
+vendor/

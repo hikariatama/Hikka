@@ -11,6 +11,7 @@
 # scope: inline
 
 import logging
+import os
 
 import git
 from telethon.tl.types import Message
@@ -85,7 +86,7 @@ class HikkaInfoMod(loader.Module):
         ver = utils.get_git_hash() or "Unknown"
 
         try:
-            repo = git.Repo()
+            repo = git.Repo(search_parent_directories=True)
             diff = repo.git.log(["HEAD..origin/master", "--oneline"])
             upd = (
                 self.strings("update_required") if diff else self.strings("up-to-date")

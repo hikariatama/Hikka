@@ -87,11 +87,11 @@ class CoreMod(loader.Module):
         "lang_removed": "✅ <b>Переводы сброшены</b>",
         "check_pack": "🚫 <b>По ссылке находится неправильный пак</b>",
         "_cmd_doc_hikka": "Показать версию Hikka",
-        "_cmd_doc_blacklist": "Отключить бота где-либо",
-        "_cmd_doc_unblacklist": "Включить бота где-либо",
-        "_cmd_doc_blacklistuser": "Запретить пользователю выполнять все команды",
-        "_cmd_doc_unblacklistuser": "Разрешить пользователю выполнять команды, на которые ему хватает разрешений",
-        "_cmd_doc_setprefix": "Установить префикс",
+        "_cmd_doc_blacklist": "[чат] [модуль] - Отключить бота где-либо",
+        "_cmd_doc_unblacklist": "<чат> - Включить бота где-либо",
+        "_cmd_doc_blacklistuser": "[пользователь] - Запретить пользователю выполнять все команды",
+        "_cmd_doc_unblacklistuser": "[пользователь] - Разрешить пользователю выполнять команды, на которые ему хватает разрешений",
+        "_cmd_doc_setprefix": "<префикс> - Установить префикс",
         "_cmd_doc_aliases": "Показать алиасы",
         "_cmd_doc_addalias": "Установить алиас для команды",
         "_cmd_doc_delalias": "Удалить алиас для команды",
@@ -136,7 +136,7 @@ class CoreMod(loader.Module):
         await utils.answer(message, self.strings("hikka").format(*main.__version__))
 
     async def blacklistcmd(self, message: Message):
-        """Blacklist the bot from operating somewhere"""
+        """[chat_id] [module] - Blacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
         self._db.set(
@@ -148,7 +148,7 @@ class CoreMod(loader.Module):
         await utils.answer(message, self.strings("blacklisted").format(chatid))
 
     async def unblacklistcmd(self, message: Message):
-        """Unblacklist the bot from operating somewhere"""
+        """<chat_id> - Unblacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
         self._db.set(
@@ -173,12 +173,15 @@ class CoreMod(loader.Module):
             if message.is_private:
                 return message.to_id.user_id
 
-            await utils.answer(message, self.strings("who_to_unblacklist"))
-            return
+            return False
 
     async def blacklistusercmd(self, message: Message):
-        """Prevent this user from running any commands"""
+        """[user_id] - Prevent this user from running any commands"""
         user = await self.getuser(message)
+
+        if not user:
+            await utils.answer(message, self.strings("who_to_unblacklist"))
+            return
 
         self._db.set(
             main.__name__,
@@ -189,8 +192,12 @@ class CoreMod(loader.Module):
         await utils.answer(message, self.strings("user_blacklisted").format(user))
 
     async def unblacklistusercmd(self, message: Message):
-        """Allow this user to run permitted commands"""
+        """[user_id] - Allow this user to run permitted commands"""
         user = await self.getuser(message)
+
+        if not user:
+            await utils.answer(message, self.strings("who_to_unblacklist"))
+            return
 
         self._db.set(
             main.__name__,
@@ -205,7 +212,7 @@ class CoreMod(loader.Module):
 
     @loader.owner
     async def setprefixcmd(self, message: Message):
-        """Sets command prefix"""
+        """<prefix> - Sets command prefix"""
         args = utils.get_args_raw(message)
 
         if not args:

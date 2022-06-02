@@ -37,6 +37,7 @@ import re
 import shlex
 import string
 import time
+import inspect
 from datetime import timedelta
 from typing import Any, List, Optional, Tuple, Union
 from urllib.parse import urlparse
@@ -80,6 +81,7 @@ from telethon.tl.types import (
     PeerChat,
     PeerUser,
     User,
+    Chat,
 )
 
 from .inline.types import InlineCall, InlineMessage
@@ -902,6 +904,77 @@ def get_lang_flag(countrycode: str) -> str:
         return "".join([chr(ord(c.upper()) + (ord("🇦") - ord("A"))) for c in code])
 
     return countrycode
+
+
+def get_entity_url(
+    entity: Union[User, Channel],
+    openmessage: Optional[bool] = False,
+) -> str:
+    """
+    Get link to object, if available
+    :param entity: Entity to get url of
+    :param openmessage: Use tg://openmessage link for users
+    :return: Link to object or empty string
+    """
+    return (
+        f"tg://user?id={entity.id}"
+        if isinstance(entity, User)
+        else (
+            f"tg://resolve?domain={entity.username}"
+            if getattr(entity, "username", None)
+            else ""
+        )
+    )
+
+
+async def get_message_link(
+    message: Message,
+    chat: Optional[Union[Chat, Channel]] = None,
+) -> str:
+    if message.is_private:
+        return (
+            f"tg://openmessage?user_id={get_chat_id(message)}&message_id={message.id}"
+        )
+
+    if not chat:
+        chat = await message.get_chat()
+
+    return (
+        f"https://t.me/{chat.username}/{message.id}"
+        if getattr(chat, "username", False)
+        else f"https://t.me/c/{chat.id}/{message.id}"
+    )
+
+
+def remove_html(text: str, escape: Optional[bool] = False) -> str:
+    """
+    Removes HTML tags from text
+    :param text: Text to remove HTML from
+    :param escape: Escape HTML
+    :return: Text without HTML
+    """
+    return (escape_html if escape else str)(
+        re.sub(
+            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>)",
+            "",
+            text,
+        )
+    )
+
+
+def get_kwargs() -> dict:
+    """
+    Get kwargs of function, in which is called
+    :return: kwargs
+    """
+    # https://stackoverflow.com/a/65927265/19170642
+    frame = inspect.currentframe().f_back
+    keys, _, _, values = inspect.getargvalues(frame)
+    kwargs = {}
+    for key in keys:
+        if key != "self":
+            kwargs[key] = values[key]
+    return kwargs
 
 
 init_ts = time.perf_counter()

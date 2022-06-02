@@ -71,6 +71,7 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Cancel",
         "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
+        "heroku_update": "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>",
         "full_success": "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>",
     }
 
@@ -99,6 +100,7 @@ class UpdaterMod(loader.Module):
         "_cls_doc": "Обновляет юзербот",
         "lavhost_restart": "✌️ <b>Твой lavHost перезагружается...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Твой lavHost обновляется...\n&gt;///&lt;</b>",
+        "heroku_update": "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>",
     }
 
     def __init__(self):
@@ -220,7 +222,7 @@ class UpdaterMod(loader.Module):
         # Now we have downloaded new code, install requirements
         logger.debug("Installing new requirements...")
         try:
-            subprocess.run(  # skipcq: PYL-W1510
+            subprocess.run(
                 [
                     sys.executable,
                     "-m",
@@ -232,9 +234,9 @@ class UpdaterMod(loader.Module):
                         "requirements.txt",
                     ),
                     "--user",
-                ]
+                ],
+                check=True,
             )
-
         except subprocess.CalledProcessError:
             logger.exception("Req install failed")
 
@@ -252,12 +254,13 @@ class UpdaterMod(loader.Module):
                 or not await self.inline.form(
                     message=message,
                     text=self.strings("update_confirm").format(
-                        current,
-                        current[:8],
-                        upcoming,
-                        upcoming[:8],
+                        *(
+                            [current, current[:8], upcoming, upcoming[:8]]
+                            if "DYNO" not in os.environ
+                            else ["", "", "", ""]
+                        )
                     )
-                    if upcoming != current
+                    if upcoming != current or "DYNO" in os.environ
                     else self.strings("no_update"),
                     reply_markup=[
                         {
@@ -289,6 +292,8 @@ class UpdaterMod(loader.Module):
                 return
 
             if "DYNO" in os.environ:
+                await utils.answer(msg_obj, self.strings("heroku_update"))
+                await self.process_restart_message(msg_obj)
                 await self._db.postgre_force_save()
                 heroku.publish(api_token=main.hikka.api_token, create_new=False)
                 return

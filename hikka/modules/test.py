@@ -24,13 +24,15 @@ from .. import loader, main, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
-DEBUG_MODS_DIR = os.path.join(utils.get_base_dir(), "debug_modules")
 
-if not os.path.isdir(DEBUG_MODS_DIR):
-    os.mkdir(DEBUG_MODS_DIR, mode=0o755)
+if "DYNO" not in os.environ:
+    DEBUG_MODS_DIR = os.path.join(utils.get_base_dir(), "debug_modules")
 
-for mod in os.scandir(DEBUG_MODS_DIR):
-    os.remove(mod.path)
+    if not os.path.isdir(DEBUG_MODS_DIR):
+        os.mkdir(DEBUG_MODS_DIR, mode=0o755)
+
+    for mod in os.scandir(DEBUG_MODS_DIR):
+        os.remove(mod.path)
 
 
 @loader.tds
@@ -60,6 +62,7 @@ class TestMod(loader.Module):
         "bad_module": "🚫 <b>Module not found</b>",
         "debugging_enabled": "🧑‍💻 <b>Debugging mode enabled for module </b><code>{0}</code>\n<i>Go to directory named `debug_modules`, edit file named `{0}.py` and see changes in real time</i>",
         "debugging_disabled": "✅ <b>Debugging disabled</b>",
+        "heroku_debug": "🚫 <b>Debugging is not available on Heroku</b>",
     }
 
     strings_ru = {
@@ -83,6 +86,7 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<время> - Заморозить бота на некоторое время",
         "_cmd_doc_ping": "Проверяет скорость отклика юзербота",
         "_cls_doc": "Операции, связанные с самотестированием",
+        "heroku_debug": "🚫 <b>Режим разработчика не доступен на Heroku</b>",
     }
 
     @staticmethod
@@ -102,7 +106,7 @@ class TestMod(loader.Module):
     async def cancel(call: InlineCall):
         await call.delete()
 
-    @loader.loop(interval=1, autostart=True)
+    @loader.loop(interval=1)
     async def watchdog(self):
         try:
             for module in os.scandir(DEBUG_MODS_DIR):
@@ -138,6 +142,10 @@ class TestMod(loader.Module):
     async def debugmodcmd(self, message: Message):
         """[module] - For developers: Open module for debugging
         You will be able to track changes in real-time"""
+        if "DYNO" in os.environ:
+            await utils.answer(message, self.strings("heroku_debug"))
+            return
+
         args = utils.get_args_raw(message)
         instance = None
         for module in self.allmodules.modules:
@@ -418,6 +426,9 @@ class TestMod(loader.Module):
         )
 
         self._logchat = int(f"-100{chat.id}")
+
+        if "DYNO" not in os.environ:
+            self.watchdog.start()
 
         if not is_new and any(
             participant.id == self.inline.bot_id

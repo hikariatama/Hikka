@@ -2,6 +2,7 @@ import asyncio
 import functools
 import logging
 import time
+import traceback
 from types import FunctionType
 from typing import List, Optional, Union
 
@@ -16,11 +17,14 @@ from aiogram.types import (
     InputMediaPhoto,
 )
 from aiogram.utils.exceptions import BadRequest, InvalidHTTPUrlContent, RetryAfter
+
 from telethon.tl.types import Message
+from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
+
 from urllib.parse import urlparse
 import os
 
-from .. import utils
+from .. import utils, main
 from .types import InlineUnit
 
 logger = logging.getLogger(__name__)
@@ -253,6 +257,13 @@ class Gallery(InlineUnit):
         else:
             status_message = None
 
+        async def answer(msg: str):
+            nonlocal message
+            if isinstance(message, Message):
+                await (message.edit if message.out else message.respond)(msg)
+            else:
+                await self._client.send_message(message, msg)
+
         try:
             q = await self._client.inline_query(self.bot_username, unit_id)
             m = await q[0].click(
@@ -261,40 +272,33 @@ class Gallery(InlineUnit):
                 if isinstance(message, Message)
                 else None,
             )
-        except Exception:
+        except ChatSendInlineForbiddenError:
+            await answer("🚫 <b>You can't send inline units in this chat</b>")
+        except Exception as e:
             logger.exception("Error sending inline gallery")
 
             del self._units[unit_id]
 
             if _reattempt:
-                msg = (
-                    "🚫 <b>A problem occurred with inline bot "
-                    "while processing query. Check logs for "
-                    "further info.</b>"
-                )
+                logger.exception("Can't send gallery")
 
-                if isinstance(message, Message):
-                    await (message.edit if message.out else message.respond)(msg)
+                if not self._db.get(main.__name__, "inlinelogs", True):
+                    msg = f"<b>🚫 Gallery invoke failed! More info in logs</b>"
                 else:
-                    await self._client.send_message(message, msg)
+                    exc = traceback.format_exc()
+                    # Remove `Traceback (most recent call last):`
+                    exc = "\n".join(exc.splitlines()[1:])
+                    msg = (
+                        f"<b>🚫 Gallery invoke failed!</b>\n\n"
+                        f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
+                    )
+
+                del self._units[unit_id]
+                await answer(msg)
 
                 return False
 
-            return await self.gallery(
-                message=message,
-                next_handler=next_handler,
-                caption=caption,
-                force_me=force_me,
-                always_allow=always_allow,
-                manual_security=manual_security,
-                disable_security=disable_security,
-                ttl=ttl,
-                on_unload=on_unload,
-                preload=preload,
-                gif=gif,
-                silent=silent,
-                _reattempt=True,
-            )
+            return await self.gallery(**utils.get_kwargs())
 
         self._units[unit_id]["chat"] = utils.get_chat_id(m)
         self._units[unit_id]["message_id"] = m.id

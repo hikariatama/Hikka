@@ -1,10 +1,26 @@
 import asyncio
 import inspect
 import logging
+import contextlib
+import io
+import os
+from copy import deepcopy
 from types import FunctionType
-from typing import List, Union
+from typing import List, Optional, Union
+from urllib.parse import urlparse
 
-from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InputMediaAnimation,
+    InputMediaDocument,
+    InputMediaAudio,
+    InputMediaPhoto,
+    InputMediaVideo,
+    InputFile,
+)
+
 from aiogram.utils.exceptions import (
     InvalidQueryID,
     MessageIdInvalid,
@@ -211,6 +227,12 @@ class Utils(InlineUnit):
         text: str,
         reply_markup: List[List[dict]] = None,
         *,
+        photo: Optional[str] = None,
+        file: Optional[str] = None,
+        video: Optional[str] = None,
+        audio: Optional[str] = None,
+        gif: Optional[str] = None,
+        mime_type: Optional[str] = None,
         force_me: Union[bool, None] = None,
         disable_security: Union[bool, None] = None,
         always_allow: Union[List[int], None] = None,
@@ -227,6 +249,48 @@ class Utils(InlineUnit):
 
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
+            return False
+
+        if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
+            logger.error("Invalid type for `photo`")
+            return False
+
+        if gif and (not isinstance(gif, str) or not utils.check_url(gif)):
+            logger.error("Invalid type for `gif`")
+            return False
+
+        if file and (
+            not isinstance(file, str, bytes, io.BytesIO)
+            or (isinstance(file, str) and not utils.check_url(file))
+        ):
+            logger.error("Invalid type for `file`")
+            return False
+
+        if file and not mime_type:
+            logger.error(
+                "You must pass `mime_type` along with `file` field\n"
+                "It may be either 'application/zip' or 'application/pdf'"
+            )
+            return False
+
+        if video and (not isinstance(video, str) or not utils.check_url(video)):
+            logger.error("Invalid type for `video`")
+            return False
+
+        if audio and (not isinstance(audio, str) or not utils.check_url(audio)):
+            logger.error("Invalid type for `audio`")
+            return False
+
+        media_params = [
+            photo is None,
+            gif is None,
+            file is None,
+            video is None,
+            audio is None,
+        ]
+
+        if media_params.count(False) > 1:
+            logger.error("You passed two or more exclusive parameters simultaneously")
             return False
 
         if unit_uid is not None and unit_uid in self._units:
@@ -261,47 +325,79 @@ class Utils(InlineUnit):
             )
             return False
 
+        if not any(media_params):
+            try:
+                await self.bot.edit_message_text(
+                    text,
+                    inline_message_id=inline_message_id,
+                    disable_web_page_preview=disable_web_page_preview,
+                    reply_markup=self.generate_markup(
+                        reply_markup
+                        if isinstance(reply_markup, list)
+                        else unit.get("buttons", [])
+                    ),
+                )
+            except MessageNotModified:
+                if query:
+                    try:
+                        await query.answer()
+                    except InvalidQueryID:
+                        pass  # Just ignore that error, bc we need to just
+                        # remove preloader from user's button, if message
+                        # was deleted
+            except RetryAfter as e:
+                logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
+                await asyncio.sleep(e.timeout)
+                return await self._edit_unit(**utils.get_kwargs())
+            except MessageIdInvalid:
+                with contextlib.suppress(Exception):
+                    await query.answer(
+                        "I should have edited some message, but it is deleted :("
+                    )
+
+            return
+
+        # If passed `photo` is gif
         try:
-            await self.bot.edit_message_text(
-                text,
+            path = urlparse(media).path
+            ext = os.path.splitext(path)[1]
+        except Exception:
+            ext = None
+
+        if photo is not None and ext in {".gif", ".mp4"}:
+            gif = deepcopy(photo)
+            photo = None
+
+        if file is not None:
+            media = InputMediaDocument(file, caption=text, parse_mode="HTML")
+        elif photo is not None:
+            media = InputMediaPhoto(photo, caption=text, parse_mode="HTML")
+        elif audio is not None:
+            media = InputMediaAudio(audio, caption=text, parse_mode="HTML")
+        elif video is not None:
+            media = InputMediaVideo(video, caption=text, parse_mode="HTML")
+        elif gif is not None:
+            media = InputMediaAnimation(gif, caption=text, parse_mode="HTML")
+
+        try:
+            await self.bot.edit_message_media(
                 inline_message_id=inline_message_id,
-                disable_web_page_preview=disable_web_page_preview,
+                media=media,
                 reply_markup=self.generate_markup(
                     reply_markup
                     if isinstance(reply_markup, list)
                     else unit.get("buttons", [])
                 ),
             )
-        except MessageNotModified:
-            if query:
-                try:
-                    await query.answer()
-                except InvalidQueryID:
-                    pass  # Just ignore that error, bc we need to just
-                    # remove preloader from user's button, if message
-                    # was deleted
-
         except RetryAfter as e:
             logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
             await asyncio.sleep(e.timeout)
-            return await self._edit_unit(
-                text=text,
-                reply_markup=reply_markup,
-                force_me=force_me,
-                disable_security=disable_security,
-                always_allow=always_allow,
-                disable_web_page_preview=disable_web_page_preview,
-                query=query,
-                unit_uid=unit_uid,
-                inline_message_id=inline_message_id,
-            )
+            return await self._edit_unit(**utils.get_kwargs())
         except MessageIdInvalid:
-            try:
-                await query.answer("I should have edited some message, but it is deleted :(")  # fmt: skip
-            except InvalidQueryID:
-                pass  # Just ignore that error, bc we need to just
-                # remove preloader from user's button, if message
-                # was deleted
+            with contextlib.suppress(Exception):
+                await query.answer(
+                    "I should have edited some message, but it is deleted :("
+                )
 
     async def _delete_unit_message(
         self,

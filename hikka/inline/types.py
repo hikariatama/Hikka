@@ -15,7 +15,7 @@ class InlineMessage:
 
     def __init__(
         self,
-        inline_manager: "InlineManager",  # noqa: F821
+        inline_manager: "InlineManager",  # type: ignore
         unit_uid: str,
         inline_message_id: str,
     ):
@@ -68,7 +68,7 @@ class InlineCall(CallbackQuery, InlineMessage):
     def __init__(
         self,
         call: CallbackQuery,
-        inline_manager: "InlineManager",  # noqa: F821
+        inline_manager: "InlineManager",  # type: ignore
         unit_uid: str,
     ):
         CallbackQuery.__init__(self)

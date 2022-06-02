@@ -28,9 +28,7 @@
 
 import asyncio
 import logging
-import traceback
 import io
-import datetime
 
 from . import utils
 from ._types import Module

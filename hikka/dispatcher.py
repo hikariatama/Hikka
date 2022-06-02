@@ -65,7 +65,7 @@ class CommandDispatcher:
         self._ratelimit_max_chat = db.get(__name__, "ratelimit_max_chat", 100)
         self.check_security = self.security.check
 
-    async def init(self, client: "TelegramClient"):  # noqa: F821
+    async def init(self, client: "TelegramClient"):  # type: ignore
         await self.security.init(client)
         me = await client.get_me()
         self._me = me.id
@@ -156,13 +156,13 @@ class CommandDispatcher:
             for line in text.split("\n"):
                 if (
                     grep
-                    and grep in re.sub("<.*?>", "", line)
-                    and (not ungrep or ungrep not in re.sub("<.*?>", "", line))
+                    and grep in utils.remove_html(line)
+                    and (not ungrep or ungrep not in utils.remove_html(line))
                 ):
-                    res.append(line.replace(grep, f"<u>{grep}</u>"))
+                    res.append(utils.remove_html(line, escape=True).replace(grep, f"<u>{grep}</u>"))
 
-                if not grep and ungrep and ungrep not in re.sub("<.*?>", "", line):
-                    res.append(line)
+                if not grep and ungrep and ungrep not in utils.remove_html(line):
+                    res.append(utils.remove_html(line, escape=True))
 
             cont = (
                 (f"contain <b>{grep}</b>" if grep else "")

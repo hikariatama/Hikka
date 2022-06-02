@@ -80,21 +80,26 @@ class Events(InlineUnit):
             if isinstance(result, dict):
                 result = [result]
 
-            if not isinstance(result, list) or not all(
-                (
-                    "message" in res
-                    or "photo" in res
-                    or "gif" in res
-                    or "video" in res
-                    or "file" in res
-                    and "mime_type" in res
+            if not isinstance(result, list):
+                logger.error(
+                    f"Got invalid type from inline handler. It must be `dict`, got `{type(result)}`"
                 )
-                and "title" in res
-                for res in result
-            ):
-                logger.error("Got invalid type from inline handler. Refer to docs for more info")  # fmt: skip
                 await instance.e500()
                 return
+
+            for res in result:
+                mandatory = {"message", "photo", "gif", "video", "file"}
+                if not any(item in res for item in mandatory):
+                    logger.error(
+                        f"Got invalid type from inline handler. It must contain one of `{mandatory}`"
+                    )
+                    await instance.e500()
+                    return
+
+                if "file" in res and "mime_type" not in res:
+                    logger.error(
+                        f"Got invalid type from inline handler. It contains field `file`, so it must contain `mime_type` as well"
+                    )
 
             inline_result = []
 
@@ -113,9 +118,7 @@ class Events(InlineUnit):
                             thumb_url=res.get("thumb"),
                             thumb_width=128,
                             thumb_height=128,
-                            reply_markup=self.generate_markup(
-                                res.get("reply_markup")
-                            ),
+                            reply_markup=self.generate_markup(res.get("reply_markup")),
                         )
                     ]
                 elif "photo" in res:
@@ -128,9 +131,7 @@ class Events(InlineUnit):
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["photo"]),
                             photo_url=res["photo"],
-                            reply_markup=self.generate_markup(
-                                res.get("reply_markup")
-                            ),
+                            reply_markup=self.generate_markup(res.get("reply_markup")),
                         )
                     ]
                 elif "gif" in res:
@@ -142,9 +143,7 @@ class Events(InlineUnit):
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["gif"]),
                             gif_url=res["gif"],
-                            reply_markup=self.generate_markup(
-                                res.get("reply_markup")
-                            ),
+                            reply_markup=self.generate_markup(res.get("reply_markup")),
                         )
                     ]
                 elif "video" in res:
@@ -158,9 +157,7 @@ class Events(InlineUnit):
                             thumb_url=res.get("thumb", res["video"]),
                             video_url=res["video"],
                             mime_type="video/mp4",
-                            reply_markup=self.generate_markup(
-                                res.get("reply_markup")
-                            ),
+                            reply_markup=self.generate_markup(res.get("reply_markup")),
                         )
                     ]
                 elif "file" in res:
@@ -174,16 +171,16 @@ class Events(InlineUnit):
                             thumb_url=res.get("thumb", res["file"]),
                             document_url=res["file"],
                             mime_type=res["mime_type"],
-                            reply_markup=self.generate_markup(
-                                res.get("reply_markup")
-                            ),
+                            reply_markup=self.generate_markup(res.get("reply_markup")),
                         )
                     ]
 
             try:
                 await inline_query.answer(inline_result, cache_time=0)
             except Exception:
-                logger.exception(f"Exception when answering inline query with result from {cmd}")  # fmt: skip
+                logger.exception(
+                    f"Exception when answering inline query with result from {cmd}"
+                )
                 return
 
         await self._form_inline_handler(inline_query)
@@ -343,7 +340,9 @@ class Events(InlineUnit):
                             **button.get("kwargs", {}),
                         )
                     except Exception:
-                        logger.exception("Exception while running chosen query watcher!")  # fmt: skip
+                        logger.exception(
+                            "Exception while running chosen query watcher!"
+                        )
                         return
 
     async def _query_help(self, inline_query: InlineQuery):

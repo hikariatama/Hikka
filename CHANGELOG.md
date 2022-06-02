@@ -1,5 +1,21 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.2
+
+- Update gitignore so git doesn't count shit on heroku
+- Visual heroku fixes in updater
+- Deepsource fixes
+- Add `utils.get_entity_url`, `utils.get_message_link`, `utils.remove_html`, `utils.get_kwargs`
+- Disable modules debugging on heroku
+- Add `.nonickusers`, `.nonickcmds`, `.nonickchats`
+- Update blacklist command docs
+- Fix grep removing everything in <...>
+- Add `loader.validators.RegExp`
+- Automatically convert `None` to empty string \ zero integer etc., if validator is specified
+- More meaningful errors in `inline_handler`s
+- More meaningful errors in `self.inline.form`, `self.inline.gallery`, `self.inline.list` on user-side
+- Allow editing\adding media to form via `call.edit`. Currently supported: `photo`, `file`, `video`, `audio`, `gif`
+
 ## 🌑 Hikka 1.2.1
 
 - Add termux specific requirements

@@ -5,6 +5,7 @@ from types import FunctionType
 from typing import List, Optional, Union
 import random
 import grapheme
+import traceback
 
 from aiogram.types import (
     InlineQuery,
@@ -18,8 +19,9 @@ from aiogram.types import (
     InlineQueryResultAudio,
 )
 from telethon.tl.types import Message
+from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 
-from .. import utils
+from .. import utils, main
 from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
@@ -267,6 +269,13 @@ class Form(InlineUnit):
             **({"always_allow": always_allow} if always_allow else {}),
         }
 
+        async def answer(msg: str):
+            nonlocal message
+            if isinstance(message, Message):
+                await (message.edit if message.out else message.respond)(msg)
+            else:
+                await self._client.send_message(message, msg)
+
         try:
             q = await self._client.inline_query(self.bot_username, unit_id)
             m = await q[0].click(
@@ -275,18 +284,24 @@ class Form(InlineUnit):
                 if isinstance(message, Message)
                 else None,
             )
-        except Exception:
-            msg = (
-                "🚫 <b>A problem occurred with inline bot "
-                "while processing query. Check logs for "
-                "further info.</b>"
-            )
+        except ChatSendInlineForbiddenError:
+            await answer("🚫 <b>You can't send inline units in this chat</b>")
+        except Exception as e:
+            logger.exception("Can't send form")
+
+            if not self._db.get(main.__name__, "inlinelogs", True):
+                msg = f"<b>🚫 Form invoke failed! More info in logs</b>"
+            else:
+                exc = traceback.format_exc()
+                # Remove `Traceback (most recent call last):`
+                exc = "\n".join(exc.splitlines()[1:])
+                msg = (
+                    f"<b>🚫 Form invoke failed!</b>\n\n"
+                    f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
+                )
 
             del self._units[unit_id]
-            if isinstance(message, Message):
-                await (message.edit if message.out else message.respond)(msg)
-            else:
-                await self._client.send_message(message, msg)
+            await answer(msg)
 
             return False
 

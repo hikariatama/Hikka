@@ -2,6 +2,7 @@ import functools
 from typing import Any, Optional, Union
 from . import utils
 import grapheme
+import re
 
 
 class ValidationError(Exception):
@@ -276,7 +277,9 @@ def Series(
 
 
 def _Link(value: Any, /) -> str:
-    if not utils.check_url(value):
+    try:
+        assert utils.check_url(value)
+    except Exception:
         raise ValidationError(f"Passed value ({value}) is not a valid URL")
 
     return value
@@ -298,10 +301,15 @@ def _String(value: Any, /, *, length: int) -> str:
     if isinstance(length, int) and len(list(grapheme.graphemes(str(value)))) != length:
         raise ValidationError(f"Passed value ({value}) must be a length of {length}")
 
-    return value
+    return str(value)
 
 
 def String(length: Optional[int] = None) -> Validator:
+    """
+    Checks for length of passed value and automatically converts it to string
+    :param length: Exact length of string
+    """
+
     if length is not None:
         doc = {
             "en": f"string of length {length}",
@@ -317,6 +325,36 @@ def String(length: Optional[int] = None) -> Validator:
         functools.partial(_String, length=length),
         doc,
         _internal_id="String",
+    )
+
+
+def _RegExp(value: Any, /, *, regex: str) -> str:
+    if not re.match(regex, value):
+        raise ValidationError(f"Passed value ({value}) must follow pattern {regex}")
+
+    return value
+
+
+def RegExp(regex: str) -> Validator:
+    """
+    Checks if value matches the regex
+    :param regex: Regex to match
+    """
+
+    try:
+        re.compile(regex)
+    except re.error as e:
+        raise Exception(f"{regex} is not a valid regex") from e
+
+    doc = {
+        "en": f"string matching pattern «{regex}»",
+        "ru": f"строкой, соответствующей шаблону «{regex}»",
+    }
+
+    return Validator(
+        functools.partial(_RegExp, regex=regex),
+        doc,
+        _internal_id="RegExp",
     )
 
 

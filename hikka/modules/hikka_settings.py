@@ -20,6 +20,7 @@ from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
+from telethon.utils import get_display_name
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
@@ -87,6 +88,10 @@ class HikkaSettingsMod(loader.Module):
         "uninstall": "😢 <b>Uninstalling Hikka...</b>",
         "uninstalled": "😢 <b>Hikka uninstalled. Web interface is still active, you can add another account</b>",
         "logs_cleared": "🗑 <b>Logs cleared</b>",
+        "cmd_nn_list": "🔰 <b>NoNick is enabled for these commands:</b>\n\n{}",
+        "user_nn_list": "🔰 <b>NoNick is enabled for these users:</b>\n\n{}",
+        "chat_nn_list": "🔰 <b>NoNick is enabled for these chats:</b>\n\n{}",
+        "nothing": "🔰 <b>Nothing to show...</b>",
     }
 
     strings_ru = {
@@ -147,6 +152,10 @@ class HikkaSettingsMod(loader.Module):
         "uninstall": "😢 <b>Удаляю Hikka...</b>",
         "uninstalled": "😢 <b>Hikka удалена. Веб-интерфейс все еще активен, можно добавить другие аккаунты!</b>",
         "logs_cleared": "🗑 <b>Логи очищены</b>",
+        "cmd_nn_list": "🔰 <b>NoNick включен для этих команд:</b>\n\n{}",
+        "user_nn_list": "🔰 <b>NoNick включен для этих пользователей:</b>\n\n{}",
+        "chat_nn_list": "🔰 <b>NoNick включен для этих чатов:</b>\n\n{}",
+        "nothing": "🔰 <b>Нечего показывать...</b>",
     }
 
     def get_watchers(self) -> tuple:
@@ -500,6 +509,88 @@ class HikkaSettingsMod(loader.Module):
             )
 
         self._db.set(main.__name__, "nonickcmds", nn)
+
+    async def nonickcmdscmd(self, message: Message):
+        """Returns the list of NoNick commands"""
+        if not self._db.get(main.__name__, "nonickcmds", []):
+            await utils.answer(message, self.strings("nothing"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("cmd_nn_list").format(
+                "\n".join(
+                    [
+                        f"▫️ <code>{self.get_prefix()}{cmd}</code>"
+                        for cmd in self._db.get(main.__name__, "nonickcmds", [])
+                    ]
+                )
+            ),
+        )
+
+    async def nonickuserscmd(self, message: Message):
+        """Returns the list of NoNick users"""
+        users = []
+        for user_id in self._db.get(main.__name__, "nonickusers", []).copy():
+            try:
+                user = await self._client.get_entity(user_id)
+            except Exception:
+                self._db.set(
+                    main.__name__,
+                    "nonickusers",
+                    list(
+                        set(self._db.get(main.__name__, "nonickusers", []))
+                        - set([user_id])
+                    ),
+                )
+                logger.warning(
+                    f"User {user_id} removed from nonickusers list", exc_info=True
+                )
+                continue
+
+            users += [
+                f'▫️ <b><a href="tg://user?id={user_id}">{utils.escape_html(get_display_name(user))}</a></b>'
+            ]
+
+        if not users:
+            await utils.answer(message, self.strings("nothing"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("user_nn_list").format("\n".join(users)),
+        )
+
+    async def nonickchatscmd(self, message: Message):
+        """Returns the list of NoNick chats"""
+        chats = []
+        for chat in self._db.get(main.__name__, "nonickchats", []):
+            try:
+                chat_entity = await self._client.get_entity(int(chat))
+            except Exception:
+                self._db.set(
+                    main.__name__,
+                    "nonickchats",
+                    list(
+                        set(self._db.get(main.__name__, "nonickchats", []))
+                        - set([chat])
+                    ),
+                )
+                logger.warning(f"Chat {chat} removed from nonickchats list")
+                continue
+
+            chats += [
+                f'▫️ <b><a href="{utils.get_entity_url(chat_entity)}">{utils.escape_html(get_display_name(chat_entity))}</a></b>'
+            ]
+
+        if not chats:
+            await utils.answer(message, self.strings("nothing"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("user_nn_list").format("\n".join(chats)),
+        )
 
     async def inline__setting(self, call: InlineCall, key: str, state: bool):
         self._db.set(main.__name__, key, state)
