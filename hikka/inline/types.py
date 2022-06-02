@@ -16,48 +16,48 @@ class InlineMessage:
     def __init__(
         self,
         inline_manager: "InlineManager",  # type: ignore
-        unit_uid: str,
+        unit_id: str,
         inline_message_id: str,
     ):
         self.inline_message_id = inline_message_id
-        self.unit_uid = unit_uid
+        self.unit_id = unit_id
         self.inline_manager = inline_manager
         self._units = inline_manager._units
         self.form = (
-            {"id": unit_uid, **self._units[unit_uid]} if unit_uid in self._units else {}
+            {"id": unit_id, **self._units[unit_id]} if unit_id in self._units else {}
         )
 
     async def edit(self, *args, **kwargs) -> "InlineMessage":
-        if "unit_uid" in kwargs:
-            kwargs.pop("unit_uid")
+        if "unit_id" in kwargs:
+            kwargs.pop("unit_id")
 
         if "inline_message_id" in kwargs:
             kwargs.pop("inline_message_id")
 
         return await self.inline_manager._edit_unit(
             *args,
-            unit_uid=self.unit_uid,
+            unit_id=self.unit_id,
             inline_message_id=self.inline_message_id,
             **kwargs,
         )
 
     async def delete(self, *args, **kwargs):
-        if "unit_uid" in kwargs:
-            kwargs.pop("unit_uid")
+        if "unit_id" in kwargs:
+            kwargs.pop("unit_id")
 
         return await self.inline_manager._delete_unit_message(
             *args,
-            unit_uid=self.unit_uid,
+            unit_id=self.unit_id,
             **kwargs,
         )
 
     async def unload(self, *args, **kwargs):
-        if "unit_uid" in kwargs:
-            kwargs.pop("unit_uid")
+        if "unit_id" in kwargs:
+            kwargs.pop("unit_id")
 
         return await self.inline_manager._unload_unit(
             *args,
-            unit_uid=self.unit_uid,
+            unit_id=self.unit_id,
             **kwargs,
         )
 
@@ -69,7 +69,7 @@ class InlineCall(CallbackQuery, InlineMessage):
         self,
         call: CallbackQuery,
         inline_manager: "InlineManager",  # type: ignore
-        unit_uid: str,
+        unit_id: str,
     ):
         CallbackQuery.__init__(self)
 
@@ -87,7 +87,7 @@ class InlineCall(CallbackQuery, InlineMessage):
         InlineMessage.__init__(
             self,
             inline_manager,
-            unit_uid,
+            unit_id,
             call.inline_message_id,
         )
 

@@ -238,10 +238,10 @@ class Utils(InlineUnit):
         always_allow: Union[List[int], None] = None,
         disable_web_page_preview: bool = True,
         query: CallbackQuery = None,
-        unit_uid: str = None,
+        unit_id: str = None,
         inline_message_id: Union[str, None] = None,
     ):
-        """Do not edit or pass `self`, `query`, `unit_uid` params, they are for internal use only"""
+        """Do not edit or pass `self`, `query`, `unit_id` params, they are for internal use only"""
         if isinstance(reply_markup, (list, dict)):
             reply_markup = self._normalize_markup(reply_markup)
         elif reply_markup is None:
@@ -293,8 +293,8 @@ class Utils(InlineUnit):
             logger.error("You passed two or more exclusive parameters simultaneously")
             return False
 
-        if unit_uid is not None and unit_uid in self._units:
-            unit = self._units[unit_uid]
+        if unit_id is not None and unit_id in self._units:
+            unit = self._units[unit_id]
 
             unit["buttons"] = reply_markup
 
@@ -402,16 +402,16 @@ class Utils(InlineUnit):
     async def _delete_unit_message(
         self,
         call: CallbackQuery = None,
-        unit_uid: str = None,
+        unit_id: str = None,
     ) -> bool:
-        """Params `self`, `form`, `unit_uid` are for internal use only, do not try to pass them"""
+        """Params `self`, `form`, `unit_id` are for internal use only, do not try to pass them"""
         try:
             await self._client.delete_messages(
-                self._units[unit_uid]["chat"],
-                [self._units[unit_uid]["message_id"]],
+                self._units[unit_id]["chat"],
+                [self._units[unit_id]["message_id"]],
             )
 
-            await self._unload_unit(None, unit_uid)
+            await self._unload_unit(None, unit_id)
         except Exception:
             return False
 
@@ -420,17 +420,17 @@ class Utils(InlineUnit):
     async def _unload_unit(
         self,
         call: CallbackQuery = None,
-        unit_uid: str = None,
+        unit_id: str = None,
     ) -> bool:
-        """Params `self`, `unit_uid` are for internal use only, do not try to pass them"""
+        """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
         try:
-            if "on_unload" in self._units[unit_uid] and callable(
-                self._units[unit_uid]["on_unload"]
+            if "on_unload" in self._units[unit_id] and callable(
+                self._units[unit_id]["on_unload"]
             ):
-                self._units[unit_uid]["on_unload"]()
+                self._units[unit_id]["on_unload"]()
 
-            if unit_uid in self._units:
-                del self._units[unit_uid]
+            if unit_id in self._units:
+                del self._units[unit_id]
             else:
                 return False
         except Exception:

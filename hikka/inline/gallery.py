@@ -218,7 +218,7 @@ class Gallery(InlineUnit):
             "handler": asyncio.coroutine(
                 functools.partial(
                     self._delete_unit_message,
-                    unit_uid=unit_id,
+                    unit_id=unit_id,
                 )
             ),
             **default_map,
