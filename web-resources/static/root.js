@@ -79,10 +79,9 @@ function finish_login() {
     })
     .then(() => {
         window.expanse = true;
-        $(".blur").fadeOut(1500);
-        setTimeout(() => {
-            window.location.href = "/";
-        }, 8000);
+        $(".installation").fadeOut(2000, () => {
+            $(".finish_block").fadeIn(300);
+        });
     })
     .catch(() => {
         error_state();

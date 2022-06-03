@@ -67,6 +67,10 @@
       color: #fff;
       padding: 15px 0;
     }
+
+    .finish_block {
+      display: none;
+    }
   </style>
 {% endblock %}
 
@@ -80,7 +84,17 @@
   <div class="confirm_auth">Please, confirm action in <span style="color:#28a0dc">Telegram</span></div>
 </div>
 <div class="wrapper">
-  <div class="blur main">
+  <div class="blur main finish_block">
+    <div class="title">Hikka is installed</div>
+    <div class="description">
+      {% if heroku %}
+      Wait for a while, Hikka will be ready in a few minutes.
+      {% else %}
+      Hikka is ready to use.
+      {% endif %}
+    </div>
+  </div>
+  <div class="blur main installation">
     <div class="title">Hikka</div>
     <div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.<br><span style="color: #18cc18; display: none" class="authorized">Authorized!</span></div>
     <div class="center">

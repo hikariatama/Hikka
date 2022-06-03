@@ -385,7 +385,12 @@ class Hikka:
                 importlib.invalidate_caches()
                 self._get_api_token()
 
-    async def save_client_session(self, client: TelegramClient):
+    async def save_client_session(
+        self,
+        client: TelegramClient,
+        heroku_config: "ConfigVars" = None,  # type: ignore
+        heroku_app: "App" = None,  # type: ignore
+    ):
         if hasattr(client, "_tg_id"):
             telegram_id = client._tg_id
         else:
@@ -412,8 +417,9 @@ class Hikka:
         if "DYNO" not in os.environ:
             session.save()
         else:
-            config = heroku.get_app(self.api_token)[1]
-            config["hikka_session"] = session.save()
+            heroku_config["hikka_session"] = session.save()
+            heroku_app.update_config(heroku_config)
+            # Heroku will restart the app after updating config
 
         client.session = session
         # Set db attribute to this client in order to save
