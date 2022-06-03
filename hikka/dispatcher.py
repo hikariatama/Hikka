@@ -424,8 +424,15 @@ class CommandDispatcher:
             # Avoid weird AttributeErrors in weird dochub modules by settings placeholder
             # of attributes
             for placeholder in {"text", "raw_text"}:
-                if not hasattr(event, placeholder):
-                    setattr(event, placeholder, "")
+                try:
+                    if not hasattr(event, placeholder):
+                        setattr(event, placeholder, "")
+                except UnicodeDecodeError:
+                    logging.critical(
+                        "Hikka issued error on updates\n"
+                        "This is not your fault, please, report this issue in @hikka_talks along with info below:\n\n"
+                        f"{type(event)=}, {event=}, {placeholder=}"
+                    )
 
             # Run watcher via ensure_future so in case user has a lot
             # of watchers with long actions, they can run simultaneously

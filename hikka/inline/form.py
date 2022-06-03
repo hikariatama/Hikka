@@ -63,53 +63,35 @@ class Form(InlineUnit):
         location: Optional[str] = None,
         audio: Optional[str] = None,
         silent: Optional[bool] = False,
-    ) -> Union[str, bool]:
+    ) -> Union[InlineMessage, bool]:
         """
-        Creates inline form with callback
-        Args:
-            text
-                Content of inline form. HTML markdown supported
-            message
-                Where to send inline. Can be either `Message` or `int`
-            reply_markup
-                List of buttons to insert in markup. List of dicts with
-                keys: text, callback
-            force_me
-                Either this form buttons must be pressed only by owner scope or no
-            always_allow
-                Users, that are allowed to press buttons in addition to previous rules
-            ttl
-                Time, when the form is going to be unloaded. Unload means, that the form
-                buttons with inline queries and callback queries will become unusable, but
-                buttons with type url will still work as usual. Pay attention, that ttl can't
-                be bigger, than default one (1 day) and must be either `int` or `False`
-            on_unload
-                Callback, called when form is unloaded and/or closed. You can clean up trash
-                or perform another needed action
-            manual_security
-                By default, Hikka will try to inherit inline buttons security from the caller (command)
-                If you want to avoid this, pass `manual_security=True`
-            disable_security
-                By default, Hikka will try to inherit inline buttons security from the caller (command)
-                If you want to disable all security checks on this form in particular, pass `disable_security=True`
-            photo
-                Attach a photo to the form. URL must be supplied
-            gif
-                Attach a gif to the form. URL must be supplied
-            file
-                Attach a file to the form. URL must be supplied
-            mime_type
-                Only needed, if `file` field is not empty. Must be either 'application/pdf' or 'application/zip'
-            video
-                Attach a video to the form. URL must be supplied
-            location
-                Attach a map point to the form. List/tuple must be supplied (latitude, longitude)
-                Example: (55.749931, 48.742371)
-                ⚠️ If you pass this parameter, you'll need to pass empty string to `text` ⚠️
-            audio
-                Attach a audio to the form. URL must be supplied
-            silent
-                Whether the form must be sent silently (w/o "Loading inline form..." message)
+        Send inline form to chat
+        :param text: Content of inline form. HTML markdown supported
+        :param message: Where to send inline. Can be either `Message` or `int`
+        :param reply_markup: List of buttons to insert in markup. List of dicts with keys: text, callback
+        :param force_me: Either this form buttons must be pressed only by owner scope or no
+        :param always_allow: Users, that are allowed to press buttons in addition to previous rules
+        :param ttl: Time, when the form is going to be unloaded. Unload means, that the form
+                    buttons with inline queries and callback queries will become unusable, but
+                    buttons with type url will still work as usual. Pay attention, that ttl can't
+                    be bigger, than default one (1 day) and must be either `int` or `False`
+        :param on_unload: Callback, called when form is unloaded and/or closed. You can clean up trash
+                          or perform another needed action
+        :param manual_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+                                If you want to avoid this, pass `manual_security=True`
+        :param disable_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+                                 If you want to disable all security checks on this form in particular, pass `disable_security=True`
+        :param photo: Attach a photo to the form. URL must be supplied
+        :param gif: Attach a gif to the form. URL must be supplied
+        :param file: Attach a file to the form. URL must be supplied
+        :param mime_type: Only needed, if `file` field is not empty. Must be either 'application/pdf' or 'application/zip'
+        :param video: Attach a video to the form. URL must be supplied
+        :param location: Attach a map point to the form. List/tuple must be supplied (latitude, longitude)
+                         Example: (55.749931, 48.742371)
+                         ⚠️ If you pass this parameter, you'll need to pass empty string to `text` ⚠️
+        :param audio: Attach a audio to the form. URL must be supplied
+        :param silent: Whether the form must be sent silently (w/o "Loading inline form..." message)
+        :return: If form is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
 
         if reply_markup is None:

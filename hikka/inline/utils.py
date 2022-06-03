@@ -8,6 +8,7 @@ from copy import deepcopy
 from types import FunctionType
 from typing import List, Optional, Union
 from urllib.parse import urlparse
+import functools
 
 from aiogram.types import (
     CallbackQuery,
@@ -18,7 +19,6 @@ from aiogram.types import (
     InputMediaAudio,
     InputMediaPhoto,
     InputMediaVideo,
-    InputFile,
 )
 
 from aiogram.utils.exceptions import (
@@ -30,7 +30,7 @@ from aiogram.utils.exceptions import (
 
 from .. import utils
 from .._types import Module
-from .types import InlineUnit
+from .types import InlineUnit, InlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +61,26 @@ class Utils(InlineUnit):
                 if not isinstance(button, dict):
                     logger.error(f"Button {button} is not a `dict`, but `{type(button)}` in {map_}")  # fmt: skip
                     return None
+
+                if "callback" not in button:
+                    if button.get("action") == "close":
+                        button["callback"] = self._close_unit_handler
+
+                    if button.get("action") == "unload":
+                        button["callback"] = self._unload_unit_handler
+
+                    if button.get("action") == "answer":
+                        if not button.get("text"):
+                            logger.error(
+                                f"Button {button} has no `text` to answer with"
+                            )
+                            return None
+
+                        button["callback"] = functools.partial(
+                            self._answer_unit_handler,
+                            show_alert=button.get("show_alert", False),
+                            text=button["text"],
+                        )
 
                 if "callback" in button and "_callback_data" not in button:
                     button["_callback_data"] = utils.rand(30)
@@ -174,6 +194,15 @@ class Utils(InlineUnit):
         return markup
 
     generate_markup = _generate_markup
+
+    async def _close_unit_handler(self, call: InlineCall):
+        await call.delete()
+
+    async def _unload_unit_handler(self, call: InlineCall):
+        await call.unload()
+
+    async def _answer_unit_handler(self, call: InlineCall, text: str, show_alert: bool):
+        await call.answer(text, show_alert=show_alert)
 
     async def check_inline_security(
         self,

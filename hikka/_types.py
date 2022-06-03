@@ -40,7 +40,7 @@ class Module:
 
 
 class LoadError(Exception):
-    """Tells user, why your module can't be loaded, if rased in `client_ready`"""
+    """Tells user, why your module can't be loaded, if raised in `client_ready`"""
 
     def __init__(self, error_message: str):  # skipcq: PYL-W0231
         self._error = error_message

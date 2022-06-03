@@ -1,5 +1,14 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.3
+
+- Add field `action` to inline buttons. You can pass there `close` to close inline form, `unload` to unload it from memory, `answer` & `text` | `show_alert` to answer callback query with message
+- Update docstrings in inline to match unified format
+- Add surrogate error ignorance in dispatcher
+- Fix :obj:`EntityCache` caching username `@None`
+- Return :obj:`InlineMessage` in `hikka.inline.gallery.Gallery.gallery`
+- Fix typo in docstring
+
 ## 🌑 Hikka 1.2.2
 
 - Update gitignore so git doesn't count shit on heroku

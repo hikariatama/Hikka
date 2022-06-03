@@ -39,33 +39,24 @@ class List(InlineUnit):
         ttl: Optional[Union[int, bool]] = False,
         on_unload: Optional[FunctionType] = None,
         silent: Optional[bool] = False,
-    ) -> Union[bool, str]:
+    ) -> Union[bool, InlineMessage]:
         """
-        Processes inline lists
-        Args:
-            message
-                Where to send list. Can be either `Message` or `int`
-            strings
-                List of strings, which should become inline list
-            force_me
-                Either this list buttons must be pressed only by owner scope or no
-            always_allow
-                Users, that are allowed to press buttons in addition to previous rules
-            ttl
-                Time, when the list is going to be unloaded. Unload means, that the list
-                will become unusable. Pay attention, that ttl can't
-                be bigger, than default one (1 day) and must be either `int` or `False`
-            on_unload
-                Callback, called when list is unloaded and/or closed. You can clean up trash
-                or perform another needed action
-            manual_security
-                By default, Hikka will try to inherit inline buttons security from the caller (command)
-                If you want to avoid this, pass `manual_security=True`
-            disable_security
-                By default, Hikka will try to inherit inline buttons security from the caller (command)
-                If you want to disable all security checks on this list in particular, pass `disable_security=True`
-            silent
-                Whether the list must be sent silently (w/o "Loading inline list..." message)
+        Send inline list to chat
+        :param message: Where to send list. Can be either `Message` or `int`
+        :param strings: List of strings, which should become inline list
+        :param force_me: Either this list buttons must be pressed only by owner scope or no
+        :param always_allow: Users, that are allowed to press buttons in addition to previous rules
+        :param ttl: Time, when the list is going to be unloaded. Unload means, that the list
+                    will become unusable. Pay attention, that ttl can't
+                    be bigger, than default one (1 day) and must be either `int` or `False`
+        :param on_unload: Callback, called when list is unloaded and/or closed. You can clean up trash
+                          or perform another needed action
+        :param manual_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+                                If you want to avoid this, pass `manual_security=True`
+        :param disable_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+                                 If you want to disable all security checks on this list in particular, pass `disable_security=True`
+        :param silent: Whether the list must be sent silently (w/o "Loading inline list..." message)
+        :return: If list is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
 
         if not isinstance(manual_security, bool):

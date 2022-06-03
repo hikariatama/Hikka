@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 import os
 
 from .. import utils, main
-from .types import InlineUnit
+from .types import InlineUnit, InlineMessage
 
 logger = logging.getLogger(__name__)
 
@@ -57,42 +57,30 @@ class Gallery(InlineUnit):
         gif: Optional[bool] = False,
         silent: Optional[bool] = False,
         _reattempt: bool = False,
-    ) -> Union[bool, str]:
+    ) -> Union[bool, InlineMessage]:
         """
-        Processes inline gallery
-        Args:
-            caption
-                Caption for photo, or callable, returning caption
-            message
-                Where to send inline. Can be either `Message` or `int`
-            next_handler
-                Callback function, which must return url for next photo or list with photo urls
-            force_me
-                Either this gallery buttons must be pressed only by owner scope or no
-            always_allow
-                Users, that are allowed to press buttons in addition to previous rules
-            ttl
-                Time, when the gallery is going to be unloaded. Unload means, that the gallery
-                will become unusable. Pay attention, that ttl can't
-                be bigger, than default one (1 day) and must be either `int` or `False`
-            on_unload
-                Callback, called when gallery is unloaded and/or closed. You can clean up trash
-                or perform another needed action
-            preload
-                Either to preload gallery photos beforehand or no. If yes - specify threshold to
-                be loaded. Toggle this attribute, if your callback is too slow to load photos
-                in real time
-            gif
-                Whether the gallery will be filled with gifs. If you omit this argument and specify
-                gifs in `next_handler`, Hikka will try to determine the filetype of these images
-            manual_security
-                By default, Hikka will try to inherit inline buttons security from the caller (command)
-                If you want to avoid this, pass `manual_security=True`
-            disable_security
-                By default, Hikka will try to inherit inline buttons security from the caller (command)
-                If you want to disable all security checks on this gallery in particular, pass `disable_security=True`
-            silent
-                Whether the gallery must be sent silently (w/o "Loading inline gallery..." message)
+        Send inline gallery to chat
+        :param caption: Caption for photo, or callable, returning caption
+        :param message: Where to send inline. Can be either `Message` or `int`
+        :param next_handler: Callback function, which must return url for next photo or list with photo urls
+        :param force_me: Either this gallery buttons must be pressed only by owner scope or no
+        :param always_allow: Users, that are allowed to press buttons in addition to previous rules
+        :param ttl: Time, when the gallery is going to be unloaded. Unload means, that the gallery
+                    will become unusable. Pay attention, that ttl can't
+                    be bigger, than default one (1 day) and must be either `int` or `False`
+        :param on_unload: Callback, called when gallery is unloaded and/or closed. You can clean up trash
+                          or perform another needed action
+        :param preload: Either to preload gallery photos beforehand or no. If yes - specify threshold to
+                        be loaded. Toggle this attribute, if your callback is too slow to load photos
+                        in real time
+        :param gif: Whether the gallery will be filled with gifs. If you omit this argument and specify
+                    gifs in `next_handler`, Hikka will try to determine the filetype of these images
+        :param manual_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+                                If you want to avoid this, pass `manual_security=True`
+        :param disable_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+                                 If you want to disable all security checks on this gallery in particular, pass `disable_security=True`
+        :param silent: Whether the gallery must be sent silently (w/o "Loading inline gallery..." message)
+        :return: If gallery is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
 
         if not isinstance(caption, str) and not callable(caption):
@@ -311,7 +299,7 @@ class Gallery(InlineUnit):
 
         asyncio.ensure_future(self._load_gallery_photos(unit_id))
 
-        return unit_id
+        return InlineMessage(self, unit_id, self._units[unit_id]["inline_message_id"])
 
     async def _call_photo(self, callback: FunctionType) -> Union[str, bool]:
         """Parses photo url from `callback`. Returns url on success, otherwise `False`"""
