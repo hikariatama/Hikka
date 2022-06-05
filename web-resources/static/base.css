@@ -162,6 +162,18 @@ body {
         top: 0;
         height: 50vh;
     }
+
+    .title {
+        height: auto;
+        line-height: auto;
+    }
+
+    .finish_block, .auth {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 @keyframes floating {
@@ -248,3 +260,8 @@ label {
     box-sizing: border-box;
     position: absolute;
 } 
+
+#installation_icon {
+    height: 200px;
+    margin-bottom: 35px;
+}
