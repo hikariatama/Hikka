@@ -15,14 +15,14 @@ import time
 import asyncio
 
 try:
-    import redis
+    import psycopg2
 except ImportError as e:
     if "DYNO" in os.environ:
         raise e
 
-    REDIS_AVAILABLE = False
+    POSTGRE_AVAILABLE = False
 else:
-    REDIS_AVAILABLE = True
+    POSTGRE_AVAILABLE = True
 
 from typing import Any, Union
 
@@ -50,7 +50,7 @@ class Database(dict):
     _revisions = []
     _assets = None
     _me = None
-    _redis = None
+    _postgre = None
     _saving_task = None
 
     def __init__(self, client):
@@ -60,49 +60,59 @@ class Database(dict):
     def __repr__(self):
         return object.__repr__(self)
 
-    def _redis_save_sync(self):
-        self._redis.set(str(self._client._tg_id), json.dumps(self, ensure_ascii=True))
+    def _postgre_save_sync(self):
+        self._postgre.execute(
+            "DELETE FROM hikka WHERE id = %s; INSERT INTO hikka (id, data) VALUES (%s, %s);",
+            (self._client._tg_id, self._client._tg_id, json.dumps(self)),
+        )
+        self._postgre.connection.commit()
 
-    async def redis_force_save(self) -> bool:
-        """Force save database to redis without waiting"""
-        if not self._redis:
+    async def postgre_force_save(self) -> bool:
+        """Force save database to postgresql without waiting"""
+        if not self._postgre:
             return False
 
-        await utils.run_sync(self._redis_save_sync)
-        logger.debug("Published db to Redis")
+        await utils.run_sync(self._postgre_save_sync)
+        logger.debug("Published db to PostgreSQL")
         return True
 
-    async def _redis_save(self) -> bool:
-        """Save database to redis"""
-        if not self._redis:
+    async def _postgre_save(self) -> bool:
+        """Save database to postgresql"""
+        if not self._postgre:
             return False
 
         await asyncio.sleep(5)
 
-        await utils.run_sync(self._redis_save_sync)
+        await utils.run_sync(self._postgre_save_sync)
 
-        logger.debug("Published db to Redis")
+        logger.debug("Published db to PostgreSQL")
 
         self._saving_task = None
         return True
 
-    async def redis_init(self) -> bool:
-        """Init redis database"""
-        if not REDIS_AVAILABLE:
-            logger.critical("Attempted to initialize redis database, but it is not installed")  # fmt: skip
+    async def postgre_init(self) -> bool:
+        """Init postgresql database"""
+        if not POSTGRE_AVAILABLE:
+            logger.critical("Attempted to initialize postgresql database, but psycopg2 is not installed")  # fmt: skip
             return False
 
-        REDIS_URI = os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")
+        POSTGRE_URI = os.environ.get("DATABASE_URL") or main.get_config_key(
+            "postgre_uri"
+        )
 
-        if not REDIS_URI:
+        if not POSTGRE_URI:
             return False
 
-        self._redis = redis.from_url(REDIS_URI)
+        conn = psycopg2.connect(POSTGRE_URI, sslmode="require")
+
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS hikka (id integer, data text);")
+        self._postgre = cur
 
     async def init(self):
         """Asynchronous initialization unit"""
-        if os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
-            await self.redis_init()
+        if os.environ.get("DATABASE_URL") or main.get_config_key("postgre_uri"):
+            await self.postgre_init()
 
         self._db_path = os.path.join(DATA_DIR, f"config-{self._client._tg_id}.json")
         self.read()
@@ -153,11 +163,15 @@ class Database(dict):
 
     def read(self):
         """Read database and stores it in self"""
-        if self._redis:
+        if self._postgre:
             try:
-                self.update(**json.loads(self._redis.get(str(self._client._tg_id))))
+                self._postgre.execute(
+                    "SELECT data FROM hikka WHERE id=%s;",
+                    (self._client._tg_id,),
+                )
+                self.update(**json.loads(self._postgre.fetchall()[0][0]))
             except Exception:
-                logger.exception("Error reading redis database")
+                logger.exception("Error reading postgresql database")
             else:
                 return
 
@@ -221,9 +235,9 @@ class Database(dict):
         while len(self._revisions) > 15:
             self._revisions.pop()
 
-        if self._redis:
+        if self._postgre:
             if not self._saving_task:
-                self._saving_task = asyncio.ensure_future(self._redis_save())
+                self._saving_task = asyncio.ensure_future(self._postgre_save())
             return True
 
         try:

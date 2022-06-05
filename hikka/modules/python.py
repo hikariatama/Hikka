@@ -115,10 +115,10 @@ class PythonMod(loader.Module):
         except Exception:
             exc = format_exc().replace(self._phone, "📵")
 
-            if os.environ.get("REDIS_URL"):
+            if os.environ.get("DATABASE_URL"):
                 exc = exc.replace(
-                    os.environ.get("REDIS_URL"),
-                    "redis://**************************",
+                    os.environ.get("DATABASE_URL"),
+                    "postgre://**************************",
                 )
 
             if os.environ.get("hikka_session"):
@@ -142,10 +142,10 @@ class PythonMod(loader.Module):
         )
         ret = ret.replace(str(self._phone), "📵")
 
-        if os.environ.get("REDIS_URL"):
+        if os.environ.get("DATABASE_URL"):
             ret = ret.replace(
-                os.environ.get("REDIS_URL"),
-                "redis://**************************",
+                os.environ.get("DATABASE_URL"),
+                "postgre://**************************",
             )
 
         if os.environ.get("hikka_session"):
