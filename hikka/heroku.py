@@ -43,9 +43,9 @@ def publish(
     )
 
     if not any(
-        addon.plan.name.startswith("heroku-postgresql") for addon in app.addons()
+        addon.plan.name.startswith("heroku-redis") for addon in app.addons()
     ):
-        app.install_addon("heroku-postgresql")
+        app.install_addon("heroku-redis")
 
     repo = get_repo()
     url = app.git_url.replace("https://", f"https://api:{key}@")
@@ -115,3 +115,8 @@ def init():
     """Will be run on every Heroku start"""
     # Create repo if not found
     get_repo()
+    app = get_app()[0]
+    if not any(
+        addon.plan.name.startswith("heroku-redis") for addon in app.addons()
+    ):
+        app.install_addon("heroku-redis")

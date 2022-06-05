@@ -13,7 +13,7 @@
     },
     "addons": [
         {
-            "plan": "heroku-postgresql"
+            "plan": "heroku-redis"
         }
     ],
     "buildpacks": [

@@ -340,10 +340,10 @@ class TestMod(loader.Module):
                 f'{hikka_token.split("_")[0]}_********************************',
             )
 
-        if os.environ.get("DATABASE_URL"):
+        if os.environ.get("REDIS_URL"):
             logs = logs.replace(
-                os.environ.get("DATABASE_URL"),
-                "postgre://**************************",
+                os.environ.get("REDIS_URL"),
+                "redis://**************************",
             )
 
         if os.environ.get("hikka_session"):
