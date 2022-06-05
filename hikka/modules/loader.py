@@ -641,7 +641,7 @@ class LoaderMod(loader.Module):
 
                 importlib.invalidate_caches()
 
-                return await self.load_module(utils.get_kwargs())  # Try again
+                return await self.load_module(**utils.get_kwargs())  # Try again
             except loader.LoadError as e:
                 with contextlib.suppress(ValueError):
                     self.allmodules.modules.remove(instance)  # skipcq: PYL-E0601
