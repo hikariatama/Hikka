@@ -84,12 +84,12 @@ class Database(dict):
         if not self._postgre and not self._redis:
             return False
 
-        if self._postgre:
-            await utils.run_sync(self._postgre_save_sync)
-            logger.debug("Published db to PostgreSQL")
-        elif self._redis:
+        if self._redis:
             await utils.run_sync(self._redis_save_sync)
             logger.debug("Published db to Redis")
+        elif self._postgre:
+            await utils.run_sync(self._postgre_save_sync)
+            logger.debug("Published db to PostgreSQL")
 
         return True
 
@@ -147,10 +147,10 @@ class Database(dict):
 
     async def init(self):
         """Asynchronous initialization unit"""
-        if os.environ.get("DATABASE_URL") or main.get_config_key("postgre_uri"):
-            await self.postgre_init()
-        elif os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
+        if os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             await self.redis_init()
+        elif os.environ.get("DATABASE_URL") or main.get_config_key("postgre_uri"):
+            await self.postgre_init()
 
         self._db_path = os.path.join(DATA_DIR, f"config-{self._client._tg_id}.json")
         self.read()
@@ -175,7 +175,19 @@ class Database(dict):
 
     def read(self):
         """Read database and stores it in self"""
-        if self._postgre:
+        if self._redis:
+            try:
+                self.update(
+                    **json.loads(
+                        self._redis.get(
+                            str(self._client._tg_id),
+                        ).decode(),
+                    )
+                )
+            except Exception:
+                logger.exception("Error reading redis database")
+            return
+        elif self._postgre:
             try:
                 self._postgre.execute(
                     "SELECT data FROM hikka WHERE id=%s;",
@@ -188,18 +200,6 @@ class Database(dict):
                 )
             except Exception:
                 logger.exception("Error reading postgresql database")
-            return
-        elif self._redis:
-            try:
-                self.update(
-                    **json.loads(
-                        self._redis.get(
-                            str(self._client._tg_id),
-                        ).decode(),
-                    )
-                )
-            except Exception:
-                logger.exception("Error reading redis database")
             return
 
         try:
@@ -262,13 +262,13 @@ class Database(dict):
         while len(self._revisions) > 15:
             self._revisions.pop()
 
-        if self._postgre:
-            if not self._saving_task:
-                self._saving_task = asyncio.ensure_future(self._postgre_save())
-            return True
-        elif self._redis:
+        if self._redis:
             if not self._saving_task:
                 self._saving_task = asyncio.ensure_future(self._redis_save())
+            return True
+        elif self._postgre:
+            if not self._saving_task:
+                self._saving_task = asyncio.ensure_future(self._postgre_save())
             return True
 
         try:
