@@ -10,7 +10,13 @@
 
 import logging
 import os
-import redis
+
+try:
+    import redis
+except ImportError as e:
+    if "DYNO" in os.environ:
+        raise e
+
 from telethon.tl.types import Message
 
 from .. import loader, main, utils, heroku
