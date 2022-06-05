@@ -142,11 +142,13 @@ class PythonMod(loader.Module):
         )
         ret = ret.replace(str(self._phone), "📵")
 
-        if os.environ.get("DATABASE_URL"):
-            ret = ret.replace(
-                os.environ.get("DATABASE_URL"),
-                "postgre://**************************",
-            )
+        postgre = os.environ.get("DATABASE_URL") or main.get_config_key("postgre_uri")
+        if postgre:
+            ret = ret.replace(postgre, "postgre://**************************")
+
+        redis = os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")
+        if redis:
+            ret = ret.replace(redis, "redis://**************************")
 
         if os.environ.get("hikka_session"):
             ret = ret.replace(

@@ -66,7 +66,7 @@ class OktetoMod(loader.Module):
 
             raise loader.SelfUnload
 
-        await utils.dnd(client, await client.get_entity(self._bot), True)
+        await utils.dnd(client, self._bot, True)
         self._task = asyncio.ensure_future(self._okteto_pinger())
 
     async def on_unload(self):

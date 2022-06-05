@@ -175,12 +175,13 @@ class UpdaterMod(loader.Module):
 
         self.set("restart_ts", time.time())
 
+        await self._db.remote_force_save()
+
         if "LAVHOST" in os.environ:
             os.system("lavhost restart")
             return
 
         if "DYNO" in os.environ:
-            await self._db.postgre_force_save()
             app = heroku.get_app(api_token=main.hikka.api_token)[0]
             app.restart()
             return
@@ -294,7 +295,7 @@ class UpdaterMod(loader.Module):
             if "DYNO" in os.environ:
                 await utils.answer(msg_obj, self.strings("heroku_update"))
                 await self.process_restart_message(msg_obj)
-                await self._db.postgre_force_save()
+                await self._db.remote_force_save()
                 heroku.publish(api_token=main.hikka.api_token, create_new=False)
                 return
 

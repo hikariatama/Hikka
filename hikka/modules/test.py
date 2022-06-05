@@ -346,6 +346,12 @@ class TestMod(loader.Module):
                 "postgre://**************************",
             )
 
+        if os.environ.get("REDIS_URL"):
+            logs = logs.replace(
+                os.environ.get("REDIS_URL"),
+                "postgre://**************************",
+            )
+
         if os.environ.get("hikka_session"):
             logs = logs.replace(
                 os.environ.get("hikka_session"),
