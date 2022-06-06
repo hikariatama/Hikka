@@ -1,5 +1,24 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.4
+
+- Show current options in module config
+- Add new validators: `loader.validators.Union`, `loader.validators.NoneType`
+- Add additional Heroku deps
+- Fix `load_module` reattempt
+- Reorder database read-writes to make postgres the ladder
+- Make redis optional for non-heroku users
+- Add source to Pipfile
+- New Heroku dependencies list in Pipfile
+- External Redis database support
+- Mask more options in logs and .e output
+- Remove psycopg2 from requirements.txt
+- New installation banner
+- Add automatic blob->raw convertion in loader
+- Add banner with Hikka installation status
+- Reorder config saving in web
+- Fix `Unauthorized` error on Heroku
+
 ## 🌑 Hikka 1.2.3
 
 - Add field `action` to inline buttons. You can pass there `close` to close inline form, `unload` to unload it from memory, `answer` & `text` | `show_alert` to answer callback query with message
