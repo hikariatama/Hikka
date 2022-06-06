@@ -29,7 +29,7 @@ class HikkaConfigMod(loader.Module):
     strings = {
         "name": "HikkaConfig",
         "configure": "🎚 <b>Here you can configure your modules' configs</b>",
-        "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>",
+        "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>\n\n<b>Current options:</b>\n\n{}",
         "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: </b><code>{}</code>\n\n<b>Current: </b><code>{}</code>\n\n{}",
         "option_saved": "🎚 <b>Option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: </b><code>{}</code>",
         "option_reset": "♻️ <b>Option </b><code>{}</code><b> of mod </b><code>{}</code><b> has been reset to default</b>\n<b>Current: </b><code>{}</code>",
@@ -38,7 +38,7 @@ class HikkaConfigMod(loader.Module):
         "no_option": "🚫 <b>Configuration option doesn't exist</b>",
         "validation_error": "🚫 <b>You entered incorrect config value. \nError: {}</b>",
         "try_again": "🔁 Try again",
-        "typehint": "🕵️ <b>Must be a {}</b>",
+        "typehint": "🕵️ <b>Must be the {}</b>",
         "set": "set",
         "set_default_btn": "♻️ Reset default",
         "enter_value_btn": "✍️ Enter value",
@@ -53,7 +53,7 @@ class HikkaConfigMod(loader.Module):
 
     strings_ru = {
         "configure": "🎚 <b>Здесь можно управлять настройками модулей</b>",
-        "configuring_mod": "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>",
+        "configuring_mod": "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>\n\n<b>Текущие настройки:</b>\n\n{}",
         "configuring_option": "🎚 <b>Управление параметром </b><code>{}</code><b> модуля </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное: </b><code>{}</code>\n\n<b>Текущее: </b><code>{}</code>\n\n{}",
         "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее: </b><code>{}</code>",
         "option_reset": "♻️ <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сброшен до значения по умолчанию</b>\n<b>Текущее: </b><code>{}</code>",
@@ -500,7 +500,15 @@ class HikkaConfigMod(loader.Module):
             ]
 
         await call.edit(
-            self.strings("configuring_mod").format(utils.escape_html(mod)),
+            self.strings("configuring_mod").format(
+                utils.escape_html(mod),
+                "\n".join(
+                    [
+                        f"▫️ <code>{utils.escape_html(key)}</code>: <code>{self.prep_value(value)}</code>"
+                        for key, value in self.lookup(mod).config.items()
+                    ]
+                ),
+            ),
             reply_markup=list(utils.chunks(btns, 2))
             + [
                 [

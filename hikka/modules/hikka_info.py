@@ -67,7 +67,10 @@ class HikkaInfoMod(loader.Module):
                 "custom_button",
                 ["🌘 Support chat", "https://t.me/hikka_talks"],
                 lambda: self.strings("_cfg_cst_btn"),
-                validator=loader.validators.Series(fixed_len=2),
+                validator=loader.validators.Union(
+                    loader.validators.Series(fixed_len=2),
+                    loader.validators.NoneType(),
+                ),
             ),
             loader.ConfigValue(
                 "disable_banner",

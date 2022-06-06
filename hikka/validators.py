@@ -451,3 +451,50 @@ def TelegramID() -> Validator:
         "Telegram ID",
         _internal_id="TelegramID",
     )
+
+
+def _Union(value: Any, /, *, validators: list):
+    for validator in validators:
+        try:
+            return validator.validate(value)
+        except ValidationError:
+            pass
+
+    raise ValidationError(f"Passed value ({value}) is not valid")
+
+
+def Union(*validators) -> Validator:
+    doc = {
+        "en": "one of the following:\n",
+        "ru": "одним из следующего:\n",
+    }
+
+    case = lambda x: x[0].upper() + x[1:]
+
+    for validator in validators:
+        doc["en"] += f"- {case(validator.doc['en'])}\n"
+        doc["ru"] += f"- {case(validator.doc['ru'])}\n"
+
+    doc["en"] = doc["en"].strip()
+    doc["ru"] = doc["ru"].strip()
+
+    return Validator(
+        functools.partial(_Union, validators=validators),
+        doc,
+        _internal_id="Union",
+    )
+
+
+def _NoneType(value: Any, /) -> None:
+    if value not in {None, False, ""}:
+        raise ValidationError(f"Passed value ({value}) is not None")
+
+    return None
+
+
+def NoneType() -> Validator:
+    return Validator(
+        _NoneType,
+        "`None`",
+        _internal_id="NoneType",
+    )
