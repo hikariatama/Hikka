@@ -27,6 +27,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import contextlib
 import functools
 import io
 import json
@@ -82,6 +83,7 @@ from telethon.tl.types import (
     PeerUser,
     User,
     Chat,
+    UpdateNewChannelMessage,
 )
 
 from .inline.types import InlineCall, InlineMessage
@@ -466,12 +468,24 @@ async def set_avatar(
     else:
         return False
 
-    await client(
+    res = await client(
         EditPhotoRequest(
             channel=peer,
             photo=await client.upload_file(f, file_name="photo.png"),
         )
     )
+
+    with contextlib.suppress(Exception):
+        await client.delete_messages(
+            peer,
+            message_ids=[
+                next(
+                    update
+                    for update in res.updates
+                    if isinstance(update, UpdateNewChannelMessage)
+                ).message.id
+            ],
+        )
 
     return True
 
