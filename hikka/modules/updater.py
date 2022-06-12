@@ -26,6 +26,7 @@
 
 import asyncio
 import atexit
+import contextlib
 import logging
 import os
 import signal
@@ -192,7 +193,8 @@ class UpdaterMod(loader.Module):
             app.restart()
             return
 
-        await main.hikka.web.stop()
+        with contextlib.suppress(Exception):
+            await main.hikka.web.stop()
 
         atexit.register(restart, *sys.argv[1:])
         handler = logging.getLogger().handlers[0]
