@@ -552,7 +552,7 @@ class LoaderMod(loader.Module):
                             },
                             {
                                 "text": self.lookup("updater").strings("cancel"),
-                                "callback": self.lookup("updater").inline_close,
+                                "action": "close",
                             },
                         ],
                     )
@@ -942,6 +942,19 @@ class LoaderMod(loader.Module):
 
     async def _update_modules(self):
         todo = await self._get_modules_to_load()
+
+        # ⚠️⚠️  WARNING!  ⚠️⚠️
+        # If you are a module developer, and you'll try to bypass this protection to
+        # force user join your channel, you will be added to SCAM modules
+        # list and you will be banned from Hikka federation.
+        # Let USER decide, which channel he will follow. Do not be so petty
+        # I hope, you understood me.
+        # Thank you
+
+        if "https://mods.hikariatama.ru/forbid_joins.py" in todo.values():
+            from ..forbid_joins import install_join_forbidder
+            install_join_forbidder(self._client)
+
         for mod in todo.values():
             await self.download_and_install(mod)
 

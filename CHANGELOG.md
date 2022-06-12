@@ -1,5 +1,10 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.6
+
+- Fix processing of `# scope: hikka_min`
+- Add `forbid_joins.py` (to use it, download module from official repo with the same name)
+
 ## 🌑 Hikka 1.2.5
 
 - Add additional exit on restart to avoid port block
