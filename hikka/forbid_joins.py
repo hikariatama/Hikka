@@ -46,6 +46,8 @@ def install_join_forbidder(client: TelegramClient) -> TelegramClient:
                     and isinstance(frame_info.frame.f_locals, dict)
                     and "self" in frame_info.frame.f_locals
                     and isinstance(frame_info.frame.f_locals["self"], loader.Module)
+                    and frame_info.frame.f_locals["self"].__class__.__name__
+                    not in {"APIRatelimiterMod", "ForbidJoinMod"}
                 ).__class__.__name__ not in {"HelpMod", "LoaderMod"}:
                     logger.debug(
                         f"🎉 I protected you from unintented JoinChannelRequest ({item})!"
