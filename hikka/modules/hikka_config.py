@@ -209,7 +209,9 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 utils.escape_html(self.lookup(mod).config.getdoc(option)),
                 self.prep_value(self.lookup(mod).config.getdef(option)),
-                self.prep_value(self.lookup(mod).config[option]),
+                self.prep_value(self.lookup(mod).config[option])
+                if not validator or validator.internal_id != "Hidden"
+                else self.hide_value(self.lookup(mod).config[option]),
                 self.strings("typehint").format(
                     doc,
                     eng_art="n" if doc.lower().startswith(tuple("euioay")) else "",
@@ -460,8 +462,8 @@ class HikkaConfigMod(loader.Module):
             utils.escape_html(module.config.getdoc(config_opt)),
             self.prep_value(module.config.getdef(config_opt)),
             self.prep_value(module.config[config_opt])
-            if module.config._config[config_opt].validator
-            and module.config._config[config_opt].validator.internal_id != "Hidden"
+            if not module.config._config[config_opt].validator
+            or module.config._config[config_opt].validator.internal_id != "Hidden"
             or force_hidden
             else self.hide_value(module.config[config_opt]),
         ]
