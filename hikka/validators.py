@@ -1,7 +1,6 @@
 import functools
 from typing import Any, Optional, Union
 
-from pyrsistent import v
 from . import utils
 import grapheme
 import re
