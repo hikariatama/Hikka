@@ -218,10 +218,6 @@ class HikkaSecurityMod(loader.Module):
             reply_markup=self._build_markup_global(is_inline),
         )
 
-    @staticmethod
-    async def inline_close(call: InlineCall):
-        await call.delete()
-
     def _build_markup(
         self,
         command: FunctionType,
@@ -248,7 +244,7 @@ class HikkaSecurityMod(loader.Module):
                 [
                     {
                         "text": self.strings("close_menu"),
-                        "callback": self.inline_close,
+                        "action": "close",
                     }
                 ]
             ]
@@ -268,7 +264,7 @@ class HikkaSecurityMod(loader.Module):
                 for group, level in perms.items()
             ],
             2,
-        ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
+        ) + [[{"text": self.strings("close_menu"), "action": "close"}]]
 
     def _build_markup_global(self, is_inline: bool = False) -> List[List[dict]]:
         perms = self._get_current_bm(is_inline)
@@ -282,7 +278,7 @@ class HikkaSecurityMod(loader.Module):
                 for group, level in perms.items()
             ],
             2,
-        ) + [[{"text": self.strings("close_menu"), "callback": self.inline_close}]]
+        ) + [[{"text": self.strings("close_menu"), "action": "close"}]]
 
     def _get_current_bm(self, is_inline: bool = False) -> dict:
         return self._perms_map(
@@ -436,7 +432,7 @@ class HikkaSecurityMod(loader.Module):
                 reply_markup=[
                     {
                         "text": self.strings("cancel"),
-                        "callback": self.inline_close,
+                        "action": "close",
                     },
                     {
                         "text": self.strings("confirm"),
@@ -468,7 +464,7 @@ class HikkaSecurityMod(loader.Module):
             reply_markup=[
                 {
                     "text": self.strings("cancel"),
-                    "callback": self.inline_close,
+                    "action": "close",
                 },
                 {
                     "text": self.strings("enable_nonick_btn"),

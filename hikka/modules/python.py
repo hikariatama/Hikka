@@ -78,10 +78,6 @@ class PythonMod(loader.Module):
         """Alias for .e command"""
         await self.ecmd(message)
 
-    async def inline__close(self, call: InlineCall):
-        await call.answer("Operation cancelled")
-        await call.delete()
-
     async def inline__allow(self, call: InlineCall):
         await call.answer("Now you can access db through .e command", show_alert=True)
         self._db.set(main.__name__, "enable_db_eval", True)
@@ -107,7 +103,7 @@ class PythonMod(loader.Module):
                             "text": "✅ Allow",
                             "callback": self.inline__allow,
                         },
-                        {"text": "🚫 Cancel", "callback": self.inline__close},
+                        {"text": "🚫 Cancel", "action": "close"},
                     ]
                 ],
             )

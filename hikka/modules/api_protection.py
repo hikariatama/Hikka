@@ -15,7 +15,6 @@ import asyncio
 import io
 import json
 import logging
-import random
 import time
 
 from telethon.tl.types import Message
@@ -108,8 +107,8 @@ class APIRatelimiterMod(loader.Module):
         old_call = self._client._call
 
         async def new_call(
-            sender: "MTProtoSender",  # noqa: F821
-            request: "TLRequest",  # noqa: F821
+            sender: "MTProtoSender",  # type: ignore
+            request: "TLRequest",  # type: ignore
             ordered: bool = False,
             flood_sleep_threshold: int = None,
         ):
@@ -184,26 +183,10 @@ class APIRatelimiterMod(loader.Module):
             message=message,
             text=self.strings("u_sure"),
             reply_markup=[
-                {"text": "🚫 No", "callback": self._cancel},
+                {"text": "🚫 No", "action": "close"},
                 {"text": "✅ Yes", "callback": self._finish},
             ],
         )
-
-    async def _cancel(self, call: InlineCall):
-        await call.answer("Goodbye!")
-        await call.delete()
-
-    def _generate_silly_markup(
-        self,
-        emoji1: str,
-        emoji2: str,
-        callback: callable,
-    ) -> list:
-        markup = [{"text": emoji1, "callback": self._cancel}] * (8**2 - 1) + [
-            {"text": emoji2, "callback": callback}
-        ]
-        random.shuffle(markup)
-        return utils.chunks(markup, 8)
 
     async def _finish(self, call: InlineCall):
         state = self.get("disable_protection", True)

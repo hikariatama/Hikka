@@ -87,10 +87,6 @@ class HikkaConfigMod(loader.Module):
         self._client = client
 
     @staticmethod
-    async def inline__close(call: InlineCall):
-        await call.delete()
-
-    @staticmethod
     def prep_value(value: Any) -> Any:
         if isinstance(value, str):
             return utils.escape_html(value.strip())
@@ -148,7 +144,7 @@ class HikkaConfigMod(loader.Module):
                         "callback": self.inline__configure,
                         "args": (mod,),
                     },
-                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "action": "close"},
                 ]
             ],
             inline_message_id=inline_message_id,
@@ -175,7 +171,7 @@ class HikkaConfigMod(loader.Module):
                         "callback": self.inline__configure,
                         "args": (mod,),
                     },
-                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "action": "close"},
                 ]
             ],
         )
@@ -267,7 +263,7 @@ class HikkaConfigMod(loader.Module):
                     "callback": self.inline__configure,
                     "args": (mod,),
                 },
-                {"text": self.strings("close_btn"), "callback": self.inline__close},
+                {"text": self.strings("close_btn"), "action": "close"},
             ],
         ]
 
@@ -320,7 +316,7 @@ class HikkaConfigMod(loader.Module):
                         "callback": self.inline__configure,
                         "args": (mod,),
                     },
-                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "action": "close"},
                 ]
             ],
             inline_message_id=inline_message_id,
@@ -390,7 +386,7 @@ class HikkaConfigMod(loader.Module):
                         "callback": self.inline__configure,
                         "args": (mod,),
                     },
-                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "action": "close"},
                 ]
             ],
             inline_message_id=inline_message_id,
@@ -446,7 +442,7 @@ class HikkaConfigMod(loader.Module):
                     "callback": self.inline__configure,
                     "args": (mod,),
                 },
-                {"text": self.strings("close_btn"), "callback": self.inline__close},
+                {"text": self.strings("close_btn"), "action": "close"},
             ],
         ]
 
@@ -558,7 +554,7 @@ class HikkaConfigMod(loader.Module):
                         "callback": self.inline__configure,
                         "args": (mod,),
                     },
-                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "action": "close"},
                 ],
             ],
         )
@@ -592,7 +588,7 @@ class HikkaConfigMod(loader.Module):
                         "text": self.strings("back_btn"),
                         "callback": self.inline__global_config,
                     },
-                    {"text": self.strings("close_btn"), "callback": self.inline__close},
+                    {"text": self.strings("close_btn"), "action": "close"},
                 ]
             ],
         )
@@ -614,7 +610,7 @@ class HikkaConfigMod(loader.Module):
             ]
             kb += [row]
 
-        kb += [[{"text": self.strings("close_btn"), "callback": self.inline__close}]]
+        kb += [[{"text": self.strings("close_btn"), "action": "close"}]]
 
         if isinstance(call, Message):
             await self.inline.form(

@@ -137,7 +137,7 @@ class UpdaterMod(loader.Module):
                             "text": self.strings("btn_restart"),
                             "callback": self.inline_restart,
                         },
-                        {"text": self.strings("cancel"), "callback": self.inline_close},
+                        {"text": self.strings("cancel"), "action": "close"},
                     ],
                 )
             ):
@@ -147,9 +147,6 @@ class UpdaterMod(loader.Module):
 
     async def inline_restart(self, call: InlineCall):
         await self.restart_common(call)
-
-    async def inline_close(self, call: InlineCall):
-        await call.delete()
 
     async def process_restart_message(self, msg_obj: Union[InlineCall, Message]):
         self.set(
@@ -281,7 +278,7 @@ class UpdaterMod(loader.Module):
                             "text": self.strings("btn_update"),
                             "callback": self.inline_update,
                         },
-                        {"text": self.strings("cancel"), "callback": self.inline_close},
+                        {"text": self.strings("cancel"), "action": "close"},
                     ],
                 )
             ):

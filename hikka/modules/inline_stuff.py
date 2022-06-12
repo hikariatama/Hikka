@@ -45,10 +45,6 @@ class InlineStuffMod(loader.Module):
     async def client_ready(self, client, db):
         self._db = db
         self._client = client
-        self._bot_id = (await self.inline.bot.get_me()).id
-
-    async def inline__close(self, call: InlineCall):
-        await call.delete()
 
     async def watcher(self, message: Message):
         if (
@@ -64,7 +60,7 @@ class InlineStuffMod(loader.Module):
         if (
             not getattr(message, "out", False)
             or not getattr(message, "via_bot_id", False)
-            or message.via_bot_id != self._bot_id
+            or message.via_bot_id != self.inline.bot_id
             or "Loading Hikka gallery..." not in getattr(message, "raw_text", "")
         ):
             return

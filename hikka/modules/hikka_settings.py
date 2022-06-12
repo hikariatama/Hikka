@@ -256,7 +256,7 @@ class HikkaSettingsMod(loader.Module):
                             *[
                                 {
                                     "text": self.strings(f"deauth_no_{i}"),
-                                    "callback": self.inline__close,
+                                    "action": "close",
                                 }
                                 for i in range(1, 4)
                             ],
@@ -270,7 +270,7 @@ class HikkaSettingsMod(loader.Module):
                 [
                     {
                         "text": self.strings("deauth_cancel"),
-                        "callback": self.inline__close,
+                        "action": "close",
                     }
                 ]
             ],
@@ -286,7 +286,7 @@ class HikkaSettingsMod(loader.Module):
                     "text": self.strings("deauth_confirm_btn"),
                     "callback": self._uninstall_confirm_step_2,
                 },
-                {"text": self.strings("deauth_cancel"), "callback": self.inline__close},
+                {"text": self.strings("deauth_cancel"), "action": "close"},
             ],
         )
 
@@ -612,9 +612,6 @@ class HikkaSettingsMod(loader.Module):
             reply_markup=self._get_settings_markup(),
         )
 
-    async def inline__close(self, call: InlineCall):
-        await call.delete()
-
     async def inline__update(
         self,
         call: InlineCall,
@@ -625,7 +622,7 @@ class HikkaSettingsMod(loader.Module):
                 self.strings("confirm_update"),
                 reply_markup=[
                     {"text": "🪂 Update", "callback": self.inline__update},
-                    {"text": "🚫 Cancel", "callback": self.inline__close},
+                    {"text": "🚫 Cancel", "action": "close"},
                 ],
             )
             return
@@ -645,7 +642,7 @@ class HikkaSettingsMod(loader.Module):
                 self.strings("confirm_restart"),
                 reply_markup=[
                     {"text": "🔄 Restart", "callback": self.inline__restart},
-                    {"text": "🚫 Cancel", "callback": self.inline__close},
+                    {"text": "🚫 Cancel", "action": "close"},
                 ],
             )
             return
@@ -792,7 +789,7 @@ class HikkaSettingsMod(loader.Module):
                     "args": (True,),
                 },
             ],
-            [{"text": self.strings("close_menu"), "callback": self.inline__close}],
+            [{"text": self.strings("close_menu"), "action": "close"}],
         ]
 
     @loader.owner
