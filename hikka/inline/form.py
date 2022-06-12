@@ -216,10 +216,6 @@ class Form(InlineUnit):
             logger.error("Invalid type for `ttl`")
             return False
 
-        if isinstance(ttl, int) and (ttl > self._markup_ttl or ttl < 10):
-            ttl = None
-            logger.debug("Defaulted ttl, because it breaks out of limits")
-
         if isinstance(message, Message) and not silent:
             try:
                 status_message = await (

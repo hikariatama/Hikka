@@ -141,10 +141,6 @@ class List(InlineUnit):
             logger.error("Invalid type for `ttl`")
             return False
 
-        if isinstance(ttl, int) and (ttl > self._markup_ttl or ttl < 10):
-            ttl = self._markup_ttl
-            logger.debug("Defaulted ttl, because it breaks out of limits")
-
         unit_id = utils.rand(16)
         btn_call_data = {key: utils.rand(10) for key in {"back", "next", "close"}}
 

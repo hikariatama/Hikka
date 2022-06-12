@@ -134,10 +134,6 @@ class Gallery(InlineUnit):
             logger.error("Invalid type for `ttl`")
             return False
 
-        if isinstance(ttl, int) and (ttl > self._markup_ttl or ttl < 10):
-            ttl = self._markup_ttl
-            logger.debug("Defaulted ttl, because it breaks out of limits")
-
         if isinstance(next_handler, list):
             if all(isinstance(i, str) for i in next_handler):
                 next_handler = ListGalleryHelper(next_handler)
