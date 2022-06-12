@@ -1,3 +1,5 @@
+import contextlib
+import copy
 import logging
 import time
 from asyncio import Event
@@ -93,6 +95,8 @@ class Form(InlineUnit):
         :param silent: Whether the form must be sent silently (w/o "Loading inline form..." message)
         :return: If form is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
+        with contextlib.suppress(AttributeError):
+            _hikka_client_id_logging_tag = copy.copy(self._client._tg_id)
 
         if reply_markup is None:
             reply_markup = []
@@ -184,6 +188,7 @@ class Form(InlineUnit):
                 or "callback" in button
                 or "input" in button
                 or "data" in button
+                or "action" in button
                 for button in row
             )
             for row in reply_markup
@@ -194,7 +199,8 @@ class Form(InlineUnit):
                 "  - `url`\n"
                 "  - `callback`\n"
                 "  - `input`\n"
-                "  - `data`"
+                "  - `data`\n"
+                "  - `action`"
             )
             return False
 
@@ -341,7 +347,9 @@ class Form(InlineUnit):
                                 description=f"⚠️ Do not remove ID! {random.choice(VERIFICATION_EMOJIES)}",
                                 input_message_content=InputTextMessageContent(
                                     "🔄 <b>Transferring value to userbot...</b>\n"
-                                    "<i>This message is gonna be deleted...</i>",
+                                    "<i>This message will be deleted automatically</i>"
+                                    if inline_query.from_user.id == self._me
+                                    else "🔄 <b>Transferring value to userbot...</b>",
                                     "HTML",
                                     disable_web_page_preview=True,
                                 ),

@@ -21,10 +21,11 @@ heroku3 = '==5.1.4'
 psycopg2-binary = '==2.9.3'
 redis = '==3.5.3'
 # Optional Heroku deps just to make user comfortable
-Pillow = '*'
-pydub = '*'
-SpeechRecognition = '*'
-googletrans = '==4.0.0rc1'
-python-ffmpeg = '*'
-emoji = '*'
-moviepy = '*'
+Pillow = '*'  # Any module, which works with images
+pydub = '*'  # Almost any, module which works with audio
+SpeechRecognition = '*'  # .dlmod vtt
+googletrans = '==4.0.0rc1'  # .dlmod translator
+python-ffmpeg = '*'  # Majority of modules, which work with audio
+emoji = '*'  # .dlmod sticks
+moviepy = '*'  # Almost any module, which works with video
+websockets = '*'  # .dlmod hikarichat

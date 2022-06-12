@@ -39,7 +39,7 @@ class HikkaInfoMod(loader.Module):
         "update_required": "😕 Update required </b><code>.update</code><b>",
         "_cfg_cst_msg": "Custom message for info. May contain {me}, {version}, {build}, {prefix}, {platform} keywords",
         "_cfg_cst_btn": "Custom button for info. Leave empty to remove button",
-        "_cfg_banner": "Set `True` in order to disable an image banner",
+        "_cfg_banner": "URL to image banner",
     }
 
     strings_ru = {
@@ -54,7 +54,7 @@ class HikkaInfoMod(loader.Module):
         "update_required": "😕 Требуется обновление </b><code>.update</code><b>",
         "_cfg_cst_msg": "Кастомный текст сообщения в info. Может содержать ключевые слова {me}, {version}, {build}, {prefix}, {platform}",
         "_cfg_cst_btn": "Кастомная кнопка в сообщении в info. Оставь пустым, чтобы убрать кнопку",
-        "_cfg_banner": "Поставь `True`, чтобы отключить баннер-картинку",
+        "_cfg_banner": "Ссылка на баннер-картинку",
     }
 
     def __init__(self):
@@ -73,10 +73,10 @@ class HikkaInfoMod(loader.Module):
                 ),
             ),
             loader.ConfigValue(
-                "disable_banner",
-                False,
+                "banner_url",
+                "https://i.imgur.com/XYNawuK.jpeg",
                 lambda: self.strings("_cfg_banner"),
-                validator=loader.validators.Boolean(),
+                validator=loader.validators.Link(),
             ),
         )
 
@@ -153,8 +153,8 @@ class HikkaInfoMod(loader.Module):
             text=self._render_info(),
             reply_markup=self._get_mark(),
             **(
-                {"photo": "https://i.imgur.com/XYNawuK.jpeg"}
-                if not self.config["disable_banner"]
+                {"photo": self.config["banner_url"]}
+                if self.config["banner_url"]
                 else {}
             ),
         )

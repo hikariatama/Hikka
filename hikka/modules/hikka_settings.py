@@ -65,6 +65,8 @@ class HikkaSettingsMod(loader.Module):
         "close_menu": "😌 Close menu",
         "download_btn": "✅ Download via button",
         "no_download_btn": "🚫 Download via button",
+        "suggest_subscribe": "✅ Suggest subscribe to channel",
+        "do_not_suggest_subscribe": "🚫 Suggest subscribe to channel",
         "private_not_allowed": "🚫 <b>This command must be executed in chat</b>",
         "nonick_warning": (
             "Warning! You enabled NoNick with default prefix! "
@@ -116,6 +118,8 @@ class HikkaSettingsMod(loader.Module):
         "close_menu": "😌 Закрыть меню",
         "download_btn": "✅ Скачивать кнопкой",
         "no_download_btn": "🚫 Скачивать кнопкой",
+        "suggest_subscribe": "✅ Предлагать подписку на канал",
+        "do_not_suggest_subscribe": "🚫 Предлагать подписку на канал",
         "private_not_allowed": "🚫 <b>Эту команду нужно выполнять в чате</b>",
         "_cmd_doc_watchers": "Показать список смотрителей",
         "_cmd_doc_watcherbl": "<модуль> - Включить\\выключить смотритель в чате",
@@ -750,6 +754,27 @@ class HikkaSettingsMod(loader.Module):
                         "callback": self.inline__setting,
                         "args": (
                             "permanent_modules_fs",
+                            True,
+                        ),
+                    }
+                ),
+            ],
+            [
+                (
+                    {
+                        "text": self.strings("suggest_subscribe"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "suggest_subscribe",
+                            False,
+                        ),
+                    }
+                    if self._db.get(main.__name__, "suggest_subscribe", True)
+                    else {
+                        "text": self.strings("do_not_suggest_subscribe"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "suggest_subscribe",
                             True,
                         ),
                     }

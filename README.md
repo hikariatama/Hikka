@@ -15,9 +15,11 @@
 <a href="https://heroku.com/deploy?template=https://github.com/hikariatama/Hikka"><img src="https://www.herokucdn.com/deploy/button.svg" height="40"></a>
 <a href="https://t.me/lavhostbot?start=SGlra2E"><img src="https://user-images.githubusercontent.com/36935426/167272288-85f00779-4b98-47da-8d0d-ea2c6370b979.png" height="40"></a>
 
+<b>⚠️ Okteto now bans userbots, so it's not recommended to install Hikka there!</b>
+
 <b>Script installation:</b>
 Simply run this command out of <b>root</b>:
-<code>. <(wget -qO- http://gg.gg/get_hikka)</code>
+<code>. <(wget -qO- https://hikariatama.ru/get_hikka)</code>
 
 <b>Manual installation:</b>
 <code>apt update && apt install git libcairo2 -y && git clone https://github.com/hikariatama/Hikka && cd Hikka && pip install -r requirements.txt && python3 -m hikka</code>

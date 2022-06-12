@@ -89,8 +89,22 @@ class TestMod(loader.Module):
         "heroku_debug": "🚫 <b>Режим разработчика не доступен на Heroku</b>",
     }
 
-    @staticmethod
-    async def dumpcmd(message: Message):
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            loader.ConfigValue(
+                "force_send_all",
+                False,
+                (
+                    "Forcefully send logs to all clients, aka do not split logs "
+                    "to <mine> and <not-mine>. Restart required after setting"
+                ),
+                validator=loader.validators.Boolean(),
+            )
+        )
+
+        logging.getLogger().handlers[0].force_send_all = self.config["force_send_all"]
+
+    async def dumpcmd(self, message: Message):
         """Use in reply to get a dump of a message"""
         if not message.is_reply:
             return
@@ -101,10 +115,6 @@ class TestMod(loader.Module):
             + utils.escape_html((await message.get_reply_message()).stringify())
             + "</code>",
         )
-
-    @staticmethod
-    async def cancel(call: InlineCall):
-        await call.delete()
 
     @loader.loop(interval=1)
     async def watchdog(self):
@@ -266,7 +276,13 @@ class TestMod(loader.Module):
 
         logs = "\n\n".join(
             [
-                ("\n".join(handler.dumps(lvl)))
+                (
+                    "\n".join(
+                        handler.dumps(lvl, client_id=self._client._tg_id)
+                        if "client_id" in inspect.signature(handler.dumps).parameters
+                        else handler.dumps(lvl)
+                    )
+                )
                 for handler in logging.getLogger().handlers
             ]
         )

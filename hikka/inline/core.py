@@ -57,9 +57,9 @@ class InlineManager(
 
     def __init__(
         self,
-        client: "TelegramClient",  # noqa: F821
+        client: "TelegramClient",  # type: ignore
         db: Database,
-        allmodules: "Modules",  # noqa: F821
+        allmodules: "Modules",  # type: ignore
     ):
         """Initialize InlineManager to create forms"""
         self._client = client

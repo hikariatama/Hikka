@@ -28,6 +28,7 @@ import asyncio
 import atexit
 import logging
 import os
+import signal
 import subprocess
 import sys
 from typing import Union
@@ -43,6 +44,12 @@ from telethon.tl.types import DialogFilter, Message
 
 from .. import loader, utils, heroku, main
 from ..inline.types import InlineCall
+
+try:
+    import psycopg2
+except ImportError:
+    if "DYNO" in os.environ:
+        raise
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +80,7 @@ class UpdaterMod(loader.Module):
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
         "heroku_update": "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>",
         "full_success": "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>",
+        "heroku_psycopg2_unavailable": "♓️🚫 <b>PostgreSQL database is not available.</b>\n\n<i>Do not report this error to support chat, as it has nothing to do with Hikka. Try changing database to Redis</i>",
     }
 
     strings_ru = {
@@ -101,6 +109,7 @@ class UpdaterMod(loader.Module):
         "lavhost_restart": "✌️ <b>Твой lavHost перезагружается...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Твой lavHost обновляется...\n&gt;///&lt;</b>",
         "heroku_update": "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>",
+        "heroku_psycopg2_unavailable": "♓️🚫 <b>PostgreSQL база данных не доступна.</b>\n\n<i>Не обращайтесь к поддержке чата, так как эта проблема не вызвана Hikka. Попробуйте изменить базу данных на Redis</i>",
     }
 
     def __init__(self):
@@ -186,9 +195,12 @@ class UpdaterMod(loader.Module):
             app.restart()
             return
 
+        await main.hikka.web.stop()
+
         atexit.register(restart, *sys.argv[1:])
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
+
         for client in self.allclients:
             # Terminate main loop of all running clients
             # Won't work if not all clients are ready
@@ -196,6 +208,7 @@ class UpdaterMod(loader.Module):
                 await client.disconnect()
 
         await message.client.disconnect()
+        sys.exit(0)
 
     async def download_common(self):
         try:
@@ -295,7 +308,14 @@ class UpdaterMod(loader.Module):
             if "DYNO" in os.environ:
                 await utils.answer(msg_obj, self.strings("heroku_update"))
                 await self.process_restart_message(msg_obj)
-                await self._db.remote_force_save()
+                try:
+                    await self._db.remote_force_save()
+                except psycopg2.errors.InFailedSqlTransaction:
+                    await utils.answer(
+                        msg_obj, self.strings("heroku_psycopg2_unavailable")
+                    )
+                    return
+
                 heroku.publish(api_token=main.hikka.api_token, create_new=False)
                 return
 

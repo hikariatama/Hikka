@@ -31,6 +31,7 @@
 import argparse
 import asyncio
 import collections
+import copy
 import importlib
 import json
 import logging
@@ -68,8 +69,6 @@ except ImportError:
     logging.exception("Unable to import web")
 else:
     web_available = True
-
-omit_log = False
 
 BASE_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -278,6 +277,8 @@ def raise_auth():
 
 class Hikka:
     """Main userbot instance, which can handle multiple clients"""
+
+    omit_log = False
 
     def __init__(self):
         self.arguments = parse_arguments()
@@ -544,12 +545,12 @@ class Hikka:
         """Wrapper around amain"""
         async with client:
             first = True
+            client._tg_id = (await client.get_me()).id
             while await self.amain(first, client):
                 first = False
 
     async def _badge(self, client):
         """Call the badge in shell"""
-        global omit_log
         try:
             import git
 
@@ -572,7 +573,7 @@ class Hikka:
                      • Platform: {_platform}
                      """
 
-            if not omit_log:
+            if not self.omit_log:
                 print(logo1)
                 logging.info(
                     "🌘 Hikka started\n"
@@ -580,7 +581,7 @@ class Hikka:
                     f"Hikka version: {'.'.join(list(map(str, list(__version__))))}\n"
                     f"Platform: {_platform}"
                 )
-                omit_log = True
+                self.omit_log = True
 
             print(f"- Started for {client._tg_id} -")
         except Exception:
@@ -618,8 +619,6 @@ class Hikka:
         web_only = self.arguments.web_only
         client.parse_mode = "HTML"
         await client.start()
-
-        client._tg_id = (await client.get_me()).id
 
         db = database.Database(client)
         await db.init()

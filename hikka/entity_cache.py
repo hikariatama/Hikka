@@ -1,3 +1,4 @@
+import copy
 import time
 import asyncio
 import logging
@@ -49,6 +50,10 @@ def install_entity_caching(client: TelegramClient):
     old = client.get_entity
 
     async def new(entity: EntityLike):
+        # Will be used to determine, which client caused logging messages
+        # parsed via inspect.stack()
+        _hikka_client_id_logging_tag = copy.copy(client._tg_id)  # skipcq
+
         if not hashable(entity):
             try:
                 hashable_entity = next(
@@ -99,5 +104,6 @@ def install_entity_caching(client: TelegramClient):
             await asyncio.sleep(3)
 
     client.get_entity = new
+    client.force_get_entity = old
     asyncio.ensure_future(cleaner(client))
     logger.debug("Monkeypatched client with cacher")

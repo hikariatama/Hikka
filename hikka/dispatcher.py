@@ -28,6 +28,8 @@
 
 import asyncio
 import collections
+import copy
+import functools
 import logging
 import re
 import traceback
@@ -68,6 +70,9 @@ class CommandDispatcher:
     async def init(self, client: "TelegramClient"):  # type: ignore
         await self.security.init(client)
         me = await client.get_me()
+
+        self.client = client  # Intended to be used to track user in logging
+
         self._me = me.id
         self._cached_username = me.username.lower() if me.username else str(me.id)
 
@@ -159,7 +164,11 @@ class CommandDispatcher:
                     and grep in utils.remove_html(line)
                     and (not ungrep or ungrep not in utils.remove_html(line))
                 ):
-                    res.append(utils.remove_html(line, escape=True).replace(grep, f"<u>{grep}</u>"))
+                    res.append(
+                        utils.remove_html(line, escape=True).replace(
+                            grep, f"<u>{grep}</u>"
+                        )
+                    )
 
                 if not grep and ungrep and ungrep not in utils.remove_html(line):
                     res.append(utils.remove_html(line, escape=True))
@@ -451,6 +460,9 @@ class CommandDispatcher:
         exception_handler: FunctionType,
         *args,
     ):
+        # Will be used to determine, which client caused logging messages
+        # parsed via inspect.stack()
+        _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)  # skipcq
         try:
             await func(message)
         except BaseException as e:

@@ -1,5 +1,7 @@
 import functools
 from typing import Any, Optional, Union
+
+from pyrsistent import v
 from . import utils
 import grapheme
 import re
@@ -497,4 +499,19 @@ def NoneType() -> Validator:
         _NoneType,
         "`None`",
         _internal_id="NoneType",
+    )
+
+
+def _Hidden(value: Any, /, *, validator: Validator) -> Any:
+    return validator.validate(value)
+
+
+def Hidden(validator: Optional[Validator] = None) -> Validator:
+    if not validator:
+        validator = String()
+
+    return Validator(
+        functools.partial(_Hidden, validator=validator),
+        validator.doc,
+        _internal_id="Hidden",
     )

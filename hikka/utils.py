@@ -282,12 +282,33 @@ def relocate_entities(
 async def answer(
     message: Union[Message, InlineCall, InlineMessage],
     response: str,
+    *,
+    reply_markup: Optional[Union[List[List[dict]], List[dict], dict]] = None,
     **kwargs,
 ) -> Union[InlineCall, InlineMessage, Message]:
     """Use this to give the response to a command"""
     # Compatibility with FTG\GeekTG
+
     if isinstance(message, list) and message:
         message = message[0]
+
+    if reply_markup is not None:
+        if not isinstance(reply_markup, (list, dict)):
+            raise ValueError("reply_markup must be a list or dict")
+
+        if reply_markup:
+            if isinstance(message, (InlineMessage, InlineCall)):
+                await message.edit(response, reply_markup)
+                return
+
+            reply_markup = message.client.loader.inline._normalize_markup(reply_markup)
+            result = await message.client.loader.inline.form(
+                response,
+                message=message if message.out else get_chat_id(message),
+                reply_markup=reply_markup,
+                **kwargs,
+            )
+            return result
 
     if isinstance(message, (InlineMessage, InlineCall)):
         await message.edit(response)

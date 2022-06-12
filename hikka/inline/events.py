@@ -249,7 +249,7 @@ class Events(InlineUnit):
                         return
 
                     try:
-                        return await button["callback"](
+                        result = await button["callback"](
                             InlineCall(query, self, unit_id),
                             *button.get("args", []),
                             **button.get("kwargs", {}),
@@ -265,6 +265,7 @@ class Events(InlineUnit):
                         return
 
                     del self._units[unit_id]
+                    return result
 
         if query.data in self._custom_map:
             if (
@@ -307,6 +308,9 @@ class Events(InlineUnit):
         chosen_inline_query: ChosenInlineResult,
     ):
         query = chosen_inline_query.query
+
+        if not query:
+            return
 
         for unit_id, unit in self._units.items():
             if (

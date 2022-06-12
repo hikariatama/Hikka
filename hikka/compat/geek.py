@@ -29,7 +29,9 @@ def compat(code: str) -> str:
                             re.sub(
                                 r"^( *)from \.\.inline import (.+), ?rand, ?(.+)$",
                                 r"\1from ..inline.types import \2, \3\n\1from ..utils import rand",
-                                line.replace("GeekInlineQuery", "InlineQuery").replace("self.inline._bot", "self.inline.bot"),
+                                line.replace("GeekInlineQuery", "InlineQuery").replace(
+                                    "self.inline._bot", "self.inline.bot"
+                                ),
                                 flags=re.M,
                             ),
                             flags=re.M,

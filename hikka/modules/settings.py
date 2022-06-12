@@ -29,6 +29,7 @@ import os
 from telethon.tl.types import Message
 
 from .. import loader, main, translations, utils
+from ..inline.types import InlineCall
 
 
 @loader.tds
@@ -60,6 +61,9 @@ class CoreMod(loader.Module):
         "incorrect_language": "🚫 <b>Incorrect language specified</b>",
         "lang_removed": "✅ <b>Translations reset to default ones</b>",
         "check_pack": "🚫 <b>Invalid pack format in url</b>",
+        "confirm_cleardb": "⚠️ <b>Are you sure, that you want to clear database?</b>",
+        "cleardb_confirm": "🗑 Clear database",
+        "cancel": "🚫 Cancel",
     }
 
     strings_ru = {
@@ -100,6 +104,9 @@ class CoreMod(loader.Module):
         "_cmd_doc_setlang": "Выбрать предпочитаемый язык перевода\nТребуется перезагрузка после выполнения",
         "_cmd_doc_cleardb": "Сброс до заводских настроек - сброс базы данных",
         "_cls_doc": "Управление базовыми настройками юзербота",
+        "confirm_cleardb": "⚠️ <b>Вы уверены, что хотите сбросить базу данных?</b>",
+        "cleardb_confirm": "🗑 Очистить базу",
+        "cancel": "🚫 Отмена",
     }
 
     async def client_ready(self, client, db):
@@ -239,7 +246,9 @@ class CoreMod(loader.Module):
         aliases = self.allmodules.aliases
         string = self.strings("aliases")
 
-        string += "\n".join([f"▫️ <code>{i}</code> &lt;- {y}" for i, y in aliases.items()])
+        string += "\n".join(
+            [f"▫️ <code>{i}</code> &lt;- {y}" for i, y in aliases.items()]
+        )
 
         await utils.answer(message, string)
 
@@ -348,6 +357,22 @@ class CoreMod(loader.Module):
     @loader.owner
     async def cleardbcmd(self, message: Message):
         """Clears the entire database, effectively performing a factory reset"""
+        await self.inline.form(
+            self.strings("confirm_cleardb"),
+            message,
+            reply_markup=[
+                {
+                    "text": self.strings("cleardb_confirm"),
+                    "callback": self._inline__cleardb,
+                },
+                {
+                    "text": self.strings("cancel"),
+                    "action": "close",
+                },
+            ],
+        )
+
+    async def _inline__cleardb(self, call: InlineCall):
         self._db.clear()
         self._db.save()
-        await utils.answer(message, self.strings("db_cleared"))
+        await utils.answer(call, self.strings("db_cleared"))

@@ -12,7 +12,7 @@
 
 import ast
 import logging
-from typing import Union, Any
+from typing import Optional, Union, Any
 
 from telethon.tl.types import Message
 
@@ -38,7 +38,7 @@ class HikkaConfigMod(loader.Module):
         "no_option": "🚫 <b>Configuration option doesn't exist</b>",
         "validation_error": "🚫 <b>You entered incorrect config value. \nError: {}</b>",
         "try_again": "🔁 Try again",
-        "typehint": "🕵️ <b>Must be the {}</b>",
+        "typehint": "🕵️ <b>Must be a{eng_art} {}</b>",
         "set": "set",
         "set_default_btn": "♻️ Reset default",
         "enter_value_btn": "✍️ Enter value",
@@ -49,6 +49,8 @@ class HikkaConfigMod(loader.Module):
         "close_btn": "🚫 Close",
         "add_item_btn": "➕ Add item",
         "remove_item_btn": "➖ Remove item",
+        "show_hidden": "🚸 Show value",
+        "hide_value": "🔒 Hide value",
     }
 
     strings_ru = {
@@ -76,6 +78,8 @@ class HikkaConfigMod(loader.Module):
         "close_btn": "🚫 Закрыть",
         "add_item_btn": "➕ Добавить элемент",
         "remove_item_btn": "➖ Удалить элемент",
+        "show_hidden": "🚸 Показать значение",
+        "hide_value": "🔒 Скрыть значение",
     }
 
     async def client_ready(self, client, db):
@@ -95,6 +99,16 @@ class HikkaConfigMod(loader.Module):
             return utils.escape_html(", ".join(list(map(str, value))))
 
         return utils.escape_html(value)
+
+    @staticmethod
+    def hide_value(value: Any) -> str:
+        if isinstance(value, str):
+            return "*" * len(value)
+
+        if isinstance(value, list) and value:
+            return str(["*" * len(str(i)) for i in value])
+
+        return "*" * len(str(value))
 
     async def inline__set_config(
         self,
@@ -121,7 +135,11 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
-                self.prep_value(self.lookup(mod).config[option]),
+                self.prep_value(self.lookup(mod).config[option])
+                if not self.lookup(mod).config._config[option].validator
+                or self.lookup(mod).config._config[option].validator.internal_id
+                != "Hidden"
+                else self.hide_value(self.lookup(mod).config[option]),
             ),
             reply_markup=[
                 [
@@ -144,7 +162,11 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_reset").format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
-                self.prep_value(self.lookup(mod).config[option]),
+                self.prep_value(self.lookup(mod).config[option])
+                if not self.lookup(mod).config._config[option].validator
+                or self.lookup(mod).config._config[option].validator.internal_id
+                != "Hidden"
+                else self.hide_value(self.lookup(mod).config[option]),
             ),
             reply_markup=[
                 [
@@ -192,7 +214,12 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(self.lookup(mod).config.getdoc(option)),
                 self.prep_value(self.lookup(mod).config.getdef(option)),
                 self.prep_value(self.lookup(mod).config[option]),
-                self.strings("typehint").format(doc) if doc else "",
+                self.strings("typehint").format(
+                    doc,
+                    eng_art="n" if doc.lower().startswith(tuple("euioay")) else "",
+                )
+                if doc
+                else "",
             ),
             reply_markup=self._generate_bool_markup(mod, option),
         )
@@ -280,7 +307,11 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
-                self.prep_value(self.lookup(mod).config[option]),
+                self.prep_value(self.lookup(mod).config[option])
+                if not self.lookup(mod).config._config[option].validator
+                or self.lookup(mod).config._config[option].validator.internal_id
+                != "Hidden"
+                else self.hide_value(self.lookup(mod).config[option]),
             ),
             reply_markup=[
                 [
@@ -346,7 +377,11 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
-                self.prep_value(self.lookup(mod).config[option]),
+                self.prep_value(self.lookup(mod).config[option])
+                if not self.lookup(mod).config._config[option].validator
+                or self.lookup(mod).config._config[option].validator.internal_id
+                != "Hidden"
+                else self.hide_value(self.lookup(mod).config[option]),
             ),
             reply_markup=[
                 [
@@ -420,6 +455,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         config_opt: str,
+        force_hidden: Optional[bool] = False,
     ):
         module = self.lookup(mod)
         args = [
@@ -427,8 +463,40 @@ class HikkaConfigMod(loader.Module):
             utils.escape_html(mod),
             utils.escape_html(module.config.getdoc(config_opt)),
             self.prep_value(module.config.getdef(config_opt)),
-            self.prep_value(module.config[config_opt]),
+            self.prep_value(module.config[config_opt])
+            if module.config._config[config_opt].validator
+            and module.config._config[config_opt].validator.internal_id != "Hidden"
+            or force_hidden
+            else self.hide_value(module.config[config_opt]),
         ]
+
+        if (
+            module.config._config[config_opt].validator
+            and module.config._config[config_opt].validator.internal_id == "Hidden"
+        ):
+            additonal_button_row = (
+                [
+                    [
+                        {
+                            "text": self.strings("hide_value"),
+                            "callback": self.inline__configure_option,
+                            "args": (mod, config_opt, False),
+                        }
+                    ]
+                ]
+                if force_hidden
+                else [
+                    [
+                        {
+                            "text": self.strings("show_hidden"),
+                            "callback": self.inline__configure_option,
+                            "args": (mod, config_opt, True),
+                        }
+                    ]
+                ]
+            )
+        else:
+            additonal_button_row = []
 
         try:
             validator = module.config._config[config_opt].validator
@@ -443,24 +511,32 @@ class HikkaConfigMod(loader.Module):
             validator = None
             args += [""]
         else:
-            args += [self.strings("typehint").format(doc)]
+            args += [
+                self.strings("typehint").format(
+                    doc,
+                    eng_art="n" if doc.lower().startswith(tuple("euioay")) else "",
+                )
+            ]
             if validator.internal_id == "Boolean":
                 await call.edit(
                     self.strings("configuring_option").format(*args),
-                    reply_markup=self._generate_bool_markup(mod, config_opt),
+                    reply_markup=additonal_button_row
+                    + self._generate_bool_markup(mod, config_opt),
                 )
                 return
 
             if validator.internal_id == "Series":
                 await call.edit(
                     self.strings("configuring_option").format(*args),
-                    reply_markup=self._generate_series_markup(call, mod, config_opt),
+                    reply_markup=additonal_button_row
+                    + self._generate_series_markup(call, mod, config_opt),
                 )
                 return
 
         await call.edit(
             self.strings("configuring_option").format(*args),
-            reply_markup=[
+            reply_markup=additonal_button_row
+            + [
                 [
                     {
                         "text": self.strings("enter_value_btn"),
@@ -504,7 +580,7 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 "\n".join(
                     [
-                        f"▫️ <code>{utils.escape_html(key)}</code>: <code>{self.prep_value(value)}</code>"
+                        f"▫️ <code>{utils.escape_html(key)}</code>: <code>{self.prep_value(value) if not self.lookup(mod).config._config[key].validator or self.lookup(mod).config._config[key].validator.internal_id != 'Hidden' else self.hide_value(value)}</code>"
                         for key, value in self.lookup(mod).config.items()
                     ]
                 ),
@@ -589,6 +665,9 @@ class HikkaConfigMod(loader.Module):
             self.strings("option_saved").format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(instance.config[option]),
+                self.prep_value(instance.config[option])
+                if not instance.config._config[option].validator
+                or instance.config._config[option].validator.internal_id != "Hidden"
+                else self.hide_value(instance.config[option]),
             ),
         )

@@ -1,4 +1,6 @@
 import asyncio
+import contextlib
+import copy
 import functools
 import logging
 import time
@@ -82,6 +84,8 @@ class Gallery(InlineUnit):
         :param silent: Whether the gallery must be sent silently (w/o "Loading inline gallery..." message)
         :return: If gallery is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
+        with contextlib.suppress(AttributeError):
+            _hikka_client_id_logging_tag = copy.copy(self._client._tg_id)
 
         if not isinstance(caption, str) and not callable(caption):
             logger.error("Invalid type for `caption`")

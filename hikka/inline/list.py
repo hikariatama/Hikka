@@ -1,4 +1,6 @@
 import asyncio
+import contextlib
+import copy
 import functools
 import logging
 import time
@@ -39,6 +41,7 @@ class List(InlineUnit):
         ttl: Optional[Union[int, bool]] = False,
         on_unload: Optional[FunctionType] = None,
         silent: Optional[bool] = False,
+        custom_buttons: Optional[Union[_List[_List[dict]], _List[dict], dict]] = None,
     ) -> Union[bool, InlineMessage]:
         """
         Send inline list to chat
@@ -56,8 +59,48 @@ class List(InlineUnit):
         :param disable_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
                                  If you want to disable all security checks on this list in particular, pass `disable_security=True`
         :param silent: Whether the list must be sent silently (w/o "Loading inline list..." message)
+        :param custom_buttons: Custom buttons to add above native ones
         :return: If list is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
+        with contextlib.suppress(AttributeError):
+            _hikka_client_id_logging_tag = copy.copy(self._client._tg_id)
+
+        if custom_buttons is None:
+            custom_buttons = []
+
+        if not isinstance(custom_buttons, (list, dict)):
+            logger.error("Invalid type for `custom_buttons`")
+            return False
+
+        custom_buttons = self._normalize_markup(custom_buttons)
+
+        if not all(
+            all(isinstance(button, dict) for button in row) for row in custom_buttons
+        ):
+            logger.error("Invalid type for one of the buttons. It must be `dict`")
+            return False
+
+        if not all(
+            all(
+                "url" in button
+                or "callback" in button
+                or "input" in button
+                or "data" in button
+                or "action" in button
+                for button in row
+            )
+            for row in custom_buttons
+        ):
+            logger.error(
+                "Invalid button specified. "
+                "Button must contain one of the following fields:\n"
+                "  - `url`\n"
+                "  - `callback`\n"
+                "  - `input`\n"
+                "  - `data`\n"
+                "  - `action`"
+            )
+            return False
 
         if not isinstance(manual_security, bool):
             logger.error("Invalid type for `manual_security`")

@@ -1,5 +1,26 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.5
+
+- Add additional exit on restart to avoid port block
+- Add unloaded module name on `.unloadmod`
+- Add `banner_url` config var to `HikkaInfo`
+- Add `loader.validators.Hidden`
+- Add `websockets` dependency, so users can load hikarichat on Heroku
+- Add `reply_markup` kwarg to `utils.answer`. This will automatically add buttons to plain message or edit buttons of inline unit
+- Add suggestion to join developer's channel on module load if available
+- Add `client.force_get_entity` to bypass Hikka Cacher
+- Add clickable link to loaded module message if specified meta developer is channel
+- Add support of `action` attributes for buttons ("action": "close", "action": "unload", "action": "answer")
+- Add log splitter between different clients of instance (if possible)
+- Fix inline events `IndexError`
+- Fix text in inline input
+- Fix translation issue in HikkaConfig
+- Fix `.dump`
+- Fix modules list reset if you perform `.dlmod` when userbot is not yet fully loaded
+- Update links in README
+- Remove nalinor from official repos until new modules appear
+
 ## 🌑 Hikka 1.2.4
 
 - Show current options in module config

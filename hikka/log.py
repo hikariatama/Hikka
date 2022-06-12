@@ -27,8 +27,10 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import inspect
 import logging
 import io
+from typing import Optional
 
 from . import utils
 from ._types import Module
@@ -63,8 +65,9 @@ class TelegramLogsHandler(logging.Handler):
         self.handledbuffer = []
         self.lvl = logging.NOTSET  # Default loglevel
         self._queue = []
-        self.tg_buff = ""
+        self.tg_buff = []
         self._mods = {}
+        self.force_send_all = False
 
     def install_tg_log(self, mod: Module):
         if getattr(self, "_task", False):
@@ -86,54 +89,98 @@ class TelegramLogsHandler(logging.Handler):
         """Return a list of logging entries"""
         return self.handledbuffer + self.buffer
 
-    def dumps(self, lvl: int = 0) -> list:
+    def dumps(self, lvl: Optional[int] = 0, client_id: Optional[int] = None) -> list:
         """Return all entries of minimum level as list of strings"""
         return [
             self.target.format(record)
             for record in (self.buffer + self.handledbuffer)
             if record.levelno >= lvl
+            and (not record.hikka_caller or client_id == record.hikka_caller)
         ]
 
     async def sender(self):
-        self._queue = utils.chunks(utils.escape_html(self.tg_buff), 4096)
-        self.tg_buff = ""
+        self._queue = {
+            client_id: utils.chunks(
+                utils.escape_html(
+                    "".join(
+                        [
+                            item[0]
+                            for item in self.tg_buff
+                            if not item[1]
+                            or item[1] == client_id
+                            or self.force_send_all
+                        ]
+                    )
+                ),
+                4096,
+            )
+            for client_id in self._mods
+        }
 
-        if len(self._queue) > 5:
-            for mod in self._mods.values():
-                file = io.BytesIO("".join(self._queue).encode("utf-8"))
+        self.tg_buff = []
+
+        for client_id in self._mods:
+            if client_id not in self._queue:
+                continue
+
+            if len(self._queue[client_id]) > 5:
+                file = io.BytesIO("".join(self._queue[client_id]).encode("utf-8"))
                 file.name = "hikka-logs.txt"
                 file.seek(0)
-                await mod.inline.bot.send_document(
-                    mod._logchat,
+                await self._mods[client_id].inline.bot.send_document(
+                    self._mods[client_id]._logchat,
                     file,
                     parse_mode="HTML",
                     caption="<b>🧳 Journals are too big to be sent as separate messages</b>",
                 )
 
-            self._queue = []
-            return
+                self._queue[client_id] = []
+                continue
 
-        if not self._queue:
-            return
+            while self._queue[client_id]:
+                chunk = self._queue[client_id].pop(0)
 
-        chunk = self._queue.pop(0)
+                if not chunk:
+                    continue
 
-        if not chunk:
-            return
-
-        for mod in self._mods.values():
-            await mod.inline.bot.send_message(
-                mod._logchat,
-                f"<code>{chunk}</code>",
-                parse_mode="HTML",
-                disable_notification=True,
-            )
+                asyncio.ensure_future(
+                    self._mods[client_id].inline.bot.send_message(
+                        self._mods[client_id]._logchat,
+                        f"<code>{chunk}</code>",
+                        parse_mode="HTML",
+                        disable_notification=True,
+                    )
+                )
 
     def emit(self, record: logging.LogRecord):
-        if record.levelno >= 20:
-            self.tg_buff += ("🚫 " if record.exc_info else "") + _tg_formatter.format(
-                record
+        try:
+            caller = next(
+                (
+                    frame_info.frame.f_locals["_hikka_client_id_logging_tag"]
+                    for frame_info in inspect.stack()
+                    if isinstance(
+                        getattr(getattr(frame_info, "frame", None), "f_locals", {}).get(
+                            "_hikka_client_id_logging_tag"
+                        ),
+                        int,
+                    )
+                ),
+                False,
             )
+
+            assert isinstance(caller, int)
+        except Exception:
+            caller = None
+
+        record.hikka_caller = caller
+
+        if record.levelno >= 20:
+            self.tg_buff += [
+                (
+                    ("🚫 " if record.exc_info else "") + _tg_formatter.format(record),
+                    caller,
+                )
+            ]
 
         if len(self.buffer) + len(self.handledbuffer) >= self.capacity:
             if self.handledbuffer:
