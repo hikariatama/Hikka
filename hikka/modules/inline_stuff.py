@@ -51,7 +51,7 @@ class InlineStuffMod(loader.Module):
             getattr(message, "out", False)
             and getattr(message, "via_bot_id", False)
             and message.via_bot_id == self.inline.bot_id
-            and "This message is gonna be deleted..."
+            and "This message will be deleted automatically"
             in getattr(message, "raw_text", "")
         ):
             await message.delete()

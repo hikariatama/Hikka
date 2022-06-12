@@ -434,13 +434,13 @@ class CommandDispatcher:
             # of attributes
             for placeholder in {"text", "raw_text"}:
                 try:
-                    if not hasattr(event, placeholder):
-                        setattr(event, placeholder, "")
+                    if not hasattr(message, placeholder):
+                        setattr(message, placeholder, "")
                 except UnicodeDecodeError:
                     logging.critical(
                         "Hikka issued error on updates\n"
                         "This is not your fault, please, report this issue in @hikka_talks along with info below:\n\n"
-                        f"{type(event)=}, {event=}, {placeholder=}"
+                        f"{type(message)=}, {message=}, {placeholder=}"
                     )
 
             # Run watcher via ensure_future so in case user has a lot

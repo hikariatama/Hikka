@@ -631,7 +631,6 @@ class HikkaConfigMod(loader.Module):
                 "🌘 <b>Loading configuration</b>",
                 message,
                 {"text": "🌘", "data": "empty"},
-                ttl=60 * 60,
             )
             await self.inline__configure(form, args)
             return

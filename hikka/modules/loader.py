@@ -804,9 +804,17 @@ class LoaderMod(loader.Module):
                         },
                     ]
 
+            try:
+                is_channel = isinstance(
+                    await self._client.get_entity(developer),
+                    Channel,
+                )
+            except Exception:
+                is_channel = False
+
             developer = self.strings("developer").format(
                 utils.escape_html(developer)
-                if isinstance(await self._client.get_entity(developer), Channel)
+                if is_channel
                 else f"<code>{utils.escape_html(developer)}</code>"
             )
         else:

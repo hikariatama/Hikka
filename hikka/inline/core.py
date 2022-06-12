@@ -72,7 +72,7 @@ class InlineManager(
         """Cleans outdated inline units"""
         while True:
             for unit_id, unit in self._units.copy().items():
-                if unit.get("ttl", time.time() + self._markup_ttl) < time.time():
+                if (unit.get("ttl") or (time.time() + self._markup_ttl)) < time.time():
                     del self._units[unit_id]
 
             await asyncio.sleep(5)

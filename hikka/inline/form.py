@@ -55,7 +55,7 @@ class Form(InlineUnit):
         always_allow: Optional[List[list]] = None,
         manual_security: Optional[bool] = False,
         disable_security: Optional[bool] = False,
-        ttl: Optional[Union[int, bool]] = False,
+        ttl: Optional[int] = None,
         on_unload: Optional[FunctionType] = None,
         photo: Optional[str] = None,
         gif: Optional[str] = None,

@@ -264,7 +264,7 @@ class TestMod(loader.Module):
                                 "args": (False, 0),
                             },
                         ],
-                        [{"text": "🚫 Cancel", "callback": self.cancel}],
+                        [{"text": "🚫 Cancel", "action": "close"}],
                     ],
                     message=message,
                 ):
@@ -313,7 +313,7 @@ class TestMod(loader.Module):
                             "callback": self.logscmd,
                             "args": [True, lvl],
                         },
-                        {"text": "🚫 Cancel", "callback": self.cancel},
+                        {"text": "🚫 Cancel", "action": "close"},
                     ],
                 }
                 if isinstance(message, Message):

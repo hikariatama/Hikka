@@ -264,7 +264,6 @@ class Events(InlineUnit):
                         )
                         return
 
-                    del self._units[unit_id]
                     return result
 
         if query.data in self._custom_map:
