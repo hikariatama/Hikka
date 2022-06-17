@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from aiogram.types import CallbackQuery
 from aiogram.types import InlineQuery as AiogramInlineQuery
@@ -41,14 +42,10 @@ class InlineMessage:
             **kwargs,
         )
 
-    async def delete(self, *args, **kwargs):
-        if "unit_id" in kwargs:
-            kwargs.pop("unit_id")
-
+    async def delete(self):
         return await self.inline_manager._delete_unit_message(
-            *args,
+            self,
             unit_id=self.unit_id,
-            **kwargs,
         )
 
     async def unload(self, *args, **kwargs):

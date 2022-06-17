@@ -31,14 +31,14 @@ class HikkaBackupMod(loader.Module):
 
     strings = {
         "name": "HikkaBackup",
-        "period": "⌚️ <b>Hewwo! I'm Asuna</b> - your personal backup manager. Please, select the periodicity of automatic database backups",
+        "period": "⌚️ <b>Unit «ALPHA»</b> creates database backups periodically. You can change this behavior later.\n\nPlease, select the periodicity of automatic database backups",
         "saved": "✅ Backup period saved. You can re-configure it later with .set_backup_period",
         "never": "✅ I will not make automatic backups. You can re-configure it later with .set_backup_period",
         "invalid_args": "🚫 <b>Specify correct backup period in hours, or `0` to disable</b>",
     }
 
     strings_ru = {
-        "period": "⌚️ <b>Приветики! Я Асуна</b> - твой менеджер резервного копирования. Пожалуйста, выбери периодичность резервных копий базы данных Hikka",
+        "period": "⌚️ <b>Юнит «ALPHA»</b> создает регулярные резервные копии. Эти настройки можно изменить позже.\n\nПожалуйста, выберите периодичность резервного копирования",
         "saved": "✅ Периодичность сохранена! Ее можно изменить с помощью .set_backup_period",
         "never": "✅ Я не буду делать автоматические резервные копии. Можно отменить используя .set_backup_period",
         "invalid_args": "🚫 <b>Укажи правильную периодичность в часах, или `0` для отключения</b>",
@@ -50,7 +50,7 @@ class HikkaBackupMod(loader.Module):
         if not self.get("period"):
             await self.inline.bot.send_photo(
                 self._tg_id,
-                photo="https://i.pinimg.com/originals/94/e5/9c/94e59c1fbecd7b842d7feeecb58f8fd6.jpg",
+                photo="https://github.com/hikariatama/assets/raw/master/unit_alpha.png",
                 caption=self.strings("period"),
                 reply_markup=self.inline.generate_markup(
                     utils.chunks(
@@ -64,7 +64,7 @@ class HikkaBackupMod(loader.Module):
                 ),
             )
 
-        self._backup_channel, is_new = await utils.asset_channel(
+        self._backup_channel, _ = await utils.asset_channel(
             self._client,
             "hikka-backups",
             "📼 Your database backups will appear there",
@@ -75,17 +75,6 @@ class HikkaBackupMod(loader.Module):
         )
 
         self.handler.start()
-
-        if not is_new and self.get("nomigrate", False):
-            return
-
-        await utils.set_avatar(
-            client,
-            self._backup_channel,
-            "https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
-        )
-
-        self.set("nomigrate", True)
 
     async def backup_period_callback_handler(self, call: InlineCall):
         if not call.data.startswith("backup_period"):

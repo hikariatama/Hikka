@@ -28,7 +28,6 @@
 
 import logging
 import time
-from types import FunctionType
 from typing import Optional
 
 from telethon.tl.functions.messages import GetFullChatRequest
@@ -87,67 +86,67 @@ PUBLIC_PERMISSIONS = GROUP_OWNER | GROUP_ADMIN_ANY | GROUP_MEMBER | PM
 ALL = (1 << 13) - 1
 
 
-def owner(func: FunctionType) -> FunctionType:
+def owner(func: callable) -> callable:
     return _sec(func, OWNER)
 
 
-def sudo(func: FunctionType) -> FunctionType:
+def sudo(func: callable) -> callable:
     return _sec(func, SUDO)
 
 
-def support(func: FunctionType) -> FunctionType:
+def support(func: callable) -> callable:
     return _sec(func, SUDO | SUPPORT)
 
 
-def group_owner(func: FunctionType) -> FunctionType:
+def group_owner(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_OWNER)
 
 
-def group_admin_add_admins(func: FunctionType) -> FunctionType:
+def group_admin_add_admins(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_ADMIN_ADD_ADMINS)
 
 
-def group_admin_change_info(func: FunctionType) -> FunctionType:
+def group_admin_change_info(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_ADMIN_CHANGE_INFO)
 
 
-def group_admin_ban_users(func: FunctionType) -> FunctionType:
+def group_admin_ban_users(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_ADMIN_BAN_USERS)
 
 
-def group_admin_delete_messages(func: FunctionType) -> FunctionType:
+def group_admin_delete_messages(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_ADMIN_DELETE_MESSAGES)
 
 
-def group_admin_pin_messages(func: FunctionType) -> FunctionType:
+def group_admin_pin_messages(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_ADMIN_PIN_MESSAGES)
 
 
-def group_admin_invite_users(func: FunctionType) -> FunctionType:
+def group_admin_invite_users(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_ADMIN_INVITE_USERS)
 
 
-def group_admin(func: FunctionType) -> FunctionType:
+def group_admin(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_ADMIN)
 
 
-def group_member(func: FunctionType) -> FunctionType:
+def group_member(func: callable) -> callable:
     return _sec(func, SUDO | GROUP_MEMBER)
 
 
-def pm(func: FunctionType) -> FunctionType:
+def pm(func: callable) -> callable:
     return _sec(func, SUDO | PM)
 
 
-def unrestricted(func: FunctionType) -> FunctionType:
+def unrestricted(func: callable) -> callable:
     return _sec(func, ALL)
 
 
-def inline_everyone(func: FunctionType) -> FunctionType:
+def inline_everyone(func: callable) -> callable:
     return _sec(func, EVERYONE)
 
 
-def _sec(func: FunctionType, flags: int) -> FunctionType:
+def _sec(func: callable, flags: int) -> callable:
     prev = getattr(func, "security", 0)
     func.security = prev | OWNER | flags
     return func
@@ -175,7 +174,7 @@ class SecurityManager:
         self._client = client
         self._me = (await client.get_me()).id
 
-    def get_flags(self, func: FunctionType) -> int:
+    def get_flags(self, func: callable) -> int:
         if isinstance(func, int):
             config = func
         else:
@@ -197,7 +196,7 @@ class SecurityManager:
     async def _check(
         self,
         message: Message,
-        func: FunctionType,
+        func: callable,
         user: Optional[int] = None,
     ) -> bool:
         """Checks if message sender is permitted to execute certain function"""

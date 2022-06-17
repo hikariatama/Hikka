@@ -1,5 +1,27 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.7
+
+- Add automatic proxy pass
+- Fix --no-web argument parsing
+- Fix localization error in updater
+- Print out only INFO statements to stdout
+- Add rotating file handler (logfile with max 10MB size)
+- Show web endpoint on startup if available
+- Fix gallery `inline_message_id` error
+- Add support for `custom_buttons` in `inline.list`
+- Add support for `custom_buttons` in `inline.gallery`
+- Smart fast_uploader (Do not use hard download on files smaller than 1 MB)
+- Attempt to parse `unit_id` from passed `InlineCall` object in `inline._delete_unit_message`
+- Reformatting
+- Change typehints
+- Show list-like values in formatted way in config
+- Properly escape html in config
+- Split config to pages and categories (core \ non-core)
+- Properly edit dictionary config (iter)
+- Properly remove items from series options through built-in configurator
+- Remove warning from web by replacing coroutine generation with `functools.partial`
+
 ## 🌑 Hikka 1.2.6
 
 - Fix processing of `# scope: hikka_min`

@@ -31,7 +31,6 @@
 import argparse
 import asyncio
 import collections
-import copy
 import importlib
 import json
 import logging
@@ -42,7 +41,6 @@ import sqlite3
 import sys
 from math import ceil
 from typing import Union
-import subprocess
 
 from telethon import TelegramClient, events
 from telethon.errors.rpcerrorlist import (
@@ -181,14 +179,17 @@ def parse_arguments() -> dict:
     :returns: Dictionary with arguments
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--port", dest="port", action="store", default=gen_port(), type=int)  # fmt: skip
+    parser.add_argument(
+        "--port", dest="port", action="store", default=gen_port(), type=int
+    )
     parser.add_argument("--phone", "-p", action="append")
     parser.add_argument("--token", "-t", action="append", dest="tokens")
     parser.add_argument("--heroku", action="store_true")
     parser.add_argument("--no-nickname", "-nn", dest="no_nickname", action="store_true")
     parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
     parser.add_argument("--web-only", dest="web_only", action="store_true")
-    parser.add_argument("--no-web", dest="disable_web", action="store_false")
+    parser.add_argument("--no-web", dest="disable_web", action="store_true")
+    parser.add_argument("--no-proxy-pass", dest="proxypass", action="store_false")
     parser.add_argument(
         "--data-root",
         dest="data_root",
@@ -300,7 +301,9 @@ class Hikka:
             and self.arguments.proxy_port is not None
             and self.arguments.proxy_secret is not None
         ):
-            logging.debug(f"Using proxy: {self.arguments.proxy_host}:{self.arguments.proxy_port}")  # fmt: skip
+            logging.debug(
+                f"Using proxy: {self.arguments.proxy_host}:{self.arguments.proxy_port}"
+            )
             self.proxy, self.conn = (
                 (
                     self.arguments.proxy_host,
@@ -360,7 +363,7 @@ class Hikka:
 
     def _init_web(self):
         """Initialize web"""
-        if web_available and not getattr(self.arguments, "disable_web", False):
+        if not web_available or getattr(self.arguments, "disable_web", False):
             self.web = None
             return
 
@@ -377,8 +380,13 @@ class Hikka:
             if self.arguments.no_auth:
                 return
             if self.web:
-                self.loop.run_until_complete(self.web.start(self.arguments.port))
-                self._web_banner()
+                self.loop.run_until_complete(
+                    self.web.start(
+                        self.arguments.port,
+                        not getattr(self.arguments, "proxypass", False),
+                    )
+                )
+                self.loop.run_until_complete(self._web_banner())
                 self.loop.run_until_complete(self.web.wait_for_api_token_setup())
                 self.api_token = self.web.api_token
             else:
@@ -428,17 +436,10 @@ class Hikka:
         client.hikka_db = database.Database(client)
         await client.hikka_db.init()
 
-    def _web_banner(self):
+    async def _web_banner(self):
         """Shows web banner"""
         print("✅ Web mode ready for configuration")
-        ip = (
-            "127.0.0.1"
-            if "DOCKER" not in os.environ
-            else subprocess.run(
-                ["hostname", "-i"], stdout=subprocess.PIPE, check=True
-            ).stdout
-        )
-        print(f"🌐 Please visit http://{ip}:{self.web.port}")
+        print(f"🌐 Please visit {self.web.url}")
 
     async def wait_for_web_auth(self, token: str):
         """Waits for web auth confirmation in Telegram"""
@@ -480,8 +481,13 @@ class Hikka:
             return True
 
         if not self.web.running.is_set():
-            self.loop.run_until_complete(self.web.start(self.arguments.port))
-            self._web_banner()
+            self.loop.run_until_complete(
+                self.web.start(
+                    self.arguments.port,
+                    not getattr(self.arguments, "proxypass", False),
+                )
+            )
+            asyncio.ensure_future(self._web_banner())
 
         self.loop.run_until_complete(self.web.wait_for_clients_setup())
 
@@ -575,11 +581,16 @@ class Hikka:
 
             if not self.omit_log:
                 print(logo1)
+                web_url = (
+                    f"🌐 Web url: {self.web.url}\n"
+                    if self.web and hasattr(self.web, "url")
+                    else ""
+                )
                 logging.info(
-                    "🌘 Hikka started\n"
-                    f"GitHub commit SHA: {build[:7]} ({upd})\n"
-                    f"Hikka version: {'.'.join(list(map(str, list(__version__))))}\n"
-                    f"Platform: {_platform}"
+                    f"🌘 Hikka {'.'.join(list(map(str, list(__version__))))} started\n"
+                    f"🔏 GitHub commit SHA: {build[:7]} ({upd})\n"
+                    f"{web_url}"
+                    f"{_platform}"
                 )
                 self.omit_log = True
 

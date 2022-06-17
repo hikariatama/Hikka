@@ -215,20 +215,26 @@ class Database(dict):
 
         for key, value in db.copy().items():
             if not isinstance(key, (str, int)):
-                logger.warning(f"DbAutoFix: Dropped {key=} , because it is not string or int")  # fmt: skip
+                logger.warning(
+                    f"DbAutoFix: Dropped {key=} , because it is not string or int"
+                )
                 continue
 
             if not isinstance(value, dict):
                 # If value is not a dict (module values), drop it,
                 # otherwise it may cause problems
                 del db[key]
-                logger.warning(f"DbAutoFix: Dropped {key=}, because it is non-dict {type(value)=}")  # fmt: skip
+                logger.warning(
+                    f"DbAutoFix: Dropped {key=}, because it is non-dict {type(value)=}"
+                )
                 continue
 
             for subkey in value:
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
-                    logger.warning(f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not string or int")  # fmt: skip
+                    logger.warning(
+                        f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not string or int"
+                    )
                     continue
 
         return True
@@ -286,7 +292,7 @@ class Database(dict):
         returns asset_id as integer
         """
         if not self._assets:
-            raise NoAssetsChannel("Tried to save asset to non-existing asset channel")  # fmt: skip
+            raise NoAssetsChannel("Tried to save asset to non-existing asset channel")
 
         return (
             (await self._client.send_message(self._assets, message)).id
@@ -303,7 +309,9 @@ class Database(dict):
     async def fetch_asset(self, asset_id: int) -> Union[None, Message]:
         """Fetch previously saved asset by its asset_id"""
         if not self._assets:
-            raise NoAssetsChannel("Tried to fetch asset from non-existing asset channel")  # fmt: skip
+            raise NoAssetsChannel(
+                "Tried to fetch asset from non-existing asset channel"
+            )
 
         asset = await self._client.get_messages(self._assets, ids=[asset_id])
 

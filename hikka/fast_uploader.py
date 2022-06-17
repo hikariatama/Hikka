@@ -472,7 +472,7 @@ async def download_file(
     if getattr(location, "document", None):
         location = location.document
 
-    if not hasattr(location, "size"):
+    if not hasattr(location, "size") or location.size <= 1024 * 1024:
         return io.BytesIO(await _client._download_file(location, bytes))
 
     size = location.size
@@ -550,6 +550,9 @@ async def upload_file(
     """
     if not hasattr(file, "read"):
         file = io.BytesIO(file)
+
+    if len(file.getvalue()) < 1024 * 1024:
+        return await _client.upload_file(file, file_name=filename)
 
     ratelimiter = time.time() + 3
 

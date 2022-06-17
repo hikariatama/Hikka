@@ -5,7 +5,6 @@ import contextlib
 import io
 import os
 from copy import deepcopy
-from types import FunctionType
 from typing import List, Optional, Union
 from urllib.parse import urlparse
 import functools
@@ -59,7 +58,9 @@ class Utils(InlineUnit):
         for row in map_:
             for button in row:
                 if not isinstance(button, dict):
-                    logger.error(f"Button {button} is not a `dict`, but `{type(button)}` in {map_}")  # fmt: skip
+                    logger.error(
+                        f"Button {button} is not a `dict`, but `{type(button)}` in {map_}"
+                    )
                     return None
 
                 if "callback" not in button:
@@ -147,7 +148,8 @@ class Utils(InlineUnit):
                         line += [
                             InlineKeyboardButton(
                                 button["text"],
-                                switch_inline_query_current_chat=button["_switch_query"] + " ",  # fmt: skip
+                                switch_inline_query_current_chat=button["_switch_query"]
+                                + " ",
                             )
                         ]
                     elif "data" in button:
@@ -207,8 +209,8 @@ class Utils(InlineUnit):
     async def check_inline_security(
         self,
         *,
-        func: FunctionType,
-        user: int,
+        func: callable,
+        user: int
     ) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
@@ -217,7 +219,7 @@ class Utils(InlineUnit):
             message=None,
         )
 
-    def _find_caller_sec_map(self) -> Union[FunctionType, None]:
+    def _find_caller_sec_map(self) -> Union[callable, None]:
         try:
             for stack_entry in inspect.stack():
                 if hasattr(stack_entry, "function") and (
@@ -433,7 +435,10 @@ class Utils(InlineUnit):
         call: CallbackQuery = None,
         unit_id: str = None,
     ) -> bool:
-        """Params `self`, `form`, `unit_id` are for internal use only, do not try to pass them"""
+        """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
+        if not unit_id and hasattr(call, "unit_id") and call.unit_id:
+            unit_id = call.unit_id
+
         try:
             await self._client.delete_messages(
                 self._units[unit_id]["chat"],
@@ -466,3 +471,154 @@ class Utils(InlineUnit):
             return False
 
         return True
+
+    def build_pagination(
+        self,
+        callback: callable,
+        total_pages: int,
+        unit_id: Optional[str] = None,
+        current_page: Optional[int] = None,
+    ) -> List[dict]:
+        # Based on https://github.com/pystorage/pykeyboard/blob/master/pykeyboard/inline_pagination_keyboard.py#L4
+        if current_page is None:
+            current_page = self._units[unit_id]["current_index"] + 1
+
+        if total_pages <= 5:
+            return [
+                [
+                    {"text": number, "args": (number - 1,), "callback": callback}
+                    if number != current_page
+                    else {
+                        "text": f"· {number} ·",
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                    for number in range(1, total_pages + 1)
+                ]
+            ]
+        else:
+            if current_page <= 3:
+                return [
+                    [
+                        {
+                            "text": f"· {number} ·",
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                        if number == current_page
+                        else {
+                            "text": f"{number} ›",
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                        if number == 4
+                        else {
+                            "text": f"{total_pages} »",
+                            "args": (total_pages - 1,),
+                            "callback": callback,
+                        }
+                        if number == 5
+                        else {
+                            "text": number,
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                        for number in range(1, 6)
+                    ]
+                ]
+            elif current_page > total_pages - 3:
+                return [
+                    [
+                        {"text": "« 1", "args": (0,), "callback": callback},
+                        {
+                            "text": f"‹ {total_pages - 3}",
+                            "args": (total_pages - 4,),
+                            "callback": callback,
+                        },
+                    ]
+                    + [
+                        {
+                            "text": f"· {number} ·",
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                        if number == current_page
+                        else {
+                            "text": number,
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                        for number in range(total_pages - 2, total_pages + 1)
+                    ]
+                ]
+            else:
+                return [
+                    [
+                        {"text": "« 1", "args": (0,), "callback": callback},
+                        {
+                            "text": f"‹ {current_page - 1}",
+                            "args": (current_page - 2,),
+                            "callback": callback,
+                        },
+                        {
+                            "text": f"· {current_page} ·",
+                            "args": (current_page - 1,),
+                            "callback": callback,
+                        },
+                        {
+                            "text": f"{current_page + 1} ›",
+                            "args": (current_page,),
+                            "callback": callback,
+                        },
+                        {
+                            "text": f"{total_pages} »",
+                            "args": (total_pages - 1,),
+                            "callback": callback,
+                        },
+                    ]
+                ]
+
+    def _validate_markup(
+        self,
+        buttons: Optional[Union[List[List[dict]], List[dict], dict]],
+    ) -> list:
+        if buttons is None:
+            buttons = []
+
+        if not isinstance(buttons, (list, dict)):
+            logger.error(
+                f"Reply markup ommited because passed type is not valid ({type(buttons)})"
+            )
+            return None
+
+        buttons = self._normalize_markup(buttons)
+
+        if not all(all(isinstance(button, dict) for button in row) for row in buttons):
+            logger.error(
+                "Reply markup ommited because passed invalid type for one of the buttons"
+            )
+            return None
+
+        if not all(
+            all(
+                "url" in button
+                or "callback" in button
+                or "input" in button
+                or "data" in button
+                or "action" in button
+                for button in row
+            )
+            for row in buttons
+        ):
+            logger.error(
+                "Invalid button specified. "
+                "Button must contain one of the following fields:\n"
+                "  - `url`\n"
+                "  - `callback`\n"
+                "  - `input`\n"
+                "  - `data`\n"
+                "  - `action`"
+            )
+            return None
+
+        return buttons

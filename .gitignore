@@ -170,3 +170,5 @@ config.json
 .profile.d/
 vendor/
 Pipfile.lock
+
+hikka.log.*

@@ -31,6 +31,7 @@ import inspect
 import logging
 import io
 from typing import Optional
+from logging.handlers import RotatingFileHandler
 
 from . import utils
 from ._types import Module
@@ -46,6 +47,17 @@ _tg_formatter = logging.Formatter(
     style="%",
 )
 
+rotating_handler = RotatingFileHandler(
+    filename="hikka.log",
+    mode="a",
+    maxBytes=10 * 1024 * 1024,
+    backupCount=1,
+    encoding="utf-8",
+    delay=0,
+)
+
+rotating_handler.setFormatter(_main_formatter)
+
 
 class TelegramLogsHandler(logging.Handler):
     """
@@ -57,9 +69,9 @@ class TelegramLogsHandler(logging.Handler):
     first trimming handled then unused.
     """
 
-    def __init__(self, target, capacity: int):
+    def __init__(self, targets: list, capacity: int):
         super().__init__(0)
-        self.target = target
+        self.targets = targets
         self.capacity = capacity
         self.buffer = []
         self.handledbuffer = []
@@ -92,7 +104,7 @@ class TelegramLogsHandler(logging.Handler):
     def dumps(self, lvl: Optional[int] = 0, client_id: Optional[int] = None) -> list:
         """Return all entries of minimum level as list of strings"""
         return [
-            self.target.format(record)
+            self.targets[0].format(record)
             for record in (self.buffer + self.handledbuffer)
             if record.levelno >= lvl
             and (not record.hikka_caller or client_id == record.hikka_caller)
@@ -194,7 +206,9 @@ class TelegramLogsHandler(logging.Handler):
             self.acquire()
             try:
                 for precord in self.buffer:
-                    self.target.handle(precord)
+                    for target in self.targets:
+                        if record.levelno >= target.level:
+                            target.handle(precord)
 
                 self.handledbuffer = (
                     self.handledbuffer[-(self.capacity - len(self.buffer)) :]
@@ -207,9 +221,12 @@ class TelegramLogsHandler(logging.Handler):
 
 def init():
     handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
     handler.setFormatter(_main_formatter)
     logging.getLogger().handlers = []
-    logging.getLogger().addHandler(TelegramLogsHandler(handler, 7000))
+    logging.getLogger().addHandler(
+        TelegramLogsHandler((handler, rotating_handler), 7000)
+    )
     logging.getLogger().setLevel(logging.NOTSET)
     logging.getLogger("telethon").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)

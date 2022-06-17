@@ -179,7 +179,7 @@ class HelpMod(loader.Module):
 
         reply = self.strings("single_mod_header").format(utils.escape_html(name))
         if module.__doc__:
-            reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"  # fmt: skip
+            reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"
 
         commands = {
             name: func

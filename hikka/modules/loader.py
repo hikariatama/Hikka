@@ -613,7 +613,9 @@ class LoaderMod(loader.Module):
                         )
                     )
                 except TypeError:
-                    logger.warning("No valid pip packages specified in code, attemping installation from error")  # fmt: skip
+                    logger.warning(
+                        "No valid pip packages specified in code, attemping installation from error"
+                    )
                     requirements = [e.name]
 
                 logger.debug(f"Installing requirements: {requirements}")
@@ -905,7 +907,7 @@ class LoaderMod(loader.Module):
                 )
             )
             if worked
-            else self.strings("not_loaded")
+            else self.strings("not_unloaded")
         )
 
         await utils.answer(message, msg)
@@ -953,6 +955,7 @@ class LoaderMod(loader.Module):
 
         if "https://mods.hikariatama.ru/forbid_joins.py" in todo.values():
             from ..forbid_joins import install_join_forbidder
+
             install_join_forbidder(self._client)
 
         for mod in todo.values():

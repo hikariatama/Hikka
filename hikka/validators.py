@@ -238,7 +238,9 @@ def Series(
     """
 
     _each_en = f" (each must be {validator.doc['en']})" if validator is not None else ""
-    _each_ru = f" (каждое должно быть {validator.doc['ru']})" if validator is not None else ""  # fmt: skip
+    _each_ru = (
+        f" (каждое должно быть {validator.doc['ru']})" if validator is not None else ""
+    )
 
     if fixed_len is not None:
         _len_en = f" (exactly {fixed_len} pcs.)"

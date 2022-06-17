@@ -11,7 +11,6 @@
 # scope: inline
 
 import logging
-from types import FunctionType
 from typing import List, Union
 
 from telethon.tl.types import Message, PeerUser, User
@@ -220,7 +219,7 @@ class HikkaSecurityMod(loader.Module):
 
     def _build_markup(
         self,
-        command: FunctionType,
+        command: callable,
         is_inline: bool = False,
     ) -> List[List[dict]]:
         perms = self._get_current_perms(command, is_inline)
@@ -302,7 +301,9 @@ class HikkaSecurityMod(loader.Module):
                 "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
                 "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
                 "group_admin_ban_users": bool(perms & GROUP_ADMIN_BAN_USERS),
-                "group_admin_delete_messages": bool(perms & GROUP_ADMIN_DELETE_MESSAGES),  # fmt: skip
+                "group_admin_delete_messages": bool(
+                    perms & GROUP_ADMIN_DELETE_MESSAGES
+                ),
                 "group_admin_pin_messages": bool(perms & GROUP_ADMIN_PIN_MESSAGES),
                 "group_admin_invite_users": bool(perms & GROUP_ADMIN_INVITE_USERS),
                 "group_admin": bool(perms & GROUP_ADMIN),
@@ -314,7 +315,7 @@ class HikkaSecurityMod(loader.Module):
 
     def _get_current_perms(
         self,
-        command: FunctionType,
+        command: callable,
         is_inline: bool = False,
     ) -> dict:
         config = self._db.get(security.__name__, "masks", {}).get(

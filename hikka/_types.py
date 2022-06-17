@@ -114,11 +114,11 @@ class ModuleConfig(dict):
 
     def __setitem__(self, key: str, value: Any):
         self._config[key].value = value
-        return dict.__setitem__(self, key, value)
+        self.update({key: value})
 
     def set_no_raise(self, key: str, value: Any):
         self._config[key].set_no_raise(value)
-        return dict.__setitem__(self, key, value)
+        self.update({key: value})
 
     def __getitem__(self, key: str) -> Any:
         try:

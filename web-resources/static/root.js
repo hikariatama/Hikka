@@ -1,16 +1,17 @@
 function auth(callback) {
-    bodymovin.loadAnimation({
-        container: document.getElementById("tg_icon"),
-        renderer: 'canvas',
-        loop: true,
-        autoplay: true,
-        path: 'https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json',
-        rendererSettings: {
-            clearCanvas: true,
-        }
-    });
     $(".main").fadeOut(500, () => {
-        $(".auth").hide().fadeIn(500);
+        $(".auth").hide().fadeIn(500, () => {
+            bodymovin.loadAnimation({
+                container: document.getElementById("tg_icon"),
+                renderer: 'canvas',
+                loop: true,
+                autoplay: true,
+                path: 'https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json',
+                rendererSettings: {
+                    clearCanvas: true,
+                }
+            });
+        });
         fetch("/web_auth", {
             method: "POST",
             credentials: "include",

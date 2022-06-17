@@ -5,7 +5,6 @@ import functools
 import logging
 import time
 import traceback
-from types import FunctionType
 from typing import List as _List
 from typing import Optional, Union
 
@@ -39,7 +38,7 @@ class List(InlineUnit):
         manual_security: Optional[bool] = False,
         disable_security: Optional[bool] = False,
         ttl: Optional[Union[int, bool]] = False,
-        on_unload: Optional[FunctionType] = None,
+        on_unload: Optional[callable] = None,
         silent: Optional[bool] = False,
         custom_buttons: Optional[Union[_List[_List[dict]], _List[dict], dict]] = None,
     ) -> Union[bool, InlineMessage]:
@@ -65,42 +64,7 @@ class List(InlineUnit):
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self._client._tg_id)
 
-        if custom_buttons is None:
-            custom_buttons = []
-
-        if not isinstance(custom_buttons, (list, dict)):
-            logger.error("Invalid type for `custom_buttons`")
-            return False
-
-        custom_buttons = self._normalize_markup(custom_buttons)
-
-        if not all(
-            all(isinstance(button, dict) for button in row) for row in custom_buttons
-        ):
-            logger.error("Invalid type for one of the buttons. It must be `dict`")
-            return False
-
-        if not all(
-            all(
-                "url" in button
-                or "callback" in button
-                or "input" in button
-                or "data" in button
-                or "action" in button
-                for button in row
-            )
-            for row in custom_buttons
-        ):
-            logger.error(
-                "Invalid button specified. "
-                "Button must contain one of the following fields:\n"
-                "  - `url`\n"
-                "  - `callback`\n"
-                "  - `input`\n"
-                "  - `data`\n"
-                "  - `action`"
-            )
-            return False
+        custom_buttons = self._validate_markup(custom_buttons)
 
         if not isinstance(manual_security, bool):
             logger.error("Invalid type for `manual_security`")
@@ -142,7 +106,6 @@ class List(InlineUnit):
             return False
 
         unit_id = utils.rand(16)
-        btn_call_data = {key: utils.rand(10) for key in {"back", "next", "close"}}
 
         perms_map = self._find_caller_sec_map() if not manual_security else None
 
@@ -151,7 +114,6 @@ class List(InlineUnit):
             "chat": None,
             "message_id": None,
             "uid": unit_id,
-            "btn_call_data": btn_call_data,
             "current_index": 0,
             "strings": strings,
             "future": asyncio.Event(),
@@ -162,9 +124,18 @@ class List(InlineUnit):
             **({"always_allow": always_allow} if always_allow else {}),
             **({"perms_map": perms_map} if perms_map else {}),
             **({"message": message} if isinstance(message, Message) else {}),
+            **({"custom_buttons": custom_buttons} if custom_buttons else {}),
         }
 
-        default_map = {
+        btn_call_data = utils.rand(10)
+
+        self._custom_map[btn_call_data] = {
+            "handler": asyncio.coroutine(
+                functools.partial(
+                    self._list_page,
+                    unit_id=unit_id,
+                )
+            ),
             **(
                 {"ttl": self._units[unit_id]["ttl"]}
                 if "ttl" in self._units[unit_id]
@@ -175,38 +146,6 @@ class List(InlineUnit):
             **({"disable_security": disable_security} if disable_security else {}),
             **({"perms_map": perms_map} if perms_map else {}),
             **({"message": message} if isinstance(message, Message) else {}),
-        }
-
-        self._custom_map[btn_call_data["back"]] = {
-            "handler": asyncio.coroutine(
-                functools.partial(
-                    self._list_back,
-                    btn_call_data=btn_call_data,
-                    unit_id=unit_id,
-                )
-            ),
-            **default_map,
-        }
-
-        self._custom_map[btn_call_data["close"]] = {
-            "handler": asyncio.coroutine(
-                functools.partial(
-                    self._delete_unit_message,
-                    unit_id=unit_id,
-                )
-            ),
-            **default_map,
-        }
-
-        self._custom_map[btn_call_data["next"]] = {
-            "handler": asyncio.coroutine(
-                functools.partial(
-                    self._list_next,
-                    btn_call_data=btn_call_data,
-                    unit_id=unit_id,
-                )
-            ),
-            **default_map,
         }
 
         if isinstance(message, Message) and not silent:
@@ -236,7 +175,7 @@ class List(InlineUnit):
             )
         except ChatSendInlineForbiddenError:
             await answer("🚫 <b>You can't send inline units in this chat</b>")
-        except Exception as e:
+        except Exception:
             logger.exception("Can't send list")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
@@ -269,52 +208,23 @@ class List(InlineUnit):
 
         return InlineMessage(self, unit_id, self._units[unit_id]["inline_message_id"])
 
-    async def _list_back(
+    async def _list_page(
         self,
         call: CallbackQuery,
-        btn_call_data: _List[str] = None,
+        page: Union[int, str],
         unit_id: str = None,
     ):
-        if not self._units[unit_id]["current_index"]:
-            await call.answer("No way back", show_alert=True)
+        if page == "close":
+            await self._delete_unit_message(call, unit_id=unit_id)
             return
 
-        self._units[unit_id]["current_index"] -= 1
-
-        try:
-            await self.bot.edit_message_text(
-                inline_message_id=call.inline_message_id,
-                text=self._units[unit_id]["strings"][
-                    self._units[unit_id]["current_index"]
-                ],
-                reply_markup=self._list_markup(unit_id),
-            )
-            await call.answer()
-        except RetryAfter as e:
-            await call.answer(
-                f"Got FloodWait. Wait for {e.timeout} seconds",
-                show_alert=True,
-            )
-        except Exception:
-            logger.exception("Exception while trying to edit list")
-            await call.answer("Error occurred", show_alert=True)
-            return
-
-    async def _list_next(
-        self,
-        call: CallbackQuery,
-        btn_call_data: _List[str] = None,
-        func: FunctionType = None,
-        unit_id: str = None,
-    ):
-        self._units[unit_id]["current_index"] += 1
-        # If we exceeded limit in list
-        if self._units[unit_id]["current_index"] >= len(
+        if self._units[unit_id]["current_index"] < 0 or page >= len(
             self._units[unit_id]["strings"]
         ):
-            await call.answer("No entries left...", show_alert=True)
-            self._units[unit_id]["current_index"] -= 1
+            await call.answer("Can't go to this page", show_alert=True)
             return
+
+        self._units[unit_id]["current_index"] = page
 
         try:
             await self.bot.edit_message_text(
@@ -330,44 +240,23 @@ class List(InlineUnit):
                 f"Got FloodWait. Wait for {e.timeout} seconds",
                 show_alert=True,
             )
-            return
         except Exception:
             logger.exception("Exception while trying to edit list")
             await call.answer("Error occurred", show_alert=True)
             return
 
     def _list_markup(self, unit_id: str) -> InlineKeyboardMarkup:
-        """Converts `btn_call_data` into a aiogram markup"""
-        markup = InlineKeyboardMarkup()
-        markup.add(
-            *(
-                [
-                    InlineKeyboardButton(
-                        f"⏪ [{self._units[unit_id]['current_index']} / {len(self._units[unit_id]['strings'])}]",
-                        callback_data=self._units[unit_id]["btn_call_data"]["back"],
-                    )
-                ]
-                if self._units[unit_id]["current_index"] > 0
-                else []
-            ),
-            InlineKeyboardButton(
-                "❌",
-                callback_data=self._units[unit_id]["btn_call_data"]["close"],
-            ),
-            *(
-                [
-                    InlineKeyboardButton(
-                        f"⏩ [{self._units[unit_id]['current_index'] + 2} / {len(self._units[unit_id]['strings'])}]",
-                        callback_data=self._units[unit_id]["btn_call_data"]["next"],
-                    ),
-                ]
-                if self._units[unit_id]["current_index"]
-                < len(self._units[unit_id]["strings"]) - 1
-                else []
-            ),
+        """Generates aiogram markup for `list`"""
+        callback = functools.partial(self._list_page, unit_id=unit_id)
+        return self.generate_markup(
+            self._units[unit_id].get("custom_buttons", [])
+            + self.build_pagination(
+                callback=callback,
+                total_pages=len(self._units[unit_id]["strings"]),
+                unit_id=unit_id,
+            )
+            + [[{"text": "🔻 Close", "callback": callback, "args": ("close",)}]],
         )
-
-        return markup
 
     async def _list_inline_handler(self, inline_query: InlineQuery):
         for unit in self._units.copy().values():

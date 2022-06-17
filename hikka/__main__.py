@@ -106,7 +106,7 @@ def restart():
 if sys.version_info < (3, 8, 0):
     print("🚫 Error: you must use at least Python version 3.8.0")
 elif __package__ != "hikka":  # In case they did python __main__.py
-    print("🚫 Error: you cannot run this as a script; you must execute as a package")  # fmt: skip
+    print("🚫 Error: you cannot run this as a script; you must execute as a package")
 else:
     try:
         import telethon  # noqa: F401
@@ -116,7 +116,9 @@ else:
         try:
             from telethon.tl.functions.messages import SendReactionRequest  # noqa: F401
         except ImportError:
-            print("⚠️ Warning: Default telethon is used as main one. This can cause errors and enables DAR. Attempting to reinstall telethon-mod...")  # fmt: skip
+            print(
+                "⚠️ Warning: Default telethon is used as main one. This can cause errors and enables DAR. Attempting to reinstall telethon-mod..."
+            )
             subprocess.run(
                 [
                     sys.executable,

@@ -295,7 +295,7 @@ class UpdaterMod(loader.Module):
     ):
         # We don't really care about asyncio at this point, as we are shutting down
         if hard:
-            os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")  # fmt: skip
+            os.system(f"cd {utils.get_base_dir()} && cd .. && git reset --hard HEAD")
 
         try:
             if "LAVHOST" in os.environ:

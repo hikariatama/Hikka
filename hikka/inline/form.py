@@ -3,7 +3,6 @@ import copy
 import logging
 import time
 from asyncio import Event
-from types import FunctionType
 from typing import List, Optional, Union
 import random
 import grapheme
@@ -56,7 +55,7 @@ class Form(InlineUnit):
         manual_security: Optional[bool] = False,
         disable_security: Optional[bool] = False,
         ttl: Optional[int] = None,
-        on_unload: Optional[FunctionType] = None,
+        on_unload: Optional[callable] = None,
         photo: Optional[str] = None,
         gif: Optional[str] = None,
         file: Optional[str] = None,
@@ -174,35 +173,7 @@ class Form(InlineUnit):
             logger.error("You passed two or more exclusive parameters simultaneously")
             return False
 
-        reply_markup = self._normalize_markup(reply_markup)
-
-        if not all(
-            all(isinstance(button, dict) for button in row) for row in reply_markup
-        ):
-            logger.error("Invalid type for one of the buttons. It must be `dict`")
-            return False
-
-        if not all(
-            all(
-                "url" in button
-                or "callback" in button
-                or "input" in button
-                or "data" in button
-                or "action" in button
-                for button in row
-            )
-            for row in reply_markup
-        ):
-            logger.error(
-                "Invalid button specified. "
-                "Button must contain one of the following fields:\n"
-                "  - `url`\n"
-                "  - `callback`\n"
-                "  - `input`\n"
-                "  - `data`\n"
-                "  - `action`"
-            )
-            return False
+        reply_markup = self._validate_markup(reply_markup) or []
 
         if not isinstance(force_me, bool):
             logger.error("Invalid type for `force_me`")

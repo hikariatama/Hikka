@@ -33,7 +33,6 @@ import functools
 import logging
 import re
 import traceback
-from types import FunctionType
 from typing import Tuple, Union
 
 from telethon import types
@@ -210,7 +209,7 @@ class CommandDispatcher:
     async def _handle_command(
         self,
         event,
-    ) -> Union[bool, Tuple[Message, str, str, FunctionType]]:
+    ) -> Union[bool, Tuple[Message, str, str, callable]]:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return False
 
@@ -455,9 +454,9 @@ class CommandDispatcher:
 
     async def future_dispatcher(
         self,
-        func: FunctionType,
+        func: callable,
         message: Message,
-        exception_handler: FunctionType,
+        exception_handler: callable,
         *args,
     ):
         # Will be used to determine, which client caused logging messages

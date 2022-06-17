@@ -406,7 +406,13 @@ class Web:
                     disable_web_page_preview=True,
                     reply_markup=markup,
                 )
-                ops += [bot.delete_message(msg.chat.id, msg.message_id)]
+                ops += [
+                    functools.partial(
+                        bot.delete_message,
+                        chat_id=msg.chat.id,
+                        message_id=msg.message_id,
+                    )
+                ]
             except Exception:
                 pass
 
@@ -420,11 +426,11 @@ class Web:
 
         if not await main.hikka.wait_for_web_auth(token):
             for op in ops:
-                await op
+                await op()
             return web.Response(body="TIMEOUT")
 
         for op in ops:
-            await op
+            await op()
 
         self._sessions += [session]
 

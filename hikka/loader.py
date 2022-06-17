@@ -454,7 +454,9 @@ class Modules:
                     self.modules.remove(instance)
                 except Exception:
                     pass
-                raise RuntimeError(f"Command {command} is core and will not be overwritten by {instance}")  # fmt: skip
+                raise RuntimeError(
+                    f"Command {command} is core and will not be overwritten by {instance}"
+                )
 
             # Verify that command does not already exist, or,
             # if it does, the command must be from the same class name
@@ -466,7 +468,7 @@ class Modules:
                     != self.commands[command].__self__.__class__.__name__
                 ):
                     logger.debug(f"Duplicate command {command}")
-                logger.debug(f"Replacing command for {self.commands[command]}")  # fmt: skip
+                logger.debug(f"Replacing command for {self.commands[command]}")
 
             if not instance.commands[command].__doc__:
                 logger.debug(f"Missing docs for {command}")
@@ -486,7 +488,9 @@ class Modules:
                     != self.inline_handlers[handler].__self__.__class__.__name__
                 ):
                     logger.debug(f"Duplicate inline_handler {handler}")
-                logger.debug(f"Replacing inline_handler for {self.inline_handlers[handler]}")  # fmt: skip
+                logger.debug(
+                    f"Replacing inline_handler for {self.inline_handlers[handler]}"
+                )
 
             if not instance.inline_handlers[handler].__doc__:
                 logger.debug(f"Missing docs for {handler}")
@@ -503,7 +507,9 @@ class Modules:
                 != self.callback_handlers[handler].__self__.__class__.__name__
             ):
                 logger.debug(f"Duplicate callback_handler {handler}")
-            self.callback_handlers.update({handler.lower(): instance.callback_handlers[handler]})  # fmt: skip
+            self.callback_handlers.update(
+                {handler.lower(): instance.callback_handlers[handler]}
+            )
 
     def register_watcher(self, instance: Module):
         """Register watcher from instance"""
@@ -705,7 +711,9 @@ class Modules:
             _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
 
         if interval < 0.1:
-            logger.warning("Resetting animation interval to 0.1s, because it may get you in floodwaits bro")  # fmt: skip
+            logger.warning(
+                "Resetting animation interval to 0.1s, because it may get you in floodwaits bro"
+            )
             interval = 0.1
 
         for frame in frames:
@@ -771,7 +779,9 @@ class Modules:
             logger.debug(f"Unloading {mod}, because it raised SelfUnload")
             self.modules.remove(mod)
         except Exception as e:
-            logger.exception(f"Failed to send mod init complete signal for {mod} due to {e}, attempting unload")  # fmt: skip
+            logger.exception(
+                f"Failed to send mod init complete signal for {mod} due to {e}, attempting unload"
+            )
             self.modules.remove(mod)
             raise
 
@@ -887,7 +897,9 @@ class Modules:
         affected_uids=None,
         data=None,
     ):
-        return await asyncio.gather(*[fun(type_, group, affected_uids, data) for fun in self._log_handlers])  # fmt: skip
+        return await asyncio.gather(
+            *[fun(type_, group, affected_uids, data) for fun in self._log_handlers]
+        )
 
     def register_logger(self, _logger):
         self._log_handlers += [_logger]
