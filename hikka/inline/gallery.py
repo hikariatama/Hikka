@@ -263,7 +263,10 @@ class Gallery(InlineUnit):
 
                 return False
 
-            return await self.gallery(**utils.get_kwargs())
+            kwargs = utils.get_kwargs()
+            kwargs["_reattempt"] = True
+
+            return await self.gallery(**kwargs)
 
         await self._units[unit_id]["future"].wait()
         del self._units[unit_id]["future"]
