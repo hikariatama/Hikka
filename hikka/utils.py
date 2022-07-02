@@ -475,7 +475,7 @@ async def set_avatar(
         )
     )
 
-    with contextlib.suppress(Exception):
+    try:
         await client.delete_messages(
             peer,
             message_ids=[
@@ -486,6 +486,8 @@ async def set_avatar(
                 ).message.id
             ],
         )
+    except Exception:
+        pass
 
     return True
 

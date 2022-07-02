@@ -38,21 +38,24 @@ def install_join_forbidder(client: TelegramClient) -> TelegramClient:
 
         for item in request:
             if item.CONSTRUCTOR_ID == 615851205:
-                if next(
-                    frame_info.frame.f_locals["self"]
-                    for frame_info in inspect.stack()
-                    if hasattr(frame_info, "frame")
-                    and hasattr(frame_info.frame, "f_locals")
-                    and isinstance(frame_info.frame.f_locals, dict)
-                    and "self" in frame_info.frame.f_locals
-                    and isinstance(frame_info.frame.f_locals["self"], loader.Module)
-                    and frame_info.frame.f_locals["self"].__class__.__name__
-                    not in {"APIRatelimiterMod", "ForbidJoinMod"}
-                ).__class__.__name__ not in {"HelpMod", "LoaderMod"}:
-                    logger.debug(
-                        f"🎉 I protected you from unintented JoinChannelRequest ({item})!"
-                    )
-                    continue
+                try:
+                    if next(
+                        frame_info.frame.f_locals["self"]
+                        for frame_info in inspect.stack()
+                        if hasattr(frame_info, "frame")
+                        and hasattr(frame_info.frame, "f_locals")
+                        and isinstance(frame_info.frame.f_locals, dict)
+                        and "self" in frame_info.frame.f_locals
+                        and isinstance(frame_info.frame.f_locals["self"], loader.Module)
+                        and frame_info.frame.f_locals["self"].__class__.__name__
+                        not in {"APIRatelimiterMod", "ForbidJoinMod"}
+                    ).__class__.__name__ not in {"HelpMod", "LoaderMod"}:
+                        logger.debug(
+                            f"🎉 I protected you from unintented JoinChannelRequest ({item})!"
+                        )
+                        continue
+                except StopIteration:
+                    pass
 
             new_request += [item]
 

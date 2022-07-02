@@ -49,11 +49,11 @@ import requests
 import telethon
 from telethon.tl.types import Message, Channel
 from telethon.tl.functions.channels import JoinChannelRequest
-from telethon.tl.functions.contacts import SearchRequest
 
 from .. import loader, main, utils
 from ..compat import geek
 from ..inline.types import InlineCall
+from .._types import CoreOverwriteError
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +88,8 @@ class LoaderMod(loader.Module):
         "unloaded": "<b>🧹 Module {} unloaded.</b>",
         "not_unloaded": "<b>🚫 Module not unloaded.</b>",
         "requirements_failed": "<b>🚫 Requirements installation failed</b>",
+        "requirements_failed_termux": "🕶🚫 <b>Requirements installation failed</b>\n<b>The most common reason is that Termux doesn't support many libraries. Don't report it as bug, this can't be solved.</b>",
+        "heroku_install_failed": "♓️⚠️ <b>This module requires additional libraries to be installed, which can't be done on Heroku. Don't report it as bug, this can't be solved.</b>",
         "requirements_installing": "<b>🔄 Installing requirements:\n\n{}</b>",
         "requirements_restart": "<b>🔄 Requirements installed, but a restart is required for </b><code>{}</code><b> to apply</b>",
         "all_modules_deleted": "<b>✅ All modules deleted</b>",
@@ -122,6 +124,8 @@ class LoaderMod(loader.Module):
         "confirm_clearmodules": "⚠️ <b>Are you sure you want to clear all modules?</b>",
         "clearmodules": "🗑 Clear modules",
         "cancel": "🚫 Cancel",
+        "overwrite_module": "🚫 <b>This module attempted to override the core one (</b><code>{}</code><b>)</b>\n\n<i>💡 Don't report it as bug. It's a security measure to prevent replacing core modules with some junk</i>",
+        "overwrite_command": "🚫 <b>This module attempted to override the core command (</b><code>{}{}</code><b>)</b>\n\n<i>💡 Don't report it as bug. It's a security measure to prevent replacing core modules' commands with some junk</i>",
     }
 
     strings_ru = {
@@ -141,6 +145,8 @@ class LoaderMod(loader.Module):
         "unloaded": "<b>🧹 Модуль {} выгружен.</b>",
         "not_unloaded": "<b>🚫 Модуль не выгружен.</b>",
         "requirements_failed": "<b>🚫 Ошибка установки зависимостей</b>",
+        "requirements_failed_termux": "🕶🚫 <b>Ошибка установки зависимостей</b>\n<b>Наиболее часто возникает из-за того, что Termux не поддерживает многие библиотека. Не сообщайте об этом как об ошибке, это не может быть исправлено.</b>",
+        "heroku_install_failed": "♓️⚠️ <b>Этому модулю требуются дополнительные библиотека, которые нельзя установить на Heroku. Не сообщайте об этом как об ошибке, это не может быть исправлено</b>",
         "requirements_installing": "<b>🔄 Устанавливаю зависимости:\n\n{}</b>",
         "requirements_restart": "<b>🔄 Зависимости установлены, но нужна перезагрузка для применения </b><code>{}</code>",
         "all_modules_deleted": "<b>✅ Модули удалены</b>",
@@ -176,6 +182,8 @@ class LoaderMod(loader.Module):
         "confirm_clearmodules": "⚠️ <b>Вы уверены, что хотите выгрузить все модули?</b>",
         "clearmodules": "🗑 Выгрузить модули",
         "cancel": "🚫 Отмена",
+        "overwrite_module": "🚫 <b>Этот модуль попытался перезаписать встроенный (</b><code>{}</code><b>)</b>\n\n<i>💡 Это не ошибка, а мера безопасности, требуемая для предотвращения замены встроенных модулей всяким хламом. Не сообщайте о ней в support чате</i>",
+        "overwrite_command": "🚫 <b>Этот модуль попытался перезаписать встроенную команду (</b><code>{}</code><b>)</b>\n\n<i>💡 Это не ошибка, а мера безопасности, требуемая для предотвращения замены команд встроенных модулей всяким хламом. Не сообщайте о ней в support чате</i>",
     }
 
     def __init__(self):
@@ -583,6 +591,24 @@ class LoaderMod(loader.Module):
 
         doc = geek.compat(doc)
 
+        async def core_overwrite(e: CoreOverwriteError):
+            nonlocal message
+
+            with contextlib.suppress(Exception):
+                self.allmodules.modules.remove(instance)
+
+            if not message:
+                return
+
+            await utils.answer(
+                message,
+                self.strings(f"overwrite_{e.type}").format(
+                    *(e.target,)
+                    if e.type == "module"
+                    else (self.get_prefix(), e.target)
+                ),
+            )
+
         try:
             try:
                 spec = ModuleSpec(
@@ -625,10 +651,16 @@ class LoaderMod(loader.Module):
 
                 if did_requirements:
                     if message is not None:
-                        await utils.answer(
-                            message,
-                            self.strings("requirements_restart").format(e.name),
-                        )
+                        if "DYNO" in os.environ:
+                            await utils.answer(
+                                message,
+                                self.strings("heroku_install_failed"),
+                            )
+                        else:
+                            await utils.answer(
+                                message,
+                                self.strings("requirements_restart").format(e.name),
+                            )
 
                     return
 
@@ -657,10 +689,16 @@ class LoaderMod(loader.Module):
 
                 if rc != 0:
                     if message is not None:
-                        await utils.answer(
-                            message,
-                            self.strings("requirements_failed"),
-                        )
+                        if "com.termux" in os.environ.get("PREFIX", ""):
+                            await utils.answer(
+                                message,
+                                self.strings("requirements_failed_termux"),
+                            )
+                        else:
+                            await utils.answer(
+                                message,
+                                self.strings("requirements_failed"),
+                            )
 
                     return
 
@@ -676,6 +714,9 @@ class LoaderMod(loader.Module):
 
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
+                return
+            except CoreOverwriteError as e:
+                await core_overwrite(e)
                 return
         except BaseException as e:
             logger.exception(f"Loading external module failed due to {e}")
@@ -717,6 +758,9 @@ class LoaderMod(loader.Module):
 
                 if message:
                     await utils.answer(message, f"🚫 <b>{utils.escape_html(str(e))}</b>")
+                return
+            except CoreOverwriteError as e:
+                await core_overwrite(e)
                 return
         except Exception as e:
             logger.exception(f"Module threw because {e}")
@@ -958,25 +1002,29 @@ class LoaderMod(loader.Module):
 
             install_join_forbidder(self._client)
 
-        for mod in todo.values():
-            await self.download_and_install(mod)
+        secure_boot = False
 
-        self._update_modules_in_db()
+        if self._db.get(loader.__name__, "secure_boot", False):
+            self._db.set(loader.__name__, "secure_boot", False)
+            secure_boot = True
+        else:
+            for mod in todo.values():
+                await self.download_and_install(mod)
 
-        aliases = {
-            alias: cmd
-            for alias, cmd in self.lookup("settings").get("aliases", {}).items()
-            if self.allmodules.add_alias(alias, cmd)
-        }
+            self._update_modules_in_db()
 
-        self.lookup("settings").set("aliases", aliases)
+            aliases = {
+                alias: cmd
+                for alias, cmd in self.lookup("settings").get("aliases", {}).items()
+                if self.allmodules.add_alias(alias, cmd)
+            }
+
+            self.lookup("settings").set("aliases", aliases)
 
         self._fully_loaded = True
 
-        try:
-            await self.lookup("Updater").full_restart_complete()
-        except AttributeError:
-            pass
+        with contextlib.suppress(AttributeError):
+            await self.lookup("Updater").full_restart_complete(secure_boot)
 
     async def client_ready(self, client, db):
         self._db = db

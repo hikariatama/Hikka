@@ -29,7 +29,6 @@
 import asyncio
 import collections
 import copy
-import functools
 import logging
 import re
 import traceback

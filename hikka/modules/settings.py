@@ -330,19 +330,11 @@ class CoreMod(loader.Module):
         )
 
     async def setlangcmd(self, message: Message):
-        """[language] - Change default language"""
+        """[languages in the order of priority] - Change default language"""
         args = utils.get_args_raw(message)
-        if not args or len(args) != 2:
+        if not args or not all(len(i) == 2 for i in args.split(" ")):
             await utils.answer(message, self.strings("incorrect_language"))
             return
-
-        possible_pack_path = os.path.join(
-            utils.get_base_dir(),
-            f"langpacks/{args.lower()}.json",
-        )
-
-        if os.path.isfile(possible_pack_path):
-            self._db.set(translations.__name__, "pack", args.lower())
 
         self._db.set(translations.__name__, "lang", args.lower())
         await self.translator.init()
@@ -350,7 +342,14 @@ class CoreMod(loader.Module):
         await utils.answer(
             message,
             self.strings("lang_saved").format(
-                utils.get_lang_flag(args.lower() if args.lower() != "en" else "gb")
+                "".join(
+                    [
+                        utils.get_lang_flag(
+                            lang.lower() if lang.lower() != "en" else "gb"
+                        )
+                        for lang in args.lower().split(" ")
+                    ]
+                )
             ),
         )
 

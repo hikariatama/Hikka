@@ -98,7 +98,7 @@ class Events(InlineUnit):
 
                 if "file" in res and "mime_type" not in res:
                     logger.error(
-                        f"Got invalid type from inline handler. It contains field `file`, so it must contain `mime_type` as well"
+                        "Got invalid type from inline handler. It contains field `file`, so it must contain `mime_type` as well"
                     )
 
             inline_result = []

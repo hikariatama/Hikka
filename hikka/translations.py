@@ -26,41 +26,39 @@ class Translator:
 
     async def init(self) -> bool:
         self._data = {}
-        if not (pack := self.db.get(__name__, "pack", False)):
+        if not (lang := self.db.get(__name__, "lang", False)):
             return False
 
-        if len(pack) == 2:
+        for language in lang.split(" "):
+            if utils.check_url(language):
+                try:
+                    ndata = (await utils.run_sync(requests.get, lang)).json()
+                except Exception:
+                    logger.exception(f"Unable to decode {lang}")
+                    continue
+
+                data = ndata.get("data", ndata)
+
+                if any(not isinstance(i, str) for i in data.values()):
+                    logger.exception(
+                        "Translation pack format is not valid (typecheck failed)"
+                    )
+                    continue
+
+                self._data.update(data)
+                continue
+
             possible_pack_path = os.path.join(
                 utils.get_base_dir(),
-                f"langpacks/{pack}.json",
+                f"langpacks/{language}.json",
             )
 
-            if os.path.isfile(possible_pack_path) and pack == self.db.get(
-                __name__,
-                "lang",
-                False,
-            ):
+            if os.path.isfile(possible_pack_path):
                 with open(possible_pack_path, "r") as f:
-                    self._data = json.loads(f.read())
+                    self._data.update(json.load(f))
 
                 return True
 
-        if not utils.check_url(pack):
-            return False
-
-        try:
-            ndata = (await utils.run_sync(requests.get, pack)).json()
-        except Exception:
-            logger.exception(f"Unable to decode {pack}")
-            return False
-
-        data = ndata.get("data", ndata)
-
-        if any(not isinstance(i, str) for i in data.values()):
-            logger.exception("Translation pack format is not valid (typecheck failed)")
-            return False
-
-        self._data = data
         return True
 
     def getkey(self, key):
@@ -88,7 +86,20 @@ class Strings:
         ) or (
             getattr(
                 self._mod,
-                f"strings_{self._translator.db.get(__name__, 'lang', 'en')}",
+                next(
+                    (
+                        f"strings_{lang}"
+                        for lang in self._translator.db.get(
+                            __name__,
+                            "lang",
+                            "en",
+                        ).split(" ")
+                        if hasattr(self._mod, f"strings_{lang}")
+                        and isinstance(getattr(self._mod, f"strings_{lang}"), dict)
+                        and key in getattr(self._mod, f"strings_{lang}")
+                    ),
+                    utils.rand(32),
+                ),
                 self._base_strings,
             )
             if self._translator is not None

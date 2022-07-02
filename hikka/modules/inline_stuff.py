@@ -19,7 +19,6 @@ from telethon.tl.functions.contacts import UnblockRequest
 from telethon.tl.types import Message
 
 from .. import loader, utils
-from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

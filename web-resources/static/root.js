@@ -94,9 +94,9 @@ function finish_login() {
             $(".finish_block").fadeIn(300);
         });
     })
-    .catch(() => {
+    .catch((err) => {
         error_state();
-        error_message("Login confirmation error");
+        error_message("Login confirmation error: " + err.toString());
     });
 }
 
@@ -107,17 +107,13 @@ function tg_code() {
         })
         .then((response) => {
             if (!response.ok) {
-                if (response.status == 403) {
-                    error_state();
-                    Swal.showValidationMessage("Code is incorrect!");
-                } else if (response.status == 401) {
+                if (response.status == 401) {
                     switch_block("2fa");
-                } else if (response.status == 404) {
-                    error_state();
-                    Swal.showValidationMessage("Code is expired!");
                 } else {
-                    error_state();
-                    Swal.showValidationMessage("Internal server error");
+                    response.text().then((text) => {
+                        error_state();
+                        Swal.showValidationMessage(text);
+                    });
                 }
             } else {
                 switch_block("custom_bot")
@@ -201,17 +197,18 @@ function process_next() {
                 body: _api_hash + _api_id,
                 credentials: "include"
             })
+            .then(response => response.text())
             .then((response) => {
-                if (!response.ok) {
+                if (response != "ok") {
                     error_state();
-                    error_message("Error occured while saving credentials")
+                    error_message(response)
                 } else {
                     switch_block("phone");
                 }
             })
-            .catch(() => {
+            .catch((err) => {
                 error_state();
-                error_message("Error occured while saving credentials")
+                error_message("Error occured while saving credentials: " + err.toString());
             });
 
         return;
@@ -232,8 +229,10 @@ function process_next() {
             })
             .then((response) => {
                 if (!response.ok) {
-                    error_state();
-                    error_message("Code send failed");
+                    response.text().then((text) => {
+                        error_state();
+                        error_message(text);
+                    });
                 } else {
                     Swal.fire({
                         title: "Enter received code",
@@ -252,9 +251,9 @@ function process_next() {
                     })
                 }
             })
-            .catch(() => {
+            .catch((err) => {
                 error_state();
-                error_message("Code send failed");
+                error_message("Code send failed: " + err.toString());
             });
     }
 
@@ -298,9 +297,9 @@ function process_next() {
 
                 finish_login();
             })
-            .catch(() => {
+            .catch((err) => {
                 error_state();
-                error_message("Custom bot setting error");
+                error_message("Custom bot setting error: " + err.toString());
             });
 
         return

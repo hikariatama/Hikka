@@ -2,7 +2,7 @@ import ast
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Optional, Union
-from .inline.types import *
+from .inline.types import *  # skipcq: PYL-W0614
 from . import validators  # skipcq: PY-W2000
 
 from telethon.tl.types import Message
@@ -47,6 +47,21 @@ class LoadError(Exception):
 
     def __str__(self) -> str:
         return self._error
+
+
+class CoreOverwriteError(Exception):
+    """Is being raised when core module or command is overwritten"""
+
+    def __init__(self, module: Optional[str] = None, command: Optional[str] = None):
+        self.type = "module" if module else "command"
+        self.target = module or command
+
+    def __str__(self) -> str:
+        return (
+            f"Module {self.target} will not be overwritten, because it's core"
+            if self.type == "module"
+            else f"Command {self.target} will not be overwritten, because it's core"
+        )
 
 
 class SelfUnload(Exception):

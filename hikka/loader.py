@@ -34,7 +34,6 @@ import importlib
 import importlib.util
 import inspect
 import logging
-import re
 import os
 import sys
 from importlib.abc import SourceLoader
@@ -52,6 +51,7 @@ from ._types import (
     SelfUnload,
     StopLoop,
     InlineMessage,
+    CoreOverwriteError,
 )
 from .fast_uploader import download_file, upload_file
 from .inline.core import InlineManager
@@ -337,7 +337,7 @@ class Modules:
                 )
             ]
 
-            if "DYNO" not in os.environ:
+            if "DYNO" not in os.environ and not db.get(__name__, "secure_boot", False):
                 external_mods = [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
@@ -450,13 +450,10 @@ class Modules:
                 command.lower() in self._core_commands
                 and getattr(instance, "__origin__", "") != "<core>"
             ):
-                try:
+                with contextlib.suppress(Exception):
                     self.modules.remove(instance)
-                except Exception:
-                    pass
-                raise RuntimeError(
-                    f"Command {command} is core and will not be overwritten by {instance}"
-                )
+
+                raise CoreOverwriteError(command=command)
 
             # Verify that command does not already exist, or,
             # if it does, the command must be from the same class name
@@ -562,7 +559,11 @@ class Modules:
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
                 if getattr(module, "__origin__", "") == "<core>":
-                    raise RuntimeError(f"Attempted to overwrite core module {module}")
+                    raise CoreOverwriteError(
+                        module=module.__class__.__name__[:-3]
+                        if module.__class__.__name__.endswith("Mod")
+                        else module.__class__.__name__
+                    )
 
                 logger.debug(f"Removing module for update {module}")
                 asyncio.ensure_future(module.on_unload())

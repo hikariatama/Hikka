@@ -239,7 +239,7 @@ class Gallery(InlineUnit):
             )
         except ChatSendInlineForbiddenError:
             await answer("🚫 <b>You can't send inline units in this chat</b>")
-        except Exception as e:
+        except Exception:
             logger.exception("Error sending inline gallery")
 
             del self._units[unit_id]
@@ -248,7 +248,7 @@ class Gallery(InlineUnit):
                 logger.exception("Can't send gallery")
 
                 if not self._db.get(main.__name__, "inlinelogs", True):
-                    msg = f"<b>🚫 Gallery invoke failed! More info in logs</b>"
+                    msg = "<b>🚫 Gallery invoke failed! More info in logs</b>"
                 else:
                     exc = traceback.format_exc()
                     # Remove `Traceback (most recent call last):`

@@ -107,7 +107,7 @@ def get_config_key(key: str) -> Union[str, bool]:
     """
     try:
         with open(CONFIG_PATH, "r") as f:
-            config = json.loads(f.read())
+            config = json.load(f)
 
         return config.get(key, False)
     except FileNotFoundError:
@@ -124,7 +124,7 @@ def save_config_key(key: str, value: str) -> bool:
     try:
         # Try to open our newly created json config
         with open(CONFIG_PATH, "r") as f:
-            config = json.loads(f.read())
+            config = json.load(f)
     except FileNotFoundError:
         # If it doesn't exist, just default config to none
         # It won't cause problems, bc after new save
@@ -136,7 +136,7 @@ def save_config_key(key: str, value: str) -> bool:
 
     # And save config
     with open(CONFIG_PATH, "w") as f:
-        f.write(json.dumps(config))
+        json.dump(config, f, indent=4)
 
     return True
 
@@ -189,7 +189,6 @@ def parse_arguments() -> dict:
     parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
     parser.add_argument("--web-only", dest="web_only", action="store_true")
     parser.add_argument("--no-web", dest="disable_web", action="store_true")
-    parser.add_argument("--no-proxy-pass", dest="proxypass", action="store_false")
     parser.add_argument(
         "--data-root",
         dest="data_root",
@@ -383,7 +382,7 @@ class Hikka:
                 self.loop.run_until_complete(
                     self.web.start(
                         self.arguments.port,
-                        not getattr(self.arguments, "proxypass", False),
+                        proxy_pass=True,
                     )
                 )
                 self.loop.run_until_complete(self._web_banner())
@@ -484,7 +483,7 @@ class Hikka:
             self.loop.run_until_complete(
                 self.web.start(
                     self.arguments.port,
-                    not getattr(self.arguments, "proxypass", False),
+                    proxy_pass=True,
                 )
             )
             asyncio.ensure_future(self._web_banner())

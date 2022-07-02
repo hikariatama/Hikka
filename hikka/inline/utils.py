@@ -206,12 +206,7 @@ class Utils(InlineUnit):
     async def _answer_unit_handler(self, call: InlineCall, text: str, show_alert: bool):
         await call.answer(text, show_alert=show_alert)
 
-    async def check_inline_security(
-        self,
-        *,
-        func: callable,
-        user: int
-    ) -> bool:
+    async def check_inline_security(self, *, func: callable, user: int) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
             func=func,
@@ -390,7 +385,7 @@ class Utils(InlineUnit):
 
         # If passed `photo` is gif
         try:
-            path = urlparse(media).path
+            path = urlparse(photo).path
             ext = os.path.splitext(path)[1]
         except Exception:
             ext = None
@@ -496,87 +491,88 @@ class Utils(InlineUnit):
                     for number in range(1, total_pages + 1)
                 ]
             ]
-        else:
-            if current_page <= 3:
-                return [
-                    [
-                        {
-                            "text": f"· {number} ·",
-                            "args": (number - 1,),
-                            "callback": callback,
-                        }
-                        if number == current_page
-                        else {
-                            "text": f"{number} ›",
-                            "args": (number - 1,),
-                            "callback": callback,
-                        }
-                        if number == 4
-                        else {
-                            "text": f"{total_pages} »",
-                            "args": (total_pages - 1,),
-                            "callback": callback,
-                        }
-                        if number == 5
-                        else {
-                            "text": number,
-                            "args": (number - 1,),
-                            "callback": callback,
-                        }
-                        for number in range(1, 6)
-                    ]
+
+        if current_page <= 3:
+            return [
+                [
+                    {
+                        "text": f"· {number} ·",
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                    if number == current_page
+                    else {
+                        "text": f"{number} ›",
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                    if number == 4
+                    else {
+                        "text": f"{total_pages} »",
+                        "args": (total_pages - 1,),
+                        "callback": callback,
+                    }
+                    if number == 5
+                    else {
+                        "text": number,
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                    for number in range(1, 6)
                 ]
-            elif current_page > total_pages - 3:
-                return [
-                    [
-                        {"text": "« 1", "args": (0,), "callback": callback},
-                        {
-                            "text": f"‹ {total_pages - 3}",
-                            "args": (total_pages - 4,),
-                            "callback": callback,
-                        },
-                    ]
-                    + [
-                        {
-                            "text": f"· {number} ·",
-                            "args": (number - 1,),
-                            "callback": callback,
-                        }
-                        if number == current_page
-                        else {
-                            "text": number,
-                            "args": (number - 1,),
-                            "callback": callback,
-                        }
-                        for number in range(total_pages - 2, total_pages + 1)
-                    ]
+            ]
+
+        if current_page > total_pages - 3:
+            return [
+                [
+                    {"text": "« 1", "args": (0,), "callback": callback},
+                    {
+                        "text": f"‹ {total_pages - 3}",
+                        "args": (total_pages - 4,),
+                        "callback": callback,
+                    },
                 ]
-            else:
-                return [
-                    [
-                        {"text": "« 1", "args": (0,), "callback": callback},
-                        {
-                            "text": f"‹ {current_page - 1}",
-                            "args": (current_page - 2,),
-                            "callback": callback,
-                        },
-                        {
-                            "text": f"· {current_page} ·",
-                            "args": (current_page - 1,),
-                            "callback": callback,
-                        },
-                        {
-                            "text": f"{current_page + 1} ›",
-                            "args": (current_page,),
-                            "callback": callback,
-                        },
-                        {
-                            "text": f"{total_pages} »",
-                            "args": (total_pages - 1,),
-                            "callback": callback,
-                        },
-                    ]
+                + [
+                    {
+                        "text": f"· {number} ·",
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                    if number == current_page
+                    else {
+                        "text": number,
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                    for number in range(total_pages - 2, total_pages + 1)
                 ]
+            ]
+
+        return [
+            [
+                {"text": "« 1", "args": (0,), "callback": callback},
+                {
+                    "text": f"‹ {current_page - 1}",
+                    "args": (current_page - 2,),
+                    "callback": callback,
+                },
+                {
+                    "text": f"· {current_page} ·",
+                    "args": (current_page - 1,),
+                    "callback": callback,
+                },
+                {
+                    "text": f"{current_page + 1} ›",
+                    "args": (current_page,),
+                    "callback": callback,
+                },
+                {
+                    "text": f"{total_pages} »",
+                    "args": (total_pages - 1,),
+                    "callback": callback,
+                },
+            ]
+        ]
 
     def _validate_markup(
         self,

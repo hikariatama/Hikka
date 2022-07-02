@@ -29,7 +29,6 @@ import atexit
 import contextlib
 import logging
 import os
-import signal
 import subprocess
 import sys
 from typing import Union
@@ -70,6 +69,7 @@ class UpdaterMod(loader.Module):
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
         "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
+        "secure_boot_confirm": "🔄 <b>Are you sure you want to restart in secure boot mode?</b>",
         "update_confirm": (
             "🧭 <b>Are you sure you want to update?\n\n"
             '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
@@ -81,6 +81,7 @@ class UpdaterMod(loader.Module):
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
         "heroku_update": "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>",
         "full_success": "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>",
+        "secure_boot_complete": "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>",
         "heroku_psycopg2_unavailable": "♓️🚫 <b>PostgreSQL database is not available.</b>\n\n<i>Do not report this error to support chat, as it has nothing to do with Hikka. Try changing database to Redis</i>",
     }
 
@@ -91,10 +92,12 @@ class UpdaterMod(loader.Module):
         "installing": "🕐 <b>Установка обновлений...</b>",
         "success": "⏳ <b>Перезагрузка успешна! {}</b>\n<i>Но модули еще загружаются...</i>\n<i>Перезагрузка заняла {} сек</i>",
         "full_success": "✅ <b>Юзербот полностью загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>",
+        "secure_boot_complete": "🔒 <b>Безопасная загрузка завершена! {}</b>\n<i>Перезагрузка заняла {} сек</i>",
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
         "restart_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться?</b>",
+        "secure_boot_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться в режиме безопасной загрузки?</b>",
         "update_confirm": (
             "🧭 <b>Ты уверен, что хочешь обновиться??\n\n"
             '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
@@ -126,17 +129,21 @@ class UpdaterMod(loader.Module):
     @loader.owner
     async def restartcmd(self, message: Message):
         """Restarts the userbot"""
+        secure_boot = "--secure-boot" in utils.get_args_raw(message)
         try:
             if (
                 "--force" in (utils.get_args_raw(message) or "")
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
-                    text=self.strings("restart_confirm"),
+                    text=self.strings(
+                        "secure_boot_confirm" if secure_boot else "restart_confirm"
+                    ),
                     reply_markup=[
                         {
                             "text": self.strings("btn_restart"),
                             "callback": self.inline_restart,
+                            "args": (secure_boot,),
                         },
                         {"text": self.strings("cancel"), "action": "close"},
                     ],
@@ -144,10 +151,10 @@ class UpdaterMod(loader.Module):
             ):
                 raise
         except Exception:
-            await self.restart_common(message)
+            await self.restart_common(message, secure_boot)
 
-    async def inline_restart(self, call: InlineCall):
-        await self.restart_common(call)
+    async def inline_restart(self, call: InlineCall, secure_boot: bool = False):
+        await self.restart_common(call, secure_boot=secure_boot)
 
     async def process_restart_message(self, msg_obj: Union[InlineCall, Message]):
         self.set(
@@ -157,7 +164,11 @@ class UpdaterMod(loader.Module):
             else f"{utils.get_chat_id(msg_obj)}:{msg_obj.id}",
         )
 
-    async def restart_common(self, msg_obj: Union[InlineCall, Message]):
+    async def restart_common(
+        self,
+        msg_obj: Union[InlineCall, Message],
+        secure_boot: bool = False,
+    ):
         if (
             hasattr(msg_obj, "form")
             and isinstance(msg_obj.form, dict)
@@ -168,6 +179,9 @@ class UpdaterMod(loader.Module):
             message = self.inline._units[msg_obj.form["uid"]]["message"]
         else:
             message = msg_obj
+
+        if secure_boot:
+            self._db.set(loader.__name__, "secure_boot", True)
 
         msg_obj = await utils.answer(
             msg_obj,
@@ -473,18 +487,20 @@ class UpdaterMod(loader.Module):
             text=msg,
         )
 
-    async def full_restart_complete(self):
-
+    async def full_restart_complete(self, secure_boot: bool = False):
         start = self.get("restart_ts")
+
         try:
             took = round(time.time() - start)
         except Exception:
             took = "n/a"
 
         self.set("restart_ts", None)
-        ms = self.get("selfupdatemsg")
 
-        msg = self.strings("full_success").format(utils.ascii_face(), took)
+        ms = self.get("selfupdatemsg")
+        msg = self.strings(
+            "secure_boot_complete" if secure_boot else "full_success"
+        ).format(utils.ascii_face(), took)
 
         if ms is None:
             return

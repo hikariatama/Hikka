@@ -54,7 +54,7 @@ class HikkaConfigMod(loader.Module):
         "remove_item_btn": "➖ Remove item",
         "show_hidden": "🚸 Show value",
         "hide_value": "🔒 Hide value",
-        "builtin": "🕋 Built-in",
+        "builtin": "🛰 Built-in",
         "external": "🛸 External",
     }
 
@@ -86,7 +86,7 @@ class HikkaConfigMod(loader.Module):
         "remove_item_btn": "➖ Удалить элемент",
         "show_hidden": "🚸 Показать значение",
         "hide_value": "🔒 Скрыть значение",
-        "builtin": "🕋 Встроенные",
+        "builtin": "🛰 Встроенные",
         "external": "🛸 Внешние",
     }
 
@@ -222,8 +222,15 @@ class HikkaConfigMod(loader.Module):
 
         validator = self.lookup(mod).config._config[option].validator
         doc = utils.escape_html(
-            validator.doc.get(
-                self._db.get(translations.__name__, "lang", "en"), validator.doc["en"]
+            next(
+                (
+                    validator.doc[lang]
+                    for lang in self._db.get(translations.__name__, "lang", "en").split(
+                        " "
+                    )
+                    if lang in validator.doc
+                ),
+                validator.doc["en"],
             )
         )
 
@@ -548,8 +555,14 @@ class HikkaConfigMod(loader.Module):
         try:
             validator = module.config._config[config_opt].validator
             doc = utils.escape_html(
-                validator.doc.get(
-                    self._db.get(translations.__name__, "lang", "en"),
+                next(
+                    (
+                        validator.doc[lang]
+                        for lang in self._db.get(
+                            translations.__name__, "lang", "en"
+                        ).split(" ")
+                        if lang in validator.doc
+                    ),
                     validator.doc["en"],
                 )
             )

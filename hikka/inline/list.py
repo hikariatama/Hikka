@@ -10,7 +10,6 @@ from typing import Optional, Union
 
 from aiogram.types import (
     CallbackQuery,
-    InlineKeyboardButton,
     InlineKeyboardMarkup,
     InlineQuery,
     InlineQueryResultArticle,

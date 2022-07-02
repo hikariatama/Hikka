@@ -105,7 +105,10 @@ class Web(root.Web):
         self._stream_processed.clear()
         self._tunnel_url = None
         url = await asyncio.wait_for(self._get_proxy_pass_url(self.port), timeout=10)
-        assert url
+
+        if not url:
+            raise Exception("Failed to get proxy pass url")
+
         self._tunnel_url = url
         asyncio.ensure_future(self._reopen_tunnel())
 
@@ -147,22 +150,19 @@ class Web(root.Web):
 
         return None
 
-    async def start(self, port: int, use_tunnel: bool = True):
-        self.runner = web.AppRunner(self.app)
-        await self.runner.setup()
-        self.port = os.environ.get("PORT", port)
-        site = web.TCPSite(self.runner, None, self.port)
-        await site.start()
-
+    async def get_url(self, proxy_pass: bool):
         url = None
 
-        if "DYNO" not in os.environ and use_tunnel:
+        if all(option in os.environ for option in {"LAVHOST", "USER", "SERVER"}):
+            return f"https://{os.environ['USER']}.{os.environ['SERVER']}.lavhost.ml"
+
+        if "DYNO" not in os.environ and proxy_pass:
             with contextlib.suppress(Exception):
+                self._kill_tunnel()
                 url = await asyncio.wait_for(
                     self._get_proxy_pass_url(self.port),
                     timeout=10,
                 )
-                assert url
 
         if not url:
             ip = (
@@ -182,6 +182,17 @@ class Web(root.Web):
             asyncio.ensure_future(self._reopen_tunnel())
 
         self.url = url
+        return url
+
+    async def start(self, port: int, proxy_pass: bool = False):
+        self.runner = web.AppRunner(self.app)
+        await self.runner.setup()
+        self.port = os.environ.get("PORT", port)
+        site = web.TCPSite(self.runner, None, self.port)
+        await site.start()
+
+        await self.get_url(proxy_pass)
+
         self.running.set()
 
     async def stop(self):
@@ -190,12 +201,17 @@ class Web(root.Web):
         self.running.clear()
         self.ready.clear()
 
-    async def add_loader(self, client, loader, db):
+    async def add_loader(
+        self,
+        client: "TelegramClient",  # type: ignore
+        loader: "Modules",  # type: ignore
+        db: "Database",  # type: ignore
+    ):
         self.client_data[client._tg_id] = (loader, client, db)
 
     @staticmethod
     async def favicon(request):
         return web.Response(
             status=301,
-            headers={"Location": "https://i.imgur.com/xEOkgCj.jpeg"},
+            headers={"Location": "https://i.imgur.com/IRAiWBo.jpeg"},
         )

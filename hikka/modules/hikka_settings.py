@@ -94,6 +94,14 @@ class HikkaSettingsMod(loader.Module):
         "user_nn_list": "🔰 <b>NoNick is enabled for these users:</b>\n\n{}",
         "chat_nn_list": "🔰 <b>NoNick is enabled for these chats:</b>\n\n{}",
         "nothing": "🔰 <b>Nothing to show...</b>",
+        "privacy_leak": "⚠️ <b>This command gives access to your Hikka web interface. It's not recommended to run it in public group chats. Consider using it in <a href='tg://openmessage?user_id={}'>Saved messages</a>. Type </b><code>{}proxypass force_insecure</code><b> to ignore this warning</b>",
+        "privacy_leak_nowarn": "⚠️ <b>This command gives access to your Hikka web interface. It's not recommended to run it in public group chats. Consider using it in <a href='tg://openmessage?user_id={}'>Saved messages</a>.</b>",
+        "opening_tunnel": "🔁 <b>Opening tunnel to Hikka web interface...</b>",
+        "tunnel_opened": "🎉 <b>Tunnel opened. This link is valid for about 1 hour</b>",
+        "web_btn": "🌍 Web interface",
+        "btn_yes": "🚸 Open anyway",
+        "btn_no": "🔻 Cancel",
+        "lavhost_web": "✌️ <b>This link leads to your Hikka web interface on lavHost</b>\n\n<i>💡 You'll need to authorize using lavHost credentials, specified on registration</i>",
     }
 
     strings_ru = {
@@ -160,6 +168,14 @@ class HikkaSettingsMod(loader.Module):
         "user_nn_list": "🔰 <b>NoNick включен для этих пользователей:</b>\n\n{}",
         "chat_nn_list": "🔰 <b>NoNick включен для этих чатов:</b>\n\n{}",
         "nothing": "🔰 <b>Нечего показывать...</b>",
+        "privacy_leak": "⚠️ <b>Эта команда дает доступ к веб-интерфейсу Hikka. Ее выполнение в публичных чатах является угрозой безопасности. Предпочтительно выполнять ее в <a href='tg://openmessage?user_id={}'>Избранных сообщениях</a>. Выполни </b><code>{}proxypass force_insecure</code><b> чтобы отключить это предупреждение</b>",
+        "privacy_leak_nowarn": "⚠️ <b>Эта команда дает доступ к веб-интерфейсу Hikka. Ее выполнение в публичных чатах является угрозой безопасности. Предпочтительно выполнять ее в <a href='tg://openmessage?user_id={}'>Избранных сообщениях</a>.</b>",
+        "opening_tunnel": "🔁 <b>Открываю тоннель к веб-интерфейсу Hikka...</b>",
+        "tunnel_opened": "🎉 <b>Тоннель открыт. Эта ссылка будет активна не более часа</b>",
+        "web_btn": "🌍 Веб-интерфейс",
+        "btn_yes": "🚸 Все равно открыть",
+        "btn_no": "🔻 Закрыть",
+        "lavhost_web": "✌️ <b>По этой ссылке ты попадешь в веб-интерфейс Hikka на lavHost</b>\n\n<i>💡 Тебе нужно будет авторизоваться, используя данные, указанные при настройке lavHost</i>",
     }
 
     def get_watchers(self) -> tuple:
@@ -799,4 +815,70 @@ class HikkaSettingsMod(loader.Module):
             self.strings("inline_settings"),
             message=message,
             reply_markup=self._get_settings_markup(),
+        )
+
+    @loader.owner
+    async def weburlcmd(self, message: Message, force: bool = False):
+        """Opens web tunnel to your Hikka web interface"""
+        if "LAVHOST" in os.environ:
+            form = await self.inline.form(
+                self.strings("lavhost_web"),
+                message=message,
+                reply_markup={"text": self.strings("web_btn"), "url": await main.hikka.web.get_url(proxy_pass=False)},
+                gif="https://t.me/hikari_assets/28",
+            )
+            return
+
+        if (
+            not force
+            and not message.is_private
+            and "force_insecure" not in message.raw_text.lower()
+        ):
+            try:
+                if not await self.inline.form(
+                    self.strings("privacy_leak_nowarn").format(self._client._tg_id),
+                    message=message,
+                    reply_markup=[
+                        {
+                            "text": self.strings("btn_yes"),
+                            "callback": self.weburlcmd,
+                            "args": (True,),
+                        },
+                        {"text": self.strings("btn_no"), "action": "close"},
+                    ],
+                    gif="https://i.gifer.com/embedded/download/Z5tS.gif",
+                ):
+                    raise Exception
+            except Exception:
+                await utils.answer(
+                    message,
+                    self.strings("privacy_leak").format(
+                        self._client._tg_id,
+                        self.get_prefix(),
+                    ),
+                )
+
+            return
+
+        if force:
+            form = message
+            await form.edit(
+                self.strings("opening_tunnel"),
+                reply_markup={"text": "🕔 Wait...", "data": "empty"},
+                gif="https://i.gifer.com/origin/e4/e43e1b221fd960003dc27d2f2f1b8ce1.gif",
+            )
+        else:
+            form = await self.inline.form(
+                self.strings("opening_tunnel"),
+                message=message,
+                reply_markup={"text": "🕔 Wait...", "data": "empty"},
+                gif="https://i.gifer.com/origin/e4/e43e1b221fd960003dc27d2f2f1b8ce1.gif",
+            )
+
+        url = await main.hikka.web.get_url(proxy_pass=True)
+
+        await form.edit(
+            self.strings("tunnel_opened"),
+            reply_markup={"text": self.strings("web_btn"), "url": url},
+            gif="https://t.me/hikari_assets/28",
         )

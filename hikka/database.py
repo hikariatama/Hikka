@@ -8,6 +8,7 @@
 # 🔒 Licensed under the GNU GPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import contextlib
 import json
 import logging
 import os
@@ -29,7 +30,6 @@ except ImportError as e:
 
 from typing import Any, Union
 
-from telethon.tl.functions.channels import EditTitleRequest
 from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
 
@@ -65,11 +65,12 @@ class Database(dict):
         return object.__repr__(self)
 
     def _postgre_save_sync(self):
-        self._postgre.execute(
-            "DELETE FROM hikka WHERE id = %s; INSERT INTO hikka (id, data) VALUES (%s, %s);",
-            (self._client._tg_id, self._client._tg_id, json.dumps(self)),
-        )
-        self._postgre.connection.commit()
+        with self._postgre:
+            with self._postgre.cursor() as cur:
+                cur.execute(
+                    "UPDATE hikka SET data = %s WHERE id = %s;",
+                    (self._client._tg_id, json.dumps(self)),
+                )
 
     def _redis_save_sync(self):
         with self._redis.pipeline() as pipe:
@@ -132,9 +133,37 @@ class Database(dict):
 
         conn = psycopg2.connect(POSTGRE_URI, sslmode="require")
 
-        cur = conn.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS hikka (id integer, data text);")
-        self._postgre = cur
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute("CREATE TABLE IF NOT EXISTS hikka (id bigint, data text);")
+
+                with contextlib.suppress(Exception):
+                    cur.execute(
+                        "SELECT EXISTS(SELECT 1 FROM hikka WHERE id=%s);",
+                        (self._client._tg_id,),
+                    )
+
+                    if not cur.fetchone()[0]:
+                        cur.execute(
+                            "INSERT INTO hikka (id, data) VALUES (%s, %s);",
+                            (self._client._tg_id, json.dumps(self)),
+                        )
+
+                with contextlib.suppress(Exception):
+                    cur.execute(
+                        "SELECT (column_name, data_type) "
+                        "FROM information_schema.columns "
+                        "WHERE table_name = 'hikka' AND column_name = 'id';"
+                    )
+
+                    if "integer" in cur.fetchone()[0].lower():
+                        logger.warning(
+                            "Made legacy migration from integer to bigint "
+                            "in postgresql database"
+                        )
+                        cur.execute("ALTER TABLE hikka ALTER COLUMN id TYPE bigint;")
+
+        self._postgre = conn
 
     async def redis_init(self) -> bool:
         """Init redis database"""
@@ -165,7 +194,7 @@ class Database(dict):
             )
         except ChannelsTooMuchError:
             self._assets = None
-            logger.critical(
+            logger.error(
                 "Can't find and/or create assets folder\n"
                 "This may cause several consequences, such as:\n"
                 "- Non working assets feature (e.g. notes)\n"
@@ -187,25 +216,27 @@ class Database(dict):
             except Exception:
                 logger.exception("Error reading redis database")
             return
-        elif self._postgre:
+
+        if self._postgre:
             try:
-                self._postgre.execute(
-                    "SELECT data FROM hikka WHERE id=%s;",
-                    (self._client._tg_id,),
-                )
-                self.update(
-                    **json.loads(
-                        self._postgre.fetchall()[0][0],
-                    ),
-                )
+                with self._postgre:
+                    with self._postgre.cursor() as cur:
+                        cur.execute(
+                            "SELECT data FROM hikka WHERE id=%s;",
+                            (self._client._tg_id,),
+                        )
+                        self.update(
+                            **json.loads(
+                                cur.fetchall()[0][0],
+                            ),
+                        )
             except Exception:
                 logger.exception("Error reading postgresql database")
             return
 
         try:
             with open(self._db_path, "r", encoding="utf-8") as f:
-                data = json.loads(f.read())
-                self.update(**data)
+                self.update(**json.load(f))
         except (FileNotFoundError, json.decoder.JSONDecodeError):
             logger.warning("Database read failed! Creating new one...")
 
@@ -272,14 +303,15 @@ class Database(dict):
             if not self._saving_task:
                 self._saving_task = asyncio.ensure_future(self._redis_save())
             return True
-        elif self._postgre:
+
+        if self._postgre:
             if not self._saving_task:
                 self._saving_task = asyncio.ensure_future(self._postgre_save())
             return True
 
         try:
             with open(self._db_path, "w", encoding="utf-8") as f:
-                f.write(json.dumps(self))
+                json.dump(self, f, indent=4)
         except Exception:
             logger.exception("Database save failed!")
             return False

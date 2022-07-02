@@ -180,7 +180,8 @@ class TelegramLogsHandler(logging.Handler):
                 False,
             )
 
-            assert isinstance(caller, int)
+            if not isinstance(caller, int):
+                caller = None
         except Exception:
             caller = None
 

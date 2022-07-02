@@ -11,7 +11,6 @@
 # scope: inline
 
 import logging
-import os
 
 import git
 from telethon.tl.types import Message

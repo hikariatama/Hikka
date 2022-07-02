@@ -1,5 +1,20 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.8
+
+- Add automatic webpage bot unblock in heroku waker
+- Add secure boot feature
+- Update native heroku postgre database saving method
+- Add easter egg to `.ping`
+- Add platform-specific errors while installing requirements
+- Change postgresql column `id` datatype from int32 to int64 + legacy migration
+- Change proxypass tunnel behavior - now it only opens on setup and via command `.weburl`
+- Lavhost-specific web url
+- Meaningful errors in web
+- ⚠️ Drop `fast_uploader` support. It will be completely removed in next major update
+- Deepsource fixes
+- Multiple languages with priority
+
 ## 🌑 Hikka 1.2.7
 
 - Add automatic proxy pass

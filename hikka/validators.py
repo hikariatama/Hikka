@@ -1,6 +1,5 @@
 import functools
-from typing import Any, Optional, Union
-
+from typing import Any, Optional, Union as TypeUnion
 from . import utils
 import grapheme
 import re
@@ -35,7 +34,7 @@ class Validator:
     def __init__(
         self,
         validator: callable,
-        doc: Union[str, dict] = None,
+        doc: TypeUnion[str, dict] = None,
         _internal_id: int = None,
     ):
         self.validate = validator
@@ -75,7 +74,7 @@ def _Integer(
     digits: int,
     minimum: int,
     maximum: int,
-) -> Union[int, None]:
+) -> TypeUnion[int, None]:
     try:
         value = int(str(value).strip())
     except ValueError:
@@ -281,7 +280,8 @@ def Series(
 
 def _Link(value: Any, /) -> str:
     try:
-        assert utils.check_url(value)
+        if not utils.check_url(value):
+            raise Exception("Invalid URL")
     except Exception:
         raise ValidationError(f"Passed value ({value}) is not a valid URL")
 
@@ -367,7 +367,7 @@ def _Float(
     *,
     minimum: Optional[float] = None,
     maximum: Optional[float] = None,
-) -> Union[int, None]:
+) -> TypeUnion[int, None]:
     try:
         value = float(str(value).strip().replace(",", "."))
     except ValueError:
@@ -472,7 +472,8 @@ def Union(*validators) -> Validator:
         "ru": "одним из следующего:\n",
     }
 
-    case = lambda x: x[0].upper() + x[1:]
+    def case(x: str) -> str:
+        return x[0].upper() + x[1:]
 
     for validator in validators:
         doc["en"] += f"- {case(validator.doc['en'])}\n"

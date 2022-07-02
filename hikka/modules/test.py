@@ -13,6 +13,7 @@
 import inspect
 import logging
 import os
+import random
 import time
 from io import BytesIO
 from typing import Union
@@ -49,7 +50,8 @@ class TestMod(loader.Module):
         "logs_caption": "🌘 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka version: {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>",
         "suspend_invalid_time": "🚫 <b>Invalid time to suspend</b>",
         "suspended": "🥶 <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>",
-        "results_ping": "⏱ <b>Response time:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Uptime: {}</b>",
+        "results_ping": "⏱ <b>Telegram ping:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Uptime: {}</b>",
+        "ping_hint": "💡 <i>Telegram ping mostly depends on Telegram servers latency and other external factors and has nothing to do with the parameters of server on which userbot is installed</i>",
         "confidential": "⚠️ <b>Log level </b><code>{}</code><b> may reveal your confidential info, be careful</b>",
         "confidential_text": (
             "⚠️ <b>Log level </b><code>{0}</code><b> may reveal your confidential info, "
@@ -77,7 +79,8 @@ class TestMod(loader.Module):
         "debugging_disabled": "✅ <b>Режим разработчика выключен</b>",
         "suspend_invalid_time": "🚫 <b>Неверное время заморозки</b>",
         "suspended": "🥶 <b>Бот заморожен на</b> <code>{}</code> <b>секунд</b>",
-        "results_ping": "⏱ <b>Скорость отклика:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Прошло с последней перезагрузки: {}</b>",
+        "results_ping": "⏱ <b>Скорость отклика Telegram:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Прошло с последней перезагрузки: {}</b>",
+        "ping_hint": "💡 <i>Скорость отклика Telegram в большей степени зависит от загруженности серверов Telegram и других внешних факторов и никак не связана с параметрами сервера, на который установлен юзербот</i>",
         "confidential": "⚠️ <b>Уровень логов </b><code>{}</code><b> может содержать личную информацию, будь осторожен</b>",
         "confidential_text": "⚠️ <b>Уровень логов </b><code>{0}</code><b> может содержать личную информацию, будь осторожен</b>\n<b>Напиши </b><code>.logs {0} force_insecure</code><b>, чтобы отправить логи игнорируя предупреждение</b>",
         "choose_loglevel": "💁‍♂️ <b>Выбери уровень логов</b>",
@@ -427,11 +430,17 @@ class TestMod(loader.Module):
         """Test your userbot ping"""
         start = time.perf_counter_ns()
         message = await utils.answer(message, "<code>🐻 Nofin...</code>")
+
         await utils.answer(
             message,
             self.strings("results_ping").format(
                 round((time.perf_counter_ns() - start) / 10**6, 3),
                 utils.formatted_uptime(),
+            )
+            + (
+                ("\n\n" + self.strings("ping_hint"))
+                if random.choice([0, 0, 1]) == 1
+                else ""
             ),
         )
 

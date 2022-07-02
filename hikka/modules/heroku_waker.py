@@ -21,6 +21,9 @@ from telethon.tl.types import Message
 
 from .. import loader, main, utils, heroku
 
+from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.tl.functions.contacts import UnblockRequest
+
 logger = logging.getLogger(__name__)
 
 
@@ -95,7 +98,12 @@ class HerokuMod(loader.Module):
     async def _heroku_pinger(self):
         """Sends request to Heroku webapp through WebpageBot"""
         async with self._client.conversation(self._bot) as conv:
-            m = await conv.send_message(self._heroku_url)
+            try:
+                m = await conv.send_message(self._heroku_url)
+            except YouBlockedUserError:
+                await self._client(UnblockRequest(self._bot))
+                m = await conv.send_message(self._heroku_url)
+
             r = await conv.get_response()
             await m.delete()
             await r.delete()

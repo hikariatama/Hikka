@@ -241,7 +241,7 @@ class Form(InlineUnit):
             )
         except ChatSendInlineForbiddenError:
             await answer("🚫 <b>You can't send inline units in this chat</b>")
-        except Exception as e:
+        except Exception:
             logger.exception("Can't send form")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
