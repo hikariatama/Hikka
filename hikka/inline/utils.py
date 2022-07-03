@@ -256,7 +256,7 @@ class Utils(InlineUnit):
         photo: Optional[str] = None,
         file: Optional[str] = None,
         video: Optional[str] = None,
-        audio: Optional[str] = None,
+        audio: Optional[Union[dict, str]] = None,
         gif: Optional[str] = None,
         mime_type: Optional[str] = None,
         force_me: Union[bool, None] = None,
@@ -303,7 +303,14 @@ class Utils(InlineUnit):
             logger.error("Invalid type for `video`")
             return False
 
-        if audio and (not isinstance(audio, str) or not utils.check_url(audio)):
+        if isinstance(audio, str):
+            audio = {"url": audio}
+
+        if audio and (
+            not isinstance(audio, dict)
+            or "url" not in audio
+            or not utils.check_url(audio["url"])
+        ):
             logger.error("Invalid type for `audio`")
             return False
 
@@ -399,7 +406,14 @@ class Utils(InlineUnit):
         elif photo is not None:
             media = InputMediaPhoto(photo, caption=text, parse_mode="HTML")
         elif audio is not None:
-            media = InputMediaAudio(audio, caption=text, parse_mode="HTML")
+            media = InputMediaAudio(
+                audio["url"],
+                title=audio.get("title"),
+                performer=audio.get("performer"),
+                duration=audio.get("duration"),
+                caption=text,
+                parse_mode="HTML",
+            )
         elif video is not None:
             media = InputMediaVideo(video, caption=text, parse_mode="HTML")
         elif gif is not None:

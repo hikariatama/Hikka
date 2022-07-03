@@ -55,6 +55,7 @@ class CoreOverwriteError(Exception):
     def __init__(self, module: Optional[str] = None, command: Optional[str] = None):
         self.type = "module" if module else "command"
         self.target = module or command
+        super().__init__()
 
     def __str__(self) -> str:
         return (
