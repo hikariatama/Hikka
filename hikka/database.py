@@ -69,7 +69,7 @@ class Database(dict):
             with self._postgre.cursor() as cur:
                 cur.execute(
                     "UPDATE hikka SET data = %s WHERE id = %s;",
-                    (self._client._tg_id, json.dumps(self)),
+                    (json.dumps(self), self._client._tg_id),
                 )
 
     def _redis_save_sync(self):
