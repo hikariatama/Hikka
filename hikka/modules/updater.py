@@ -379,7 +379,7 @@ class UpdaterMod(loader.Module):
 
         folders = await self._client(GetDialogFiltersRequest())
 
-        if any(folder.title == "hikka" for folder in folders):
+        if any(getattr(folder, "title", None) == "hikka" for folder in folders):
             return
 
         try:
