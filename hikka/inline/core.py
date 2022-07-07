@@ -1,13 +1,11 @@
 """Inline buttons, galleries and other Telegram-Bot-API stuff"""
 
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
+#           https://t.me/hikariatama
 #
-#          https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
+# 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
@@ -142,17 +140,17 @@ class InlineManager(
         # Register required event handlers inside aiogram
         self._dp.register_inline_handler(
             self._inline_handler,
-            lambda inline_query: True,
+            lambda _: True,
         )
 
         self._dp.register_callback_query_handler(
             self._callback_query_handler,
-            lambda query: True,
+            lambda _: True,
         )
 
         self._dp.register_chosen_inline_handler(
             self._chosen_inline_handler,
-            lambda chosen_inline_query: True,
+            lambda _: True,
         )
 
         self._dp.register_message_handler(

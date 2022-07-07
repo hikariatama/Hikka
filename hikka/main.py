@@ -17,14 +17,12 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
+#           https://t.me/hikariatama
 #
-#          https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
+# 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 
@@ -689,10 +687,7 @@ class Hikka:
             )
 
             app = heroku.publish(key, api_token=self.api_token)
-            print(
-                "Installed to heroku successfully!\n"
-                "🎉 App URL: {}".format(app.web_url)
-            )
+            print("Installed to heroku successfully!\n" f"🎉 App URL: {app.web_url}")
 
             # On this point our work is done
             # everything else will be run on Heroku, including

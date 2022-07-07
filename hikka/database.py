@@ -1,11 +1,9 @@
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
+#           https://t.me/hikariatama
 #
-#          https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
+# 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import contextlib
@@ -65,12 +63,11 @@ class Database(dict):
         return object.__repr__(self)
 
     def _postgre_save_sync(self):
-        with self._postgre:
-            with self._postgre.cursor() as cur:
-                cur.execute(
-                    "UPDATE hikka SET data = %s WHERE id = %s;",
-                    (json.dumps(self), self._client._tg_id),
-                )
+        with self._postgre, self._postgre.cursor() as cur:
+            cur.execute(
+                "UPDATE hikka SET data = %s WHERE id = %s;",
+                (json.dumps(self), self._client._tg_id),
+            )
 
     def _redis_save_sync(self):
         with self._redis.pipeline() as pipe:
@@ -133,35 +130,34 @@ class Database(dict):
 
         conn = psycopg2.connect(POSTGRE_URI, sslmode="require")
 
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute("CREATE TABLE IF NOT EXISTS hikka (id bigint, data text);")
+        with conn, conn.cursor() as cur:
+            cur.execute("CREATE TABLE IF NOT EXISTS hikka (id bigint, data text);")
 
-                with contextlib.suppress(Exception):
+            with contextlib.suppress(Exception):
+                cur.execute(
+                    "SELECT EXISTS(SELECT 1 FROM hikka WHERE id=%s);",
+                    (self._client._tg_id,),
+                )
+
+                if not cur.fetchone()[0]:
                     cur.execute(
-                        "SELECT EXISTS(SELECT 1 FROM hikka WHERE id=%s);",
-                        (self._client._tg_id,),
+                        "INSERT INTO hikka (id, data) VALUES (%s, %s);",
+                        (self._client._tg_id, json.dumps(self)),
                     )
 
-                    if not cur.fetchone()[0]:
-                        cur.execute(
-                            "INSERT INTO hikka (id, data) VALUES (%s, %s);",
-                            (self._client._tg_id, json.dumps(self)),
-                        )
+            with contextlib.suppress(Exception):
+                cur.execute(
+                    "SELECT (column_name, data_type) "
+                    "FROM information_schema.columns "
+                    "WHERE table_name = 'hikka' AND column_name = 'id';"
+                )
 
-                with contextlib.suppress(Exception):
-                    cur.execute(
-                        "SELECT (column_name, data_type) "
-                        "FROM information_schema.columns "
-                        "WHERE table_name = 'hikka' AND column_name = 'id';"
+                if "integer" in cur.fetchone()[0].lower():
+                    logger.warning(
+                        "Made legacy migration from integer to bigint "
+                        "in postgresql database"
                     )
-
-                    if "integer" in cur.fetchone()[0].lower():
-                        logger.warning(
-                            "Made legacy migration from integer to bigint "
-                            "in postgresql database"
-                        )
-                        cur.execute("ALTER TABLE hikka ALTER COLUMN id TYPE bigint;")
+                    cur.execute("ALTER TABLE hikka ALTER COLUMN id TYPE bigint;")
 
         self._postgre = conn
 
@@ -219,17 +215,16 @@ class Database(dict):
 
         if self._postgre:
             try:
-                with self._postgre:
-                    with self._postgre.cursor() as cur:
-                        cur.execute(
-                            "SELECT data FROM hikka WHERE id=%s;",
-                            (self._client._tg_id,),
-                        )
-                        self.update(
-                            **json.loads(
-                                cur.fetchall()[0][0],
-                            ),
-                        )
+                with self._postgre, self._postgre.cursor() as cur:
+                    cur.execute(
+                        "SELECT data FROM hikka WHERE id=%s;",
+                        (self._client._tg_id,),
+                    )
+                    self.update(
+                        **json.loads(
+                            cur.fetchall()[0][0],
+                        ),
+                    )
             except Exception:
                 logger.exception("Error reading postgresql database")
             return

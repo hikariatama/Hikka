@@ -1,3 +1,11 @@
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
+#              © Copyright 2022
+#           https://t.me/hikariatama
+#
+# 🔒      Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+
 import copy
 import time
 import asyncio
@@ -69,9 +77,12 @@ def install_entity_caching(client: TelegramClient):
         else:
             hashable_entity = entity
 
+        if str(hashable_entity).isdigit() and int(hashable_entity) < 0:
+            hashable_entity = int(str(hashable_entity)[4:])
+
         if hashable_entity and hashable_entity in client._hikka_cache:
             logger.debug(
-                f"Using cached {entity=} ({type(client._hikka_cache[hashable_entity].entity).__name__})"
+                f"Using cached entity {entity} ({type(client._hikka_cache[hashable_entity].entity).__name__})"
             )
             return client._hikka_cache[hashable_entity].entity
 
@@ -80,15 +91,15 @@ def install_entity_caching(client: TelegramClient):
         if resolved_entity:
             cache_record = CacheRecord(hashable_entity, resolved_entity)
             client._hikka_cache[hashable_entity] = cache_record
-            logger.debug(f"Saved {hashable_entity=} to cache")
+            logger.debug(f"Saved hashable_entity {hashable_entity} to cache")
 
             if getattr(resolved_entity, "id", None):
-                logger.debug(f"Saved {resolved_entity.id=} to cache")
+                logger.debug(f"Saved resolved_entity id {resolved_entity.id} to cache")
                 client._hikka_cache[resolved_entity.id] = cache_record
 
             if getattr(resolved_entity, "username", None):
                 logger.debug(
-                    f"Saved resolved_entity.username @{resolved_entity.username} to cache"
+                    f"Saved resolved_entity username @{resolved_entity.username} to cache"
                 )
                 client._hikka_cache[f"@{resolved_entity.username}"] = cache_record
 

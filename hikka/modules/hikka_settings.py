@@ -1,11 +1,9 @@
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
+#           https://t.me/hikariatama
 #
-#          https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
+# 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # scope: inline
@@ -824,7 +822,10 @@ class HikkaSettingsMod(loader.Module):
             form = await self.inline.form(
                 self.strings("lavhost_web"),
                 message=message,
-                reply_markup={"text": self.strings("web_btn"), "url": await main.hikka.web.get_url(proxy_pass=False)},
+                reply_markup={
+                    "text": self.strings("web_btn"),
+                    "url": await main.hikka.web.get_url(proxy_pass=False),
+                },
                 gif="https://t.me/hikari_assets/28",
             )
             return

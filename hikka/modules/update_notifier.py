@@ -1,11 +1,9 @@
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
+#           https://t.me/hikariatama
 #
-#          https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
+# 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 # scope: inline
@@ -102,10 +100,7 @@ class UpdateNotifierMod(loader.Module):
 
     @loader.loop(interval=60)
     async def poller(self):
-        if self.config["disable_notifications"]:
-            return
-
-        if not self.get_changelog():
+        if self.config["disable_notifications"] or not self.get_changelog():
             return
 
         self._pending = self.get_latest()

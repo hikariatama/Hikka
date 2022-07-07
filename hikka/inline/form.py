@@ -1,3 +1,11 @@
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
+#              © Copyright 2022
+#           https://t.me/hikariatama
+#
+# 🔒      Licensed under the GNU AGPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+
 import contextlib
 import copy
 import logging
@@ -252,13 +260,13 @@ class Form(InlineUnit):
             logger.exception("Can't send form")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = f"<b>🚫 Form invoke failed! More info in logs</b>"
+                msg = "<b>🚫 Form invoke failed! More info in logs</b>"
             else:
                 exc = traceback.format_exc()
                 # Remove `Traceback (most recent call last):`
                 exc = "\n".join(exc.splitlines()[1:])
                 msg = (
-                    f"<b>🚫 Form invoke failed!</b>\n\n"
+                    "<b>🚫 Form invoke failed!</b>\n\n"
                     f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
                 )
 

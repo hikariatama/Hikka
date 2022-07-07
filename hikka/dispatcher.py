@@ -16,14 +16,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-# █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
-#
+#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
+#             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
+#           https://t.me/hikariatama
 #
-#          https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU GPLv3
+# 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
@@ -435,11 +433,7 @@ class CommandDispatcher:
                     if not hasattr(message, placeholder):
                         setattr(message, placeholder, "")
                 except UnicodeDecodeError:
-                    logging.critical(
-                        "Hikka issued error on updates\n"
-                        "This is not your fault, please, report this issue in @hikka_talks along with info below:\n\n"
-                        f"{type(message)=}, {message=}, {placeholder=}"
-                    )
+                    pass
 
             # Run watcher via ensure_future so in case user has a lot
             # of watchers with long actions, they can run simultaneously
