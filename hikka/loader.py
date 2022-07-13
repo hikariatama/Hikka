@@ -573,8 +573,7 @@ class Modules:
 
         if self._db.get(legacy, key, Placeholder) is not Placeholder:
             for key, value in self._db[legacy].items():
-                if self._db.get(mod, key, Placeholder) is Placeholder:
-                    self._db.set(mod, key, value)
+                self._db.set(mod, key, value)
 
             logger.debug(f"Migrated {legacy} -> {mod}")
             del self._db[legacy]
