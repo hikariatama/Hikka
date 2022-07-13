@@ -344,7 +344,7 @@ class HelpMod(loader.Module):
         core_.sort(key=lambda x: x.split()[1])
         inline_.sort(key=lambda x: x.split()[1])
         no_commands_.sort(key=lambda x: x.split()[1])
-        no_commands_ = "\n".join(no_commands_) if force else ""
+        no_commands_ = "".join(no_commands_) if force else ""
 
         partial_load = (
             f"\n\n{self.strings('partial_load')}"
