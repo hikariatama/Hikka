@@ -347,22 +347,22 @@ class HikkaConfigMod(loader.Module):
                 *(
                     [
                         {
-                            "text": f"✅ {self.strings('set')} `True`",
-                            "callback": self.inline__set_bool,
-                            "args": (mod, option, True),
-                            "kwargs": {"obj_type": obj_type},
-                        }
-                    ]
-                    if not self.lookup(mod).config[option]
-                    else [
-                        {
                             "text": f"❌ {self.strings('set')} `False`",
                             "callback": self.inline__set_bool,
                             "args": (mod, option, False),
                             "kwargs": {"obj_type": obj_type},
                         }
                     ]
-                ),
+                    if self.lookup(mod).config[option]
+                    else [
+                        {
+                            "text": f"✅ {self.strings('set')} `True`",
+                            "callback": self.inline__set_bool,
+                            "args": (mod, option, True),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                )
             ],
             [
                 *(

@@ -501,7 +501,7 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
 
-        try:
+        with contextlib.suppress(AttributeError):
             if instance.watcher:
                 for watcher in self.watchers:
                     if (
@@ -513,8 +513,6 @@ class Modules:
                         self.watchers.remove(watcher)
 
                 self.watchers += [instance.watcher]
-        except AttributeError:
-            pass
 
     def _lookup(self, modname: str):
         return next(
@@ -682,7 +680,7 @@ class Modules:
             )
 
             for conf in class_instance.config.keys():
-                try:
+                with contextlib.suppress(Exception):
                     class_instance.config.set_no_raise(
                         conf,
                         (
@@ -694,13 +692,10 @@ class Modules:
                             or class_instance.config.getdef(conf)
                         ),
                     )
-                except Exception:
-                    pass
-
         self.libraries += [class_instance]
 
         if len([x.name for x in self.libraries]) != len(
-            set([x.name for x in self.libraries])
+            {x.name for x in self.libraries}
         ):
             self.libraries.remove(class_instance)
             _raise(
@@ -755,7 +750,7 @@ class Modules:
             )
             try:
                 for conf in mod.config.keys():
-                    try:
+                    with contextlib.suppress(validators.ValidationError):
                         mod.config.set_no_raise(
                             conf,
                             (
@@ -765,8 +760,6 @@ class Modules:
                                 or mod.config.getdef(conf)
                             ),
                         )
-                    except validators.ValidationError:
-                        pass
             except AttributeError:
                 logger.warning(
                     "Got invalid config instance. Expected `ModuleConfig`, got"
