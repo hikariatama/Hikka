@@ -424,7 +424,7 @@ class Hikka:
             session.save()
         else:
             heroku_config["hikka_session"] = session.save()
-            heroku_app.update_config(heroku_config)
+            heroku_app.update_config(heroku_config.to_dict())
             # Heroku will restart the app after updating config
 
         client.session = session

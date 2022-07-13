@@ -85,6 +85,7 @@ from telethon.tl.types import (
 
 from .inline.types import InlineCall, InlineMessage
 
+
 FormattingEntity = Union[
     MessageEntityUnknown,
     MessageEntityMention,
@@ -357,7 +358,10 @@ async def answer(
                 result = await message.client.send_file(
                     message.peer_id,
                     file,
-                    caption="<b>📤 Command output seems to be too long, so it's sent in file.</b>",
+                    caption=(
+                        "<b>📤 Command output seems to be too long, so it's sent in"
+                        " file.</b>"
+                    ),
                 )
 
                 if message.out:
@@ -951,7 +955,11 @@ def get_entity_url(
     :return: Link to object or empty string
     """
     return (
-        f"tg://user?id={entity.id}"
+        (
+            f"tg://openmessage?id={entity.id}"
+            if openmessage
+            else f"tg://user?id={entity.id}"
+        )
         if isinstance(entity, User)
         else (
             f"tg://resolve?domain={entity.username}"
@@ -1012,7 +1020,6 @@ def get_kwargs() -> dict:
 
 
 init_ts = time.perf_counter()
-
 
 # GeekTG Compatibility
 def get_git_info():

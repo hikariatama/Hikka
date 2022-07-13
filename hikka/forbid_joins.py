@@ -45,7 +45,7 @@ def install_join_forbidder(client: TelegramClient) -> TelegramClient:
         new_request = []
 
         for item in request:
-            if item.CONSTRUCTOR_ID == 615851205:
+            if item.CONSTRUCTOR_ID in {615851205, 1817183516}:
                 try:
                     if next(
                         frame_info.frame.f_locals["self"]
@@ -59,7 +59,7 @@ def install_join_forbidder(client: TelegramClient) -> TelegramClient:
                         not in {"APIRatelimiterMod", "ForbidJoinMod"}
                     ).__class__.__name__ not in {"HelpMod", "LoaderMod"}:
                         logger.debug(
-                            f"🎉 I protected you from unintented JoinChannelRequest ({item})!"
+                            f"🎉 I protected you from unintented {item.__class__.__name__} ({item})!"
                         )
                         continue
                 except StopIteration:

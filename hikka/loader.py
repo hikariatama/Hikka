@@ -27,31 +27,34 @@
 import asyncio
 import contextlib
 import copy
-import functools
+from functools import partial, wraps
 import importlib
 import importlib.util
 import inspect
 import logging
 import os
 import sys
-from importlib.abc import SourceLoader
 from importlib.machinery import ModuleSpec
 from types import FunctionType
-from typing import Any, Optional, Union, List
+from typing import Any, Hashable, Optional, Union, List
+import requests
 from telethon.tl.types import Message
 
 from . import security, utils, validators
 from ._types import (
-    ConfigValue,  # type: ignore
-    LoadError,  # type: ignore
+    ConfigValue,  # skipcq
+    LoadError,  # skipcq
     Module,
-    ModuleConfig,  # type: ignore
+    Library,  # skipcq
+    ModuleConfig,  # skipcq
+    LibraryConfig,  # skipcq
     SelfUnload,
+    SelfSuspend,
     StopLoop,
     InlineMessage,
     CoreOverwriteError,
+    StringLoader,
 )
-from .fast_uploader import download_file, upload_file
 from .inline.core import InlineManager
 from .translations import Strings
 
@@ -74,29 +77,12 @@ unrestricted = security.unrestricted
 inline_everyone = security.inline_everyone
 
 
-class StringLoader(SourceLoader):
-    """Load a python module/file from a string"""
-
-    def __init__(self, data: str, origin: str):
-        self.data = data.encode("utf-8") if isinstance(data, str) else data
-        self.origin = origin
-
-    def get_code(self, fullname: str) -> str:
-        return (
-            compile(source, self.origin, "exec", dont_inherit=True)
-            if (source := self.get_source(fullname))
-            else None
-        )
-
-    def get_filename(self, *args, **kwargs) -> str:
-        return self.origin
-
-    def get_data(self, *args, **kwargs) -> bytes:
-        return self.data
-
-
 async def stop_placeholder() -> bool:
     return True
+
+
+class Placeholder:
+    """Placeholder"""
 
 
 class InfiniteLoop:
@@ -231,7 +217,7 @@ if not os.path.isdir(LOADED_MODULES_DIR) and "DYNO" not in os.environ:
 def translatable_docstring(cls):
     """Decorator that makes triple-quote docstrings translatable"""
 
-    @functools.wraps(cls.config_complete)
+    @wraps(cls.config_complete)
     def config_complete(self, *args, **kwargs):
         for command_, func_ in get_commands(cls).items():
             try:
@@ -307,7 +293,6 @@ class Modules:
     """Stores all registered modules"""
 
     client = None
-    added_modules = None
     _initial_registration = True
 
     def __init__(self):
@@ -316,6 +301,7 @@ class Modules:
         self.callback_handlers = {}
         self.aliases = {}
         self.modules = []  # skipcq: PTC-W0052
+        self.libraries = []
         self.watchers = []
         self._log_handlers = []
         self._core_commands = []
@@ -528,7 +514,15 @@ class Modules:
 
     def _lookup(self, modname: str):
         return next(
-            (mod for mod in self.modules if mod.name.lower() == modname.lower()),
+            (lib for lib in self.libraries if lib.name.lower() == modname.lower()),
+            False,
+        ) or next(
+            (
+                mod
+                for mod in self.modules
+                if mod.__class__.__name__.lower() == modname.lower()
+                or mod.name.lower() == modname.lower()
+            ),
             False,
         )
 
@@ -539,20 +533,15 @@ class Modules:
 
         instance.allmodules = self
         instance.hikka = True
-        instance.get = functools.partial(
-            self._mod_get,
-            mod=instance.strings["name"],
-        )
-        instance.set = functools.partial(
-            self._mod_set,
-            mod=instance.strings["name"],
-        )
-
-        instance.get_prefix = lambda: (
-            self._db.get("hikka.main", "command_prefix", False) or "."
-        )
-
+        instance.get = partial(self._mod_get, _module=instance)
+        instance.set = partial(self._mod_set, _modname=instance.__class__.__name__)
+        instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
+        instance.client = self.client
+        instance._client = self.client
+        instance.db = self._db
+        instance._db = self._db
         instance.lookup = self._lookup
+        instance.import_lib = self._mod_import_lib
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
@@ -574,11 +563,140 @@ class Modules:
 
         self.modules += [instance]
 
-    def _mod_get(self, *args, mod: str = None) -> Any:
-        return self._db.get(mod, *args)
+    def _mod_get(
+        self,
+        key: str,
+        default: Optional[Hashable] = None,
+        _module: Module = None,
+    ) -> Hashable:
+        mod, legacy = _module.__class__.__name__, _module.strings["name"]
 
-    def _mod_set(self, *args, mod: str = None) -> bool:
-        return self._db.set(mod, *args)
+        if self._db.get(legacy, key, Placeholder) is not Placeholder:
+            for key, value in self._db[legacy].items():
+                if self._db.get(mod, key, Placeholder) is Placeholder:
+                    self._db.set(mod, key, value)
+
+            logger.debug(f"Migrated {legacy} -> {mod}")
+            del self._db[legacy]
+
+        return self._db.get(mod, key, default)
+
+    def _mod_set(self, key: str, value: Hashable, _modname: str = None) -> bool:
+        return self._db.set(_modname, key, value)
+
+    async def _mod_import_lib(
+        self,
+        url: str,
+        *,
+        suspend_on_error: Optional[bool] = False,
+    ) -> object:
+        """
+        Import library from url and register it in :obj:`Modules`
+        :param url: Url to import
+        :param suspend_on_error: Will raise :obj:`loader.SelfSuspend` if library can't be loaded
+        :return: Library class instance
+        :raise: HTTPError if library is not found
+        :raise: ImportError if library doesn't have any class which is a subclass of :obj:`loader.Library`
+        :raise: ImportError if library name doesn't end with `Lib`
+        :raise: RuntimeError if library throws in :method:`init`
+        :raise: RuntimeError if library classname exists in :obj:`Modules`.libraries
+        """
+
+        def _raise(e: Exception):
+            if suspend_on_error:
+                raise SelfSuspend("Required library is not available or is corrupted.")
+            else:
+                raise e
+
+        if not utils.check_url(url):
+            _raise(ValueError("Invalid url for library"))
+
+        code = await utils.run_sync(requests.get, url)
+        code.raise_for_status()
+        code = code.text
+
+        module = f"hikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
+        origin = f"<library {url}>"
+
+        spec = ModuleSpec(module, StringLoader(code, origin), origin=origin)
+        instance = importlib.util.module_from_spec(spec)
+        sys.modules[module] = instance
+        spec.loader.exec_module(instance)
+
+        class_instance = next(
+            (
+                value()
+                for value in vars(instance).values()
+                if inspect.isclass(value) and issubclass(value, Library)
+            ),
+            None,
+        )
+
+        if not class_instance:
+            _raise(ImportError("Invalid library. No class found"))
+
+        if not class_instance.__class__.__name__.endswith("Lib"):
+            _raise(ImportError("Invalid library. Class name must end with 'Lib'"))
+
+        class_instance.client = self.client
+        class_instance._client = self.client  # skipcq
+        class_instance.db = self._db  # skipcq
+        class_instance._db = self._db  # skipcq
+        class_instance.name = class_instance.__class__.__name__
+        class_instance.source_url = url.strip("/")
+
+        for lib in self.libraries.copy():
+            if lib.source_url == class_instance.source_url:
+                logging.debug(f"Using existing instance of library {lib.source_url}")
+                return lib
+
+        if hasattr(class_instance, "init") and callable(class_instance.init):
+            try:
+                await class_instance.init()
+            except Exception:
+                _raise(RuntimeError("Library init() failed"))
+
+        if hasattr(class_instance, "config"):
+            if not isinstance(class_instance.config, LibraryConfig):
+                _raise(
+                    RuntimeError("Library config must be a `LibraryConfig` instance")
+                )
+
+            libcfg = class_instance.db.get(
+                class_instance.__class__.__name__,
+                "__config__",
+                {},
+            )
+
+            for conf in class_instance.config.keys():
+                try:
+                    class_instance.config.set_no_raise(
+                        conf,
+                        (
+                            libcfg[conf]
+                            if conf in libcfg.keys()
+                            else os.environ.get(
+                                f"{class_instance.__class__.__name__}.{conf}"
+                            )
+                            or class_instance.config.getdef(conf)
+                        ),
+                    )
+                except Exception:
+                    pass
+
+        self.libraries += [class_instance]
+
+        if len([x.name for x in self.libraries]) != len(
+            set([x.name for x in self.libraries])
+        ):
+            self.libraries.remove(class_instance)
+            _raise(
+                RuntimeError(
+                    "Use different classname for your library. You have a override"
+                )
+            )
+
+        return class_instance
 
     def dispatch(self, command: str) -> tuple:
         """Dispatch command to appropriate module"""
@@ -638,7 +756,8 @@ class Modules:
                         pass
             except AttributeError:
                 logger.warning(
-                    f"Got invalid config instance. Expected `ModuleConfig`, got {type(mod.config)=}, {mod.config=}"
+                    "Got invalid config instance. Expected `ModuleConfig`, got"
+                    f" {type(mod.config)=}, {mod.config=}"
                 )
 
         if skip_hook:
@@ -683,9 +802,6 @@ class Modules:
         except Exception as e:
             logger.exception(f"Failed to send mod init complete signal due to {e}")
 
-        if self.added_modules:
-            await self.added_modules(self)
-
     async def _animate(
         self,
         message: Union[Message, InlineMessage],
@@ -711,7 +827,8 @@ class Modules:
 
         if interval < 0.1:
             logger.warning(
-                "Resetting animation interval to 0.1s, because it may get you in floodwaits bro"
+                "Resetting animation interval to 0.1s, because it may get you in"
+                " floodwaits bro"
             )
             interval = 0.1
 
@@ -751,9 +868,6 @@ class Modules:
         mod.inline = self.inline
         mod.animate = self._animate
 
-        mod.fast_upload = functools.partial(upload_file, _client=client)
-        mod.fast_download = functools.partial(download_file, _client=client)
-
         for method in dir(mod):
             if isinstance(getattr(mod, method), InfiniteLoop):
                 setattr(getattr(mod, method), "module_instance", mod)
@@ -777,9 +891,16 @@ class Modules:
 
             logger.debug(f"Unloading {mod}, because it raised SelfUnload")
             self.modules.remove(mod)
+        except SelfSuspend as e:
+            if no_self_unload:
+                raise e
+
+            logger.debug(f"Suspending {mod}, because it raised SelfSuspend")
+            return
         except Exception as e:
             logger.exception(
-                f"Failed to send mod init complete signal for {mod} due to {e}, attempting unload"
+                f"Failed to send mod init complete signal for {mod} due to {e},"
+                " attempting unload"
             )
             self.modules.remove(mod)
             raise
@@ -795,8 +916,6 @@ class Modules:
 
         self.register_commands(mod)
         self.register_watcher(mod)
-        if not self._initial_registration and self.added_modules:
-            await self.added_modules(self)
 
     def get_classname(self, name: str) -> str:
         return next(

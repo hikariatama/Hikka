@@ -100,6 +100,8 @@ class HikkaSettingsMod(loader.Module):
         "btn_yes": "🚸 Open anyway",
         "btn_no": "🔻 Cancel",
         "lavhost_web": "✌️ <b>This link leads to your Hikka web interface on lavHost</b>\n\n<i>💡 You'll need to authorize using lavHost credentials, specified on registration</i>",
+        "disable_stats": "✅ Anonymous stats allowed",
+        "enable_stats": "🚫 Anonymous stats disabled",
     }
 
     strings_ru = {
@@ -174,6 +176,8 @@ class HikkaSettingsMod(loader.Module):
         "btn_yes": "🚸 Все равно открыть",
         "btn_no": "🔻 Закрыть",
         "lavhost_web": "✌️ <b>По этой ссылке ты попадешь в веб-интерфейс Hikka на lavHost</b>\n\n<i>💡 Тебе нужно будет авторизоваться, используя данные, указанные при настройке lavHost</i>",
+        "disable_stats": "✅ Анонимная стата разрешена",
+        "enable_stats": "🚫 Анонимная стата запрещена",
     }
 
     def get_watchers(self) -> tuple:
@@ -786,6 +790,26 @@ class HikkaSettingsMod(loader.Module):
                         "callback": self.inline__setting,
                         "args": (
                             "suggest_subscribe",
+                            True,
+                        ),
+                    }
+                ),
+            ],
+            [
+                (
+                    {
+                        "text": self.strings("disable_stats"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "stats", False
+                        ),
+                    }
+                    if self._db.get(main.__name__, "stats", True)
+                    else {
+                        "text": self.strings("enable_stats"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "stats",
                             True,
                         ),
                     }
