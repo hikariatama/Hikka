@@ -462,7 +462,7 @@ class HikkaSettingsMod(loader.Module):
             nn = list(set(nn))  # skipcq: PTC-W0018
             await utils.answer(message, self.strings("user_nn").format("on"))
         else:
-            nn = list(set(nn) - set([u]))  # skipcq: PTC-W0018
+            nn = list(set(nn) - {u})
             await utils.answer(message, self.strings("user_nn").format("off"))
 
         self._db.set(main.__name__, "nonickusers", nn)
@@ -487,7 +487,7 @@ class HikkaSettingsMod(loader.Module):
                 ),
             )
         else:
-            nn = list(set(nn) - set([chat]))  # skipcq: PTC-W0018
+            nn = list(set(nn) - {chat})
             await utils.answer(
                 message,
                 self.strings("cmd_nn").format(
@@ -521,7 +521,7 @@ class HikkaSettingsMod(loader.Module):
                 ),
             )
         else:
-            nn = list(set(nn) - set([args]))  # skipcq: PTC-W0018
+            nn = list(set(nn) - {args})
             await utils.answer(
                 message,
                 self.strings("cmd_nn").format(
@@ -561,10 +561,13 @@ class HikkaSettingsMod(loader.Module):
                     main.__name__,
                     "nonickusers",
                     list(
-                        set(self._db.get(main.__name__, "nonickusers", []))
-                        - set([user_id])
+                        (
+                            set(self._db.get(main.__name__, "nonickusers", []))
+                            - {user_id}
+                        )
                     ),
                 )
+
                 logger.warning(
                     f"User {user_id} removed from nonickusers list", exc_info=True
                 )
@@ -594,10 +597,13 @@ class HikkaSettingsMod(loader.Module):
                     main.__name__,
                     "nonickchats",
                     list(
-                        set(self._db.get(main.__name__, "nonickchats", []))
-                        - set([chat])
+                        (
+                            set(self._db.get(main.__name__, "nonickchats", []))
+                            - {chat}
+                        )
                     ),
                 )
+
                 logger.warning(f"Chat {chat} removed from nonickchats list")
                 continue
 
@@ -733,25 +739,23 @@ class HikkaSettingsMod(loader.Module):
                 ),
             ],
             [
-                (
-                    {
-                        "text": self.strings("suggest_fs"),
-                        "callback": self.inline__setting,
-                        "args": (
-                            "disable_modules_fs",
-                            True,
-                        ),
-                    }
-                    if not self._db.get(main.__name__, "disable_modules_fs", False)
-                    else {
-                        "text": self.strings("do_not_suggest_fs"),
-                        "callback": self.inline__setting,
-                        "args": (
-                            "disable_modules_fs",
-                            False,
-                        ),
-                    }
-                ),
+                {
+                    "text": self.strings("do_not_suggest_fs"),
+                    "callback": self.inline__setting,
+                    "args": (
+                        "disable_modules_fs",
+                        False,
+                    ),
+                }
+                if self._db.get(main.__name__, "disable_modules_fs", False)
+                else {
+                    "text": self.strings("suggest_fs"),
+                    "callback": self.inline__setting,
+                    "args": (
+                        "disable_modules_fs",
+                        True,
+                    ),
+                }
             ],
             [
                 (
@@ -800,9 +804,7 @@ class HikkaSettingsMod(loader.Module):
                     {
                         "text": self.strings("disable_stats"),
                         "callback": self.inline__setting,
-                        "args": (
-                            "stats", False
-                        ),
+                        "args": ("stats", False),
                     }
                     if self._db.get(main.__name__, "stats", True)
                     else {
