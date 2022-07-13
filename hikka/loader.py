@@ -573,7 +573,17 @@ class Modules:
 
         if self._db.get(legacy, key, Placeholder) is not Placeholder:
             for iterkey, value in self._db[legacy].items():
-                self._db.set(mod, iterkey, value)
+                if iterkey == "__config__":
+                    # Config already uses classname as key
+                    # No need to migrate
+                    continue
+
+                if isinstance(value, dict) and isinstance(
+                    self._db.get(mod, iterkey), dict
+                ):
+                    self._db[mod][iterkey].update(value)
+                else:
+                    self._db.set(mod, iterkey, value)
 
             logger.debug(f"Migrated {legacy} -> {mod}")
             del self._db[legacy]
