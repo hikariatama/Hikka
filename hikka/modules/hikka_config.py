@@ -21,6 +21,11 @@ from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
+# Everywhere in this module, we use the following naming convention:
+# `obj_type` of non-core module = False
+# `obj_type` of core module = True
+# `obj_type` of library = "library"
+
 
 @loader.tds
 class HikkaConfigMod(loader.Module):
@@ -28,12 +33,43 @@ class HikkaConfigMod(loader.Module):
 
     strings = {
         "name": "HikkaConfig",
-        "choose_core": "🎚 <b>Choose a category of modules to configure</b>",
+        "choose_core": "🎚 <b>Choose a category</b>",
         "configure": "🎚 <b>Choose a module to configure</b>",
-        "configuring_mod": "🎚 <b>Choose config option for mod</b> <code>{}</code>\n\n<b>Current options:</b>\n\n{}",
-        "configuring_option": "🎚 <b>Configuring option </b><code>{}</code><b> of mod </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current: {}</b>\n\n{}",
-        "option_saved": "🎚 <b>Option </b><code>{}</code><b> of mod </b><code>{}</code><b> saved!</b>\n<b>Current: {}</b>",
-        "option_reset": "♻️ <b>Option </b><code>{}</code><b> of mod </b><code>{}</code><b> has been reset to default</b>\n<b>Current: {}</b>",
+        "configure_lib": "🪴 <b>Choose a library to configure</b>",
+        "configuring_mod": (
+            "🎚 <b>Choose config option for mod</b> <code>{}</code>\n\n<b>Current"
+            " options:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "🪴 <b>Choose config option for library</b> <code>{}</code>\n\n<b>Current"
+            " options:</b>\n\n{}"
+        ),
+        "configuring_option": (
+            "🎚 <b>Configuring option </b><code>{}</code><b> of mod"
+            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
+            " {}</b>\n\n{}"
+        ),
+        "configuring_option_lib": (
+            "🪴 <b>Configuring option </b><code>{}</code><b> of library"
+            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
+            " {}</b>\n\n{}"
+        ),
+        "option_saved": (
+            "🎚 <b>Option </b><code>{}</code><b> of module </b><code>{}</code><b>"
+            " saved!</b>\n<b>Current: {}</b>"
+        ),
+        "option_saved_lib": (
+            "🪴 <b>Option </b><code>{}</code><b> of library </b><code>{}</code><b>"
+            " saved!</b>\n<b>Current: {}</b>"
+        ),
+        "option_reset": (
+            "♻️ <b>Option </b><code>{}</code><b> of module </b><code>{}</code><b> has"
+            " been reset to default</b>\n<b>Current: {}</b>"
+        ),
+        "option_reset_lib": (
+            "♻️ <b>Option </b><code>{}</code><b> of library </b><code>{}</code><b> has"
+            " been reset to default</b>\n<b>Current: {}</b>"
+        ),
         "args": "🚫 <b>You specified incorrect args</b>",
         "no_mod": "🚫 <b>Module doesn't exist</b>",
         "no_option": "🚫 <b>Configuration option doesn't exist</b>",
@@ -54,22 +90,60 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Hide value",
         "builtin": "🛰 Built-in",
         "external": "🛸 External",
+        "libraries": "🪴 Libraries",
     }
 
     strings_ru = {
-        "choose_core": "🎚 <b>Выбери категорию модуля</b>",
-        "configure": "🎚 <b>Выбери модуль для изменения конфигурации</b>",
-        "configuring_mod": "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>\n\n<b>Текущие настройки:</b>\n\n{}",
-        "configuring_option": "🎚 <b>Управление параметром </b><code>{}</code><b> модуля </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное: {}</b>\n\n<b>Текущее: {}</b>\n\n{}",
-        "option_saved": "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сохранен!</b>\n<b>Текущее: {}</b>",
-        "option_reset": "♻️ <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b> сброшен до значения по умолчанию</b>\n<b>Текущее: {}</b>",
+        "choose_core": "🎚 <b>Выбери категорию</b>",
+        "configure": "🎚 <b>Выбери модуль для настройки</b>",
+        "configure_lib": "🪴 <b>Выбери библиотеку для настройки</b>",
+        "configuring_mod": (
+            "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>\n\n<b>Текущие"
+            " настройки:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "🪴 <b>Выбери параметр для библиотеки</b> <code>{}</code>\n\n<b>Текущие"
+            " настройки:</b>\n\n{}"
+        ),
+        "configuring_option": (
+            "🎚 <b>Управление параметром </b><code>{}</code><b> модуля"
+            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
+            " {}</b>\n\n<b>Текущее: {}</b>\n\n{}"
+        ),
+        "configuring_option_lib": (
+            "🪴 <b>Управление параметром </b><code>{}</code><b> библиотеки"
+            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
+            " {}</b>\n\n<b>Текущее: {}</b>\n\n{}"
+        ),
+        "option_saved": (
+            "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b>"
+            " сохранен!</b>\n<b>Текущее: {}</b>"
+        ),
+        "option_saved_lib": (
+            "🪴 <b>Параметр </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
+            " сохранен!</b>\n<b>Текущее: {}</b>"
+        ),
+        "option_reset": (
+            "♻️ <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b>"
+            " сброшен до значения по умолчанию</b>\n<b>Текущее: {}</b>"
+        ),
+        "option_reset_lib": (
+            "♻️ <b>Параметр </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
+            " сброшен до значения по умолчанию</b>\n<b>Текущее: {}</b>"
+        ),
         "_cmd_doc_config": "Настройки модулей",
-        "_cmd_doc_fconfig": "<имя модуля> <имя конфига> <значение> - Расшифровывается как ForceConfig - Принудительно устанавливает значение в конфиге, если это не удалось сделать через inline бота",
+        "_cmd_doc_fconfig": (
+            "<имя модуля> <имя конфига> <значение> - Расшифровывается как ForceConfig -"
+            " Принудительно устанавливает значение в конфиге, если это не удалось"
+            " сделать через inline бота"
+        ),
         "_cls_doc": "Интерактивный конфигуратор Hikka",
         "args": "🚫 <b>Ты указал неверные аргументы</b>",
         "no_mod": "🚫 <b>Модуль не существует</b>",
         "no_option": "🚫 <b>У модуля нет такого значения конфига</b>",
-        "validation_error": "🚫 <b>Введено некорректное значение конфига. \nОшибка: {}</b>",
+        "validation_error": (
+            "🚫 <b>Введено некорректное значение конфига. \nОшибка: {}</b>"
+        ),
         "try_again": "🔁 Попробовать еще раз",
         "typehint": "🕵️ <b>Должно быть {}</b>",
         "set": "поставить",
@@ -86,6 +160,7 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Скрыть значение",
         "builtin": "🛰 Встроенные",
         "external": "🛸 Внешние",
+        "libraries": "🪴 Библиотеки",
     }
 
     async def client_ready(self, client, db):
@@ -123,7 +198,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = query
@@ -134,13 +209,15 @@ class HikkaConfigMod(loader.Module):
                     "text": self.strings("try_again"),
                     "callback": self.inline__configure_option,
                     "args": (mod, option),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 },
             )
             return
 
         await call.edit(
-            self.strings("option_saved").format(
+            self.strings(
+                "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
+            ).format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
                 self.prep_value(self.lookup(mod).config[option])
@@ -155,7 +232,7 @@ class HikkaConfigMod(loader.Module):
                         "text": self.strings("back_btn"),
                         "callback": self.inline__configure,
                         "args": (mod,),
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     },
                     {"text": self.strings("close_btn"), "action": "close"},
                 ]
@@ -168,13 +245,15 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
         mod_instance = self.lookup(mod)
         mod_instance.config[option] = mod_instance.config.getdef(option)
 
         await call.edit(
-            self.strings("option_reset").format(
+            self.strings(
+                "option_reset" if isinstance(obj_type, bool) else "option_reset_lib"
+            ).format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
                 self.prep_value(self.lookup(mod).config[option])
@@ -189,7 +268,7 @@ class HikkaConfigMod(loader.Module):
                         "text": self.strings("back_btn"),
                         "callback": self.inline__configure,
                         "args": (mod,),
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     },
                     {"text": self.strings("close_btn"), "action": "close"},
                 ]
@@ -202,7 +281,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         value: bool,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = value
@@ -213,7 +292,7 @@ class HikkaConfigMod(loader.Module):
                     "text": self.strings("try_again"),
                     "callback": self.inline__configure_option,
                     "args": (mod, option),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 },
             )
             return
@@ -233,7 +312,11 @@ class HikkaConfigMod(loader.Module):
         )
 
         await call.edit(
-            self.strings("configuring_option").format(
+            self.strings(
+                "configuring_option"
+                if isinstance(obj_type, bool)
+                else "configuring_option_lib"
+            ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
                 utils.escape_html(self.lookup(mod).config.getdoc(option)),
@@ -248,7 +331,7 @@ class HikkaConfigMod(loader.Module):
                 if doc
                 else "",
             ),
-            reply_markup=self._generate_bool_markup(mod, option, is_core),
+            reply_markup=self._generate_bool_markup(mod, option, obj_type),
         )
 
         await call.answer("✅")
@@ -257,29 +340,29 @@ class HikkaConfigMod(loader.Module):
         self,
         mod: str,
         option: str,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ) -> list:
         return [
             [
                 *(
                     [
                         {
-                            "text": f"✅ {self.strings('set')} `True`",
-                            "callback": self.inline__set_bool,
-                            "args": (mod, option, True),
-                            "kwargs": {"is_core": is_core},
-                        }
-                    ]
-                    if not self.lookup(mod).config[option]
-                    else [
-                        {
                             "text": f"❌ {self.strings('set')} `False`",
                             "callback": self.inline__set_bool,
                             "args": (mod, option, False),
-                            "kwargs": {"is_core": is_core},
+                            "kwargs": {"obj_type": obj_type},
                         }
                     ]
-                ),
+                    if self.lookup(mod).config[option]
+                    else [
+                        {
+                            "text": f"✅ {self.strings('set')} `True`",
+                            "callback": self.inline__set_bool,
+                            "args": (mod, option, True),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                )
             ],
             [
                 *(
@@ -288,7 +371,7 @@ class HikkaConfigMod(loader.Module):
                             "text": self.strings("set_default_btn"),
                             "callback": self.inline__reset_default,
                             "args": (mod, option),
-                            "kwargs": {"is_core": is_core},
+                            "kwargs": {"obj_type": obj_type},
                         }
                     ]
                     if self.lookup(mod).config[option]
@@ -301,7 +384,7 @@ class HikkaConfigMod(loader.Module):
                     "text": self.strings("back_btn"),
                     "callback": self.inline__configure,
                     "args": (mod,),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 },
                 {"text": self.strings("close_btn"), "action": "close"},
             ],
@@ -314,7 +397,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
         try:
             try:
@@ -336,13 +419,15 @@ class HikkaConfigMod(loader.Module):
                     "text": self.strings("try_again"),
                     "callback": self.inline__configure_option,
                     "args": (mod, option),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 },
             )
             return
 
         await call.edit(
-            self.strings("option_saved").format(
+            self.strings(
+                "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
+            ).format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
                 self.prep_value(self.lookup(mod).config[option])
@@ -357,7 +442,7 @@ class HikkaConfigMod(loader.Module):
                         "text": self.strings("back_btn"),
                         "callback": self.inline__configure,
                         "args": (mod,),
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     },
                     {"text": self.strings("close_btn"), "action": "close"},
                 ]
@@ -372,7 +457,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
         try:
             try:
@@ -396,7 +481,8 @@ class HikkaConfigMod(loader.Module):
 
             if old_config_len == len(self.lookup(mod).config[option]):
                 raise loader.validators.ValidationError(
-                    f"Nothing from passed value ({self.prep_value(query)}) is not in target list"
+                    f"Nothing from passed value ({self.prep_value(query)}) is not in"
+                    " target list"
                 )
         except loader.validators.ValidationError as e:
             await call.edit(
@@ -405,13 +491,15 @@ class HikkaConfigMod(loader.Module):
                     "text": self.strings("try_again"),
                     "callback": self.inline__configure_option,
                     "args": (mod, option),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 },
             )
             return
 
         await call.edit(
-            self.strings("option_saved").format(
+            self.strings(
+                "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
+            ).format(
                 utils.escape_html(mod),
                 utils.escape_html(option),
                 self.prep_value(self.lookup(mod).config[option])
@@ -426,7 +514,7 @@ class HikkaConfigMod(loader.Module):
                         "text": self.strings("back_btn"),
                         "callback": self.inline__configure,
                         "args": (mod,),
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     },
                     {"text": self.strings("close_btn"), "action": "close"},
                 ]
@@ -439,7 +527,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ) -> list:
         return [
             [
@@ -448,7 +536,7 @@ class HikkaConfigMod(loader.Module):
                     "input": self.strings("enter_value_desc"),
                     "handler": self.inline__set_config,
                     "args": (mod, option, call.inline_message_id),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 }
             ],
             [
@@ -459,14 +547,14 @@ class HikkaConfigMod(loader.Module):
                             "input": self.strings("remove_item_desc"),
                             "handler": self.inline__remove_item,
                             "args": (mod, option, call.inline_message_id),
-                            "kwargs": {"is_core": is_core},
+                            "kwargs": {"obj_type": obj_type},
                         },
                         {
                             "text": self.strings("add_item_btn"),
                             "input": self.strings("add_item_desc"),
                             "handler": self.inline__add_item,
                             "args": (mod, option, call.inline_message_id),
-                            "kwargs": {"is_core": is_core},
+                            "kwargs": {"obj_type": obj_type},
                         },
                     ]
                     if self.lookup(mod).config[option]
@@ -480,7 +568,7 @@ class HikkaConfigMod(loader.Module):
                             "text": self.strings("set_default_btn"),
                             "callback": self.inline__reset_default,
                             "args": (mod, option),
-                            "kwargs": {"is_core": is_core},
+                            "kwargs": {"obj_type": obj_type},
                         }
                     ]
                     if self.lookup(mod).config[option]
@@ -493,7 +581,7 @@ class HikkaConfigMod(loader.Module):
                     "text": self.strings("back_btn"),
                     "callback": self.inline__configure,
                     "args": (mod,),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 },
                 {"text": self.strings("close_btn"), "action": "close"},
             ],
@@ -505,7 +593,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         config_opt: str,
         force_hidden: Optional[bool] = False,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
         module = self.lookup(mod)
         args = [
@@ -531,7 +619,7 @@ class HikkaConfigMod(loader.Module):
                             "text": self.strings("hide_value"),
                             "callback": self.inline__configure_option,
                             "args": (mod, config_opt, False),
-                            "kwargs": {"is_core": is_core},
+                            "kwargs": {"obj_type": obj_type},
                         }
                     ]
                 ]
@@ -542,7 +630,7 @@ class HikkaConfigMod(loader.Module):
                             "text": self.strings("show_hidden"),
                             "callback": self.inline__configure_option,
                             "args": (mod, config_opt, True),
-                            "kwargs": {"is_core": is_core},
+                            "kwargs": {"obj_type": obj_type},
                         }
                     ]
                 ]
@@ -577,22 +665,34 @@ class HikkaConfigMod(loader.Module):
             ]
             if validator.internal_id == "Boolean":
                 await call.edit(
-                    self.strings("configuring_option").format(*args),
+                    self.strings(
+                        "configuring_option"
+                        if isinstance(obj_type, bool)
+                        else "configuring_option_lib"
+                    ).format(*args),
                     reply_markup=additonal_button_row
-                    + self._generate_bool_markup(mod, config_opt, is_core),
+                    + self._generate_bool_markup(mod, config_opt, obj_type),
                 )
                 return
 
             if validator.internal_id == "Series":
                 await call.edit(
-                    self.strings("configuring_option").format(*args),
+                    self.strings(
+                        "configuring_option"
+                        if isinstance(obj_type, bool)
+                        else "configuring_option_lib"
+                    ).format(*args),
                     reply_markup=additonal_button_row
-                    + self._generate_series_markup(call, mod, config_opt, is_core),
+                    + self._generate_series_markup(call, mod, config_opt, obj_type),
                 )
                 return
 
         await call.edit(
-            self.strings("configuring_option").format(*args),
+            self.strings(
+                "configuring_option"
+                if isinstance(obj_type, bool)
+                else "configuring_option_lib"
+            ).format(*args),
             reply_markup=additonal_button_row
             + [
                 [
@@ -601,7 +701,7 @@ class HikkaConfigMod(loader.Module):
                         "input": self.strings("enter_value_desc"),
                         "handler": self.inline__set_config,
                         "args": (mod, config_opt, call.inline_message_id),
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     }
                 ],
                 [
@@ -609,7 +709,7 @@ class HikkaConfigMod(loader.Module):
                         "text": self.strings("set_default_btn"),
                         "callback": self.inline__reset_default,
                         "args": (mod, config_opt),
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     }
                 ],
                 [
@@ -617,7 +717,7 @@ class HikkaConfigMod(loader.Module):
                         "text": self.strings("back_btn"),
                         "callback": self.inline__configure,
                         "args": (mod,),
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     },
                     {"text": self.strings("close_btn"), "action": "close"},
                 ],
@@ -628,24 +728,27 @@ class HikkaConfigMod(loader.Module):
         self,
         call: InlineCall,
         mod: str,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
         btns = [
             {
                 "text": param,
                 "callback": self.inline__configure_option,
                 "args": (mod, param),
-                "kwargs": {"is_core": is_core},
+                "kwargs": {"obj_type": obj_type},
             }
             for param in self.lookup(mod).config
         ]
 
         await call.edit(
-            self.strings("configuring_mod").format(
+            self.strings(
+                "configuring_mod" if isinstance(obj_type, bool) else "configuring_lib"
+            ).format(
                 utils.escape_html(mod),
                 "\n".join(
                     [
-                        f"▫️ <code>{utils.escape_html(key)}</code>: <b>{self.prep_value(value) if not self.lookup(mod).config._config[key].validator or self.lookup(mod).config._config[key].validator.internal_id != 'Hidden' else self.hide_value(value)}</b>"
+                        f"▫️ <code>{utils.escape_html(key)}</code>:"
+                        f" <b>{self.prep_value(value) if not self.lookup(mod).config._config[key].validator or self.lookup(mod).config._config[key].validator.internal_id != 'Hidden' else self.hide_value(value)}</b>"
                         for key, value in self.lookup(mod).config.items()
                     ]
                 ),
@@ -656,7 +759,7 @@ class HikkaConfigMod(loader.Module):
                     {
                         "text": self.strings("back_btn"),
                         "callback": self.inline__global_config,
-                        "kwargs": {"is_core": is_core},
+                        "kwargs": {"obj_type": obj_type},
                     },
                     {"text": self.strings("close_btn"), "action": "close"},
                 ]
@@ -672,13 +775,27 @@ class HikkaConfigMod(loader.Module):
                     {
                         "text": self.strings("builtin"),
                         "callback": self.inline__global_config,
-                        "kwargs": {"is_core": True},
+                        "kwargs": {"obj_type": True},
                     },
                     {
                         "text": self.strings("external"),
                         "callback": self.inline__global_config,
                     },
                 ],
+                *(
+                    [
+                        [
+                            {
+                                "text": self.strings("libraries"),
+                                "callback": self.inline__global_config,
+                                "kwargs": {"obj_type": "library"},
+                            }
+                        ]
+                    ]
+                    if self.allmodules.libraries
+                    and any(hasattr(lib, "config") for lib in self.allmodules.libraries)
+                    else []
+                ),
                 [{"text": self.strings("close_btn"), "action": "close"}],
             ],
         )
@@ -687,16 +804,21 @@ class HikkaConfigMod(loader.Module):
         self,
         call: InlineCall,
         page: int = 0,
-        is_core: bool = False,
+        obj_type: Union[bool, str] = False,
     ):
-        to_config = [
-            mod.strings("name")
-            for mod in self.allmodules.modules
-            if hasattr(mod, "config")
-            and callable(mod.strings)
-            and (getattr(mod, "__origin__", None) == "<core>" or not is_core)
-            and (getattr(mod, "__origin__", None) != "<core>" or is_core)
-        ]
+        if isinstance(obj_type, bool):
+            to_config = [
+                mod.strings("name")
+                for mod in self.allmodules.modules
+                if hasattr(mod, "config")
+                and callable(mod.strings)
+                and (getattr(mod, "__origin__", None) == "<core>" or not obj_type)
+                and (getattr(mod, "__origin__", None) != "<core>" or obj_type)
+            ]
+        else:
+            to_config = [
+                lib.name for lib in self.allmodules.libraries if hasattr(lib, "config")
+            ]
 
         to_config.sort()
 
@@ -716,7 +838,7 @@ class HikkaConfigMod(loader.Module):
                     "text": btn,
                     "callback": self.inline__configure,
                     "args": (btn,),
-                    "kwargs": {"is_core": is_core},
+                    "kwargs": {"obj_type": obj_type},
                 }
                 for btn in mod_row
             ]
@@ -724,7 +846,9 @@ class HikkaConfigMod(loader.Module):
 
         if len(to_config) > self._num_rows * self._row_size:
             kb += self.inline.build_pagination(
-                callback=functools.partial(self.inline__global_config, is_core=is_core),
+                callback=functools.partial(
+                    self.inline__global_config, obj_type=obj_type
+                ),
                 total_pages=ceil(len(to_config) / (self._num_rows * self._row_size)),
                 current_page=page + 1,
             )
@@ -739,7 +863,12 @@ class HikkaConfigMod(loader.Module):
             ]
         ]
 
-        await call.edit(self.strings("configure"), reply_markup=kb)
+        await call.edit(
+            self.strings(
+                "configure" if isinstance(obj_type, bool) else "configure_lib"
+            ),
+            reply_markup=kb,
+        )
 
     async def configcmd(self, message: Message):
         """Configure modules"""
@@ -778,7 +907,11 @@ class HikkaConfigMod(loader.Module):
         instance.config[option] = value
         await utils.answer(
             message,
-            self.strings("option_saved").format(
+            self.strings(
+                "option_saved"
+                if isinstance(instance, loader.Module)
+                else "option_saved_lib"
+            ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
                 self.prep_value(instance.config[option])

@@ -1,5 +1,21 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.10
+
+- Completely drop fast_uploader support
+- Add :method:`utils.import_lib`
+- Add protection for :obj:`CheckChatInviteRequest` in forbid_joins
+- Add ability to search modules by classname in :method:`self.lookup`
+- Add anonymous stats of modules loading (YOU CAN DISABLE THEM IN `.settings`)
+- Add telethon objects formatting in `.e`
+- Add :obj:`loader.SelfSuspend` to disable module commands and watcher loading, e.g. if library is unavailable
+- Add migration native modules db storage from `strings["name"]` to classname. ⚠️ Might break some stuff in the beginning in rare cases
+- Fix heroku-specific config error
+
+## 🌑 Hikka 1.2.9
+
+- Small patch which allows developer to specify audio metadata in form and `_edit_unit`
+
 ## 🌑 Hikka 1.2.8
 
 - Add automatic webpage bot unblock in heroku waker
