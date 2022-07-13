@@ -343,19 +343,23 @@ class Modules:
 
         for mod in modules:
             try:
-                module_name = (
-                    f"{__package__}."
-                    f"{MODULES_NAME}."
-                    f"{os.path.basename(mod).rsplit('.py', maxsplit=1)[0].rsplit('_', maxsplit=1)[0]}"
+                mod_shortname = (
+                    os.path.basename(mod)
+                    .rsplit(".py", maxsplit=1)[0]
+                    .rsplit("_", maxsplit=1)[0]
                 )
+                module_name = f"{__package__}.{MODULES_NAME}.{mod_shortname}"
+                user_friendly_origin = (
+                    "<core {}>" if origin == "<core>" else "<file {}>"
+                ).format(mod_shortname)
 
                 logger.debug(f"Loading {module_name} from filesystem")
 
                 with open(mod, "r") as file:
                     spec = ModuleSpec(
                         module_name,
-                        StringLoader(file.read(), origin),
-                        origin=origin,
+                        StringLoader(file.read(), user_friendly_origin),
+                        origin=user_friendly_origin,
                     )
 
                 self.register_module(spec, module_name, origin)

@@ -490,7 +490,7 @@ class LoaderMod(loader.Module):
         self,
         call: InlineCall,
         doc: str,
-        path_: Union[str, None],
+        path_: Optional[str],
         mode: str,
     ):
         save = False
@@ -729,8 +729,10 @@ class LoaderMod(loader.Module):
             try:
                 spec = ModuleSpec(
                     module_name,
-                    loader.StringLoader(doc, origin),
-                    origin=origin,
+                    loader.StringLoader(
+                        doc, f"<string {uid}>" if origin == "<string>" else origin
+                    ),
+                    origin=f"<string {uid}>" if origin == "<string>" else origin,
                 )
                 instance = self.allmodules.register_module(
                     spec,
