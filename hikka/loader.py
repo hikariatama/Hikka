@@ -58,6 +58,10 @@ from ._types import (
 from .inline.core import InlineManager
 from .translations import Strings
 
+import gc as _gc
+import types as _types
+import inspect as _inspect
+
 logger = logging.getLogger(__name__)
 
 owner = security.owner
@@ -75,6 +79,119 @@ group_member = security.group_member
 pm = security.pm
 unrestricted = security.unrestricted
 inline_everyone = security.inline_everyone
+
+
+def proxy0(data):
+    def proxy1():
+        return data
+
+    return proxy1
+
+
+_CELLTYPE = type(proxy0(None).__closure__[0])
+
+
+def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
+    """
+    :summary: Uses the :mod:`gc` module to replace all references to obj
+              :attr:`replace_from` with :attr:`replace_to` (it tries it's best,
+              anyway).
+    :param replace_from: The obj you want to replace.
+    :param replace_to: The new objject you want in place of the old one.
+    :returns: The replace_from
+    """
+    # https://github.com/cart0113/pyjack/blob/dd1f9b70b71f48335d72f53ee0264cf70dbf4e28/pyjack.py
+
+    _gc.collect()
+
+    hit = False
+    for referrer in _gc.get_referrers(replace_from):
+
+        # FRAMES -- PASS THEM UP
+        if isinstance(referrer, _types.FrameType):
+            continue
+
+        # DICTS
+        if isinstance(referrer, dict):
+
+            cls = None
+
+            # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
+            if '__dict__' in referrer and '__weakref__' in referrer:
+                for cls in _gc.get_referrers(referrer):
+                    if _inspect.isclass(cls) and cls.__dict__ == referrer:
+                        break
+
+            for key, value in referrer.items():
+                # REMEMBER TO REPLACE VALUES ...
+                if value is replace_from:
+                    hit = True
+                    value = replace_to
+                    referrer[key] = value
+                    if cls: # AGAIN, CLEANUP DICTPROXY PROBLEM
+                        setattr(cls, key, replace_to)
+                # AND KEYS.
+                if key is replace_from:
+                    hit = True
+                    del referrer[key]
+                    referrer[replace_to] = value
+
+        # LISTS
+        elif isinstance(referrer, list):
+            for i, value in enumerate(referrer):
+                if value is replace_from:
+                    hit = True
+                    referrer[i] = replace_to
+
+        # SETS
+        elif isinstance(referrer, set):
+            referrer.remove(replace_from)
+            referrer.add(replace_to)
+            hit = True
+
+        # TUPLE, FROZENSET
+        elif isinstance(referrer, (tuple, frozenset,)):
+            new_tuple = []
+            for obj in referrer:
+                if obj is replace_from:
+                    new_tuple.append(replace_to)
+                else:
+                    new_tuple.append(obj)
+            replace_all_refs(referrer, type(referrer)(new_tuple))
+
+        # CELLTYPE
+        elif isinstance(referrer, _CELLTYPE):
+            def proxy0(data):
+                def proxy1(): return data
+                return proxy1
+            proxy = proxy0(replace_to)
+            newcell = proxy.__closure__[0]
+            replace_all_refs(referrer, newcell)
+
+        # FUNCTIONS
+        elif isinstance(referrer, _types.FunctionType):
+            localsmap = {}
+            for key in ['code', 'globals', 'name',
+                        'defaults', 'closure']:
+                orgattr = getattr(referrer, '__{}__'.format(key))
+                if orgattr is replace_from:
+                    localsmap[key] = replace_to
+                else:
+                    localsmap[key] = orgattr
+            localsmap['argdefs'] = localsmap['defaults']
+            del localsmap['defaults']
+            newfn = _types.FunctionType(**localsmap)
+            replace_all_refs(referrer, newfn)
+
+        # OTHER (IN DEBUG, SEE WHAT IS NOT SUPPORTED).
+        else:
+            logging.debug(f"{referrer} is not supported.")
+            pass
+
+    if hit is False:
+        raise AttributeError(f"Object '{replace_from}' not found")
+
+    return replace_from
 
 
 async def stop_placeholder() -> bool:
@@ -680,22 +797,19 @@ class Modules:
             ):
                 logging.debug(f"Using existing instance of library {lib.source_url}")
                 return lib
-        
+
         new = True
 
         for lib in self.libraries:
             if lib.source_url == class_instance.source_url:
-                if hasattr(class_instance, "on_lib_update") and callable(
-                    class_instance.on_lib_update
-                ):
-                    await class_instance.on_lib_update()
+                if hasattr(lib, "on_lib_update") and callable(lib.on_lib_update):
+                    await lib.on_lib_update(class_instance)
 
-                lib.__dict__.update(class_instance.__dict__)
-                class_instance = lib
+                replace_all_refs(lib, class_instance)
                 new = False
                 logging.debug(
-                    f"Replacing existing instance of library {lib.source_url} with"
-                    " updated object"
+                    "Replacing existing instance of library"
+                    f" {class_instance.source_url} with updated object"
                 )
 
         if hasattr(class_instance, "init") and callable(class_instance.init):
