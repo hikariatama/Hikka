@@ -733,7 +733,8 @@ class Modules:
         Import library from url and register it in :obj:`Modules`
         :param url: Url to import
         :param suspend_on_error: Will raise :obj:`loader.SelfSuspend` if library can't be loaded
-        :return: Library class instance
+        :return: :obj:`Library`
+        :raise: SelfUnload if :attr:`suspend_on_error` is True and error occurred
         :raise: HTTPError if library is not found
         :raise: ImportError if library doesn't have any class which is a subclass of :obj:`loader.Library`
         :raise: ImportError if library name doesn't end with `Lib`
@@ -762,7 +763,7 @@ class Modules:
         sys.modules[module] = instance
         spec.loader.exec_module(instance)
 
-        class_instance = next(
+        lib_obj = next(
             (
                 value()
                 for value in vars(instance).values()
@@ -771,83 +772,84 @@ class Modules:
             None,
         )
 
-        if not class_instance:
+        if not lib_obj:
             _raise(ImportError("Invalid library. No class found"))
 
-        if not class_instance.__class__.__name__.endswith("Lib"):
+        if not lib_obj.__class__.__name__.endswith("Lib"):
             _raise(ImportError("Invalid library. Class name must end with 'Lib'"))
 
-        class_instance.client = self.client
-        class_instance._client = self.client  # skipcq
-        class_instance.db = self._db
-        class_instance._db = self._db  # skipcq
-        class_instance.name = class_instance.__class__.__name__
-        class_instance.source_url = url.strip("/")
+        lib_obj.client = self.client
+        lib_obj._client = self.client  # skipcq
+        lib_obj.db = self._db
+        lib_obj._db = self._db  # skipcq
+        lib_obj.name = lib_obj.__class__.__name__
+        lib_obj.source_url = url.strip("/")
 
-        class_instance.lookup = self._lookup
-        class_instance.allmodules = self
-        class_instance._lib_get = partial(self._lib_get, _lib=class_instance)  # skipcq
-        class_instance._lib_set = partial(self._lib_set, _lib=class_instance)  # skipcq
+        lib_obj.lookup = self._lookup
+        lib_obj.allmodules = self
+        lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
+        lib_obj._lib_set = partial(self._lib_set, _lib=lib_obj)  # skipcq
+        lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
-        for lib in self.libraries:
-            if lib.source_url == class_instance.source_url and (
-                not isinstance(getattr(lib, "version", None), tuple)
-                and not isinstance(getattr(class_instance, "version", None), tuple)
-                or lib.version == class_instance.version
+        for old_lib in self.libraries:
+            if old_lib.source_url == lib_obj.source_url and (
+                not isinstance(getattr(old_lib, "version", None), tuple)
+                and not isinstance(getattr(lib_obj, "version", None), tuple)
+                or old_lib.version == lib_obj.version
             ):
-                logging.debug(f"Using existing instance of library {lib.source_url}")
-                return lib
+                logging.debug(f"Using existing instance of library {old_lib.source_url}")
+                return old_lib
 
         new = True
 
-        for lib in self.libraries:
-            if lib.source_url == class_instance.source_url:
-                if hasattr(lib, "on_lib_update") and callable(lib.on_lib_update):
-                    await lib.on_lib_update(class_instance)
+        for old_lib in self.libraries:
+            if old_lib.source_url == lib_obj.source_url:
+                if hasattr(old_lib, "on_lib_update") and callable(old_lib.on_lib_update):
+                    await old_lib.on_lib_update(lib_obj)
 
-                replace_all_refs(lib, class_instance)
+                replace_all_refs(old_lib, lib_obj)
                 new = False
                 logging.debug(
                     "Replacing existing instance of library"
-                    f" {class_instance.source_url} with updated object"
+                    f" {lib_obj.source_url} with updated object"
                 )
 
-        if hasattr(class_instance, "init") and callable(class_instance.init):
+        if hasattr(lib_obj, "init") and callable(lib_obj.init):
             try:
-                await class_instance.init()
+                await lib_obj.init()
             except Exception:
                 _raise(RuntimeError("Library init() failed"))
 
-        if hasattr(class_instance, "config"):
-            if not isinstance(class_instance.config, LibraryConfig):
+        if hasattr(lib_obj, "config"):
+            if not isinstance(lib_obj.config, LibraryConfig):
                 _raise(
                     RuntimeError("Library config must be a `LibraryConfig` instance")
                 )
 
-            libcfg = class_instance.db.get(
-                class_instance.__class__.__name__,
+            libcfg = lib_obj.db.get(
+                lib_obj.__class__.__name__,
                 "__config__",
                 {},
             )
 
-            for conf in class_instance.config.keys():
+            for conf in lib_obj.config.keys():
                 with contextlib.suppress(Exception):
-                    class_instance.config.set_no_raise(
+                    lib_obj.config.set_no_raise(
                         conf,
                         (
                             libcfg[conf]
                             if conf in libcfg.keys()
                             else os.environ.get(
-                                f"{class_instance.__class__.__name__}.{conf}"
+                                f"{lib_obj.__class__.__name__}.{conf}"
                             )
-                            or class_instance.config.getdef(conf)
+                            or lib_obj.config.getdef(conf)
                         ),
                     )
 
         if new:
-            self.libraries += [class_instance]
+            self.libraries += [lib_obj]
 
-        return class_instance
+        return lib_obj
 
     def dispatch(self, command: str) -> tuple:
         """Dispatch command to appropriate module"""
