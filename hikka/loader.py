@@ -676,7 +676,7 @@ class Modules:
             if lib.source_url == class_instance.source_url and (
                 not isinstance(getattr(lib, "version", None), tuple)
                 and not isinstance(getattr(class_instance, "version", None), tuple)
-                or lib.version != class_instance.version
+                or lib.version == class_instance.version
             ):
                 logging.debug(f"Using existing instance of library {lib.source_url}")
                 return lib
