@@ -7,7 +7,9 @@
 - Add `self.allmodules` to libs
 - Add `self.lib_get` to libs
 - Add `self.lib_set` to libs
+- Add `self.get_prefix` to libs
 - Add support for hook `on_lib_update` (invoked when library is being updated by new version)
+- Add adequate library migration
 
 ## 🌑 Hikka 1.2.10
 
