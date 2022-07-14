@@ -595,6 +595,17 @@ class Modules:
     def _mod_set(self, key: str, value: Hashable, _modname: str = None) -> bool:
         return self._db.set(_modname, key, value)
 
+    def _lib_get(
+        self,
+        key: str,
+        default: Optional[Hashable] = None,
+        _lib: Library = None,
+    ) -> Hashable:
+        return self._db.get(_lib.__class__.__name__, key, default)
+
+    def _lib_set(self, key: str, value: Hashable, _lib: Library = None) -> bool:
+        return self._db.set(_lib.__class__.__name__, key, value)
+
     async def _mod_import_lib(
         self,
         url: str,
@@ -651,15 +662,41 @@ class Modules:
 
         class_instance.client = self.client
         class_instance._client = self.client  # skipcq
-        class_instance.db = self._db  # skipcq
+        class_instance.db = self._db
         class_instance._db = self._db  # skipcq
         class_instance.name = class_instance.__class__.__name__
         class_instance.source_url = url.strip("/")
 
-        for lib in self.libraries.copy():
-            if lib.source_url == class_instance.source_url:
+        class_instance.lookup = self._lookup
+        class_instance.allmodules = self
+        class_instance._lib_get = partial(self._lib_get, _lib=class_instance)  # skipcq
+        class_instance._lib_set = partial(self._lib_set, _lib=class_instance)  # skipcq
+
+        for lib in self.libraries:
+            if lib.source_url == class_instance.source_url and (
+                not isinstance(getattr(lib, "version", None), tuple)
+                and not isinstance(getattr(class_instance, "version", None), tuple)
+                or lib.version != class_instance.version
+            ):
                 logging.debug(f"Using existing instance of library {lib.source_url}")
                 return lib
+        
+        new = True
+
+        for lib in self.libraries:
+            if lib.source_url == class_instance.source_url:
+                if hasattr(class_instance, "on_lib_update") and callable(
+                    class_instance.on_lib_update
+                ):
+                    await class_instance.on_lib_update()
+
+                lib.__dict__.update(class_instance.__dict__)
+                class_instance = lib
+                new = False
+                logging.debug(
+                    f"Replacing existing instance of library {lib.source_url} with"
+                    " updated object"
+                )
 
         if hasattr(class_instance, "init") and callable(class_instance.init):
             try:
@@ -692,17 +729,9 @@ class Modules:
                             or class_instance.config.getdef(conf)
                         ),
                     )
-        self.libraries += [class_instance]
 
-        if len([x.name for x in self.libraries]) != len(
-            {x.name for x in self.libraries}
-        ):
-            self.libraries.remove(class_instance)
-            _raise(
-                RuntimeError(
-                    "Use different classname for your library. You have a override"
-                )
-            )
+        if new:
+            self.libraries += [class_instance]
 
         return class_instance
 

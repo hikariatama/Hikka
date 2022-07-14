@@ -1,5 +1,14 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.11
+
+- Add support for lib attribute `version` (must be defined BEFORE `init` method)
+- Add `self.lookup` to libs
+- Add `self.allmodules` to libs
+- Add `self.lib_get` to libs
+- Add `self.lib_set` to libs
+- Add support for hook `on_lib_update` (invoked when library is being updated by new version)
+
 ## 🌑 Hikka 1.2.10
 
 - Completely drop fast_uploader support
