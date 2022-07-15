@@ -115,7 +115,8 @@ else:
             from telethon.tl.functions.messages import SendReactionRequest  # noqa: F401
         except ImportError:
             print(
-                "⚠️ Warning: Default telethon is used as main one. This can cause errors and enables DAR. Attempting to reinstall telethon-mod..."
+                "⚠️ Warning: Default telethon is used as main one. This can cause"
+                " errors and enables DAR. Attempting to reinstall telethon-mod..."
             )
             subprocess.run(
                 [

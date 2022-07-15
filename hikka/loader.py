@@ -117,7 +117,7 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
             cls = None
 
             # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
-            if '__dict__' in referrer and '__weakref__' in referrer:
+            if "__dict__" in referrer and "__weakref__" in referrer:
                 for cls in _gc.get_referrers(referrer):
                     if _inspect.isclass(cls) and cls.__dict__ == referrer:
                         break
@@ -128,7 +128,7 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
                     hit = True
                     value = replace_to
                     referrer[key] = value
-                    if cls: # AGAIN, CLEANUP DICTPROXY PROBLEM
+                    if cls:  # AGAIN, CLEANUP DICTPROXY PROBLEM
                         setattr(cls, key, replace_to)
                 # AND KEYS.
                 if key is replace_from:
@@ -150,7 +150,13 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
             hit = True
 
         # TUPLE, FROZENSET
-        elif isinstance(referrer, (tuple, frozenset,)):
+        elif isinstance(
+            referrer,
+            (
+                tuple,
+                frozenset,
+            ),
+        ):
             new_tuple = []
             for obj in referrer:
                 if obj is replace_from:
@@ -161,9 +167,13 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
 
         # CELLTYPE
         elif isinstance(referrer, _CELLTYPE):
+
             def proxy0(data):
-                def proxy1(): return data
+                def proxy1():
+                    return data
+
                 return proxy1
+
             proxy = proxy0(replace_to)
             newcell = proxy.__closure__[0]
             replace_all_refs(referrer, newcell)
@@ -171,15 +181,14 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
         # FUNCTIONS
         elif isinstance(referrer, _types.FunctionType):
             localsmap = {}
-            for key in ['code', 'globals', 'name',
-                        'defaults', 'closure']:
-                orgattr = getattr(referrer, '__{}__'.format(key))
+            for key in ["code", "globals", "name", "defaults", "closure"]:
+                orgattr = getattr(referrer, "__{}__".format(key))
                 if orgattr is replace_from:
                     localsmap[key] = replace_to
                 else:
                     localsmap[key] = orgattr
-            localsmap['argdefs'] = localsmap['defaults']
-            del localsmap['defaults']
+            localsmap["argdefs"] = localsmap["defaults"]
+            del localsmap["defaults"]
             newfn = _types.FunctionType(**localsmap)
             replace_all_refs(referrer, newfn)
 
@@ -797,14 +806,18 @@ class Modules:
                 and not isinstance(getattr(lib_obj, "version", None), tuple)
                 or old_lib.version == lib_obj.version
             ):
-                logging.debug(f"Using existing instance of library {old_lib.source_url}")
+                logging.debug(
+                    f"Using existing instance of library {old_lib.source_url}"
+                )
                 return old_lib
 
         new = True
 
         for old_lib in self.libraries:
             if old_lib.source_url == lib_obj.source_url:
-                if hasattr(old_lib, "on_lib_update") and callable(old_lib.on_lib_update):
+                if hasattr(old_lib, "on_lib_update") and callable(
+                    old_lib.on_lib_update
+                ):
                     await old_lib.on_lib_update(lib_obj)
 
                 replace_all_refs(old_lib, lib_obj)
@@ -839,12 +852,15 @@ class Modules:
                         (
                             libcfg[conf]
                             if conf in libcfg.keys()
-                            else os.environ.get(
-                                f"{lib_obj.__class__.__name__}.{conf}"
-                            )
+                            else os.environ.get(f"{lib_obj.__class__.__name__}.{conf}")
                             or lib_obj.config.getdef(conf)
                         ),
                     )
+
+        if hasattr(lib_obj, "strings"):
+            lib_obj.strings = Strings(lib_obj, self.translator)
+
+        lib_obj.translator = self.translator
 
         if new:
             self.libraries += [lib_obj]
@@ -873,6 +889,7 @@ class Modules:
 
     def send_config(self, db, translator, skip_hook: bool = False):
         """Configure modules"""
+        self.translator = translator
         for mod in self.modules:
             self.send_config_one(mod, db, translator, skip_hook)
 

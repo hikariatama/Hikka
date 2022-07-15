@@ -43,9 +43,14 @@ class HikkaSecurityMod(loader.Module):
     strings = {
         "name": "HikkaSecurity",
         "no_command": "🚫 <b>Command </b><code>{}</code><b> not found!</b>",
-        "permissions": "🔐 <b>Here you can configure permissions for </b><code>{}{}</code>",
+        "permissions": (
+            "🔐 <b>Here you can configure permissions for </b><code>{}{}</code>"
+        ),
         "close_menu": "🙈 Close this menu",
-        "global": "🔐 <b>Here you can configure global bounding mask. If the permission is excluded here, it is excluded everywhere!</b>",
+        "global": (
+            "🔐 <b>Here you can configure global bounding mask. If the permission is"
+            " excluded here, it is excluded everywhere!</b>"
+        ),
         "owner": "🤴 Owner",
         "sudo": "🤵 Sudo",
         "support": "🧑‍🔧 Support",
@@ -66,19 +71,38 @@ class HikkaSecurityMod(loader.Module):
         "no_owner": "🤴 <b>There is no users in group </b><code>owner</code>",
         "no_sudo": "🧑‍✈️ <b>There is no users in group </b><code>sudo</code>",
         "no_support": "🧑‍🔧 <b>There is no users in group </b><code>support</code>",
-        "owner_added": '🤴 <b><a href="tg://user?id={}">{}</a> added to group </b><code>owner</code>',
-        "sudo_added": '🧑‍✈️ <b><a href="tg://user?id={}">{}</a> added to group </b><code>sudo</code>',
-        "support_added": '🧑‍🔧 <b><a href="tg://user?id={}">{}</a> added to group </b><code>support</code>',
-        "owner_removed": '🤴 <b><a href="tg://user?id={}">{}</a> removed from group </b><code>owner</code>',
-        "sudo_removed": '🧑‍✈️ <b><a href="tg://user?id={}">{}</a> removed from group </b><code>sudo</code>',
-        "support_removed": '🧑‍🔧 <b><a href="tg://user?id={}">{}</a> removed from group </b><code>support</code>',
+        "owner_added": (
+            '🤴 <b><a href="tg://user?id={}">{}</a> added to group'
+            " </b><code>owner</code>"
+        ),
+        "sudo_added": (
+            '🧑‍✈️ <b><a href="tg://user?id={}">{}</a> added to group'
+            " </b><code>sudo</code>"
+        ),
+        "support_added": (
+            '🧑‍🔧 <b><a href="tg://user?id={}">{}</a> added to group'
+            " </b><code>support</code>"
+        ),
+        "owner_removed": (
+            '🤴 <b><a href="tg://user?id={}">{}</a> removed from group'
+            " </b><code>owner</code>"
+        ),
+        "sudo_removed": (
+            '🧑‍✈️ <b><a href="tg://user?id={}">{}</a> removed from group'
+            " </b><code>sudo</code>"
+        ),
+        "support_removed": (
+            '🧑‍🔧 <b><a href="tg://user?id={}">{}</a> removed from group'
+            " </b><code>support</code>"
+        ),
         "no_user": "🚫 <b>Specify user to permit</b>",
         "not_a_user": "🚫 <b>Specified entity is not a user</b>",
         "li": '⦿ <b><a href="tg://user?id={}">{}</a></b>',
         "warning": (
-            '⚠️ <b>Please, confirm, that you want to add <a href="tg://user?id={}">{}</a> '
-            "to group </b><code>{}</code><b>!\nThis action may reveal personal info and grant "
-            "full or partial access to userbot to this user</b>"
+            "⚠️ <b>Please, confirm, that you want to add <a"
+            ' href="tg://user?id={}">{}</a> to group </b><code>{}</code><b>!\nThis'
+            " action may reveal personal info and grant full or partial access to"
+            " userbot to this user</b>"
         ),
         "cancel": "🚫 Cancel",
         "confirm": "👑 Confirm",
@@ -90,9 +114,14 @@ class HikkaSecurityMod(loader.Module):
 
     strings_ru = {
         "no_command": "🚫 <b>Команда </b><code>{}</code><b> не найдена!</b>",
-        "permissions": "🔐 <b>Здесь можно настроить разрешения для команды </b><code>{}{}</code>",
+        "permissions": (
+            "🔐 <b>Здесь можно настроить разрешения для команды </b><code>{}{}</code>"
+        ),
         "close_menu": "🙈 Закрыть это меню",
-        "global": "🔐 <b>Здесь можно настроить глобальную исключающую маску. Если тумблер выключен здесь, он выключен для всех команд</b>",
+        "global": (
+            "🔐 <b>Здесь можно настроить глобальную исключающую маску. Если тумблер"
+            " выключен здесь, он выключен для всех команд</b>"
+        ),
         "owner": "🤴 Владелец",
         "sudo": "🤵 Sudo",
         "support": "🧑‍🔧 Помощник",
@@ -108,7 +137,9 @@ class HikkaSecurityMod(loader.Module):
         "pm": "🤙 В лс",
         "owner_list": "🤴 <b>Пользователи группы </b><code>owner</code><b>:</b>\n\n{}",
         "sudo_list": "🧑‍✈️ <b>Пользователи группы </b><code>sudo</code><b>:</b>\n\n{}",
-        "support_list": "🧑‍🔧 <b>Пользователи группы </b><code>support</code><b>:</b>\n\n{}",
+        "support_list": (
+            "🧑‍🔧 <b>Пользователи группы </b><code>support</code><b>:</b>\n\n{}"
+        ),
         "no_owner": "🤴 <b>Нет пользователей в группе </b><code>owner</code>",
         "no_sudo": "🧑‍✈️ <b>Нет пользователей в группе </b><code>sudo</code>",
         "no_support": "🧑‍🔧 <b>Нет пользователей в группе </b><code>support</code>",
@@ -118,20 +149,26 @@ class HikkaSecurityMod(loader.Module):
         "confirm": "👑 Подтвердить",
         "self": "🚫 <b>Нельзя управлять своими правами!</b>",
         "warning": (
-            '⚠️ <b>Ты действительно хочешь добавить <a href="tg://user?id={}">{}</a> '
-            "в группу </b><code>{}</code><b>!\nЭто действие может передать частичный или"
+            '⚠️ <b>Ты действительно хочешь добавить <a href="tg://user?id={}">{}</a> в'
+            " группу </b><code>{}</code><b>!\nЭто действие может передать частичный или"
             " полный доступ к юзерботу этому пользователю!</b>"
         ),
-        "suggest_nonick": "🔰 <i>Хочешь ли ты включить NoNick для этого пользователя?</i>",
+        "suggest_nonick": (
+            "🔰 <i>Хочешь ли ты включить NoNick для этого пользователя?</i>"
+        ),
         "user_nn": '🔰 <b>NoNick для <a href="tg://user?id={}">{}</a> включен</b>',
         "enable_nonick_btn": "🔰 Включить",
         "_cmd_doc_security": "[команда] - Изменить настройки безопасности для команды",
         "_cmd_doc_sudoadd": "<пользователь> - Добавить пользователя в группу `sudo`",
         "_cmd_doc_owneradd": "<пользователь> - Добавить пользователя в группу `owner`",
-        "_cmd_doc_supportadd": "<пользователь> - Добавить пользователя в группу `support`",
+        "_cmd_doc_supportadd": (
+            "<пользователь> - Добавить пользователя в группу `support`"
+        ),
         "_cmd_doc_sudorm": "<пользователь> - Удалить пользователя из группы `sudo`",
         "_cmd_doc_ownerrm": "<пользователь> - Удалить пользователя из группы `owner`",
-        "_cmd_doc_supportrm": "<пользователь> - Удалить пользователя из группы `support`",
+        "_cmd_doc_supportrm": (
+            "<пользователь> - Удалить пользователя из группы `support`"
+        ),
         "_cmd_doc_sudolist": "Показать пользователей в группе `sudo`",
         "_cmd_doc_ownerlist": "Показать пользователей в группе `owner`",
         "_cmd_doc_supportlist": "Показать пользователей в группе `support`",
@@ -178,7 +215,8 @@ class HikkaSecurityMod(loader.Module):
             and level
         ):
             await call.answer(
-                f"Security value set but not applied. Consider enabling this value in .{'inlinesec' if is_inline else 'security'}",
+                "Security value set but not applied. Consider enabling this value in"
+                f" .{'inlinesec' if is_inline else 'security'}",
                 show_alert=True,
             )
         else:

@@ -62,12 +62,17 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Restarting...</b>",
         "downloading": "🕐 <b>Downloading updates...</b>",
         "installing": "🕐 <b>Installing updates...</b>",
-        "success": "⏳ <b>Restart successful! {}</b>\n<i>But still loading modules...</i>\n<i>Restart took {}s</i>",
+        "success": (
+            "⏳ <b>Restart successful! {}</b>\n<i>But still loading"
+            " modules...</i>\n<i>Restart took {}s</i>"
+        ),
         "origin_cfg_doc": "Git origin URL, for where to update from",
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
         "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
-        "secure_boot_confirm": "🔄 <b>Are you sure you want to restart in secure boot mode?</b>",
+        "secure_boot_confirm": (
+            "🔄 <b>Are you sure you want to restart in secure boot mode?</b>"
+        ),
         "update_confirm": (
             "🧭 <b>Are you sure you want to update?\n\n"
             '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
@@ -77,10 +82,20 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Cancel",
         "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
-        "heroku_update": "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>",
-        "full_success": "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>",
-        "secure_boot_complete": "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>",
-        "heroku_psycopg2_unavailable": "♓️🚫 <b>PostgreSQL database is not available.</b>\n\n<i>Do not report this error to support chat, as it has nothing to do with Hikka. Try changing database to Redis</i>",
+        "heroku_update": (
+            "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
+        ),
+        "full_success": (
+            "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>"
+        ),
+        "heroku_psycopg2_unavailable": (
+            "♓️🚫 <b>PostgreSQL database is not available.</b>\n\n<i>Do not report this"
+            " error to support chat, as it has nothing to do with Hikka. Try changing"
+            " database to Redis</i>"
+        ),
     }
 
     strings_ru = {
@@ -88,14 +103,26 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Перезагрузка...</b>",
         "downloading": "🕐 <b>Скачивание обновлений...</b>",
         "installing": "🕐 <b>Установка обновлений...</b>",
-        "success": "⏳ <b>Перезагрузка успешна! {}</b>\n<i>Но модули еще загружаются...</i>\n<i>Перезагрузка заняла {} сек</i>",
-        "full_success": "✅ <b>Юзербот полностью загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>",
-        "secure_boot_complete": "🔒 <b>Безопасная загрузка завершена! {}</b>\n<i>Перезагрузка заняла {} сек</i>",
+        "success": (
+            "⏳ <b>Перезагрузка успешна! {}</b>\n<i>Но модули еще"
+            " загружаются...</i>\n<i>Перезагрузка заняла {} сек</i>"
+        ),
+        "full_success": (
+            "✅ <b>Юзербот полностью загружен! {}</b>\n<i>Полная перезагрузка заняла {}"
+            " сек</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Безопасная загрузка завершена! {}</b>\n<i>Перезагрузка заняла {}"
+            " сек</i>"
+        ),
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
         "restart_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться?</b>",
-        "secure_boot_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться в режиме безопасной загрузки?</b>",
+        "secure_boot_confirm": (
+            "🔄 <b>Ты уверен, что хочешь перезагрузиться в режиме безопасной"
+            " загрузки?</b>"
+        ),
         "update_confirm": (
             "🧭 <b>Ты уверен, что хочешь обновиться??\n\n"
             '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
@@ -110,8 +137,14 @@ class UpdaterMod(loader.Module):
         "_cls_doc": "Обновляет юзербот",
         "lavhost_restart": "✌️ <b>Твой lavHost перезагружается...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Твой lavHost обновляется...\n&gt;///&lt;</b>",
-        "heroku_update": "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>",
-        "heroku_psycopg2_unavailable": "♓️🚫 <b>PostgreSQL база данных не доступна.</b>\n\n<i>Не обращайтесь к поддержке чата, так как эта проблема не вызвана Hikka. Попробуйте изменить базу данных на Redis</i>",
+        "heroku_update": (
+            "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
+        ),
+        "heroku_psycopg2_unavailable": (
+            "♓️🚫 <b>PostgreSQL база данных не доступна.</b>\n\n<i>Не обращайтесь к"
+            " поддержке чата, так как эта проблема не вызвана Hikka. Попробуйте"
+            " изменить базу данных на Redis</i>"
+        ),
     }
 
     def __init__(self):

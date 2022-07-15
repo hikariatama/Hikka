@@ -45,22 +45,40 @@ class TestMod(loader.Module):
         "set_loglevel": "🚫 <b>Please specify verbosity as an integer or string</b>",
         "no_logs": "ℹ️ <b>You don't have any logs at verbosity {}.</b>",
         "logs_filename": "hikka-logs.txt",
-        "logs_caption": "🌘 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka version: {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>",
+        "logs_caption": (
+            "🌘 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka"
+            " version: {}.{}.{}</b>{}\n⏱ <b>Uptime:"
+            " {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
+            " InlineLogs</b>"
+        ),
         "suspend_invalid_time": "🚫 <b>Invalid time to suspend</b>",
         "suspended": "🥶 <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>",
-        "results_ping": "⏱ <b>Telegram ping:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Uptime: {}</b>",
-        "ping_hint": "💡 <i>Telegram ping mostly depends on Telegram servers latency and other external factors and has nothing to do with the parameters of server on which userbot is installed</i>",
-        "confidential": "⚠️ <b>Log level </b><code>{}</code><b> may reveal your confidential info, be careful</b>",
+        "results_ping": (
+            "⏱ <b>Telegram ping:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Uptime: {}</b>"
+        ),
+        "ping_hint": (
+            "💡 <i>Telegram ping mostly depends on Telegram servers latency and other"
+            " external factors and has nothing to do with the parameters of server on"
+            " which userbot is installed</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Log level </b><code>{}</code><b> may reveal your confidential info,"
+            " be careful</b>"
+        ),
         "confidential_text": (
-            "⚠️ <b>Log level </b><code>{0}</code><b> may reveal your confidential info, "
-            "be careful</b>\n<b>Type </b><code>.logs {0} force_insecure</code><b> "
-            "to ignore this warning</b>"
+            "⚠️ <b>Log level </b><code>{0}</code><b> may reveal your confidential info,"
+            " be careful</b>\n<b>Type </b><code>.logs {0} force_insecure</code><b> to"
+            " ignore this warning</b>"
         ),
         "choose_loglevel": "💁‍♂️ <b>Choose log level</b>",
         "database_unlocked": "🚫 DB eval unlocked",
         "database_locked": "✅ DB eval locked",
         "bad_module": "🚫 <b>Module not found</b>",
-        "debugging_enabled": "🧑‍💻 <b>Debugging mode enabled for module </b><code>{0}</code>\n<i>Go to directory named `debug_modules`, edit file named `{0}.py` and see changes in real time</i>",
+        "debugging_enabled": (
+            "🧑‍💻 <b>Debugging mode enabled for module </b><code>{0}</code>\n<i>Go to"
+            " directory named `debug_modules`, edit file named `{0}.py` and see changes"
+            " in real time</i>"
+        ),
         "debugging_disabled": "✅ <b>Debugging disabled</b>",
         "heroku_debug": "🚫 <b>Debugging is not available on Heroku</b>",
     }
@@ -69,21 +87,47 @@ class TestMod(loader.Module):
         "set_loglevel": "🚫 <b>Укажи уровень логов числом или строкой</b>",
         "no_logs": "ℹ️ <b>У тебя нет логов уровня {}.</b>",
         "logs_filename": "hikka-logs.txt",
-        "logs_caption": "🌘 <b>Логи Hikka уровня </b><code>{}</code>\n\n👩‍🎤 <b>Версия Hikka: {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>",
+        "logs_caption": (
+            "🌘 <b>Логи Hikka уровня </b><code>{}</code>\n\n👩‍🎤 <b>Версия Hikka:"
+            " {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{}"
+            " NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>"
+        ),
         "database_unlocked": "🚫 База скомпрометирована",
         "database_locked": "✅ База защищена",
         "bad_module": "🚫 <b>Модуль не найден</b>",
-        "debugging_enabled": "🧑‍💻 <b>Режим разработчика включен для модуля </b><code>{0}</code>\n<i>Отправляйся в директорию `debug_modules`, изменяй файл `{0}.py`, и смотри изменения в режиме реального времени</i>",
+        "debugging_enabled": (
+            "🧑‍💻 <b>Режим разработчика включен для модуля"
+            " </b><code>{0}</code>\n<i>Отправляйся в директорию `debug_modules`,"
+            " изменяй файл `{0}.py`, и смотри изменения в режиме реального времени</i>"
+        ),
         "debugging_disabled": "✅ <b>Режим разработчика выключен</b>",
         "suspend_invalid_time": "🚫 <b>Неверное время заморозки</b>",
         "suspended": "🥶 <b>Бот заморожен на</b> <code>{}</code> <b>секунд</b>",
-        "results_ping": "⏱ <b>Скорость отклика Telegram:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Прошло с последней перезагрузки: {}</b>",
-        "ping_hint": "💡 <i>Скорость отклика Telegram в большей степени зависит от загруженности серверов Telegram и других внешних факторов и никак не связана с параметрами сервера, на который установлен юзербот</i>",
-        "confidential": "⚠️ <b>Уровень логов </b><code>{}</code><b> может содержать личную информацию, будь осторожен</b>",
-        "confidential_text": "⚠️ <b>Уровень логов </b><code>{0}</code><b> может содержать личную информацию, будь осторожен</b>\n<b>Напиши </b><code>.logs {0} force_insecure</code><b>, чтобы отправить логи игнорируя предупреждение</b>",
+        "results_ping": (
+            "⏱ <b>Скорость отклика Telegram:</b> <code>{}</code> <b>ms</b>\n👩‍💼"
+            " <b>Прошло с последней перезагрузки: {}</b>"
+        ),
+        "ping_hint": (
+            "💡 <i>Скорость отклика Telegram в большей степени зависит от загруженности"
+            " серверов Telegram и других внешних факторов и никак не связана с"
+            " параметрами сервера, на который установлен юзербот</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Уровень логов </b><code>{}</code><b> может содержать личную"
+            " информацию, будь осторожен</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Уровень логов </b><code>{0}</code><b> может содержать личную"
+            " информацию, будь осторожен</b>\n<b>Напиши </b><code>.logs {0}"
+            " force_insecure</code><b>, чтобы отправить логи игнорируя"
+            " предупреждение</b>"
+        ),
         "choose_loglevel": "💁‍♂️ <b>Выбери уровень логов</b>",
         "_cmd_doc_dump": "Показать информацию о сообщении",
-        "_cmd_doc_logs": "<уровень> - Отправляет лог-файл. Уровни ниже WARNING могут содержать личную инфомрацию.",
+        "_cmd_doc_logs": (
+            "<уровень> - Отправляет лог-файл. Уровни ниже WARNING могут содержать"
+            " личную инфомрацию."
+        ),
         "_cmd_doc_suspend": "<время> - Заморозить бота на некоторое время",
         "_cmd_doc_ping": "Проверяет скорость отклика юзербота",
         "_cls_doc": "Операции, связанные с самотестированием",
@@ -95,10 +139,8 @@ class TestMod(loader.Module):
             loader.ConfigValue(
                 "force_send_all",
                 False,
-                (
-                    "Forcefully send logs to all clients, aka do not split logs "
-                    "to <mine> and <not-mine>. Restart required after setting"
-                ),
+                "Forcefully send logs to all clients, aka do not split logs "
+                "to <mine> and <not-mine>. Restart required after setting",
                 validator=loader.validators.Boolean(),
             )
         )
@@ -277,12 +319,10 @@ class TestMod(loader.Module):
 
         logs = "\n\n".join(
             [
-                (
-                    "\n".join(
-                        handler.dumps(lvl, client_id=self._client._tg_id)
-                        if "client_id" in inspect.signature(handler.dumps).parameters
-                        else handler.dumps(lvl)
-                    )
+                "\n".join(
+                    handler.dumps(lvl, client_id=self._client._tg_id)
+                    if "client_id" in inspect.signature(handler.dumps).parameters
+                    else handler.dumps(lvl)
                 )
                 for handler in logging.getLogger().handlers
             ]
@@ -382,7 +422,8 @@ class TestMod(loader.Module):
 
         other = (
             *main.__version__,
-            f' <i><a href="https://github.com/hikariatama/Hikka/commit/{ghash}">({ghash[:8]})</a></i>'
+            " <i><a"
+            f' href="https://github.com/hikariatama/Hikka/commit/{ghash}">({ghash[:8]})</a></i>'
             if ghash
             else "",
             utils.formatted_uptime(),

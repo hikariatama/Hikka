@@ -26,12 +26,18 @@ class UpdateNotifierMod(loader.Module):
 
     strings = {
         "name": "UpdateNotifier",
-        "update_required": "🌘 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
+        "update_required": (
+            "🌘 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
         "more": "\n<i><b>🎥 And {} more...</b></i>",
     }
 
     strings_ru = {
-        "update_required": "🌘 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
+        "update_required": (
+            "🌘 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
         "more": "\n<i><b>🎥 И еще {}...</b></i>",
     }
 
@@ -65,7 +71,8 @@ class UpdateNotifierMod(loader.Module):
             return False
 
         res = "\n".join(
-            f"<b>{commit.split()[0]}</b>: <i>{utils.escape_html(' '.join(commit.split()[1:]))}</i>"
+            f"<b>{commit.split()[0]}</b>:"
+            f" <i>{utils.escape_html(' '.join(commit.split()[1:]))}</i>"
             for commit in diff.splitlines()[:10]
         )
 

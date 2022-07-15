@@ -672,12 +672,11 @@ class Hikka:
                 key = self.arguments.heroku
             else:
                 print(
-                    "\033[0;35m- Heroku installation -\033[0m\n"
-                    "*If you are from Russia, enable VPN and use it throughout the process\n\n"
-                    "1. Register account at https://heroku.com\n"
-                    "2. Go to https://dashboard.heroku.com/account\n"
-                    "3. Next to API Key click `Reveal` and copy it\n"
-                    "4. Enter it below:"
+                    "\033[0;35m- Heroku installation -\033[0m\n*If you are from Russia,"
+                    " enable VPN and use it throughout the process\n\n1. Register"
+                    " account at https://heroku.com\n2. Go to"
+                    " https://dashboard.heroku.com/account\n3. Next to API Key click"
+                    " `Reveal` and copy it\n4. Enter it below:"
                 )
                 key = input("♓️ \033[1;37mHeroku API key:\033[0m ").strip()
 
@@ -687,7 +686,7 @@ class Hikka:
             )
 
             app = heroku.publish(key, api_token=self.api_token)
-            print("Installed to heroku successfully!\n" f"🎉 App URL: {app.web_url}")
+            print(f"Installed to heroku successfully!\n🎉 App URL: {app.web_url}")
 
             # On this point our work is done
             # everything else will be run on Heroku, including

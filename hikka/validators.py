@@ -133,7 +133,10 @@ def Integer(
         else:
             doc = {
                 "en": f"{_sign_en}integer from {minimum} to {maximum}{_digits_en}",
-                "ru": f"{_sign_ru}целым числом в промежутке от {minimum} до {maximum}{_digits_ru}",
+                "ru": (
+                    f"{_sign_ru}целым числом в промежутке от {minimum} до"
+                    f" {maximum}{_digits_ru}"
+                ),
             }
     else:
         if maximum is None and maximum != 0:
@@ -162,7 +165,8 @@ def Integer(
 def _Choice(value: Any, /, *, possible_values: list) -> Any:
     if value not in possible_values:
         raise ValidationError(
-            f"Passed value ({value}) is not one of the following: {'/'.join(list(map(str, possible_values)))}"
+            f"Passed value ({value}) is not one of the following:"
+            f" {'/'.join(list(map(str, possible_values)))}"
         )
 
     return value
@@ -221,7 +225,8 @@ def _Series(
                 value[i] = validator.validate(item)
             except ValidationError:
                 raise ValidationError(
-                    f"Passed value ({value}) contains invalid item ({str(item).strip()}), which must be {validator.doc['en']}"
+                    f"Passed value ({value}) contains invalid item"
+                    f" ({str(item).strip()}), which must be {validator.doc['en']}"
                 )
 
     value = list(filter(lambda x: x, value))
@@ -414,7 +419,9 @@ def Float(
         else:
             doc = {
                 "en": f"{_sign_en}float from {minimum} to {maximum}",
-                "ru": f"{_sign_ru}дробным числом в промежутке от {minimum} до {maximum}",
+                "ru": (
+                    f"{_sign_ru}дробным числом в промежутке от {minimum} до {maximum}"
+                ),
             }
     else:
         if maximum is None and maximum != 0:

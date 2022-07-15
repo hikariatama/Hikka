@@ -262,7 +262,7 @@ class Gallery(InlineUnit):
                     # Remove `Traceback (most recent call last):`
                     exc = "\n".join(exc.splitlines()[1:])
                     msg = (
-                        f"<b>🚫 Gallery invoke failed!</b>\n\n"
+                        "<b>🚫 Gallery invoke failed!</b>\n\n"
                         f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
                     )
 

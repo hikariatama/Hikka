@@ -52,7 +52,10 @@ class HikkaSettingsMod(loader.Module):
         "cmd_nn": "🔰 <b>NoNick for </b><code>{}</code><b> is now {}</b>",
         "cmd404": "🔰 <b>Command not found</b>",
         "inline_settings": "⚙️ <b>Here you can configure your Hikka settings</b>",
-        "confirm_update": "🧭 <b>Please, confirm that you want to update. Your userbot will be restarted</b>",
+        "confirm_update": (
+            "🧭 <b>Please, confirm that you want to update. Your userbot will be"
+            " restarted</b>"
+        ),
         "confirm_restart": "🔄 <b>Please, confirm that you want to restart</b>",
         "suggest_fs": "✅ Suggest FS for modules",
         "do_not_suggest_fs": "🚫 Suggest FS for modules",
@@ -71,14 +74,17 @@ class HikkaSettingsMod(loader.Module):
             "You may get muted in Hikka chats. Change prefix or "
             "disable NoNick!"
         ),
-        "reply_required": "🚫 <b>Reply to a message of user, which needs to be added to NoNick</b>",
-        "deauth_confirm": (
-            "⚠️ <b>This action will fully remove Hikka from this account and can't be reverted!</b>\n\n"
-            "<i>- Hikka chats will be removed\n"
-            "- Session will be terminated and removed\n"
-            "- Hikka inline bot will be removed</i>"
+        "reply_required": (
+            "🚫 <b>Reply to a message of user, which needs to be added to NoNick</b>"
         ),
-        "deauth_confirm_step2": "⚠️ <b>Are you really sure you want to delete Hikka?</b>",
+        "deauth_confirm": (
+            "⚠️ <b>This action will fully remove Hikka from this account and can't be"
+            " reverted!</b>\n\n<i>- Hikka chats will be removed\n- Session will be"
+            " terminated and removed\n- Hikka inline bot will be removed</i>"
+        ),
+        "deauth_confirm_step2": (
+            "⚠️ <b>Are you really sure you want to delete Hikka?</b>"
+        ),
         "deauth_yes": "I'm sure",
         "deauth_no_1": "I'm not sure",
         "deauth_no_2": "I'm uncertain",
@@ -86,20 +92,36 @@ class HikkaSettingsMod(loader.Module):
         "deauth_cancel": "🚫 Cancel",
         "deauth_confirm_btn": "😢 Delete",
         "uninstall": "😢 <b>Uninstalling Hikka...</b>",
-        "uninstalled": "😢 <b>Hikka uninstalled. Web interface is still active, you can add another account</b>",
+        "uninstalled": (
+            "😢 <b>Hikka uninstalled. Web interface is still active, you can add another"
+            " account</b>"
+        ),
         "logs_cleared": "🗑 <b>Logs cleared</b>",
         "cmd_nn_list": "🔰 <b>NoNick is enabled for these commands:</b>\n\n{}",
         "user_nn_list": "🔰 <b>NoNick is enabled for these users:</b>\n\n{}",
         "chat_nn_list": "🔰 <b>NoNick is enabled for these chats:</b>\n\n{}",
         "nothing": "🔰 <b>Nothing to show...</b>",
-        "privacy_leak": "⚠️ <b>This command gives access to your Hikka web interface. It's not recommended to run it in public group chats. Consider using it in <a href='tg://openmessage?user_id={}'>Saved messages</a>. Type </b><code>{}proxypass force_insecure</code><b> to ignore this warning</b>",
-        "privacy_leak_nowarn": "⚠️ <b>This command gives access to your Hikka web interface. It's not recommended to run it in public group chats. Consider using it in <a href='tg://openmessage?user_id={}'>Saved messages</a>.</b>",
+        "privacy_leak": (
+            "⚠️ <b>This command gives access to your Hikka web interface. It's not"
+            " recommended to run it in public group chats. Consider using it in <a"
+            " href='tg://openmessage?user_id={}'>Saved messages</a>. Type"
+            " </b><code>{}proxypass force_insecure</code><b> to ignore this warning</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>This command gives access to your Hikka web interface. It's not"
+            " recommended to run it in public group chats. Consider using it in <a"
+            " href='tg://openmessage?user_id={}'>Saved messages</a>.</b>"
+        ),
         "opening_tunnel": "🔁 <b>Opening tunnel to Hikka web interface...</b>",
         "tunnel_opened": "🎉 <b>Tunnel opened. This link is valid for about 1 hour</b>",
         "web_btn": "🌍 Web interface",
         "btn_yes": "🚸 Open anyway",
         "btn_no": "🔻 Cancel",
-        "lavhost_web": "✌️ <b>This link leads to your Hikka web interface on lavHost</b>\n\n<i>💡 You'll need to authorize using lavHost credentials, specified on registration</i>",
+        "lavhost_web": (
+            "✌️ <b>This link leads to your Hikka web interface on lavHost</b>\n\n<i>💡"
+            " You'll need to authorize using lavHost credentials, specified on"
+            " registration</i>"
+        ),
         "disable_stats": "✅ Anonymous stats allowed",
         "enable_stats": "🚫 Anonymous stats disabled",
     }
@@ -139,7 +161,9 @@ class HikkaSettingsMod(loader.Module):
             "[-o - только исходящие]\n"
             "[-i - только входящие]"
         ),
-        "_cmd_doc_nonickuser": "Разрешить пользователю выполнять какую-то команду без ника",
+        "_cmd_doc_nonickuser": (
+            "Разрешить пользователю выполнять какую-то команду без ника"
+        ),
         "_cmd_doc_nonickcmd": "Разрешить выполнять определенную команду без ника",
         "_cls_doc": "Дополнительные настройки Hikka",
         "nonick_warning": (
@@ -147,12 +171,14 @@ class HikkaSettingsMod(loader.Module):
             "Тебя могут замьютить в чатах Hikka. Измени префикс или "
             "отключи глобальный NoNick!"
         ),
-        "reply_required": "🚫 <b>Ответь на сообщение пользователя, для которого нужно включить NoNick</b>",
+        "reply_required": (
+            "🚫 <b>Ответь на сообщение пользователя, для которого нужно включить"
+            " NoNick</b>"
+        ),
         "deauth_confirm": (
-            "⚠️ <b>Это действие полностью удалит Hikka с этого аккаунта! Его нельзя отменить</b>\n\n"
-            "<i>- Все чаты, связанные с Hikka будут удалены\n"
-            "- Сессия Hikka будет сброшена\n"
-            "- Инлайн бот Hikka будет удален</i>"
+            "⚠️ <b>Это действие полностью удалит Hikka с этого аккаунта! Его нельзя"
+            " отменить</b>\n\n<i>- Все чаты, связанные с Hikka будут удалены\n- Сессия"
+            " Hikka будет сброшена\n- Инлайн бот Hikka будет удален</i>"
         ),
         "deauth_confirm_step2": "⚠️ <b>Ты точно уверен, что хочешь удалить Hikka?</b>",
         "deauth_yes": "Я уверен",
@@ -162,20 +188,39 @@ class HikkaSettingsMod(loader.Module):
         "deauth_cancel": "🚫 Отмена",
         "deauth_confirm_btn": "😢 Удалить",
         "uninstall": "😢 <b>Удаляю Hikka...</b>",
-        "uninstalled": "😢 <b>Hikka удалена. Веб-интерфейс все еще активен, можно добавить другие аккаунты!</b>",
+        "uninstalled": (
+            "😢 <b>Hikka удалена. Веб-интерфейс все еще активен, можно добавить другие"
+            " аккаунты!</b>"
+        ),
         "logs_cleared": "🗑 <b>Логи очищены</b>",
         "cmd_nn_list": "🔰 <b>NoNick включен для этих команд:</b>\n\n{}",
         "user_nn_list": "🔰 <b>NoNick включен для этих пользователей:</b>\n\n{}",
         "chat_nn_list": "🔰 <b>NoNick включен для этих чатов:</b>\n\n{}",
         "nothing": "🔰 <b>Нечего показывать...</b>",
-        "privacy_leak": "⚠️ <b>Эта команда дает доступ к веб-интерфейсу Hikka. Ее выполнение в публичных чатах является угрозой безопасности. Предпочтительно выполнять ее в <a href='tg://openmessage?user_id={}'>Избранных сообщениях</a>. Выполни </b><code>{}proxypass force_insecure</code><b> чтобы отключить это предупреждение</b>",
-        "privacy_leak_nowarn": "⚠️ <b>Эта команда дает доступ к веб-интерфейсу Hikka. Ее выполнение в публичных чатах является угрозой безопасности. Предпочтительно выполнять ее в <a href='tg://openmessage?user_id={}'>Избранных сообщениях</a>.</b>",
+        "privacy_leak": (
+            "⚠️ <b>Эта команда дает доступ к веб-интерфейсу Hikka. Ее выполнение в"
+            " публичных чатах является угрозой безопасности. Предпочтительно выполнять"
+            " ее в <a href='tg://openmessage?user_id={}'>Избранных сообщениях</a>."
+            " Выполни </b><code>{}proxypass force_insecure</code><b> чтобы отключить"
+            " это предупреждение</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>Эта команда дает доступ к веб-интерфейсу Hikka. Ее выполнение в"
+            " публичных чатах является угрозой безопасности. Предпочтительно выполнять"
+            " ее в <a href='tg://openmessage?user_id={}'>Избранных сообщениях</a>.</b>"
+        ),
         "opening_tunnel": "🔁 <b>Открываю тоннель к веб-интерфейсу Hikka...</b>",
-        "tunnel_opened": "🎉 <b>Тоннель открыт. Эта ссылка будет активна не более часа</b>",
+        "tunnel_opened": (
+            "🎉 <b>Тоннель открыт. Эта ссылка будет активна не более часа</b>"
+        ),
         "web_btn": "🌍 Веб-интерфейс",
         "btn_yes": "🚸 Все равно открыть",
         "btn_no": "🔻 Закрыть",
-        "lavhost_web": "✌️ <b>По этой ссылке ты попадешь в веб-интерфейс Hikka на lavHost</b>\n\n<i>💡 Тебе нужно будет авторизоваться, используя данные, указанные при настройке lavHost</i>",
+        "lavhost_web": (
+            "✌️ <b>По этой ссылке ты попадешь в веб-интерфейс Hikka на"
+            " lavHost</b>\n\n<i>💡 Тебе нужно будет авторизоваться, используя данные,"
+            " указанные при настройке lavHost</i>"
+        ),
         "disable_stats": "✅ Анонимная стата разрешена",
         "enable_stats": "🚫 Анонимная стата запрещена",
     }
@@ -574,7 +619,8 @@ class HikkaSettingsMod(loader.Module):
                 continue
 
             users += [
-                f'▫️ <b><a href="tg://user?id={user_id}">{utils.escape_html(get_display_name(user))}</a></b>'
+                "▫️ <b><a"
+                f' href="tg://user?id={user_id}">{utils.escape_html(get_display_name(user))}</a></b>'
             ]
 
         if not users:
@@ -597,10 +643,7 @@ class HikkaSettingsMod(loader.Module):
                     main.__name__,
                     "nonickchats",
                     list(
-                        (
-                            set(self._db.get(main.__name__, "nonickchats", []))
-                            - {chat}
-                        )
+                        (set(self._db.get(main.__name__, "nonickchats", [])) - {chat})
                     ),
                 )
 
@@ -608,7 +651,8 @@ class HikkaSettingsMod(loader.Module):
                 continue
 
             chats += [
-                f'▫️ <b><a href="{utils.get_entity_url(chat_entity)}">{utils.escape_html(get_display_name(chat_entity))}</a></b>'
+                "▫️ <b><a"
+                f' href="{utils.get_entity_url(chat_entity)}">{utils.escape_html(get_display_name(chat_entity))}</a></b>'
             ]
 
         if not chats:
@@ -892,14 +936,18 @@ class HikkaSettingsMod(loader.Module):
             await form.edit(
                 self.strings("opening_tunnel"),
                 reply_markup={"text": "🕔 Wait...", "data": "empty"},
-                gif="https://i.gifer.com/origin/e4/e43e1b221fd960003dc27d2f2f1b8ce1.gif",
+                gif=(
+                    "https://i.gifer.com/origin/e4/e43e1b221fd960003dc27d2f2f1b8ce1.gif"
+                ),
             )
         else:
             form = await self.inline.form(
                 self.strings("opening_tunnel"),
                 message=message,
                 reply_markup={"text": "🕔 Wait...", "data": "empty"},
-                gif="https://i.gifer.com/origin/e4/e43e1b221fd960003dc27d2f2f1b8ce1.gif",
+                gif=(
+                    "https://i.gifer.com/origin/e4/e43e1b221fd960003dc27d2f2f1b8ce1.gif"
+                ),
             )
 
         url = await main.hikka.web.get_url(proxy_pass=True)

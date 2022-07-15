@@ -259,7 +259,8 @@ class Database(dict):
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
                     logger.warning(
-                        f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not string or int"
+                        f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not"
+                        " string or int"
                     )
                     continue
 
@@ -283,8 +284,7 @@ class Database(dict):
             self.update(**rev)
 
             raise RuntimeError(
-                "Rewriting database to the last revision "
-                "because new one destructed it"
+                "Rewriting database to the last revision because new one destructed it"
             )
 
         if self._next_revision_call < time.time():

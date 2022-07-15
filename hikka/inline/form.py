@@ -9,10 +9,12 @@
 import contextlib
 import copy
 import logging
+import os
 import time
 from asyncio import Event
 from typing import List, Optional, Union
 import random
+from urllib.parse import urlparse
 import grapheme
 import traceback
 
@@ -138,6 +140,16 @@ class Form(InlineUnit):
         if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
             logger.error("Invalid type for `photo`")
             return False
+        
+        try:
+            path = urlparse(photo).path
+            ext = os.path.splitext(path)[1]
+        except Exception:
+            ext = None
+
+        if photo is not None and ext in {".gif", ".mp4"}:
+            gif = copy.copy(photo)
+            photo = None
 
         if gif and (not isinstance(gif, str) or not utils.check_url(gif)):
             logger.error("Invalid type for `gif`")
@@ -326,7 +338,10 @@ class Form(InlineUnit):
                             InlineQueryResultArticle(
                                 id=utils.rand(20),
                                 title=button["input"],
-                                description=f"⚠️ Do not remove ID! {random.choice(VERIFICATION_EMOJIES)}",
+                                description=(
+                                    "⚠️ Do not remove ID!"
+                                    f" {random.choice(VERIFICATION_EMOJIES)}"
+                                ),
                                 input_message_content=InputTextMessageContent(
                                     "🔄 <b>Transferring value to userbot...</b>\n"
                                     "<i>This message will be deleted automatically</i>"
@@ -359,7 +374,9 @@ class Form(InlineUnit):
                         caption=form.get("text"),
                         parse_mode="HTML",
                         photo_url=form["photo"],
-                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        thumb_url=(
+                            "https://img.icons8.com/cotton/452/moon-satellite.png"
+                        ),
                         reply_markup=self.generate_markup(
                             form["uid"],
                         ),
@@ -376,7 +393,9 @@ class Form(InlineUnit):
                         caption=form.get("text"),
                         parse_mode="HTML",
                         gif_url=form["gif"],
-                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        thumb_url=(
+                            "https://img.icons8.com/cotton/452/moon-satellite.png"
+                        ),
                         reply_markup=self.generate_markup(
                             form["uid"],
                         ),
@@ -394,7 +413,9 @@ class Form(InlineUnit):
                         caption=form.get("text"),
                         parse_mode="HTML",
                         video_url=form["video"],
-                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        thumb_url=(
+                            "https://img.icons8.com/cotton/452/moon-satellite.png"
+                        ),
                         mime_type="video/mp4",
                         reply_markup=self.generate_markup(
                             form["uid"],

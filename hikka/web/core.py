@@ -125,7 +125,8 @@ class Web(root.Web):
     async def _get_proxy_pass_url(self, port: int) -> str:
         logging.debug("Starting proxy pass shell")
         self._sproc = await asyncio.create_subprocess_shell(
-            f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{port} nokey@localhost.run",
+            "ssh -o StrictHostKeyChecking=no -R"
+            f" 80:localhost:{port} nokey@localhost.run",
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,

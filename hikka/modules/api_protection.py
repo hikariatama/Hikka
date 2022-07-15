@@ -30,19 +30,22 @@ class APIRatelimiterMod(loader.Module):
     strings = {
         "name": "APIRatelimiter",
         "warning": (
-            "🚫 <b>WARNING!</b>\n\n"
-            "Your account exceeded the limit of requests, "
-            "specified in config. In order to prevent "
-            "Telegram API Flood, userbot has been <b>fully frozen</b> "
-            "for {} seconds. Further info is provided in attached file. \n\n"
-            "It is recommended to get help in <code>{prefix}support</code> group!\n\n"
-            "If you think, that it is an intended behavior, then wait until userbot gets unlocked "
-            "and next time, when you will be going to perform such an operation, use "
-            "<code>{prefix}suspend_api_protect</code> &lt;time in seconds&gt;"
+            "🚫 <b>WARNING!</b>\n\nYour account exceeded the limit of requests,"
+            " specified in config. In order to prevent Telegram API Flood, userbot has"
+            " been <b>fully frozen</b> for {} seconds. Further info is provided in"
+            " attached file. \n\nIt is recommended to get help in"
+            " <code>{prefix}support</code> group!\n\nIf you think, that it is an"
+            " intended behavior, then wait until userbot gets unlocked and next time,"
+            " when you will be going to perform such an operation, use"
+            " <code>{prefix}suspend_api_protect</code> &lt;time in seconds&gt;"
         ),
         "args_invalid": "🚫 <b>Invalid arguments</b>",
         "suspended_for": "✅ <b>API Flood Protection is disabled for {} seconds</b>",
-        "test": "⚠️ <b>This action will expose your account to flooding Telegram API.</b> <i>In order to confirm, that you really know, what you are doing, complete this simple test - find the emoji, differing from others</i>",
+        "test": (
+            "⚠️ <b>This action will expose your account to flooding Telegram API.</b>"
+            " <i>In order to confirm, that you really know, what you are doing,"
+            " complete this simple test - find the emoji, differing from others</i>"
+        ),
         "on": "✅ <b>Protection enabled</b>",
         "off": "🚫 <b>Protection disabled</b>",
         "u_sure": "⚠️ <b>Are you sure?</b>",
@@ -50,18 +53,23 @@ class APIRatelimiterMod(loader.Module):
 
     strings_ru = {
         "warning": (
-            "🚫 <b>ВНИМАНИЕ!</b>\n\n"
-            "Аккаунт вышел за лимиты запросов, указанные в конфиге. "
-            "С целью предотвращения флуда Telegram API, юзербот был <b>полностью заморожен</b> "
-            "на {} секунд. Дополнительная информация прикреплена в файле ниже. \n\n"
-            "Рекомендуется обратиться за помощью в <code>{prefix}support</code> группу!\n\n"
-            "Если ты считаешь, что это запланированное поведение юзербота, просто подожди, пока закончится таймер "
-            "и в следующий раз, когда запланируешь выполнять такую ресурсозатратную операцию, используй "
-            "<code>{prefix}suspend_api_protect</code> &lt;время в секундах&gt;"
+            "🚫 <b>ВНИМАНИЕ!</b>\n\nАккаунт вышел за лимиты запросов, указанные в"
+            " конфиге. С целью предотвращения флуда Telegram API, юзербот был"
+            " <b>полностью заморожен</b> на {} секунд. Дополнительная информация"
+            " прикреплена в файле ниже. \n\nРекомендуется обратиться за помощью в"
+            " <code>{prefix}support</code> группу!\n\nЕсли ты считаешь, что это"
+            " запланированное поведение юзербота, просто подожди, пока закончится"
+            " таймер и в следующий раз, когда запланируешь выполнять такую"
+            " ресурсозатратную операцию, используй"
+            " <code>{prefix}suspend_api_protect</code> &lt;время в секундах&gt;"
         ),
         "args_invalid": "🚫 <b>Неверные аргументы</b>",
         "suspended_for": "✅ <b>Защита API отключена на {} секунд</b>",
-        "test": "⚠️ <b>Это действие открывает юзерботу возможность флудить Telegram API.</b> <i>Для того, чтобы убедиться, что ты действительно уверен в том, что делаешь - реши простенький тест - найди отличающийся эмодзи.</i>",
+        "test": (
+            "⚠️ <b>Это действие открывает юзерботу возможность флудить Telegram"
+            " API.</b> <i>Для того, чтобы убедиться, что ты действительно уверен в том,"
+            " что делаешь - реши простенький тест - найди отличающийся эмодзи.</i>"
+        ),
         "on": "✅ <b>Защита включена</b>",
         "off": "🚫 <b>Защита отключена</b>",
         "u_sure": "⚠️ <b>Ты уверен?</b>",

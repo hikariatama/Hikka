@@ -146,9 +146,7 @@ class PythonMod(loader.Module):
         ):
             ret = ret.replace(postgre, "postgre://**************************")
 
-        if redis := os.environ.get("REDIS_URL") or main.get_config_key(
-            "redis_uri"
-        ):
+        if redis := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             ret = ret.replace(redis, "redis://**************************")
 
         if os.environ.get("hikka_session"):

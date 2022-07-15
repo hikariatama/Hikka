@@ -36,10 +36,16 @@ class HelpMod(loader.Module):
         "hidden_shown": "🌘 <b>{} modules hidden, {} modules shown:</b>\n{}\n{}",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
-        "joined": "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "joined": (
+            "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>"
+        ),
         "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
-        "partial_load": "⚠️ <b>Userbot is not fully loaded, so not all modules are shown</b>",
-        "not_exact": "⚠️ <b>No exact match occured, so the closest result is shown instead</b>",
+        "partial_load": (
+            "⚠️ <b>Userbot is not fully loaded, so not all modules are shown</b>"
+        ),
+        "not_exact": (
+            "⚠️ <b>No exact match occured, so the closest result is shown instead</b>"
+        ),
     }
 
     strings_ru = {
@@ -55,14 +61,25 @@ class HelpMod(loader.Module):
         "hidden_shown": "🌘 <b>{} модулей скрыто, {} модулей показано:</b>\n{}\n{}",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
-        "joined": "🌘 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
+        "joined": (
+            "🌘 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>"
+        ),
         "join": "🌘 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
-        "_cmd_doc_helphide": "<модуль(-и)> - Скрывает модуль(-и) из помощи\n*Разделяй имена модулей пробелами",
+        "_cmd_doc_helphide": (
+            "<модуль(-и)> - Скрывает модуль(-и) из помощи\n*Разделяй имена модулей"
+            " пробелами"
+        ),
         "_cmd_doc_help": "[модуль] [-f] - Показывает помощь",
         "_cmd_doc_support": "Вступает в чат помощи Hikka",
         "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
-        "partial_load": "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все модули</b>",
-        "not_exact": "⚠️ <b>Точного совпадения не нашлось, поэтому было выбрано наиболее подходящее</b>",
+        "partial_load": (
+            "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все"
+            " модули</b>"
+        ),
+        "not_exact": (
+            "⚠️ <b>Точного совпадения не нашлось, поэтому было выбрано наиболее"
+            " подходящее</b>"
+        ),
     }
 
     def __init__(self):
@@ -334,7 +351,10 @@ class HelpMod(loader.Module):
                 else:
                     plain_ += [tmp]
             elif not shown_warn and (mod.commands or mod.inline_handlers):
-                reply = f"<i>You have permissions to execute only these commands</i>\n{reply}"
+                reply = (
+                    "<i>You have permissions to execute only these"
+                    f" commands</i>\n{reply}"
+                )
                 shown_warn = True
 
         plain_.sort(key=lambda x: x.split()[1])
@@ -348,7 +368,6 @@ class HelpMod(loader.Module):
             if self.lookup("Loader")._fully_loaded
             else f"\n\n{self.strings('partial_load')}"
         )
-
 
         await utils.answer(
             message,

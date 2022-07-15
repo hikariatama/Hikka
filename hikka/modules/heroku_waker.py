@@ -32,14 +32,13 @@ class HerokuMod(loader.Module):
     strings = {
         "name": "Heroku",
         "redisdocs": (
-            "🥡 <b>Redis Database</b>\n\n"
-            "🇷🇺 <b>If you are from Russia, or just want to use external service:</b>\n"
-            "1. Go to https://redis.com\n"
-            "2. Register account\n"
-            "3. Create database instance\n"
-            "4. Enter your Redis Database URL via <code>.setredis &lt;redis_url&gt;</code>\n"
-            "<i>💡 Hint: URL structure is <code>redis://:PASSWORD@ENDPOINT</code></i>\n\n"
-            "♓️ <b>If you are not from Russia, just enable </b><code>heroku-redis</code><b> plugin for your app. For this action Heroku account verification is required!</b>"
+            "🥡 <b>Redis Database</b>\n\n🇷🇺 <b>If you are from Russia, or just want to"
+            " use external service:</b>\n1. Go to https://redis.com\n2. Register"
+            " account\n3. Create database instance\n4. Enter your Redis Database URL"
+            " via <code>.setredis &lt;redis_url&gt;</code>\n<i>💡 Hint: URL structure is"
+            " <code>redis://:PASSWORD@ENDPOINT</code></i>\n\n♓️ <b>If you are not from"
+            " Russia, just enable </b><code>heroku-redis</code><b> plugin for your app."
+            " For this action Heroku account verification is required!</b>"
         ),
         "url_invalid": "🚫 <b>Invalid URL specified</b>",
         "url_saved": "✅ <b>URL saved</b>",
@@ -47,14 +46,14 @@ class HerokuMod(loader.Module):
 
     strings_ru = {
         "redisdocs": (
-            "🥡 <b>База данных Redis</b>\n\n"
-            "🇷🇺 <b>Если ты из России, или просто хочешь использовать внешний сервис:</b>\n"
-            "1. Перейди на https://redis.com\n"
-            "2. Зарегистрируйся\n"
-            "3. Создай базу данных\n"
-            "4. Введи Database URL в <code>.setredis &lt;redis_url&gt;</code>\n"
-            "<i>💡 Подсказка: URL выглядит так: <code>redis://:PASSWORD@ENDPOINT</code></i>\n\n"
-            "♓️ <b>Если ты не из России, можешь просто активировать плагин </b><code>heroku-redis</code><b> в Hikka app Heroku. Для этого тебе нужно будет верифицировать аккаунт</b>"
+            "🥡 <b>База данных Redis</b>\n\n🇷🇺 <b>Если ты из России, или просто хочешь"
+            " использовать внешний сервис:</b>\n1. Перейди на https://redis.com\n2."
+            " Зарегистрируйся\n3. Создай базу данных\n4. Введи Database URL в"
+            " <code>.setredis &lt;redis_url&gt;</code>\n<i>💡 Подсказка: URL выглядит"
+            " так: <code>redis://:PASSWORD@ENDPOINT</code></i>\n\n♓️ <b>Если ты не из"
+            " России, можешь просто активировать плагин"
+            " </b><code>heroku-redis</code><b> в Hikka app Heroku. Для этого тебе нужно"
+            " будет верифицировать аккаунт</b>"
         ),
         "url_invalid": "🚫 <b>Указан неверный URL</b>",
         "url_saved": "✅ <b>URL сохранен</b>",

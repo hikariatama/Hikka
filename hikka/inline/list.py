@@ -192,7 +192,7 @@ class List(InlineUnit):
                 # Remove `Traceback (most recent call last):`
                 exc = "\n".join(exc.splitlines()[1:])
                 msg = (
-                    f"<b>🚫 List invoke failed!</b>\n\n"
+                    "<b>🚫 List invoke failed!</b>\n\n"
                     f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
                 )
 

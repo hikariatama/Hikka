@@ -5,11 +5,18 @@
 - Add support for lib attribute `version` (must be defined BEFORE `init` method)
 - Add `self.lookup` to libs
 - Add `self.allmodules` to libs
-- Add `self.lib_get` to libs
-- Add `self.lib_set` to libs
+- Add `self._lib_get` to libs
+- Add `self._lib_set` to libs
 - Add `self.get_prefix` to libs
 - Add support for hook `on_lib_update` (invoked when library is being updated by new version)
-- Add adequate library migration
+- Add adequate library migration with references replacement
+- Add support for markup, generated for messages, sent by bot itself
+- Reformat code with `black --preview`
+- Automatically send photo as gif if possible in form
+- Update quickstart
+- New fields in HikkaInfo
+- Remove suffix `Hikka` if user specified it somewhere below
+- New exception handler
 
 ## 🌑 Hikka 1.2.10
 
