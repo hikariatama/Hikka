@@ -26,6 +26,7 @@ from aiogram.types import (
     InputMediaAudio,
     InputMediaPhoto,
     InputMediaVideo,
+    InputFile,
 )
 
 from aiogram.utils.exceptions import (
@@ -297,28 +298,10 @@ class Utils(InlineUnit):
         :param disable_web_page_preview: Disable web page preview
         :param query: Callback query
         :return: Status of edit"""
-        if isinstance(reply_markup, (list, dict)):
-            reply_markup = self._normalize_markup(reply_markup)
-        elif reply_markup is None:
-            reply_markup = [[]]
+        reply_markup = self._validate_markup(reply_markup) or []
 
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
-            return False
-
-        if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
-            logger.error("Invalid type for `photo`")
-            return False
-
-        if gif and (not isinstance(gif, str) or not utils.check_url(gif)):
-            logger.error("Invalid type for `gif`")
-            return False
-
-        if file and (
-            not isinstance(file, str, bytes, io.BytesIO)
-            or (isinstance(file, str) and not utils.check_url(file))
-        ):
-            logger.error("Invalid type for `file`")
             return False
 
         if file and not mime_type:
@@ -328,20 +311,8 @@ class Utils(InlineUnit):
             )
             return False
 
-        if video and (not isinstance(video, str) or not utils.check_url(video)):
-            logger.error("Invalid type for `video`")
-            return False
-
         if isinstance(audio, str):
             audio = {"url": audio}
-
-        if audio and (
-            not isinstance(audio, dict)
-            or "url" not in audio
-            or not utils.check_url(audio["url"])
-        ):
-            logger.error("Invalid type for `audio`")
-            return False
 
         media_params = [
             photo is None,
@@ -399,24 +370,43 @@ class Utils(InlineUnit):
             gif = deepcopy(photo)
             photo = None
 
-        if file is not None:
-            media = InputMediaDocument(file, caption=text, parse_mode="HTML")
-        elif photo is not None:
-            media = InputMediaPhoto(photo, caption=text, parse_mode="HTML")
-        elif audio is not None:
-            media = InputMediaAudio(
-                audio["url"],
-                title=audio.get("title"),
-                performer=audio.get("performer"),
-                duration=audio.get("duration"),
-                caption=text,
-                parse_mode="HTML",
-            )
-        elif video is not None:
-            media = InputMediaVideo(video, caption=text, parse_mode="HTML")
-        elif gif is not None:
-            media = InputMediaAnimation(gif, caption=text, parse_mode="HTML")
-        else:
+        media = next(
+            (media for media in [photo, file, video, audio, gif] if media), None
+        )
+
+        if isinstance(media, bytes):
+            media = io.BytesIO(media)
+            media.name = "upload.mp4"
+
+        if isinstance(media, io.BytesIO):
+            media = InputFile(media)
+
+        if file:
+            media = InputMediaDocument(media, caption=text, parse_mode="HTML")
+        elif photo:
+            media = InputMediaPhoto(media, caption=text, parse_mode="HTML")
+        elif audio:
+            if isinstance(audio, dict):
+                media = InputMediaAudio(
+                    audio["url"],
+                    title=audio.get("title"),
+                    performer=audio.get("performer"),
+                    duration=audio.get("duration"),
+                    caption=text,
+                    parse_mode="HTML",
+                )
+            else:
+                media = InputMediaAudio(
+                    audio,
+                    caption=text,
+                    parse_mode="HTML",
+                )
+        elif video:
+            media = InputMediaVideo(media, caption=text, parse_mode="HTML")
+        elif gif:
+            media = InputMediaAnimation(media, caption=text, parse_mode="HTML")
+
+        if media is None:
             try:
                 await self.bot.edit_message_text(
                     text,
