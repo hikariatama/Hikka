@@ -114,7 +114,8 @@ class PythonMod(loader.Module):
                 "\n<b>🪐 Full stack:</b>\n\n"
                 + "\n".join(item.full_stack.splitlines()[:-1])
                 + "\n\n"
-                + "😵 " + item.full_stack.splitlines()[-1]
+                + "😵 "
+                + item.full_stack.splitlines()[-1]
             )
             exc = exc.replace(str(self._phone), "📵")
 

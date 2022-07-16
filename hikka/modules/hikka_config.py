@@ -162,7 +162,7 @@ class HikkaConfigMod(loader.Module):
         "external": "🛸 Внешние",
         "libraries": "🪴 Библиотеки",
     }
-    
+
     _row_size = 3
     _num_rows = 5
 

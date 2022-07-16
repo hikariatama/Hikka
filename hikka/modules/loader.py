@@ -898,12 +898,9 @@ class LoaderMod(loader.Module):
 
         try:
             try:
-                self.allmodules.send_config_one(instance, self._db, self.translator)
+                self.allmodules.send_config_one(instance)
                 await self.allmodules.send_ready_one(
                     instance,
-                    self._client,
-                    self._db,
-                    self.allclients,
                     no_self_unload=True,
                     from_dlmod=bool(message),
                 )

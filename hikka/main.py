@@ -641,7 +641,7 @@ class Hikka:
         translator = Translator(client, db)
 
         await translator.init()
-        modules = loader.Modules()
+        modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
 
         if self.arguments.docker_deps_internal:
@@ -658,9 +658,9 @@ class Hikka:
         if not web_only:
             await self._add_dispatcher(client, modules, db)
 
-        modules.register_all(client, db, to_load)
-        modules.send_config(db, translator)
-        await modules.send_ready(client, db, self.clients)
+        modules.register_all(to_load)
+        modules.send_config()
+        await modules.send_ready()
 
         if first:
             await self._badge(client)

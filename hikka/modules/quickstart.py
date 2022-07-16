@@ -22,7 +22,6 @@ imgs = [
     "https://i.gifer.com/Lym6.gif",
     "https://i.gifer.com/IjT4.gif",
     "https://i.gifer.com/A9H.gif",
-    
 ]
 
 TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.

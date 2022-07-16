@@ -235,7 +235,9 @@ class Events(InlineUnit):
         for unit_id, unit in self._units.copy().items():
             for button in utils.array_sum(unit.get("buttons", [])):
                 if not isinstance(button, dict):
-                    logger.warning(f"Can't process update, because of corrupted button: {button}")
+                    logger.warning(
+                        f"Can't process update, because of corrupted button: {button}"
+                    )
                     continue
 
                 if button.get("_callback_data") == call.data:

@@ -38,6 +38,7 @@ from importlib.machinery import ModuleSpec
 from types import FunctionType
 from typing import Any, Hashable, Optional, Union, List
 import requests
+from telethon import TelegramClient
 from telethon.tl.types import Message
 
 from . import security, utils, validators
@@ -56,7 +57,7 @@ from ._types import (
     StringLoader,
 )
 from .inline.core import InlineManager
-from .translations import Strings
+from .translations import Strings, Translator
 
 import gc as _gc
 import types as _types
@@ -420,22 +421,30 @@ class Modules:
 
     client = None
     _initial_registration = True
+    commands = {}
+    inline_handlers = {}
+    callback_handlers = {}
+    aliases = {}
+    modules = []  # skipcq: PTC-W0052
+    libraries = []
+    watchers = []
+    _log_handlers = []
+    _core_commands = []
 
-    def __init__(self):
-        self.commands = {}
-        self.inline_handlers = {}
-        self.callback_handlers = {}
-        self.aliases = {}
-        self.modules = []  # skipcq: PTC-W0052
-        self.libraries = []
-        self.watchers = []
-        self._log_handlers = []
-        self._core_commands = []
-
-    def register_all(self, client, db, mods=None):
-        """Load all modules in the module directory"""
+    def __init__(
+        self,
+        client: TelegramClient,
+        db: "Database",  # type: ignore
+        allclients: list,
+        translator: Translator,
+    ):
+        self.allclients = allclients
+        self.client = client
         self._db = db
+        self._translator = translator
 
+    def register_all(self, mods: list = None):
+        """Load all modules in the module directory"""
         external_mods = []
 
         if not mods:
@@ -447,12 +456,15 @@ class Modules:
                 )
             ]
 
-            if "DYNO" not in os.environ and not db.get(__name__, "secure_boot", False):
+            if "DYNO" not in os.environ and not self._db.get(
+                __name__, "secure_boot", False
+            ):
                 external_mods = [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
                         lambda x: (
-                            x.endswith(f"{client.tg_id}.py") and not x.startswith("_")
+                            x.endswith(f"{self.client.tg_id}.py")
+                            and not x.startswith("_")
                         ),
                         os.listdir(LOADED_MODULES_DIR),
                     )
@@ -659,6 +671,23 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
+        instance.allclients = self.allclients
+        instance.allmodules = self
+        instance.hikka = True
+        instance.get = partial(self._mod_get, _module=instance)
+        instance.set = partial(self._mod_set, _modname=instance.__class__.__name__)
+        instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
+        instance.client = self.client
+        instance._client = self.client
+        instance.db = self._db
+        instance._db = self._db
+        instance.lookup = self._lookup
+        instance.import_lib = self._mod_import_lib
+        instance.tg_id = self.client.tg_id
+        instance._tg_id = self.client.tg_id
+
+        instance.animate = self._animate
+
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
                 if getattr(module, "__origin__", "") == "<core>":
@@ -847,9 +876,9 @@ class Modules:
                     )
 
         if hasattr(lib_obj, "strings"):
-            lib_obj.strings = Strings(lib_obj, self.translator)
+            lib_obj.strings = Strings(lib_obj, self._translator)
 
-        lib_obj.translator = self.translator
+        lib_obj.translator = self._translator
 
         if new:
             self.libraries += [lib_obj]
@@ -876,25 +905,22 @@ class Modules:
                     except KeyError:
                         return command, None
 
-    def send_config(self, db, translator, skip_hook: bool = False):
+    def send_config(self, skip_hook: bool = False):
         """Configure modules"""
-        self.translator = translator
         for mod in self.modules:
-            self.send_config_one(mod, db, translator, skip_hook)
+            self.send_config_one(mod, skip_hook)
 
     def send_config_one(
         self,
         mod: "Module",
-        db: "Database",  # type: ignore
-        translator: "Translator" = None,  # type: ignore
-        skip_hook: bool = False,
+        skip_hook: bool = False
     ):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if hasattr(mod, "config"):
-            modcfg = db.get(
+            modcfg = self._db.get(
                 mod.__class__.__name__,
                 "__config__",
                 {},
@@ -924,9 +950,9 @@ class Modules:
             mod.name = mod.strings["name"]
 
         if hasattr(mod, "strings"):
-            mod.strings = Strings(mod, translator)
+            mod.strings = Strings(mod, self._translator)
 
-        mod.translator = translator
+        mod.translator = self._translator
 
         try:
             mod.config_complete()
@@ -934,13 +960,11 @@ class Modules:
             logger.exception(f"Failed to send mod config complete signal due to {e}")
             raise
 
-    async def send_ready(self, client, db, allclients):
+    async def send_ready(self):
         """Send all data to all modules"""
-        self.client = client
-
         # Init inline manager anyway, so the modules
         # can access its `init_complete`
-        inline_manager = InlineManager(client, db, self)
+        inline_manager = InlineManager(self.client, self._db, self)
 
         await inline_manager._register_manager()
 
@@ -952,7 +976,7 @@ class Modules:
         try:
             await asyncio.gather(
                 *[
-                    self.send_ready_one(mod, client, db, allclients)
+                    self.send_ready_one(mod)
                     for mod in self.modules
                 ]
             )
@@ -1009,32 +1033,13 @@ class Modules:
     async def send_ready_one(
         self,
         mod: Module,
-        client: "TelegramClient",  # type: ignore
-        db: "Database",  # type: ignore
-        allclients: list,
         no_self_unload: bool = False,
         from_dlmod: bool = False,
     ):
-        mod.allclients = allclients
-        mod.allmodules = self
-        mod.hikka = True
-        mod.get = partial(self._mod_get, _module=mod)
-        mod.set = partial(self._mod_set, _modname=mod.__class__.__name__)
-        mod.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
-        mod.client = self.client
-        mod._client = self.client
-        mod.db = self._db
-        mod._db = self._db
-        mod.lookup = self._lookup
-        mod.import_lib = self._mod_import_lib
-        mod.tg_id = self.client.tg_id
-        mod._tg_id = self.client.tg_id
-
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         mod.inline = self.inline
-        mod.animate = self._animate
 
         for method in dir(mod):
             if isinstance(getattr(mod, method), InfiniteLoop):
@@ -1047,12 +1052,12 @@ class Modules:
 
         if from_dlmod:
             try:
-                await mod.on_dlmod(client, db)
+                await mod.on_dlmod(self.client, self._db)
             except Exception:
                 logger.info("Can't process `on_dlmod` hook", exc_info=True)
 
         try:
-            await mod.client_ready(client, db)
+            await mod.client_ready(self.client, self._db)
         except SelfUnload as e:
             if no_self_unload:
                 raise e

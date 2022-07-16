@@ -140,7 +140,7 @@ class Form(InlineUnit):
         if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
             logger.error("Invalid type for `photo`")
             return False
-        
+
         try:
             path = urlparse(photo).path
             ext = os.path.splitext(path)[1]

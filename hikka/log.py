@@ -57,6 +57,15 @@ class HikkaException:
         def to_hashable(dictionary: dict) -> dict:
             for key, value in dictionary.items():
                 if isinstance(value, dict):
+                    if (
+                        getattr(getattr(value, "__class__", None), "__name__", None)
+                        == "Database"
+                    ):
+                        dictionary[key] = "<Database>"
+
+                    if isinstance(value, telethon.TelegramClient):
+                        dictionary[key] = "<TelegramClient>"
+
                     dictionary[key] = to_hashable(value)
                 else:
                     try:
