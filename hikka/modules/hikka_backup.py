@@ -114,7 +114,7 @@ class HikkaBackupMod(loader.Module):
             await call.delete()
             return
 
-        self.set("period", value)
+        self.set("period", value * 60 * 60)
         self.set("last_backup", round(time.time()))
 
         await call.answer(self.strings("saved"), show_alert=True)

@@ -22,6 +22,8 @@
 - Fix back button in `.config <lib>`
 - New `.e` error format
 - Ignore folder creation error
+- Fix unload error in module without commands
+- Rework aiogram media processing on edit
 
 ## 🌑 Hikka 1.2.10
 

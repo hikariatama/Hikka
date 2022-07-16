@@ -55,6 +55,7 @@ class HikkaException:
         tb: traceback.TracebackException,
     ) -> "HikkaException":
         def to_hashable(dictionary: dict) -> dict:
+            dictionary = dictionary.copy()
             for key, value in dictionary.items():
                 if isinstance(value, dict):
                     if (
@@ -92,11 +93,16 @@ class HikkaException:
             )
 
         filename, lineno, name = next(
-            re.search(line_regex, line).groups()
-            for line in full_stack.splitlines()
-            if re.search(line_regex, line)
+            (
+                re.search(line_regex, line).groups()
+                for line in full_stack.splitlines()
+                if re.search(line_regex, line)
+            ),
+            (None, None, None),
         )
-        line = next(line for line in full_stack.splitlines() if line.startswith("   "))
+        line = next(
+            (line for line in full_stack.splitlines() if line.startswith("   ")), ""
+        )
 
         full_stack = "\n".join(
             [

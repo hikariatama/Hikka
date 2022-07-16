@@ -910,11 +910,7 @@ class Modules:
         for mod in self.modules:
             self.send_config_one(mod, skip_hook)
 
-    def send_config_one(
-        self,
-        mod: "Module",
-        skip_hook: bool = False
-    ):
+    def send_config_one(self, mod: "Module", skip_hook: bool = False):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -974,12 +970,7 @@ class Modules:
         self.inline = inline_manager
 
         try:
-            await asyncio.gather(
-                *[
-                    self.send_ready_one(mod)
-                    for mod in self.modules
-                ]
-            )
+            await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
         except Exception as e:
             logger.exception(f"Failed to send mod init complete signal due to {e}")
 
@@ -1139,7 +1130,11 @@ class Modules:
                         getattr(module, method).stop()
                         logger.debug(f"Stopped loop in {module=}, {method=}")
 
-                to_remove += module.commands.values()
+                to_remove += (
+                    module.commands
+                    if isinstance(getattr(module, "commands", None), dict)
+                    else {}
+                ).values()
                 if hasattr(module, "watcher"):
                     to_remove += [module.watcher]
 
