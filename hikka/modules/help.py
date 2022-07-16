@@ -405,7 +405,3 @@ class HelpMod(loader.Module):
                 )
             except Exception:
                 await utils.answer(message, self.strings("join"))
-
-    async def client_ready(self, client, db):
-        self._client = client
-        self._db = db

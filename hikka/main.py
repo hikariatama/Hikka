@@ -402,6 +402,7 @@ class Hikka:
         else:
             telegram_id = (await client.get_me()).id
             client._tg_id = telegram_id
+            client.tg_id = telegram_id
 
         if "DYNO" in os.environ:
             session = StringSession()
@@ -549,6 +550,7 @@ class Hikka:
         async with client:
             first = True
             client._tg_id = (await client.get_me()).id
+            client.tg_id = client._tg_id
             while await self.amain(first, client):
                 first = False
 

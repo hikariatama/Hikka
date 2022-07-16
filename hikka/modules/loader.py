@@ -271,6 +271,9 @@ class LoaderMod(loader.Module):
         "cannot_unload_lib": "🚫 <b>Ты не можешь выгрузить библиотеку</b>",
     }
 
+    _fully_loaded = False
+    _links_cache = {}
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -296,6 +299,44 @@ class LoaderMod(loader.Module):
                 validator=loader.validators.Boolean(),
             ),
         )
+
+    async def client_ready(self, *_):
+        self.allmodules.add_aliases(self.lookup("settings").get("aliases", {}))
+
+        main.hikka.ready.set()
+
+        asyncio.ensure_future(self._update_modules())
+        asyncio.ensure_future(self.get_repo_list("full"))
+
+    @loader.loop(interval=3, wait_before=True, autostart=True)
+    async def _config_autosaver(self):
+        for mod in self.allmodules.modules:
+            if not hasattr(mod, "config") or not mod.config:
+                continue
+
+            for option, config in mod.config._config.items():
+                if not hasattr(config, "_save_marker"):
+                    continue
+
+                delattr(mod.config._config[option], "_save_marker")
+                self._db.setdefault(mod.__class__.__name__, {}).setdefault(
+                    "__config__", {}
+                )[option] = config.value
+
+        for lib in self.allmodules.libraries:
+            if not hasattr(lib, "config") or not lib.config:
+                continue
+
+            for option, config in lib.config._config.items():
+                if not hasattr(config, "_save_marker"):
+                    continue
+
+                delattr(lib.config._config[option], "_save_marker")
+                self._db.setdefault(lib.__class__.__name__, {}).setdefault(
+                    "__config__", {}
+                )[option] = config.value
+
+        self._db.save()
 
     def _update_modules_in_db(self):
         self.set(
@@ -1198,47 +1239,3 @@ class LoaderMod(loader.Module):
 
         with contextlib.suppress(AttributeError):
             await self.lookup("Updater").full_restart_complete(secure_boot)
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-        self._fully_loaded = False
-
-        self._links_cache = {}
-
-        self.allmodules.add_aliases(self.lookup("settings").get("aliases", {}))
-
-        main.hikka.ready.set()
-
-        asyncio.ensure_future(self._update_modules())
-        asyncio.ensure_future(self.get_repo_list("full"))
-
-    @loader.loop(interval=3, wait_before=True, autostart=True)
-    async def _config_autosaver(self):
-        for mod in self.allmodules.modules:
-            if not hasattr(mod, "config") or not mod.config:
-                continue
-
-            for option, config in mod.config._config.items():
-                if not hasattr(config, "_save_marker"):
-                    continue
-
-                delattr(mod.config._config[option], "_save_marker")
-                self._db.setdefault(mod.__class__.__name__, {}).setdefault(
-                    "__config__", {}
-                )[option] = config.value
-
-        for lib in self.allmodules.libraries:
-            if not hasattr(lib, "config") or not lib.config:
-                continue
-
-            for option, config in lib.config._config.items():
-                if not hasattr(config, "_save_marker"):
-                    continue
-
-                delattr(lib.config._config[option], "_save_marker")
-                self._db.setdefault(lib.__class__.__name__, {}).setdefault(
-                    "__config__", {}
-                )[option] = config.value
-
-        self._db.save()

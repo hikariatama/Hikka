@@ -206,7 +206,7 @@ class Web(root.Web):
         loader: "Modules",  # type: ignore
         db: "Database",  # type: ignore
     ):
-        self.client_data[client._tg_id] = (loader, client, db)
+        self.client_data[client.tg_id] = (loader, client, db)
 
     @staticmethod
     async def favicon(request):

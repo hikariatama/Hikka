@@ -65,12 +65,10 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
+    async def client_ready(self, *_):
         if not self.get("period"):
             await self.inline.bot.send_photo(
-                self._tg_id,
+                self.tg_id,
                 photo="https://github.com/hikariatama/assets/raw/master/unit_alpha.png",
                 caption=self.strings("period"),
                 reply_markup=self.inline.generate_markup(

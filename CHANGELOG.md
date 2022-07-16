@@ -8,6 +8,8 @@
 - Add `self._lib_get` to libs
 - Add `self._lib_set` to libs
 - Add `self.get_prefix` to libs
+- Add `self.tg_id` to libs
+- Add `client.tg_id` to every TelegramClient
 - Add support for hook `on_lib_update` (invoked when library is being updated by new version)
 - Add adequate library migration with references replacement
 - Add support for markup, generated for messages, sent by bot itself
@@ -17,6 +19,9 @@
 - New fields in HikkaInfo
 - Remove suffix `Hikka` if user specified it somewhere below
 - New exception handler
+- Fix back button in `.config <lib>`
+- New `.e` error format
+- Ignore folder creation error
 
 ## 🌑 Hikka 1.2.10
 

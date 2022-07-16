@@ -395,10 +395,7 @@ class UpdaterMod(loader.Module):
             self.strings("source").format(self.config["GIT_ORIGIN_URL"]),
         )
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
+    async def client_ready(self, client, _):
         if self.get("selfupdatemsg") is not None:
             try:
                 await self.update_complete(client)
@@ -408,6 +405,14 @@ class UpdaterMod(loader.Module):
         if self.get("do_not_create", False):
             return
 
+        try:
+            self._add_folder()
+        except Exception:
+            logger.exception("Failed to add folder!")
+        finally:
+            self.set("do_not_create", True)
+
+    async def _add_folder(self):
         folders = await self._client(GetDialogFiltersRequest())
 
         if any(getattr(folder, "title", None) == "hikka" for folder in folders):
@@ -493,8 +498,6 @@ class UpdaterMod(loader.Module):
                 "- User got floodwait\n"
                 "Ignoring error and adding folder addition to ignore list"
             )
-
-        self.set("do_not_create", True)
 
     async def update_complete(self, client: "TelegramClient"):  # type: ignore
         logger.debug("Self update successful! Edit message")

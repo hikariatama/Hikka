@@ -66,13 +66,13 @@ class Database(dict):
         with self._postgre, self._postgre.cursor() as cur:
             cur.execute(
                 "UPDATE hikka SET data = %s WHERE id = %s;",
-                (json.dumps(self), self._client._tg_id),
+                (json.dumps(self), self._client.tg_id),
             )
 
     def _redis_save_sync(self):
         with self._redis.pipeline() as pipe:
             pipe.set(
-                str(self._client._tg_id),
+                str(self._client.tg_id),
                 json.dumps(self, ensure_ascii=True),
             )
             pipe.execute()
@@ -136,13 +136,13 @@ class Database(dict):
             with contextlib.suppress(Exception):
                 cur.execute(
                     "SELECT EXISTS(SELECT 1 FROM hikka WHERE id=%s);",
-                    (self._client._tg_id,),
+                    (self._client.tg_id,),
                 )
 
                 if not cur.fetchone()[0]:
                     cur.execute(
                         "INSERT INTO hikka (id, data) VALUES (%s, %s);",
-                        (self._client._tg_id, json.dumps(self)),
+                        (self._client.tg_id, json.dumps(self)),
                     )
 
             with contextlib.suppress(Exception):
@@ -177,7 +177,7 @@ class Database(dict):
         elif os.environ.get("DATABASE_URL") or main.get_config_key("postgre_uri"):
             await self.postgre_init()
 
-        self._db_path = os.path.join(DATA_DIR, f"config-{self._client._tg_id}.json")
+        self._db_path = os.path.join(DATA_DIR, f"config-{self._client.tg_id}.json")
         self.read()
 
         try:
@@ -205,7 +205,7 @@ class Database(dict):
                 self.update(
                     **json.loads(
                         self._redis.get(
-                            str(self._client._tg_id),
+                            str(self._client.tg_id),
                         ).decode(),
                     )
                 )
@@ -218,7 +218,7 @@ class Database(dict):
                 with self._postgre, self._postgre.cursor() as cur:
                     cur.execute(
                         "SELECT data FROM hikka WHERE id=%s;",
-                        (self._client._tg_id,),
+                        (self._client.tg_id,),
                     )
                     self.update(
                         **json.loads(

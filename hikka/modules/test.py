@@ -320,7 +320,7 @@ class TestMod(loader.Module):
         logs = "\n\n".join(
             [
                 "\n".join(
-                    handler.dumps(lvl, client_id=self._client._tg_id)
+                    handler.dumps(lvl, client_id=self._client.tg_id)
                     if "client_id" in inspect.signature(handler.dumps).parameters
                     else handler.dumps(lvl)
                 )
@@ -483,10 +483,7 @@ class TestMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, client, db):
-        self._client = client
-        self._db = db
-
+    async def client_ready(self, *_):
         chat, is_new = await utils.asset_channel(
             self._client,
             "hikka-logs",

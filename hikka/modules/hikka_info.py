@@ -85,9 +85,7 @@ class HikkaInfoMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
+    async def client_ready(self, client, _):
         self._me = await client.get_me()
 
     def _render_info(self) -> str:

@@ -60,7 +60,7 @@ def install_entity_caching(client: TelegramClient):
     async def new(entity: EntityLike):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(client._tg_id)  # skipcq
+        _hikka_client_id_logging_tag = copy.copy(client.tg_id)  # skipcq
 
         if not hashable(entity):
             try:

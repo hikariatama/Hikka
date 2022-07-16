@@ -126,10 +126,6 @@ class CoreMod(loader.Module):
         "cancel": "🚫 Отмена",
     }
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
     async def blacklistcommon(self, message: Message):
         args = utils.get_args(message)
 

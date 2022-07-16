@@ -47,6 +47,75 @@ class HikkaException:
         self.local_vars = local_vars
         self.full_stack = full_stack
 
+    @classmethod
+    def from_exc_info(
+        self,
+        exc_type: object,
+        exc_value: Exception,
+        tb: traceback.TracebackException,
+    ) -> "HikkaException":
+        def to_hashable(dictionary: dict) -> dict:
+            for key, value in dictionary.items():
+                if isinstance(value, dict):
+                    dictionary[key] = to_hashable(value)
+                else:
+                    try:
+                        json.dumps([value])
+                    except Exception:
+                        dictionary[key] = str(value)
+
+            return dictionary
+
+        full_stack = traceback.format_exc().replace(
+            "Traceback (most recent call last):\n", ""
+        )
+
+        line_regex = r'  File "(.*?)", line ([0-9]+), in (.+)'
+
+        def format_line(line: str) -> str:
+            filename_, lineno_, name_ = re.search(line_regex, line).groups()
+            with contextlib.suppress(Exception):
+                filename_ = os.path.basename(filename_)
+
+            return (
+                f"👉 <code>{utils.escape_html(filename_)}:{lineno_}</code> <b>in</b>"
+                f" <code>{utils.escape_html(name_)}</code>"
+            )
+
+        filename, lineno, name = next(
+            re.search(line_regex, line).groups()
+            for line in full_stack.splitlines()
+            if re.search(line_regex, line)
+        )
+        line = next(line for line in full_stack.splitlines() if line.startswith("   "))
+
+        full_stack = "\n".join(
+            [
+                f"<code>{utils.escape_html(line)}</code>"
+                if not re.search(line_regex, line)
+                else format_line(line)
+                for line in full_stack.splitlines()
+            ]
+        )
+
+        with contextlib.suppress(Exception):
+            filename = os.path.basename(filename)
+
+        return HikkaException(
+            message=(
+                "<b>🚫 Error!</b>\n<b>🗄 Where:</b>"
+                f" <code>{utils.escape_html(filename)}:{lineno}</code><b>"
+                f" in </b><code>{utils.escape_html(name)}</code>\n😵"
+                f" <code>{utils.escape_html(line)}</code>"
+                " 👈\n<b>❓ What:</b>"
+                f" <code>{utils.escape_html(''.join(traceback.format_exception_only(exc_type, exc_value)).strip())}</code>"
+            ),
+            local_vars=(
+                f"<code>{utils.escape_html(json.dumps(to_hashable(tb.tb_frame.f_locals), indent=4))}</code>"
+            ),
+            full_stack=full_stack,
+        )
+
 
 class TelegramLogsHandler(logging.Handler):
     """
@@ -74,7 +143,7 @@ class TelegramLogsHandler(logging.Handler):
         if getattr(self, "_task", False):
             self._task.cancel()
 
-        self._mods[mod._tg_id] = mod
+        self._mods[mod.tg_id] = mod
 
         self._task = asyncio.ensure_future(self.queue_poller())
 
@@ -230,68 +299,9 @@ class TelegramLogsHandler(logging.Handler):
 
         if record.levelno >= 20:
             if record.exc_info:
-
-                def formatException(exc_info):
-                    (exc_type, exc_value, tb) = exc_info
-
-                    def to_hashable(dictionary: dict) -> dict:
-                        for key, value in dictionary.items():
-                            if isinstance(value, dict):
-                                dictionary[key] = to_hashable(value)
-                            else:
-                                try:
-                                    json.dumps([value])
-                                except Exception:
-                                    dictionary[key] = str(value)
-
-                        return dictionary
-
-                    full_stack = traceback.format_exc().replace(
-                        "Traceback (most recent call last):\n", ""
-                    )
-
-                    line_regex = r'  File "(.*?)", line ([0-9]+), in (.+)'
-
-                    def format_line(line: str) -> str:
-                        filename_, lineno_, name_ = re.search(line_regex, line).groups()
-                        with contextlib.suppress(Exception):
-                            filename_ = os.path.basename(filename_)
-
-                        return (
-                            f"👉 <code>{utils.escape_html(filename_)}:{lineno_}</code> <b>in</b>"
-                            f" <code>{utils.escape_html(name_)}</code>"
-                        )
-
-                    filename, lineno, name = next(re.search(line_regex, line).groups() for line in full_stack.splitlines() if re.search(line_regex, line))
-                    line = next(line for line in full_stack.splitlines() if line.startswith("   "))
-
-                    full_stack = "\n".join(
-                        [
-                            f"<code>{utils.escape_html(line)}</code>" if not re.search(line_regex, line) else format_line(line)
-                            for line in full_stack.splitlines()
-                        ]
-                    )
-
-                    with contextlib.suppress(Exception):
-                        filename = os.path.basename(filename)
-
-                    return HikkaException(
-                        message=(
-                            "<b>🚫 Error!</b>\n<b>🗄 Where:</b>"
-                            f" <code>{utils.escape_html(filename)}:{lineno}</code><b>"
-                            f" in </b><code>{utils.escape_html(name)}</code>\n😵 <code>{utils.escape_html(line)}</code>"
-                            " 👈\n<b>❓ What:</b>"
-                            f" <code>{utils.escape_html(''.join(traceback.format_exception_only(exc_type, exc_value)).strip())}</code>"
-                        ),
-                        local_vars=(
-                            f"<code>{utils.escape_html(json.dumps(to_hashable(tb.tb_frame.f_locals), indent=4))}</code>"
-                        ),
-                        full_stack=full_stack,
-                    )
-
                 self.tg_buff += [
                     (
-                        formatException(record.exc_info),
+                        HikkaException.from_exc_info(*record.exc_info),
                         caller,
                     )
                 ]

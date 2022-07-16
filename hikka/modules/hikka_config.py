@@ -162,12 +162,9 @@ class HikkaConfigMod(loader.Module):
         "external": "🛸 Внешние",
         "libraries": "🪴 Библиотеки",
     }
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-        self._row_size = 3
-        self._num_rows = 5
+    
+    _row_size = 3
+    _num_rows = 5
 
     @staticmethod
     def prep_value(value: Any) -> Any:
@@ -880,7 +877,16 @@ class HikkaConfigMod(loader.Module):
                 {"text": "🌘", "data": "empty"},
                 ttl=24 * 60 * 60,
             )
-            await self.inline__configure(form, args)
+            mod = self.lookup(args)
+            if isinstance(mod, loader.Library):
+                type_ = "library"
+            else:
+                if getattr(mod, "__origin__", None) == "<core>":
+                    type_ = True
+                else:
+                    type_ = False
+
+            await self.inline__configure(form, args, obj_type=type_)
             return
 
         await self.inline__choose_category(message)

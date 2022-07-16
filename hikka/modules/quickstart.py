@@ -20,7 +20,9 @@ imgs = [
     "https://i.gifer.com/3uvT.gif",
     "https://i.gifer.com/2qQQ.gif",
     "https://i.gifer.com/Lym6.gif",
-    "",
+    "https://i.gifer.com/IjT4.gif",
+    "https://i.gifer.com/A9H.gif",
+    
 ]
 
 TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
@@ -96,7 +98,7 @@ class QuickstartMod(loader.Module):
         )
 
         await self.inline.bot.send_animation(
-            client._tg_id,
+            client.tg_id,
             animation=choice(imgs),
             caption=TEXT,
             reply_markup=self.inline.generate_markup(self.mark("en")),

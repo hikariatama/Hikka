@@ -101,8 +101,7 @@ class APIRatelimiterMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, client, db):
-        self._client = client
+    async def client_ready(self, *_):
         asyncio.ensure_future(self._install_protection())
 
     async def _install_protection(self):
@@ -147,7 +146,7 @@ class APIRatelimiterMod(loader.Module):
                     report.name = "local_fw_report.json"
 
                     await self.inline.bot.send_document(
-                        self._tg_id,
+                        self.tg_id,
                         report,
                         caption=self.strings("warning").format(
                             self.config["local_floodwait"],

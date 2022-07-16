@@ -232,10 +232,6 @@ class HikkaSettingsMod(loader.Module):
             if watcher.__self__.__class__.strings is not None
         ], self._db.get(main.__name__, "disabled_watchers", {})
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
     async def _uninstall(self, call: InlineCall):
         await call.edit(self.strings("uninstall"))
 
@@ -907,7 +903,7 @@ class HikkaSettingsMod(loader.Module):
         ):
             try:
                 if not await self.inline.form(
-                    self.strings("privacy_leak_nowarn").format(self._client._tg_id),
+                    self.strings("privacy_leak_nowarn").format(self._client.tg_id),
                     message=message,
                     reply_markup=[
                         {
@@ -924,7 +920,7 @@ class HikkaSettingsMod(loader.Module):
                 await utils.answer(
                     message,
                     self.strings("privacy_leak").format(
-                        self._client._tg_id,
+                        self._client.tg_id,
                         self.get_prefix(),
                     ),
                 )

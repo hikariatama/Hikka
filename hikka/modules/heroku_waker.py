@@ -59,12 +59,9 @@ class HerokuMod(loader.Module):
         "url_saved": "✅ <b>URL сохранен</b>",
     }
 
-    async def client_ready(self, client, db):
+    _bot = "@WebpageBot"
 
-        self._db = db
-        self._client = client
-        self._bot = "@WebpageBot"
-
+    async def client_ready(self, client, _):
         if "DYNO" not in os.environ:
             raise loader.SelfUnload
 

@@ -236,7 +236,7 @@ class InfiniteLoop:
     def stop(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(
-                self.module_instance.allmodules.client._tg_id
+                self.module_instance.allmodules.client.tg_id
             )
 
         if self._task:
@@ -253,7 +253,7 @@ class InfiniteLoop:
     def start(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(
-                self.module_instance.allmodules.client._tg_id
+                self.module_instance.allmodules.client.tg_id
             )
 
         if not self._task:
@@ -452,7 +452,7 @@ class Modules:
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
                         lambda x: (
-                            x.endswith(f"{client._tg_id}.py") and not x.startswith("_")
+                            x.endswith(f"{client.tg_id}.py") and not x.startswith("_")
                         ),
                         os.listdir(LOADED_MODULES_DIR),
                     )
@@ -465,7 +465,7 @@ class Modules:
 
     def _register_modules(self, modules: list, origin: str = "<core>"):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         for mod in modules:
             try:
@@ -501,7 +501,7 @@ class Modules:
     ) -> Module:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
@@ -533,7 +533,7 @@ class Modules:
         if save_fs and "DYNO" not in os.environ:
             path = os.path.join(
                 LOADED_MODULES_DIR,
-                f"{cls_name}_{self.client._tg_id}.py",
+                f"{cls_name}_{self.client.tg_id}.py",
             )
 
             if origin == "<string>":
@@ -553,7 +553,7 @@ class Modules:
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if getattr(instance, "__origin__", "") == "<core>":
             self._core_commands += list(map(lambda x: x.lower(), instance.commands))
@@ -625,7 +625,7 @@ class Modules:
     def register_watcher(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         with contextlib.suppress(AttributeError):
             if instance.watcher:
@@ -657,19 +657,7 @@ class Modules:
     def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
-
-        instance.allmodules = self
-        instance.hikka = True
-        instance.get = partial(self._mod_get, _module=instance)
-        instance.set = partial(self._mod_set, _modname=instance.__class__.__name__)
-        instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
-        instance.client = self.client
-        instance._client = self.client
-        instance.db = self._db
-        instance._db = self._db
-        instance.lookup = self._lookup
-        instance.import_lib = self._mod_import_lib
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
@@ -795,6 +783,7 @@ class Modules:
         lib_obj.source_url = url.strip("/")
 
         lib_obj.lookup = self._lookup
+        lib_obj.tg_id = self.client.tg_id
         lib_obj.allmodules = self
         lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
         lib_obj._lib_set = partial(self._lib_set, _lib=lib_obj)  # skipcq
@@ -902,7 +891,7 @@ class Modules:
     ):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if hasattr(mod, "config"):
             modcfg = db.get(
@@ -991,7 +980,7 @@ class Modules:
         """
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if interval < 0.1:
             logger.warning(
@@ -1027,11 +1016,22 @@ class Modules:
         from_dlmod: bool = False,
     ):
         mod.allclients = allclients
-        mod._client = client
-        mod._tg_id = client._tg_id
+        mod.allmodules = self
+        mod.hikka = True
+        mod.get = partial(self._mod_get, _module=mod)
+        mod.set = partial(self._mod_set, _modname=mod.__class__.__name__)
+        mod.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
+        mod.client = self.client
+        mod._client = self.client
+        mod.db = self._db
+        mod._db = self._db
+        mod.lookup = self._lookup
+        mod.import_lib = self._mod_import_lib
+        mod.tg_id = self.client.tg_id
+        mod._tg_id = self.client.tg_id
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(client.tg_id)
 
         mod.inline = self.inline
         mod.animate = self._animate
@@ -1101,7 +1101,7 @@ class Modules:
         to_remove = []
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         for module in self.modules:
             if classname.lower() in (
@@ -1117,7 +1117,7 @@ class Modules:
                 if "DYNO" not in os.environ:
                     path = os.path.join(
                         LOADED_MODULES_DIR,
-                        f"{name}_{self.client._tg_id}.py",
+                        f"{name}_{self.client.tg_id}.py",
                     )
 
                     if os.path.isfile(path):

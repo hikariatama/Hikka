@@ -459,7 +459,7 @@ class CommandDispatcher:
     ):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)  # skipcq
+        _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # skipcq
         try:
             await func(message)
         except BaseException as e:

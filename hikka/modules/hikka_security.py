@@ -175,10 +175,6 @@ class HikkaSecurityMod(loader.Module):
         "_cls_doc": "Управление настройками безопасности",
     }
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
     async def inline__switch_perm(
         self,
         call: InlineCall,
@@ -436,7 +432,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("not_a_user"))
             return
 
-        if user.id == self._tg_id:
+        if user.id == self.tg_id:
             await utils.answer(message, self.strings("self"))
             return
 
@@ -548,7 +544,7 @@ class HikkaSecurityMod(loader.Module):
     async def _list_group(self, message: Message, group: str):
         _resolved_users = []
         for user in self._db.get(security.__name__, group, []) + (
-            [self._tg_id] if group == "owner" else []
+            [self.tg_id] if group == "owner" else []
         ):
             try:
                 _resolved_users += [await self._client.get_entity(user)]

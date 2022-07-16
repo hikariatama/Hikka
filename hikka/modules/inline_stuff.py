@@ -50,10 +50,6 @@ class InlineStuffMod(loader.Module):
         "_cmd_doc_ch_hikka_bot": "<username> - Изменить юзернейм инлайн бота",
     }
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
     async def watcher(self, message: Message):
         if (
             getattr(message, "out", False)
