@@ -408,18 +408,6 @@ def get_callback_handlers(mod):
 class Modules:
     """Stores all registered modules"""
 
-    client = None
-    _initial_registration = True
-    commands = {}
-    inline_handlers = {}
-    callback_handlers = {}
-    aliases = {}
-    modules = []  # skipcq: PTC-W0052
-    libraries = []
-    watchers = []
-    _log_handlers = []
-    _core_commands = []
-
     def __init__(
         self,
         client: TelegramClient,
@@ -427,6 +415,16 @@ class Modules:
         allclients: list,
         translator: Translator,
     ):
+        self._initial_registration = True
+        self.commands = {}
+        self.inline_handlers = {}
+        self.callback_handlers = {}
+        self.aliases = {}
+        self.modules = []  # skipcq: PTC-W0052
+        self.libraries = []
+        self.watchers = []
+        self._log_handlers = []
+        self._core_commands = []
         self.allclients = allclients
         self.client = client
         self._db = db
