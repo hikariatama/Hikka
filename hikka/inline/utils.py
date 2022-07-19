@@ -84,16 +84,16 @@ class Utils(InlineUnit):
                         button["callback"] = self._unload_unit_handler
 
                     if button.get("action") == "answer":
-                        if not button.get("text"):
+                        if not button.get("message"):
                             logger.error(
-                                f"Button {button} has no `text` to answer with"
+                                f"Button {button} has no `message` to answer with"
                             )
                             return None
 
                         button["callback"] = functools.partial(
                             self._answer_unit_handler,
                             show_alert=button.get("show_alert", False),
-                            text=button["text"],
+                            text=button["message"],
                         )
 
                 if "callback" in button and "_callback_data" not in button:

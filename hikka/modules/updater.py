@@ -43,12 +43,6 @@ from telethon.tl.types import DialogFilter, Message
 from .. import loader, utils, heroku, main
 from ..inline.types import InlineCall
 
-try:
-    import psycopg2
-except ImportError:
-    if "DYNO" in os.environ:
-        raise
-
 logger = logging.getLogger(__name__)
 
 
@@ -85,16 +79,14 @@ class UpdaterMod(loader.Module):
         "heroku_update": (
             "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
         ),
+        "heroku_update_done_nothing_to_push": (
+            "😔 <b>Update complete. Nothing to push...</b>"
+        ),
         "full_success": (
             "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>"
         ),
         "secure_boot_complete": (
             "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>"
-        ),
-        "heroku_psycopg2_unavailable": (
-            "♓️🚫 <b>PostgreSQL database is not available.</b>\n\n<i>Do not report this"
-            " error to support chat, as it has nothing to do with Hikka. Try changing"
-            " database to Redis</i>"
         ),
     }
 
@@ -140,10 +132,8 @@ class UpdaterMod(loader.Module):
         "heroku_update": (
             "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
         ),
-        "heroku_psycopg2_unavailable": (
-            "♓️🚫 <b>PostgreSQL база данных не доступна.</b>\n\n<i>Не обращайтесь к"
-            " поддержке чата, так как эта проблема не вызвана Hikka. Попробуйте"
-            " изменить базу данных на Redis</i>"
+        "heroku_update_done_nothing_to_push": (
+            "😔 <b>Обновление завершено. Ничего не изменилось, нечего обновлять...</b>"
         ),
     }
 
@@ -350,17 +340,49 @@ class UpdaterMod(loader.Module):
                 return
 
             if "DYNO" in os.environ:
-                await utils.answer(msg_obj, self.strings("heroku_update"))
+                msg_obj = await utils.answer(
+                    msg_obj,
+                    self.strings("heroku_update"),
+                    reply_markup={
+                        "text": "📂 Preparing files...",
+                        "action": "answer",
+                        "text": "🕧 Wait. Update is processing",
+                    },
+                )
                 await self.process_restart_message(msg_obj)
                 try:
-                    await self._db.remote_force_save()
-                except psycopg2.errors.InFailedSqlTransaction:
-                    await utils.answer(
-                        msg_obj, self.strings("heroku_psycopg2_unavailable")
-                    )
-                    return
+                    nosave = "--no-save" in utils.get_args_raw(msg_obj)
+                except Exception:
+                    nosave = False
 
-                heroku.publish(api_token=main.hikka.api_token, create_new=False)
+                if not nosave:
+                    await self._db.remote_force_save()
+
+                app, _ = heroku.get_app(
+                    api_token=main.hikka.api_token,
+                    create_new=False,
+                )
+                repo = heroku.get_repo()
+                url = app.git_url.replace(
+                    "https://",
+                    f"https://api:{os.environ.get('heroku_api_token')}@",
+                )
+
+                if "heroku" in repo.remotes:
+                    remote = repo.remote("heroku")
+                    remote.set_url(url)
+                else:
+                    remote = repo.create_remote("heroku", url)
+
+                await utils.run_sync(
+                    remote.push,
+                    refspec="HEAD:refs/heads/master",
+                    kwargs={"force": True},
+                )
+                await utils.answer(
+                    msg_obj,
+                    self.strings("heroku_update_done_nothing_to_push"),
+                )
                 return
 
             try:

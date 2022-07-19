@@ -186,7 +186,7 @@ class List(InlineUnit):
             logger.exception("Can't send list")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = f"<b>🚫 List invoke failed! More info in logs</b>"
+                msg = "<b>🚫 List invoke failed! More info in logs</b>"
             else:
                 exc = traceback.format_exc()
                 # Remove `Traceback (most recent call last):`
