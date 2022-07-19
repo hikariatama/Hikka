@@ -118,7 +118,7 @@ class Web(root.Web):
 
         if re.search(regex, stdout_line):
             logging.debug(f"Proxy pass tunneled: {stdout_line}")
-            self._tunnel_url = re.search(regex, stdout_line).group(1)
+            self._tunnel_url = re.search(regex, stdout_line)[1]
             self._stream_processed.set()
             atexit.register(self._kill_tunnel)
 
@@ -144,10 +144,7 @@ class Web(root.Web):
 
         await self._stream_processed.wait()
 
-        if hasattr(self, "_tunnel_url"):
-            return self._tunnel_url
-
-        return None
+        return self._tunnel_url if hasattr(self, "_tunnel_url") else None
 
     async def get_url(self, proxy_pass: bool):
         url = None

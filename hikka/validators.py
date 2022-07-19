@@ -125,30 +125,31 @@ def Integer(
     _digits_ru = f", в котором ровно {digits} цифр " if digits is not None else ""
 
     if minimum is not None and minimum != 0:
-        if maximum is None and maximum != 0:
-            doc = {
+        doc = (
+            {
                 "en": f"{_sign_en}integer greater than {minimum}{_digits_en}",
                 "ru": f"{_sign_ru}целым числом больше {minimum}{_digits_ru}",
             }
-        else:
-            doc = {
+            if maximum is None and maximum != 0
+            else {
                 "en": f"{_sign_en}integer from {minimum} to {maximum}{_digits_en}",
                 "ru": (
                     f"{_sign_ru}целым числом в промежутке от {minimum} до"
                     f" {maximum}{_digits_ru}"
                 ),
             }
+        )
+
+    elif maximum is None and maximum != 0:
+        doc = {
+            "en": f"{_sign_en}integer{_digits_en}",
+            "ru": f"{_sign_ru}целым числом{_digits_ru}",
+        }
     else:
-        if maximum is None and maximum != 0:
-            doc = {
-                "en": f"{_sign_en}integer{_digits_en}",
-                "ru": f"{_sign_ru}целым числом{_digits_ru}",
-            }
-        else:
-            doc = {
-                "en": f"{_sign_en}integer less than {maximum}{_digits_en}",
-                "ru": f"{_sign_ru}целым числом меньше {maximum}{_digits_ru}",
-            }
+        doc = {
+            "en": f"{_sign_en}integer less than {maximum}{_digits_en}",
+            "ru": f"{_sign_ru}целым числом меньше {maximum}{_digits_ru}",
+        }
 
     return Validator(
         functools.partial(
@@ -257,22 +258,20 @@ def Series(
     if fixed_len is not None:
         _len_en = f" (exactly {fixed_len} pcs.)"
         _len_ru = f" (ровно {fixed_len} шт.)"
-    else:
-        if min_len is not None:
-            if max_len is not None:
-                _len_en = f" (from {min_len} to {max_len} pcs.)"
-                _len_ru = f" (от {min_len} до {max_len} шт.)"
-            else:
-                _len_en = f" (at least {min_len} pcs.)"
-                _len_ru = f" (как минимум {min_len} шт.)"
-        else:
-            if max_len is not None:
-                _len_en = f" (up to {max_len} pcs.)"
-                _len_ru = f" (до {max_len} шт.)"
-            else:
-                _len_en = ""
-                _len_ru = ""
+    elif min_len is None:
+        if max_len is None:
+            _len_en = ""
+            _len_ru = ""
 
+        else:
+            _len_en = f" (up to {max_len} pcs.)"
+            _len_ru = f" (до {max_len} шт.)"
+    elif max_len is not None:
+        _len_en = f" (from {min_len} to {max_len} pcs.)"
+        _len_ru = f" (от {min_len} до {max_len} шт.)"
+    else:
+        _len_en = f" (at least {min_len} pcs.)"
+        _len_ru = f" (как минимум {min_len} шт.)"
     doc = {
         "en": f"series of values{_len_en}{_each_en}, separated with «,»",
         "ru": f"списком значений{_len_ru}{_each_ru}, разделенных «,»",
@@ -411,29 +410,30 @@ def Float(
     _sign_ru = "отрицательным " if maximum is not None and maximum == 0 else _sign_ru
 
     if minimum is not None and minimum != 0:
-        if maximum is None and maximum != 0:
-            doc = {
+        doc = (
+            {
                 "en": f"{_sign_en}float greater than {minimum}",
                 "ru": f"{_sign_ru}дробным числом больше {minimum}",
             }
-        else:
-            doc = {
+            if maximum is None and maximum != 0
+            else {
                 "en": f"{_sign_en}float from {minimum} to {maximum}",
                 "ru": (
                     f"{_sign_ru}дробным числом в промежутке от {minimum} до {maximum}"
                 ),
             }
+        )
+
+    elif maximum is None and maximum != 0:
+        doc = {
+            "en": f"{_sign_en}float",
+            "ru": f"{_sign_ru}дробным числом",
+        }
     else:
-        if maximum is None and maximum != 0:
-            doc = {
-                "en": f"{_sign_en}float",
-                "ru": f"{_sign_ru}дробным числом",
-            }
-        else:
-            doc = {
-                "en": f"{_sign_en}float less than {maximum}",
-                "ru": f"{_sign_ru}дробным числом меньше {maximum}",
-            }
+        doc = {
+            "en": f"{_sign_en}float less than {maximum}",
+            "ru": f"{_sign_ru}дробным числом меньше {maximum}",
+        }
 
     return Validator(
         functools.partial(

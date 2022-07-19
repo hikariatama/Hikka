@@ -106,12 +106,13 @@ class HikkaException:
 
         full_stack = "\n".join(
             [
-                f"<code>{utils.escape_html(line)}</code>"
-                if not re.search(line_regex, line)
-                else format_line(line)
+                format_line(line)
+                if re.search(line_regex, line)
+                else f"<code>{utils.escape_html(line)}</code>"
                 for line in full_stack.splitlines()
             ]
         )
+
 
         with contextlib.suppress(Exception):
             filename = os.path.basename(filename)
@@ -276,18 +277,14 @@ class TelegramLogsHandler(logging.Handler):
                 continue
 
             while self._queue[client_id]:
-                chunk = self._queue[client_id].pop(0)
-
-                if not chunk:
-                    continue
-
-                asyncio.ensure_future(
-                    self._mods[client_id].inline.bot.send_message(
-                        self._mods[client_id]._logchat,
-                        f"<code>{chunk}</code>",
-                        disable_notification=True,
+                if chunk := self._queue[client_id].pop(0):
+                    asyncio.ensure_future(
+                        self._mods[client_id].inline.bot.send_message(
+                            self._mods[client_id]._logchat,
+                            f"<code>{chunk}</code>",
+                            disable_notification=True,
+                        )
                     )
-                )
 
     def emit(self, record: logging.LogRecord):
         try:
