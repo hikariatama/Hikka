@@ -118,14 +118,15 @@ class Web(root.Web):
 
         if re.search(regex, stdout_line):
             logging.debug(f"Proxy pass tunneled: {stdout_line}")
-            self._tunnel_url = re.search(regex, stdout_line).group(1)
+            self._tunnel_url = re.search(regex, stdout_line)[1]
             self._stream_processed.set()
             atexit.register(self._kill_tunnel)
 
     async def _get_proxy_pass_url(self, port: int) -> str:
         logging.debug("Starting proxy pass shell")
         self._sproc = await asyncio.create_subprocess_shell(
-            f"ssh -o StrictHostKeyChecking=no -R 80:localhost:{port} nokey@localhost.run",
+            "ssh -o StrictHostKeyChecking=no -R"
+            f" 80:localhost:{port} nokey@localhost.run",
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
@@ -143,10 +144,7 @@ class Web(root.Web):
 
         await self._stream_processed.wait()
 
-        if hasattr(self, "_tunnel_url"):
-            return self._tunnel_url
-
-        return None
+        return self._tunnel_url if hasattr(self, "_tunnel_url") else None
 
     async def get_url(self, proxy_pass: bool):
         url = None
@@ -205,7 +203,7 @@ class Web(root.Web):
         loader: "Modules",  # type: ignore
         db: "Database",  # type: ignore
     ):
-        self.client_data[client._tg_id] = (loader, client, db)
+        self.client_data[client.tg_id] = (loader, client, db)
 
     @staticmethod
     async def favicon(request):

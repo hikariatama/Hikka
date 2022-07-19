@@ -26,7 +26,7 @@ from aiogram.types import (
 from aiogram.types import Message as AiogramMessage
 
 from .. import utils
-from .types import InlineCall, InlineQuery, InlineUnit
+from .types import InlineCall, InlineQuery, InlineUnit, BotInlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -90,23 +90,26 @@ class Events(InlineUnit):
 
             if not isinstance(result, list):
                 logger.error(
-                    f"Got invalid type from inline handler. It must be `dict`, got `{type(result)}`"
+                    "Got invalid type from inline handler. It must be `dict`, got"
+                    f" `{type(result)}`"
                 )
                 await instance.e500()
                 return
 
             for res in result:
                 mandatory = {"message", "photo", "gif", "video", "file"}
-                if not any(item in res for item in mandatory):
+                if all(item not in res for item in mandatory):
                     logger.error(
-                        f"Got invalid type from inline handler. It must contain one of `{mandatory}`"
+                        "Got invalid type from inline handler. It must contain one of"
+                        f" `{mandatory}`"
                     )
                     await instance.e500()
                     return
 
                 if "file" in res and "mime_type" not in res:
                     logger.error(
-                        "Got invalid type from inline handler. It contains field `file`, so it must contain `mime_type` as well"
+                        "Got invalid type from inline handler. It contains field"
+                        " `file`, so it must contain `mime_type` as well"
                     )
 
             inline_result = []
@@ -197,27 +200,31 @@ class Events(InlineUnit):
 
     async def _callback_query_handler(
         self,
-        query: CallbackQuery,
+        call: CallbackQuery,
         reply_markup: List[List[dict]] = None,
     ):
         """Callback query handler (buttons' presses)"""
         if reply_markup is None:
             reply_markup = []
 
-        if re.search(r"authorize_web_(.{8})", query.data):
-            self._web_auth_tokens += [
-                re.search(r"authorize_web_(.{8})", query.data).group(1)
-            ]
+        if re.search(r"authorize_web_(.{8})", call.data):
+            self._web_auth_tokens += [re.search(r"authorize_web_(.{8})", call.data)[1]]
             return
 
         # First, dispatch all registered callback handlers
         for func in self._allmodules.callback_handlers.values():
-            if await self.check_inline_security(func=func, user=query.from_user.id):
+            if await self.check_inline_security(func=func, user=call.from_user.id):
                 try:
-                    await func(InlineCall(query, self, None))
+                    await func(
+                        (
+                            BotInlineCall
+                            if getattr(getattr(call, "message", None), "chat", None)
+                            else InlineCall
+                        )(call, self, None)
+                    )
                 except Exception:
                     logger.exception("Error on running callback watcher!")
-                    await query.answer(
+                    await call.answer(
                         "Error occured while processing request. More info in logs",
                         show_alert=True,
                     )
@@ -225,13 +232,19 @@ class Events(InlineUnit):
 
         for unit_id, unit in self._units.copy().items():
             for button in utils.array_sum(unit.get("buttons", [])):
-                if button.get("_callback_data") == query.data:
+                if not isinstance(button, dict):
+                    logger.warning(
+                        f"Can't process update, because of corrupted button: {button}"
+                    )
+                    continue
+
+                if button.get("_callback_data") == call.data:
                     if (
                         button.get("disable_security", False)
                         or unit.get("disable_security", False)
                         or (
                             unit.get("force_me", False)
-                            and query.from_user.id == self._me
+                            and call.from_user.id == self._me
                         )
                         or not unit.get("force_me", False)
                         and (
@@ -240,7 +253,7 @@ class Events(InlineUnit):
                                     "perms_map",
                                     lambda: self._client.dispatcher.security._default,
                                 )(),  # we call it so we can get reloaded rights in runtime
-                                user=query.from_user.id,
+                                user=call.from_user.id,
                             )
                             if "message" in unit
                             else False
@@ -248,23 +261,27 @@ class Events(InlineUnit):
                     ):
                         pass
                     elif (
-                        query.from_user.id
+                        call.from_user.id
                         not in self._client.dispatcher.security._owner
                         + unit.get("always_allow", [])
                         + button.get("always_allow", [])
                     ):
-                        await query.answer("You are not allowed to press this button!")
+                        await call.answer("You are not allowed to press this button!")
                         return
 
                     try:
                         result = await button["callback"](
-                            InlineCall(query, self, unit_id),
+                            (
+                                BotInlineCall
+                                if getattr(getattr(call, "message", None), "chat", None)
+                                else InlineCall
+                            )(call, self, unit_id),
                             *button.get("args", []),
                             **button.get("kwargs", {}),
                         )
                     except Exception:
                         logger.exception("Error on running callback watcher!")
-                        await query.answer(
+                        await call.answer(
                             "Error occurred while "
                             "processing request. "
                             "More info in logs",
@@ -274,39 +291,43 @@ class Events(InlineUnit):
 
                     return result
 
-        if query.data in self._custom_map:
+        if call.data in self._custom_map:
             if (
-                self._custom_map[query.data].get("disable_security", False)
+                self._custom_map[call.data].get("disable_security", False)
                 or (
-                    self._custom_map[query.data].get("force_me", False)
-                    and query.from_user.id == self._me
+                    self._custom_map[call.data].get("force_me", False)
+                    and call.from_user.id == self._me
                 )
-                or not self._custom_map[query.data].get("force_me", False)
+                or not self._custom_map[call.data].get("force_me", False)
                 and (
                     await self.check_inline_security(
-                        func=self._custom_map[query.data].get(
+                        func=self._custom_map[call.data].get(
                             "perms_map",
                             lambda: self._client.dispatcher.security._default,
                         )(),
-                        user=query.from_user.id,
+                        user=call.from_user.id,
                     )
-                    if "message" in self._custom_map[query.data]
+                    if "message" in self._custom_map[call.data]
                     else False
                 )
             ):
                 pass
             elif (
-                query.from_user.id not in self._client.dispatcher.security._owner
-                and query.from_user.id
-                not in self._custom_map[query.data].get("always_allow", [])
+                call.from_user.id not in self._client.dispatcher.security._owner
+                and call.from_user.id
+                not in self._custom_map[call.data].get("always_allow", [])
             ):
-                await query.answer("You are not allowed to press this button!")
+                await call.answer("You are not allowed to press this button!")
                 return
 
-            await self._custom_map[query.data]["handler"](
-                InlineCall(query, self, None),
-                *self._custom_map[query.data].get("args", []),
-                **self._custom_map[query.data].get("kwargs", {}),
+            await self._custom_map[call.data]["handler"](
+                (
+                    BotInlineCall
+                    if getattr(getattr(call, "message", None), "chat", None)
+                    else InlineCall
+                )(call, self, None),
+                *self._custom_map[call.data].get("args", []),
+                **self._custom_map[call.data].get("kwargs", {}),
             )
             return
 
@@ -384,11 +405,14 @@ class Events(InlineUnit):
                         title="Show available inline commands",
                         description="You have no available commands",
                         input_message_content=InputTextMessageContent(
-                            "<b>😔 There are no available inline commands or you lack access to them</b>",
+                            "<b>😔 There are no available inline commands or you lack"
+                            " access to them</b>",
                             "HTML",
                             disable_web_page_preview=True,
                         ),
-                        thumb_url="https://img.icons8.com/fluency/50/000000/info-squared.png",
+                        thumb_url=(
+                            "https://img.icons8.com/fluency/50/000000/info-squared.png"
+                        ),
                         thumb_width=128,
                         thumb_height=128,
                     )
@@ -402,13 +426,17 @@ class Events(InlineUnit):
                 InlineQueryResultArticle(
                     id=utils.rand(20),
                     title="Show available inline commands",
-                    description=f"You have {len(_help.splitlines())} available command(-s)",
+                    description=(
+                        f"You have {len(_help.splitlines())} available command(-s)"
+                    ),
                     input_message_content=InputTextMessageContent(
                         f"<b>ℹ️ Available inline commands:</b>\n\n{_help}",
                         "HTML",
                         disable_web_page_preview=True,
                     ),
-                    thumb_url="https://img.icons8.com/fluency/50/000000/info-squared.png",
+                    thumb_url=(
+                        "https://img.icons8.com/fluency/50/000000/info-squared.png"
+                    ),
                     thumb_width=128,
                     thumb_height=128,
                 )

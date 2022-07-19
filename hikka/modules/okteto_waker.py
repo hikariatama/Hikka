@@ -30,18 +30,15 @@ class OktetoMod(loader.Module):
 
     strings = {"name": "Okteto"}
 
-    async def client_ready(self, client, db):
+    _env_wait_interval = 10
+    _overall_polling_interval = 30 * 60
+    _plan = 2 * 24 * 60 * 60
+    _messages_interval = 30 * 60
+    _exception_timeout = 10
+    _send_interval = 5
+    _bot = "@WebpageBot"
 
-        self._db = db
-        self._client = client
-        self._env_wait_interval = 10
-        self._overall_polling_interval = 30 * 60
-        self._plan = 2 * 24 * 60 * 60
-        self._messages_interval = 30 * 60
-        self._exception_timeout = 10
-        self._send_interval = 5
-        self._bot = "@WebpageBot"
-
+    async def client_ready(self, client, _):
         if "OKTETO" not in os.environ:
             messages = (
                 await client(

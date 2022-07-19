@@ -1,5 +1,30 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.11
+
+- Add support for lib attribute `version` (must be defined BEFORE `init` method)
+- Add `self.lookup` to libs
+- Add `self.allmodules` to libs
+- Add `self._lib_get` to libs
+- Add `self._lib_set` to libs
+- Add `self.get_prefix` to libs
+- Add `self.tg_id` to libs
+- Add `client.tg_id` to every TelegramClient
+- Add support for hook `on_lib_update` (invoked when library is being updated by new version)
+- Add adequate library migration with references replacement
+- Add support for markup, generated for messages, sent by bot itself
+- Reformat code with `black --preview`
+- Automatically send photo as gif if possible in form
+- Update quickstart
+- New fields in HikkaInfo
+- Remove suffix `Hikka` if user specified it somewhere below
+- New exception handler
+- Fix back button in `.config <lib>`
+- New `.e` error format
+- Ignore folder creation error
+- Fix unload error in module without commands
+- Rework aiogram media processing on edit
+
 ## 🌑 Hikka 1.2.10
 
 - Completely drop fast_uploader support

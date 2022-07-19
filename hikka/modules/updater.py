@@ -43,12 +43,6 @@ from telethon.tl.types import DialogFilter, Message
 from .. import loader, utils, heroku, main
 from ..inline.types import InlineCall
 
-try:
-    import psycopg2
-except ImportError:
-    if "DYNO" in os.environ:
-        raise
-
 logger = logging.getLogger(__name__)
 
 
@@ -62,12 +56,17 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Restarting...</b>",
         "downloading": "🕐 <b>Downloading updates...</b>",
         "installing": "🕐 <b>Installing updates...</b>",
-        "success": "⏳ <b>Restart successful! {}</b>\n<i>But still loading modules...</i>\n<i>Restart took {}s</i>",
+        "success": (
+            "⏳ <b>Restart successful! {}</b>\n<i>But still loading"
+            " modules...</i>\n<i>Restart took {}s</i>"
+        ),
         "origin_cfg_doc": "Git origin URL, for where to update from",
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
         "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
-        "secure_boot_confirm": "🔄 <b>Are you sure you want to restart in secure boot mode?</b>",
+        "secure_boot_confirm": (
+            "🔄 <b>Are you sure you want to restart in secure boot mode?</b>"
+        ),
         "update_confirm": (
             "🧭 <b>Are you sure you want to update?\n\n"
             '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
@@ -77,10 +76,18 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Cancel",
         "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
-        "heroku_update": "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>",
-        "full_success": "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>",
-        "secure_boot_complete": "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>",
-        "heroku_psycopg2_unavailable": "♓️🚫 <b>PostgreSQL database is not available.</b>\n\n<i>Do not report this error to support chat, as it has nothing to do with Hikka. Try changing database to Redis</i>",
+        "heroku_update": (
+            "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
+        ),
+        "heroku_update_done_nothing_to_push": (
+            "😔 <b>Update complete. Nothing to push...</b>"
+        ),
+        "full_success": (
+            "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>"
+        ),
     }
 
     strings_ru = {
@@ -88,14 +95,26 @@ class UpdaterMod(loader.Module):
         "restarting_caption": "🔄 <b>Перезагрузка...</b>",
         "downloading": "🕐 <b>Скачивание обновлений...</b>",
         "installing": "🕐 <b>Установка обновлений...</b>",
-        "success": "⏳ <b>Перезагрузка успешна! {}</b>\n<i>Но модули еще загружаются...</i>\n<i>Перезагрузка заняла {} сек</i>",
-        "full_success": "✅ <b>Юзербот полностью загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>",
-        "secure_boot_complete": "🔒 <b>Безопасная загрузка завершена! {}</b>\n<i>Перезагрузка заняла {} сек</i>",
+        "success": (
+            "⏳ <b>Перезагрузка успешна! {}</b>\n<i>Но модули еще"
+            " загружаются...</i>\n<i>Перезагрузка заняла {} сек</i>"
+        ),
+        "full_success": (
+            "✅ <b>Юзербот полностью загружен! {}</b>\n<i>Полная перезагрузка заняла {}"
+            " сек</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Безопасная загрузка завершена! {}</b>\n<i>Перезагрузка заняла {}"
+            " сек</i>"
+        ),
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
         "restart_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться?</b>",
-        "secure_boot_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться в режиме безопасной загрузки?</b>",
+        "secure_boot_confirm": (
+            "🔄 <b>Ты уверен, что хочешь перезагрузиться в режиме безопасной"
+            " загрузки?</b>"
+        ),
         "update_confirm": (
             "🧭 <b>Ты уверен, что хочешь обновиться??\n\n"
             '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
@@ -110,8 +129,12 @@ class UpdaterMod(loader.Module):
         "_cls_doc": "Обновляет юзербот",
         "lavhost_restart": "✌️ <b>Твой lavHost перезагружается...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Твой lavHost обновляется...\n&gt;///&lt;</b>",
-        "heroku_update": "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>",
-        "heroku_psycopg2_unavailable": "♓️🚫 <b>PostgreSQL база данных не доступна.</b>\n\n<i>Не обращайтесь к поддержке чата, так как эта проблема не вызвана Hikka. Попробуйте изменить базу данных на Redis</i>",
+        "heroku_update": (
+            "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
+        ),
+        "heroku_update_done_nothing_to_push": (
+            "😔 <b>Обновление завершено. Ничего не изменилось, нечего обновлять...</b>"
+        ),
     }
 
     def __init__(self):
@@ -317,31 +340,45 @@ class UpdaterMod(loader.Module):
                 return
 
             if "DYNO" in os.environ:
-                await utils.answer(msg_obj, self.strings("heroku_update"))
+                msg_obj = await utils.answer(msg_obj, self.strings("heroku_update"))
                 await self.process_restart_message(msg_obj)
                 try:
-                    await self._db.remote_force_save()
-                except psycopg2.errors.InFailedSqlTransaction:
-                    await utils.answer(
-                        msg_obj, self.strings("heroku_psycopg2_unavailable")
-                    )
-                    return
+                    nosave = "--no-save" in utils.get_args_raw(msg_obj)
+                except Exception:
+                    nosave = False
 
-                heroku.publish(api_token=main.hikka.api_token, create_new=False)
+                if not nosave:
+                    await self._db.remote_force_save()
+
+                app, _ = heroku.get_app(
+                    api_token=main.hikka.api_token,
+                    create_new=False,
+                )
+                repo = heroku.get_repo()
+                url = app.git_url.replace(
+                    "https://",
+                    f"https://api:{os.environ.get('heroku_api_token')}@",
+                )
+
+                if "heroku" in repo.remotes:
+                    remote = repo.remote("heroku")
+                    remote.set_url(url)
+                else:
+                    remote = repo.create_remote("heroku", url)
+
+                await utils.run_sync(remote.push, refspec="HEAD:refs/heads/master")
+                await utils.answer(
+                    msg_obj,
+                    self.strings("heroku_update_done_nothing_to_push"),
+                )
                 return
 
-            try:
+            with contextlib.suppress(Exception):
                 msg_obj = await utils.answer(msg_obj, self.strings("downloading"))
-            except Exception:
-                pass
-
             req_update = await self.download_common()
 
-            try:
+            with contextlib.suppress(Exception):
                 msg_obj = await utils.answer(msg_obj, self.strings("installing"))
-            except Exception:
-                pass
-
             if req_update:
                 self.req_common()
 
@@ -362,10 +399,7 @@ class UpdaterMod(loader.Module):
             self.strings("source").format(self.config["GIT_ORIGIN_URL"]),
         )
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
+    async def client_ready(self, client, _):
         if self.get("selfupdatemsg") is not None:
             try:
                 await self.update_complete(client)
@@ -375,6 +409,14 @@ class UpdaterMod(loader.Module):
         if self.get("do_not_create", False):
             return
 
+        try:
+            self._add_folder()
+        except Exception:
+            logger.exception("Failed to add folder!")
+        finally:
+            self.set("do_not_create", True)
+
+    async def _add_folder(self):
         folders = await self._client(GetDialogFiltersRequest())
 
         if any(getattr(folder, "title", None) == "hikka" for folder in folders):
@@ -460,8 +502,6 @@ class UpdaterMod(loader.Module):
                 "- User got floodwait\n"
                 "Ignoring error and adding folder addition to ignore list"
             )
-
-        self.set("do_not_create", True)
 
     async def update_complete(self, client: "TelegramClient"):  # type: ignore
         logger.debug("Self update successful! Edit message")

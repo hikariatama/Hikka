@@ -9,6 +9,7 @@
 # scope: inline
 
 import asyncio
+import contextlib
 import logging
 from typing import Union
 
@@ -26,12 +27,18 @@ class UpdateNotifierMod(loader.Module):
 
     strings = {
         "name": "UpdateNotifier",
-        "update_required": "🌘 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
+        "update_required": (
+            "🌘 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
         "more": "\n<i><b>🎥 And {} more...</b></i>",
     }
 
     strings_ru = {
-        "update_required": "🌘 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}",
+        "update_required": (
+            "🌘 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
         "more": "\n<i><b>🎥 И еще {}...</b></i>",
     }
 
@@ -65,7 +72,8 @@ class UpdateNotifierMod(loader.Module):
             return False
 
         res = "\n".join(
-            f"<b>{commit.split()[0]}</b>: <i>{utils.escape_html(' '.join(commit.split()[1:]))}</i>"
+            f"<b>{commit.split()[0]}</b>:"
+            f" <i>{utils.escape_html(' '.join(commit.split()[1:]))}</i>"
             for commit in diff.splitlines()[:10]
         )
 
@@ -80,10 +88,7 @@ class UpdateNotifierMod(loader.Module):
         except Exception:
             return ""
 
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
-
+    async def client_ready(self, *_):
         try:
             git.Repo()
         except Exception as e:
@@ -112,9 +117,9 @@ class UpdateNotifierMod(loader.Module):
             await asyncio.sleep(60)
             return
 
-        if self._pending != self.get_commit() and self._pending != self._notified:
+        if self._pending not in [self.get_commit(), self._notified]:
             m = await self.inline.bot.send_message(
-                self._tg_id,
+                self.tg_id,
                 self.strings("update_required").format(
                     self.get_commit()[:6],
                     f'<a href="https://github.com/hikariatama/Hikka/compare/{self.get_commit()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
@@ -133,13 +138,11 @@ class UpdateNotifierMod(loader.Module):
 
     async def _delete_all_upd_messages(self):
         for client in self.allclients:
-            try:
+            with contextlib.suppress(Exception):
                 await client.loader.inline.bot.delete_message(
-                    client._tg_id,
-                    client.loader._db.get("UpdateNotifier", "upd_msg"),
+                    client.tg_id,
+                    client.loader._db.get("UpdateNotifierMod", "upd_msg"),
                 )
-            except Exception:
-                pass
 
     async def update_callback_handler(self, call: InlineCall):
         """Process update buttons clicks"""
@@ -151,19 +154,14 @@ class UpdateNotifierMod(loader.Module):
             await call.answer("Notifications about this update have been suppressed")
             return
 
-        m = await self._client.send_message(
-            self.inline.bot_username,
-            f"<code>{self.get_prefix()}update --force</code>",
-        )
-
         await self._delete_all_upd_messages()
 
-        try:
-            await self.inline.bot.delete_message(
-                call.message.chat.id,
-                call.message.message_id,
-            )
-        except Exception:
-            pass
+        with contextlib.suppress(Exception):
+            await call.delete()
 
-        await self.allmodules.commands["update"](m)
+        await self.allmodules.commands["update"](
+            await self._client.send_message(
+                self.inline.bot_username,
+                f"<code>{self.get_prefix()}update --force</code>",
+            )
+        )

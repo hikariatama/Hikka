@@ -402,6 +402,7 @@ class Hikka:
         else:
             telegram_id = (await client.get_me()).id
             client._tg_id = telegram_id
+            client.tg_id = telegram_id
 
         if "DYNO" in os.environ:
             session = StringSession()
@@ -549,6 +550,7 @@ class Hikka:
         async with client:
             first = True
             client._tg_id = (await client.get_me()).id
+            client.tg_id = client._tg_id
             while await self.amain(first, client):
                 first = False
 
@@ -639,7 +641,7 @@ class Hikka:
         translator = Translator(client, db)
 
         await translator.init()
-        modules = loader.Modules()
+        modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
 
         if self.arguments.docker_deps_internal:
@@ -656,9 +658,9 @@ class Hikka:
         if not web_only:
             await self._add_dispatcher(client, modules, db)
 
-        modules.register_all(client, db, to_load)
-        modules.send_config(db, translator)
-        await modules.send_ready(client, db, self.clients)
+        modules.register_all(to_load)
+        modules.send_config()
+        await modules.send_ready()
 
         if first:
             await self._badge(client)
@@ -672,12 +674,11 @@ class Hikka:
                 key = self.arguments.heroku
             else:
                 print(
-                    "\033[0;35m- Heroku installation -\033[0m\n"
-                    "*If you are from Russia, enable VPN and use it throughout the process\n\n"
-                    "1. Register account at https://heroku.com\n"
-                    "2. Go to https://dashboard.heroku.com/account\n"
-                    "3. Next to API Key click `Reveal` and copy it\n"
-                    "4. Enter it below:"
+                    "\033[0;35m- Heroku installation -\033[0m\n*If you are from Russia,"
+                    " enable VPN and use it throughout the process\n\n1. Register"
+                    " account at https://heroku.com\n2. Go to"
+                    " https://dashboard.heroku.com/account\n3. Next to API Key click"
+                    " `Reveal` and copy it\n4. Enter it below:"
                 )
                 key = input("♓️ \033[1;37mHeroku API key:\033[0m ").strip()
 
@@ -687,7 +688,7 @@ class Hikka:
             )
 
             app = heroku.publish(key, api_token=self.api_token)
-            print("Installed to heroku successfully!\n" f"🎉 App URL: {app.web_url}")
+            print(f"Installed to heroku successfully!\n🎉 App URL: {app.web_url}")
 
             # On this point our work is done
             # everything else will be run on Heroku, including

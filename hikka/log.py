@@ -25,36 +25,111 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import contextlib
 import inspect
+import json
 import logging
 import io
+import os
+import re
+import telethon
+import traceback
 from typing import Optional
 from logging.handlers import RotatingFileHandler
 
 from . import utils
-from ._types import Module
+from ._types import Module, BotInlineCall
 
-_main_formatter = logging.Formatter(
-    fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    style="%",
-)
-_tg_formatter = logging.Formatter(
-    fmt="[%(levelname)s] %(name)s: %(message)s\n",
-    datefmt=None,
-    style="%",
-)
 
-rotating_handler = RotatingFileHandler(
-    filename="hikka.log",
-    mode="a",
-    maxBytes=10 * 1024 * 1024,
-    backupCount=1,
-    encoding="utf-8",
-    delay=0,
-)
+class HikkaException:
+    def __init__(self, message: str, local_vars: str, full_stack: str):
+        self.message = message
+        self.local_vars = local_vars
+        self.full_stack = full_stack
 
-rotating_handler.setFormatter(_main_formatter)
+    @classmethod
+    def from_exc_info(
+        cls,
+        exc_type: object,
+        exc_value: Exception,
+        tb: traceback.TracebackException,
+    ) -> "HikkaException":
+        def to_hashable(dictionary: dict) -> dict:
+            dictionary = dictionary.copy()
+            for key, value in dictionary.items():
+                if isinstance(value, dict):
+                    if (
+                        getattr(getattr(value, "__class__", None), "__name__", None)
+                        == "Database"
+                    ):
+                        dictionary[key] = "<Database>"
+
+                    if isinstance(value, telethon.TelegramClient):
+                        dictionary[key] = "<TelegramClient>"
+
+                    dictionary[key] = to_hashable(value)
+                else:
+                    try:
+                        json.dumps([value])
+                    except Exception:
+                        dictionary[key] = str(value)
+
+            return dictionary
+
+        full_stack = traceback.format_exc().replace(
+            "Traceback (most recent call last):\n", ""
+        )
+
+        line_regex = r'  File "(.*?)", line ([0-9]+), in (.+)'
+
+        def format_line(line: str) -> str:
+            filename_, lineno_, name_ = re.search(line_regex, line).groups()
+            with contextlib.suppress(Exception):
+                filename_ = os.path.basename(filename_)
+
+            return (
+                f"👉 <code>{utils.escape_html(filename_)}:{lineno_}</code> <b>in</b>"
+                f" <code>{utils.escape_html(name_)}</code>"
+            )
+
+        filename, lineno, name = next(
+            (
+                re.search(line_regex, line).groups()
+                for line in full_stack.splitlines()
+                if re.search(line_regex, line)
+            ),
+            (None, None, None),
+        )
+        line = next(
+            (line for line in full_stack.splitlines() if line.startswith("   ")), ""
+        )
+
+        full_stack = "\n".join(
+            [
+                format_line(line)
+                if re.search(line_regex, line)
+                else f"<code>{utils.escape_html(line)}</code>"
+                for line in full_stack.splitlines()
+            ]
+        )
+
+        with contextlib.suppress(Exception):
+            filename = os.path.basename(filename)
+
+        return HikkaException(
+            message=(
+                "<b>🚫 Error!</b>\n<b>🗄 Where:</b>"
+                f" <code>{utils.escape_html(filename)}:{lineno}</code><b>"
+                f" in </b><code>{utils.escape_html(name)}</code>\n😵"
+                f" <code>{utils.escape_html(line)}</code>"
+                " 👈\n<b>❓ What:</b>"
+                f" <code>{utils.escape_html(''.join(traceback.format_exception_only(exc_type, exc_value)).strip())}</code>"
+            ),
+            local_vars=(
+                f"<code>{utils.escape_html(json.dumps(to_hashable(tb.tb_frame.f_locals), indent=4))}</code>"
+            ),
+            full_stack=full_stack,
+        )
 
 
 class TelegramLogsHandler(logging.Handler):
@@ -83,7 +158,7 @@ class TelegramLogsHandler(logging.Handler):
         if getattr(self, "_task", False):
             self._task.cancel()
 
-        self._mods[mod._tg_id] = mod
+        self._mods[mod.tg_id] = mod
 
         self._task = asyncio.ensure_future(self.queue_poller())
 
@@ -108,6 +183,28 @@ class TelegramLogsHandler(logging.Handler):
             and (not record.hikka_caller or client_id == record.hikka_caller)
         ]
 
+    async def _show_full_stack(
+        self,
+        call: BotInlineCall,
+        bot: "aiogram.Bot",  # type: ignore
+        item: HikkaException,
+    ):
+        chunks = (
+            item.message
+            + "\n\n<b>🦝 Locals:</b>\n"
+            + item.local_vars
+            + "\n\n"
+            + "<b>🪐 Full stack:</b>\n"
+            + item.full_stack
+        )
+
+        chunks = list(utils.smart_split(*telethon.extensions.html.parse(chunks), 4096))
+
+        await call.edit(chunks[0])
+
+        for chunk in chunks[1:]:
+            await bot.send_message(chat_id=call.chat_id, text=chunk)
+
     async def sender(self):
         self._queue = {
             client_id: utils.chunks(
@@ -116,9 +213,12 @@ class TelegramLogsHandler(logging.Handler):
                         [
                             item[0]
                             for item in self.tg_buff
-                            if not item[1]
-                            or item[1] == client_id
-                            or self.force_send_all
+                            if isinstance(item[0], str)
+                            and (
+                                not item[1]
+                                or item[1] == client_id
+                                or self.force_send_all
+                            )
                         ]
                     )
                 ),
@@ -127,6 +227,33 @@ class TelegramLogsHandler(logging.Handler):
             for client_id in self._mods
         }
 
+        self._exc_queue = {
+            client_id: [
+                self._mods[client_id].inline.bot.send_message(
+                    self._mods[client_id]._logchat,
+                    item[0].message,
+                    reply_markup=self._mods[client_id].inline.generate_markup(
+                        {
+                            "text": "🪐 Full stack",
+                            "callback": self._show_full_stack,
+                            "args": (
+                                self._mods[client_id].inline.bot,
+                                item[0],
+                            ),
+                        }
+                    ),
+                )
+                for item in self.tg_buff
+                if isinstance(item[0], HikkaException)
+                and (not item[1] or item[1] == client_id or self.force_send_all)
+            ]
+            for client_id in self._mods
+        }
+
+        for client_id, exceptions in self._exc_queue.items():
+            for exc in exceptions:
+                await exc
+
         self.tg_buff = []
 
         for client_id in self._mods:
@@ -134,33 +261,29 @@ class TelegramLogsHandler(logging.Handler):
                 continue
 
             if len(self._queue[client_id]) > 5:
-                file = io.BytesIO("".join(self._queue[client_id]).encode("utf-8"))
-                file.name = "hikka-logs.txt"
-                file.seek(0)
+                logfile = io.BytesIO("".join(self._queue[client_id]).encode("utf-8"))
+                logfile.name = "hikka-logs.txt"
+                logfile.seek(0)
                 await self._mods[client_id].inline.bot.send_document(
                     self._mods[client_id]._logchat,
-                    file,
-                    parse_mode="HTML",
-                    caption="<b>🧳 Journals are too big to be sent as separate messages</b>",
+                    logfile,
+                    caption=(
+                        "<b>🧳 Journals are too big to be sent as separate messages</b>"
+                    ),
                 )
 
                 self._queue[client_id] = []
                 continue
 
             while self._queue[client_id]:
-                chunk = self._queue[client_id].pop(0)
-
-                if not chunk:
-                    continue
-
-                asyncio.ensure_future(
-                    self._mods[client_id].inline.bot.send_message(
-                        self._mods[client_id]._logchat,
-                        f"<code>{chunk}</code>",
-                        parse_mode="HTML",
-                        disable_notification=True,
+                if chunk := self._queue[client_id].pop(0):
+                    asyncio.ensure_future(
+                        self._mods[client_id].inline.bot.send_message(
+                            self._mods[client_id]._logchat,
+                            f"<code>{chunk}</code>",
+                            disable_notification=True,
+                        )
                     )
-                )
 
     def emit(self, record: logging.LogRecord):
         try:
@@ -186,12 +309,20 @@ class TelegramLogsHandler(logging.Handler):
         record.hikka_caller = caller
 
         if record.levelno >= 20:
-            self.tg_buff += [
-                (
-                    ("🚫 " if record.exc_info else "") + _tg_formatter.format(record),
-                    caller,
-                )
-            ]
+            if record.exc_info:
+                self.tg_buff += [
+                    (
+                        HikkaException.from_exc_info(*record.exc_info),
+                        caller,
+                    )
+                ]
+            else:
+                self.tg_buff += [
+                    (
+                        _tg_formatter.format(record),
+                        caller,
+                    )
+                ]
 
         if len(self.buffer) + len(self.handledbuffer) >= self.capacity:
             if self.handledbuffer:
@@ -216,6 +347,29 @@ class TelegramLogsHandler(logging.Handler):
                 self.buffer = []
             finally:
                 self.release()
+
+
+_main_formatter = logging.Formatter(
+    fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    style="%",
+)
+_tg_formatter = logging.Formatter(
+    fmt="[%(levelname)s] %(name)s: %(message)s\n",
+    datefmt=None,
+    style="%",
+)
+
+rotating_handler = RotatingFileHandler(
+    filename="hikka.log",
+    mode="a",
+    maxBytes=10 * 1024 * 1024,
+    backupCount=1,
+    encoding="utf-8",
+    delay=0,
+)
+
+rotating_handler.setFormatter(_main_formatter)
 
 
 def init():

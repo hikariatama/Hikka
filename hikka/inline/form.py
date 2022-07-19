@@ -9,10 +9,12 @@
 import contextlib
 import copy
 import logging
+import os
 import time
 from asyncio import Event
 from typing import List, Optional, Union
 import random
+from urllib.parse import urlparse
 import grapheme
 import traceback
 
@@ -103,7 +105,7 @@ class Form(InlineUnit):
         :return: If form is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self._client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)
 
         if reply_markup is None:
             reply_markup = []
@@ -138,6 +140,16 @@ class Form(InlineUnit):
         if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
             logger.error("Invalid type for `photo`")
             return False
+
+        try:
+            path = urlparse(photo).path
+            ext = os.path.splitext(path)[1]
+        except Exception:
+            ext = None
+
+        if photo is not None and ext in {".gif", ".mp4"}:
+            gif = copy.copy(photo)
+            photo = None
 
         if gif and (not isinstance(gif, str) or not utils.check_url(gif)):
             logger.error("Invalid type for `gif`")
@@ -214,7 +226,7 @@ class Form(InlineUnit):
 
         unit_id = utils.rand(16)
 
-        perms_map = self._find_caller_sec_map() if not manual_security else None
+        perms_map = None if manual_security else self._find_caller_sec_map()
 
         self._units[unit_id] = {
             "type": "form",
@@ -326,7 +338,10 @@ class Form(InlineUnit):
                             InlineQueryResultArticle(
                                 id=utils.rand(20),
                                 title=button["input"],
-                                description=f"⚠️ Do not remove ID! {random.choice(VERIFICATION_EMOJIES)}",
+                                description=(
+                                    "⚠️ Do not remove ID!"
+                                    f" {random.choice(VERIFICATION_EMOJIES)}"
+                                ),
                                 input_message_content=InputTextMessageContent(
                                     "🔄 <b>Transferring value to userbot...</b>\n"
                                     "<i>This message will be deleted automatically</i>"
@@ -359,7 +374,9 @@ class Form(InlineUnit):
                         caption=form.get("text"),
                         parse_mode="HTML",
                         photo_url=form["photo"],
-                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        thumb_url=(
+                            "https://img.icons8.com/cotton/452/moon-satellite.png"
+                        ),
                         reply_markup=self.generate_markup(
                             form["uid"],
                         ),
@@ -376,7 +393,9 @@ class Form(InlineUnit):
                         caption=form.get("text"),
                         parse_mode="HTML",
                         gif_url=form["gif"],
-                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        thumb_url=(
+                            "https://img.icons8.com/cotton/452/moon-satellite.png"
+                        ),
                         reply_markup=self.generate_markup(
                             form["uid"],
                         ),
@@ -394,7 +413,9 @@ class Form(InlineUnit):
                         caption=form.get("text"),
                         parse_mode="HTML",
                         video_url=form["video"],
-                        thumb_url="https://img.icons8.com/cotton/452/moon-satellite.png",
+                        thumb_url=(
+                            "https://img.icons8.com/cotton/452/moon-satellite.png"
+                        ),
                         mime_type="video/mp4",
                         reply_markup=self.generate_markup(
                             form["uid"],

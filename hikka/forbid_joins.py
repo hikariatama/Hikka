@@ -59,7 +59,8 @@ def install_join_forbidder(client: TelegramClient) -> TelegramClient:
                         not in {"APIRatelimiterMod", "ForbidJoinMod"}
                     ).__class__.__name__ not in {"HelpMod", "LoaderMod"}:
                         logger.debug(
-                            f"🎉 I protected you from unintented {item.__class__.__name__} ({item})!"
+                            "🎉 I protected you from unintented"
+                            f" {item.__class__.__name__} ({item})!"
                         )
                         continue
                 except StopIteration:

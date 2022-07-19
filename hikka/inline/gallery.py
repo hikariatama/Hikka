@@ -96,7 +96,7 @@ class Gallery(InlineUnit):
         :return: If gallery is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self._client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)
 
         custom_buttons = self._validate_markup(custom_buttons)
 
@@ -175,7 +175,7 @@ class Gallery(InlineUnit):
             logger.exception("Error while parsing first photo in gallery")
             return False
 
-        perms_map = self._find_caller_sec_map() if not manual_security else None
+        perms_map = None if manual_security else self._find_caller_sec_map()
 
         self._units[unit_id] = {
             "type": "gallery",
@@ -262,7 +262,7 @@ class Gallery(InlineUnit):
                     # Remove `Traceback (most recent call last):`
                     exc = "\n".join(exc.splitlines()[1:])
                     msg = (
-                        f"<b>🚫 Gallery invoke failed!</b>\n\n"
+                        "<b>🚫 Gallery invoke failed!</b>\n\n"
                         f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
                     )
 
@@ -541,9 +541,9 @@ class Gallery(InlineUnit):
         return (
             caption
             if isinstance(caption, str)
-            else ""
-            if not callable(caption)
             else caption()
+            if callable(caption)
+            else ""
         )
 
     def _gallery_markup(self, unit_id: str) -> InlineKeyboardMarkup:
@@ -551,54 +551,62 @@ class Gallery(InlineUnit):
         callback = functools.partial(self._gallery_page, unit_id=unit_id)
         unit = self._units[unit_id]
         return self.generate_markup(
-            unit.get("custom_buttons", [])
-            + self.build_pagination(
-                unit_id=unit_id,
-                callback=callback,
-                total_pages=len(unit["photos"]),
+            (
+                (
+                    unit.get("custom_buttons", [])
+                    + self.build_pagination(
+                        unit_id=unit_id,
+                        callback=callback,
+                        total_pages=len(unit["photos"]),
+                    )
+                    + [
+                        [
+                            *(
+                                [
+                                    {
+                                        "text": "⏪",
+                                        "callback": callback,
+                                        "args": (unit["current_index"] - 1,),
+                                    }
+                                ]
+                                if unit["current_index"] > 0
+                                else []
+                            ),
+                            *(
+                                [
+                                    {
+                                        "text": "🛑"
+                                        if unit.get("slideshow", False)
+                                        else "⏱",
+                                        "callback": callback,
+                                        "args": ("slideshow",),
+                                    }
+                                ]
+                                if unit["current_index"] < len(unit["photos"]) - 1
+                                or not isinstance(
+                                    unit["next_handler"], ListGalleryHelper
+                                )
+                                else []
+                            ),
+                            *(
+                                [
+                                    {
+                                        "text": "⏩",
+                                        "callback": callback,
+                                        "args": (unit["current_index"] + 1,),
+                                    }
+                                ]
+                                if unit["current_index"] < len(unit["photos"]) - 1
+                                or not isinstance(
+                                    unit["next_handler"], ListGalleryHelper
+                                )
+                                else []
+                            ),
+                        ]
+                    ]
+                )
+                + [[{"text": "🔻 Close", "callback": callback, "args": ("close",)}]]
             )
-            + [
-                [
-                    *(
-                        [
-                            {
-                                "text": "⏪",
-                                "callback": callback,
-                                "args": (unit["current_index"] - 1,),
-                            }
-                        ]
-                        if unit["current_index"] > 0
-                        else []
-                    ),
-                    *(
-                        [
-                            {
-                                "text": "⏱"
-                                if not unit.get("slideshow", False)
-                                else "🛑",
-                                "callback": callback,
-                                "args": ("slideshow",),
-                            }
-                        ]
-                        if unit["current_index"] < len(unit["photos"]) - 1
-                        or not isinstance(unit["next_handler"], ListGalleryHelper)
-                        else []
-                    ),
-                    *(
-                        [
-                            {
-                                "text": "⏩",
-                                "callback": callback,
-                                "args": (unit["current_index"] + 1,),
-                            }
-                        ]
-                        if unit["current_index"] < len(unit["photos"]) - 1
-                        or not isinstance(unit["next_handler"], ListGalleryHelper)
-                        else []
-                    ),
-                ]
-            ]
-            + [[{"text": "🔻 Close", "callback": callback, "args": ("close",)}]],
         )
 
     async def _gallery_inline_handler(self, inline_query: InlineQuery):

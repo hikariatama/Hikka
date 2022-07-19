@@ -162,7 +162,7 @@ class SecurityManager:
         self._owner = list(
             set(
                 self._db.get(__name__, "owner", []).copy()
-                + ([self._me] if hasattr(self, "_me") else [])
+                + ([self._client.tg_id] if hasattr(self, "_client") else [])
             )
         )
         self._sudo = list(set(self._db.get(__name__, "sudo", []).copy()))
@@ -170,7 +170,6 @@ class SecurityManager:
 
     async def init(self, client):
         self._client = client
-        self._me = client._tg_id
 
     def get_flags(self, func: callable) -> int:
         if isinstance(func, int):
@@ -206,7 +205,7 @@ class SecurityManager:
         if not user:
             user = message.sender_id
 
-        if user == self._me or getattr(message, "out", False):
+        if user == self._client.tg_id or getattr(message, "out", False):
             return True
 
         logger.debug(f"Checking security match for {config}")

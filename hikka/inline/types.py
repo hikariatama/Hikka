@@ -66,6 +66,62 @@ class InlineMessage:
         )
 
 
+class BotInlineMessage:
+    """Aiogram message, send through inline bot itself"""
+
+    def __init__(
+        self,
+        inline_manager: "InlineManager",  # type: ignore
+        unit_id: str,
+        chat_id: int,
+        message_id: int,
+    ):
+        self.chat_id = chat_id
+        self.unit_id = unit_id
+        self.inline_manager = inline_manager
+        self.message_id = message_id
+        self._units = inline_manager._units
+        self.form = (
+            {"id": unit_id, **self._units[unit_id]} if unit_id in self._units else {}
+        )
+
+    async def edit(self, *args, **kwargs) -> "BotMessage":
+        if "unit_id" in kwargs:
+            kwargs.pop("unit_id")
+
+        if "message_id" in kwargs:
+            kwargs.pop("message_id")
+
+        if "chat_id" in kwargs:
+            kwargs.pop("chat_id")
+
+        return await self.inline_manager._edit_unit(
+            *args,
+            unit_id=self.unit_id,
+            chat_id=self.chat_id,
+            message_id=self.message_id,
+            **kwargs,
+        )
+
+    async def delete(self):
+        return await self.inline_manager._delete_unit_message(
+            self,
+            unit_id=self.unit_id,
+            chat_id=self.chat_id,
+            message_id=self.message_id,
+        )
+
+    async def unload(self, *args, **kwargs):
+        if "unit_id" in kwargs:
+            kwargs.pop("unit_id")
+
+        return await self.inline_manager._unload_unit(
+            *args,
+            unit_id=self.unit_id,
+            **kwargs,
+        )
+
+
 class InlineCall(CallbackQuery, InlineMessage):
     """Modified version of classic aiogram `CallbackQuery`"""
 
@@ -88,11 +144,46 @@ class InlineCall(CallbackQuery, InlineMessage):
         }:
             setattr(self, attr, getattr(call, attr, None))
 
+        self.original_call = call
+
         InlineMessage.__init__(
             self,
             inline_manager,
             unit_id,
             call.inline_message_id,
+        )
+
+
+class BotInlineCall(CallbackQuery, BotInlineMessage):
+    """Modified version of classic aiogram `CallbackQuery`"""
+
+    def __init__(
+        self,
+        call: CallbackQuery,
+        inline_manager: "InlineManager",  # type: ignore
+        unit_id: str,
+    ):
+        CallbackQuery.__init__(self)
+
+        for attr in {
+            "id",
+            "from_user",
+            "message",
+            "chat",
+            "chat_instance",
+            "data",
+            "game_short_name",
+        }:
+            setattr(self, attr, getattr(call, attr, None))
+
+        self.original_call = call
+
+        BotInlineMessage.__init__(
+            self,
+            inline_manager,
+            unit_id,
+            call.message.chat.id,
+            call.message.message_id,
         )
 
 
@@ -147,7 +238,8 @@ class InlineQuery(AiogramInlineQuery):
         await self.answer(
             self._get_res(
                 "🚫 400",
-                "Bad request. You need to pass right arguments, follow module's documentation",
+                "Bad request. You need to pass right arguments, follow module's"
+                " documentation",
                 "https://img.icons8.com/color/344/swearing-male--v1.png",
             ),
             cache_time=0,

@@ -38,6 +38,7 @@ from importlib.machinery import ModuleSpec
 from types import FunctionType
 from typing import Any, Hashable, Optional, Union, List
 import requests
+from telethon import TelegramClient
 from telethon.tl.types import Message
 
 from . import security, utils, validators
@@ -56,7 +57,10 @@ from ._types import (
     StringLoader,
 )
 from .inline.core import InlineManager
-from .translations import Strings
+from .translations import Strings, Translator
+
+import gc as _gc
+import types as _types
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +79,118 @@ group_member = security.group_member
 pm = security.pm
 unrestricted = security.unrestricted
 inline_everyone = security.inline_everyone
+
+
+def proxy0(data):
+    def proxy1():
+        return data
+
+    return proxy1
+
+
+_CELLTYPE = type(proxy0(None).__closure__[0])
+
+
+def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
+    """
+    :summary: Uses the :mod:`gc` module to replace all references to obj
+              :attr:`replace_from` with :attr:`replace_to` (it tries it's best,
+              anyway).
+    :param replace_from: The obj you want to replace.
+    :param replace_to: The new objject you want in place of the old one.
+    :returns: The replace_from
+    """
+    # https://github.com/cart0113/pyjack/blob/dd1f9b70b71f48335d72f53ee0264cf70dbf4e28/pyjack.py
+
+    _gc.collect()
+
+    hit = False
+    for referrer in _gc.get_referrers(replace_from):
+
+        # FRAMES -- PASS THEM UP
+        if isinstance(referrer, _types.FrameType):
+            continue
+
+        # DICTS
+        if isinstance(referrer, dict):
+
+            cls = None
+
+            # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
+            if "__dict__" in referrer and "__weakref__" in referrer:
+                for cls in _gc.get_referrers(referrer):
+                    if inspect.isclass(cls) and cls.__dict__ == referrer:
+                        break
+
+            for key, value in referrer.items():
+                # REMEMBER TO REPLACE VALUES ...
+                if value is replace_from:
+                    hit = True
+                    value = replace_to
+                    referrer[key] = value
+                    if cls:  # AGAIN, CLEANUP DICTPROXY PROBLEM
+                        setattr(cls, key, replace_to)
+                # AND KEYS.
+                if key is replace_from:
+                    hit = True
+                    del referrer[key]
+                    referrer[replace_to] = value
+
+        elif isinstance(referrer, list):
+            for i, value in enumerate(referrer):
+                if value is replace_from:
+                    hit = True
+                    referrer[i] = replace_to
+
+        elif isinstance(referrer, set):
+            referrer.remove(replace_from)
+            referrer.add(replace_to)
+            hit = True
+
+        elif isinstance(
+            referrer,
+            (
+                tuple,
+                frozenset,
+            ),
+        ):
+            new_tuple = []
+            for obj in referrer:
+                if obj is replace_from:
+                    new_tuple.append(replace_to)
+                else:
+                    new_tuple.append(obj)
+            replace_all_refs(referrer, type(referrer)(new_tuple))
+
+        elif isinstance(referrer, _CELLTYPE):
+
+            def _proxy0(data):
+                def proxy1():
+                    return data
+
+                return proxy1
+
+            proxy = _proxy0(replace_to)
+            newcell = proxy.__closure__[0]
+            replace_all_refs(referrer, newcell)
+
+        elif isinstance(referrer, _types.FunctionType):
+            localsmap = {}
+            for key in ["code", "globals", "name", "defaults", "closure"]:
+                orgattr = getattr(referrer, f"__{key}__")
+                localsmap[key] = replace_to if orgattr is replace_from else orgattr
+            localsmap["argdefs"] = localsmap["defaults"]
+            del localsmap["defaults"]
+            newfn = _types.FunctionType(**localsmap)
+            replace_all_refs(referrer, newfn)
+
+        else:
+            logging.debug(f"{referrer} is not supported.")
+
+    if hit is False:
+        raise AttributeError(f"Object '{replace_from}' not found")
+
+    return replace_from
 
 
 async def stop_placeholder() -> bool:
@@ -110,7 +226,7 @@ class InfiniteLoop:
     def stop(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(
-                self.module_instance.allmodules.client._tg_id
+                self.module_instance.allmodules.client.tg_id
             )
 
         if self._task:
@@ -127,7 +243,7 @@ class InfiniteLoop:
     def start(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(
-                self.module_instance.allmodules.client._tg_id
+                self.module_instance.allmodules.client.tg_id
             )
 
         if not self._task:
@@ -294,22 +410,30 @@ class Modules:
 
     client = None
     _initial_registration = True
+    commands = {}
+    inline_handlers = {}
+    callback_handlers = {}
+    aliases = {}
+    modules = []  # skipcq: PTC-W0052
+    libraries = []
+    watchers = []
+    _log_handlers = []
+    _core_commands = []
 
-    def __init__(self):
-        self.commands = {}
-        self.inline_handlers = {}
-        self.callback_handlers = {}
-        self.aliases = {}
-        self.modules = []  # skipcq: PTC-W0052
-        self.libraries = []
-        self.watchers = []
-        self._log_handlers = []
-        self._core_commands = []
-
-    def register_all(self, client, db, mods=None):
-        """Load all modules in the module directory"""
+    def __init__(
+        self,
+        client: TelegramClient,
+        db: "Database",  # type: ignore
+        allclients: list,
+        translator: Translator,
+    ):
+        self.allclients = allclients
+        self.client = client
         self._db = db
+        self._translator = translator
 
+    def register_all(self, mods: list = None):
+        """Load all modules in the module directory"""
         external_mods = []
 
         if not mods:
@@ -321,12 +445,15 @@ class Modules:
                 )
             ]
 
-            if "DYNO" not in os.environ and not db.get(__name__, "secure_boot", False):
+            if "DYNO" not in os.environ and not self._db.get(
+                __name__, "secure_boot", False
+            ):
                 external_mods = [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
                         lambda x: (
-                            x.endswith(f"{client._tg_id}.py") and not x.startswith("_")
+                            x.endswith(f"{self.client.tg_id}.py")
+                            and not x.startswith("_")
                         ),
                         os.listdir(LOADED_MODULES_DIR),
                     )
@@ -339,7 +466,7 @@ class Modules:
 
     def _register_modules(self, modules: list, origin: str = "<core>"):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         for mod in modules:
             try:
@@ -375,7 +502,7 @@ class Modules:
     ) -> Module:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
@@ -407,7 +534,7 @@ class Modules:
         if save_fs and "DYNO" not in os.environ:
             path = os.path.join(
                 LOADED_MODULES_DIR,
-                f"{cls_name}_{self.client._tg_id}.py",
+                f"{cls_name}_{self.client.tg_id}.py",
             )
 
             if origin == "<string>":
@@ -427,7 +554,7 @@ class Modules:
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if getattr(instance, "__origin__", "") == "<core>":
             self._core_commands += list(map(lambda x: x.lower(), instance.commands))
@@ -499,7 +626,7 @@ class Modules:
     def register_watcher(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         with contextlib.suppress(AttributeError):
             if instance.watcher:
@@ -531,8 +658,9 @@ class Modules:
     def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
+        instance.allclients = self.allclients
         instance.allmodules = self
         instance.hikka = True
         instance.get = partial(self._mod_get, _module=instance)
@@ -544,6 +672,10 @@ class Modules:
         instance._db = self._db
         instance.lookup = self._lookup
         instance.import_lib = self._mod_import_lib
+        instance.tg_id = self.client.tg_id
+        instance._tg_id = self.client.tg_id
+
+        instance.animate = self._animate
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
@@ -595,6 +727,17 @@ class Modules:
     def _mod_set(self, key: str, value: Hashable, _modname: str = None) -> bool:
         return self._db.set(_modname, key, value)
 
+    def _lib_get(
+        self,
+        key: str,
+        default: Optional[Hashable] = None,
+        _lib: Library = None,
+    ) -> Hashable:
+        return self._db.get(_lib.__class__.__name__, key, default)
+
+    def _lib_set(self, key: str, value: Hashable, _lib: Library = None) -> bool:
+        return self._db.set(_lib.__class__.__name__, key, value)
+
     async def _mod_import_lib(
         self,
         url: str,
@@ -605,7 +748,8 @@ class Modules:
         Import library from url and register it in :obj:`Modules`
         :param url: Url to import
         :param suspend_on_error: Will raise :obj:`loader.SelfSuspend` if library can't be loaded
-        :return: Library class instance
+        :return: :obj:`Library`
+        :raise: SelfUnload if :attr:`suspend_on_error` is True and error occurred
         :raise: HTTPError if library is not found
         :raise: ImportError if library doesn't have any class which is a subclass of :obj:`loader.Library`
         :raise: ImportError if library name doesn't end with `Lib`
@@ -634,7 +778,7 @@ class Modules:
         sys.modules[module] = instance
         spec.loader.exec_module(instance)
 
-        class_instance = next(
+        lib_obj = next(
             (
                 value()
                 for value in vars(instance).values()
@@ -643,68 +787,92 @@ class Modules:
             None,
         )
 
-        if not class_instance:
+        if not lib_obj:
             _raise(ImportError("Invalid library. No class found"))
 
-        if not class_instance.__class__.__name__.endswith("Lib"):
+        if not lib_obj.__class__.__name__.endswith("Lib"):
             _raise(ImportError("Invalid library. Class name must end with 'Lib'"))
 
-        class_instance.client = self.client
-        class_instance._client = self.client  # skipcq
-        class_instance.db = self._db  # skipcq
-        class_instance._db = self._db  # skipcq
-        class_instance.name = class_instance.__class__.__name__
-        class_instance.source_url = url.strip("/")
+        lib_obj.client = self.client
+        lib_obj._client = self.client  # skipcq
+        lib_obj.db = self._db
+        lib_obj._db = self._db  # skipcq
+        lib_obj.name = lib_obj.__class__.__name__
+        lib_obj.source_url = url.strip("/")
 
-        for lib in self.libraries.copy():
-            if lib.source_url == class_instance.source_url:
-                logging.debug(f"Using existing instance of library {lib.source_url}")
-                return lib
+        lib_obj.lookup = self._lookup
+        lib_obj.tg_id = self.client.tg_id
+        lib_obj.allmodules = self
+        lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
+        lib_obj._lib_set = partial(self._lib_set, _lib=lib_obj)  # skipcq
+        lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
-        if hasattr(class_instance, "init") and callable(class_instance.init):
+        for old_lib in self.libraries:
+            if old_lib.source_url == lib_obj.source_url and (
+                not isinstance(getattr(old_lib, "version", None), tuple)
+                and not isinstance(getattr(lib_obj, "version", None), tuple)
+                or old_lib.version == lib_obj.version
+            ):
+                logging.debug(
+                    f"Using existing instance of library {old_lib.source_url}"
+                )
+                return old_lib
+
+        new = True
+
+        for old_lib in self.libraries:
+            if old_lib.source_url == lib_obj.source_url:
+                if hasattr(old_lib, "on_lib_update") and callable(
+                    old_lib.on_lib_update
+                ):
+                    await old_lib.on_lib_update(lib_obj)
+
+                replace_all_refs(old_lib, lib_obj)
+                new = False
+                logging.debug(
+                    "Replacing existing instance of library"
+                    f" {lib_obj.source_url} with updated object"
+                )
+
+        if hasattr(lib_obj, "init") and callable(lib_obj.init):
             try:
-                await class_instance.init()
+                await lib_obj.init()
             except Exception:
                 _raise(RuntimeError("Library init() failed"))
 
-        if hasattr(class_instance, "config"):
-            if not isinstance(class_instance.config, LibraryConfig):
+        if hasattr(lib_obj, "config"):
+            if not isinstance(lib_obj.config, LibraryConfig):
                 _raise(
                     RuntimeError("Library config must be a `LibraryConfig` instance")
                 )
 
-            libcfg = class_instance.db.get(
-                class_instance.__class__.__name__,
+            libcfg = lib_obj.db.get(
+                lib_obj.__class__.__name__,
                 "__config__",
                 {},
             )
 
-            for conf in class_instance.config.keys():
+            for conf in lib_obj.config.keys():
                 with contextlib.suppress(Exception):
-                    class_instance.config.set_no_raise(
+                    lib_obj.config.set_no_raise(
                         conf,
                         (
                             libcfg[conf]
                             if conf in libcfg.keys()
-                            else os.environ.get(
-                                f"{class_instance.__class__.__name__}.{conf}"
-                            )
-                            or class_instance.config.getdef(conf)
+                            else os.environ.get(f"{lib_obj.__class__.__name__}.{conf}")
+                            or lib_obj.config.getdef(conf)
                         ),
                     )
-        self.libraries += [class_instance]
 
-        if len([x.name for x in self.libraries]) != len(
-            {x.name for x in self.libraries}
-        ):
-            self.libraries.remove(class_instance)
-            _raise(
-                RuntimeError(
-                    "Use different classname for your library. You have a override"
-                )
-            )
+        if hasattr(lib_obj, "strings"):
+            lib_obj.strings = Strings(lib_obj, self._translator)
 
-        return class_instance
+        lib_obj.translator = self._translator
+
+        if new:
+            self.libraries += [lib_obj]
+
+        return lib_obj
 
     def dispatch(self, command: str) -> tuple:
         """Dispatch command to appropriate module"""
@@ -726,24 +894,18 @@ class Modules:
                     except KeyError:
                         return command, None
 
-    def send_config(self, db, translator, skip_hook: bool = False):
+    def send_config(self, skip_hook: bool = False):
         """Configure modules"""
         for mod in self.modules:
-            self.send_config_one(mod, db, translator, skip_hook)
+            self.send_config_one(mod, skip_hook)
 
-    def send_config_one(
-        self,
-        mod: "Module",
-        db: "Database",  # type: ignore
-        translator: "Translator" = None,  # type: ignore
-        skip_hook: bool = False,
-    ):
+    def send_config_one(self, mod: "Module", skip_hook: bool = False):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if hasattr(mod, "config"):
-            modcfg = db.get(
+            modcfg = self._db.get(
                 mod.__class__.__name__,
                 "__config__",
                 {},
@@ -773,9 +935,9 @@ class Modules:
             mod.name = mod.strings["name"]
 
         if hasattr(mod, "strings"):
-            mod.strings = Strings(mod, translator)
+            mod.strings = Strings(mod, self._translator)
 
-        mod.translator = translator
+        mod.translator = self._translator
 
         try:
             mod.config_complete()
@@ -783,13 +945,11 @@ class Modules:
             logger.exception(f"Failed to send mod config complete signal due to {e}")
             raise
 
-    async def send_ready(self, client, db, allclients):
+    async def send_ready(self):
         """Send all data to all modules"""
-        self.client = client
-
         # Init inline manager anyway, so the modules
         # can access its `init_complete`
-        inline_manager = InlineManager(client, db, self)
+        inline_manager = InlineManager(self.client, self._db, self)
 
         await inline_manager._register_manager()
 
@@ -799,12 +959,7 @@ class Modules:
         self.inline = inline_manager
 
         try:
-            await asyncio.gather(
-                *[
-                    self.send_ready_one(mod, client, db, allclients)
-                    for mod in self.modules
-                ]
-            )
+            await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
         except Exception as e:
             logger.exception(f"Failed to send mod init complete signal due to {e}")
 
@@ -829,7 +984,7 @@ class Modules:
         """
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if interval < 0.1:
             logger.warning(
@@ -858,21 +1013,13 @@ class Modules:
     async def send_ready_one(
         self,
         mod: Module,
-        client: "TelegramClient",  # type: ignore
-        db: "Database",  # type: ignore
-        allclients: list,
         no_self_unload: bool = False,
         from_dlmod: bool = False,
     ):
-        mod.allclients = allclients
-        mod._client = client
-        mod._tg_id = client._tg_id
-
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         mod.inline = self.inline
-        mod.animate = self._animate
 
         for method in dir(mod):
             if isinstance(getattr(mod, method), InfiniteLoop):
@@ -885,12 +1032,12 @@ class Modules:
 
         if from_dlmod:
             try:
-                await mod.on_dlmod(client, db)
+                await mod.on_dlmod(self.client, self._db)
             except Exception:
                 logger.info("Can't process `on_dlmod` hook", exc_info=True)
 
         try:
-            await mod.client_ready(client, db)
+            await mod.client_ready(self.client, self._db)
         except SelfUnload as e:
             if no_self_unload:
                 raise e
@@ -939,7 +1086,7 @@ class Modules:
         to_remove = []
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         for module in self.modules:
             if classname.lower() in (
@@ -955,7 +1102,7 @@ class Modules:
                 if "DYNO" not in os.environ:
                     path = os.path.join(
                         LOADED_MODULES_DIR,
-                        f"{name}_{self.client._tg_id}.py",
+                        f"{name}_{self.client.tg_id}.py",
                     )
 
                     if os.path.isfile(path):
@@ -972,7 +1119,11 @@ class Modules:
                         getattr(module, method).stop()
                         logger.debug(f"Stopped loop in {module=}, {method=}")
 
-                to_remove += module.commands.values()
+                to_remove += (
+                    module.commands
+                    if isinstance(getattr(module, "commands", None), dict)
+                    else {}
+                ).values()
                 if hasattr(module, "watcher"):
                     to_remove += [module.watcher]
 

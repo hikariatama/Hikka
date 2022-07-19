@@ -41,7 +41,10 @@ class CoreMod(loader.Module):
         "user_unblacklisted": "✅ <b>User {} unblacklisted from userbot</b>",
         "what_prefix": "❓ <b>What should the prefix be set to?</b>",
         "prefix_incorrect": "🚫 <b>Prefix must be one symbol in length</b>",
-        "prefix_set": "✅ <b>Command prefix updated. Type</b> <code>{newprefix}setprefix {oldprefix}</code> <b>to change it back</b>",
+        "prefix_set": (
+            "✅ <b>Command prefix updated. Type</b> <code>{newprefix}setprefix"
+            " {oldprefix}</code> <b>to change it back</b>"
+        ),
         "alias_created": "✅ <b>Alias created. Access it with</b> <code>{}</code>",
         "aliases": "<b>🔗 Aliases:</b>\n",
         "no_command": "🚫 <b>Command</b> <code>{}</code> <b>does not exist</b>",
@@ -66,11 +69,18 @@ class CoreMod(loader.Module):
         "too_many_args": "🚫 <b>Слишком много аргументов</b>",
         "blacklisted": "✅ <b>Чат {} добавлен в черный список юзербота</b>",
         "unblacklisted": "✅ <b>Чат {} удален из черного списка юзербота</b>",
-        "user_blacklisted": "✅ <b>Пользователь {} добавлен в черный список юзербота</b>",
-        "user_unblacklisted": "✅ <b>Пользователь {} удален из черного списка юзербота</b>",
+        "user_blacklisted": (
+            "✅ <b>Пользователь {} добавлен в черный список юзербота</b>"
+        ),
+        "user_unblacklisted": (
+            "✅ <b>Пользователь {} удален из черного списка юзербота</b>"
+        ),
         "what_prefix": "❓ <b>А какой префикс ставить то?</b>",
         "prefix_incorrect": "🚫 <b>Префикс должен состоять только из одного символа</b>",
-        "prefix_set": "✅ <b>Префикс обновлен. Чтобы вернуть его, используй</b> <code>{newprefix}setprefix {oldprefix}</code>",
+        "prefix_set": (
+            "✅ <b>Префикс обновлен. Чтобы вернуть его, используй</b>"
+            " <code>{newprefix}setprefix {oldprefix}</code>"
+        ),
         "alias_created": "✅ <b>Алиас создан. Используй его через</b> <code>{}</code>",
         "aliases": "<b>🔗 Алиасы:</b>\n",
         "no_command": "🚫 <b>Команда</b> <code>{}</code> <b>не существует</b>",
@@ -89,25 +99,32 @@ class CoreMod(loader.Module):
         "_cmd_doc_hikka": "Показать версию Hikka",
         "_cmd_doc_blacklist": "[чат] [модуль] - Отключить бота где-либо",
         "_cmd_doc_unblacklist": "<чат> - Включить бота где-либо",
-        "_cmd_doc_blacklistuser": "[пользователь] - Запретить пользователю выполнять все команды",
-        "_cmd_doc_unblacklistuser": "[пользователь] - Разрешить пользователю выполнять команды, на которые ему хватает разрешений",
+        "_cmd_doc_blacklistuser": (
+            "[пользователь] - Запретить пользователю выполнять все команды"
+        ),
+        "_cmd_doc_unblacklistuser": (
+            "[пользователь] - Разрешить пользователю выполнять команды, на которые ему"
+            " хватает разрешений"
+        ),
         "_cmd_doc_setprefix": "<префикс> - Установить префикс",
         "_cmd_doc_aliases": "Показать алиасы",
         "_cmd_doc_addalias": "Установить алиас для команды",
         "_cmd_doc_delalias": "Удалить алиас для команды",
-        "_cmd_doc_addtrnsl": "Установить пак перевода\n.addtrnsl <пак>\nТребуется перезагрузка после выполнения",
+        "_cmd_doc_addtrnsl": (
+            "Установить пак перевода\n.addtrnsl <пак>\nТребуется перезагрузка после"
+            " выполнения"
+        ),
         "_cmd_doc_cleartrnsl": "Удалить все паки перевода",
-        "_cmd_doc_setlang": "Выбрать предпочитаемый язык перевода\nТребуется перезагрузка после выполнения",
+        "_cmd_doc_setlang": (
+            "Выбрать предпочитаемый язык перевода\nТребуется перезагрузка после"
+            " выполнения"
+        ),
         "_cmd_doc_cleardb": "Сброс до заводских настроек - сброс базы данных",
         "_cls_doc": "Управление базовыми настройками юзербота",
         "confirm_cleardb": "⚠️ <b>Вы уверены, что хотите сбросить базу данных?</b>",
         "cleardb_confirm": "🗑 Очистить базу",
         "cancel": "🚫 Отмена",
     }
-
-    async def client_ready(self, client, db):
-        self._db = db
-        self._client = client
 
     async def blacklistcommon(self, message: Message):
         args = utils.get_args(message)
@@ -157,9 +174,7 @@ class CoreMod(loader.Module):
         self._db.set(
             main.__name__,
             "blacklist_chats",
-            list(
-                set(self._db.get(main.__name__, "blacklist_chats", [])) - set([chatid])
-            ),
+            list(set(self._db.get(main.__name__, "blacklist_chats", [])) - {chatid}),
         )
 
         await utils.answer(message, self.strings("unblacklisted").format(chatid))
@@ -173,10 +188,7 @@ class CoreMod(loader.Module):
             if reply:
                 return reply.sender_id
 
-            if message.is_private:
-                return message.to_id.user_id
-
-            return False
+            return message.to_id.user_id if message.is_private else False
 
     async def blacklistusercmd(self, message: Message):
         """[user_id] - Prevent this user from running any commands"""
@@ -205,7 +217,7 @@ class CoreMod(loader.Module):
         self._db.set(
             main.__name__,
             "blacklist_users",
-            list(set(self._db.get(main.__name__, "blacklist_users", [])) - set([user])),
+            list(set(self._db.get(main.__name__, "blacklist_users", [])) - {user}),
         )
 
         await utils.answer(
@@ -258,9 +270,7 @@ class CoreMod(loader.Module):
             return
 
         alias, cmd = args
-        ret = self.allmodules.add_alias(alias, cmd)
-
-        if ret:
+        if ret := self.allmodules.add_alias(alias, cmd):
             self.set(
                 "aliases",
                 {
@@ -328,7 +338,7 @@ class CoreMod(loader.Module):
     async def setlangcmd(self, message: Message):
         """[languages in the order of priority] - Change default language"""
         args = utils.get_args_raw(message)
-        if not args or not all(len(i) == 2 for i in args.split(" ")):
+        if not args or any(len(i) != 2 for i in args.split(" ")):
             await utils.answer(message, self.strings("incorrect_language"))
             return
 

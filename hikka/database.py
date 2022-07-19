@@ -66,13 +66,13 @@ class Database(dict):
         with self._postgre, self._postgre.cursor() as cur:
             cur.execute(
                 "UPDATE hikka SET data = %s WHERE id = %s;",
-                (json.dumps(self), self._client._tg_id),
+                (json.dumps(self), self._client.tg_id),
             )
 
     def _redis_save_sync(self):
         with self._redis.pipeline() as pipe:
             pipe.set(
-                str(self._client._tg_id),
+                str(self._client.tg_id),
                 json.dumps(self, ensure_ascii=True),
             )
             pipe.execute()
@@ -85,7 +85,7 @@ class Database(dict):
         if self._redis:
             await utils.run_sync(self._redis_save_sync)
             logger.debug("Published db to Redis")
-        elif self._postgre:
+        else:
             await utils.run_sync(self._postgre_save_sync)
             logger.debug("Published db to PostgreSQL")
 
@@ -136,13 +136,13 @@ class Database(dict):
             with contextlib.suppress(Exception):
                 cur.execute(
                     "SELECT EXISTS(SELECT 1 FROM hikka WHERE id=%s);",
-                    (self._client._tg_id,),
+                    (self._client.tg_id,),
                 )
 
                 if not cur.fetchone()[0]:
                     cur.execute(
                         "INSERT INTO hikka (id, data) VALUES (%s, %s);",
-                        (self._client._tg_id, json.dumps(self)),
+                        (self._client.tg_id, json.dumps(self)),
                     )
 
             with contextlib.suppress(Exception):
@@ -163,12 +163,10 @@ class Database(dict):
 
     async def redis_init(self) -> bool:
         """Init redis database"""
-        REDIS_URI = os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")
-
-        if not REDIS_URI:
+        if REDIS_URI := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
+            self._redis = redis.Redis.from_url(REDIS_URI)
+        else:
             return False
-
-        self._redis = redis.Redis.from_url(REDIS_URI)
 
     async def init(self):
         """Asynchronous initialization unit"""
@@ -177,7 +175,7 @@ class Database(dict):
         elif os.environ.get("DATABASE_URL") or main.get_config_key("postgre_uri"):
             await self.postgre_init()
 
-        self._db_path = os.path.join(DATA_DIR, f"config-{self._client._tg_id}.json")
+        self._db_path = os.path.join(DATA_DIR, f"config-{self._client.tg_id}.json")
         self.read()
 
         try:
@@ -205,7 +203,7 @@ class Database(dict):
                 self.update(
                     **json.loads(
                         self._redis.get(
-                            str(self._client._tg_id),
+                            str(self._client.tg_id),
                         ).decode(),
                     )
                 )
@@ -218,7 +216,7 @@ class Database(dict):
                 with self._postgre, self._postgre.cursor() as cur:
                     cur.execute(
                         "SELECT data FROM hikka WHERE id=%s;",
-                        (self._client._tg_id,),
+                        (self._client.tg_id,),
                     )
                     self.update(
                         **json.loads(
@@ -259,7 +257,8 @@ class Database(dict):
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
                     logger.warning(
-                        f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not string or int"
+                        f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not"
+                        " string or int"
                     )
                     continue
 
@@ -283,8 +282,7 @@ class Database(dict):
             self.update(**rev)
 
             raise RuntimeError(
-                "Rewriting database to the last revision "
-                "because new one destructed it"
+                "Rewriting database to the last revision because new one destructed it"
             )
 
         if self._next_revision_call < time.time():
@@ -342,10 +340,7 @@ class Database(dict):
 
         asset = await self._client.get_messages(self._assets, ids=[asset_id])
 
-        if not asset:
-            return None
-
-        return asset[0]
+        return asset[0] if asset else None
 
     def get(self, owner: str, key: str, default: Any = None) -> Any:
         """Get database key"""

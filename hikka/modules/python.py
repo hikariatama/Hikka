@@ -6,11 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import contextlib
 import itertools
 import logging
-from traceback import format_exc
+import sys
 from types import ModuleType
 import os
+from typing import Any
 
 import telethon
 from meval import meval
@@ -19,6 +21,7 @@ from telethon.tl.types import Message
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
+from ..log import HikkaException
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +43,7 @@ class PythonMod(loader.Module):
     strings = {
         "name": "Python",
         "eval": "<b>🎬 Code:</b>\n<code>{}</code>\n<b>🪄 Result:</b>\n<code>{}</code>",
-        "err": "<b>🎬 Code:</b>\n<code>{}</code>\n\n<b>🚫 Error:</b>\n<code>{}</code>",
+        "err": "<b>🎬 Code:</b>\n<code>{}</code>\n\n<b>🚫 Error:</b>\n{}",
         "db_permission": (
             "⚠️ <b>Do not use </b><code>db.set</code><b>, </b><code>db.get</code><b> "
             "and other db operations. You have core modules to control anything you "
@@ -53,7 +56,7 @@ class PythonMod(loader.Module):
 
     strings_ru = {
         "eval": "<b>🎬 Код:</b>\n<code>{}</code>\n<b>🪄 Результат:</b>\n<code>{}</code>",
-        "err": "<b>🎬 Код:</b>\n<code>{}</code>\n\n<b>🚫 Ошибка:</b>\n<code>{}</code>",
+        "err": "<b>🎬 Код:</b>\n<code>{}</code>\n\n<b>🚫 Ошибка:</b>\n{}",
         "db_permission": (
             "⚠️ <b>Не используй </b><code>db.set</code><b>, </b><code>db.get</code><b>"
             " и другие операции с базой данных. У тебя есть встроенные модуля для"
@@ -67,9 +70,7 @@ class PythonMod(loader.Module):
         "_cls_doc": "Выполняет Python код",
     }
 
-    async def client_ready(self, client, db):
-        self._client = client
-        self._db = db
+    async def client_ready(self, client, _):
         self._phone = (await client.get_me()).phone
 
     @loader.owner
@@ -108,7 +109,15 @@ class PythonMod(loader.Module):
             )
             return
         except Exception:
-            exc = format_exc().replace(self._phone, "📵")
+            item = HikkaException.from_exc_info(*sys.exc_info())
+            exc = (
+                "\n<b>🪐 Full stack:</b>\n\n"
+                + "\n".join(item.full_stack.splitlines()[:-1])
+                + "\n\n"
+                + "😵 "
+                + item.full_stack.splitlines()[-1]
+            )
+            exc = exc.replace(str(self._phone), "📵")
 
             if os.environ.get("DATABASE_URL"):
                 exc = exc.replace(
@@ -126,11 +135,12 @@ class PythonMod(loader.Module):
                 message,
                 self.strings("err").format(
                     utils.escape_html(utils.get_args_raw(message)),
-                    utils.escape_html(exc),
+                    exc,
                 ),
             )
 
             return
+
         ret = ret.format(
             utils.escape_html(utils.get_args_raw(message)),
             utils.escape_html(
@@ -139,6 +149,7 @@ class PythonMod(loader.Module):
                 else str(it)
             ),
         )
+
         ret = ret.replace(str(self._phone), "📵")
 
         if postgre := os.environ.get("DATABASE_URL") or main.get_config_key(
@@ -146,9 +157,7 @@ class PythonMod(loader.Module):
         ):
             ret = ret.replace(postgre, "postgre://**************************")
 
-        if redis := os.environ.get("REDIS_URL") or main.get_config_key(
-            "redis_uri"
-        ):
+        if redis := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             ret = ret.replace(redis, "redis://**************************")
 
         if os.environ.get("hikka_session"):
@@ -157,12 +166,10 @@ class PythonMod(loader.Module):
                 "StringSession(**************************)",
             )
 
-        try:
+        with contextlib.suppress(MessageIdInvalidError):
             await utils.answer(message, ret)
-        except MessageIdInvalidError:
-            pass
 
-    async def getattrs(self, message):
+    async def getattrs(self, message: Message) -> dict:
         reply = await message.get_reply_message()
         return {
             **{
@@ -195,7 +202,7 @@ class PythonMod(loader.Module):
             ),
         }
 
-    def get_sub(self, it, _depth: int = 1) -> dict:
+    def get_sub(self, obj: Any, _depth: int = 1) -> dict:
         """Get all callable capitalised objects in an object recursively, ignoring _*"""
         return {
             **dict(
@@ -203,7 +210,7 @@ class PythonMod(loader.Module):
                     lambda x: x[0][0] != "_"
                     and x[0][0].upper() == x[0][0]
                     and callable(x[1]),
-                    it.__dict__.items(),
+                    obj.__dict__.items(),
                 )
             ),
             **dict(
@@ -213,10 +220,10 @@ class PythonMod(loader.Module):
                         for y in filter(
                             lambda x: x[0][0] != "_"
                             and isinstance(x[1], ModuleType)
-                            and x[1] != it
+                            and x[1] != obj
                             and x[1].__package__.rsplit(".", _depth)[0]
                             == "telethon.tl",
-                            it.__dict__.items(),
+                            obj.__dict__.items(),
                         )
                     ]
                 )

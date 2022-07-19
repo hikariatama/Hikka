@@ -69,7 +69,7 @@ class List(InlineUnit):
         :return: If list is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self._client._tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)
 
         custom_buttons = self._validate_markup(custom_buttons)
 
@@ -114,7 +114,7 @@ class List(InlineUnit):
 
         unit_id = utils.rand(16)
 
-        perms_map = self._find_caller_sec_map() if not manual_security else None
+        perms_map = None if manual_security else self._find_caller_sec_map()
 
         self._units[unit_id] = {
             "type": "list",
@@ -186,13 +186,13 @@ class List(InlineUnit):
             logger.exception("Can't send list")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = f"<b>🚫 List invoke failed! More info in logs</b>"
+                msg = "<b>🚫 List invoke failed! More info in logs</b>"
             else:
                 exc = traceback.format_exc()
                 # Remove `Traceback (most recent call last):`
                 exc = "\n".join(exc.splitlines()[1:])
                 msg = (
-                    f"<b>🚫 List invoke failed!</b>\n\n"
+                    "<b>🚫 List invoke failed!</b>\n\n"
                     f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
                 )
 

@@ -26,13 +26,14 @@ from aiogram.types import (
     InputMediaAudio,
     InputMediaPhoto,
     InputMediaVideo,
+    InputFile,
 )
 
 from aiogram.utils.exceptions import (
-    InvalidQueryID,
     MessageIdInvalid,
     MessageNotModified,
     RetryAfter,
+    BadRequest,
 )
 
 from .. import utils
@@ -51,6 +52,9 @@ class Utils(InlineUnit):
         if not markup_obj:
             return None
 
+        if isinstance(markup_obj, InlineKeyboardMarkup):
+            return markup_obj
+
         markup = InlineKeyboardMarkup()
 
         map_ = (
@@ -67,7 +71,8 @@ class Utils(InlineUnit):
             for button in row:
                 if not isinstance(button, dict):
                     logger.error(
-                        f"Button {button} is not a `dict`, but `{type(button)}` in {map_}"
+                        f"Button {button} is not a `dict`, but `{type(button)}` in"
+                        f" {map_}"
                     )
                     return None
 
@@ -79,16 +84,16 @@ class Utils(InlineUnit):
                         button["callback"] = self._unload_unit_handler
 
                     if button.get("action") == "answer":
-                        if not button.get("text"):
+                        if not button.get("message"):
                             logger.error(
-                                f"Button {button} has no `text` to answer with"
+                                f"Button {button} has no `message` to answer with"
                             )
                             return None
 
                         button["callback"] = functools.partial(
                             self._answer_unit_handler,
                             show_alert=button.get("show_alert", False),
-                            text=button["text"],
+                            text=button["message"],
                         )
 
                 if "callback" in button and "_callback_data" not in button:
@@ -273,31 +278,30 @@ class Utils(InlineUnit):
         disable_web_page_preview: bool = True,
         query: CallbackQuery = None,
         unit_id: str = None,
-        inline_message_id: Union[str, None] = None,
-    ):
-        """Do not edit or pass `self`, `query`, `unit_id` params, they are for internal use only"""
-        if isinstance(reply_markup, (list, dict)):
-            reply_markup = self._normalize_markup(reply_markup)
-        elif reply_markup is None:
-            reply_markup = [[]]
+        inline_message_id: Optional[str] = None,
+        chat_id: Optional[int] = None,
+        message_id: Optional[int] = None,
+    ) -> bool:
+        """
+        Edits unit message
+        :param text: Text of message
+        :param reply_markup: Inline keyboard
+        :param photo: Url to a valid photo to attach to message
+        :param file: Url to a valid file to attach to message
+        :param video: Url to a valid video to attach to message
+        :param audio: Url to a valid audio to attach to message
+        :param gif: Url to a valid gif to attach to message
+        :param mime_type: Mime type of file
+        :param force_me: Allow only userbot owner to interact with buttons
+        :param disable_security: Disable security check for buttons
+        :param always_allow: List of user ids, which will always be allowed
+        :param disable_web_page_preview: Disable web page preview
+        :param query: Callback query
+        :return: Status of edit"""
+        reply_markup = self._validate_markup(reply_markup) or []
 
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
-            return False
-
-        if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
-            logger.error("Invalid type for `photo`")
-            return False
-
-        if gif and (not isinstance(gif, str) or not utils.check_url(gif)):
-            logger.error("Invalid type for `gif`")
-            return False
-
-        if file and (
-            not isinstance(file, str, bytes, io.BytesIO)
-            or (isinstance(file, str) and not utils.check_url(file))
-        ):
-            logger.error("Invalid type for `file`")
             return False
 
         if file and not mime_type:
@@ -307,20 +311,8 @@ class Utils(InlineUnit):
             )
             return False
 
-        if video and (not isinstance(video, str) or not utils.check_url(video)):
-            logger.error("Invalid type for `video`")
-            return False
-
         if isinstance(audio, str):
             audio = {"url": audio}
-
-        if audio and (
-            not isinstance(audio, dict)
-            or "url" not in audio
-            or not utils.check_url(audio["url"])
-        ):
-            logger.error("Invalid type for `audio`")
-            return False
 
         media_params = [
             photo is None,
@@ -350,13 +342,14 @@ class Utils(InlineUnit):
         else:
             unit = {}
 
-        inline_message_id = (
-            inline_message_id
-            or unit.get("inline_message_id", False)
-            or query.inline_message_id
-        )
+        if not chat_id or not message_id:
+            inline_message_id = (
+                inline_message_id
+                or unit.get("inline_message_id", False)
+                or getattr(query, "inline_message_id", None)
+            )
 
-        if not inline_message_id:
+        if not chat_id and not message_id and not inline_message_id:
             logger.warning(
                 "Attempted to edit message with no `inline_message_id`. "
                 "Possible reasons:\n"
@@ -365,38 +358,6 @@ class Utils(InlineUnit):
                 "- There is an in-userbot error, which you should report"
             )
             return False
-
-        if all(media_params):
-            try:
-                await self.bot.edit_message_text(
-                    text,
-                    inline_message_id=inline_message_id,
-                    disable_web_page_preview=disable_web_page_preview,
-                    reply_markup=self.generate_markup(
-                        reply_markup
-                        if isinstance(reply_markup, list)
-                        else unit.get("buttons", [])
-                    ),
-                )
-            except MessageNotModified:
-                if query:
-                    try:
-                        await query.answer()
-                    except InvalidQueryID:
-                        pass  # Just ignore that error, bc we need to just
-                        # remove preloader from user's button, if message
-                        # was deleted
-            except RetryAfter as e:
-                logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
-                await asyncio.sleep(e.timeout)
-                return await self._edit_unit(**utils.get_kwargs())
-            except MessageIdInvalid:
-                with contextlib.suppress(Exception):
-                    await query.answer(
-                        "I should have edited some message, but it is deleted :("
-                    )
-
-            return
 
         # If passed `photo` is gif
         try:
@@ -409,27 +370,107 @@ class Utils(InlineUnit):
             gif = deepcopy(photo)
             photo = None
 
-        if file is not None:
-            media = InputMediaDocument(file, caption=text, parse_mode="HTML")
-        elif photo is not None:
-            media = InputMediaPhoto(photo, caption=text, parse_mode="HTML")
-        elif audio is not None:
-            media = InputMediaAudio(
-                audio["url"],
-                title=audio.get("title"),
-                performer=audio.get("performer"),
-                duration=audio.get("duration"),
-                caption=text,
-                parse_mode="HTML",
-            )
-        elif video is not None:
-            media = InputMediaVideo(video, caption=text, parse_mode="HTML")
-        elif gif is not None:
-            media = InputMediaAnimation(gif, caption=text, parse_mode="HTML")
+        media = next(
+            (media for media in [photo, file, video, audio, gif] if media), None
+        )
+
+        if isinstance(media, bytes):
+            media = io.BytesIO(media)
+            media.name = "upload.mp4"
+
+        if isinstance(media, io.BytesIO):
+            media = InputFile(media)
+
+        if file:
+            media = InputMediaDocument(media, caption=text, parse_mode="HTML")
+        elif photo:
+            media = InputMediaPhoto(media, caption=text, parse_mode="HTML")
+        elif audio:
+            if isinstance(audio, dict):
+                media = InputMediaAudio(
+                    audio["url"],
+                    title=audio.get("title"),
+                    performer=audio.get("performer"),
+                    duration=audio.get("duration"),
+                    caption=text,
+                    parse_mode="HTML",
+                )
+            else:
+                media = InputMediaAudio(
+                    audio,
+                    caption=text,
+                    parse_mode="HTML",
+                )
+        elif video:
+            media = InputMediaVideo(media, caption=text, parse_mode="HTML")
+        elif gif:
+            media = InputMediaAnimation(media, caption=text, parse_mode="HTML")
+
+        if media is None:
+            try:
+                await self.bot.edit_message_text(
+                    text,
+                    **(
+                        {"inline_message_id": inline_message_id}
+                        if inline_message_id
+                        else {"chat_id": chat_id, "message_id": message_id}
+                    ),
+                    disable_web_page_preview=disable_web_page_preview,
+                    reply_markup=self.generate_markup(
+                        reply_markup
+                        if isinstance(reply_markup, list)
+                        else unit.get("buttons", [])
+                    ),
+                )
+            except MessageNotModified:
+                if query:
+                    with contextlib.suppress(Exception):
+                        await query.answer()
+
+                return False
+            except RetryAfter as e:
+                logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
+                await asyncio.sleep(e.timeout)
+                return await self._edit_unit(**utils.get_kwargs())
+            except MessageIdInvalid:
+                with contextlib.suppress(Exception):
+                    await query.answer(
+                        "I should have edited some message, but it is deleted :("
+                    )
+
+                return False
+            except BadRequest as e:
+                if "There is no text in the message to edit" not in str(e):
+                    raise
+
+                try:
+                    await self.bot.edit_message_caption(
+                        caption=text,
+                        **(
+                            {"inline_message_id": inline_message_id}
+                            if inline_message_id
+                            else {"chat_id": chat_id, "message_id": message_id}
+                        ),
+                        reply_markup=self.generate_markup(
+                            reply_markup
+                            if isinstance(reply_markup, list)
+                            else unit.get("buttons", [])
+                        ),
+                    )
+                except Exception:
+                    return False
+                else:
+                    return True
+            else:
+                return True
 
         try:
             await self.bot.edit_message_media(
-                inline_message_id=inline_message_id,
+                **(
+                    {"inline_message_id": inline_message_id}
+                    if inline_message_id
+                    else {"chat_id": chat_id, "message_id": message_id}
+                ),
                 media=media,
                 reply_markup=self.generate_markup(
                     reply_markup
@@ -446,6 +487,9 @@ class Utils(InlineUnit):
                 await query.answer(
                     "I should have edited some message, but it is deleted :("
                 )
+            return False
+        else:
+            return True
 
     async def _delete_unit_message(
         self,
@@ -453,6 +497,17 @@ class Utils(InlineUnit):
         unit_id: str = None,
     ) -> bool:
         """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
+        if getattr(getattr(call, "message", None), "chat", None):
+            try:
+                await self.bot.delete_message(
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.message_id,
+                )
+            except Exception:
+                return False
+
+            return True
+
         if not unit_id and hasattr(call, "unit_id") and call.unit_id:
             unit_id = call.unit_id
 
@@ -605,7 +660,8 @@ class Utils(InlineUnit):
 
         if not isinstance(buttons, (list, dict)):
             logger.error(
-                f"Reply markup ommited because passed type is not valid ({type(buttons)})"
+                "Reply markup ommited because passed type is not valid"
+                f" ({type(buttons)})"
             )
             return None
 
@@ -613,7 +669,8 @@ class Utils(InlineUnit):
 
         if not all(all(isinstance(button, dict) for button in row) for row in buttons):
             logger.error(
-                "Reply markup ommited because passed invalid type for one of the buttons"
+                "Reply markup ommited because passed invalid type for one of the"
+                " buttons"
             )
             return None
 
