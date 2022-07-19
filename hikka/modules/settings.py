@@ -175,9 +175,10 @@ class CoreMod(loader.Module):
             main.__name__,
             "blacklist_chats",
             list(
-                set(self._db.get(main.__name__, "blacklist_chats", [])) - set([chatid])
+                set(self._db.get(main.__name__, "blacklist_chats", [])) - {chatid}
             ),
         )
+
 
         await utils.answer(message, self.strings("unblacklisted").format(chatid))
 
@@ -190,10 +191,7 @@ class CoreMod(loader.Module):
             if reply:
                 return reply.sender_id
 
-            if message.is_private:
-                return message.to_id.user_id
-
-            return False
+            return message.to_id.user_id if message.is_private else False
 
     async def blacklistusercmd(self, message: Message):
         """[user_id] - Prevent this user from running any commands"""
@@ -222,8 +220,9 @@ class CoreMod(loader.Module):
         self._db.set(
             main.__name__,
             "blacklist_users",
-            list(set(self._db.get(main.__name__, "blacklist_users", [])) - set([user])),
+            list(set(self._db.get(main.__name__, "blacklist_users", [])) - {user}),
         )
+
 
         await utils.answer(
             message,
@@ -275,9 +274,7 @@ class CoreMod(loader.Module):
             return
 
         alias, cmd = args
-        ret = self.allmodules.add_alias(alias, cmd)
-
-        if ret:
+        if ret := self.allmodules.add_alias(alias, cmd):
             self.set(
                 "aliases",
                 {
@@ -345,7 +342,7 @@ class CoreMod(loader.Module):
     async def setlangcmd(self, message: Message):
         """[languages in the order of priority] - Change default language"""
         args = utils.get_args_raw(message)
-        if not args or not all(len(i) == 2 for i in args.split(" ")):
+        if not args or any(len(i) != 2 for i in args.split(" ")):
             await utils.answer(message, self.strings("incorrect_language"))
             return
 

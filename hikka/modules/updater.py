@@ -373,18 +373,12 @@ class UpdaterMod(loader.Module):
                 )
                 return
 
-            try:
+            with contextlib.suppress(Exception):
                 msg_obj = await utils.answer(msg_obj, self.strings("downloading"))
-            except Exception:
-                pass
-
             req_update = await self.download_common()
 
-            try:
+            with contextlib.suppress(Exception):
                 msg_obj = await utils.answer(msg_obj, self.strings("installing"))
-            except Exception:
-                pass
-
             if req_update:
                 self.req_common()
 

@@ -136,20 +136,17 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
                     del referrer[key]
                     referrer[replace_to] = value
 
-        # LISTS
         elif isinstance(referrer, list):
             for i, value in enumerate(referrer):
                 if value is replace_from:
                     hit = True
                     referrer[i] = replace_to
 
-        # SETS
         elif isinstance(referrer, set):
             referrer.remove(replace_from)
             referrer.add(replace_to)
             hit = True
 
-        # TUPLE, FROZENSET
         elif isinstance(
             referrer,
             (
@@ -165,7 +162,6 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
                     new_tuple.append(obj)
             replace_all_refs(referrer, type(referrer)(new_tuple))
 
-        # CELLTYPE
         elif isinstance(referrer, _CELLTYPE):
 
             def _proxy0(data):
@@ -178,21 +174,16 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
             newcell = proxy.__closure__[0]
             replace_all_refs(referrer, newcell)
 
-        # FUNCTIONS
         elif isinstance(referrer, _types.FunctionType):
             localsmap = {}
             for key in ["code", "globals", "name", "defaults", "closure"]:
                 orgattr = getattr(referrer, f"__{key}__")
-                if orgattr is replace_from:
-                    localsmap[key] = replace_to
-                else:
-                    localsmap[key] = orgattr
+                localsmap[key] = replace_to if orgattr is replace_from else orgattr
             localsmap["argdefs"] = localsmap["defaults"]
             del localsmap["defaults"]
             newfn = _types.FunctionType(**localsmap)
             replace_all_refs(referrer, newfn)
 
-        # OTHER (IN DEBUG, SEE WHAT IS NOT SUPPORTED).
         else:
             logging.debug(f"{referrer} is not supported.")
 

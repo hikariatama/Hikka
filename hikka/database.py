@@ -85,7 +85,7 @@ class Database(dict):
         if self._redis:
             await utils.run_sync(self._redis_save_sync)
             logger.debug("Published db to Redis")
-        elif self._postgre:
+        else:
             await utils.run_sync(self._postgre_save_sync)
             logger.debug("Published db to PostgreSQL")
 
@@ -163,12 +163,12 @@ class Database(dict):
 
     async def redis_init(self) -> bool:
         """Init redis database"""
-        REDIS_URI = os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")
-
-        if not REDIS_URI:
+        if REDIS_URI := os.environ.get("REDIS_URL") or main.get_config_key(
+            "redis_uri"
+        ):
+            self._redis = redis.Redis.from_url(REDIS_URI)
+        else:
             return False
-
-        self._redis = redis.Redis.from_url(REDIS_URI)
 
     async def init(self):
         """Asynchronous initialization unit"""
@@ -342,10 +342,7 @@ class Database(dict):
 
         asset = await self._client.get_messages(self._assets, ids=[asset_id])
 
-        if not asset:
-            return None
-
-        return asset[0]
+        return asset[0] if asset else None
 
     def get(self, owner: str, key: str, default: Any = None) -> Any:
         """Get database key"""

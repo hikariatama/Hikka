@@ -255,8 +255,28 @@ class HikkaSecurityMod(loader.Module):
         is_inline: bool = False,
     ) -> List[List[dict]]:
         perms = self._get_current_perms(command, is_inline)
-        if not is_inline:
-            return utils.chunks(
+        return (
+            utils.chunks(
+                [
+                    {
+                        "text": f"{'✅' if level else '🚫'} {self.strings[group]}",
+                        "callback": self.inline__switch_perm,
+                        "args": (
+                            command.__name__.rsplit("_inline_handler", maxsplit=1)[
+                                0
+                            ],
+                            group,
+                            not level,
+                            is_inline,
+                        ),
+                    }
+                    for group, level in perms.items()
+                ],
+                2,
+            )
+            + [[{"text": self.strings("close_menu"), "action": "close"}]]
+            if is_inline
+            else utils.chunks(
                 [
                     {
                         "text": f"{'✅' if level else '🚫'} {self.strings[group]}",
@@ -271,7 +291,8 @@ class HikkaSecurityMod(loader.Module):
                     for group, level in perms.items()
                 ],
                 2,
-            ) + [
+            )
+            + [
                 [
                     {
                         "text": self.strings("close_menu"),
@@ -279,23 +300,7 @@ class HikkaSecurityMod(loader.Module):
                     }
                 ]
             ]
-
-        return utils.chunks(
-            [
-                {
-                    "text": f"{'✅' if level else '🚫'} {self.strings[group]}",
-                    "callback": self.inline__switch_perm,
-                    "args": (
-                        command.__name__.rsplit("_inline_handler", maxsplit=1)[0],
-                        group,
-                        not level,
-                        is_inline,
-                    ),
-                }
-                for group, level in perms.items()
-            ],
-            2,
-        ) + [[{"text": self.strings("close_menu"), "action": "close"}]]
+        )
 
     def _build_markup_global(self, is_inline: bool = False) -> List[List[dict]]:
         perms = self._get_current_bm(is_inline)
