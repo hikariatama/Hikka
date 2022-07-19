@@ -49,7 +49,7 @@ class HikkaException:
 
     @classmethod
     def from_exc_info(
-        self,
+        cls,
         exc_type: object,
         exc_value: Exception,
         tb: traceback.TracebackException,

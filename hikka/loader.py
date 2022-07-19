@@ -61,7 +61,6 @@ from .translations import Strings, Translator
 
 import gc as _gc
 import types as _types
-import inspect as _inspect
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +119,7 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
             # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
             if "__dict__" in referrer and "__weakref__" in referrer:
                 for cls in _gc.get_referrers(referrer):
-                    if _inspect.isclass(cls) and cls.__dict__ == referrer:
+                    if inspect.isclass(cls) and cls.__dict__ == referrer:
                         break
 
             for key, value in referrer.items():
@@ -169,13 +168,13 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
         # CELLTYPE
         elif isinstance(referrer, _CELLTYPE):
 
-            def proxy0(data):
+            def _proxy0(data):
                 def proxy1():
                     return data
 
                 return proxy1
 
-            proxy = proxy0(replace_to)
+            proxy = _proxy0(replace_to)
             newcell = proxy.__closure__[0]
             replace_all_refs(referrer, newcell)
 
@@ -183,7 +182,7 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
         elif isinstance(referrer, _types.FunctionType):
             localsmap = {}
             for key in ["code", "globals", "name", "defaults", "closure"]:
-                orgattr = getattr(referrer, "__{}__".format(key))
+                orgattr = getattr(referrer, f"__{key}__")
                 if orgattr is replace_from:
                     localsmap[key] = replace_to
                 else:
@@ -196,7 +195,6 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
         # OTHER (IN DEBUG, SEE WHAT IS NOT SUPPORTED).
         else:
             logging.debug(f"{referrer} is not supported.")
-            pass
 
     if hit is False:
         raise AttributeError(f"Object '{replace_from}' not found")

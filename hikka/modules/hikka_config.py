@@ -881,10 +881,7 @@ class HikkaConfigMod(loader.Module):
             if isinstance(mod, loader.Library):
                 type_ = "library"
             else:
-                if getattr(mod, "__origin__", None) == "<core>":
-                    type_ = True
-                else:
-                    type_ = False
+                type_ = getattr(mod, "__origin__", None) == "<core>"
 
             await self.inline__configure(form, args, obj_type=type_)
             return

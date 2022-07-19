@@ -340,15 +340,7 @@ class UpdaterMod(loader.Module):
                 return
 
             if "DYNO" in os.environ:
-                msg_obj = await utils.answer(
-                    msg_obj,
-                    self.strings("heroku_update"),
-                    reply_markup={
-                        "text": "📂 Preparing files...",
-                        "action": "answer",
-                        "text": "🕧 Wait. Update is processing",
-                    },
-                )
+                msg_obj = await utils.answer(msg_obj, self.strings("heroku_update"))
                 await self.process_restart_message(msg_obj)
                 try:
                     nosave = "--no-save" in utils.get_args_raw(msg_obj)
@@ -374,11 +366,7 @@ class UpdaterMod(loader.Module):
                 else:
                     remote = repo.create_remote("heroku", url)
 
-                await utils.run_sync(
-                    remote.push,
-                    refspec="HEAD:refs/heads/master",
-                    kwargs={"force": True},
-                )
+                await utils.run_sync(remote.push, refspec="HEAD:refs/heads/master")
                 await utils.answer(
                     msg_obj,
                     self.strings("heroku_update_done_nothing_to_push"),
