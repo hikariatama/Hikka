@@ -410,7 +410,7 @@ class UpdaterMod(loader.Module):
             return
 
         try:
-            self._add_folder()
+            await self._add_folder()
         except Exception:
             logger.exception("Failed to add folder!")
         finally:
