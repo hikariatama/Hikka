@@ -113,7 +113,6 @@ class HikkaException:
             ]
         )
 
-
         with contextlib.suppress(Exception):
             filename = os.path.basename(filename)
 

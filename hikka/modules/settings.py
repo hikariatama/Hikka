@@ -174,11 +174,8 @@ class CoreMod(loader.Module):
         self._db.set(
             main.__name__,
             "blacklist_chats",
-            list(
-                set(self._db.get(main.__name__, "blacklist_chats", [])) - {chatid}
-            ),
+            list(set(self._db.get(main.__name__, "blacklist_chats", [])) - {chatid}),
         )
-
 
         await utils.answer(message, self.strings("unblacklisted").format(chatid))
 
@@ -222,7 +219,6 @@ class CoreMod(loader.Module):
             "blacklist_users",
             list(set(self._db.get(main.__name__, "blacklist_users", [])) - {user}),
         )
-
 
         await utils.answer(
             message,

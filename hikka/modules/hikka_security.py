@@ -262,9 +262,7 @@ class HikkaSecurityMod(loader.Module):
                         "text": f"{'✅' if level else '🚫'} {self.strings[group]}",
                         "callback": self.inline__switch_perm,
                         "args": (
-                            command.__name__.rsplit("_inline_handler", maxsplit=1)[
-                                0
-                            ],
+                            command.__name__.rsplit("_inline_handler", maxsplit=1)[0],
                             group,
                             not level,
                             is_inline,
