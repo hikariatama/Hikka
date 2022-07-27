@@ -32,8 +32,8 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Prefix",
         "send_info": "Send userbot info",
         "description": "ℹ This will not compromise any sensitive info",
-        "up-to-date": "😌 Up-to-date",
-        "update_required": "😕 Update required </b><code>.update</code><b>",
+        "up-to-date": "<b>😌 Up-to-date</b>",
+        "update_required": "<b>😕 Update required </b><code>.update</code>",
         "_cfg_cst_msg": (
             "Custom message for info. May contain {me}, {version}, {build}, {prefix},"
             " {platform}, {upd}, {uptime} keywords"
