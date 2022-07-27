@@ -44,22 +44,16 @@ class BotPM(InlineUnit):
 
     gs = get_fsm_state
 
-    async def _bot_message_answer(  # skipcq: PYL-E0213
-        mod,
-        text: str = None,
-        message: AiogramMessage = None,
-        parse_mode: Optional[str] = "HTML",
-        disable_web_page_preview: Optional[bool] = True,
-        **kwargs,
-    ) -> bool:
+    async def _bot_message_answer(self, text: str = None, message: AiogramMessage = None, parse_mode: Optional[str] = "HTML", disable_web_page_preview: Optional[bool] = True, **kwargs) -> bool:
         try:
-            await mod.bot.send_message(
+            await self.bot.send_message(
                 message.chat.id,
                 text,
                 parse_mode=parse_mode,
                 disable_web_page_preview=disable_web_page_preview,
-                **kwargs,
+                **kwargs
             )
+
         except Exception:
             return False
 

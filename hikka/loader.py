@@ -659,10 +659,7 @@ class Modules:
 
     @property
     def get_approved_channel(self):
-        if not self.__approve:
-            return None
-
-        return self.__approve.pop(0)
+        return self.__approve.pop(0) if self.__approve else None
 
     async def _approve(
         self,
@@ -734,7 +731,7 @@ class Modules:
                 raise LoadError(
                     f"You need to join @{channel.username} in order to use this module"
                 )
-            
+
             return False
 
         if not isinstance(channel, Channel):
