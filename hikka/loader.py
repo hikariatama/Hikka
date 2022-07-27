@@ -36,10 +36,12 @@ import os
 import sys
 from importlib.machinery import ModuleSpec
 from types import FunctionType
-from typing import Any, Hashable, Optional, Union, List
+from typing import Any, Awaitable, Hashable, Optional, Union, List
 import requests
 from telethon import TelegramClient
-from telethon.tl.types import Message
+from telethon.tl.types import Message, InputPeerNotifySettings, Channel
+from telethon.tl.functions.account import UpdateNotifySettingsRequest
+from telethon.hints import EntityLike
 
 from . import security, utils, validators
 from ._types import (
@@ -57,6 +59,7 @@ from ._types import (
     StringLoader,
 )
 from .inline.core import InlineManager
+from .inline.types import InlineCall
 from .translations import Strings, Translator
 
 import gc as _gc
@@ -425,6 +428,7 @@ class Modules:
         self.watchers = []
         self._log_handlers = []
         self._core_commands = []
+        self.__approve = []
         self.allclients = allclients
         self.client = client
         self._db = db
@@ -653,6 +657,144 @@ class Modules:
             False,
         )
 
+    @property
+    def get_approved_channel(self):
+        if not self.__approve:
+            return None
+
+        return self.__approve.pop(0)
+
+    async def _approve(
+        self,
+        call: InlineCall,
+        channel: EntityLike,
+        event: asyncio.Event,
+    ):
+        local_event = asyncio.Event()
+        self.__approve += [(channel, local_event)]
+        await local_event.wait()
+        event.status = local_event.status
+        event.set()
+        await call.edit(
+            "💫 <b>Joined <a"
+            f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>',
+            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
+        )
+
+    async def _decline(
+        self,
+        call: InlineCall,
+        channel: EntityLike,
+        event: asyncio.Event,
+    ):
+        self._db.set(
+            "hikka.main",
+            "declined_joins",
+            list(set(self._db.get("hikka.main", "declined_joins", []) + [channel.id])),
+        )
+        event.status = False
+        event.set()
+        await call.edit(
+            "✖️ <b>Declined joining <a"
+            f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>',
+            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
+        )
+
+    async def _request_join(
+        self,
+        peer: EntityLike,
+        reason: str,
+        assure_joined: Optional[bool] = False,
+        _module: Module = None,
+    ) -> bool:
+        """
+        Request to join a channel.
+        :param peer: The channel to join.
+        :param reason: The reason for joining.
+        :param assure_joined: If set, module will not be loaded unless the required channel is joined.
+                              ⚠️ Works only in `client_ready`!
+                              ⚠️ If user declines to join channel, he will not be asked to
+                              join again, so unless he joins it manually, module will not be loaded
+                              ever.
+        :return: Status of the request.
+        :rtype: bool
+        :notice: This method will block module loading until the request is approved or declined.
+        """
+        event = asyncio.Event()
+        await self.client(
+            UpdateNotifySettingsRequest(
+                peer=self.inline.bot_username,
+                settings=InputPeerNotifySettings(show_previews=False, silent=False),
+            )
+        )
+
+        channel = await self.client.get_entity(peer)
+        if channel.id in self._db.get("hikka.main", "declined_joins", []):
+            return False
+
+        if not isinstance(channel, Channel):
+            raise TypeError("`peer` field must be a channel")
+
+        if getattr(channel, "left", True):
+            channel = await self.client.force_get_entity(peer)
+
+        if not getattr(channel, "left", True):
+            return True
+
+        _module.strings._base_strings["_hikka_internal_request_join"] = (
+            f"💫 <b>Module </b><code>{_module.__class__.__name__}</code><b> requested to"
+            " join channel <a"
+            f" href='https://t.me/{channel.username}'>{utils.escape_html(channel.title)}</a></b>\n\n<b>❓"
+            f" Reason: </b><i>{utils.escape_html(reason)}</i>"
+        )
+
+        if not hasattr(_module, "strings_ru"):
+            _module.strings_ru = {}
+
+        _module.strings_ru["_hikka_internal_request_join"] = (
+            f"💫 <b>Модуль </b><code>{_module.__class__.__name__}</code><b> запросил"
+            " разрешение на вступление в канал <a"
+            f" href='https://t.me/{channel.username}'>{utils.escape_html(channel.title)}</a></b>\n\n<b>❓"
+            f" Причина: </b><i>{utils.escape_html(reason)}</i>"
+        )
+
+        await self.inline.bot.send_animation(
+            self.client.tg_id,
+            "https://static.hikari.gay/ab3adf144c94a0883bfe489f4eebc520.gif",
+            caption=_module.strings("_hikka_internal_request_join"),
+            reply_markup=self.inline.generate_markup(
+                [
+                    {
+                        "text": "💫 Approve",
+                        "callback": self._approve,
+                        "args": (channel, event),
+                    },
+                    {
+                        "text": "✖️ Decline",
+                        "callback": self._decline,
+                        "args": (channel, event),
+                    },
+                ]
+            ),
+        )
+
+        _module.hikka_wait_channel_approve = (
+            _module.__class__.__name__,
+            channel,
+            reason,
+        )
+        await event.wait()
+
+        with contextlib.suppress(AttributeError):
+            delattr(_module, "hikka_wait_channel_approve")
+
+        if assure_joined and not event.status:
+            raise LoadError(
+                f"You need to join @{channel.username} in order to use this module"
+            )
+
+        return event.status
+
     def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
@@ -672,6 +814,7 @@ class Modules:
         instance.import_lib = self._mod_import_lib
         instance.tg_id = self.client.tg_id
         instance._tg_id = self.client.tg_id
+        instance.request_join = partial(self._request_join, _module=instance)
 
         instance.animate = self._animate
 
@@ -1035,7 +1178,10 @@ class Modules:
                 logger.info("Can't process `on_dlmod` hook", exc_info=True)
 
         try:
-            await mod.client_ready(self.client, self._db)
+            if len(inspect.signature(mod.client_ready).parameters) == 2:
+                await mod.client_ready(self.client, self._db)
+            else:
+                await mod.client_ready()
         except SelfUnload as e:
             if no_self_unload:
                 raise e

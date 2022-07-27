@@ -1,5 +1,13 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.12
+
+- Automatically patch reply markup in inline form in the way, that edit stays available anyway
+- Do not unload inline form automatically, keep it for 10 minutes instead
+- Use `telethon.utils.resolve_inline_message_id` to remove inline unit
+- Add `self.request_join`
+- Allow developers to declare `client_ready` without arguments
+
 ## 🌑 Hikka 1.2.11
 
 - Add support for lib attribute `version` (must be defined BEFORE `init` method)

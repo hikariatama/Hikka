@@ -40,6 +40,8 @@ from .. import utils
 from .._types import Module
 from .types import InlineUnit, InlineCall
 
+from telethon.utils import resolve_inline_message_id
+
 logger = logging.getLogger(__name__)
 
 
@@ -512,11 +514,11 @@ class Utils(InlineUnit):
             unit_id = call.unit_id
 
         try:
-            await self._client.delete_messages(
-                self._units[unit_id]["chat"],
-                [self._units[unit_id]["message_id"]],
+            message_id, peer, _, _ = resolve_inline_message_id(
+                self._units[unit_id]["inline_message_id"]
             )
 
+            await self._client.delete_messages(peer, [message_id])
             await self._unload_unit(None, unit_id)
         except Exception:
             return False

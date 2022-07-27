@@ -7,11 +7,11 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
-from typing import Optional, Union
 
 from aiogram.types import Message as AiogramMessage
-
+from typing import Optional, Union
 from .types import InlineUnit
+
 
 logger = logging.getLogger(__name__)
 

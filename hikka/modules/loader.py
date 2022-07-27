@@ -164,6 +164,11 @@ class LoaderMod(loader.Module):
             " junk</i>"
         ),
         "cannot_unload_lib": "🚫 <b>You can't unload library</b>",
+        "wait_channel_approve": (
+            "💫 <b>Module </b><code>{}</code><b> requests permission to join channel <a"
+            ' href="https://t.me/{}">{}</a>.\n\n<b>❓ Reason: {}</b>\n\n<i>Waiting for'
+            ' <a href="https://t.me/{}">approval</a>...</i>'
+        ),
     }
 
     strings_ru = {
@@ -269,6 +274,11 @@ class LoaderMod(loader.Module):
             " хламом. Не сообщайте о ней в support чате</i>"
         ),
         "cannot_unload_lib": "🚫 <b>Ты не можешь выгрузить библиотеку</b>",
+        "wait_channel_approve": (
+            "💫 <b>Модуль </b><code>{}</code><b> запрашивает разрешение на вступление в"
+            ' канал <a href="https://t.me/{}">{}</a>.\n\n<b>❓ Причина:'
+            ' {}</b>\n\n<i>Ожидание <a href="https://t.me/{}">подтверждения</a>...</i>'
+        ),
     }
 
     _fully_loaded = False
@@ -899,11 +909,38 @@ class LoaderMod(loader.Module):
         try:
             try:
                 self.allmodules.send_config_one(instance)
+
+                async def inner_proxy():
+                    nonlocal instance, message
+                    while True:
+                        if hasattr(instance, "hikka_wait_channel_approve"):
+                            if message:
+                                (
+                                    module,
+                                    channel,
+                                    reason,
+                                ) = instance.hikka_wait_channel_approve
+                                message = await utils.answer(
+                                    message,
+                                    self.strings("wait_channel_approve").format(
+                                        module,
+                                        channel.username,
+                                        utils.escape_html(channel.title),
+                                        utils.escape_html(reason),
+                                        self.inline.bot_username,
+                                    ),
+                                )
+                                return
+
+                        await asyncio.sleep(0.1)
+
+                task = asyncio.ensure_future(inner_proxy())
                 await self.allmodules.send_ready_one(
                     instance,
                     no_self_unload=True,
                     from_dlmod=bool(message),
                 )
+                task.cancel()
             except loader.LoadError as e:
                 with contextlib.suppress(ValueError):
                     self.allmodules.modules.remove(instance)
