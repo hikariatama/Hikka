@@ -131,7 +131,7 @@ class HikkaInfoMod(loader.Module):
                 "<b>🌘 Hikka</b>\n"
                 f'<b>🤴 {self.strings("owner")}: </b>{me}\n\n'
                 f"<b>🔮 {self.strings('version')}: </b>{version} {build}\n"
-                f"<b>{upd}</b>\n\n"
+                f"{upd}\n\n"
                 f"<b>📼 {self.strings('prefix')}: </b>{prefix}\n"
                 f"<b>{platform}</b>\n"
             )
