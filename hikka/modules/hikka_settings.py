@@ -18,6 +18,7 @@ from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
+from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.utils import get_display_name
 
 from .. import loader, main, utils
@@ -238,7 +239,7 @@ class HikkaSettingsMod(loader.Module):
         async with self._client.conversation("@BotFather") as conv:
             for msg in [
                 "/deletebot",
-                self.inline.bot_username,
+                f"@{self.inline.bot_username}",
                 "Yes, I am totally sure.",
             ]:
                 m = await conv.send_message(msg)
@@ -953,3 +954,21 @@ class HikkaSettingsMod(loader.Module):
             reply_markup={"text": self.strings("web_btn"), "url": url},
             gif="https://t.me/hikari_assets/28",
         )
+
+    @loader.loop(interval=1, autostart=True)
+    async def loop(self):
+        obj = self.allmodules.get_approved_channel
+        if not obj:
+            return
+
+        channel, event = obj
+
+        try:
+            await self._client(JoinChannelRequest(channel))
+        except Exception:
+            logger.exception("Failed to join channel")
+            event.status = False
+            event.set()
+        else:
+            event.status = True
+            event.set()

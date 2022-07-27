@@ -46,25 +46,38 @@ def install_join_forbidder(client: TelegramClient) -> TelegramClient:
 
         for item in request:
             if item.CONSTRUCTOR_ID in {615851205, 1817183516}:
-                try:
-                    if next(
+                if next(
+                    (
                         frame_info.frame.f_locals["self"]
                         for frame_info in inspect.stack()
                         if hasattr(frame_info, "frame")
                         and hasattr(frame_info.frame, "f_locals")
                         and isinstance(frame_info.frame.f_locals, dict)
                         and "self" in frame_info.frame.f_locals
-                        and isinstance(frame_info.frame.f_locals["self"], loader.Module)
-                        and frame_info.frame.f_locals["self"].__class__.__name__
-                        not in {"APIRatelimiterMod", "ForbidJoinMod"}
-                    ).__class__.__name__ not in {"HelpMod", "LoaderMod"}:
-                        logger.debug(
-                            "🎉 I protected you from unintented"
-                            f" {item.__class__.__name__} ({item})!"
+                        and isinstance(
+                            frame_info.frame.f_locals["self"], loader.Module
                         )
-                        continue
-                except StopIteration:
-                    pass
+                        and frame_info.frame.f_locals["self"].__class__.__name__
+                        not in {
+                            "APIRatelimiterMod",
+                            "ForbidJoinMod",
+                            "HelpMod",
+                            "LoaderMod",
+                            "HikkaSettingsMod",
+                        }
+                        # APIRatelimiterMod is a core proxy, so it wraps around every module in Hikka, if installed
+                        # ForbidJoinMod is also a Core proxy, so it wraps around every module in Hikka, if installed
+                        # HelpMod uses JoinChannelRequest for .support command
+                        # LoaderMod prompts user to join developers' channels
+                        # HikkaSettings prompts user to join channels, required by modules
+                    ),
+                    None,
+                ):
+                    logger.debug(
+                        "🎉 I protected you from unintented"
+                        f" {item.__class__.__name__} ({item})!"
+                    )
+                    continue
 
             new_request += [item]
 
