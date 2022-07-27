@@ -730,6 +730,11 @@ class Modules:
 
         channel = await self.client.get_entity(peer)
         if channel.id in self._db.get("hikka.main", "declined_joins", []):
+            if assure_joined:
+                raise LoadError(
+                    f"You need to join @{channel.username} in order to use this module"
+                )
+            
             return False
 
         if not isinstance(channel, Channel):
