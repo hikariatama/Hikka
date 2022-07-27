@@ -53,6 +53,10 @@ VERIFICATION_EMOJIES = list(
 )
 
 
+class Placeholder:
+    """Placeholder"""
+
+
 class Form(InlineUnit):
     async def form(
         self,
@@ -239,10 +243,10 @@ class Form(InlineUnit):
             and not ttl
         ):
             logger.debug("Patching form reply markup with empty data")
-            base_reply_markup = reply_markup.copy()
+            base_reply_markup = copy.deepcopy(reply_markup) or None
             reply_markup = self._validate_markup({"text": "­", "data": "­"})
         else:
-            base_reply_markup = None
+            base_reply_markup = Placeholder()
 
         if (
             not any(
@@ -332,7 +336,7 @@ class Form(InlineUnit):
 
         msg = InlineMessage(self, unit_id, inline_message_id)
 
-        if base_reply_markup:
+        if not isinstance(base_reply_markup, Placeholder):
             await msg.edit(text, reply_markup=base_reply_markup)
 
         return msg
