@@ -206,12 +206,18 @@ class CommandDispatcher:
     async def _handle_command(
         self,
         event,
-        watcher: bool = False,
     ) -> Union[bool, Tuple[Message, str, str, callable]]:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return False
 
-        prefix = self._db.get(main.__name__, "command_prefix", False) or "."
+        if (
+            len(prefix := self._db.get(main.__name__, "command_prefix", False) or ".")
+            != 1
+        ):
+            prefix = "."
+            self._db.set(main.__name__, "command_prefix", prefix)
+            logging.warning("Prefix has been reset to a default one («.»)")
+
         change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
         message = utils.censor(event.message)
 
@@ -222,8 +228,8 @@ class CommandDispatcher:
             event.message.message.startswith(str.translate(prefix, change))
             and str.translate(prefix, change) != prefix
         ):
+            prefix = str.translate(prefix, change)
             message.message = str.translate(message.message, change)
-            message.text = str.translate(message.text, change)
         elif not event.message.message.startswith(prefix):
             return False
 
@@ -249,26 +255,28 @@ class CommandDispatcher:
             message.out
             and len(message.message) > 2
             and message.message.startswith(prefix * 2)
-            and not all(s == prefix for s in message.message)
         ):
             # Allow escaping commands using .'s
-            if not watcher:
-                await message.edit(
-                    message.message[1:],
-                    parse_mode=lambda s: (
-                        s,
-                        utils.relocate_entities(message.entities, -1, message.message)
-                        or (),
-                    ),
-                )
+            await message.edit(
+                message.message[1:],
+                parse_mode=lambda s: (
+                    s,
+                    utils.relocate_entities(message.entities, -1, message.message)
+                    or (),
+                ),
+            )
             return False
 
-        if not message.message or len(message.message) == 1:
+        message.message = message.message[1:]
+
+        if not message.message:
             return False  # Message is just the prefix
+
+        utils.relocate_entities(message.entities, -1)
 
         initiator = getattr(event, "sender_id", 0)
 
-        command = message.message.split(maxsplit=1)[0][1:]
+        command = message.message.split(maxsplit=1)[0]
         tag = command.split("@", maxsplit=1)
 
         if len(tag) == 2:
@@ -311,11 +319,10 @@ class CommandDispatcher:
             and message.chat.title.startswith("hikka-")
             and message.chat.title != "hikka-logs"
         ):
-            if not watcher:
-                logging.warning("Ignoring message in datachat \\ logging chat")
+            logging.warning("Ignoring message in datachat \\ logging chat")
             return False
 
-        message.message = prefix + txt + message.message[len(prefix + command) :]
+        message.message = txt + message.message[len(command) :]
 
         if (
             f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
@@ -326,7 +333,7 @@ class CommandDispatcher:
         ):
             return False
 
-        if self._db.get(main.__name__, "grep", False) and not watcher:
+        if self._db.get(main.__name__, "grep", False):
             message = self._handle_grep(message)
 
         return message, prefix, txt, func
@@ -416,8 +423,6 @@ class CommandDispatcher:
                 or whitelist_modules
                 and f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
                 not in whitelist_modules
-                or getattr(func, "no_commands", False)
-                and await self._handle_command(event, watcher=True)
             ):
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue

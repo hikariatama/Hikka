@@ -370,28 +370,13 @@ def translatable_docstring(cls):
 tds = translatable_docstring  # Shorter name for modules to use
 
 
-def ratelimit(func: callable):
+def ratelimit(func):
     """Decorator that causes ratelimiting for this command to be enforced more strictly"""
     func.ratelimit = True
     return func
 
 
-def tag(*tags, **kwarg_tags):
-    """Tag function (esp. watchers) with some tags"""
-
-    def inner(func: callable):
-        for tag in tags:
-            setattr(func, tag, True)
-
-        for tag, value in kwarg_tags.items():
-            setattr(func, tag, value)
-
-        return func
-
-    return inner
-
-
-def get_commands(mod: Module):
+def get_commands(mod):
     """Introspect the module to get its commands"""
     return {
         method_name.rsplit("cmd", maxsplit=1)[0]: getattr(mod, method_name)
@@ -400,7 +385,7 @@ def get_commands(mod: Module):
     }
 
 
-def get_inline_handlers(mod: Module):
+def get_inline_handlers(mod):
     """Introspect the module to get its inline handlers"""
     return {
         method_name.rsplit("_inline_handler", maxsplit=1)[0]: getattr(mod, method_name)
@@ -410,7 +395,7 @@ def get_inline_handlers(mod: Module):
     }
 
 
-def get_callback_handlers(mod: Module):
+def get_callback_handlers(mod):
     """Introspect the module to get its callback handlers"""
     return {
         method_name.rsplit("_callback_handler", maxsplit=1)[0]: getattr(
@@ -749,7 +734,7 @@ class Modules:
                 raise LoadError(
                     f"You need to join @{channel.username} in order to use this module"
                 )
-
+            
             return False
 
         if not isinstance(channel, Channel):
