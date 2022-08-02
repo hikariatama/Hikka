@@ -270,7 +270,7 @@ class CoreMod(loader.Module):
             return
 
         alias, cmd = args
-        if ret := self.allmodules.add_alias(alias, cmd):
+        if self.allmodules.add_alias(alias, cmd):
             self.set(
                 "aliases",
                 {

@@ -56,15 +56,6 @@ from .._types import CoreOverwriteError
 
 logger = logging.getLogger(__name__)
 
-VALID_PIP_PACKAGES = re.compile(
-    r"^\s*# ?requires:(?: ?)((?:{url} )*(?:{url}))\s*$".format(
-        url=r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
-    ),
-    re.MULTILINE,
-)
-
-USER_INSTALL = "PIP_TARGET" not in os.environ and "VIRTUAL_ENV" not in os.environ
-
 
 @loader.tds
 class LoaderMod(loader.Module):
@@ -801,8 +792,8 @@ class LoaderMod(loader.Module):
                 )
             except ImportError as e:
                 logger.info(
-                    "Module loading failed, attemping dependency installation",
-                    exc_info=True,
+                    "Module loading failed, attemping dependency installation"
+                    f" ({e.name})"
                 )
                 # Let's try to reinstall dependencies
                 try:
@@ -811,7 +802,7 @@ class LoaderMod(loader.Module):
                             lambda x: not x.startswith(("-", "_", ".")),
                             map(
                                 str.strip,
-                                VALID_PIP_PACKAGES.search(doc)[1].split(),
+                                loader.VALID_PIP_PACKAGES.search(doc)[1].split(),
                             ),
                         )
                     )
@@ -859,7 +850,7 @@ class LoaderMod(loader.Module):
                     "-q",
                     "--disable-pip-version-check",
                     "--no-warn-script-location",
-                    *["--user"] if USER_INSTALL else [],
+                    *["--user"] if loader.USER_INSTALL else [],
                     *requirements,
                 )
 
@@ -994,7 +985,7 @@ class LoaderMod(loader.Module):
                 and url is not None
                 and utils.check_url(url)
             ):
-                asyncio.ensure_future(self._send_stats(url))
+                await self._send_stats(url)
 
         for alias, cmd in self.lookup("settings").get("aliases", {}).items():
             if cmd in instance.commands:

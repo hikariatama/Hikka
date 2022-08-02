@@ -19,6 +19,11 @@
 - Fix TypeError in `.e` when returning tl class instead of object
 - Remove stupid db lock in `.e`
 - Allow `.security` and `.inlinesec` only to owner by default
+- Add support for `# requires` metatag in libraries
+- Add support for `# scope: hikka_min` metatag in libraries
+- Send stats of libraries, if enabled in `.settings`
+- Replace library existence check from source url to classname
+- Add `self.inline` to libraries
 
 ## 🌑 Hikka 1.2.12
 

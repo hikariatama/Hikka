@@ -33,6 +33,7 @@ import importlib.util
 import inspect
 import logging
 import os
+import re
 import sys
 from importlib.machinery import ModuleSpec
 from types import FunctionType
@@ -43,7 +44,7 @@ from telethon.tl.types import Message, InputPeerNotifySettings, Channel
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
 
-from . import security, utils, validators
+from . import security, utils, validators, version
 from ._types import (
     ConfigValue,  # skipcq
     LoadError,  # skipcq
@@ -202,6 +203,16 @@ async def stop_placeholder() -> bool:
 
 class Placeholder:
     """Placeholder"""
+
+
+VALID_PIP_PACKAGES = re.compile(
+    r"^\s*# ?requires:(?: ?)((?:{url} )*(?:{url}))\s*$".format(
+        url=r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
+    ),
+    re.MULTILINE,
+)
+
+USER_INSTALL = "PIP_TARGET" not in os.environ and "VIRTUAL_ENV" not in os.environ
 
 
 class InfiniteLoop:
@@ -467,7 +478,7 @@ class Modules:
                     os.listdir(os.path.join(utils.get_base_dir(), MODULES_NAME)),
                 )
             ]
-            
+
             self.secure_boot = self._db.get(__name__, "secure_boot", False)
 
             if "DYNO" not in os.environ and not self.secure_boot:
@@ -910,6 +921,7 @@ class Modules:
         url: str,
         *,
         suspend_on_error: Optional[bool] = False,
+        _did_requirements: bool = False,
     ) -> object:
         """
         Import library from url and register it in :obj:`Modules`
@@ -937,13 +949,81 @@ class Modules:
         code.raise_for_status()
         code = code.text
 
+        if re.search(r"# ?scope: ?hikka_min", code):
+            ver = tuple(
+                map(
+                    int,
+                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)
+                    .group(1)
+                    .split("."),
+                )
+            )
+            if version.__version__ < ver:
+                _raise(
+                    RuntimeError(
+                        f"Library requires Hikka version {'{}.{}.{}'.format(*ver)}+"
+                    )
+                )
+
         module = f"hikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
         origin = f"<library {url}>"
 
         spec = ModuleSpec(module, StringLoader(code, origin), origin=origin)
-        instance = importlib.util.module_from_spec(spec)
-        sys.modules[module] = instance
-        spec.loader.exec_module(instance)
+        try:
+            instance = importlib.util.module_from_spec(spec)
+            sys.modules[module] = instance
+            spec.loader.exec_module(instance)
+        except ImportError as e:
+            logger.info(
+                f"Library loading failed, attemping dependency installation ({e.name})"
+            )
+            # Let's try to reinstall dependencies
+            try:
+                requirements = list(
+                    filter(
+                        lambda x: not x.startswith(("-", "_", ".")),
+                        map(
+                            str.strip,
+                            VALID_PIP_PACKAGES.search(code)[1].split(),
+                        ),
+                    )
+                )
+            except TypeError:
+                logger.warning(
+                    "No valid pip packages specified in code, attemping"
+                    " installation from error"
+                )
+                requirements = [e.name]
+
+            logger.debug(f"Installing requirements: {requirements}")
+
+            if not requirements or _did_requirements:
+                _raise(e)
+
+            pip = await asyncio.create_subprocess_exec(
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "-q",
+                "--disable-pip-version-check",
+                "--no-warn-script-location",
+                *["--user"] if USER_INSTALL else [],
+                *requirements,
+            )
+
+            rc = await pip.wait()
+
+            if rc != 0:
+                _raise(e)
+
+            importlib.invalidate_caches()
+
+            kwargs = utils.get_kwargs()
+            kwargs["_did_requirements"] = True
+
+            return await self._mod_import_lib(**kwargs)  # Try again
 
         lib_obj = next(
             (
@@ -960,6 +1040,17 @@ class Modules:
         if not lib_obj.__class__.__name__.endswith("Lib"):
             _raise(ImportError("Invalid library. Class name must end with 'Lib'"))
 
+        if (
+            not any(
+                line.replace(" ", "") == "#scope:no_stats" for line in code.splitlines()
+            )
+            and self._db.get("hikka.main", "stats", True)
+            and url is not None
+            and utils.check_url(url)
+        ):
+            with contextlib.suppress(Exception):
+                await self._lookup("loader")._send_stats(url)
+
         lib_obj.client = self.client
         lib_obj._client = self.client  # skipcq
         lib_obj.db = self._db
@@ -968,6 +1059,7 @@ class Modules:
         lib_obj.source_url = url.strip("/")
 
         lib_obj.lookup = self._lookup
+        lib_obj.inline = self.inline
         lib_obj.tg_id = self.client.tg_id
         lib_obj.allmodules = self
         lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
@@ -975,20 +1067,18 @@ class Modules:
         lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
         for old_lib in self.libraries:
-            if old_lib.source_url == lib_obj.source_url and (
+            if old_lib.name == lib_obj.name and (
                 not isinstance(getattr(old_lib, "version", None), tuple)
                 and not isinstance(getattr(lib_obj, "version", None), tuple)
                 or old_lib.version == lib_obj.version
             ):
-                logging.debug(
-                    f"Using existing instance of library {old_lib.source_url}"
-                )
+                logging.debug(f"Using existing instance of library {old_lib.name}")
                 return old_lib
 
         new = True
 
         for old_lib in self.libraries:
-            if old_lib.source_url == lib_obj.source_url:
+            if old_lib.name == lib_obj.name:
                 if hasattr(old_lib, "on_lib_update") and callable(
                     old_lib.on_lib_update
                 ):
@@ -998,7 +1088,7 @@ class Modules:
                 new = False
                 logging.debug(
                     "Replacing existing instance of library"
-                    f" {lib_obj.source_url} with updated object"
+                    f" {lib_obj.name} with updated object"
                 )
 
         if hasattr(lib_obj, "init") and callable(lib_obj.init):
