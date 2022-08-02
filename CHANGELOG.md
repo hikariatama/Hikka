@@ -17,6 +17,8 @@
 - Add uptime to `.info`
 - Refactor `.help`, add version to single mod help message
 - Fix TypeError in `.e` when returning tl class instead of object
+- Remove stupid db lock in `.e`
+- Allow `.security` and `.inlinesec` only to owner by default
 
 ## 🌑 Hikka 1.2.12
 
