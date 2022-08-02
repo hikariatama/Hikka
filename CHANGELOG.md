@@ -1,5 +1,14 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.13
+
+- Patch stats so they correctly recognize links
+- Fix bug when `...` is being replaced with `..` (unnecessary prefix escape)
+- Add `@loader.tag`
+- Add `@loader.tag("no_commands")` for watchers. Ignores commands
+- Do not cut off prefix in `message.message`, `message.text` and `message.raw_text`
+- Partially rework events processing and dispatching
+
 ## 🌑 Hikka 1.2.12
 
 - Automatically patch reply markup in inline form in the way, that edit stays available anyway

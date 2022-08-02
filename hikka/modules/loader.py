@@ -736,7 +736,12 @@ class LoaderMod(loader.Module):
 
         blob_link = self.strings("blob_link") if blob_link else ""
 
-        url = copy.deepcopy(name)
+        if utils.check_url(name):
+            url = copy.deepcopy(name)
+        elif utils.check_url(origin):
+            url = copy.deepcopy(origin)
+        else:
+            url = None
 
         if name is None:
             try:
