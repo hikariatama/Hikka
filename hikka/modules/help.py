@@ -149,40 +149,34 @@ class HelpMod(loader.Module):
 
     async def modhelp(self, message: Message, args: str):
         exact = True
-
-        try:
-            module = next(
-                mod
-                for mod in self.allmodules.modules
-                if mod.strings("name").lower() == args.lower()
-            )
-        except Exception:
-            module = None
+        module = self.lookup(args)
 
         if not module:
-            args = args.lower()
-            args = args[1:] if args.startswith(self.get_prefix()) else args
-            if args in self.allmodules.commands:
-                module = self.allmodules.commands[args].__self__
+            _args = args.lower()
+            _args = _args[1:] if _args.startswith(self.get_prefix()) else _args
+            if _args in self.allmodules.commands:
+                module = self.allmodules.commands[_args].__self__
 
         if not module:
-            module_name = next(  # skipcq: PTC-W0063
-                reversed(
-                    sorted(
-                        [module.strings["name"] for module in self.allmodules.modules],
-                        key=lambda x: difflib.SequenceMatcher(
-                            None,
-                            args.lower(),
-                            x,
-                        ).ratio(),
-                    )
+            module = self.lookup(
+                next(
+                    (
+                        reversed(
+                            sorted(
+                                [
+                                    module.strings["name"]
+                                    for module in self.allmodules.modules
+                                ],
+                                key=lambda x: difflib.SequenceMatcher(
+                                    None,
+                                    args.lower(),
+                                    x,
+                                ).ratio(),
+                            )
+                        )
+                    ),
+                    None,
                 )
-            )
-
-            module = next(  # skipcq: PTC-W0063
-                module
-                for module in self.allmodules.modules
-                if module.strings["name"] == module_name
             )
 
             exact = False
@@ -192,7 +186,15 @@ class HelpMod(loader.Module):
         except KeyError:
             name = getattr(module, "name", "ERROR")
 
-        reply = self.strings("single_mod_header").format(utils.escape_html(name))
+        _name = (
+            utils.escape_html(name)
+            if not hasattr(module, "__version__")
+            else (
+                f"{utils.escape_html(name)} (v{'{}.{}.{}'.format(*module.__version__)})"
+            )
+        )
+
+        reply = self.strings("single_mod_header").format(_name)
         if module.__doc__:
             reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"
 

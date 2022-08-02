@@ -870,13 +870,8 @@ class HikkaConfigMod(loader.Module):
     async def configcmd(self, message: Message):
         """Configure modules"""
         args = utils.get_args_raw(message)
-        if self.lookup(args):
-            form = await self.inline.form(
-                "🌘 <b>Loading configuration</b>",
-                message,
-                {"text": "🌘", "data": "empty"},
-                ttl=24 * 60 * 60,
-            )
+        if self.lookup(args) and hasattr(self.lookup(args), "config"):
+            form = await self.inline.form("🌘 <b>Loading configuration</b>", message)
             mod = self.lookup(args)
             if isinstance(mod, loader.Library):
                 type_ = "library"
@@ -889,7 +884,7 @@ class HikkaConfigMod(loader.Module):
         await self.inline__choose_category(message)
 
     async def fconfigcmd(self, message: Message):
-        """<module_name> <propery_name> <config_value> - Stands for ForceConfig - Set the config value if it is not possible using default method"""
+        """<module_name> <property_name> <config_value> - Stands for ForceConfig - Set the config value if it is not possible using default method"""
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:

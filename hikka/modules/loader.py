@@ -190,11 +190,11 @@ class LoaderMod(loader.Module):
         "requirements_failed": "<b>🚫 Ошибка установки зависимостей</b>",
         "requirements_failed_termux": (
             "🕶🚫 <b>Ошибка установки зависимостей</b>\n<b>Наиболее часто возникает из-за"
-            " того, что Termux не поддерживает многие библиотека. Не сообщайте об этом"
+            " того, что Termux не поддерживает многие библиотеки. Не сообщайте об этом"
             " как об ошибке, это не может быть исправлено.</b>"
         ),
         "heroku_install_failed": (
-            "♓️⚠️ <b>Этому модулю требуются дополнительные библиотека, которые нельзя"
+            "♓️⚠️ <b>Этому модулю требуются дополнительные библиотеки, которые нельзя"
             " установить на Heroku. Не сообщайте об этом как об ошибке, это не может"
             " быть исправлено</b>"
         ),
@@ -349,6 +349,9 @@ class LoaderMod(loader.Module):
         self._db.save()
 
     def _update_modules_in_db(self):
+        if self.allmodules.secure_boot:
+            return
+
         self.set(
             "loaded_modules",
             {
@@ -1180,14 +1183,15 @@ class LoaderMod(loader.Module):
 
         worked = self.allmodules.unload_module(args)
 
-        self.set(
-            "loaded_modules",
-            {
-                mod: link
-                for mod, link in self.get("loaded_modules", {}).items()
-                if mod not in worked
-            },
-        )
+        if not self.allmodules.secure_boot:
+            self.set(
+                "loaded_modules",
+                {
+                    mod: link
+                    for mod, link in self.get("loaded_modules", {}).items()
+                    if mod not in worked
+                },
+            )
 
         msg = (
             self.strings("unloaded").format(

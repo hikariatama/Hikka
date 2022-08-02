@@ -377,7 +377,20 @@ def ratelimit(func: callable):
 
 
 def tag(*tags, **kwarg_tags):
-    """Tag function (esp. watchers) with some tags"""
+    """
+    Tag function (esp. watchers) with some tags
+    Currently available tags:
+        • `no_commands` - Ignore all userbot commands in watcher
+        • `out` - Capture only outgoing events
+        • `in` - Capture only incoming events
+        • `only_messages` - Capture only messages (not join events)
+
+    Usage example:
+
+    @loader.tag("no_commands", "out")
+    @loader.tag("no_commands", out=True)
+    @loader.tag(only_messages=True)
+    """
 
     def inner(func: callable):
         for tag in tags:
@@ -391,36 +404,28 @@ def tag(*tags, **kwarg_tags):
     return inner
 
 
-def get_commands(mod: Module):
+def _get_members(mod: Module, ending: str) -> dict:
+    """Get method of module, which end with ending"""
+    return {
+        method_name.rsplit(ending, maxsplit=1)[0]: getattr(mod, method_name)
+        for method_name in dir(mod)
+        if callable(getattr(mod, method_name)) and method_name.endswith(ending)
+    }
+
+
+def get_commands(mod: Module) -> dict:
     """Introspect the module to get its commands"""
-    return {
-        method_name.rsplit("cmd", maxsplit=1)[0]: getattr(mod, method_name)
-        for method_name in dir(mod)
-        if callable(getattr(mod, method_name)) and method_name.endswith("cmd")
-    }
+    return _get_members(mod, "cmd")
 
 
-def get_inline_handlers(mod: Module):
+def get_inline_handlers(mod: Module) -> dict:
     """Introspect the module to get its inline handlers"""
-    return {
-        method_name.rsplit("_inline_handler", maxsplit=1)[0]: getattr(mod, method_name)
-        for method_name in dir(mod)
-        if callable(getattr(mod, method_name))
-        and method_name.endswith("_inline_handler")
-    }
+    return _get_members(mod, "_inline_handler")
 
 
-def get_callback_handlers(mod: Module):
+def get_callback_handlers(mod: Module) -> dict:
     """Introspect the module to get its callback handlers"""
-    return {
-        method_name.rsplit("_callback_handler", maxsplit=1)[0]: getattr(
-            mod,
-            method_name,
-        )
-        for method_name in dir(mod)
-        if callable(getattr(mod, method_name))
-        and method_name.endswith("_callback_handler")
-    }
+    return _get_members(mod, "_callback_handler")
 
 
 class Modules:
@@ -448,6 +453,7 @@ class Modules:
         self.client = client
         self._db = db
         self._translator = translator
+        self.secure_boot = False
 
     def register_all(self, mods: list = None):
         """Load all modules in the module directory"""
@@ -461,10 +467,10 @@ class Modules:
                     os.listdir(os.path.join(utils.get_base_dir(), MODULES_NAME)),
                 )
             ]
+            
+            self.secure_boot = self._db.get(__name__, "secure_boot", False)
 
-            if "DYNO" not in os.environ and not self._db.get(
-                __name__, "secure_boot", False
-            ):
+            if "DYNO" not in os.environ and not self.secure_boot:
                 external_mods = [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
@@ -1037,23 +1043,14 @@ class Modules:
 
     def dispatch(self, command: str) -> tuple:
         """Dispatch command to appropriate module"""
-        change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
-        try:
-            return command, self.commands[command.lower()]
-        except KeyError:
-            try:
-                cmd = self.aliases[command.lower()]
-                return cmd, self.commands[cmd.lower()]
-            except KeyError:
-                try:
-                    cmd = self.aliases[str.translate(command, change).lower()]
-                    return cmd, self.commands[cmd.lower()]
-                except KeyError:
-                    try:
-                        cmd = str.translate(command, change).lower()
-                        return cmd, self.commands[cmd.lower()]
-                    except KeyError:
-                        return command, None
+        return next(
+            (
+                (cmd, self.commands[cmd.lower()])
+                for cmd in [command, self.aliases.get(command.lower(), None)]
+                if cmd and cmd.lower() in self.commands
+            ),
+            (command, None),
+        )
 
     def send_config(self, skip_hook: bool = False):
         """Configure modules"""
@@ -1311,7 +1308,7 @@ class Modules:
 
         return worked
 
-    def add_alias(self, alias, cmd):
+    def add_alias(self, alias: str, cmd: str) -> bool:
         """Make an alias"""
         if cmd not in self.commands:
             return False
@@ -1319,7 +1316,7 @@ class Modules:
         self.aliases[alias.lower().strip()] = cmd
         return True
 
-    def remove_alias(self, alias):
+    def remove_alias(self, alias: str) -> bool:
         """Remove an alias"""
         try:
             del self.aliases[alias.lower().strip()]
@@ -1328,17 +1325,5 @@ class Modules:
 
         return True
 
-    async def log(
-        self,
-        type_,
-        *,
-        group=None,
-        affected_uids=None,
-        data=None,
-    ):
-        return await asyncio.gather(
-            *[fun(type_, group, affected_uids, data) for fun in self._log_handlers]
-        )
-
-    def register_logger(self, _logger):
-        self._log_handlers += [_logger]
+    async def log(self, *args, **kwargs):
+        """Unnecessary placeholder for logging"""

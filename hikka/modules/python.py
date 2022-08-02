@@ -88,7 +88,7 @@ class PythonMod(loader.Module):
         """Evaluates python code"""
         ret = self.strings("eval")
         try:
-            it = await meval(
+            result = await meval(
                 utils.get_args_raw(message),
                 globals(),
                 **await self.getattrs(message),
@@ -141,13 +141,15 @@ class PythonMod(loader.Module):
 
             return
 
+        if callable(getattr(result, "stringify", None)):
+            with contextlib.suppress(Exception):
+                result = str(result.stringify())
+
+        result = str(result)
+
         ret = ret.format(
             utils.escape_html(utils.get_args_raw(message)),
-            utils.escape_html(
-                str(it.stringify())
-                if hasattr(it, "stringify") and callable(it.stringify)
-                else str(it)
-            ),
+            utils.escape_html(result),
         )
 
         ret = ret.replace(str(self._phone), "📵")

@@ -6,8 +6,17 @@
 - Fix bug when `...` is being replaced with `..` (unnecessary prefix escape)
 - Add `@loader.tag`
 - Add `@loader.tag("no_commands")` for watchers. Ignores commands
+- Add `@loader.tag("out")` for watchers. Captures only outgoing events
+- Add `@loader.tag("in")` for watchers. Captures only incoming events
+- Add `@loader.tag("only_messages")` for watchers. Captures only messages (not service events)
 - Do not cut off prefix in `message.message`, `message.text` and `message.raw_text`
 - Partially rework events processing and dispatching
+- Attempt to fix cached entities mixing up
+- Do not update modules in db when secure boot is active
+- Refactor members getterr
+- Add uptime to `.info`
+- Refactor `.help`, add version to single mod help message
+- Fix TypeError in `.e` when returning tl class instead of object
 
 ## 🌑 Hikka 1.2.12
 

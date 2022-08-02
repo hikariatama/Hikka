@@ -690,7 +690,7 @@ class Hikka:
             app = heroku.publish(key, api_token=self.api_token)
             print(f"Installed to heroku successfully!\n🎉 App URL: {app.web_url}")
 
-            # On this point our work is done
+            # At this point our work is done
             # everything else will be run on Heroku, including
             # authentication
             return

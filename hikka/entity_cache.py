@@ -12,6 +12,7 @@ import asyncio
 import logging
 from telethon.hints import EntityLike
 from telethon import TelegramClient
+import copy
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +33,8 @@ class CacheRecord:
         hashable_entity: "Hashable",  # type: ignore
         resolved_entity: EntityLike,
     ):
-        self.entity = resolved_entity
-        self._hashable_entity = hashable_entity
+        self.entity = copy.deepcopy(resolved_entity)
+        self._hashable_entity = copy.deepcopy(hashable_entity)
         self._exp = round(time.time() + 5 * 60)
 
     def expired(self):
@@ -85,7 +86,7 @@ def install_entity_caching(client: TelegramClient):
                 "Using cached entity"
                 f" {entity} ({type(client._hikka_cache[hashable_entity].entity).__name__})"
             )
-            return client._hikka_cache[hashable_entity].entity
+            return copy.deepcopy(client._hikka_cache[hashable_entity].entity)
 
         resolved_entity = await old(entity)
 
@@ -105,7 +106,7 @@ def install_entity_caching(client: TelegramClient):
                 )
                 client._hikka_cache[f"@{resolved_entity.username}"] = cache_record
 
-        return resolved_entity
+        return copy.deepcopy(resolved_entity)
 
     async def cleaner(client: TelegramClient):
         while True:

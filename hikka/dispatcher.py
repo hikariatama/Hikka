@@ -418,6 +418,12 @@ class CommandDispatcher:
                 not in whitelist_modules
                 or getattr(func, "no_commands", False)
                 and await self._handle_command(event, watcher=True)
+                or getattr(func, "out", False)
+                and not getattr(message, "out", True)
+                or getattr(func, "in", False)
+                and getattr(message, "out", True)
+                or getattr(func, "only_messages", False)
+                and not isinstance(message, types.Message)
             ):
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue
