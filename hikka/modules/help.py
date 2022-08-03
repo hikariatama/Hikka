@@ -187,12 +187,11 @@ class HelpMod(loader.Module):
             name = getattr(module, "name", "ERROR")
 
         _name = (
-            utils.escape_html(name)
-            if not hasattr(module, "__version__")
-            else (
-                f"{utils.escape_html(name)} (v{module.__version__[0]}.{module.__version__[1]}.{module.__version__[2]})"
-            )
+            f"{utils.escape_html(name)} (v{module.__version__[0]}.{module.__version__[1]}.{module.__version__[2]})"
+            if hasattr(module, "__version__")
+            else utils.escape_html(name)
         )
+
 
         reply = self.strings("single_mod_header").format(_name)
         if module.__doc__:

@@ -249,7 +249,7 @@ class CommandDispatcher:
             message.out
             and len(message.message) > 2
             and message.message.startswith(prefix * 2)
-            and not all(s == prefix for s in message.message)
+            and any(s != prefix for s in message.message)
         ):
             # Allow escaping commands using .'s
             if not watcher:

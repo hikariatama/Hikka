@@ -764,7 +764,7 @@ class Modules:
             strict=True,
         ).values():
             with contextlib.suppress(AttributeError, ValueError):
-                existing_watcher = next(
+                if existing_watcher := next(
                     (
                         existing_watcher
                         for existing_watcher in self.watchers
@@ -775,9 +775,7 @@ class Modules:
                         )
                     ),
                     None,
-                )
-
-                if existing_watcher:
+                ):
                     logger.debug(f"Removing watcher for update {existing_watcher}")
                     self.watchers.remove(existing_watcher)
 
@@ -799,10 +797,7 @@ class Modules:
 
     @property
     def get_approved_channel(self):
-        if not self.__approve:
-            return None
-
-        return self.__approve.pop(0)
+        return self.__approve.pop(0) if self.__approve else None
 
     async def _approve(
         self,
@@ -1061,11 +1056,12 @@ class Modules:
             ver = tuple(
                 map(
                     int,
-                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)
-                    .group(1)
-                    .split("."),
+                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)[
+                        1
+                    ].split("."),
                 )
             )
+
             if version.__version__ < ver:
                 _raise(
                     RuntimeError(
@@ -1149,8 +1145,9 @@ class Modules:
             _raise(ImportError("Invalid library. Class name must end with 'Lib'"))
 
         if (
-            not any(
-                line.replace(" ", "") == "#scope:no_stats" for line in code.splitlines()
+            all(
+                line.replace(" ", "") != "#scope:no_stats"
+                for line in code.splitlines()
             )
             and self._db.get("hikka.main", "stats", True)
             and url is not None
