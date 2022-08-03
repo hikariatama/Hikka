@@ -321,7 +321,7 @@ class LoaderMod(loader.Module):
         asyncio.ensure_future(self.get_repo_list("full"))
         self._react_queue = []
 
-    @loader.loop(interval=30, autostart=True)
+    @loader.loop(interval=120, autostart=True)
     async def _react_processor(self):
         if not self._react_queue:
             return
