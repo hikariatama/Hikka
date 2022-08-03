@@ -357,7 +357,7 @@ class CommandDispatcher:
             try:
                 txt = (
                     "<b>🚫 Call</b>"
-                    f" <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b>"
+                    f" <code>{utils.escape_html(message.message)}</code><b>"
                     " failed!</b>"
                 )
                 await (message.edit if message.out else message.reply)(txt)
@@ -371,7 +371,7 @@ class CommandDispatcher:
             exc = "\n".join(exc.splitlines()[1:])
             txt = (
                 "<b>🚫 Call</b>"
-                f" <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b>"
+                f" <code>{utils.escape_html(message.message)}</code><b>"
                 f" failed!</b>\n\n<b>🧾 Logs:</b>\n<code>{exc}</code>"
             )
             await (message.edit if message.out else message.reply)(txt)
