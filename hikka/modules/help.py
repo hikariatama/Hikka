@@ -190,7 +190,7 @@ class HelpMod(loader.Module):
             utils.escape_html(name)
             if not hasattr(module, "__version__")
             else (
-                f"{utils.escape_html(name)} (v{'{}.{}.{}'.format(*module.__version__)})"
+                f"{utils.escape_html(name)} (v{module.__version__[0]}.{module.__version__[1]}.{module.__version__[2]})"
             )
         )
 

@@ -12,7 +12,6 @@ import asyncio
 import logging
 from telethon.hints import EntityLike
 from telethon import TelegramClient
-import copy
 
 logger = logging.getLogger(__name__)
 

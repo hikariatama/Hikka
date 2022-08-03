@@ -1026,6 +1026,7 @@ def mime_type(message: Message) -> str:
 
 init_ts = time.perf_counter()
 
+
 # GeekTG Compatibility
 def get_git_info():
     # https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/utils.py#L133

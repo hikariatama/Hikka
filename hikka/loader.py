@@ -386,11 +386,11 @@ def translatable_docstring(cls):
     config_complete._old_ = cls.config_complete
     cls.config_complete = config_complete
 
-    for command, func in get_commands(cls).items():
-        cls.strings[f"_cmd_doc_{command}"] = inspect.getdoc(func)
+    for command_, func in get_commands(cls).items():
+        cls.strings[f"_cmd_doc_{command_}"] = inspect.getdoc(func)
 
-    for inline_handler, func in get_inline_handlers(cls).items():
-        cls.strings[f"_ihandle_doc_{inline_handler}"] = inspect.getdoc(func)
+    for inline_handler_, func in get_inline_handlers(cls).items():
+        cls.strings[f"_ihandle_doc_{inline_handler_}"] = inspect.getdoc(func)
 
     cls.strings["_cls_doc"] = inspect.getdoc(cls)
 
@@ -416,8 +416,8 @@ def tag(*tags, **kwarg_tags):
         • `in` - Capture only incoming events
         • `only_messages` - Capture only messages (not join events)
         • `editable` - Capture only messages, which can be edited (no forwards etc.)
-        • `no_media` - Capture only messages without media \ files
-        • `only_media` - Capture only messages with media \ files
+        • `no_media` - Capture only messages without media and files
+        • `only_media` - Capture only messages with media and files
         • `only_photos` - Capture only messages with photos
         • `only_videos` - Capture only messages with videos
         • `only_audios` - Capture only messages with audios
@@ -439,11 +439,11 @@ def tag(*tags, **kwarg_tags):
     """
 
     def inner(func: callable):
-        for tag in tags:
-            setattr(func, tag, True)
+        for _tag in tags:
+            setattr(func, _tag, True)
 
-        for tag, value in kwarg_tags.items():
-            setattr(func, tag, value)
+        for _tag, value in kwarg_tags.items():
+            setattr(func, _tag, value)
 
         return func
 
@@ -688,33 +688,33 @@ class Modules:
         if getattr(instance, "__origin__", "") == "<core>":
             self._core_commands += list(map(lambda x: x.lower(), instance.commands))
 
-        for command in instance.commands.copy():
+        for _command in instance.commands.copy():
             # Restrict overwriting core modules' commands
             if (
-                command.lower() in self._core_commands
+                _command.lower() in self._core_commands
                 and getattr(instance, "__origin__", "") != "<core>"
             ):
                 with contextlib.suppress(Exception):
                     self.modules.remove(instance)
 
-                raise CoreOverwriteError(command=command)
+                raise CoreOverwriteError(command=_command)
 
             # Verify that command does not already exist, or,
             # if it does, the command must be from the same class name
-            if command.lower() in self.commands:
+            if _command.lower() in self.commands:
                 if (
-                    hasattr(instance.commands[command], "__self__")
-                    and hasattr(self.commands[command], "__self__")
-                    and instance.commands[command].__self__.__class__.__name__
-                    != self.commands[command].__self__.__class__.__name__
+                    hasattr(instance.commands[_command], "__self__")
+                    and hasattr(self.commands[_command], "__self__")
+                    and instance.commands[_command].__self__.__class__.__name__
+                    != self.commands[_command].__self__.__class__.__name__
                 ):
-                    logger.debug(f"Duplicate command {command}")
-                logger.debug(f"Replacing command for {self.commands[command]}")
+                    logger.debug(f"Duplicate command {_command}")
+                logger.debug(f"Replacing command for {self.commands[_command]}")
 
-            if not instance.commands[command].__doc__:
-                logger.debug(f"Missing docs for {command}")
+            if not instance.commands[_command].__doc__:
+                logger.debug(f"Missing docs for {_command}")
 
-            self.commands.update({command.lower(): instance.commands[command]})
+            self.commands.update({_command.lower(): instance.commands[_command]})
 
         for alias, cmd in self.aliases.items():
             if cmd in instance.commands:
@@ -757,7 +757,7 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        for watcher in _get_members(
+        for _watcher in _get_members(
             instance,
             "watcher",
             "is_watcher",
@@ -771,7 +771,7 @@ class Modules:
                         if (
                             hasattr(existing_watcher, "__self__")
                             and f"{existing_watcher.__self__.__class__.__name__}.{existing_watcher.__name__}"
-                            == f"{watcher.__self__.__class__.__name__}.{watcher.__name__}"
+                            == f"{_watcher.__self__.__class__.__name__}.{_watcher.__name__}"
                         )
                     ),
                     None,
@@ -781,7 +781,7 @@ class Modules:
                     logger.debug(f"Removing watcher for update {existing_watcher}")
                     self.watchers.remove(existing_watcher)
 
-                self.watchers += [watcher]
+                self.watchers += [_watcher]
 
     def _lookup(self, modname: str):
         return next(
@@ -1047,8 +1047,8 @@ class Modules:
         def _raise(e: Exception):
             if suspend_on_error:
                 raise SelfSuspend("Required library is not available or is corrupted.")
-            else:
-                raise e
+
+            raise e
 
         if not utils.check_url(url):
             _raise(ValueError("Invalid url for library"))
@@ -1239,15 +1239,15 @@ class Modules:
 
         return lib_obj
 
-    def dispatch(self, command: str) -> tuple:
+    def dispatch(self, _command: str) -> tuple:
         """Dispatch command to appropriate module"""
         return next(
             (
                 (cmd, self.commands[cmd.lower()])
-                for cmd in [command, self.aliases.get(command.lower(), None)]
+                for cmd in [_command, self.aliases.get(_command.lower())]
                 if cmd and cmd.lower() in self.commands
             ),
-            (command, None),
+            (_command, None),
         )
 
     def send_config(self, skip_hook: bool = False):
@@ -1487,21 +1487,21 @@ class Modules:
                     to_remove += [module.watcher]
 
         logger.debug(f"{to_remove=}, {worked=}")
-        for watcher in self.watchers.copy():
-            if watcher in to_remove:
-                logger.debug(f"Removing {watcher=} for unload")
-                self.watchers.remove(watcher)
+        for _watcher in self.watchers.copy():
+            if _watcher in to_remove:
+                logger.debug(f"Removing {_watcher=} for unload")
+                self.watchers.remove(_watcher)
 
         aliases_to_remove = []
 
-        for name, command in self.commands.copy().items():
-            if command in to_remove:
-                logger.debug(f"Removing {command=} for unload")
+        for name, _command in self.commands.copy().items():
+            if _command in to_remove:
+                logger.debug(f"Removing {_command=} for unload")
                 del self.commands[name]
                 aliases_to_remove.append(name)
 
-        for alias, command in self.aliases.copy().items():
-            if command in aliases_to_remove:
+        for alias, _command in self.aliases.copy().items():
+            if _command in aliases_to_remove:
                 del self.aliases[alias]
 
         return worked
