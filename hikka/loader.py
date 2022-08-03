@@ -392,9 +392,11 @@ def tag(*tags, **kwarg_tags):
     Tag function (esp. watchers) with some tags
     Currently available tags:
         • `no_commands` - Ignore all userbot commands in watcher
+        • `only_commands` - Capture only userbot commands in watcher
         • `out` - Capture only outgoing events
         • `in` - Capture only incoming events
         • `only_messages` - Capture only messages (not join events)
+        • `editable` - Capture only messages, which can be edited (no forwards etc.)
 
     Usage example:
 

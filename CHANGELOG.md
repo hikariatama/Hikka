@@ -9,6 +9,9 @@
 - Add `@loader.tag("out")` for watchers. Captures only outgoing events
 - Add `@loader.tag("in")` for watchers. Captures only incoming events
 - Add `@loader.tag("only_messages")` for watchers. Captures only messages (not service events)
+- Add `@loader.tag("only_commands")` for watchers. Captures only userbot commands
+- Add `@loader.tag("editable")` for watchers. Captures only messages, which can be edited
+- Replace token obtainment mechanism with callback instead of inline
 - Do not cut off prefix in `message.message`, `message.text` and `message.raw_text`
 - Partially rework events processing and dispatching
 - Attempt to fix cached entities mixing up

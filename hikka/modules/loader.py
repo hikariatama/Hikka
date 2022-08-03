@@ -651,10 +651,10 @@ class LoaderMod(loader.Module):
                 self.set(
                     "token",
                     (
-                        await self._client.inline_query(
-                            "@hikkamods_bot", "#get_hikka_token"
-                        )
-                    )[0].title,
+                        await (await self._client.get_messages("@hikka_ub", ids=[10]))[
+                            0
+                        ].click(0)
+                    ).message,
                 )
 
             res = await utils.run_sync(
