@@ -28,6 +28,7 @@
 - Add support for command translate directly in decorator (`@loader.command(ru_doc="Привет")`)
 - Add support for :obj:`aiogram.types.Message` in `utils.get_chat_id`
 - Add human-readable error message when trying to unload core module
+- Replace `print` with `logging.info` in main script to make url visible in logs
 
 ## 🌑 Hikka 1.2.12
 

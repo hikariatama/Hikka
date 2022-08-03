@@ -436,8 +436,8 @@ class Hikka:
 
     async def _web_banner(self):
         """Shows web banner"""
-        print("✅ Web mode ready for configuration")
-        print(f"🌐 Please visit {self.web.url}")
+        logging.info("✅ Web mode ready for configuration")
+        logging.info(f"🌐 Please visit {self.web.url}")
 
     async def wait_for_web_auth(self, token: str):
         """Waits for web auth confirmation in Telegram"""
@@ -516,7 +516,7 @@ class Hikka:
 
                 self.clients += [client]
             except sqlite3.OperationalError:
-                print(
+                logging.error(
                     "Check that this is the only instance running. "
                     f"If that doesn't help, delete the file named '{session}'"
                 )
@@ -529,13 +529,13 @@ class Hikka:
                 run_config({}, self.arguments.data_root)
                 return False
             except PhoneNumberInvalidError:
-                print(
+                logging.error(
                     "Phone number is incorrect. Use international format (+XX...) "
                     "and don't put spaces in it."
                 )
                 self.sessions.remove(session)
             except InteractiveAuthRequired:
-                print(f"Session {session} was terminated and re-auth is required")
+                logging.error(f"Session {session} was terminated and re-auth is required")
                 self.sessions.remove(session)
 
         return bool(self.sessions)
@@ -593,7 +593,7 @@ class Hikka:
                 )
                 self.omit_log = True
 
-            print(f"- Started for {client._tg_id} -")
+            logging.info(f"- Started for {client._tg_id} -")
         except Exception:
             logging.exception("Badge error")
 
