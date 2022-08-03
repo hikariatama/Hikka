@@ -98,6 +98,7 @@ class InlineManager(
 
         # Create bot instance and dispatcher
         self.bot = Bot(token=self._token, parse_mode=ParseMode.HTML)
+        Bot.set_current(self.bot)
         self._bot = self.bot  # This is a temporary alias so the
         # developers can adapt their code
         self._dp = Dispatcher(self.bot)

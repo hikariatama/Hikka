@@ -23,6 +23,9 @@
 - Send stats of libraries, if enabled in `.settings`
 - Replace library existence check from source url to classname
 - Add `self.inline` to libraries
+- Add `@loader.command`, `@loader.watcher`, `@loader.inline_handler`, `@loader.callback_handler`
+- Add support for multiple watchers
+- Add support for command translate directly in decorator (`@loader.command(ru_doc="Привет")`)
 
 ## 🌑 Hikka 1.2.12
 

@@ -349,13 +349,31 @@ def translatable_docstring(cls):
 
     @wraps(cls.config_complete)
     def config_complete(self, *args, **kwargs):
+        def proccess_decorators(mark: str):
+            nonlocal self
+            for attr in dir(func_):
+                if (
+                    attr.endswith("_doc")
+                    and len(attr) == 6
+                    and isinstance(getattr(func_, attr), str)
+                ):
+                    var = f"strings_{attr.split('_')[0]}"
+                    if not hasattr(self, var):
+                        setattr(self, var, {})
+
+                    getattr(self, var).setdefault(
+                        f"{mark}{command_}", getattr(func_, attr)
+                    )
+
         for command_, func_ in get_commands(cls).items():
+            proccess_decorators("_cmd_doc_")
             try:
                 func_.__doc__ = self.strings[f"_cmd_doc_{command_}"]
             except AttributeError:
                 func_.__func__.__doc__ = self.strings[f"_cmd_doc_{command_}"]
 
         for inline_handler_, func_ in get_inline_handlers(cls).items():
+            proccess_decorators("_ihandle_doc_")
             try:
                 func_.__doc__ = self.strings[f"_ihandle_doc_{inline_handler_}"]
             except AttributeError:
@@ -414,6 +432,9 @@ def tag(*tags, **kwarg_tags):
     @loader.tag("no_commands", "out")
     @loader.tag("no_commands", out=True)
     @loader.tag(only_messages=True)
+
+    💡 These tags can be used directly in `@loader.watcher`:
+    @loader.watcher("no_commands", out=True)
     """
 
     def inner(func: callable):
@@ -428,28 +449,88 @@ def tag(*tags, **kwarg_tags):
     return inner
 
 
-def _get_members(mod: Module, ending: str) -> dict:
+def _mark_method(mark: str, *args, **kwargs) -> callable:
+    """
+    Mark method as a method of a class
+    """
+
+    def decorator(func: callable) -> callable:
+        setattr(func, mark, True)
+        for arg in args:
+            setattr(func, arg, True)
+
+        for kwarg, value in kwargs.items():
+            setattr(func, kwarg, value)
+
+        return func
+
+    return decorator
+
+
+def command(*args, **kwargs):
+    """
+    Decorator that marks function as userbot command
+    """
+    return _mark_method("is_command", *args, **kwargs)
+
+
+def inline_handler(*args, **kwargs):
+    """
+    Decorator that marks function as inline handler
+    """
+    return _mark_method("is_inline_handler", *args, **kwargs)
+
+
+def watcher(*args, **kwargs):
+    """
+    Decorator that marks function as watcher
+    """
+    return _mark_method("is_watcher", *args, **kwargs)
+
+
+def callback_handler(*args, **kwargs):
+    """
+    Decorator that marks function as callback handler
+    """
+    return _mark_method("is_callback_handler", *args, **kwargs)
+
+
+def _get_members(
+    mod: Module,
+    ending: str,
+    attribute: Optional[str] = None,
+    strict: bool = False,
+) -> dict:
     """Get method of module, which end with ending"""
     return {
-        method_name.rsplit(ending, maxsplit=1)[0]: getattr(mod, method_name)
+        (
+            method_name.rsplit(ending, maxsplit=1)[0]
+            if (method_name == ending if strict else method_name.endswith(ending))
+            else method_name
+        ): getattr(mod, method_name)
         for method_name in dir(mod)
-        if callable(getattr(mod, method_name)) and method_name.endswith(ending)
+        if callable(getattr(mod, method_name))
+        and (
+            (method_name == ending if strict else method_name.endswith(ending))
+            or attribute
+            and getattr(getattr(mod, method_name), attribute, False)
+        )
     }
 
 
 def get_commands(mod: Module) -> dict:
     """Introspect the module to get its commands"""
-    return _get_members(mod, "cmd")
+    return _get_members(mod, "cmd", "is_command")
 
 
 def get_inline_handlers(mod: Module) -> dict:
     """Introspect the module to get its inline handlers"""
-    return _get_members(mod, "_inline_handler")
+    return _get_members(mod, "_inline_handler", "is_inline_handler")
 
 
 def get_callback_handlers(mod: Module) -> dict:
     """Introspect the module to get its callback handlers"""
-    return _get_members(mod, "_callback_handler")
+    return _get_members(mod, "_callback_handler", "is_callback_handler")
 
 
 class Modules:
@@ -675,18 +756,31 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        with contextlib.suppress(AttributeError):
-            if instance.watcher:
-                for watcher in self.watchers:
-                    if (
-                        hasattr(watcher, "__self__")
-                        and watcher.__self__.__class__.__name__
-                        == instance.watcher.__self__.__class__.__name__
-                    ):
-                        logger.debug(f"Removing watcher for update {watcher}")
-                        self.watchers.remove(watcher)
+        for watcher in _get_members(
+            instance,
+            "watcher",
+            "is_watcher",
+            strict=True,
+        ).values():
+            with contextlib.suppress(AttributeError, ValueError):
+                existing_watcher = next(
+                    (
+                        existing_watcher
+                        for existing_watcher in self.watchers
+                        if (
+                            hasattr(existing_watcher, "__self__")
+                            and f"{existing_watcher.__self__.__class__.__name__}.{existing_watcher.__name__}"
+                            == f"{watcher.__self__.__class__.__name__}.{watcher.__name__}"
+                        )
+                    ),
+                    None,
+                )
 
-                self.watchers += [instance.watcher]
+                if existing_watcher:
+                    logger.debug(f"Removing watcher for update {existing_watcher}")
+                    self.watchers.remove(existing_watcher)
+
+                self.watchers += [watcher]
 
     def _lookup(self, modname: str):
         return next(

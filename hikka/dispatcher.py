@@ -326,6 +326,9 @@ class CommandDispatcher:
         ):
             return False
 
+        if await self._handle_tags(event, func):
+            return False
+
         if self._db.get(main.__name__, "grep", False) and not watcher:
             message = self._handle_grep(message)
 
@@ -378,6 +381,85 @@ class CommandDispatcher:
     async def watcher_exc(self, e, message: Message):
         logging.exception("Error running watcher")
 
+    async def _handle_tags(self, event, func: callable) -> bool:
+        message = getattr(event, "message", event)
+        return (
+            (
+                getattr(func, "no_commands", False)
+                and await self._handle_command(event, watcher=True)
+            )
+            or (
+                getattr(func, "only_commands", False)
+                and not await self._handle_command(event, watcher=True)
+            )
+            or (getattr(func, "out", False) and not getattr(message, "out", True))
+            or (getattr(func, "in", False) and getattr(message, "out", True))
+            or (
+                getattr(func, "only_messages", False)
+                and not isinstance(message, types.Message)
+            )
+            or (
+                getattr(func, "editable", False)
+                and (
+                    getattr(message, "fwd_from", False)
+                    or not getattr(message, "out", False)
+                    or getattr(message, "sticker", False)
+                    or getattr(message, "via_bot_id", False)
+                )
+            )
+            or (
+                getattr(func, "no_media", False)
+                and (
+                    not isinstance(message, types.Message)
+                    or getattr(message, "media", False)
+                )
+            )
+            or (
+                getattr(func, "only_media", False)
+                and (
+                    not isinstance(message, types.Message)
+                    or not getattr(message, "media", False)
+                )
+            )
+            or (
+                getattr(func, "only_photos", False)
+                and not utils.mime_type(message).startswith("image/")
+            )
+            or (
+                getattr(func, "only_videos", False)
+                and not utils.mime_type(message).startswith("video/")
+            )
+            or (
+                getattr(func, "only_audios", False)
+                and not utils.mime_type(message).startswith("audio/")
+            )
+            or (
+                getattr(func, "only_stickers", False)
+                and not getattr(message, "sticker", False)
+            )
+            or (
+                getattr(func, "only_docs", False)
+                and not getattr(message, "document", False)
+            )
+            or (
+                getattr(func, "only_inline", False)
+                and not getattr(message, "via_bot_id", False)
+            )
+            or (
+                getattr(func, "only_channels", False)
+                and not getattr(message, "is_channel", False)
+                and getattr(message, "is_group", False)
+            )
+            or (
+                getattr(func, "only_groups", False)
+                and not getattr(message, "is_group", False)
+            )
+            or (
+                getattr(func, "only_pm", False)
+                and not getattr(message, "is_private", False)
+            )
+        )
+
     async def handle_incoming(self, event):
         """Handle all incoming messages"""
         message = utils.censor(getattr(event, "message", event))
@@ -416,79 +498,7 @@ class CommandDispatcher:
                 or whitelist_modules
                 and f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
                 not in whitelist_modules
-                or (
-                    getattr(func, "no_commands", False)
-                    and await self._handle_command(event, watcher=True)
-                )
-                or (
-                    getattr(func, "only_commands", False)
-                    and not await self._handle_command(event, watcher=True)
-                )
-                or (getattr(func, "out", False) and not getattr(message, "out", True))
-                or (getattr(func, "in", False) and getattr(message, "out", True))
-                or (
-                    getattr(func, "only_messages", False)
-                    and not isinstance(message, types.Message)
-                )
-                or (
-                    getattr(func, "editable", False)
-                    and (
-                        getattr(message, "fwd_from", False)
-                        or not getattr(message, "out", False)
-                        or getattr(message, "sticker", False)
-                        or getattr(message, "via_bot_id", False)
-                    )
-                )
-                or (
-                    getattr(func, "no_media", False)
-                    and (
-                        not isinstance(message, types.Message)
-                        or getattr(message, "media", False)
-                    )
-                )
-                or (
-                    getattr(func, "only_media", False)
-                    and (
-                        not isinstance(message, types.Message)
-                        or not getattr(message, "media", False)
-                    )
-                )
-                or (
-                    getattr(func, "only_photos", False)
-                    and not utils.mime_type(message).startswith("image/")
-                )
-                or (
-                    getattr(func, "only_videos", False)
-                    and not utils.mime_type(message).startswith("video/")
-                )
-                or (
-                    getattr(func, "only_audios", False)
-                    and not utils.mime_type(message).startswith("audio/")
-                )
-                or (
-                    getattr(func, "only_stickers", False)
-                    and not getattr(message, "sticker", False)
-                )
-                or (
-                    getattr(func, "only_docs", False)
-                    and not getattr(message, "document", False)
-                )
-                or (
-                    getattr(func, "only_inline", False)
-                    and not getattr(message, "via_bot_id", False)
-                )
-                or (
-                    getattr(func, "only_channels", False)
-                    and not getattr(message, "is_channel", False) and getattr(message, "is_group", False)
-                )
-                or (
-                    getattr(func, "only_groups", False)
-                    and not getattr(message, "is_group", False)
-                )
-                or (
-                    getattr(func, "only_pm", False)
-                    and not getattr(message, "is_private", False)
-                )
+                or await self._handle_tags(event, func)
             ):
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue
