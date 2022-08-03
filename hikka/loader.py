@@ -350,7 +350,7 @@ def translatable_docstring(cls):
 
     @wraps(cls.config_complete)
     def config_complete(self, *args, **kwargs):
-        def proccess_decorators(mark: str):
+        def proccess_decorators(mark: str, obj: str):
             nonlocal self
             for attr in dir(func_):
                 if (
@@ -363,18 +363,18 @@ def translatable_docstring(cls):
                         setattr(self, var, {})
 
                     getattr(self, var).setdefault(
-                        f"{mark}{command_}", getattr(func_, attr)
+                        f"{mark}{obj}", getattr(func_, attr)
                     )
 
         for command_, func_ in get_commands(cls).items():
-            proccess_decorators("_cmd_doc_")
+            proccess_decorators("_cmd_doc_", command_)
             try:
                 func_.__doc__ = self.strings[f"_cmd_doc_{command_}"]
             except AttributeError:
                 func_.__func__.__doc__ = self.strings[f"_cmd_doc_{command_}"]
 
         for inline_handler_, func_ in get_inline_handlers(cls).items():
-            proccess_decorators("_ihandle_doc_")
+            proccess_decorators("_ihandle_doc_", inline_handler_)
             try:
                 func_.__doc__ = self.strings[f"_ihandle_doc_{inline_handler_}"]
             except AttributeError:
