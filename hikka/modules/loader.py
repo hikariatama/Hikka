@@ -319,6 +319,29 @@ class LoaderMod(loader.Module):
 
         asyncio.ensure_future(self._update_modules())
         asyncio.ensure_future(self.get_repo_list("full"))
+        self._react_queue = []
+
+    @loader.loop(interval=30, autostart=True)
+    async def _react_processor(self):
+        if not self._react_queue:
+            return
+
+        developer_entity, modname = self._react_queue.pop(0)
+        try:
+            await (
+                await self._client.get_messages(
+                    developer_entity, limit=1, search=modname
+                )
+            )[0].react("❤️")
+            self.set(
+                "reacted",
+                self.get("reacted", []) + [f"{developer_entity.id}/{modname}"],
+            )
+        except Exception:
+            logger.debug(
+                f"Unable to react to {developer_entity.id} about {modname}",
+                exc_info=True,
+            )
 
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
@@ -1002,13 +1025,32 @@ class LoaderMod(loader.Module):
             if cmd in instance.commands:
                 self.allmodules.add_alias(alias, cmd)
 
-        if message is None:
-            return
-
         try:
             modname = instance.strings("name")
         except KeyError:
             modname = getattr(instance, "name", "ERROR")
+
+        try:
+            if developer in self._client._hikka_cache and getattr(
+                await self._client.get_entity(developer), "left", True
+            ):
+                developer_entity = await self._client.force_get_entity(developer)
+            else:
+                developer_entity = await self._client.get_entity(developer)
+        except Exception:
+            developer_entity = None
+
+        if not isinstance(developer_entity, Channel):
+            developer_entity = None
+
+        if (
+            developer_entity is not None
+            and f"{developer_entity.id}/{modname}" not in self.get("reacted", [])
+        ):
+            self._react_queue += [(developer_entity, modname)]
+
+        if message is None:
+            return
 
         modhelp = ""
 
@@ -1053,20 +1095,8 @@ class LoaderMod(loader.Module):
             if developer.startswith("@") and developer not in self.get(
                 "do_not_subscribe", []
             ):
-                try:
-                    if developer in self._client._hikka_cache and getattr(
-                        await self._client.get_entity(developer), "left", True
-                    ):
-                        developer_entity = await self._client.force_get_entity(
-                            developer
-                        )
-                    else:
-                        developer_entity = await self._client.get_entity(developer)
-                except Exception:
-                    developer_entity = None
-
                 if (
-                    isinstance(developer_entity, Channel)
+                    developer_entity
                     and getattr(developer_entity, "left", True)
                     and self._db.get(main.__name__, "suggest_subscribe", True)
                 ):
@@ -1094,17 +1124,9 @@ class LoaderMod(loader.Module):
                         },
                     ]
 
-            try:
-                is_channel = isinstance(
-                    await self._client.get_entity(developer),
-                    Channel,
-                )
-            except Exception:
-                is_channel = False
-
             developer = self.strings("developer").format(
                 utils.escape_html(developer)
-                if is_channel
+                if isinstance(developer_entity, Channel)
                 else f"<code>{utils.escape_html(developer)}</code>"
             )
         else:

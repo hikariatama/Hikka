@@ -29,6 +29,7 @@
 - Add support for :obj:`aiogram.types.Message` in `utils.get_chat_id`
 - Add human-readable error message when trying to unload core module
 - Replace `print` with `logging.info` in main script to make url visible in logs
+- Automatically react to module post in developer's channel if possible
 
 ## 🌑 Hikka 1.2.12
 
