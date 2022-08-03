@@ -26,6 +26,8 @@
 - Add `@loader.command`, `@loader.watcher`, `@loader.inline_handler`, `@loader.callback_handler`
 - Add support for multiple watchers
 - Add support for command translate directly in decorator (`@loader.command(ru_doc="Привет")`)
+- Add support for :obj:`aiogram.types.Message` in `utils.get_chat_id`
+- Add human-readable error message when trying to unload core module
 
 ## 🌑 Hikka 1.2.12
 

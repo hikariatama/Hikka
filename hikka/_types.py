@@ -100,6 +100,19 @@ class CoreOverwriteError(Exception):
         )
 
 
+class CoreUnloadError(Exception):
+    """Is being raised when user tries to unload core module"""
+
+    def __init__(self, module: str):
+        self.module = module
+        super().__init__()
+
+    def __str__(self) -> str:
+        return (
+            f"Module {self.module} will not be unloaded, because it's core"
+        )
+
+
 class SelfUnload(Exception):
     """Silently unloads module, if raised in `client_ready`"""
 

@@ -52,7 +52,7 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from .. import loader, main, utils
 from ..compat import geek
 from ..inline.types import InlineCall
-from .._types import CoreOverwriteError
+from .._types import CoreOverwriteError, CoreUnloadError
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +153,11 @@ class LoaderMod(loader.Module):
             " (</b><code>{}{}</code><b>)</b>\n\n<i>💡 Don't report it as bug. It's a"
             " security measure to prevent replacing core modules' commands with some"
             " junk</i>"
+        ),
+        "unload_core": (
+            "🚫 <b>You can't unload core module"
+            " </b><code>{}</code><b></b>\n\n<i>💡 Don't report it as bug. It's a"
+            " security measure to prevent replacing core modules with some junk</i>"
         ),
         "cannot_unload_lib": "🚫 <b>You can't unload library</b>",
         "wait_channel_approve": (
@@ -263,6 +268,12 @@ class LoaderMod(loader.Module):
             " (</b><code>{}</code><b>)</b>\n\n<i>💡 Это не ошибка, а мера безопасности,"
             " требуемая для предотвращения замены команд встроенных модулей всяким"
             " хламом. Не сообщайте о ней в support чате</i>"
+        ),
+        "unload_core": (
+            "🚫 <b>Ты не можешь выгрузить встроенный модуль"
+            " </b><code>{}</code><b></b>\n\n<i>💡 Это не ошибка, а мера безопасности,"
+            " требуемая для предотвращения замены встроенных модулей всяким хламом. Не"
+            " сообщайте о ней в support чате</i>"
         ),
         "cannot_unload_lib": "🚫 <b>Ты не можешь выгрузить библиотеку</b>",
         "wait_channel_approve": (
@@ -1172,7 +1183,11 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("cannot_unload_lib"))
             return
 
-        worked = self.allmodules.unload_module(args)
+        try:
+            worked = self.allmodules.unload_module(args)
+        except CoreUnloadError as e:
+            await utils.answer(message, self.strings("unload_core").format(e.module))
+            return
 
         if not self.allmodules.secure_boot:
             self.set(

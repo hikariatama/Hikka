@@ -57,6 +57,7 @@ from ._types import (
     StopLoop,
     InlineMessage,
     CoreOverwriteError,
+    CoreUnloadError,
     StringLoader,
 )
 from .inline.core import InlineManager
@@ -1452,7 +1453,7 @@ class Modules:
                 module.__class__.__name__.lower(),
             ):
                 if getattr(module, "__origin__", "") == "<core>":
-                    raise RuntimeError("You can't unload core module")
+                    raise CoreUnloadError(module.__class__.__name__)
 
                 worked += [module.__class__.__name__]
 

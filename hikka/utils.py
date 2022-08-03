@@ -83,6 +83,8 @@ from telethon.tl.types import (
     UpdateNewChannelMessage,
 )
 
+from aiogram.types import Message as AiogramMessage
+
 from .inline.types import InlineCall, InlineMessage
 
 
@@ -156,9 +158,12 @@ def get_args_split_by(message: Message, separator: str) -> List[str]:
     ]
 
 
-def get_chat_id(message: Message) -> int:
+def get_chat_id(message: Union[Message, AiogramMessage]) -> int:
     """Get the chat ID, but without -100 if its a channel"""
-    return telethon.utils.resolve_id(message.chat_id)[0]
+    return telethon.utils.resolve_id(
+        getattr(message, "chat_id", None)
+        or getattr(getattr(message, "chat", None), "id", None)
+    )[0]
 
 
 def get_entity_id(entity: Entity) -> int:
