@@ -338,10 +338,7 @@ class LoaderMod(loader.Module):
                 self.get("reacted", []) + [f"{developer_entity.id}/{modname}"],
             )
         except Exception:
-            logger.debug(
-                f"Unable to react to {developer_entity.id} about {modname}",
-                exc_info=True,
-            )
+            logger.debug(f"Unable to react to {developer_entity.id} about {modname}")
 
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
