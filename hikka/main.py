@@ -535,7 +535,9 @@ class Hikka:
                 )
                 self.sessions.remove(session)
             except InteractiveAuthRequired:
-                logging.error(f"Session {session} was terminated and re-auth is required")
+                logging.error(
+                    f"Session {session} was terminated and re-auth is required"
+                )
                 self.sessions.remove(session)
 
         return bool(self.sessions)

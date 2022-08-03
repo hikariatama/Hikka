@@ -1056,9 +1056,9 @@ class Modules:
             ver = tuple(
                 map(
                     int,
-                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)[
-                        1
-                    ].split("."),
+                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)[1].split(
+                        "."
+                    ),
                 )
             )
 
@@ -1146,8 +1146,7 @@ class Modules:
 
         if (
             all(
-                line.replace(" ", "") != "#scope:no_stats"
-                for line in code.splitlines()
+                line.replace(" ", "") != "#scope:no_stats" for line in code.splitlines()
             )
             and self._db.get("hikka.main", "stats", True)
             and url is not None

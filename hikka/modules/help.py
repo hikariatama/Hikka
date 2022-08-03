@@ -192,7 +192,6 @@ class HelpMod(loader.Module):
             else utils.escape_html(name)
         )
 
-
         reply = self.strings("single_mod_header").format(_name)
         if module.__doc__:
             reply += "<i>\nℹ️ " + utils.escape_html(inspect.getdoc(module)) + "\n</i>"

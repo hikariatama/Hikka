@@ -108,9 +108,7 @@ class CoreUnloadError(Exception):
         super().__init__()
 
     def __str__(self) -> str:
-        return (
-            f"Module {self.module} will not be unloaded, because it's core"
-        )
+        return f"Module {self.module} will not be unloaded, because it's core"
 
 
 class SelfUnload(Exception):
