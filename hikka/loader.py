@@ -397,6 +397,17 @@ def tag(*tags, **kwarg_tags):
         • `in` - Capture only incoming events
         • `only_messages` - Capture only messages (not join events)
         • `editable` - Capture only messages, which can be edited (no forwards etc.)
+        • `no_media` - Capture only messages without media \ files
+        • `only_media` - Capture only messages with media \ files
+        • `only_photos` - Capture only messages with photos
+        • `only_videos` - Capture only messages with videos
+        • `only_audios` - Capture only messages with audios
+        • `only_docs` - Capture only messages with documents
+        • `only_stickers` - Capture only messages with stickers
+        • `only_inline` - Capture only messages with inline queries
+        • `only_channels` - Capture only messages with channels
+        • `only_groups` - Capture only messages with groups
+        • `only_pm` - Capture only messages with private chats
 
     Usage example:
 

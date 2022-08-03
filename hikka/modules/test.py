@@ -87,7 +87,7 @@ class TestMod(loader.Module):
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
             "🌘 <b>Логи Hikka уровня </b><code>{}</code>\n\n👩‍🎤 <b>Версия Hikka:"
-            " {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{}"
+            " {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}"
             " NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>"
         ),
         "bad_module": "🚫 <b>Модуль не найден</b>",

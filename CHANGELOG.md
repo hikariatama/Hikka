@@ -5,12 +5,8 @@
 - Patch stats so they correctly recognize links
 - Fix bug when `...` is being replaced with `..` (unnecessary prefix escape)
 - Add `@loader.tag`
-- Add `@loader.tag("no_commands")` for watchers. Ignores commands
-- Add `@loader.tag("out")` for watchers. Captures only outgoing events
-- Add `@loader.tag("in")` for watchers. Captures only incoming events
-- Add `@loader.tag("only_messages")` for watchers. Captures only messages (not service events)
-- Add `@loader.tag("only_commands")` for watchers. Captures only userbot commands
-- Add `@loader.tag("editable")` for watchers. Captures only messages, which can be edited
+- Add watcher tags: `no_commands`, `only_commands`, `out`, `in`, `only_messages`, `editable`, `no_media`, `only_media`, `only_photos`, `only_videos`, `only_audios`, `only_docs`, `only_stickers`, `only_inline`, `only_channels`, `only_groups`, `only_pm`. See docs for detailed info
+- Add `utils.mime_type` to get mime_type of file in message
 - Replace token obtainment mechanism with callback instead of inline
 - Do not cut off prefix in `message.message`, `message.text` and `message.raw_text`
 - Partially rework events processing and dispatching

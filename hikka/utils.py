@@ -1006,6 +1006,19 @@ def get_kwargs() -> dict:
     return {key: values[key] for key in keys if key != "self"}
 
 
+def mime_type(message: Message) -> str:
+    """
+    Get mime type of document in message
+    :param message: Message with document
+    :return: Mime type or empty string if not present
+    """
+    return (
+        ""
+        if not isinstance(message, Message) or not getattr(message, "media", False)
+        else getattr(getattr(message, "media", False), "mime_type", False) or ""
+    )
+
+
 init_ts = time.perf_counter()
 
 # GeekTG Compatibility

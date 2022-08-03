@@ -439,6 +439,56 @@ class CommandDispatcher:
                         or getattr(message, "via_bot_id", False)
                     )
                 )
+                or (
+                    getattr(func, "no_media", False)
+                    and (
+                        not isinstance(message, types.Message)
+                        or getattr(message, "media", False)
+                    )
+                )
+                or (
+                    getattr(func, "only_media", False)
+                    and (
+                        not isinstance(message, types.Message)
+                        or not getattr(message, "media", False)
+                    )
+                )
+                or (
+                    getattr(func, "only_photos", False)
+                    and not utils.mime_type(message).startswith("image/")
+                )
+                or (
+                    getattr(func, "only_videos", False)
+                    and not utils.mime_type(message).startswith("video/")
+                )
+                or (
+                    getattr(func, "only_audios", False)
+                    and not utils.mime_type(message).startswith("audio/")
+                )
+                or (
+                    getattr(func, "only_stickers", False)
+                    and not getattr(message, "sticker", False)
+                )
+                or (
+                    getattr(func, "only_docs", False)
+                    and not getattr(message, "document", False)
+                )
+                or (
+                    getattr(func, "only_inline", False)
+                    and not getattr(message, "via_bot_id", False)
+                )
+                or (
+                    getattr(func, "only_channels", False)
+                    and not getattr(message, "is_channel", False) and getattr(message, "is_group", False)
+                )
+                or (
+                    getattr(func, "only_groups", False)
+                    and not getattr(message, "is_group", False)
+                )
+                or (
+                    getattr(func, "only_pm", False)
+                    and not getattr(message, "is_private", False)
+                )
             ):
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue
