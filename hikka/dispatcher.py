@@ -206,18 +206,12 @@ class CommandDispatcher:
     async def _handle_command(
         self,
         event,
+        watcher: bool = False,
     ) -> Union[bool, Tuple[Message, str, str, callable]]:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return False
 
-        if (
-            len(prefix := self._db.get(main.__name__, "command_prefix", False) or ".")
-            != 1
-        ):
-            prefix = "."
-            self._db.set(main.__name__, "command_prefix", prefix)
-            logging.warning("Prefix has been reset to a default one («.»)")
-
+        prefix = self._db.get(main.__name__, "command_prefix", False) or "."
         change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
         message = utils.censor(event.message)
 
@@ -228,8 +222,8 @@ class CommandDispatcher:
             event.message.message.startswith(str.translate(prefix, change))
             and str.translate(prefix, change) != prefix
         ):
-            prefix = str.translate(prefix, change)
             message.message = str.translate(message.message, change)
+            message.text = str.translate(message.text, change)
         elif not event.message.message.startswith(prefix):
             return False
 
@@ -255,28 +249,26 @@ class CommandDispatcher:
             message.out
             and len(message.message) > 2
             and message.message.startswith(prefix * 2)
+            and any(s != prefix for s in message.message)
         ):
             # Allow escaping commands using .'s
-            await message.edit(
-                message.message[1:],
-                parse_mode=lambda s: (
-                    s,
-                    utils.relocate_entities(message.entities, -1, message.message)
-                    or (),
-                ),
-            )
+            if not watcher:
+                await message.edit(
+                    message.message[1:],
+                    parse_mode=lambda s: (
+                        s,
+                        utils.relocate_entities(message.entities, -1, message.message)
+                        or (),
+                    ),
+                )
             return False
 
-        message.message = message.message[1:]
-
-        if not message.message:
+        if not message.message or len(message.message) == 1:
             return False  # Message is just the prefix
-
-        utils.relocate_entities(message.entities, -1)
 
         initiator = getattr(event, "sender_id", 0)
 
-        command = message.message.split(maxsplit=1)[0]
+        command = message.message.split(maxsplit=1)[0][1:]
         tag = command.split("@", maxsplit=1)
 
         if len(tag) == 2:
@@ -319,10 +311,11 @@ class CommandDispatcher:
             and message.chat.title.startswith("hikka-")
             and message.chat.title != "hikka-logs"
         ):
-            logging.warning("Ignoring message in datachat \\ logging chat")
+            if not watcher:
+                logging.warning("Ignoring message in datachat \\ logging chat")
             return False
 
-        message.message = txt + message.message[len(command) :]
+        message.message = prefix + txt + message.message[len(prefix + command) :]
 
         if (
             f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
@@ -333,7 +326,10 @@ class CommandDispatcher:
         ):
             return False
 
-        if self._db.get(main.__name__, "grep", False):
+        if await self._handle_tags(event, func):
+            return False
+
+        if self._db.get(main.__name__, "grep", False) and not watcher:
             message = self._handle_grep(message)
 
         return message, prefix, txt, func
@@ -361,7 +357,7 @@ class CommandDispatcher:
             try:
                 txt = (
                     "<b>🚫 Call</b>"
-                    f" <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b>"
+                    f" <code>{utils.escape_html(message.message)}</code><b>"
                     " failed!</b>"
                 )
                 await (message.edit if message.out else message.reply)(txt)
@@ -375,7 +371,7 @@ class CommandDispatcher:
             exc = "\n".join(exc.splitlines()[1:])
             txt = (
                 "<b>🚫 Call</b>"
-                f" <code>{utils.escape_html(prefix)}{utils.escape_html(message.message)}</code><b>"
+                f" <code>{utils.escape_html(message.message)}</code><b>"
                 f" failed!</b>\n\n<b>🧾 Logs:</b>\n<code>{exc}</code>"
             )
             await (message.edit if message.out else message.reply)(txt)
@@ -384,6 +380,85 @@ class CommandDispatcher:
 
     async def watcher_exc(self, e, message: Message):
         logging.exception("Error running watcher")
+
+    async def _handle_tags(self, event, func: callable) -> bool:
+        message = getattr(event, "message", event)
+        return (
+            (
+                getattr(func, "no_commands", False)
+                and await self._handle_command(event, watcher=True)
+            )
+            or (
+                getattr(func, "only_commands", False)
+                and not await self._handle_command(event, watcher=True)
+            )
+            or (getattr(func, "out", False) and not getattr(message, "out", True))
+            or (getattr(func, "in", False) and getattr(message, "out", True))
+            or (
+                getattr(func, "only_messages", False)
+                and not isinstance(message, types.Message)
+            )
+            or (
+                getattr(func, "editable", False)
+                and (
+                    getattr(message, "fwd_from", False)
+                    or not getattr(message, "out", False)
+                    or getattr(message, "sticker", False)
+                    or getattr(message, "via_bot_id", False)
+                )
+            )
+            or (
+                getattr(func, "no_media", False)
+                and (
+                    not isinstance(message, types.Message)
+                    or getattr(message, "media", False)
+                )
+            )
+            or (
+                getattr(func, "only_media", False)
+                and (
+                    not isinstance(message, types.Message)
+                    or not getattr(message, "media", False)
+                )
+            )
+            or (
+                getattr(func, "only_photos", False)
+                and not utils.mime_type(message).startswith("image/")
+            )
+            or (
+                getattr(func, "only_videos", False)
+                and not utils.mime_type(message).startswith("video/")
+            )
+            or (
+                getattr(func, "only_audios", False)
+                and not utils.mime_type(message).startswith("audio/")
+            )
+            or (
+                getattr(func, "only_stickers", False)
+                and not getattr(message, "sticker", False)
+            )
+            or (
+                getattr(func, "only_docs", False)
+                and not getattr(message, "document", False)
+            )
+            or (
+                getattr(func, "only_inline", False)
+                and not getattr(message, "via_bot_id", False)
+            )
+            or (
+                getattr(func, "only_channels", False)
+                and not getattr(message, "is_channel", False)
+                and getattr(message, "is_group", False)
+            )
+            or (
+                getattr(func, "only_groups", False)
+                and not getattr(message, "is_group", False)
+            )
+            or (
+                getattr(func, "only_pm", False)
+                and not getattr(message, "is_private", False)
+            )
+        )
 
     async def handle_incoming(self, event):
         """Handle all incoming messages"""
@@ -423,6 +498,7 @@ class CommandDispatcher:
                 or whitelist_modules
                 and f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
                 not in whitelist_modules
+                or await self._handle_tags(event, func)
             ):
                 logging.debug(f"Ignored watcher of module {modname}")
                 continue

@@ -52,18 +52,9 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from .. import loader, main, utils
 from ..compat import geek
 from ..inline.types import InlineCall
-from .._types import CoreOverwriteError
+from .._types import CoreOverwriteError, CoreUnloadError
 
 logger = logging.getLogger(__name__)
-
-VALID_PIP_PACKAGES = re.compile(
-    r"^\s*# ?requires:(?: ?)((?:{url} )*(?:{url}))\s*$".format(
-        url=r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
-    ),
-    re.MULTILINE,
-)
-
-USER_INSTALL = "PIP_TARGET" not in os.environ and "VIRTUAL_ENV" not in os.environ
 
 
 @loader.tds
@@ -163,6 +154,11 @@ class LoaderMod(loader.Module):
             " security measure to prevent replacing core modules' commands with some"
             " junk</i>"
         ),
+        "unload_core": (
+            "🚫 <b>You can't unload core module"
+            " </b><code>{}</code><b></b>\n\n<i>💡 Don't report it as bug. It's a"
+            " security measure to prevent replacing core modules with some junk</i>"
+        ),
         "cannot_unload_lib": "🚫 <b>You can't unload library</b>",
         "wait_channel_approve": (
             "💫 <b>Module </b><code>{}</code><b> requests permission to join channel <a"
@@ -190,11 +186,11 @@ class LoaderMod(loader.Module):
         "requirements_failed": "<b>🚫 Ошибка установки зависимостей</b>",
         "requirements_failed_termux": (
             "🕶🚫 <b>Ошибка установки зависимостей</b>\n<b>Наиболее часто возникает из-за"
-            " того, что Termux не поддерживает многие библиотека. Не сообщайте об этом"
+            " того, что Termux не поддерживает многие библиотеки. Не сообщайте об этом"
             " как об ошибке, это не может быть исправлено.</b>"
         ),
         "heroku_install_failed": (
-            "♓️⚠️ <b>Этому модулю требуются дополнительные библиотека, которые нельзя"
+            "♓️⚠️ <b>Этому модулю требуются дополнительные библиотеки, которые нельзя"
             " установить на Heroku. Не сообщайте об этом как об ошибке, это не может"
             " быть исправлено</b>"
         ),
@@ -273,6 +269,12 @@ class LoaderMod(loader.Module):
             " требуемая для предотвращения замены команд встроенных модулей всяким"
             " хламом. Не сообщайте о ней в support чате</i>"
         ),
+        "unload_core": (
+            "🚫 <b>Ты не можешь выгрузить встроенный модуль"
+            " </b><code>{}</code><b></b>\n\n<i>💡 Это не ошибка, а мера безопасности,"
+            " требуемая для предотвращения замены встроенных модулей всяким хламом. Не"
+            " сообщайте о ней в support чате</i>"
+        ),
         "cannot_unload_lib": "🚫 <b>Ты не можешь выгрузить библиотеку</b>",
         "wait_channel_approve": (
             "💫 <b>Модуль </b><code>{}</code><b> запрашивает разрешение на вступление в"
@@ -317,6 +319,26 @@ class LoaderMod(loader.Module):
 
         asyncio.ensure_future(self._update_modules())
         asyncio.ensure_future(self.get_repo_list("full"))
+        self._react_queue = []
+
+    @loader.loop(interval=120, autostart=True)
+    async def _react_processor(self):
+        if not self._react_queue:
+            return
+
+        developer_entity, modname = self._react_queue.pop(0)
+        try:
+            await (
+                await self._client.get_messages(
+                    developer_entity, limit=1, search=modname
+                )
+            )[0].react("❤️")
+            self.set(
+                "reacted",
+                self.get("reacted", []) + [f"{developer_entity.id}/{modname}"],
+            )
+        except Exception:
+            logger.debug(f"Unable to react to {developer_entity.id} about {modname}")
 
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
@@ -349,6 +371,9 @@ class LoaderMod(loader.Module):
         self._db.save()
 
     def _update_modules_in_db(self):
+        if self.allmodules.secure_boot:
+            return
+
         self.set(
             "loaded_modules",
             {
@@ -657,10 +682,10 @@ class LoaderMod(loader.Module):
                 self.set(
                     "token",
                     (
-                        await self._client.inline_query(
-                            "@hikkamods_bot", "#get_hikka_token"
-                        )
-                    )[0].title,
+                        await (await self._client.get_messages("@hikka_ub", ids=[10]))[
+                            0
+                        ].click(0)
+                    ).message,
                 )
 
             res = await utils.run_sync(
@@ -736,7 +761,12 @@ class LoaderMod(loader.Module):
 
         blob_link = self.strings("blob_link") if blob_link else ""
 
-        url = copy.deepcopy(name)
+        if utils.check_url(name):
+            url = copy.deepcopy(name)
+        elif utils.check_url(origin):
+            url = copy.deepcopy(origin)
+        else:
+            url = None
 
         if name is None:
             try:
@@ -793,8 +823,8 @@ class LoaderMod(loader.Module):
                 )
             except ImportError as e:
                 logger.info(
-                    "Module loading failed, attemping dependency installation",
-                    exc_info=True,
+                    "Module loading failed, attemping dependency installation"
+                    f" ({e.name})"
                 )
                 # Let's try to reinstall dependencies
                 try:
@@ -803,7 +833,7 @@ class LoaderMod(loader.Module):
                             lambda x: not x.startswith(("-", "_", ".")),
                             map(
                                 str.strip,
-                                VALID_PIP_PACKAGES.search(doc)[1].split(),
+                                loader.VALID_PIP_PACKAGES.search(doc)[1].split(),
                             ),
                         )
                     )
@@ -851,7 +881,7 @@ class LoaderMod(loader.Module):
                     "-q",
                     "--disable-pip-version-check",
                     "--no-warn-script-location",
-                    *["--user"] if USER_INSTALL else [],
+                    *["--user"] if loader.USER_INSTALL else [],
                     *requirements,
                 )
 
@@ -986,19 +1016,38 @@ class LoaderMod(loader.Module):
                 and url is not None
                 and utils.check_url(url)
             ):
-                asyncio.ensure_future(self._send_stats(url))
+                await self._send_stats(url)
 
         for alias, cmd in self.lookup("settings").get("aliases", {}).items():
             if cmd in instance.commands:
                 self.allmodules.add_alias(alias, cmd)
 
-        if message is None:
-            return
-
         try:
             modname = instance.strings("name")
         except KeyError:
             modname = getattr(instance, "name", "ERROR")
+
+        try:
+            if developer in self._client._hikka_cache and getattr(
+                await self._client.get_entity(developer), "left", True
+            ):
+                developer_entity = await self._client.force_get_entity(developer)
+            else:
+                developer_entity = await self._client.get_entity(developer)
+        except Exception:
+            developer_entity = None
+
+        if not isinstance(developer_entity, Channel):
+            developer_entity = None
+
+        if (
+            developer_entity is not None
+            and f"{developer_entity.id}/{modname}" not in self.get("reacted", [])
+        ):
+            self._react_queue += [(developer_entity, modname)]
+
+        if message is None:
+            return
 
         modhelp = ""
 
@@ -1043,20 +1092,8 @@ class LoaderMod(loader.Module):
             if developer.startswith("@") and developer not in self.get(
                 "do_not_subscribe", []
             ):
-                try:
-                    if developer in self._client._hikka_cache and getattr(
-                        await self._client.get_entity(developer), "left", True
-                    ):
-                        developer_entity = await self._client.force_get_entity(
-                            developer
-                        )
-                    else:
-                        developer_entity = await self._client.get_entity(developer)
-                except Exception:
-                    developer_entity = None
-
                 if (
-                    isinstance(developer_entity, Channel)
+                    developer_entity
                     and getattr(developer_entity, "left", True)
                     and self._db.get(main.__name__, "suggest_subscribe", True)
                 ):
@@ -1084,17 +1121,9 @@ class LoaderMod(loader.Module):
                         },
                     ]
 
-            try:
-                is_channel = isinstance(
-                    await self._client.get_entity(developer),
-                    Channel,
-                )
-            except Exception:
-                is_channel = False
-
             developer = self.strings("developer").format(
                 utils.escape_html(developer)
-                if is_channel
+                if isinstance(developer_entity, Channel)
                 else f"<code>{utils.escape_html(developer)}</code>"
             )
         else:
@@ -1173,16 +1202,21 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("cannot_unload_lib"))
             return
 
-        worked = self.allmodules.unload_module(args)
+        try:
+            worked = self.allmodules.unload_module(args)
+        except CoreUnloadError as e:
+            await utils.answer(message, self.strings("unload_core").format(e.module))
+            return
 
-        self.set(
-            "loaded_modules",
-            {
-                mod: link
-                for mod, link in self.get("loaded_modules", {}).items()
-                if mod not in worked
-            },
-        )
+        if not self.allmodules.secure_boot:
+            self.set(
+                "loaded_modules",
+                {
+                    mod: link
+                    for mod, link in self.get("loaded_modules", {}).items()
+                    if mod not in worked
+                },
+            )
 
         msg = (
             self.strings("unloaded").format(

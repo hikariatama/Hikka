@@ -30,6 +30,7 @@ class HikkaInfoMod(loader.Module):
         "version": "Version",
         "build": "Build",
         "prefix": "Prefix",
+        "uptime": "Uptime",
         "send_info": "Send userbot info",
         "description": "ℹ This will not compromise any sensitive info",
         "up-to-date": "<b>😌 Up-to-date</b>",
@@ -47,11 +48,12 @@ class HikkaInfoMod(loader.Module):
         "version": "Версия",
         "build": "Сборка",
         "prefix": "Префикс",
+        "uptime": "Аптайм",
         "send_info": "Отправить информацию о юзерботе",
         "description": "ℹ Это не раскроет никакой личной информации",
         "_ihandle_doc_info": "Отправить информацию о юзерботе",
-        "up-to-date": "😌 Актуальная версия",
-        "update_required": "😕 Требуется обновление </b><code>.update</code><b>",
+        "up-to-date": "<b>😌 Актуальная версия</b>",
+        "update_required": "<b>😕 Требуется обновление </b><code>.update</code>",
         "_cfg_cst_msg": (
             "Кастомный текст сообщения в info. Может содержать ключевые слова {me},"
             " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}"
@@ -133,6 +135,7 @@ class HikkaInfoMod(loader.Module):
                 f"<b>🔮 {self.strings('version')}: </b>{version} {build}\n"
                 f"{upd}\n\n"
                 f"<b>📼 {self.strings('prefix')}: </b>{prefix}\n"
+                f"<b>⌚️ {self.strings('uptime')}: </b>{utils.formatted_uptime()}\n"
                 f"<b>{platform}</b>\n"
             )
         )

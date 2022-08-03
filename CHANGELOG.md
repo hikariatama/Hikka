@@ -1,5 +1,36 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.2.13
+
+- Patch stats so they correctly recognize links
+- Fix bug when `...` is being replaced with `..` (unnecessary prefix escape)
+- Add `@loader.tag`
+- Add watcher tags: `no_commands`, `only_commands`, `out`, `in`, `only_messages`, `editable`, `no_media`, `only_media`, `only_photos`, `only_videos`, `only_audios`, `only_docs`, `only_stickers`, `only_inline`, `only_channels`, `only_groups`, `only_pm`. See docs for detailed info
+- Add `utils.mime_type` to get mime_type of file in message
+- Replace token obtainment mechanism with callback instead of inline
+- Do not cut off prefix in `message.message`, `message.text` and `message.raw_text`
+- Partially rework events processing and dispatching
+- Attempt to fix cached entities mixing up
+- Do not update modules in db when secure boot is active
+- Refactor members getterr
+- Add uptime to `.info`
+- Refactor `.help`, add version to single mod help message
+- Fix TypeError in `.e` when returning tl class instead of object
+- Remove stupid db lock in `.e`
+- Allow `.security` and `.inlinesec` only to owner by default
+- Add support for `# requires` metatag in libraries
+- Add support for `# scope: hikka_min` metatag in libraries
+- Send stats of libraries, if enabled in `.settings`
+- Replace library existence check from source url to classname
+- Add `self.inline` to libraries
+- Add `@loader.command`, `@loader.watcher`, `@loader.inline_handler`, `@loader.callback_handler`
+- Add support for multiple watchers
+- Add support for command translate directly in decorator (`@loader.command(ru_doc="Привет")`)
+- Add support for :obj:`aiogram.types.Message` in `utils.get_chat_id`
+- Add human-readable error message when trying to unload core module
+- Replace `print` with `logging.info` in main script to make url visible in logs
+- Automatically react to module post in developer's channel if possible
+
 ## 🌑 Hikka 1.2.12
 
 - Automatically patch reply markup in inline form in the way, that edit stays available anyway

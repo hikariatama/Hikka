@@ -215,8 +215,8 @@ class HikkaConfigMod(loader.Module):
             self.strings(
                 "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
             ).format(
-                utils.escape_html(mod),
                 utils.escape_html(option),
+                utils.escape_html(mod),
                 self.prep_value(self.lookup(mod).config[option])
                 if not self.lookup(mod).config._config[option].validator
                 or self.lookup(mod).config._config[option].validator.internal_id
@@ -251,8 +251,8 @@ class HikkaConfigMod(loader.Module):
             self.strings(
                 "option_reset" if isinstance(obj_type, bool) else "option_reset_lib"
             ).format(
-                utils.escape_html(mod),
                 utils.escape_html(option),
+                utils.escape_html(mod),
                 self.prep_value(self.lookup(mod).config[option])
                 if not self.lookup(mod).config._config[option].validator
                 or self.lookup(mod).config._config[option].validator.internal_id
@@ -425,8 +425,8 @@ class HikkaConfigMod(loader.Module):
             self.strings(
                 "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
             ).format(
-                utils.escape_html(mod),
                 utils.escape_html(option),
+                utils.escape_html(mod),
                 self.prep_value(self.lookup(mod).config[option])
                 if not self.lookup(mod).config._config[option].validator
                 or self.lookup(mod).config._config[option].validator.internal_id
@@ -497,8 +497,8 @@ class HikkaConfigMod(loader.Module):
             self.strings(
                 "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
             ).format(
-                utils.escape_html(mod),
                 utils.escape_html(option),
+                utils.escape_html(mod),
                 self.prep_value(self.lookup(mod).config[option])
                 if not self.lookup(mod).config._config[option].validator
                 or self.lookup(mod).config._config[option].validator.internal_id
@@ -870,13 +870,8 @@ class HikkaConfigMod(loader.Module):
     async def configcmd(self, message: Message):
         """Configure modules"""
         args = utils.get_args_raw(message)
-        if self.lookup(args):
-            form = await self.inline.form(
-                "🌘 <b>Loading configuration</b>",
-                message,
-                {"text": "🌘", "data": "empty"},
-                ttl=24 * 60 * 60,
-            )
+        if self.lookup(args) and hasattr(self.lookup(args), "config"):
+            form = await self.inline.form("🌘 <b>Loading configuration</b>", message)
             mod = self.lookup(args)
             if isinstance(mod, loader.Library):
                 type_ = "library"
@@ -889,7 +884,7 @@ class HikkaConfigMod(loader.Module):
         await self.inline__choose_category(message)
 
     async def fconfigcmd(self, message: Message):
-        """<module_name> <propery_name> <config_value> - Stands for ForceConfig - Set the config value if it is not possible using default method"""
+        """<module_name> <property_name> <config_value> - Stands for ForceConfig - Set the config value if it is not possible using default method"""
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:

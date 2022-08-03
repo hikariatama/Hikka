@@ -83,6 +83,8 @@ from telethon.tl.types import (
     UpdateNewChannelMessage,
 )
 
+from aiogram.types import Message as AiogramMessage
+
 from .inline.types import InlineCall, InlineMessage
 
 
@@ -156,9 +158,12 @@ def get_args_split_by(message: Message, separator: str) -> List[str]:
     ]
 
 
-def get_chat_id(message: Message) -> int:
+def get_chat_id(message: Union[Message, AiogramMessage]) -> int:
     """Get the chat ID, but without -100 if its a channel"""
-    return telethon.utils.resolve_id(message.chat_id)[0]
+    return telethon.utils.resolve_id(
+        getattr(message, "chat_id", None)
+        or getattr(getattr(message, "chat", None), "id", None)
+    )[0]
 
 
 def get_entity_id(entity: Entity) -> int:
@@ -1006,7 +1011,21 @@ def get_kwargs() -> dict:
     return {key: values[key] for key in keys if key != "self"}
 
 
+def mime_type(message: Message) -> str:
+    """
+    Get mime type of document in message
+    :param message: Message with document
+    :return: Mime type or empty string if not present
+    """
+    return (
+        ""
+        if not isinstance(message, Message) or not getattr(message, "media", False)
+        else getattr(getattr(message, "media", False), "mime_type", False) or ""
+    )
+
+
 init_ts = time.perf_counter()
+
 
 # GeekTG Compatibility
 def get_git_info():

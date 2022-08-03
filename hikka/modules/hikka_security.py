@@ -360,6 +360,7 @@ class HikkaSecurityMod(loader.Module):
 
         return self._perms_map(config, is_inline)
 
+    @loader.owner
     async def securitycmd(self, message: Message):
         """[command] - Configure command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
@@ -385,6 +386,7 @@ class HikkaSecurityMod(loader.Module):
             ttl=5 * 60,
         )
 
+    @loader.owner
     async def inlineseccmd(self, message: Message):
         """[command] - Configure inline command's security settings"""
         args = utils.get_args_raw(message).lower().strip()

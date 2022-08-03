@@ -48,7 +48,7 @@ class TestMod(loader.Module):
         "logs_caption": (
             "🌘 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka"
             " version: {}.{}.{}</b>{}\n⏱ <b>Uptime:"
-            " {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
             " InlineLogs</b>"
         ),
         "suspend_invalid_time": "🚫 <b>Invalid time to suspend</b>",
@@ -71,8 +71,6 @@ class TestMod(loader.Module):
             " ignore this warning</b>"
         ),
         "choose_loglevel": "💁‍♂️ <b>Choose log level</b>",
-        "database_unlocked": "🚫 DB eval unlocked",
-        "database_locked": "✅ DB eval locked",
         "bad_module": "🚫 <b>Module not found</b>",
         "debugging_enabled": (
             "🧑‍💻 <b>Debugging mode enabled for module </b><code>{0}</code>\n<i>Go to"
@@ -89,11 +87,9 @@ class TestMod(loader.Module):
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
             "🌘 <b>Логи Hikka уровня </b><code>{}</code>\n\n👩‍🎤 <b>Версия Hikka:"
-            " {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}</b>\n\n<b>{}"
+            " {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}"
             " NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>"
         ),
-        "database_unlocked": "🚫 База скомпрометирована",
-        "database_locked": "✅ База защищена",
         "bad_module": "🚫 <b>Модуль не найден</b>",
         "debugging_enabled": (
             "🧑‍💻 <b>Режим разработчика включен для модуля"
@@ -428,9 +424,6 @@ class TestMod(loader.Module):
             else "",
             utils.formatted_uptime(),
             utils.get_named_platform(),
-            self.strings(
-                f"database_{'un' if self._db.get(main.__name__, 'enable_db_eval', False) else ''}locked"
-            ),
             "✅" if self._db.get(main.__name__, "no_nickname", False) else "🚫",
             "✅" if self._db.get(main.__name__, "grep", False) else "🚫",
             "✅" if self._db.get(main.__name__, "inlinelogs", False) else "🚫",

@@ -33,6 +33,7 @@ import importlib.util
 import inspect
 import logging
 import os
+import re
 import sys
 from importlib.machinery import ModuleSpec
 from types import FunctionType
@@ -43,7 +44,7 @@ from telethon.tl.types import Message, InputPeerNotifySettings, Channel
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
 
-from . import security, utils, validators
+from . import security, utils, validators, version
 from ._types import (
     ConfigValue,  # skipcq
     LoadError,  # skipcq
@@ -56,6 +57,7 @@ from ._types import (
     StopLoop,
     InlineMessage,
     CoreOverwriteError,
+    CoreUnloadError,
     StringLoader,
 )
 from .inline.core import InlineManager
@@ -204,6 +206,16 @@ class Placeholder:
     """Placeholder"""
 
 
+VALID_PIP_PACKAGES = re.compile(
+    r"^\s*# ?requires:(?: ?)((?:{url} )*(?:{url}))\s*$".format(
+        url=r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
+    ),
+    re.MULTILINE,
+)
+
+USER_INSTALL = "PIP_TARGET" not in os.environ and "VIRTUAL_ENV" not in os.environ
+
+
 class InfiniteLoop:
     _task = None
     status = False
@@ -338,13 +350,31 @@ def translatable_docstring(cls):
 
     @wraps(cls.config_complete)
     def config_complete(self, *args, **kwargs):
+        def proccess_decorators(mark: str):
+            nonlocal self
+            for attr in dir(func_):
+                if (
+                    attr.endswith("_doc")
+                    and len(attr) == 6
+                    and isinstance(getattr(func_, attr), str)
+                ):
+                    var = f"strings_{attr.split('_')[0]}"
+                    if not hasattr(self, var):
+                        setattr(self, var, {})
+
+                    getattr(self, var).setdefault(
+                        f"{mark}{command_}", getattr(func_, attr)
+                    )
+
         for command_, func_ in get_commands(cls).items():
+            proccess_decorators("_cmd_doc_")
             try:
                 func_.__doc__ = self.strings[f"_cmd_doc_{command_}"]
             except AttributeError:
                 func_.__func__.__doc__ = self.strings[f"_cmd_doc_{command_}"]
 
         for inline_handler_, func_ in get_inline_handlers(cls).items():
+            proccess_decorators("_ihandle_doc_")
             try:
                 func_.__doc__ = self.strings[f"_ihandle_doc_{inline_handler_}"]
             except AttributeError:
@@ -356,11 +386,11 @@ def translatable_docstring(cls):
     config_complete._old_ = cls.config_complete
     cls.config_complete = config_complete
 
-    for command, func in get_commands(cls).items():
-        cls.strings[f"_cmd_doc_{command}"] = inspect.getdoc(func)
+    for command_, func in get_commands(cls).items():
+        cls.strings[f"_cmd_doc_{command_}"] = inspect.getdoc(func)
 
-    for inline_handler, func in get_inline_handlers(cls).items():
-        cls.strings[f"_ihandle_doc_{inline_handler}"] = inspect.getdoc(func)
+    for inline_handler_, func in get_inline_handlers(cls).items():
+        cls.strings[f"_ihandle_doc_{inline_handler_}"] = inspect.getdoc(func)
 
     cls.strings["_cls_doc"] = inspect.getdoc(cls)
 
@@ -370,42 +400,138 @@ def translatable_docstring(cls):
 tds = translatable_docstring  # Shorter name for modules to use
 
 
-def ratelimit(func):
+def ratelimit(func: callable):
     """Decorator that causes ratelimiting for this command to be enforced more strictly"""
     func.ratelimit = True
     return func
 
 
-def get_commands(mod):
-    """Introspect the module to get its commands"""
-    return {
-        method_name.rsplit("cmd", maxsplit=1)[0]: getattr(mod, method_name)
-        for method_name in dir(mod)
-        if callable(getattr(mod, method_name)) and method_name.endswith("cmd")
-    }
+def tag(*tags, **kwarg_tags):
+    """
+    Tag function (esp. watchers) with some tags
+    Currently available tags:
+        • `no_commands` - Ignore all userbot commands in watcher
+        • `only_commands` - Capture only userbot commands in watcher
+        • `out` - Capture only outgoing events
+        • `in` - Capture only incoming events
+        • `only_messages` - Capture only messages (not join events)
+        • `editable` - Capture only messages, which can be edited (no forwards etc.)
+        • `no_media` - Capture only messages without media and files
+        • `only_media` - Capture only messages with media and files
+        • `only_photos` - Capture only messages with photos
+        • `only_videos` - Capture only messages with videos
+        • `only_audios` - Capture only messages with audios
+        • `only_docs` - Capture only messages with documents
+        • `only_stickers` - Capture only messages with stickers
+        • `only_inline` - Capture only messages with inline queries
+        • `only_channels` - Capture only messages with channels
+        • `only_groups` - Capture only messages with groups
+        • `only_pm` - Capture only messages with private chats
+
+    Usage example:
+
+    @loader.tag("no_commands", "out")
+    @loader.tag("no_commands", out=True)
+    @loader.tag(only_messages=True)
+
+    💡 These tags can be used directly in `@loader.watcher`:
+    @loader.watcher("no_commands", out=True)
+    """
+
+    def inner(func: callable):
+        for _tag in tags:
+            setattr(func, _tag, True)
+
+        for _tag, value in kwarg_tags.items():
+            setattr(func, _tag, value)
+
+        return func
+
+    return inner
 
 
-def get_inline_handlers(mod):
-    """Introspect the module to get its inline handlers"""
+def _mark_method(mark: str, *args, **kwargs) -> callable:
+    """
+    Mark method as a method of a class
+    """
+
+    def decorator(func: callable) -> callable:
+        setattr(func, mark, True)
+        for arg in args:
+            setattr(func, arg, True)
+
+        for kwarg, value in kwargs.items():
+            setattr(func, kwarg, value)
+
+        return func
+
+    return decorator
+
+
+def command(*args, **kwargs):
+    """
+    Decorator that marks function as userbot command
+    """
+    return _mark_method("is_command", *args, **kwargs)
+
+
+def inline_handler(*args, **kwargs):
+    """
+    Decorator that marks function as inline handler
+    """
+    return _mark_method("is_inline_handler", *args, **kwargs)
+
+
+def watcher(*args, **kwargs):
+    """
+    Decorator that marks function as watcher
+    """
+    return _mark_method("is_watcher", *args, **kwargs)
+
+
+def callback_handler(*args, **kwargs):
+    """
+    Decorator that marks function as callback handler
+    """
+    return _mark_method("is_callback_handler", *args, **kwargs)
+
+
+def _get_members(
+    mod: Module,
+    ending: str,
+    attribute: Optional[str] = None,
+    strict: bool = False,
+) -> dict:
+    """Get method of module, which end with ending"""
     return {
-        method_name.rsplit("_inline_handler", maxsplit=1)[0]: getattr(mod, method_name)
+        (
+            method_name.rsplit(ending, maxsplit=1)[0]
+            if (method_name == ending if strict else method_name.endswith(ending))
+            else method_name
+        ): getattr(mod, method_name)
         for method_name in dir(mod)
         if callable(getattr(mod, method_name))
-        and method_name.endswith("_inline_handler")
-    }
-
-
-def get_callback_handlers(mod):
-    """Introspect the module to get its callback handlers"""
-    return {
-        method_name.rsplit("_callback_handler", maxsplit=1)[0]: getattr(
-            mod,
-            method_name,
+        and (
+            (method_name == ending if strict else method_name.endswith(ending))
+            or attribute
+            and getattr(getattr(mod, method_name), attribute, False)
         )
-        for method_name in dir(mod)
-        if callable(getattr(mod, method_name))
-        and method_name.endswith("_callback_handler")
     }
+
+
+def get_commands(mod: Module) -> dict:
+    """Introspect the module to get its commands"""
+    return _get_members(mod, "cmd", "is_command")
+
+
+def get_inline_handlers(mod: Module) -> dict:
+    """Introspect the module to get its inline handlers"""
+    return _get_members(mod, "_inline_handler", "is_inline_handler")
+
+
+def get_callback_handlers(mod: Module) -> dict:
+    """Introspect the module to get its callback handlers"""
+    return _get_members(mod, "_callback_handler", "is_callback_handler")
 
 
 class Modules:
@@ -433,6 +559,7 @@ class Modules:
         self.client = client
         self._db = db
         self._translator = translator
+        self.secure_boot = False
 
     def register_all(self, mods: list = None):
         """Load all modules in the module directory"""
@@ -447,9 +574,9 @@ class Modules:
                 )
             ]
 
-            if "DYNO" not in os.environ and not self._db.get(
-                __name__, "secure_boot", False
-            ):
+            self.secure_boot = self._db.get(__name__, "secure_boot", False)
+
+            if "DYNO" not in os.environ and not self.secure_boot:
                 external_mods = [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
@@ -561,33 +688,33 @@ class Modules:
         if getattr(instance, "__origin__", "") == "<core>":
             self._core_commands += list(map(lambda x: x.lower(), instance.commands))
 
-        for command in instance.commands.copy():
+        for _command in instance.commands.copy():
             # Restrict overwriting core modules' commands
             if (
-                command.lower() in self._core_commands
+                _command.lower() in self._core_commands
                 and getattr(instance, "__origin__", "") != "<core>"
             ):
                 with contextlib.suppress(Exception):
                     self.modules.remove(instance)
 
-                raise CoreOverwriteError(command=command)
+                raise CoreOverwriteError(command=_command)
 
             # Verify that command does not already exist, or,
             # if it does, the command must be from the same class name
-            if command.lower() in self.commands:
+            if _command.lower() in self.commands:
                 if (
-                    hasattr(instance.commands[command], "__self__")
-                    and hasattr(self.commands[command], "__self__")
-                    and instance.commands[command].__self__.__class__.__name__
-                    != self.commands[command].__self__.__class__.__name__
+                    hasattr(instance.commands[_command], "__self__")
+                    and hasattr(self.commands[_command], "__self__")
+                    and instance.commands[_command].__self__.__class__.__name__
+                    != self.commands[_command].__self__.__class__.__name__
                 ):
-                    logger.debug(f"Duplicate command {command}")
-                logger.debug(f"Replacing command for {self.commands[command]}")
+                    logger.debug(f"Duplicate command {_command}")
+                logger.debug(f"Replacing command for {self.commands[_command]}")
 
-            if not instance.commands[command].__doc__:
-                logger.debug(f"Missing docs for {command}")
+            if not instance.commands[_command].__doc__:
+                logger.debug(f"Missing docs for {_command}")
 
-            self.commands.update({command.lower(): instance.commands[command]})
+            self.commands.update({_command.lower(): instance.commands[_command]})
 
         for alias, cmd in self.aliases.items():
             if cmd in instance.commands:
@@ -630,18 +757,29 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        with contextlib.suppress(AttributeError):
-            if instance.watcher:
-                for watcher in self.watchers:
-                    if (
-                        hasattr(watcher, "__self__")
-                        and watcher.__self__.__class__.__name__
-                        == instance.watcher.__self__.__class__.__name__
-                    ):
-                        logger.debug(f"Removing watcher for update {watcher}")
-                        self.watchers.remove(watcher)
+        for _watcher in _get_members(
+            instance,
+            "watcher",
+            "is_watcher",
+            strict=True,
+        ).values():
+            with contextlib.suppress(AttributeError, ValueError):
+                if existing_watcher := next(
+                    (
+                        existing_watcher
+                        for existing_watcher in self.watchers
+                        if (
+                            hasattr(existing_watcher, "__self__")
+                            and f"{existing_watcher.__self__.__class__.__name__}.{existing_watcher.__name__}"
+                            == f"{_watcher.__self__.__class__.__name__}.{_watcher.__name__}"
+                        )
+                    ),
+                    None,
+                ):
+                    logger.debug(f"Removing watcher for update {existing_watcher}")
+                    self.watchers.remove(existing_watcher)
 
-                self.watchers += [instance.watcher]
+                self.watchers += [_watcher]
 
     def _lookup(self, modname: str):
         return next(
@@ -659,10 +797,7 @@ class Modules:
 
     @property
     def get_approved_channel(self):
-        if not self.__approve:
-            return None
-
-        return self.__approve.pop(0)
+        return self.__approve.pop(0) if self.__approve else None
 
     async def _approve(
         self,
@@ -734,7 +869,7 @@ class Modules:
                 raise LoadError(
                     f"You need to join @{channel.username} in order to use this module"
                 )
-            
+
             return False
 
         if not isinstance(channel, Channel):
@@ -889,6 +1024,7 @@ class Modules:
         url: str,
         *,
         suspend_on_error: Optional[bool] = False,
+        _did_requirements: bool = False,
     ) -> object:
         """
         Import library from url and register it in :obj:`Modules`
@@ -906,8 +1042,8 @@ class Modules:
         def _raise(e: Exception):
             if suspend_on_error:
                 raise SelfSuspend("Required library is not available or is corrupted.")
-            else:
-                raise e
+
+            raise e
 
         if not utils.check_url(url):
             _raise(ValueError("Invalid url for library"))
@@ -916,13 +1052,82 @@ class Modules:
         code.raise_for_status()
         code = code.text
 
+        if re.search(r"# ?scope: ?hikka_min", code):
+            ver = tuple(
+                map(
+                    int,
+                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)[1].split(
+                        "."
+                    ),
+                )
+            )
+
+            if version.__version__ < ver:
+                _raise(
+                    RuntimeError(
+                        f"Library requires Hikka version {'{}.{}.{}'.format(*ver)}+"
+                    )
+                )
+
         module = f"hikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
         origin = f"<library {url}>"
 
         spec = ModuleSpec(module, StringLoader(code, origin), origin=origin)
-        instance = importlib.util.module_from_spec(spec)
-        sys.modules[module] = instance
-        spec.loader.exec_module(instance)
+        try:
+            instance = importlib.util.module_from_spec(spec)
+            sys.modules[module] = instance
+            spec.loader.exec_module(instance)
+        except ImportError as e:
+            logger.info(
+                f"Library loading failed, attemping dependency installation ({e.name})"
+            )
+            # Let's try to reinstall dependencies
+            try:
+                requirements = list(
+                    filter(
+                        lambda x: not x.startswith(("-", "_", ".")),
+                        map(
+                            str.strip,
+                            VALID_PIP_PACKAGES.search(code)[1].split(),
+                        ),
+                    )
+                )
+            except TypeError:
+                logger.warning(
+                    "No valid pip packages specified in code, attemping"
+                    " installation from error"
+                )
+                requirements = [e.name]
+
+            logger.debug(f"Installing requirements: {requirements}")
+
+            if not requirements or _did_requirements:
+                _raise(e)
+
+            pip = await asyncio.create_subprocess_exec(
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "-q",
+                "--disable-pip-version-check",
+                "--no-warn-script-location",
+                *["--user"] if USER_INSTALL else [],
+                *requirements,
+            )
+
+            rc = await pip.wait()
+
+            if rc != 0:
+                _raise(e)
+
+            importlib.invalidate_caches()
+
+            kwargs = utils.get_kwargs()
+            kwargs["_did_requirements"] = True
+
+            return await self._mod_import_lib(**kwargs)  # Try again
 
         lib_obj = next(
             (
@@ -939,6 +1144,17 @@ class Modules:
         if not lib_obj.__class__.__name__.endswith("Lib"):
             _raise(ImportError("Invalid library. Class name must end with 'Lib'"))
 
+        if (
+            all(
+                line.replace(" ", "") != "#scope:no_stats" for line in code.splitlines()
+            )
+            and self._db.get("hikka.main", "stats", True)
+            and url is not None
+            and utils.check_url(url)
+        ):
+            with contextlib.suppress(Exception):
+                await self._lookup("loader")._send_stats(url)
+
         lib_obj.client = self.client
         lib_obj._client = self.client  # skipcq
         lib_obj.db = self._db
@@ -947,6 +1163,7 @@ class Modules:
         lib_obj.source_url = url.strip("/")
 
         lib_obj.lookup = self._lookup
+        lib_obj.inline = self.inline
         lib_obj.tg_id = self.client.tg_id
         lib_obj.allmodules = self
         lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
@@ -954,20 +1171,18 @@ class Modules:
         lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
         for old_lib in self.libraries:
-            if old_lib.source_url == lib_obj.source_url and (
+            if old_lib.name == lib_obj.name and (
                 not isinstance(getattr(old_lib, "version", None), tuple)
                 and not isinstance(getattr(lib_obj, "version", None), tuple)
                 or old_lib.version == lib_obj.version
             ):
-                logging.debug(
-                    f"Using existing instance of library {old_lib.source_url}"
-                )
+                logging.debug(f"Using existing instance of library {old_lib.name}")
                 return old_lib
 
         new = True
 
         for old_lib in self.libraries:
-            if old_lib.source_url == lib_obj.source_url:
+            if old_lib.name == lib_obj.name:
                 if hasattr(old_lib, "on_lib_update") and callable(
                     old_lib.on_lib_update
                 ):
@@ -977,7 +1192,7 @@ class Modules:
                 new = False
                 logging.debug(
                     "Replacing existing instance of library"
-                    f" {lib_obj.source_url} with updated object"
+                    f" {lib_obj.name} with updated object"
                 )
 
         if hasattr(lib_obj, "init") and callable(lib_obj.init):
@@ -1020,25 +1235,16 @@ class Modules:
 
         return lib_obj
 
-    def dispatch(self, command: str) -> tuple:
+    def dispatch(self, _command: str) -> tuple:
         """Dispatch command to appropriate module"""
-        change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
-        try:
-            return command, self.commands[command.lower()]
-        except KeyError:
-            try:
-                cmd = self.aliases[command.lower()]
-                return cmd, self.commands[cmd.lower()]
-            except KeyError:
-                try:
-                    cmd = self.aliases[str.translate(command, change).lower()]
-                    return cmd, self.commands[cmd.lower()]
-                except KeyError:
-                    try:
-                        cmd = str.translate(command, change).lower()
-                        return cmd, self.commands[cmd.lower()]
-                    except KeyError:
-                        return command, None
+        return next(
+            (
+                (cmd, self.commands[cmd.lower()])
+                for cmd in [_command, self.aliases.get(_command.lower())]
+                if cmd and cmd.lower() in self.commands
+            ),
+            (_command, None),
+        )
 
     def send_config(self, skip_hook: bool = False):
         """Configure modules"""
@@ -1243,7 +1449,7 @@ class Modules:
                 module.__class__.__name__.lower(),
             ):
                 if getattr(module, "__origin__", "") == "<core>":
-                    raise RuntimeError("You can't unload core module")
+                    raise CoreUnloadError(module.__class__.__name__)
 
                 worked += [module.__class__.__name__]
 
@@ -1277,26 +1483,26 @@ class Modules:
                     to_remove += [module.watcher]
 
         logger.debug(f"{to_remove=}, {worked=}")
-        for watcher in self.watchers.copy():
-            if watcher in to_remove:
-                logger.debug(f"Removing {watcher=} for unload")
-                self.watchers.remove(watcher)
+        for _watcher in self.watchers.copy():
+            if _watcher in to_remove:
+                logger.debug(f"Removing {_watcher=} for unload")
+                self.watchers.remove(_watcher)
 
         aliases_to_remove = []
 
-        for name, command in self.commands.copy().items():
-            if command in to_remove:
-                logger.debug(f"Removing {command=} for unload")
+        for name, _command in self.commands.copy().items():
+            if _command in to_remove:
+                logger.debug(f"Removing {_command=} for unload")
                 del self.commands[name]
                 aliases_to_remove.append(name)
 
-        for alias, command in self.aliases.copy().items():
-            if command in aliases_to_remove:
+        for alias, _command in self.aliases.copy().items():
+            if _command in aliases_to_remove:
                 del self.aliases[alias]
 
         return worked
 
-    def add_alias(self, alias, cmd):
+    def add_alias(self, alias: str, cmd: str) -> bool:
         """Make an alias"""
         if cmd not in self.commands:
             return False
@@ -1304,7 +1510,7 @@ class Modules:
         self.aliases[alias.lower().strip()] = cmd
         return True
 
-    def remove_alias(self, alias):
+    def remove_alias(self, alias: str) -> bool:
         """Remove an alias"""
         try:
             del self.aliases[alias.lower().strip()]
@@ -1313,17 +1519,5 @@ class Modules:
 
         return True
 
-    async def log(
-        self,
-        type_,
-        *,
-        group=None,
-        affected_uids=None,
-        data=None,
-    ):
-        return await asyncio.gather(
-            *[fun(type_, group, affected_uids, data) for fun in self._log_handlers]
-        )
-
-    def register_logger(self, _logger):
-        self._log_handlers += [_logger]
+    async def log(self, *args, **kwargs):
+        """Unnecessary placeholder for logging"""
