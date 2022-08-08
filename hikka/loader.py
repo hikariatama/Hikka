@@ -949,7 +949,7 @@ class Modules:
         instance.allclients = self.allclients
         instance.allmodules = self
         instance.hikka = True
-        instance.get = partial(self._mod_get, _module=instance)
+        instance.get = partial(self._mod_get, _modname=instance.__class__.__name__)
         instance.set = partial(self._mod_set, _modname=instance.__class__.__name__)
         instance.set = partial(self._mod_pointer, _modname=instance.__class__.__name__)
         instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
@@ -989,27 +989,8 @@ class Modules:
         self,
         key: str,
         default: Optional[Hashable] = None,
-        _module: Module = None,
+        _modname: str = None,
     ) -> Hashable:
-        mod, legacy = _module.__class__.__name__, _module.strings["name"]
-
-        if self._db.get(legacy, key, Placeholder) is not Placeholder:
-            for iterkey, value in self._db[legacy].items():
-                if iterkey == "__config__":
-                    # Config already uses classname as key
-                    # No need to migrate
-                    continue
-
-                if isinstance(value, dict) and isinstance(
-                    self._db.get(mod, iterkey), dict
-                ):
-                    self._db[mod][iterkey].update(value)
-                else:
-                    self._db.set(mod, iterkey, value)
-
-            logger.debug(f"Migrated {legacy} -> {mod}")
-            del self._db[legacy]
-
         return self._db.get(mod, key, default)
 
     def _mod_set(self, key: str, value: Hashable, _modname: str = None) -> bool:
