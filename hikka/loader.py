@@ -991,7 +991,7 @@ class Modules:
         default: Optional[Hashable] = None,
         _modname: str = None,
     ) -> Hashable:
-        return self._db.get(mod, key, default)
+        return self._db.get(_modname, key, default)
 
     def _mod_set(self, key: str, value: Hashable, _modname: str = None) -> bool:
         return self._db.set(_modname, key, value)
