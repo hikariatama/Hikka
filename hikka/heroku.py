@@ -12,7 +12,11 @@ from collections import namedtuple
 import logging
 import os
 
-import heroku3
+try:
+    import heroku3
+except ImportError:
+    if "DYNO" in os.environ:
+        raise
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError

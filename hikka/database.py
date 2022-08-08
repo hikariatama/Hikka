@@ -32,6 +32,14 @@ from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
 
 from . import utils, main
+from ._types import (
+    PointerBool,
+    PointerInt,
+    PointerStr,
+    PointerList,
+    PointerDict,
+    PointerTuple,
+)
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -374,3 +382,27 @@ class Database(dict):
 
         super().setdefault(owner, {})[key] = value
         return self.save()
+
+    def pointer(self, owner: str, key: str, default: Any = None) -> Any:
+        """Get a pointer to database key"""
+        value = self.get(owner, key, default)
+        mapping = {
+            int: PointerInt,
+            str: PointerStr,
+            bool: PointerBool,
+            list: PointerList,
+            dict: PointerDict,
+            tuple: PointerTuple,
+        }
+
+        pointer_constructor = next(
+            (pointer for type_, pointer in mapping.items() if isinstance(value, type_)),
+            None,
+        )
+
+        if pointer_constructor is None:
+            raise ValueError(
+                f"Pointer for type {type(value).__name__} is not implemented"
+            )
+
+        return pointer_constructor(self, owner, key, default)

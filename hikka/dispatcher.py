@@ -27,6 +27,7 @@
 import asyncio
 import collections
 import copy
+import inspect
 import logging
 import re
 import traceback
@@ -268,7 +269,7 @@ class CommandDispatcher:
 
         initiator = getattr(event, "sender_id", 0)
 
-        command = message.message.split(maxsplit=1)[0][1:]
+        command = message.message[1:].strip().split(maxsplit=1)[0]
         tag = command.split("@", maxsplit=1)
 
         if len(tag) == 2:
@@ -282,7 +283,7 @@ class CommandDispatcher:
             or event.mentioned
             and event.message is not None
             and event.message.message is not None
-            and f"@{self._cached_username}" not in event.message.message
+            and f"@{self._cached_username}" not in command.lower()
         ):
             pass
         elif (
@@ -340,19 +341,18 @@ class CommandDispatcher:
         if not message:
             return
 
-        message, prefix, _, func = message
+        message, _, _, func = message
 
         asyncio.ensure_future(
             self.future_dispatcher(
                 func,
                 message,
                 self.command_exc,
-                prefix,
             )
         )
 
-    async def command_exc(self, e, message: Message, prefix: str):
-        logging.exception("Command failed")
+    async def command_exc(self, e, message: Message):
+        logging.exception("Command failed", extra={"stack": inspect.stack()})
         if not self._db.get(main.__name__, "inlinelogs", True):
             try:
                 txt = (
@@ -372,14 +372,14 @@ class CommandDispatcher:
             txt = (
                 "<b>🚫 Call</b>"
                 f" <code>{utils.escape_html(message.message)}</code><b>"
-                f" failed!</b>\n\n<b>🧾 Logs:</b>\n<code>{exc}</code>"
+                f" failed!</b>\n\n<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
             )
             await (message.edit if message.out else message.reply)(txt)
         except Exception:
             pass
 
     async def watcher_exc(self, e, message: Message):
-        logging.exception("Error running watcher")
+        logging.exception("Error running watcher", extra={"stack": inspect.stack()})
 
     async def _handle_tags(self, event, func: callable) -> bool:
         message = getattr(event, "message", event)
@@ -457,6 +457,47 @@ class CommandDispatcher:
             or (
                 getattr(func, "only_pm", False)
                 and not getattr(message, "is_private", False)
+            )
+            or (
+                not isinstance(message, Message)
+                or getattr(func, "startswith", False)
+                and isinstance(func.startswith, str)
+                and not message.raw_text.startswith(getattr(func, "startswith"))
+            )
+            or (
+                not isinstance(message, Message)
+                or getattr(func, "endswith", False)
+                and isinstance(func.endswith, str)
+                and not message.raw_text.endswith(getattr(func, "endswith"))
+            )
+            or (
+                not isinstance(message, Message)
+                or getattr(func, "contains", False)
+                and isinstance(func.contains, str)
+                and getattr(func, "contains") not in message.raw_text
+            )
+            or (
+                getattr(func, "func", False)
+                and callable(func.func)
+                and not func.func(message)
+            )
+            or (
+                getattr(func, "from_id", False)
+                and getattr(message, "sender_id", None) != func.from_id
+            )
+            or (
+                getattr(func, "chat_id", False)
+                and utils.get_chat_id(message)
+                != (
+                    func.chat_id
+                    if not str(func.chat_id).startswith("-100")
+                    else int(str(func.chat_id)[4:])
+                )
+            )
+            or (
+                not isinstance(message, Message)
+                or getattr(func, "regex", False)
+                and not re.search(func.regex, message.raw_text)
             )
         )
 

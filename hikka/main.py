@@ -56,7 +56,7 @@ from . import database, loader, utils, heroku
 from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
-from .entity_cache import install_entity_caching
+from .tl_cache import install_entity_caching, install_perms_caching
 
 try:
     from .web import core
@@ -178,11 +178,14 @@ def parse_arguments() -> dict:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--port", dest="port", action="store", default=gen_port(), type=int
+        "--port",
+        dest="port",
+        action="store",
+        default=gen_port(),
+        type=int,
     )
     parser.add_argument("--phone", "-p", action="append")
     parser.add_argument("--token", "-t", action="append", dest="tokens")
-    parser.add_argument("--heroku", action="store_true")
     parser.add_argument("--no-nickname", "-nn", dest="no_nickname", action="store_true")
     parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
     parser.add_argument("--web-only", dest="web_only", action="store_true")
@@ -315,21 +318,24 @@ class Hikka:
 
     def _read_sessions(self):
         """Gets sessions from environment and data directory"""
-        self.sessions = [
-            SQLiteSession(
-                os.path.join(
-                    self.arguments.data_root or BASE_DIR,
-                    session.rsplit(".session", maxsplit=1)[0],
+        self.sessions = []
+        if "DYNO" not in os.environ:
+            self.sessions += [
+                SQLiteSession(
+                    os.path.join(
+                        self.arguments.data_root or BASE_DIR,
+                        session.rsplit(".session", maxsplit=1)[0],
+                    )
                 )
-            )
-            for session in filter(
-                lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                os.listdir(self.arguments.data_root or BASE_DIR),
-            )
-        ]
+                for session in filter(
+                    lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                    os.listdir(self.arguments.data_root or BASE_DIR),
+                )
+            ]
 
-        if os.environ.get("hikka_session"):
-            self.sessions += [StringSession(os.environ.get("hikka_session"))]
+        for key, value in os.environ.items():
+            if key.startswith("hikka_session"):
+                self.sessions += [StringSession(value)]
 
     def _get_api_token(self):
         """Get API Token from disk or environment"""
@@ -424,7 +430,12 @@ class Hikka:
         if "DYNO" not in os.environ:
             session.save()
         else:
-            heroku_config["hikka_session"] = session.save()
+            key = (
+                f"hikka_session_{utils.rand(6)}"
+                if "hikka_session" in heroku_config
+                else "hikka_session"
+            )
+            heroku_config[key] = session.save()
             heroku_app.update_config(heroku_config.to_dict())
             # Heroku will restart the app after updating config
 
@@ -513,6 +524,7 @@ class Hikka:
                 client.phone = "never gonna give you up"
 
                 install_entity_caching(client)
+                install_perms_caching(client)
 
                 self.clients += [client]
             except sqlite3.OperationalError:
@@ -671,32 +683,6 @@ class Hikka:
 
     def main(self):
         """Main entrypoint"""
-        if self.arguments.heroku:
-            if isinstance(self.arguments.heroku, str):
-                key = self.arguments.heroku
-            else:
-                print(
-                    "\033[0;35m- Heroku installation -\033[0m\n*If you are from Russia,"
-                    " enable VPN and use it throughout the process\n\n1. Register"
-                    " account at https://heroku.com\n2. Go to"
-                    " https://dashboard.heroku.com/account\n3. Next to API Key click"
-                    " `Reveal` and copy it\n4. Enter it below:"
-                )
-                key = input("♓️ \033[1;37mHeroku API key:\033[0m ").strip()
-
-            print(
-                "⏱ Installing to Heroku...\n"
-                "This process might take several minutes, be patient."
-            )
-
-            app = heroku.publish(key, api_token=self.api_token)
-            print(f"Installed to heroku successfully!\n🎉 App URL: {app.web_url}")
-
-            # At this point our work is done
-            # everything else will be run on Heroku, including
-            # authentication
-            return
-
         self._init_web()
         save_config_key("port", self.arguments.port)
         self._get_token()

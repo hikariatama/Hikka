@@ -1,6 +1,29 @@
 # Hikka Changelog
 
-## 🌑 Hikka 1.2.13
+## 🌑 Hikka 1.3.1
+
+- Add caching to `utils.asset_channel`
+- Add `channel` param to `utils.asset_channel` to actually create a channel, not supergroup
+- Add watcher tags: `startswith`, `endswith`, `contains`, `regex`, `func`, `from_id`, `chat_id`
+- Add buttons to `Choice` validator in `.config`
+- Add new types: `PointerInt`, `PointerList`, `PointerTuple`, `PointerDict`, `PointerStr`, `PointerBool`
+- Add `db.pointer`
+- Add support for multiaccounting on Heroku
+- Add ability to edit only reply markup or only media of message, w/o touching the actual text
+- Add support for `@loader.command`-like commands in inline caller finder
+- Add `utils.find_caller`
+- Add possible cause of error in logs (module and method)
+- Add `client.get_perms_cached` to cache native `client.get_permissions`
+- Change errors format in web to more human-readable
+- Change visible line of traceback in logs to be the last one
+- Fix bug with custom_bot option on installation page
+- Fix `RecursionError` in entity cacher
+- Fix command execution with space between prefix and command
+- Fix `utils.answer` for forwarded messages
+- Remove `heroku3` from classic requirements, along with heroku installation code snippet
+- Remove `termux_requirements.txt`
+
+## 🌑 Hikka 1.3.0
 
 - Patch stats so they correctly recognize links
 - Fix bug when `...` is being replaced with `..` (unnecessary prefix escape)

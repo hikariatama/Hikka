@@ -7,7 +7,6 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
-import inspect
 import logging
 import contextlib
 import io
@@ -37,7 +36,6 @@ from aiogram.utils.exceptions import (
 )
 
 from .. import utils
-from .._types import Module
 from .types import InlineUnit, InlineCall
 
 from telethon.utils import resolve_inline_message_id
@@ -231,22 +229,15 @@ class Utils(InlineUnit):
 
     def _find_caller_sec_map(self) -> Union[callable, None]:
         try:
-            for stack_entry in inspect.stack():
-                if hasattr(stack_entry, "function") and (
-                    stack_entry.function.endswith("cmd")
-                    or stack_entry.function.endswith("_inline_handler")
-                ):
-                    logger.debug(f"Found caller: {stack_entry.function}")
-                    return next(
-                        lambda: self._client.dispatcher.security.get_flags(
-                            getattr(
-                                cls_,
-                                stack_entry.function,
-                            ),
-                        )
-                        for name, cls_ in stack_entry.frame.f_globals.items()
-                        if name.endswith("Mod") and issubclass(cls_, Module)
-                    )
+            caller = utils.find_caller()
+            if not caller:
+                return None
+
+            logger.debug(f"Found caller: {caller.function}")
+
+            return lambda: self._client.dispatcher.security.get_flags(
+                getattr(caller.__self__, caller),
+            )
         except Exception:
             logger.debug("Can't parse security mask in form", exc_info=True)
 
@@ -265,7 +256,7 @@ class Utils(InlineUnit):
 
     async def _edit_unit(
         self,
-        text: str,
+        text: Optional[str] = None,
         reply_markup: List[List[dict]] = None,
         *,
         photo: Optional[str] = None,
@@ -302,7 +293,7 @@ class Utils(InlineUnit):
         :return: Status of edit"""
         reply_markup = self._validate_markup(reply_markup) or []
 
-        if not isinstance(text, str):
+        if text is not None and not isinstance(text, str):
             logger.error("Invalid type for `text`")
             return False
 
@@ -408,6 +399,25 @@ class Utils(InlineUnit):
         elif gif:
             media = InputMediaAnimation(media, caption=text, parse_mode="HTML")
 
+        if media is None and text is None and reply_markup:
+            try:
+                await self.bot.edit_message_reply_markup(
+                    **(
+                        {"inline_message_id": inline_message_id}
+                        if inline_message_id
+                        else {"chat_id": chat_id, "message_id": message_id}
+                    ),
+                    reply_markup=self.generate_markup(reply_markup),
+                )
+            except Exception:
+                return False
+
+            return True
+
+        if media is None and text is None:
+            logger.error("You must pass either `text` or `media` or `reply_markup`")
+            return False
+
         if media is None:
             try:
                 await self.bot.edit_message_text(
@@ -497,6 +507,8 @@ class Utils(InlineUnit):
         self,
         call: CallbackQuery = None,
         unit_id: str = None,
+        chat_id: Optional[int] = None,
+        message_id: Optional[int] = None,
     ) -> bool:
         """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
         if getattr(getattr(call, "message", None), "chat", None):
@@ -505,6 +517,14 @@ class Utils(InlineUnit):
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
                 )
+            except Exception:
+                return False
+
+            return True
+
+        if chat_id and message_id:
+            try:
+                await self.bot.delete_message(chat_id=chat_id, message_id=message_id)
             except Exception:
                 return False
 

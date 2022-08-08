@@ -155,7 +155,6 @@ else:
         from . import main
     except ModuleNotFoundError as e:  # pragma: no cover
         deps(e)
-        sys.exit(1)
 
     if __name__ == "__main__":
         if "HIKKA_DO_NOT_RESTART" in os.environ:

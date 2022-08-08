@@ -362,9 +362,7 @@ def translatable_docstring(cls):
                     if not hasattr(self, var):
                         setattr(self, var, {})
 
-                    getattr(self, var).setdefault(
-                        f"{mark}{obj}", getattr(func_, attr)
-                    )
+                    getattr(self, var).setdefault(f"{mark}{obj}", getattr(func_, attr))
 
         for command_, func_ in get_commands(cls).items():
             proccess_decorators("_cmd_doc_", command_)
@@ -427,12 +425,20 @@ def tag(*tags, **kwarg_tags):
         • `only_channels` - Capture only messages with channels
         • `only_groups` - Capture only messages with groups
         • `only_pm` - Capture only messages with private chats
+        • `startswith` - Capture only messages that start with given text
+        • `endswith` - Capture only messages that end with given text
+        • `contains` - Capture only messages that contain given text
+        • `regex` - Capture only messages that match given regex
+        • `func` - Capture only messages that pass given function
+        • `from_id` - Capture only messages from given user
+        • `chat_id` - Capture only messages from given chat
 
     Usage example:
 
     @loader.tag("no_commands", "out")
     @loader.tag("no_commands", out=True)
     @loader.tag(only_messages=True)
+    @loader.tag("only_messages", "only_pm", regex=r"^\. ?hikka$", from_id=659800858)
 
     💡 These tags can be used directly in `@loader.watcher`:
     @loader.watcher("no_commands", out=True)
@@ -1384,7 +1390,10 @@ class Modules:
 
         if from_dlmod:
             try:
-                await mod.on_dlmod(self.client, self._db)
+                if len(inspect.signature(mod.on_dlmod).parameters) == 2:
+                    await mod.on_dlmod(self.client, self._db)
+                else:
+                    await mod.on_dlmod()
             except Exception:
                 logger.info("Can't process `on_dlmod` hook", exc_info=True)
 

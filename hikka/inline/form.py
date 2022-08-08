@@ -312,7 +312,7 @@ class Form(InlineUnit):
                 exc = "\n".join(exc.splitlines()[1:])
                 msg = (
                     "<b>🚫 Form invoke failed!</b>\n\n"
-                    f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
+                    f"<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
                 )
 
             del self._units[unit_id]

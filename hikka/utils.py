@@ -86,6 +86,7 @@ from telethon.tl.types import (
 from aiogram.types import Message as AiogramMessage
 
 from .inline.types import InlineCall, InlineMessage
+from ._types import Module
 
 
 FormattingEntity = Union[
@@ -318,7 +319,7 @@ async def answer(
 
     kwargs.setdefault("link_preview", False)
 
-    if not (edit := message.out):
+    if not (edit := (message.out and not message.via_bot_id and not message.fwd_from)):
         kwargs.setdefault(
             "reply_to",
             getattr(message, "reply_to_msg_id", None),
@@ -500,6 +501,7 @@ async def asset_channel(
     title: str,
     description: str,
     *,
+    channel: Optional[bool] = False,
     silent: Optional[bool] = False,
     archive: Optional[bool] = False,
     avatar: Optional[str] = "",
@@ -510,14 +512,25 @@ async def asset_channel(
     :param client: Telegram client to create channel by
     :param title: Channel title
     :param description: Description
+    :param channel: Whether to create a channel or supergroup
     :param silent: Automatically mute channel
     :param archive: Automatically archive channel
     :param avatar: Url to an avatar to set as pfp of created peer
     :param _folder: Do not use it, or things will go wrong
     :returns: Peer and bool: is channel new or pre-existent
     """
+    if not hasattr(client, "_channels_cache"):
+        client._channels_cache = {}
+
+    if (
+        title in client._channels_cache
+        and client._channels_cache[title]["exp"] > time.time()
+    ):
+        return client._channels_cache[title]["peer"], False
+
     async for d in client.iter_dialogs():
         if d.title == title:
+            client._channels_cache[title] = {"peer": d.entity, "exp": int(time.time())}
             return d.entity, False
 
     peer = (
@@ -525,7 +538,7 @@ async def asset_channel(
             CreateChannelRequest(
                 title,
                 description,
-                megagroup=True,
+                megagroup=not channel,
             )
         )
     ).chats[0]
@@ -564,6 +577,7 @@ async def asset_channel(
             )
         )
 
+    client._channels_cache[title] = {"peer": peer, "exp": int(time.time())}
     return peer, True
 
 
@@ -629,6 +643,14 @@ def get_named_platform() -> str:
                 return f"🍇 {model}" if "Raspberry" in model else f"❓ {model}"
     except Exception:
         # In case of weird fs, aka Termux
+        pass
+
+    try:
+        from platform import uname
+
+        if "microsoft-standard" in uname().release:
+            return "🍁 WSL"
+    except Exception:
         pass
 
     is_termux = "com.termux" in os.environ.get("PREFIX", "")
@@ -1021,6 +1043,48 @@ def mime_type(message: Message) -> str:
         ""
         if not isinstance(message, Message) or not getattr(message, "media", False)
         else getattr(getattr(message, "media", False), "mime_type", False) or ""
+    )
+
+
+def find_caller(stack: Optional[List[inspect.FrameInfo]]) -> Any:
+    """Attempts to find command in stack"""
+    caller = next(
+        (
+            frame_info
+            for frame_info in stack or inspect.stack()
+            if hasattr(frame_info, "function")
+            and any(
+                inspect.isclass(cls_)
+                and issubclass(cls_, Module)
+                and cls_ is not Module
+                for cls_ in frame_info.frame.f_globals.values()
+            )
+        ),
+        None,
+    )
+
+    if not caller:
+        return next(
+            (
+                frame_info.frame.f_locals["func"]
+                for frame_info in stack or inspect.stack()
+                if hasattr(frame_info, "function")
+                and frame_info.function == "future_dispatcher"
+                and (
+                    "CommandDispatcher"
+                    in getattr(getattr(frame_info, "frame", None), "f_globals", {})
+                )
+            ),
+            None,
+        )
+
+    return next(
+        (
+            getattr(cls_, caller.function)
+            for cls_ in caller.frame.f_globals.values()
+            if inspect.isclass(cls_) and issubclass(cls_, Module)
+        ),
+        None,
     )
 
 

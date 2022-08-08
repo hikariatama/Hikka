@@ -206,7 +206,7 @@ class Web(root.Web):
         self.client_data[client.tg_id] = (loader, client, db)
 
     @staticmethod
-    async def favicon(request):
+    async def favicon(_):
         return web.Response(
             status=301,
             headers={"Location": "https://i.imgur.com/IRAiWBo.jpeg"},
