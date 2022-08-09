@@ -25,12 +25,8 @@ from .inline.types import (  # skipcq: PY-W2000
 )
 from . import validators  # skipcq: PY-W2000
 from .pointers import (  # skipcq: PY-W2000
-    PointerBool,
-    PointerInt,
-    PointerStr,
     PointerList,
     PointerDict,
-    PointerTuple,
 )
 
 logger = logging.getLogger(__name__)
