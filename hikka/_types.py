@@ -25,12 +25,8 @@ from .inline.types import (  # skipcq: PY-W2000
 )
 from . import validators  # skipcq: PY-W2000
 from .pointers import (  # skipcq: PY-W2000
-    PointerBool,
-    PointerInt,
-    PointerStr,
     PointerList,
     PointerDict,
-    PointerTuple,
 )
 
 logger = logging.getLogger(__name__)
@@ -84,30 +80,6 @@ class Module:
         ⚠️ Note, that any error there will not interrupt module load, and will just
         send a message to logs with verbosity INFO and exception traceback
         """
-
-    def __setattr__(self, attr: str, value: Any):
-        if hasattr(self, attr) and isinstance(
-            getattr(self, attr), (PointerInt, PointerList)
-        ):
-            getattr(self, attr).set(value)
-            return
-
-        return object.__setattr__(self, attr, value)
-
-    def __getattribute__(self, attr: str) -> Any:
-        try:
-            object.__getattribute__(self, attr)
-        except AttributeError:
-            pass
-        else:
-            value = object.__getattribute__(self, attr)
-            if isinstance(value, PointerInt):
-                return value.value
-
-            if isinstance(value, PointerList):
-                return list(value)
-
-        return object.__getattribute__(self, attr)
 
 
 class Library:

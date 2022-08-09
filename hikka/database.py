@@ -12,6 +12,7 @@ import logging
 import os
 import time
 import asyncio
+import collections
 
 try:
     import psycopg2
@@ -32,13 +33,9 @@ from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
 
 from . import utils, main
-from ._types import (
-    PointerBool,
-    PointerInt,
-    PointerStr,
+from .pointers import (
     PointerList,
     PointerDict,
-    PointerTuple,
 )
 
 DATA_DIR = (
@@ -387,12 +384,9 @@ class Database(dict):
         """Get a pointer to database key"""
         value = self.get(owner, key, default)
         mapping = {
-            int: PointerInt,
-            str: PointerStr,
-            bool: PointerBool,
             list: PointerList,
             dict: PointerDict,
-            tuple: PointerTuple,
+            collections.abc.Hashable: lambda v: v,
         }
 
         pointer_constructor = next(
