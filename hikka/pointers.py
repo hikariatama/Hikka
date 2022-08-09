@@ -1,6 +1,4 @@
-import asyncio
 from typing import Any, Iterable, Optional, SupportsIndex, Union
-from typing_extensions import Self
 
 
 class PointerList(list):
@@ -29,12 +27,12 @@ class PointerList(list):
         self._save()
         return a
 
-    def __iadd__(self, __x: Iterable) -> Self:
+    def __iadd__(self, __x: Iterable) -> "Self":  # type: ignore
         a = super().__iadd__(__x)
         self._save()
         return a
 
-    def __imul__(self, __x: int) -> Self:
+    def __imul__(self, __x: int) -> "Self":  # type: ignore
         a = super().__imul__(__x)
         self._save()
         return a
