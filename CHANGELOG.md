@@ -15,6 +15,7 @@
 - Add `utils.find_caller`
 - Add possible cause of error in logs (module and method)
 - Add `client.get_perms_cached` to cache native `client.get_permissions`
+- Add `client.get_fullchannel` with cache
 - Add `exp` and `force` params to `client.get_perms_cached` and `client.get_entity`
 - Add `exp` cached values check in `client.get_perms_cached` and `client.get_entity`
 - Change errors format in web to more human-readable
