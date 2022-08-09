@@ -85,30 +85,6 @@ class Module:
         send a message to logs with verbosity INFO and exception traceback
         """
 
-    def __setattr__(self, attr: str, value: Any):
-        if hasattr(self, attr) and isinstance(
-            getattr(self, attr), (PointerInt, PointerList)
-        ):
-            getattr(self, attr).set(value)
-            return
-
-        return object.__setattr__(self, attr, value)
-
-    def __getattribute__(self, attr: str) -> Any:
-        try:
-            object.__getattribute__(self, attr)
-        except AttributeError:
-            pass
-        else:
-            value = object.__getattribute__(self, attr)
-            if isinstance(value, PointerInt):
-                return value.value
-
-            if isinstance(value, PointerList):
-                return list(value)
-
-        return object.__getattribute__(self, attr)
-
 
 class Library:
     """All external libraries must have a class-inheritant from this class"""
