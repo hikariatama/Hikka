@@ -1080,7 +1080,7 @@ def find_caller(stack: Optional[List[inspect.FrameInfo]]) -> Any:
 
     return next(
         (
-            getattr(cls_, caller.function)
+            getattr(cls_, caller.function, None)
             for cls_ in caller.frame.f_globals.values()
             if inspect.isclass(cls_) and issubclass(cls_, Module)
         ),

@@ -334,7 +334,7 @@ def install_fullchannel_caching(client: TelegramClient):
     ) -> ChannelFull:
         """
         Gets the FullChannelRequest and cache it
-        :param channel_id: Channel to fetch ChannelFull of
+        :param entity: Channel to fetch ChannelFull of
         :param exp: Expiration time of the cache record and maximum time of already cached record
         :param force: Whether to force refresh the cache (make API request)
         :return: :obj:`FullChannel`
