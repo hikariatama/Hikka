@@ -3,27 +3,6 @@ from typing import Any, Iterable, Optional, SupportsIndex, Union
 from typing_extensions import Self
 
 
-class PointerInt(int):
-    """Pointer to integer saved in database"""
-
-    def __init__(
-        self,
-        db: "Database",  # type: ignore
-        module: str,
-        key: str,
-        default: Optional[Any] = None,
-    ):
-        self._db = db
-        self._module = module
-        self._key = key
-        self._default = default
-        self.value = db.get(module, key, default)
-
-    def set(self, value: Any):
-        self._db.set(self._module, self._key, value)
-        self.value = value
-
-
 class PointerList(list):
     """Pointer to list saved in database"""
 
@@ -91,43 +70,6 @@ class PointerList(list):
     def _save(self):
         self._db.set(self._module, self._key, list(self))
 
-    def set(self, value: Any):
-        if not isinstance(value, list):
-            raise TypeError(
-                f"Attempted to assign value {value}, which is not a list to pointer"
-            )
-
-        self.clear()
-        self.extend(value)
-        self._save()
-
-
-class PointerTuple(tuple):
-    """Pointer to tuple saved in database"""
-
-    def __init__(
-        self,
-        db: "Database",  # type: ignore
-        module: str,
-        key: str,
-        default: Optional[Any] = None,
-    ):
-        self._db = db
-        self._module = module
-        self._key = key
-        self._default = default
-        self.set(db.get(module, key, default))
-
-    def set(self, value: Any):
-        if not isinstance(value, tuple):
-            raise TypeError(
-                f"Attempted to assign value {value}, which is not a tuple to pointer"
-            )
-
-        self.clear()
-        self.extend(value)
-        self._save()
-
 
 class PointerDict(dict):
     """Pointer to dict saved in database"""
@@ -182,45 +124,3 @@ class PointerDict(dict):
 
     def _save(self):
         self._db.set(self._module, self._key, dict(self))
-
-    def set(self, value: Any):
-        if not isinstance(value, dict):
-            raise TypeError(
-                f"Attempted to assign value {value}, which is not a dict to pointer"
-            )
-
-        self.clear()
-        self.update(value)
-        self._save()
-
-
-class PointerStr(str):
-    """Pointer to string saved in database"""
-
-    def __init__(
-        self,
-        db: "Database",  # type: ignore
-        module: str,
-        key: str,
-        default: Optional[Any] = None,
-    ):
-        self._db = db
-        self._module = module
-        self._key = key
-        self._default = default
-        self.value = db.get(module, key, default)
-
-    def set(self, value: Any):
-        self.replace(self.center(0), value)
-        self._db.set(self._module, self._key, value)
-
-
-class PointerBool(PointerInt):
-    def __init__(
-        self,
-        db: "Database",  # type: ignore
-        module: str,
-        key: str,
-        default: Optional[Any] = None,
-    ):
-        super().__init__(db, module, key, default)
