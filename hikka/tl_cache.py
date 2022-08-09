@@ -32,10 +32,12 @@ class CacheRecord:
         self,
         hashable_entity: "Hashable",  # type: ignore
         resolved_entity: EntityLike,
+        exp: int,
     ):
         self.entity = copy.deepcopy(resolved_entity)
         self._hashable_entity = copy.deepcopy(hashable_entity)
-        self._exp = round(time.time() + 5 * 60)
+        self._exp = round(time.time() + exp)
+        self.ts = time.time()
 
     def expired(self):
         return self._exp < time.time()
@@ -90,10 +92,15 @@ def install_entity_caching(client: TelegramClient):
 
     old = client.get_entity
 
-    async def new(entity: EntityLike):
+    async def new(
+        entity: EntityLike, exp: Optional[int] = 5 * 60, force: Optional[bool] = False
+    ):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
         _hikka_client_id_logging_tag = copy.copy(client.tg_id)  # skipcq
+
+        if force:
+            return await old(entity)
 
         if not hashable(entity):
             try:
@@ -113,7 +120,14 @@ def install_entity_caching(client: TelegramClient):
         if str(hashable_entity).isdigit() and int(hashable_entity) < 0:
             hashable_entity = int(str(hashable_entity)[4:])
 
-        if hashable_entity and hashable_entity in client._hikka_entity_cache:
+        if (
+            hashable_entity
+            and hashable_entity in client._hikka_entity_cache
+            and (
+                not exp
+                or client._hikka_perms_cache[hashable_entity].ts + exp > time.time()
+            )
+        ):
             logger.debug(
                 "Using cached entity"
                 f" {entity} ({type(client._hikka_entity_cache[hashable_entity].entity).__name__})"
@@ -123,7 +137,7 @@ def install_entity_caching(client: TelegramClient):
         resolved_entity = await old(entity)
 
         if resolved_entity:
-            cache_record = CacheRecord(hashable_entity, resolved_entity)
+            cache_record = CacheRecord(hashable_entity, resolved_entity, exp)
             client._hikka_entity_cache[hashable_entity] = cache_record
             logger.debug(f"Saved hashable_entity {hashable_entity} to cache")
 
@@ -166,14 +180,14 @@ def install_perms_caching(client: TelegramClient):
     async def new(
         entity: EntityLike,
         user: Optional[EntityLike] = None,
-        exp: int = None,
-        force: bool = False,
+        exp: Optional[int] = 5 * 60,
+        force: Optional[bool] = False,
     ):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
         _hikka_client_id_logging_tag = copy.copy(client.tg_id)  # skipcq
 
-        if force and not exp:
+        if force:
             return await old(entity, user)
 
         entity = await client.get_entity(entity)
@@ -233,7 +247,7 @@ def install_perms_caching(client: TelegramClient):
                 hashable_entity,
                 hashable_user,
                 resolved_perms,
-                exp or 5 * 60,
+                exp,
             )
             client._hikka_perms_cache.setdefault(hashable_entity, {})[
                 hashable_user

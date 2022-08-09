@@ -6,14 +6,17 @@
 - Add `channel` param to `utils.asset_channel` to actually create a channel, not supergroup
 - Add watcher tags: `startswith`, `endswith`, `contains`, `regex`, `func`, `from_id`, `chat_id`
 - Add buttons to `Choice` validator in `.config`
-- Add new types: `PointerInt`, `PointerList`, `PointerTuple`, `PointerDict`, `PointerStr`, `PointerBool`
+- Add new types: `PointerList`, `PointerDict`
 - Add `db.pointer`
+- Add `self.pointer` to module and library instances
 - Add support for multiaccounting on Heroku
 - Add ability to edit only reply markup or only media of message, w/o touching the actual text
 - Add support for `@loader.command`-like commands in inline caller finder
 - Add `utils.find_caller`
 - Add possible cause of error in logs (module and method)
 - Add `client.get_perms_cached` to cache native `client.get_permissions`
+- Add `exp` and `force` params to `client.get_perms_cached` and `client.get_entity`
+- Add `exp` cached values check in `client.get_perms_cached` and `client.get_entity`
 - Change errors format in web to more human-readable
 - Change visible line of traceback in logs to be the last one
 - Fix bug with custom_bot option on installation page
@@ -22,6 +25,8 @@
 - Fix `utils.answer` for forwarded messages
 - Remove `heroku3` from classic requirements, along with heroku installation code snippet
 - Remove `termux_requirements.txt`
+- Remove legacy `self.get` migration from strings
+- Move `hikka._types` to `hikka.types` with legacy support
 
 ## 🌑 Hikka 1.3.0
 

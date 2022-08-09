@@ -38,7 +38,7 @@ from typing import List, Optional
 from logging.handlers import RotatingFileHandler
 
 from . import utils
-from ._types import Module, BotInlineCall
+from .types import Module, BotInlineCall
 
 
 class HikkaException:

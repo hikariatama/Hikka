@@ -52,7 +52,7 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from .. import loader, main, utils
 from ..compat import geek
 from ..inline.types import InlineCall
-from .._types import CoreOverwriteError, CoreUnloadError
+from ..types import CoreOverwriteError, CoreUnloadError
 
 logger = logging.getLogger(__name__)
 

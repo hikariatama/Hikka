@@ -45,7 +45,7 @@ from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
 
 from . import security, utils, validators, version
-from ._types import (
+from .types import (
     ConfigValue,  # skipcq
     LoadError,  # skipcq
     Module,
@@ -999,7 +999,7 @@ class Modules:
     def _mod_pointer(
         self,
         key: str,
-        default: Optional[Any] = None,
+        default: Optional[Hashable] = None,
         _modname: str = None,
     ) -> Any:
         return self._db.pointer(_modname, key, default)
@@ -1014,6 +1014,14 @@ class Modules:
 
     def _lib_set(self, key: str, value: Hashable, _lib: Library = None) -> bool:
         return self._db.set(_lib.__class__.__name__, key, value)
+    
+    def _lib_pointer(
+        self,
+        key: str,
+        default: Optional[Hashable] = None,
+        _lib: Library = None,
+    ) -> Any:
+        return self._db.pointer(_lib.__class__.__name__, key, default)
 
     async def _mod_import_lib(
         self,
@@ -1164,6 +1172,7 @@ class Modules:
         lib_obj.allmodules = self
         lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
         lib_obj._lib_set = partial(self._lib_set, _lib=lib_obj)  # skipcq
+        lib_obj._lib_pointer = partial(self._lib_pointer, _lib=lib_obj)  # skipcq
         lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
         for old_lib in self.libraries:

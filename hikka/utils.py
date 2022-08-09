@@ -86,7 +86,7 @@ from telethon.tl.types import (
 from aiogram.types import Message as AiogramMessage
 
 from .inline.types import InlineCall, InlineMessage
-from ._types import Module
+from .types import Module
 
 
 FormattingEntity = Union[
