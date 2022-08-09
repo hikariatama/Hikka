@@ -11,11 +11,11 @@ import time
 import asyncio
 import logging
 from typing import Optional, Union
-from xml.dom.minidom import Entity
 from telethon.hints import EntityLike
 from telethon import TelegramClient
 from telethon.tl.functions.channels import GetFullChannelRequest
-from telethon.tl.types import ChannelFull
+from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.types import ChannelFull, UserFull
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +112,33 @@ class CacheRecordFullChannel:
     def __repr__(self):
         return (
             f"CacheRecordFullChannel(channel_id={self.channel_id}(...),"
+            f" exp={self._exp})"
+        )
+
+
+
+class CacheRecordFullUser:
+    def __init__(self, user_id: int, full_user: UserFull, exp: int):
+        self.user_id = user_id
+        self.full_user = full_user
+        self._exp = round(time.time() + exp)
+        self.ts = time.time()
+
+    def expired(self):
+        return self._exp < time.time()
+
+    def __eq__(self, record: "CacheRecordFullUser"):
+        return hash(record) == hash(self)
+
+    def __hash__(self):
+        return hash((self._hashable_entity, self._hashable_user))
+
+    def __str__(self):
+        return f"CacheRecordFullUser of {self.user_id}"
+
+    def __repr__(self):
+        return (
+            f"CacheRecordFullUser(channel_id={self.user_id}(...),"
             f" exp={self._exp})"
         )
 
@@ -337,7 +364,7 @@ def install_fullchannel_caching(client: TelegramClient):
         :param entity: Channel to fetch ChannelFull of
         :param exp: Expiration time of the cache record and maximum time of already cached record
         :param force: Whether to force refresh the cache (make API request)
-        :return: :obj:`FullChannel`
+        :return: :obj:`ChannelFull`
         """
         if not hashable(entity):
             try:
@@ -385,3 +412,66 @@ def install_fullchannel_caching(client: TelegramClient):
     client.get_fullchannel = get_fullchannel
     asyncio.ensure_future(cleaner(client))
     logger.debug("Monkeypatched client with fullchannel cacher")
+
+
+def install_fulluser_caching(client: TelegramClient):
+    client._hikka_fulluser_cache = {}
+
+    async def get_fulluser(
+        entity: EntityLike,
+        exp: Optional[int] = 300,
+        force: Optional[bool] = False,
+    ) -> ChannelFull:
+        """
+        Gets the FullUserRequest and cache it
+        :param entity: User to fetch UserFull of
+        :param exp: Expiration time of the cache record and maximum time of already cached record
+        :param force: Whether to force refresh the cache (make API request)
+        :return: :obj:`UserFull`
+        """
+        if not hashable(entity):
+            try:
+                hashable_entity = next(
+                    getattr(entity, attr)
+                    for attr in {"user_id", "chat_id", "id"}
+                    if getattr(entity, attr, None)
+                )
+            except StopIteration:
+                logger.debug(
+                    f"Can't parse hashable from {entity=}, using legacy fulluser request"
+                )
+                return await client(GetFullUserRequest(entity))
+        else:
+            hashable_entity = entity
+
+        if str(hashable_entity).isdigit() and int(hashable_entity) < 0:
+            hashable_entity = int(str(hashable_entity)[4:])
+
+        if (
+            not force
+            and client._hikka_fulluser_cache.get(hashable_entity)
+            and not client._hikka_fulluser_cache[hashable_entity].expired()
+            and client._hikka_fulluser_cache[hashable_entity].ts + exp > time.time()
+        ):
+            return client._hikka_fulluser_cache[hashable_entity].full_channel
+
+        result = await client(GetFullUserRequest(entity))
+        client._hikka_fulluser_cache[hashable_entity] = CacheRecordFullUser(
+            hashable_entity,
+            result,
+            exp,
+        )
+        return result
+    
+    async def cleaner(client: TelegramClient):
+        while True:
+            for user_id, record in client._hikka_fulluser_cache.copy().items():
+                if record.expired():
+                    del client._hikka_fulluser_cache[user_id]
+                    logger.debug(f"Cleaned outdated fulluser cache {user_id=}")
+
+            await asyncio.sleep(3)
+    
+    client.get_fulluser = get_fulluser
+    asyncio.ensure_future(cleaner(client))
+    logger.debug("Monkeypatched client with fulluser cacher")

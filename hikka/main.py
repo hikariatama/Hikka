@@ -56,7 +56,12 @@ from . import database, loader, utils, heroku
 from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
-from .tl_cache import install_entity_caching, install_perms_caching, install_fullchannel_caching
+from .tl_cache import (
+    install_entity_caching,
+    install_perms_caching,
+    install_fullchannel_caching,
+    install_fulluser_caching,
+)
 
 try:
     from .web import core
@@ -526,6 +531,7 @@ class Hikka:
                 install_entity_caching(client)
                 install_perms_caching(client)
                 install_fullchannel_caching(client)
+                install_fulluser_caching(client)
 
                 self.clients += [client]
             except sqlite3.OperationalError:
