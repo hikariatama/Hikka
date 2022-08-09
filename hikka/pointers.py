@@ -17,7 +17,7 @@ class PointerList(list):
         self._module = module
         self._key = key
         self._default = default
-        self.set(db.get(module, key, default))
+        self.extend(db.get(module, key, default))
 
     def __delitem__(self, __i: Union[SupportsIndex, slice]) -> None:
         a = super().__delitem__(__i)
@@ -85,7 +85,7 @@ class PointerDict(dict):
         self._module = module
         self._key = key
         self._default = default
-        self.set(db.get(module, key, default))
+        self.update(db.get(module, key, default))
 
     def __setitem__(self, key: str, value: Any):
         super().__setitem__(key, value)
