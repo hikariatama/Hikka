@@ -125,7 +125,7 @@ def install_entity_caching(client: TelegramClient):
             and hashable_entity in client._hikka_entity_cache
             and (
                 not exp
-                or client._hikka_perms_cache[hashable_entity].ts + exp > time.time()
+                or client._hikka_entity_cache[hashable_entity].ts + exp > time.time()
             )
         ):
             logger.debug(
