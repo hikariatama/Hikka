@@ -140,7 +140,7 @@ else:
                     "-m",
                     "pip",
                     "install",
-                    "-U",
+                    "--force-reinstall",
                     "-q",
                     "--disable-pip-version-check",
                     "--no-warn-script-location",
