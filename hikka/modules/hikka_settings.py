@@ -672,7 +672,9 @@ class HikkaSettingsMod(loader.Module):
     async def inline__setting(self, call: InlineCall, key: str, state: bool = False):
         if callable(key):
             key()
-            telethon.extensions.html.CUSTOM_EMOJIS = not main.get_config_key("disable_custom_emojis")
+            telethon.extensions.html.CUSTOM_EMOJIS = not main.get_config_key(
+                "disable_custom_emojis"
+            )
         else:
             self._db.set(main.__name__, key, state)
 
@@ -858,14 +860,18 @@ class HikkaSettingsMod(loader.Module):
                         "text": self.strings("no_custom_emojis"),
                         "callback": self.inline__setting,
                         "args": (
-                            lambda: main.save_config_key("disable_custom_emojis", False),
+                            lambda: main.save_config_key(
+                                "disable_custom_emojis", False
+                            ),
                         ),
                     }
                     if main.get_config_key("disable_custom_emojis")
                     else {
                         "text": self.strings("custom_emojis"),
                         "callback": self.inline__setting,
-                        "args": (lambda: main.save_config_key("disable_custom_emojis", True),),
+                        "args": (
+                            lambda: main.save_config_key("disable_custom_emojis", True),
+                        ),
                     }
                 ),
             ],

@@ -123,6 +123,14 @@ class CoreMod(loader.Module):
         "confirm_cleardb": "⚠️ <b>Are you sure, that you want to clear database?</b>",
         "cleardb_confirm": "🗑 Clear database",
         "cancel": "🚫 Cancel",
+        "who_to_blacklist": (
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Who to"
+            " blacklist?</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Who to"
+            " unblacklist?</b>"
+        ),
     }
 
     strings_ru = {
@@ -217,6 +225,14 @@ class CoreMod(loader.Module):
         "confirm_cleardb": "⚠️ <b>Вы уверены, что хотите сбросить базу данных?</b>",
         "cleardb_confirm": "🗑 Очистить базу",
         "cancel": "🚫 Отмена",
+        "who_to_blacklist": (
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Кого заблокировать"
+            " то?</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Кого разблокировать"
+            " то?</b>"
+        ),
     }
 
     async def blacklistcommon(self, message: Message):
@@ -295,7 +311,7 @@ class CoreMod(loader.Module):
         user = await self.getuser(message)
 
         if not user:
-            await utils.answer(message, self.strings("who_to_unblacklist"))
+            await utils.answer(message, self.strings("who_to_blacklist"))
             return
 
         self._db.set(
