@@ -116,7 +116,8 @@ else:
         except ImportError:
             print(
                 "⚠️ Warning: Classic telethon is used as main one. This can cause"
-                " errors and enables DAR. Attempting to reinstall custom hikka telethon..."
+                " errors and enables DAR. Attempting to reinstall custom hikka"
+                " telethon..."
             )
             subprocess.run(
                 [

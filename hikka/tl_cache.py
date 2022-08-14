@@ -116,7 +116,6 @@ class CacheRecordFullChannel:
         )
 
 
-
 class CacheRecordFullUser:
     def __init__(self, user_id: int, full_user: UserFull, exp: int):
         self.user_id = user_id
@@ -137,10 +136,7 @@ class CacheRecordFullUser:
         return f"CacheRecordFullUser of {self.user_id}"
 
     def __repr__(self):
-        return (
-            f"CacheRecordFullUser(channel_id={self.user_id}(...),"
-            f" exp={self._exp})"
-        )
+        return f"CacheRecordFullUser(channel_id={self.user_id}(...), exp={self._exp})"
 
 
 def install_entity_caching(client: TelegramClient):
@@ -375,7 +371,8 @@ def install_fullchannel_caching(client: TelegramClient):
                 )
             except StopIteration:
                 logger.debug(
-                    f"Can't parse hashable from {entity=}, using legacy fullchannel request"
+                    f"Can't parse hashable from {entity=}, using legacy fullchannel"
+                    " request"
                 )
                 return await client(GetFullChannelRequest(channel=entity))
         else:
@@ -399,7 +396,7 @@ def install_fullchannel_caching(client: TelegramClient):
             exp,
         )
         return result
-    
+
     async def cleaner(client: TelegramClient):
         while True:
             for channel_id, record in client._hikka_fullchannel_cache.copy().items():
@@ -408,7 +405,7 @@ def install_fullchannel_caching(client: TelegramClient):
                     logger.debug(f"Cleaned outdated fullchannel cache {channel_id=}")
 
             await asyncio.sleep(3)
-    
+
     client.get_fullchannel = get_fullchannel
     asyncio.ensure_future(cleaner(client))
     logger.debug("Monkeypatched client with fullchannel cacher")
@@ -438,7 +435,8 @@ def install_fulluser_caching(client: TelegramClient):
                 )
             except StopIteration:
                 logger.debug(
-                    f"Can't parse hashable from {entity=}, using legacy fulluser request"
+                    f"Can't parse hashable from {entity=}, using legacy fulluser"
+                    " request"
                 )
                 return await client(GetFullUserRequest(entity))
         else:
@@ -462,7 +460,7 @@ def install_fulluser_caching(client: TelegramClient):
             exp,
         )
         return result
-    
+
     async def cleaner(client: TelegramClient):
         while True:
             for user_id, record in client._hikka_fulluser_cache.copy().items():
@@ -471,7 +469,7 @@ def install_fulluser_caching(client: TelegramClient):
                     logger.debug(f"Cleaned outdated fulluser cache {user_id=}")
 
             await asyncio.sleep(3)
-    
+
     client.get_fulluser = get_fulluser
     asyncio.ensure_future(cleaner(client))
     logger.debug("Monkeypatched client with fulluser cacher")

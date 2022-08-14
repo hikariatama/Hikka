@@ -12,6 +12,7 @@ import contextlib
 import io
 import os
 from copy import deepcopy
+import re
 from typing import List, Optional, Union
 from urllib.parse import urlparse
 import functools
@@ -254,6 +255,10 @@ class Utils(InlineUnit):
 
         return reply_markup
 
+    def _sanitise_text(self, text: str) -> str:
+        """Replaces all animated emojis in text with normal ones, bc aiogram doesn't support them"""
+        return re.sub(r"</?emoji.*?>", "", text)
+
     async def _edit_unit(
         self,
         text: Optional[str] = None,
@@ -306,6 +311,9 @@ class Utils(InlineUnit):
 
         if isinstance(audio, str):
             audio = {"url": audio}
+
+        if isinstance(text, str):
+            text = self._sanitise_text(text)
 
         media_params = [
             photo is None,

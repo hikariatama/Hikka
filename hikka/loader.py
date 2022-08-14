@@ -951,7 +951,9 @@ class Modules:
         instance.hikka = True
         instance.get = partial(self._mod_get, _modname=instance.__class__.__name__)
         instance.set = partial(self._mod_set, _modname=instance.__class__.__name__)
-        instance.pointer = partial(self._mod_pointer, _modname=instance.__class__.__name__)
+        instance.pointer = partial(
+            self._mod_pointer, _modname=instance.__class__.__name__
+        )
         instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
         instance.client = self.client
         instance._client = self.client
@@ -1014,7 +1016,7 @@ class Modules:
 
     def _lib_set(self, key: str, value: Hashable, _lib: Library = None) -> bool:
         return self._db.set(_lib.__class__.__name__, key, value)
-    
+
     def _lib_pointer(
         self,
         key: str,

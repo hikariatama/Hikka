@@ -1013,7 +1013,11 @@ class HikkaConfigMod(loader.Module):
 
         await self.inline__choose_category(message)
 
-    @loader.command(ru_doc="<модуль> <настройка> <значениеЮ - установить значение конфига для модуля")
+    @loader.command(
+        ru_doc=(
+            "<модуль> <настройка> <значениеЮ - установить значение конфига для модуля"
+        )
+    )
     async def fconfig(self, message: Message):
         """<module_name> <property_name> <config_value> - set the config value for the module"""
         args = utils.get_args_raw(message).split(maxsplit=2)

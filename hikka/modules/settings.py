@@ -34,7 +34,9 @@ class CoreMod(loader.Module):
 
     strings = {
         "name": "Settings",
-        "too_many_args": "🚫 <b>Too many args</b>",
+        "too_many_args": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Too many args</b>"
+        ),
         "blacklisted": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Chat {} blacklisted'
             " from userbot</b>"
@@ -52,7 +54,10 @@ class CoreMod(loader.Module):
             " unblacklisted from userbot</b>"
         ),
         "what_prefix": "❓ <b>What should the prefix be set to?</b>",
-        "prefix_incorrect": "🚫 <b>Prefix must be one symbol in length</b>",
+        "prefix_incorrect": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Prefix must be one"
+            " symbol in length</b>"
+        ),
         "prefix_set": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Command prefix'
             " updated. Type</b> <code>{newprefix}setprefix {oldprefix}</code> <b>to"
@@ -63,40 +68,68 @@ class CoreMod(loader.Module):
             " Access it with</b> <code>{}</code>"
         ),
         "aliases": "<b>🔗 Aliases:</b>\n",
-        "no_command": "🚫 <b>Command</b> <code>{}</code> <b>does not exist</b>",
-        "alias_args": "🚫 <b>You must provide a command and the alias for it</b>",
-        "delalias_args": "🚫 <b>You must provide the alias name</b>",
+        "no_command": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Command</b>"
+            " <code>{}</code> <b>does not exist</b>"
+        ),
+        "alias_args": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>You must provide a"
+            " command and the alias for it</b>"
+        ),
+        "delalias_args": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>You must provide the"
+            " alias name</b>"
+        ),
         "alias_removed": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Alias</b>'
             " <code>{}</code> <b>removed</b>."
         ),
-        "no_alias": "<b>🚫 Alias</b> <code>{}</code> <b>does not exist</b>",
+        "no_alias": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Alias</b>"
+            " <code>{}</code> <b>does not exist</b>"
+        ),
         "db_cleared": (
             '<emoji document_id="5368324170671202286">👍</emoji><b> Database cleared</b>'
         ),
         "hikka": (
             '<emoji document_id="6318565919471699564">🌌</emoji> <b>Hikka'
-            " userbot</b>\n<b>Version: {}.{}.{}</b>"
+            " userbot</b>\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
+            " <b>Version: {}.{}.{}</b>\n<emoji"
+            " document_id='6318902906900711458'>🧱</emoji> <b>Build:"
+            " </b><i>{}</i>\n\n<emoji document_id='5454182070156794055'>⌨️</emoji>"
+            " <b>Developer: t.me/hikariatama</b>"
         ),
-        "check_url": "🚫 <b>You need to specify valid url containing a langpack</b>",
+        "check_url": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>You need to specify"
+            " valid url containing a langpack</b>"
+        ),
         "lang_saved": "{} <b>Language saved!</b>",
         "pack_saved": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Translate pack'
             " saved!</b>"
         ),
-        "incorrect_language": "🚫 <b>Incorrect language specified</b>",
+        "incorrect_language": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Incorrect language"
+            " specified</b>"
+        ),
         "lang_removed": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Translations reset'
             " to default ones</b>"
         ),
-        "check_pack": "🚫 <b>Invalid pack format in url</b>",
+        "check_pack": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Invalid pack format"
+            " in url</b>"
+        ),
         "confirm_cleardb": "⚠️ <b>Are you sure, that you want to clear database?</b>",
         "cleardb_confirm": "🗑 Clear database",
         "cancel": "🚫 Cancel",
     }
 
     strings_ru = {
-        "too_many_args": "🚫 <b>Слишком много аргументов</b>",
+        "too_many_args": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Слишком много"
+            " аргументов</b>"
+        ),
         "blacklisted": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Чат {} добавлен в'
             " черный список юзербота</b>"
@@ -114,7 +147,10 @@ class CoreMod(loader.Module):
             " удален из черного списка юзербота</b>"
         ),
         "what_prefix": "❓ <b>А какой префикс ставить то?</b>",
-        "prefix_incorrect": "🚫 <b>Префикс должен состоять только из одного символа</b>",
+        "prefix_incorrect": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Префикс должен"
+            " состоять только из одного символа</b>"
+        ),
         "prefix_set": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Префикс обновлен.'
             " Чтобы вернуть его, используй</b> <code>{newprefix}setprefix"
@@ -125,33 +161,58 @@ class CoreMod(loader.Module):
             " Используй его через</b> <code>{}</code>"
         ),
         "aliases": "<b>🔗 Алиасы:</b>\n",
-        "no_command": "🚫 <b>Команда</b> <code>{}</code> <b>не существует</b>",
-        "alias_args": "🚫 <b>Требуется ввести команду и алиас для нее</b>",
-        "delalias_args": "🚫 <b>Требуется имя алиаса</b>",
+        "no_command": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Команда</b>"
+            " <code>{}</code> <b>не существует</b>"
+        ),
+        "alias_args": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Требуется ввести"
+            " команду и алиас для нее</b>"
+        ),
+        "delalias_args": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Требуется имя"
+            " алиаса</b>"
+        ),
         "alias_removed": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Алиас</b>'
             " <code>{}</code> <b>удален</b>."
         ),
-        "no_alias": "<b>🚫 Алиас</b> <code>{}</code> <b>не существует</b>",
+        "no_alias": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji><b> Алиас</b>"
+            " <code>{}</code> <b>не существует</b>"
+        ),
         "db_cleared": (
             '<emoji document_id="5368324170671202286">👍</emoji><b> База очищена</b>'
         ),
         "hikka": (
             '<emoji document_id="6318565919471699564">🌌</emoji> <b>Hikka'
-            " userbot</b>\n<b>Версия: {}.{}.{}</b>"
+            " userbot</b>\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
+            " <b>Версия: {}.{}.{}</b>\n<emoji"
+            " document_id='6318902906900711458'>🧱</emoji> <b>Сборка:"
+            " </b><i>{}</i>\n\n<emoji document_id='5454182070156794055'>⌨️</emoji>"
+            " <b>Developer: t.me/hikariatama</b>"
         ),
-        "check_url": "🚫 <b>Укажи правильную ссылку, ведущую на пак с переводом</b>",
+        "check_url": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Укажи правильную"
+            " ссылку, ведущую на пак с переводом</b>"
+        ),
         "lang_saved": "{} <b>Язык сохранен!</b>",
         "pack_saved": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Пак перевода'
             " сохранен!</b>"
         ),
-        "incorrect_language": "🚫 <b>Указан неверный язык</b>",
+        "incorrect_language": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Указан неверный"
+            " язык</b>"
+        ),
         "lang_removed": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Переводы'
             " сброшены</b>"
         ),
-        "check_pack": "🚫 <b>По ссылке находится неправильный пак</b>",
+        "check_pack": (
+            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>По ссылке находится"
+            " неправильный пак</b>"
+        ),
         "_cls_doc": "Управление базовыми настройками юзербота",
         "confirm_cleardb": "⚠️ <b>Вы уверены, что хотите сбросить базу данных?</b>",
         "cleardb_confirm": "🗑 Очистить базу",
@@ -186,7 +247,10 @@ class CoreMod(loader.Module):
     @loader.command(ru_doc="Показать версию Hikka")
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
-        await utils.answer(message, self.strings("hikka").format(*main.__version__))
+        await utils.answer(
+            message,
+            self.strings("hikka").format(*main.__version__, utils.get_commit_url()),
+        )
 
     @loader.command(ru_doc="[чат] [модуль] - Отключить бота где-либо")
     async def blacklist(self, message: Message):

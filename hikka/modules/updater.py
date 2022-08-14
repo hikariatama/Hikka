@@ -52,30 +52,52 @@ class UpdaterMod(loader.Module):
 
     strings = {
         "name": "Updater",
-        "source": "ℹ️ <b>Read the source code from</b> <a href='{}'>here</a>",
-        "restarting_caption": "🔄 <b>Restarting...</b>",
-        "downloading": "🕐 <b>Downloading updates...</b>",
-        "installing": "🕐 <b>Installing updates...</b>",
+        "source": (
+            "<emoji document_id='5456255401194429832'>📖</emoji> <b>Read the source code"
+            " from</b> <a href='{}'>here</a>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Restarting...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Downloading"
+            " updates...</b>"
+        ),
+        "installing": (
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Installing"
+            " updates...</b>"
+        ),
         "success": (
-            "⏳ <b>Restart successful! {}</b>\n<i>But still loading"
-            " modules...</i>\n<i>Restart took {}s</i>"
+            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Restart successful!"
+            " {}</b>\n<i>But still loading modules...</i>\n<i>Restart took {}s</i>"
         ),
         "origin_cfg_doc": "Git origin URL, for where to update from",
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
-        "restart_confirm": "🔄 <b>Are you sure you want to restart?</b>",
+        "restart_confirm": (
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Are you sure you"
+            " want to restart?</b>"
+        ),
         "secure_boot_confirm": (
-            "🔄 <b>Are you sure you want to restart in secure boot mode?</b>"
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Are you sure you"
+            " want to restart in secure boot mode?</b>"
         ),
         "update_confirm": (
-            "🧭 <b>Are you sure you want to update?\n\n"
-            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
-            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Are you sure you"
+            " want to update?\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
         "no_update": "🚸 <b>You are on the latest version, pull updates anyway?</b>",
         "cancel": "🚫 Cancel",
-        "lavhost_restart": "✌️ <b>Your lavHost is restarting...\n&gt;///&lt;</b>",
-        "lavhost_update": "✌️ <b>Your lavHost is updating...\n&gt;///&lt;</b>",
+        "lavhost_restart": (
+            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Your lavHost is"
+            " restarting...\n&gt;///&lt;</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Your lavHost is"
+            " updating...\n&gt;///&lt;</b>"
+        ),
         "heroku_update": (
             "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
         ),
@@ -83,7 +105,8 @@ class UpdaterMod(loader.Module):
             "😔 <b>Update complete. Nothing to push...</b>"
         ),
         "full_success": (
-            "✅ <b>Userbot is fully loaded! {}</b>\n<i>Full restart took {}s</i>"
+            "<emoji document_id='6323332130579416910'>👍</emoji> <b>Userbot is fully"
+            " loaded! {}</b>\n<i>Full restart took {}s</i>"
         ),
         "secure_boot_complete": (
             "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>"
@@ -91,17 +114,29 @@ class UpdaterMod(loader.Module):
     }
 
     strings_ru = {
-        "source": "ℹ️ <b>Исходный код можно прочитать</b> <a href='{}'>здесь</a>",
-        "restarting_caption": "🔄 <b>Перезагрузка...</b>",
-        "downloading": "🕐 <b>Скачивание обновлений...</b>",
-        "installing": "🕐 <b>Установка обновлений...</b>",
+        "source": (
+            "<emoji document_id='5456255401194429832'>📖</emoji> <b>Исходный код можно"
+            " прочитать</b> <a href='{}'>здесь</a>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Перезагрузка...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Скачивание"
+            " обновлений...</b>"
+        ),
+        "installing": (
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Установка"
+            " обновлений...</b>"
+        ),
         "success": (
-            "⏳ <b>Перезагрузка успешна! {}</b>\n<i>Но модули еще"
-            " загружаются...</i>\n<i>Перезагрузка заняла {} сек</i>"
+            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Перезагрузка"
+            " успешна! {}</b>\n<i>Но модули еще загружаются...</i>\n<i>Перезагрузка"
+            " заняла {} сек</i>"
         ),
         "full_success": (
-            "✅ <b>Юзербот полностью загружен! {}</b>\n<i>Полная перезагрузка заняла {}"
-            " сек</i>"
+            "<emoji document_id='6323332130579416910'>👍</emoji> <b>Юзербот полностью"
+            " загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>"
         ),
         "secure_boot_complete": (
             "🔒 <b>Безопасная загрузка завершена! {}</b>\n<i>Перезагрузка заняла {}"
@@ -110,21 +145,31 @@ class UpdaterMod(loader.Module):
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
-        "restart_confirm": "🔄 <b>Ты уверен, что хочешь перезагрузиться?</b>",
+        "restart_confirm": (
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Ты уверен, что"
+            " хочешь перезагрузиться?</b>"
+        ),
         "secure_boot_confirm": (
-            "🔄 <b>Ты уверен, что хочешь перезагрузиться в режиме безопасной"
-            " загрузки?</b>"
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Ты уверен, что"
+            " хочешь перезагрузиться в режиме безопасной загрузки?</b>"
         ),
         "update_confirm": (
-            "🧭 <b>Ты уверен, что хочешь обновиться??\n\n"
-            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ '
-            '<a href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Ты уверен, что"
+            " хочешь обновиться??\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
         "no_update": "🚸 <b>У тебя последняя версия. Обновиться принудительно?</b>",
         "cancel": "🚫 Отмена",
         "_cls_doc": "Обновляет юзербот",
-        "lavhost_restart": "✌️ <b>Твой lavHost перезагружается...\n&gt;///&lt;</b>",
-        "lavhost_update": "✌️ <b>Твой lavHost обновляется...\n&gt;///&lt;</b>",
+        "lavhost_restart": (
+            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Твой lavHost"
+            " перезагружается...\n&gt;///&lt;</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Твой lavHost"
+            " обновляется...\n&gt;///&lt;</b>"
+        ),
         "heroku_update": (
             "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
         ),

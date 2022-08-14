@@ -10,6 +10,7 @@ import contextlib
 import copy
 import logging
 import os
+import re
 import time
 from asyncio import Event
 from typing import List, Optional, Union
@@ -120,6 +121,8 @@ class Form(InlineUnit):
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
             return False
+
+        text = self._sanitise_text(text)
 
         if not isinstance(silent, bool):
             logger.error("Invalid type for `silent`")

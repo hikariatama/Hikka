@@ -932,6 +932,18 @@ def get_git_hash() -> Union[str, bool]:
         return False
 
 
+def get_commit_url() -> str:
+    """Get current Hikka git commit url"""
+    try:
+        repo = git.Repo()
+        hash_ = repo.heads[0].commit.hexsha
+        return (
+            f'<a href="https://github.com/hikariatama/Hikka/commit/{hash_}">#{hash_[:7]}</a>'
+        )
+    except Exception:
+        return "Unknown"
+
+
 def is_serializable(x: Any, /) -> bool:
     """Checks if object is JSON-serializable"""
     try:

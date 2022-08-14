@@ -28,24 +28,33 @@ class InlineStuffMod(loader.Module):
     strings = {
         "name": "InlineStuff",
         "bot_username_invalid": (
-            "🚫 <b>Specified bot username is invalid. It must end with"
-            " </b><code>bot</code><b> and contain at least 4 symbols</b>"
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Specified bot"
+            " username is invalid. It must end with </b><code>bot</code><b> and contain"
+            " at least 4 symbols</b>"
         ),
-        "bot_username_occupied": "🚫 <b>This username is already occupied</b>",
+        "bot_username_occupied": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>This username is"
+            " already occupied</b>"
+        ),
         "bot_updated": (
-            "😌 <b>Config successfully saved. Restart userbot to apply changes</b>"
+            "<emoji document_id='6318792204118656433'>🎉</emoji> <b>Config successfully"
+            " saved. Restart userbot to apply changes</b>"
         ),
     }
 
     strings_ru = {
         "bot_username_invalid": (
-            "🚫 <b>Неправильный ник бота. Он должен заканчиваться на"
-            " </b><code>bot</code><b> и быть не короче чем 5 символов</b>"
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Неправильный ник"
+            " бота. Он должен заканчиваться на </b><code>bot</code><b> и быть не короче"
+            " чем 5 символов</b>"
         ),
-        "bot_username_occupied": "🚫 <b>Такой ник бота уже занят</b>",
+        "bot_username_occupied": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Такой ник бота уже"
+            " занят</b>"
+        ),
         "bot_updated": (
-            "😌 <b>Настройки сохранены. Для их применения нужно перезагрузить"
-            " юзербот</b>"
+            "<emoji document_id='6318792204118656433'>🎉</emoji> <b>Настройки сохранены."
+            " Для их применения нужно перезагрузить юзербот</b>"
         ),
     }
 
