@@ -255,7 +255,7 @@ class Utils(InlineUnit):
 
         return reply_markup
 
-    def _sanitise_text(self, text: str) -> str:
+    def sanitise_text(self, text: str) -> str:
         """Replaces all animated emojis in text with normal ones, bc aiogram doesn't support them"""
         return re.sub(r"</?emoji.*?>", "", text)
 
@@ -313,7 +313,7 @@ class Utils(InlineUnit):
             audio = {"url": audio}
 
         if isinstance(text, str):
-            text = self._sanitise_text(text)
+            text = self.sanitise_text(text)
 
         media_params = [
             photo is None,

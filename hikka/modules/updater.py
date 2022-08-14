@@ -74,16 +74,12 @@ class UpdaterMod(loader.Module):
         "origin_cfg_doc": "Git origin URL, for where to update from",
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
-        "restart_confirm": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Are you sure you"
-            " want to restart?</b>"
-        ),
+        "restart_confirm": "❓ <b>Are you sure you want to restart?</b>",
         "secure_boot_confirm": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Are you sure you"
-            " want to restart in secure boot mode?</b>"
+            "❓ <b>Are you sure you want to restart in secure boot mode?</b>"
         ),
         "update_confirm": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Are you sure you"
+            "❓ <b>Are you sure you"
             " want to update?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
@@ -145,16 +141,13 @@ class UpdaterMod(loader.Module):
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
         "btn_update": "🧭 Обновиться",
-        "restart_confirm": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Ты уверен, что"
-            " хочешь перезагрузиться?</b>"
-        ),
+        "restart_confirm": "❓ <b>Ты уверен, что хочешь перезагрузиться?</b>",
         "secure_boot_confirm": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Ты уверен, что"
+            "❓ <b>Ты уверен, что"
             " хочешь перезагрузиться в режиме безопасной загрузки?</b>"
         ),
         "update_confirm": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Ты уверен, что"
+            "❓ <b>Ты уверен, что"
             " хочешь обновиться??\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
@@ -566,7 +559,7 @@ class UpdaterMod(loader.Module):
 
         await self.inline.bot.edit_message_text(
             inline_message_id=ms,
-            text=msg,
+            text=self.inline.sanitise_text(msg),
         )
 
     async def full_restart_complete(self, secure_boot: bool = False):
@@ -599,7 +592,7 @@ class UpdaterMod(loader.Module):
 
         await self.inline.bot.edit_message_text(
             inline_message_id=ms,
-            text=msg,
+            text=self.inline.sanitise_text(msg),
         )
 
 

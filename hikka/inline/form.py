@@ -122,7 +122,7 @@ class Form(InlineUnit):
             logger.error("Invalid type for `text`")
             return False
 
-        text = self._sanitise_text(text)
+        text = self.sanitise_text(text)
 
         if not isinstance(silent, bool):
             logger.error("Invalid type for `silent`")
