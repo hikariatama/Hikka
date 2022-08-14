@@ -280,7 +280,7 @@ class List(InlineUnit):
                             id=utils.rand(20),
                             title="Hikka",
                             input_message_content=InputTextMessageContent(
-                                unit["strings"][0],
+                                self.sanitise_text(unit["strings"][0]),
                                 "HTML",
                                 disable_web_page_preview=True,
                             ),

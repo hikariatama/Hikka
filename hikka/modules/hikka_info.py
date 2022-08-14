@@ -109,7 +109,7 @@ class HikkaInfoMod(loader.Module):
         prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"
         platform = utils.get_named_platform()
 
-        return utils.validate_html(
+        return (
             (
                 "<b>🌘 Hikka</b>\n"
                 if "hikka" not in self.config["custom_message"].lower()
