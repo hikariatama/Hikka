@@ -616,12 +616,14 @@ class HikkaConfigMod(loader.Module):
 
         await call.edit(
             self.strings(
-                "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
+                "option_saved"
+                if isinstance(obj_type, bool)
+                else "option_saved_lib"
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
                 self.prep_value(self.lookup(mod).config[option])
-                if not validator.internal_id == "Hidden"
+                if validator.internal_id != "Hidden"
                 else self.hide_value(self.lookup(mod).config[option]),
             ),
             reply_markup=[
@@ -636,6 +638,7 @@ class HikkaConfigMod(loader.Module):
                 ]
             ],
         )
+
 
         await call.answer("✅")
 
