@@ -40,6 +40,7 @@ import sys
 from math import ceil
 from typing import Union
 
+import telethon
 from telethon import TelegramClient, events
 from telethon.errors.rpcerrorlist import (
     ApiIdInvalidError,
@@ -710,5 +711,7 @@ class Hikka:
 
         self._init_loop()
 
+
+telethon.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
 
 hikka = Hikka()

@@ -32,29 +32,29 @@ class PythonMod(loader.Module):
     strings = {
         "name": "Python",
         "eval": (
-            "<emoji document_id='5444965061749644170'>👨‍💻</emoji><b>"
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
             " Code:</b>\n<code>{}</code>\n<emoji"
-            " document_id='5402421855904603308'>🤩</emoji><b>"
+            " document_id='6321231595218929203'>🌠</emoji><b>"
             " Result:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id='5444965061749644170'>👨‍💻</emoji><b>"
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id='6323575131239089635'>😵</emoji><b> Error:</b>\n{}"
+            " document_id='6323575131239089635'>🚫</emoji><b> Error:</b>\n{}"
         ),
     }
 
     strings_ru = {
         "eval": (
-            "<emoji document_id='5444965061749644170'>👨‍💻</emoji><b>"
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
             " Код:</b>\n<code>{}</code>\n<emoji"
-            " document_id='5402421855904603308'>🤩</emoji><b>"
+            " document_id='6321231595218929203'>🌠</emoji><b>"
             " Результат:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id='5444965061749644170'>👨‍💻</emoji><b>"
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id='6323575131239089635'>😵</emoji><b> Ошибка:</b>\n{}"
+            " document_id='6323575131239089635'>🚫</emoji><b> Ошибка:</b>\n{}"
         ),
         "_cls_doc": "Выполняет Python код",
     }
@@ -85,7 +85,7 @@ class PythonMod(loader.Module):
                 "\n<b>🪐 Full stack:</b>\n\n"
                 + "\n".join(item.full_stack.splitlines()[:-1])
                 + "\n\n"
-                + "😵 "
+                + "🚫 "
                 + item.full_stack.splitlines()[-1]
             )
             exc = exc.replace(str(self._phone), "📵")

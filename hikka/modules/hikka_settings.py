@@ -13,6 +13,8 @@ import atexit
 import random
 import sys
 import os
+
+import telethon
 from telethon.tl.types import Message
 from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
@@ -65,8 +67,8 @@ class HikkaSettingsMod(loader.Module):
         "btn_restart": "🔄 Restart",
         "btn_update": "🧭 Update",
         "close_menu": "😌 Close menu",
-        "download_btn": "✅ Download via button",
-        "no_download_btn": "🚫 Download via button",
+        "custom_emojis": "✅ Custom emojis",
+        "no_custom_emojis": "🚫 Custom emojis",
         "suggest_subscribe": "✅ Suggest subscribe to channel",
         "do_not_suggest_subscribe": "🚫 Suggest subscribe to channel",
         "private_not_allowed": "🚫 <b>This command must be executed in chat</b>",
@@ -147,8 +149,8 @@ class HikkaSettingsMod(loader.Module):
         "btn_restart": "🔄 Перезагрузка",
         "btn_update": "🧭 Обновление",
         "close_menu": "😌 Закрыть меню",
-        "download_btn": "✅ Скачивать кнопкой",
-        "no_download_btn": "🚫 Скачивать кнопкой",
+        "custom_emojis": "✅ Кастомные эмодзи",
+        "no_custom_emojis": "🚫 Кастомные эмодзи",
         "suggest_subscribe": "✅ Предлагать подписку на канал",
         "do_not_suggest_subscribe": "🚫 Предлагать подписку на канал",
         "private_not_allowed": "🚫 <b>Эту команду нужно выполнять в чате</b>",
@@ -667,8 +669,12 @@ class HikkaSettingsMod(loader.Module):
             self.strings("user_nn_list").format("\n".join(chats)),
         )
 
-    async def inline__setting(self, call: InlineCall, key: str, state: bool):
-        self._db.set(main.__name__, key, state)
+    async def inline__setting(self, call: InlineCall, key: str, state: bool = False):
+        if callable(key):
+            key()
+            telethon.extensions.html.CUSTOM_EMOJIS = not main.get_config_key("disable_custom_emojis")
+        else:
+            self._db.set(main.__name__, key, state)
 
         if key == "no_nickname" and state and self.get_prefix() == ".":
             await call.answer(
@@ -843,6 +849,23 @@ class HikkaSettingsMod(loader.Module):
                             "suggest_subscribe",
                             True,
                         ),
+                    }
+                ),
+            ],
+            [
+                (
+                    {
+                        "text": self.strings("no_custom_emojis"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            lambda: main.save_config_key("disable_custom_emojis", False),
+                        ),
+                    }
+                    if main.get_config_key("disable_custom_emojis")
+                    else {
+                        "text": self.strings("custom_emojis"),
+                        "callback": self.inline__setting,
+                        "args": (lambda: main.save_config_key("disable_custom_emojis", True),),
                     }
                 ),
             ],

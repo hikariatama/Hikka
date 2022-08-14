@@ -112,7 +112,10 @@ else:
         pass
     else:
         try:
+            # This is used as verification markers to ensure that supported
+            # version is installed
             from telethon.tl.types import MessageEntityCustomEmoji  # noqa: F401
+            from telethon.extensions.html import CUSTOM_EMOJIS  # noqa: F401
         except ImportError:
             print(
                 "⚠️ Warning: Classic telethon is used as main one. This can cause"

@@ -34,6 +34,7 @@
 - Remake all core modules to decorators
 - Force custom hikka telethon installation with 144 layer support
 - Add animated emojis to core modules strings
+- Add trigger to toggle the appearence of custom emojis
 
 ## 🌑 Hikka 1.3.0
 
