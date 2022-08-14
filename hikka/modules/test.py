@@ -46,20 +46,31 @@ class TestMod(loader.Module):
         "no_logs": "ℹ️ <b>You don't have any logs at verbosity {}.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
-            "🌘 <b>Hikka logs with verbosity </b><code>{}</code>\n\n👩‍🎤 <b>Hikka"
-            " version: {}.{}.{}</b>{}\n⏱ <b>Uptime:"
-            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Hikka logs with"
+            " verbosity </b><code>{}</code>\n\n<emoji"
+            " document_id='5454390891466726015'>👋</emoji> <b>Hikka version:"
+            " {}.{}.{}</b>{}\n<emoji document_id='6321050180095313397'>⏱</emoji>"
+            " <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
             " InlineLogs</b>"
         ),
-        "suspend_invalid_time": "🚫 <b>Invalid time to suspend</b>",
-        "suspended": "🥶 <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id='5416024721705673488'>💀</emoji> <b>Invalid time to"
+            " suspend</b>"
+        ),
+        "suspended": (
+            "<emoji document_id='5452023368054216810'>🥶</emoji> <b>Bot suspended"
+            " for</b> <code>{}</code> <b>seconds</b>"
+        ),
         "results_ping": (
-            "⏱ <b>Telegram ping:</b> <code>{}</code> <b>ms</b>\n👩‍💼 <b>Uptime: {}</b>"
+            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Telegram ping:</b>"
+            " <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id='5377371691078916778'>😎</emoji> <b>Uptime: {}</b>"
         ),
         "ping_hint": (
-            "💡 <i>Telegram ping mostly depends on Telegram servers latency and other"
-            " external factors and has nothing to do with the parameters of server on"
-            " which userbot is installed</i>"
+            "<emoji document_id='6318918617891080008'>💡</emoji> <i>Telegram ping mostly"
+            " depends on Telegram servers latency and other external factors and has"
+            " nothing to do with the parameters of server on which userbot is"
+            " installed</i>"
         ),
         "confidential": (
             "⚠️ <b>Log level </b><code>{}</code><b> may reveal your confidential info,"
@@ -86,9 +97,12 @@ class TestMod(loader.Module):
         "no_logs": "ℹ️ <b>У тебя нет логов уровня {}.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
-            "🌘 <b>Логи Hikka уровня </b><code>{}</code>\n\n👩‍🎤 <b>Версия Hikka:"
-            " {}.{}.{}</b>{}\n⏱ <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{}"
-            " NoNick</b>\n<b>{} Grep</b>\n<b>{} InlineLogs</b>"
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Логи Hikka уровня"
+            " </b><code>{}</code>\n\n<emoji document_id='5454390891466726015'>👋</emoji>"
+            " <b>Версия Hikka: {}.{}.{}</b>{}\n<emoji"
+            " document_id='6321050180095313397'>⏱</emoji> <b>Uptime:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
+            " InlineLogs</b>"
         ),
         "bad_module": "🚫 <b>Модуль не найден</b>",
         "debugging_enabled": (
@@ -97,16 +111,25 @@ class TestMod(loader.Module):
             " изменяй файл `{0}.py`, и смотри изменения в режиме реального времени</i>"
         ),
         "debugging_disabled": "✅ <b>Режим разработчика выключен</b>",
-        "suspend_invalid_time": "🚫 <b>Неверное время заморозки</b>",
-        "suspended": "🥶 <b>Бот заморожен на</b> <code>{}</code> <b>секунд</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id='5416024721705673488'>💀</emoji> <b>Неверное время"
+            " заморозки</b>"
+        ),
+        "suspended": (
+            "<emoji document_id='5452023368054216810'>🥶</emoji> <b>Бот заморожен на</b>"
+            " <code>{}</code> <b>секунд</b>"
+        ),
         "results_ping": (
-            "⏱ <b>Скорость отклика Telegram:</b> <code>{}</code> <b>ms</b>\n👩‍💼"
-            " <b>Прошло с последней перезагрузки: {}</b>"
+            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Скорость отклика"
+            " Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id='5377371691078916778'>😎</emoji> <b>Прошло с последней"
+            " перезагрузки: {}</b>"
         ),
         "ping_hint": (
-            "💡 <i>Скорость отклика Telegram в большей степени зависит от загруженности"
-            " серверов Telegram и других внешних факторов и никак не связана с"
-            " параметрами сервера, на который установлен юзербот</i>"
+            "<emoji document_id='6318918617891080008'>💡</emoji> <i>Скорость отклика"
+            " Telegram в большей степени зависит от загруженности серверов Telegram и"
+            " других внешних факторов и никак не связана с параметрами сервера, на"
+            " который установлен юзербот</i>"
         ),
         "confidential": (
             "⚠️ <b>Уровень логов </b><code>{}</code><b> может содержать личную"
@@ -135,15 +158,34 @@ class TestMod(loader.Module):
             loader.ConfigValue(
                 "force_send_all",
                 False,
-                "Forcefully send logs to all clients, aka do not split logs "
-                "to <mine> and <not-mine>. Restart required after setting",
+                "⚠️ Do not touch, if you don't know what it does!\nBy default, Hikka"
+                " will try to determine, which client caused logs. E.g. there is a"
+                " module TestModule installed on Client1 and TestModule2 on Client2. By"
+                " default, Client2 will get logs from TestModule2, and Client1 will get"
+                " logs from TestModule. If this option is enabled, Hikka will send all"
+                " logs to Client1 and Client2, even if it is not the one that caused"
+                " the log.",
                 validator=loader.validators.Boolean(),
-            )
+                on_change=self._pass_config_to_logger,
+            ),
+            loader.ConfigValue(
+                "tglog_level",
+                "INFO",
+                "⚠️ Do not touch, if you don't know what it does!\n"
+                "Minimal loglevel for records to be sent in Telegram.",
+                validator=loader.validators.Choice(
+                    ["INFO", "WARNING", "ERROR", "CRITICAL"]
+                ),
+                on_change=self._pass_config_to_logger,
+            ),
         )
 
+    def _pass_config_to_logger(self):
         logging.getLogger().handlers[0].force_send_all = self.config["force_send_all"]
+        logging.getLogger().handlers[0].tg_level = self.config["tglog_level"]
 
-    async def dumpcmd(self, message: Message):
+    @loader.command(ru_doc="Ответь на сообщение, чтобы показать его дамп")
+    async def dump(self, message: Message):
         """Use in reply to get a dump of a message"""
         if not message.is_reply:
             return
@@ -157,6 +199,9 @@ class TestMod(loader.Module):
 
     @loader.loop(interval=1)
     async def watchdog(self):
+        if not os.path.isdir(DEBUG_MODS_DIR):
+            return
+
         try:
             for module in os.scandir(DEBUG_MODS_DIR):
                 last_modified = os.stat(module.path).st_mtime
@@ -188,7 +233,13 @@ class TestMod(loader.Module):
             logger.exception("Failed debugging watchdog")
             return
 
-    async def debugmodcmd(self, message: Message):
+    @loader.command(
+        ru_doc=(
+            "[модуль] - Для разработчиков: открыть модуль в режиме дебага и применять"
+            " изменения из него в режиме реального времени"
+        )
+    )
+    async def debugmod(self, message: Message):
         """[module] - For developers: Open module for debugging
         You will be able to track changes in real-time"""
         if "DYNO" in os.environ:
@@ -245,13 +296,14 @@ class TestMod(loader.Module):
             self.strings("debugging_enabled").format(instance.__class__.__name__),
         )
 
-    async def logscmd(
+    @loader.command(ru_doc="<уровень> - Показать логи")
+    async def logs(
         self,
         message: Union[Message, InlineCall],
         force: bool = False,
         lvl: Union[int, None] = None,
     ):
-        """<level> - Dumps logs. Loglevels below WARNING may contain personal info."""
+        """<level> - Dump logs"""
         if not isinstance(lvl, int):
             args = utils.get_args_raw(message)
             try:
@@ -270,36 +322,36 @@ class TestMod(loader.Module):
                         [
                             {
                                 "text": "🚨 Critical",
-                                "callback": self.logscmd,
+                                "callback": self.logs,
                                 "args": (False, 50),
                             },
                             {
                                 "text": "🚫 Error",
-                                "callback": self.logscmd,
+                                "callback": self.logs,
                                 "args": (False, 40),
                             },
                         ],
                         [
                             {
                                 "text": "⚠️ Warning",
-                                "callback": self.logscmd,
+                                "callback": self.logs,
                                 "args": (False, 30),
                             },
                             {
                                 "text": "ℹ️ Info",
-                                "callback": self.logscmd,
+                                "callback": self.logs,
                                 "args": (False, 20),
                             },
                         ],
                         [
                             {
                                 "text": "🧑‍💻 Debug",
-                                "callback": self.logscmd,
+                                "callback": self.logs,
                                 "args": (False, 10),
                             },
                             {
                                 "text": "👁 All",
-                                "callback": self.logscmd,
+                                "callback": self.logs,
                                 "args": (False, 0),
                             },
                         ],
@@ -347,7 +399,7 @@ class TestMod(loader.Module):
                     "reply_markup": [
                         {
                             "text": "📤 Send anyway",
-                            "callback": self.logscmd,
+                            "callback": self.logs,
                             "args": [True, lvl],
                         },
                         {"text": "🚫 Cancel", "action": "close"},
@@ -446,7 +498,8 @@ class TestMod(loader.Module):
             )
 
     @loader.owner
-    async def suspendcmd(self, message: Message):
+    @loader.command(ru_doc="<время> - Заморозить бота на N секунд")
+    async def suspend(self, message: Message):
         """<time> - Suspends the bot for N seconds"""
         try:
             time_sleep = float(utils.get_args_raw(message))
@@ -458,7 +511,8 @@ class TestMod(loader.Module):
         except ValueError:
             await utils.answer(message, self.strings("suspend_invalid_time"))
 
-    async def pingcmd(self, message: Message):
+    @loader.command(ru_doc="Проверить скорость отклика юзербота")
+    async def ping(self, message: Message):
         """Test your userbot ping"""
         start = time.perf_counter_ns()
         message = await utils.answer(message, "<code>🐻 Nofin...</code>")
@@ -476,7 +530,7 @@ class TestMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, *_):
+    async def client_ready(self):
         chat, is_new = await utils.asset_channel(
             self._client,
             "hikka-logs",

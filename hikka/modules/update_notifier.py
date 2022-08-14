@@ -88,7 +88,7 @@ class UpdateNotifierMod(loader.Module):
         except Exception:
             return ""
 
-    async def client_ready(self, *_):
+    async def client_ready(self):
         try:
             git.Repo()
         except Exception as e:
@@ -144,7 +144,8 @@ class UpdateNotifierMod(loader.Module):
                     client.loader._db.get("UpdateNotifierMod", "upd_msg"),
                 )
 
-    async def update_callback_handler(self, call: InlineCall):
+    @loader.callback_handler()
+    async def update(self, call: InlineCall):
         """Process update buttons clicks"""
         if call.data not in {"hikka_update", "hikka_upd_ignore"}:
             return

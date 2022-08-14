@@ -51,9 +51,9 @@ class HikkaSecurityMod(loader.Module):
             "🔐 <b>Here you can configure global bounding mask. If the permission is"
             " excluded here, it is excluded everywhere!</b>"
         ),
-        "owner": "🤴 Owner",
+        "owner": "<emoji document_id='5386399931378440814'>😎</emoji> Owner",
         "sudo": "🤵 Sudo",
-        "support": "🧑‍🔧 Support",
+        "support": "<emoji document_id='5415729507128580146'>🤓</emoji> Support",
         "group_owner": "🧛‍♂️ Group owner",
         "group_admin_add_admins": "🧑‍⚖️ Admin (add members)",
         "group_admin_change_info": "🧑‍⚖️ Admin (change info)",
@@ -65,38 +65,62 @@ class HikkaSecurityMod(loader.Module):
         "group_member": "👥 In group",
         "pm": "🤙 In PM",
         "everyone": "🌍 Everyone (Inline)",
-        "owner_list": "🤴 <b>Users in group </b><code>owner</code><b>:</b>\n\n{}",
-        "sudo_list": "🧑‍✈️ <b>Users in group </b><code>sudo</code><b>:</b>\n\n{}",
-        "support_list": "🧑‍🔧 <b>Users in group </b><code>support</code><b>:</b>\n\n{}",
-        "no_owner": "🤴 <b>There is no users in group </b><code>owner</code>",
-        "no_sudo": "🧑‍✈️ <b>There is no users in group </b><code>sudo</code>",
-        "no_support": "🧑‍🔧 <b>There is no users in group </b><code>support</code>",
+        "owner_list": (
+            "<emoji document_id='5386399931378440814'>😎</emoji> <b>Users in group"
+            " </b><code>owner</code><b>:</b>\n\n{}"
+        ),
+        "sudo_list": (
+            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>Users in group"
+            " </b><code>sudo</code><b>:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>Users in group"
+            " </b><code>support</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id='5386399931378440814'>😎</emoji> <b>There is no users in"
+            " group </b><code>owner</code>"
+        ),
+        "no_sudo": (
+            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>There is no users in"
+            " group </b><code>sudo</code>"
+        ),
+        "no_support": (
+            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>There is no users in"
+            " group </b><code>support</code>"
+        ),
         "owner_added": (
-            '🤴 <b><a href="tg://user?id={}">{}</a> added to group'
-            " </b><code>owner</code>"
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> added to group </b><code>owner</code>'
         ),
         "sudo_added": (
-            '🧑‍✈️ <b><a href="tg://user?id={}">{}</a> added to group'
-            " </b><code>sudo</code>"
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> added to group </b><code>sudo</code>'
         ),
         "support_added": (
-            '🧑‍🔧 <b><a href="tg://user?id={}">{}</a> added to group'
-            " </b><code>support</code>"
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> added to group </b><code>support</code>'
         ),
         "owner_removed": (
-            '🤴 <b><a href="tg://user?id={}">{}</a> removed from group'
-            " </b><code>owner</code>"
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> removed from group </b><code>owner</code>'
         ),
         "sudo_removed": (
-            '🧑‍✈️ <b><a href="tg://user?id={}">{}</a> removed from group'
-            " </b><code>sudo</code>"
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> removed from group </b><code>sudo</code>'
         ),
         "support_removed": (
-            '🧑‍🔧 <b><a href="tg://user?id={}">{}</a> removed from group'
-            " </b><code>support</code>"
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> removed from group </b><code>support</code>'
         ),
-        "no_user": "🚫 <b>Specify user to permit</b>",
-        "not_a_user": "🚫 <b>Specified entity is not a user</b>",
+        "no_user": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Specify user to"
+            " permit</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Specified entity is"
+            " not a user</b>"
+        ),
         "li": '⦿ <b><a href="tg://user?id={}">{}</a></b>',
         "warning": (
             "⚠️ <b>Please, confirm, that you want to add <a"
@@ -107,13 +131,19 @@ class HikkaSecurityMod(loader.Module):
         "cancel": "🚫 Cancel",
         "confirm": "👑 Confirm",
         "enable_nonick_btn": "🔰 Enable",
-        "self": "🚫 <b>You can't promote/demote yourself!</b>",
+        "self": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>You can't"
+            " promote/demote yourself!</b>"
+        ),
         "suggest_nonick": "🔰 <i>Do you want to enable NoNick for this user?</i>",
         "user_nn": '🔰 <b>NoNick for <a href="tg://user?id={}">{}</a> enabled</b>',
     }
 
     strings_ru = {
-        "no_command": "🚫 <b>Команда </b><code>{}</code><b> не найдена!</b>",
+        "no_command": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Команда"
+            " </b><code>{}</code><b> не найдена!</b>"
+        ),
         "permissions": (
             "🔐 <b>Здесь можно настроить разрешения для команды </b><code>{}{}</code>"
         ),
@@ -122,9 +152,9 @@ class HikkaSecurityMod(loader.Module):
             "🔐 <b>Здесь можно настроить глобальную исключающую маску. Если тумблер"
             " выключен здесь, он выключен для всех команд</b>"
         ),
-        "owner": "🤴 Владелец",
+        "owner": "<emoji document_id='5386399931378440814'>😎</emoji> Владелец",
         "sudo": "🤵 Sudo",
-        "support": "🧑‍🔧 Помощник",
+        "support": "<emoji document_id='5415729507128580146'>🤓</emoji> Помощник",
         "group_owner": "🧛‍♂️ Влад. группы",
         "group_admin_add_admins": "🧑‍⚖️ Админ (добавлять участников)",
         "group_admin_change_info": "🧑‍⚖️ Админ (изменять инфо)",
@@ -135,19 +165,44 @@ class HikkaSecurityMod(loader.Module):
         "group_admin": "🧑‍⚖️ Админ (любой)",
         "group_member": "👥 В группе",
         "pm": "🤙 В лс",
-        "owner_list": "🤴 <b>Пользователи группы </b><code>owner</code><b>:</b>\n\n{}",
-        "sudo_list": "🧑‍✈️ <b>Пользователи группы </b><code>sudo</code><b>:</b>\n\n{}",
-        "support_list": (
-            "🧑‍🔧 <b>Пользователи группы </b><code>support</code><b>:</b>\n\n{}"
+        "owner_list": (
+            "<emoji document_id='5386399931378440814'>😎</emoji> <b>Пользователи группы"
+            " </b><code>owner</code><b>:</b>\n\n{}"
         ),
-        "no_owner": "🤴 <b>Нет пользователей в группе </b><code>owner</code>",
-        "no_sudo": "🧑‍✈️ <b>Нет пользователей в группе </b><code>sudo</code>",
-        "no_support": "🧑‍🔧 <b>Нет пользователей в группе </b><code>support</code>",
-        "no_user": "🚫 <b>Укажи, кому выдавать права</b>",
-        "not_a_user": "🚫 <b>Указанная цель - не пользователь</b>",
+        "sudo_list": (
+            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>Пользователи группы"
+            " </b><code>sudo</code><b>:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>Пользователи группы"
+            " </b><code>support</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id='5386399931378440814'>😎</emoji> <b>Нет пользователей в"
+            " группе </b><code>owner</code>"
+        ),
+        "no_sudo": (
+            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>Нет пользователей в"
+            " группе </b><code>sudo</code>"
+        ),
+        "no_support": (
+            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>Нет пользователей в"
+            " группе </b><code>support</code>"
+        ),
+        "no_user": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Укажи, кому выдавать"
+            " права</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Указанная цель - не"
+            " пользователь</b>"
+        ),
         "cancel": "🚫 Отмена",
         "confirm": "👑 Подтвердить",
-        "self": "🚫 <b>Нельзя управлять своими правами!</b>",
+        "self": (
+            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Нельзя управлять"
+            " своими правами!</b>"
+        ),
         "warning": (
             '⚠️ <b>Ты действительно хочешь добавить <a href="tg://user?id={}">{}</a> в'
             " группу </b><code>{}</code><b>!\nЭто действие может передать частичный или"
@@ -158,20 +213,30 @@ class HikkaSecurityMod(loader.Module):
         ),
         "user_nn": '🔰 <b>NoNick для <a href="tg://user?id={}">{}</a> включен</b>',
         "enable_nonick_btn": "🔰 Включить",
-        "_cmd_doc_security": "[команда] - Изменить настройки безопасности для команды",
-        "_cmd_doc_sudoadd": "<пользователь> - Добавить пользователя в группу `sudo`",
-        "_cmd_doc_owneradd": "<пользователь> - Добавить пользователя в группу `owner`",
-        "_cmd_doc_supportadd": (
-            "<пользователь> - Добавить пользователя в группу `support`"
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> добавлен в группу </b><code>owner</code>'
         ),
-        "_cmd_doc_sudorm": "<пользователь> - Удалить пользователя из группы `sudo`",
-        "_cmd_doc_ownerrm": "<пользователь> - Удалить пользователя из группы `owner`",
-        "_cmd_doc_supportrm": (
-            "<пользователь> - Удалить пользователя из группы `support`"
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> добавлен в группу </b><code>sudo</code>'
         ),
-        "_cmd_doc_sudolist": "Показать пользователей в группе `sudo`",
-        "_cmd_doc_ownerlist": "Показать пользователей в группе `owner`",
-        "_cmd_doc_supportlist": "Показать пользователей в группе `support`",
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> добавлен в группу </b><code>support</code>'
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> удален из группы </b><code>owner</code>'
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> удален из группы </b><code>sudo</code>'
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> удален из группы </b><code>support</code>'
+        ),
         "_cls_doc": "Управление настройками безопасности",
     }
 
@@ -361,7 +426,8 @@ class HikkaSecurityMod(loader.Module):
         return self._perms_map(config, is_inline)
 
     @loader.owner
-    async def securitycmd(self, message: Message):
+    @loader.command(ru_doc="[команда] - Настроить разрешения для команды")
+    async def security(self, message: Message):
         """[command] - Configure command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
         if args and args not in self.allmodules.commands:
@@ -387,7 +453,8 @@ class HikkaSecurityMod(loader.Module):
         )
 
     @loader.owner
-    async def inlineseccmd(self, message: Message):
+    @loader.command(ru_doc="[команда] - Настроить разрешения для инлайн команды")
+    async def inlinesec(self, message: Message):
         """[command] - Configure inline command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
         if not args:
@@ -573,38 +640,47 @@ class HikkaSecurityMod(loader.Module):
         else:
             await utils.answer(message, self.strings(f"no_{group}"))
 
-    async def sudoaddcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `sudo`")
+    async def sudoadd(self, message: Message):
         """<user> - Add user to `sudo`"""
         await self._add_to_group(message, "sudo")
 
-    async def owneraddcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `owner`")
+    async def owneradd(self, message: Message):
         """<user> - Add user to `owner`"""
         await self._add_to_group(message, "owner")
 
-    async def supportaddcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `support`")
+    async def supportadd(self, message: Message):
         """<user> - Add user to `support`"""
         await self._add_to_group(message, "support")
 
-    async def sudormcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `sudo`")
+    async def sudorm(self, message: Message):
         """<user> - Remove user from `sudo`"""
         await self._remove_from_group(message, "sudo")
 
-    async def ownerrmcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `owner`")
+    async def ownerrm(self, message: Message):
         """<user> - Remove user from `owner`"""
         await self._remove_from_group(message, "owner")
 
-    async def supportrmcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `support`")
+    async def supportrm(self, message: Message):
         """<user> - Remove user from `support`"""
         await self._remove_from_group(message, "support")
 
-    async def sudolistcmd(self, message: Message):
+    @loader.command(ru_doc="Показать список пользователей в группе `sudo`")
+    async def sudolist(self, message: Message):
         """List users in `sudo`"""
         await self._list_group(message, "sudo")
 
-    async def ownerlistcmd(self, message: Message):
+    @loader.command(ru_doc="Показать список пользователей в группе `owner`")
+    async def ownerlist(self, message: Message):
         """List users in `owner`"""
         await self._list_group(message, "owner")
 
-    async def supportlistcmd(self, message: Message):
+    @loader.command(ru_doc="Показать список пользователей в группе `support`")
+    async def supportlist(self, message: Message):
         """List users in `support`"""
         await self._list_group(message, "support")

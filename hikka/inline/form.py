@@ -10,6 +10,7 @@ import contextlib
 import copy
 import logging
 import os
+import re
 import time
 from asyncio import Event
 from typing import List, Optional, Union
@@ -120,6 +121,8 @@ class Form(InlineUnit):
         if not isinstance(text, str):
             logger.error("Invalid type for `text`")
             return False
+
+        text = self.sanitise_text(text)
 
         if not isinstance(silent, bool):
             logger.error("Invalid type for `silent`")
@@ -312,7 +315,7 @@ class Form(InlineUnit):
                 exc = "\n".join(exc.splitlines()[1:])
                 msg = (
                     "<b>🚫 Form invoke failed!</b>\n\n"
-                    f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
+                    f"<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
                 )
 
             del self._units[unit_id]

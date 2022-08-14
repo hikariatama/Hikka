@@ -25,60 +25,76 @@ class HelpMod(loader.Module):
     strings = {
         "name": "Help",
         "bad_module": "<b>🚫 <b>Module</b> <code>{}</code> <b>not found</b>",
-        "single_mod_header": "🌑 <b>{}</b>:",
+        "single_mod_header": (
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{}</b>:"
+        ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 No docs",
-        "all_header": "🌘 <b>{} mods available, {} hidden:</b>",
+        "all_header": (
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} mods available,"
+            " {} hidden:</b>"
+        ),
         "mod_tmpl": "\n{} <code>{}</code>",
         "first_cmd_tmpl": ": ( {}",
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Specify module to hide</b>",
-        "hidden_shown": "🌘 <b>{} modules hidden, {} modules shown:</b>\n{}\n{}",
+        "hidden_shown": (
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} modules hidden,"
+            " {} modules shown:</b>\n{}\n{}"
+        ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
         "joined": (
-            "🌘 <b>Joined the</b> <a href='https://t.me/hikka_talks'>support chat</a>"
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Joined the</b> <a"
+            " href='https://t.me/hikka_talks'>support chat</a>"
         ),
-        "join": "🌘 <b>Join the</b> <a href='https://t.me/hikka_talks'>support chat</a>",
+        "join": (
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Join the</b> <a"
+            " href='https://t.me/hikka_talks'>support chat</a>"
+        ),
         "partial_load": (
-            "⚠️ <b>Userbot is not fully loaded, so not all modules are shown</b>"
+            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>Userbot is not"
+            " fully loaded, so not all modules are shown</b>"
         ),
         "not_exact": (
-            "⚠️ <b>No exact match occured, so the closest result is shown instead</b>"
+            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>No exact match"
+            " occured, so the closest result is shown instead</b>"
         ),
     }
 
     strings_ru = {
         "bad_module": "<b>🚫 <b>Модуль</b> <code>{}</code> <b>не найден</b>",
-        "single_mod_header": "🌑 <b>{}</b>:",
+        "single_mod_header": (
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{}</b>:"
+        ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
-        "all_header": "🌘 <b>{} модулей доступно, {} скрыто:</b>",
+        "all_header": (
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} модулей доступно,"
+            " {} скрыто:</b>"
+        ),
         "mod_tmpl": "\n{} <code>{}</code>",
         "first_cmd_tmpl": ": ( {}",
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Укажи модуль(-и), которые нужно скрыть</b>",
-        "hidden_shown": "🌘 <b>{} модулей скрыто, {} модулей показано:</b>\n{}\n{}",
+        "hidden_shown": (
+            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} модулей скрыто,"
+            " {} модулей показано:</b>\n{}\n{}"
+        ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
         "joined": (
-            "🌘 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>"
+            "🌌 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>"
         ),
-        "join": "🌘 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
-        "_cmd_doc_helphide": (
-            "<модуль(-и)> - Скрывает модуль(-и) из помощи\n*Разделяй имена модулей"
-            " пробелами"
-        ),
-        "_cmd_doc_help": "[модуль] [-f] - Показывает помощь",
-        "_cmd_doc_support": "Вступает в чат помощи Hikka",
+        "join": "🌌 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
         "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
         "partial_load": (
-            "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все"
-            " модули</b>"
+            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>Юзербот еще не"
+            " загрузился полностью, поэтому показаны не все модули</b>"
         ),
         "not_exact": (
-            "⚠️ <b>Точного совпадения не нашлось, поэтому было выбрано наиболее"
-            " подходящее</b>"
+            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>Точного совпадения"
+            " не нашлось, поэтому было выбрано наиболее подходящее</b>"
         ),
     }
 
@@ -110,7 +126,13 @@ class HelpMod(loader.Module):
             ),
         )
 
-    async def helphidecmd(self, message: Message):
+    @loader.command(
+        ru_doc=(
+            "<модуль или модули> - Спрятать модуль(-и) из помощи\n*Разделяй модули"
+            " пробелами"
+        )
+    )
+    async def helphide(self, message: Message):
         """<module or modules> - Hide module(-s) from help
         *Split modules by spaces"""
         modules = utils.get_args(message)
@@ -229,7 +251,8 @@ class HelpMod(loader.Module):
         )
 
     @loader.unrestricted
-    async def helpcmd(self, message: Message):
+    @loader.command(ru_doc="[модуль] [-f] - Показать помощь")
+    async def help(self, message: Message):
         """[module] [-f] - Show help"""
         args = utils.get_args_raw(message)
         force = False
@@ -374,7 +397,8 @@ class HelpMod(loader.Module):
             f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}{no_commands_}{partial_load}",
         )
 
-    async def supportcmd(self, message):
+    @loader.command(ru_doc="Вступить в чат помощи")
+    async def support(self, message):
         """Joins the support Hikka chat"""
         if await self.allmodules.check_security(
             message,

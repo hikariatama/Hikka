@@ -112,11 +112,15 @@ else:
         pass
     else:
         try:
-            from telethon.tl.functions.messages import SendReactionRequest  # noqa: F401
+            # This is used as verification markers to ensure that supported
+            # version is installed
+            from telethon.tl.types import MessageEntityCustomEmoji  # noqa: F401
+            from telethon.extensions.html import CUSTOM_EMOJIS  # noqa: F401
         except ImportError:
             print(
-                "⚠️ Warning: Default telethon is used as main one. This can cause"
-                " errors and enables DAR. Attempting to reinstall telethon-mod..."
+                "⚠️ Warning: Classic telethon is used as main one. This can cause"
+                " errors and enables DAR. Attempting to reinstall custom hikka"
+                " telethon..."
             )
             subprocess.run(
                 [
@@ -136,11 +140,11 @@ else:
                     "-m",
                     "pip",
                     "install",
-                    "-U",
+                    "--force-reinstall",
                     "-q",
                     "--disable-pip-version-check",
                     "--no-warn-script-location",
-                    "telethon-mod",
+                    "git+https://github.com/hikariatama/Telethon",
                 ],
                 check=True,
             )
@@ -155,7 +159,6 @@ else:
         from . import main
     except ModuleNotFoundError as e:  # pragma: no cover
         deps(e)
-        sys.exit(1)
 
     if __name__ == "__main__":
         if "HIKKA_DO_NOT_RESTART" in os.environ:

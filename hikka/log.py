@@ -34,11 +34,11 @@ import os
 import re
 import telethon
 import traceback
-from typing import Optional
+from typing import List, Optional
 from logging.handlers import RotatingFileHandler
 
 from . import utils
-from ._types import Module, BotInlineCall
+from .types import Module, BotInlineCall
 
 
 class HikkaException:
@@ -53,6 +53,7 @@ class HikkaException:
         exc_type: object,
         exc_value: Exception,
         tb: traceback.TracebackException,
+        stack: Optional[List[inspect.FrameInfo]] = None,
     ) -> "HikkaException":
         def to_hashable(dictionary: dict) -> dict:
             dictionary = dictionary.copy()
@@ -95,13 +96,18 @@ class HikkaException:
         filename, lineno, name = next(
             (
                 re.search(line_regex, line).groups()
-                for line in full_stack.splitlines()
+                for line in reversed(full_stack.splitlines())
                 if re.search(line_regex, line)
             ),
             (None, None, None),
         )
         line = next(
-            (line for line in full_stack.splitlines() if line.startswith("   ")), ""
+            (
+                line
+                for line in reversed(full_stack.splitlines())
+                if line.startswith("   ")
+            ),
+            "",
         )
 
         full_stack = "\n".join(
@@ -116,9 +122,18 @@ class HikkaException:
         with contextlib.suppress(Exception):
             filename = os.path.basename(filename)
 
+        caller = utils.find_caller(stack or inspect.stack())
+        cause_mod = (
+            "🪬 <b>Possible cause: method"
+            f" </b><code>{utils.escape_html(caller.__name__)}</code><b> of module"
+            f" </b><code>{utils.escape_html(caller.__self__.__class__.__name__)}</code>\n"
+            if caller and hasattr(caller, "__self__") and hasattr(caller, "__name__")
+            else ""
+        )
+
         return HikkaException(
             message=(
-                "<b>🚫 Error!</b>\n<b>🗄 Where:</b>"
+                f"<b>🚫 Error!</b>\n{cause_mod}\n<b>🗄 Where:</b>"
                 f" <code>{utils.escape_html(filename)}:{lineno}</code><b>"
                 f" in </b><code>{utils.escape_html(name)}</code>\n😵"
                 f" <code>{utils.escape_html(line)}</code>"
@@ -310,9 +325,13 @@ class TelegramLogsHandler(logging.Handler):
 
         if record.levelno >= 20:
             if record.exc_info:
+                logging.debug(record.__dict__)
                 self.tg_buff += [
                     (
-                        HikkaException.from_exc_info(*record.exc_info),
+                        HikkaException.from_exc_info(
+                            *record.exc_info,
+                            stack=record.__dict__.get("stack", None),
+                        ),
                         caller,
                     )
                 ]

@@ -45,7 +45,7 @@ from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
 
 from . import security, utils, validators, version
-from ._types import (
+from .types import (
     ConfigValue,  # skipcq
     LoadError,  # skipcq
     Module,
@@ -362,9 +362,7 @@ def translatable_docstring(cls):
                     if not hasattr(self, var):
                         setattr(self, var, {})
 
-                    getattr(self, var).setdefault(
-                        f"{mark}{obj}", getattr(func_, attr)
-                    )
+                    getattr(self, var).setdefault(f"{mark}{obj}", getattr(func_, attr))
 
         for command_, func_ in get_commands(cls).items():
             proccess_decorators("_cmd_doc_", command_)
@@ -427,12 +425,20 @@ def tag(*tags, **kwarg_tags):
         • `only_channels` - Capture only messages with channels
         • `only_groups` - Capture only messages with groups
         • `only_pm` - Capture only messages with private chats
+        • `startswith` - Capture only messages that start with given text
+        • `endswith` - Capture only messages that end with given text
+        • `contains` - Capture only messages that contain given text
+        • `regex` - Capture only messages that match given regex
+        • `func` - Capture only messages that pass given function
+        • `from_id` - Capture only messages from given user
+        • `chat_id` - Capture only messages from given chat
 
     Usage example:
 
     @loader.tag("no_commands", "out")
     @loader.tag("no_commands", out=True)
     @loader.tag(only_messages=True)
+    @loader.tag("only_messages", "only_pm", regex=r"^\. ?hikka$", from_id=659800858)
 
     💡 These tags can be used directly in `@loader.watcher`:
     @loader.watcher("no_commands", out=True)
@@ -943,8 +949,11 @@ class Modules:
         instance.allclients = self.allclients
         instance.allmodules = self
         instance.hikka = True
-        instance.get = partial(self._mod_get, _module=instance)
+        instance.get = partial(self._mod_get, _modname=instance.__class__.__name__)
         instance.set = partial(self._mod_set, _modname=instance.__class__.__name__)
+        instance.pointer = partial(
+            self._mod_pointer, _modname=instance.__class__.__name__
+        )
         instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
         instance.client = self.client
         instance._client = self.client
@@ -982,31 +991,20 @@ class Modules:
         self,
         key: str,
         default: Optional[Hashable] = None,
-        _module: Module = None,
+        _modname: str = None,
     ) -> Hashable:
-        mod, legacy = _module.__class__.__name__, _module.strings["name"]
-
-        if self._db.get(legacy, key, Placeholder) is not Placeholder:
-            for iterkey, value in self._db[legacy].items():
-                if iterkey == "__config__":
-                    # Config already uses classname as key
-                    # No need to migrate
-                    continue
-
-                if isinstance(value, dict) and isinstance(
-                    self._db.get(mod, iterkey), dict
-                ):
-                    self._db[mod][iterkey].update(value)
-                else:
-                    self._db.set(mod, iterkey, value)
-
-            logger.debug(f"Migrated {legacy} -> {mod}")
-            del self._db[legacy]
-
-        return self._db.get(mod, key, default)
+        return self._db.get(_modname, key, default)
 
     def _mod_set(self, key: str, value: Hashable, _modname: str = None) -> bool:
         return self._db.set(_modname, key, value)
+
+    def _mod_pointer(
+        self,
+        key: str,
+        default: Optional[Hashable] = None,
+        _modname: str = None,
+    ) -> Any:
+        return self._db.pointer(_modname, key, default)
 
     def _lib_get(
         self,
@@ -1018,6 +1016,14 @@ class Modules:
 
     def _lib_set(self, key: str, value: Hashable, _lib: Library = None) -> bool:
         return self._db.set(_lib.__class__.__name__, key, value)
+
+    def _lib_pointer(
+        self,
+        key: str,
+        default: Optional[Hashable] = None,
+        _lib: Library = None,
+    ) -> Any:
+        return self._db.pointer(_lib.__class__.__name__, key, default)
 
     async def _mod_import_lib(
         self,
@@ -1168,6 +1174,7 @@ class Modules:
         lib_obj.allmodules = self
         lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
         lib_obj._lib_set = partial(self._lib_set, _lib=lib_obj)  # skipcq
+        lib_obj._lib_pointer = partial(self._lib_pointer, _lib=lib_obj)  # skipcq
         lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
         for old_lib in self.libraries:
@@ -1384,7 +1391,10 @@ class Modules:
 
         if from_dlmod:
             try:
-                await mod.on_dlmod(self.client, self._db)
+                if len(inspect.signature(mod.on_dlmod).parameters) == 2:
+                    await mod.on_dlmod(self.client, self._db)
+                else:
+                    await mod.on_dlmod()
             except Exception:
                 logger.info("Can't process `on_dlmod` hook", exc_info=True)
 

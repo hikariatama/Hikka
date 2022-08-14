@@ -65,7 +65,7 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
-    async def client_ready(self, *_):
+    async def client_ready(self):
         if not self.get("period"):
             await self.inline.bot.send_photo(
                 self.tg_id,
@@ -120,7 +120,8 @@ class HikkaBackupMod(loader.Module):
         await call.answer(self.strings("saved"), show_alert=True)
         await call.delete()
 
-    async def set_backup_periodcmd(self, message: Message):
+    @loader.command(ru_doc="<время в часах> - Установить частоту бэкапов")
+    async def set_backup_period(self, message: Message):
         """<time in hours> - Change backup frequency"""
         args = utils.get_args_raw(message)
         if not args or not args.isdigit() or int(args) not in range(200):

@@ -31,28 +31,46 @@ class PythonMod(loader.Module):
 
     strings = {
         "name": "Python",
-        "eval": "<b>🎬 Code:</b>\n<code>{}</code>\n<b>🪄 Result:</b>\n<code>{}</code>",
-        "err": "<b>🎬 Code:</b>\n<code>{}</code>\n\n<b>🚫 Error:</b>\n{}",
+        "eval": (
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            " Code:</b>\n<code>{}</code>\n<emoji"
+            " document_id='6321231595218929203'>🌠</emoji><b>"
+            " Result:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            " Code:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id='6323575131239089635'>🚫</emoji><b> Error:</b>\n{}"
+        ),
     }
 
     strings_ru = {
-        "eval": "<b>🎬 Код:</b>\n<code>{}</code>\n<b>🪄 Результат:</b>\n<code>{}</code>",
-        "err": "<b>🎬 Код:</b>\n<code>{}</code>\n\n<b>🚫 Ошибка:</b>\n{}",
-        "_cmd_doc_eval": "Алиас для команды .e",
-        "_cmd_doc_e": "Выполняет Python кодировка",
+        "eval": (
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            " Код:</b>\n<code>{}</code>\n<emoji"
+            " document_id='6321231595218929203'>🌠</emoji><b>"
+            " Результат:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            " Код:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id='6323575131239089635'>🚫</emoji><b> Ошибка:</b>\n{}"
+        ),
         "_cls_doc": "Выполняет Python код",
     }
 
-    async def client_ready(self, client, _):
-        self._phone = (await client.get_me()).phone
+    async def client_ready(self):
+        self._phone = (await self._client.get_me()).phone
 
     @loader.owner
-    async def evalcmd(self, message: Message):
+    @loader.command(ru_doc="Алиас для команды .e")
+    async def eval(self, message: Message):
         """Alias for .e command"""
         await self.ecmd(message)
 
     @loader.owner
-    async def ecmd(self, message: Message):
+    @loader.command(ru_doc="Выполняет Python код")
+    async def e(self, message: Message):
         """Evaluates python code"""
         ret = self.strings("eval")
         try:
@@ -67,7 +85,7 @@ class PythonMod(loader.Module):
                 "\n<b>🪐 Full stack:</b>\n\n"
                 + "\n".join(item.full_stack.splitlines()[:-1])
                 + "\n\n"
-                + "😵 "
+                + "🚫 "
                 + item.full_stack.splitlines()[-1]
             )
             exc = exc.replace(str(self._phone), "📵")

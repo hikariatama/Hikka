@@ -87,12 +87,10 @@ class HikkaInfoMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, client, _):
-        self._me = await client.get_me()
+    async def client_ready(self):
+        self._me = await self._client.get_me()
 
     def _render_info(self) -> str:
-        ver = utils.get_git_hash() or "Unknown"
-
         try:
             repo = git.Repo(search_parent_directories=True)
             diff = repo.git.log(["HEAD..origin/master", "--oneline"])
@@ -106,14 +104,12 @@ class HikkaInfoMod(loader.Module):
             "<b><a"
             f' href="tg://user?id={self._me.id}">{utils.escape_html(get_display_name(self._me))}</a></b>'
         )
+        build = utils.get_commit_url()
         version = f'<i>{".".join(list(map(str, list(main.__version__))))}</i>'
-        build = (
-            f'<a href="https://github.com/hikariatama/Hikka/commit/{ver}">#{ver[:8]}</a>'
-        )
         prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"
         platform = utils.get_named_platform()
 
-        return (
+        return utils.validate_html(
             (
                 "<b>🌘 Hikka</b>\n"
                 if "hikka" not in self.config["custom_message"].lower()
@@ -128,7 +124,7 @@ class HikkaInfoMod(loader.Module):
                 upd=upd,
                 uptime=utils.formatted_uptime(),
             )
-            if self.config["custom_message"] and self.config["custom_message"] != "no"
+            if self.config["custom_message"]
             else (
                 "<b>🌘 Hikka</b>\n"
                 f'<b>🤴 {self.strings("owner")}: </b>{me}\n\n'
@@ -151,7 +147,7 @@ class HikkaInfoMod(loader.Module):
         )
 
     @loader.inline_everyone
-    async def info_inline_handler(self, query: InlineQuery) -> dict:
+    async def info_inline_handler(self, _: InlineQuery) -> dict:
         """Send userbot info"""
 
         return {
@@ -186,19 +182,20 @@ class HikkaInfoMod(loader.Module):
 
         await utils.answer(
             message,
-            "🌘 <b>Hikka</b>\n\n"
-            "Brand new userbot for Telegram with a lot of features, "
-            "aka InlineGalleries, forms etc. Userbot - software, running "
-            "on your Telegram account. If you write a command to any chat, it will "
-            "get executed right there. Check out live examples at "
-            '<a href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id='6318565919471699564'>🌌</emoji>"
+            " <b>Hikka</b>\n\nTelegram userbot with a lot of features, like inline"
+            " galleries, forms, lists and animated emojis support. Userbot - software,"
+            " running on your Telegram account. If you write a command to any chat, it"
+            " will get executed right there. Check out live examples at <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
             if args == "en"
             else (
-                "🌘 <b>Hikka</b>\n\nНовый юзербот для Telegram с огромным количеством"
-                " функций, из которых: Инлайн галереи, формы и другое. Юзербот -"
-                " программа, которая запускается на твоем Telegram-аккаунте. Когда ты"
-                " пишешь команду в любом чате, она сразу же выполняется. Обрати"
-                " внимание на живые примеры на <a"
+                "<emoji document_id='6318565919471699564'>🌌</emoji>"
+                " <b>Hikka</b>\n\nTelegram юзербот с огромным количеством функций, из"
+                " которых: инлайн галереи, формы, списки, а также поддержка"
+                " анимированных эмодзи. Юзербот - программа, которая запускается на"
+                " твоем Telegram-аккаунте. Когда ты пишешь команду в любом чате, она"
+                " сразу же выполняется. Обрати внимание на живые примеры на <a"
                 ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
             ),
         )

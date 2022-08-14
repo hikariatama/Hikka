@@ -131,12 +131,6 @@ class HikkaConfigMod(loader.Module):
             "♻️ <b>Параметр </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
             " сброшен до значения по умолчанию</b>\n<b>Текущее: {}</b>"
         ),
-        "_cmd_doc_config": "Настройки модулей",
-        "_cmd_doc_fconfig": (
-            "<имя модуля> <имя конфига> <значение> - Расшифровывается как ForceConfig -"
-            " Принудительно устанавливает значение в конфиге, если это не удалось"
-            " сделать через inline бота"
-        ),
         "_cls_doc": "Интерактивный конфигуратор Hikka",
         "args": "🚫 <b>Ты указал неверные аргументы</b>",
         "no_mod": "🚫 <b>Модуль не существует</b>",
@@ -584,6 +578,129 @@ class HikkaConfigMod(loader.Module):
             ],
         ]
 
+    async def _choice_set_value(
+        self,
+        call: InlineCall,
+        mod: str,
+        option: str,
+        value: bool,
+        obj_type: Union[bool, str] = False,
+    ):
+        try:
+            self.lookup(mod).config[option] = value
+        except loader.validators.ValidationError as e:
+            await call.edit(
+                self.strings("validation_error").format(e.args[0]),
+                reply_markup={
+                    "text": self.strings("try_again"),
+                    "callback": self.inline__configure_option,
+                    "args": (mod, option),
+                    "kwargs": {"obj_type": obj_type},
+                },
+            )
+            return
+
+        validator = self.lookup(mod).config._config[option].validator
+        doc = utils.escape_html(
+            next(
+                (
+                    validator.doc[lang]
+                    for lang in self._db.get(translations.__name__, "lang", "en").split(
+                        " "
+                    )
+                    if lang in validator.doc
+                ),
+                validator.doc["en"],
+            )
+        )
+
+        await call.edit(
+            self.strings(
+                "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
+            ).format(
+                utils.escape_html(option),
+                utils.escape_html(mod),
+                self.prep_value(self.lookup(mod).config[option])
+                if not validator.internal_id == "Hidden"
+                else self.hide_value(self.lookup(mod).config[option]),
+            ),
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                        "kwargs": {"obj_type": obj_type},
+                    },
+                    {"text": self.strings("close_btn"), "action": "close"},
+                ]
+            ],
+        )
+
+        await call.answer("✅")
+
+    def _generate_choice_markup(
+        self,
+        call: InlineCall,
+        mod: str,
+        option: str,
+        obj_type: Union[bool, str] = False,
+    ) -> list:
+        possible_values = list(
+            self.lookup(mod)
+            .config._config[option]
+            .validator.validate.keywords["possible_values"]
+        )
+        return [
+            [
+                {
+                    "text": self.strings("enter_value_btn"),
+                    "input": self.strings("enter_value_desc"),
+                    "handler": self.inline__set_config,
+                    "args": (mod, option, call.inline_message_id),
+                    "kwargs": {"obj_type": obj_type},
+                }
+            ],
+            *utils.chunks(
+                [
+                    {
+                        "text": (
+                            f"{'☑️' if self.lookup(mod).config[option] == value else '🔘'} "
+                            f"{value if len(str(value)) < 20 else str(value)[:20]}"
+                        ),
+                        "callback": self._choice_set_value,
+                        "args": (mod, option, value, obj_type),
+                    }
+                    for value in possible_values
+                ],
+                2,
+            )[:6],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
+            [
+                {
+                    "text": self.strings("back_btn"),
+                    "callback": self.inline__configure,
+                    "args": (mod,),
+                    "kwargs": {"obj_type": obj_type},
+                },
+                {"text": self.strings("close_btn"), "action": "close"},
+            ],
+        ]
+
     async def inline__configure_option(
         self,
         call: InlineCall,
@@ -681,6 +798,18 @@ class HikkaConfigMod(loader.Module):
                     ).format(*args),
                     reply_markup=additonal_button_row
                     + self._generate_series_markup(call, mod, config_opt, obj_type),
+                )
+                return
+
+            if validator.internal_id == "Choice":
+                await call.edit(
+                    self.strings(
+                        "configuring_option"
+                        if isinstance(obj_type, bool)
+                        else "configuring_option_lib"
+                    ).format(*args),
+                    reply_markup=additonal_button_row
+                    + self._generate_choice_markup(call, mod, config_opt, obj_type),
                 )
                 return
 
@@ -867,6 +996,7 @@ class HikkaConfigMod(loader.Module):
             reply_markup=kb,
         )
 
+    @loader.command(ru_doc="Настроить модули")
     async def configcmd(self, message: Message):
         """Configure modules"""
         args = utils.get_args_raw(message)
@@ -883,8 +1013,13 @@ class HikkaConfigMod(loader.Module):
 
         await self.inline__choose_category(message)
 
-    async def fconfigcmd(self, message: Message):
-        """<module_name> <property_name> <config_value> - Stands for ForceConfig - Set the config value if it is not possible using default method"""
+    @loader.command(
+        ru_doc=(
+            "<модуль> <настройка> <значениеЮ - установить значение конфига для модуля"
+        )
+    )
+    async def fconfig(self, message: Message):
+        """<module_name> <property_name> <config_value> - set the config value for the module"""
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:

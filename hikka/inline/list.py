@@ -193,7 +193,7 @@ class List(InlineUnit):
                 exc = "\n".join(exc.splitlines()[1:])
                 msg = (
                     "<b>🚫 List invoke failed!</b>\n\n"
-                    f"<b>🧾 Logs:</b>\n<code>{exc}</code>"
+                    f"<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
                 )
 
             del self._units[unit_id]
@@ -236,9 +236,11 @@ class List(InlineUnit):
         try:
             await self.bot.edit_message_text(
                 inline_message_id=call.inline_message_id,
-                text=self._units[unit_id]["strings"][
-                    self._units[unit_id]["current_index"]
-                ],
+                text=self.sanitise_text(
+                    self._units[unit_id]["strings"][
+                        self._units[unit_id]["current_index"]
+                    ]
+                ),
                 reply_markup=self._list_markup(unit_id),
             )
             await call.answer()

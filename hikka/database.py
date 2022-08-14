@@ -12,6 +12,7 @@ import logging
 import os
 import time
 import asyncio
+import collections
 
 try:
     import psycopg2
@@ -32,6 +33,10 @@ from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
 
 from . import utils, main
+from .pointers import (
+    PointerList,
+    PointerDict,
+)
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -374,3 +379,24 @@ class Database(dict):
 
         super().setdefault(owner, {})[key] = value
         return self.save()
+
+    def pointer(self, owner: str, key: str, default: Any = None) -> Any:
+        """Get a pointer to database key"""
+        value = self.get(owner, key, default)
+        mapping = {
+            list: PointerList,
+            dict: PointerDict,
+            collections.abc.Hashable: lambda v: v,
+        }
+
+        pointer_constructor = next(
+            (pointer for type_, pointer in mapping.items() if isinstance(value, type_)),
+            None,
+        )
+
+        if pointer_constructor is None:
+            raise ValueError(
+                f"Pointer for type {type(value).__name__} is not implemented"
+            )
+
+        return pointer_constructor(self, owner, key, default)

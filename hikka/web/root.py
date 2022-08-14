@@ -88,7 +88,7 @@ class Web:
         self.clients_set = asyncio.Event()
 
     @aiohttp_jinja2.template("root.jinja2")
-    async def root(self, request):
+    async def root(self, _):
         return {
             "skip_creds": self.api_token is not None,
             "tg_done": bool(self.client_data),
@@ -172,6 +172,7 @@ class Web:
                 return web.Response(body="OCCUPIED")
 
         db.set("hikka.inline", "custom_bot", text)
+        return web.Response(body="OK")
 
     async def set_tg_api(self, request):
         if not self._check_session(request):
@@ -181,7 +182,8 @@ class Web:
 
         if len(text) < 36:
             return web.Response(
-                status=400, body="API ID and HASH pair has invalid length"
+                status=400,
+                body="API ID and HASH pair has invalid length",
             )
 
         api_id = text[32:]
@@ -191,7 +193,8 @@ class Web:
             c not in string.digits for c in api_id
         ):
             return web.Response(
-                status=400, body="You specified invalid API ID and/or API HASH"
+                status=400,
+                body="You specified invalid API ID and/or API HASH",
             )
 
         if "DYNO" not in os.environ:
@@ -238,7 +241,10 @@ class Web:
         except FloodWaitError as e:
             return web.Response(
                 status=429,
-                body=f"You got FloodWait of {e.seconds}. Please try again later.",
+                body=(
+                    f"You got FloodWait of {e.seconds} seconds. Wait the specified"
+                    " amount of time and try again."
+                ),
             )
 
         return web.Response(body="ok")
@@ -291,7 +297,10 @@ class Web:
             except telethon.errors.FloodWaitError as e:
                 return web.Response(
                     status=421,
-                    body=f"You got FloodWait of {e.seconds}. Please try again later.",
+                    body=(
+                        f"You got FloodWait of {e.seconds} seconds. Wait the specified"
+                        " amount of time and try again."
+                    ),
                 )
         else:
             try:
@@ -304,7 +313,10 @@ class Web:
             except telethon.errors.FloodWaitError as e:
                 return web.Response(
                     status=421,
-                    body=f"You got FloodWait of {e.seconds}. Please try again later.",
+                    body=(
+                        f"You got FloodWait of {e.seconds} seconds. Wait the specified"
+                        " amount of time and try again."
+                    ),
                 )
 
         # At this step we don't want `main.hikka` to "know" about our client
