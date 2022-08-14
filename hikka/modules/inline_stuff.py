@@ -47,7 +47,6 @@ class InlineStuffMod(loader.Module):
             "😌 <b>Настройки сохранены. Для их применения нужно перезагрузить"
             " юзербот</b>"
         ),
-        "_cmd_doc_ch_hikka_bot": "<username> - Изменить юзернейм инлайн бота",
     }
 
     async def watcher(self, message: Message):
@@ -114,7 +113,8 @@ class InlineStuffMod(loader.Module):
 
                     return True
 
-    async def ch_hikka_botcmd(self, message: Message):
+    @loader.command(ru_doc="<юзернейм> - Изменить юзернейм инлайн бота")
+    async def ch_hikka_bot(self, message: Message):
         """<username> - Change your Hikka inline bot username"""
         args = utils.get_args_raw(message).strip("@")
         if (

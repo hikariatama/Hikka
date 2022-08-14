@@ -1,4 +1,4 @@
-Telethon-Mod==1.24.6
+git+https://github.com/hikariatama/Telethon
 pythondialog==3.5.3
 gitpython==3.1.27
 meval==2.5

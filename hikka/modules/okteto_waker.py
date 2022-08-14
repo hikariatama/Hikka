@@ -38,10 +38,10 @@ class OktetoMod(loader.Module):
     _send_interval = 5
     _bot = "@WebpageBot"
 
-    async def client_ready(self, client, _):
+    async def client_ready(self):
         if "OKTETO" not in os.environ:
             messages = (
-                await client(
+                await self._client(
                     GetScheduledHistoryRequest(
                         peer=self._bot,
                         hash=0,
@@ -52,7 +52,7 @@ class OktetoMod(loader.Module):
             if messages:
                 logger.info("Deleting previously scheduled Okteto pinger messages")
 
-            await client(
+            await self._client(
                 DeleteScheduledMessagesRequest(
                     self._bot,
                     [message.id for message in messages],
@@ -61,7 +61,7 @@ class OktetoMod(loader.Module):
 
             raise loader.SelfUnload
 
-        await utils.dnd(client, self._bot, True)
+        await utils.dnd(self._client, self._bot, True)
         self._task = asyncio.ensure_future(self._okteto_pinger())
 
     async def on_unload(self):

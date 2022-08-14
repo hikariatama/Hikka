@@ -7,7 +7,7 @@ name = 'pypi'
 python_version = '3.9.13'
 
 [packages]
-Telethon-Mod = '*'
+telethon-mod = {git = "https://github.com/hikariatama/Telethon.git"}
 pythondialog = '==3.5.3'
 gitpython = '==3.1.27'
 meval = '==2.5'

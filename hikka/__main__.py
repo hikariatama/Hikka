@@ -112,11 +112,11 @@ else:
         pass
     else:
         try:
-            from telethon.tl.functions.messages import SendReactionRequest  # noqa: F401
+            from telethon.tl.types import MessageEntityCustomEmoji  # noqa: F401
         except ImportError:
             print(
-                "⚠️ Warning: Default telethon is used as main one. This can cause"
-                " errors and enables DAR. Attempting to reinstall telethon-mod..."
+                "⚠️ Warning: Classic telethon is used as main one. This can cause"
+                " errors and enables DAR. Attempting to reinstall custom hikka telethon..."
             )
             subprocess.run(
                 [
@@ -140,7 +140,7 @@ else:
                     "-q",
                     "--disable-pip-version-check",
                     "--no-warn-script-location",
-                    "telethon-mod",
+                    "git+https://github.com/hikariatama/Telethon",
                 ],
                 check=True,
             )

@@ -158,20 +158,6 @@ class HikkaSecurityMod(loader.Module):
         ),
         "user_nn": '🔰 <b>NoNick для <a href="tg://user?id={}">{}</a> включен</b>',
         "enable_nonick_btn": "🔰 Включить",
-        "_cmd_doc_security": "[команда] - Изменить настройки безопасности для команды",
-        "_cmd_doc_sudoadd": "<пользователь> - Добавить пользователя в группу `sudo`",
-        "_cmd_doc_owneradd": "<пользователь> - Добавить пользователя в группу `owner`",
-        "_cmd_doc_supportadd": (
-            "<пользователь> - Добавить пользователя в группу `support`"
-        ),
-        "_cmd_doc_sudorm": "<пользователь> - Удалить пользователя из группы `sudo`",
-        "_cmd_doc_ownerrm": "<пользователь> - Удалить пользователя из группы `owner`",
-        "_cmd_doc_supportrm": (
-            "<пользователь> - Удалить пользователя из группы `support`"
-        ),
-        "_cmd_doc_sudolist": "Показать пользователей в группе `sudo`",
-        "_cmd_doc_ownerlist": "Показать пользователей в группе `owner`",
-        "_cmd_doc_supportlist": "Показать пользователей в группе `support`",
         "_cls_doc": "Управление настройками безопасности",
     }
 
@@ -361,7 +347,8 @@ class HikkaSecurityMod(loader.Module):
         return self._perms_map(config, is_inline)
 
     @loader.owner
-    async def securitycmd(self, message: Message):
+    @loader.command(ru_doc="[команда] - Настроить разрешения для команды")
+    async def security(self, message: Message):
         """[command] - Configure command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
         if args and args not in self.allmodules.commands:
@@ -387,7 +374,8 @@ class HikkaSecurityMod(loader.Module):
         )
 
     @loader.owner
-    async def inlineseccmd(self, message: Message):
+    @loader.command(ru_doc="[команда] - Настроить разрешения для инлайн команды")
+    async def inlinesec(self, message: Message):
         """[command] - Configure inline command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
         if not args:
@@ -573,38 +561,47 @@ class HikkaSecurityMod(loader.Module):
         else:
             await utils.answer(message, self.strings(f"no_{group}"))
 
-    async def sudoaddcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `sudo`")
+    async def sudoadd(self, message: Message):
         """<user> - Add user to `sudo`"""
         await self._add_to_group(message, "sudo")
 
-    async def owneraddcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `owner`")
+    async def owneradd(self, message: Message):
         """<user> - Add user to `owner`"""
         await self._add_to_group(message, "owner")
 
-    async def supportaddcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `support`")
+    async def supportadd(self, message: Message):
         """<user> - Add user to `support`"""
         await self._add_to_group(message, "support")
 
-    async def sudormcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `sudo`")
+    async def sudorm(self, message: Message):
         """<user> - Remove user from `sudo`"""
         await self._remove_from_group(message, "sudo")
 
-    async def ownerrmcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `owner`")
+    async def ownerrm(self, message: Message):
         """<user> - Remove user from `owner`"""
         await self._remove_from_group(message, "owner")
 
-    async def supportrmcmd(self, message: Message):
+    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `support`")
+    async def supportrm(self, message: Message):
         """<user> - Remove user from `support`"""
         await self._remove_from_group(message, "support")
 
-    async def sudolistcmd(self, message: Message):
+    @loader.command(ru_doc="Показать список пользователей в группе `sudo`")
+    async def sudolist(self, message: Message):
         """List users in `sudo`"""
         await self._list_group(message, "sudo")
 
-    async def ownerlistcmd(self, message: Message):
+    @loader.command(ru_doc="Показать список пользователей в группе `owner`")
+    async def ownerlist(self, message: Message):
         """List users in `owner`"""
         await self._list_group(message, "owner")
 
-    async def supportlistcmd(self, message: Message):
+    @loader.command(ru_doc="Показать список пользователей в группе `support`")
+    async def supportlist(self, message: Message):
         """List users in `support`"""
         await self._list_group(message, "support")

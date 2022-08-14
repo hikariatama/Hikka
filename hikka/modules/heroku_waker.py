@@ -61,16 +61,17 @@ class HerokuMod(loader.Module):
 
     _bot = "@WebpageBot"
 
-    async def client_ready(self, client, _):
+    async def client_ready(self):
         if "DYNO" not in os.environ:
             raise loader.SelfUnload
 
-        await utils.dnd(client, self._bot, True)
+        await utils.dnd(self._client, self._bot, True)
 
         self._heroku_url = heroku.get_app(api_token=main.hikka.api_token)[0].web_url
         self._heroku_pinger.start()
 
-    async def setrediscmd(self, message: Message):
+    @loader.command(ru_doc="<ссылка Redis> - Установить базу данных Redis")
+    async def setredis(self, message: Message):
         """<redis_url> - Set Redis Database URL"""
         args = utils.get_args_raw(message)
         if not args:

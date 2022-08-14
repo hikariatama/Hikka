@@ -87,8 +87,8 @@ class HikkaInfoMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, client, _):
-        self._me = await client.get_me()
+    async def client_ready(self):
+        self._me = await self._client.get_me()
 
     def _render_info(self) -> str:
         ver = utils.get_git_hash() or "Unknown"
@@ -113,7 +113,7 @@ class HikkaInfoMod(loader.Module):
         prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"
         platform = utils.get_named_platform()
 
-        return (
+        return utils.validate_html(
             (
                 "<b>🌘 Hikka</b>\n"
                 if "hikka" not in self.config["custom_message"].lower()
@@ -128,7 +128,7 @@ class HikkaInfoMod(loader.Module):
                 upd=upd,
                 uptime=utils.formatted_uptime(),
             )
-            if self.config["custom_message"] and self.config["custom_message"] != "no"
+            if self.config["custom_message"]
             else (
                 "<b>🌘 Hikka</b>\n"
                 f'<b>🤴 {self.strings("owner")}: </b>{me}\n\n'
@@ -151,7 +151,7 @@ class HikkaInfoMod(loader.Module):
         )
 
     @loader.inline_everyone
-    async def info_inline_handler(self, query: InlineQuery) -> dict:
+    async def info_inline_handler(self, _: InlineQuery) -> dict:
         """Send userbot info"""
 
         return {

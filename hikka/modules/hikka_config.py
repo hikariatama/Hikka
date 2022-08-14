@@ -131,12 +131,6 @@ class HikkaConfigMod(loader.Module):
             "♻️ <b>Параметр </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
             " сброшен до значения по умолчанию</b>\n<b>Текущее: {}</b>"
         ),
-        "_cmd_doc_config": "Настройки модулей",
-        "_cmd_doc_fconfig": (
-            "<имя модуля> <имя конфига> <значение> - Расшифровывается как ForceConfig -"
-            " Принудительно устанавливает значение в конфиге, если это не удалось"
-            " сделать через inline бота"
-        ),
         "_cls_doc": "Интерактивный конфигуратор Hikka",
         "args": "🚫 <b>Ты указал неверные аргументы</b>",
         "no_mod": "🚫 <b>Модуль не существует</b>",
@@ -1002,6 +996,7 @@ class HikkaConfigMod(loader.Module):
             reply_markup=kb,
         )
 
+    @loader.command(ru_doc="Настроить модули")
     async def configcmd(self, message: Message):
         """Configure modules"""
         args = utils.get_args_raw(message)
@@ -1018,8 +1013,9 @@ class HikkaConfigMod(loader.Module):
 
         await self.inline__choose_category(message)
 
-    async def fconfigcmd(self, message: Message):
-        """<module_name> <property_name> <config_value> - Stands for ForceConfig - Set the config value if it is not possible using default method"""
+    @loader.command(ru_doc="<модуль> <настройка> <значениеЮ - установить значение конфига для модуля")
+    async def fconfig(self, message: Message):
+        """<module_name> <property_name> <config_value> - set the config value for the module"""
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:

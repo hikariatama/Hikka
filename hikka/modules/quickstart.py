@@ -86,8 +86,8 @@ class QuickstartMod(loader.Module):
 
     strings = {"name": "Quickstart"}
 
-    async def client_ready(self, client, db):
-        if db.get("hikka", "disable_quickstart", False):
+    async def client_ready(self):
+        if self._db.get("hikka", "disable_quickstart", False):
             raise loader.SelfUnload
 
         self.mark = (
@@ -114,15 +114,15 @@ class QuickstartMod(loader.Module):
             ]
         )
 
-        await self.inline.bot.send_animation(client.tg_id, animation=choice(imgs))
+        await self.inline.bot.send_animation(self._client.tg_id, animation=choice(imgs))
         await self.inline.bot.send_message(
-            client.tg_id,
+            self._client.tg_id,
             TEXT,
             reply_markup=self.inline.generate_markup(self.mark("en")),
             disable_web_page_preview=True,
         )
 
-        db.set("hikka", "disable_quickstart", True)
+        self._db.set("hikka", "disable_quickstart", True)
 
     async def _change_lang(self, call: BotInlineCall, lang: str):
         if lang == "ru":

@@ -38,21 +38,21 @@ class PythonMod(loader.Module):
     strings_ru = {
         "eval": "<b>🎬 Код:</b>\n<code>{}</code>\n<b>🪄 Результат:</b>\n<code>{}</code>",
         "err": "<b>🎬 Код:</b>\n<code>{}</code>\n\n<b>🚫 Ошибка:</b>\n{}",
-        "_cmd_doc_eval": "Алиас для команды .e",
-        "_cmd_doc_e": "Выполняет Python кодировка",
         "_cls_doc": "Выполняет Python код",
     }
 
-    async def client_ready(self, client, _):
-        self._phone = (await client.get_me()).phone
+    async def client_ready(self):
+        self._phone = (await self._client.get_me()).phone
 
     @loader.owner
-    async def evalcmd(self, message: Message):
+    @loader.command(ru_doc="Алиас для команды .e")
+    async def eval(self, message: Message):
         """Alias for .e command"""
         await self.ecmd(message)
 
     @loader.owner
-    async def ecmd(self, message: Message):
+    @loader.command(ru_doc="Выполняет Python код")
+    async def e(self, message: Message):
         """Evaluates python code"""
         ret = self.strings("eval")
         try:

@@ -101,7 +101,7 @@ class APIRatelimiterMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, *_):
+    async def client_ready(self):
         asyncio.ensure_future(self._install_protection())
 
     async def _install_protection(self):
@@ -171,7 +171,8 @@ class APIRatelimiterMod(loader.Module):
             delattr(self._client, "_old_call_rewritten")
             logger.debug("Successfully uninstalled ratelimiter")
 
-    async def suspend_api_protectcmd(self, message: Message):
+    @loader.command(ru_doc="<время в секундах> - Заморозить защиту API на N секунд")
+    async def suspend_api_protect(self, message: Message):
         """<time in seconds> - Suspend API Ratelimiter for n seconds"""
         args = utils.get_args_raw(message)
 
@@ -182,8 +183,9 @@ class APIRatelimiterMod(loader.Module):
         self._suspend_until = time.perf_counter() + int(args)
         await utils.answer(message, self.strings("suspended_for").format(args))
 
-    async def api_fw_protectioncmd(self, message: Message):
-        """Only for people, who know what they're doing"""
+    @loader.command(ru_doc="Включить/выключить защиту API")
+    async def api_fw_protection(self, message: Message):
+        """Toggle API Ratelimiter"""
         await self.inline.form(
             message=message,
             text=self.strings("u_sure"),

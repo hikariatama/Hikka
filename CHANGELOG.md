@@ -19,6 +19,8 @@
 - Add `client.get_fulluser` with cache
 - Add `exp` and `force` params to `client.get_perms_cached` and `client.get_entity`
 - Add `exp` cached values check in `client.get_perms_cached` and `client.get_entity`
+- Add text validation to info (automatically remove broken tags)
+- Add `utils.validate_html` to remove broken tags from text
 - Change errors format in web to more human-readable
 - Change visible line of traceback in logs to be the last one
 - Fix bug with custom_bot option on installation page
@@ -29,6 +31,9 @@
 - Remove `termux_requirements.txt`
 - Remove legacy `self.get` migration from strings
 - Move `hikka._types` to `hikka.types` with legacy support
+- Remake all core modules to decorators
+- Force custom hikka telethon installation with 144 layer support
+- Add animated emojis to core modules strings
 
 ## 🌑 Hikka 1.3.0
 

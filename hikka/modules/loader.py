@@ -312,7 +312,7 @@ class LoaderMod(loader.Module):
             ),
         )
 
-    async def client_ready(self, *_):
+    async def client_ready(self):
         self.allmodules.add_aliases(self.lookup("settings").get("aliases", {}))
 
         main.hikka.ready.set()
@@ -343,7 +343,11 @@ class LoaderMod(loader.Module):
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
         for mod in self.allmodules.modules:
-            if not hasattr(mod, "config") or not mod.config:
+            if (
+                not hasattr(mod, "config")
+                or not mod.config
+                or not isinstance(mod.config, loader.ModuleConfig)
+            ):
                 continue
 
             for option, config in mod.config._config.items():
@@ -356,7 +360,11 @@ class LoaderMod(loader.Module):
                 )[option] = config.value
 
         for lib in self.allmodules.libraries:
-            if not hasattr(lib, "config") or not lib.config:
+            if (
+                not hasattr(lib, "config")
+                or not lib.config
+                or not isinstance(lib.config, loader.ModuleConfig)
+            ):
                 continue
 
             for option, config in lib.config._config.items():
@@ -384,8 +392,9 @@ class LoaderMod(loader.Module):
         )
 
     @loader.owner
-    async def dlmodcmd(self, message: Message):
-        """Downloads and installs a module from the official module repo"""
+    @loader.command(ru_doc="Загрузить модуль из официального репозитория")
+    async def dlmod(self, message: Message):
+        """Install a module from the official module repo"""
         if args := utils.get_args(message):
             args = args[0]
 
@@ -422,7 +431,8 @@ class LoaderMod(loader.Module):
             )
 
     @loader.owner
-    async def dlpresetcmd(self, message: Message):
+    @loader.command(ru_doc="Установить пресет модулей")
+    async def dlpreset(self, message: Message):
         """Set modules preset"""
         args = utils.get_args(message)
         if not args:
@@ -584,7 +594,8 @@ class LoaderMod(loader.Module):
         await self.load_module(doc, call, origin=path_ or "<string>", save_fs=save)
 
     @loader.owner
-    async def loadmodcmd(self, message: Message):
+    @loader.command(ru_doc="Загрузить модуль из файла")
+    async def loadmod(self, message: Message):
         """Loads the module file"""
         msg = message if message.file else (await message.get_reply_message())
 
@@ -1188,7 +1199,8 @@ class LoaderMod(loader.Module):
         await call.answer(self.strings("subscribed"))
 
     @loader.owner
-    async def unloadmodcmd(self, message: Message):
+    @loader.command(ru_doc="Выгрузить модуль")
+    async def unloadmod(self, message: Message):
         """Unload module by class name"""
         args = utils.get_args_raw(message)
 
@@ -1231,7 +1243,8 @@ class LoaderMod(loader.Module):
         await utils.answer(message, msg)
 
     @loader.owner
-    async def clearmodulescmd(self, message: Message):
+    @loader.command(ru_doc="Удалить все модули")
+    async def clearmodules(self, message: Message):
         """Delete all installed modules"""
         await self.inline.form(
             self.strings("confirm_clearmodules"),

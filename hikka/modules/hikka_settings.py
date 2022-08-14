@@ -152,20 +152,6 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Предлагать подписку на канал",
         "do_not_suggest_subscribe": "🚫 Предлагать подписку на канал",
         "private_not_allowed": "🚫 <b>Эту команду нужно выполнять в чате</b>",
-        "_cmd_doc_watchers": "Показать список смотрителей",
-        "_cmd_doc_watcherbl": "<модуль> - Включить\\выключить смотритель в чате",
-        "_cmd_doc_watcher": (
-            "<модуль> - Управление глобальными правилами смотрителя\n"
-            "Аргументы:\n"
-            "[-c - только в чатах]\n"
-            "[-p - только в лс]\n"
-            "[-o - только исходящие]\n"
-            "[-i - только входящие]"
-        ),
-        "_cmd_doc_nonickuser": (
-            "Разрешить пользователю выполнять какую-то команду без ника"
-        ),
-        "_cmd_doc_nonickcmd": "Разрешить выполнять определенную команду без ника",
         "_cls_doc": "Дополнительные настройки Hikka",
         "nonick_warning": (
             "Внимание! Ты включил NoNick со стандартным префиксом! "
@@ -336,7 +322,8 @@ class HikkaSettingsMod(loader.Module):
             ],
         )
 
-    async def uninstall_hikkacmd(self, message: Message):
+    @loader.command(ru_doc="Удалить Hikka")
+    async def uninstall_hikka(self, message: Message):
         """Uninstall Hikka"""
         await self.inline.form(
             self.strings("deauth_confirm"),
@@ -350,7 +337,8 @@ class HikkaSettingsMod(loader.Module):
             ],
         )
 
-    async def clearlogscmd(self, message: Message):
+    @loader.command(ru_doc="Очистить логи")
+    async def clearlogs(self, message: Message):
         """Clear logs"""
         for handler in logging.getLogger().handlers:
             handler.buffer = []
@@ -359,7 +347,8 @@ class HikkaSettingsMod(loader.Module):
 
         await utils.answer(message, self.strings("logs_cleared"))
 
-    async def watcherscmd(self, message: Message):
+    @loader.command(ru_doc="Показать активные смотрители")
+    async def watchers(self, message: Message):
         """List current watchers"""
         watchers, disabled_watchers = self.get_watchers()
         watchers = [
@@ -372,7 +361,8 @@ class HikkaSettingsMod(loader.Module):
             message, self.strings("watchers").format("\n".join(watchers))
         )
 
-    async def watcherblcmd(self, message: Message):
+    @loader.command(ru_doc="<module> - Включить/выключить смотрителя в текущем чате")
+    async def watcherbl(self, message: Message):
         """<module> - Toggle watcher in current chat"""
         args = utils.get_args_raw(message)
         if not args:
@@ -421,6 +411,16 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "disabled_watchers", disabled_watchers)
 
+    @loader.command(
+        ru_doc=(
+            "<модуль> - Управление глобальными правилами смотрителя\n"
+            "Аргументы:\n"
+            "[-c - только в чатах]\n"
+            "[-p - только в лс]\n"
+            "[-o - только исходящие]\n"
+            "[-i - только входящие]"
+        )
+    )
     async def watchercmd(self, message: Message):
         """<module> - Toggle global watcher rules
         Args:
@@ -487,7 +487,8 @@ class HikkaSettingsMod(loader.Module):
         self._db.set(main.__name__, "disabled_watchers", disabled_watchers)
         await utils.answer(message, self.strings("disabled").format(args))
 
-    async def nonickusercmd(self, message: Message):
+    @loader.command(ru_doc="Включить NoNick для определенного пользователя")
+    async def nonickuser(self, message: Message):
         """Allow no nickname for certain user"""
         reply = await message.get_reply_message()
         if not reply:
@@ -509,7 +510,8 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickusers", nn)
 
-    async def nonickchatcmd(self, message: Message):
+    @loader.command(ru_doc="Включить NoNick для определенного чата")
+    async def nonickchat(self, message: Message):
         """Allow no nickname in certain chat"""
         if message.is_private:
             await utils.answer(message, self.strings("private_not_allowed"))
@@ -540,6 +542,7 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickchats", nn)
 
+    @loader.command(ru_doc="Включить NoNick для определенной команды")
     async def nonickcmdcmd(self, message: Message):
         """Allow certain command to be executed without nickname"""
         args = utils.get_args_raw(message)
@@ -574,7 +577,8 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickcmds", nn)
 
-    async def nonickcmdscmd(self, message: Message):
+    @loader.command(ru_doc="Показать список активных NoNick команд")
+    async def nonickcmds(self, message: Message):
         """Returns the list of NoNick commands"""
         if not self._db.get(main.__name__, "nonickcmds", []):
             await utils.answer(message, self.strings("nothing"))
@@ -592,7 +596,8 @@ class HikkaSettingsMod(loader.Module):
             ),
         )
 
-    async def nonickuserscmd(self, message: Message):
+    @loader.command(ru_doc="Показать список активных NoNick пользователей")
+    async def nonickusers(self, message: Message):
         """Returns the list of NoNick users"""
         users = []
         for user_id in self._db.get(main.__name__, "nonickusers", []).copy():
@@ -629,7 +634,8 @@ class HikkaSettingsMod(loader.Module):
             self.strings("user_nn_list").format("\n".join(users)),
         )
 
-    async def nonickchatscmd(self, message: Message):
+    @loader.command(ru_doc="Показать список активных NoNick чатов")
+    async def nonickchats(self, message: Message):
         """Returns the list of NoNick chats"""
         chats = []
         for chat in self._db.get(main.__name__, "nonickchats", []):
@@ -874,7 +880,8 @@ class HikkaSettingsMod(loader.Module):
         ]
 
     @loader.owner
-    async def settingscmd(self, message: Message):
+    @loader.command(ru_doc="Показать настройки")
+    async def settings(self, message: Message):
         """Show settings menu"""
         await self.inline.form(
             self.strings("inline_settings"),
@@ -883,7 +890,8 @@ class HikkaSettingsMod(loader.Module):
         )
 
     @loader.owner
-    async def weburlcmd(self, message: Message, force: bool = False):
+    @loader.command(ru_doc="Открыть тоннель к веб-интерфейсу Hikka")
+    async def weburl(self, message: Message, force: bool = False):
         """Opens web tunnel to your Hikka web interface"""
         if "LAVHOST" in os.environ:
             form = await self.inline.form(
@@ -909,7 +917,7 @@ class HikkaSettingsMod(loader.Module):
                     reply_markup=[
                         {
                             "text": self.strings("btn_yes"),
-                            "callback": self.weburlcmd,
+                            "callback": self.weburl,
                             "args": (True,),
                         },
                         {"text": self.strings("btn_no"), "action": "close"},

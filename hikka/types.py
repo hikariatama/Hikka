@@ -8,9 +8,12 @@
 
 
 import ast
+import asyncio
+import contextlib
+import inspect
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Optional, Union
+from typing import Any, Awaitable, Callable, Optional, Union
 from importlib.abc import SourceLoader
 from telethon.tl.types import Message
 
@@ -225,6 +228,16 @@ class _Placeholder:
     """Placeholder to determine if the default value is going to be set"""
 
 
+async def wrap(func: Awaitable):
+    with contextlib.suppress(Exception):
+        return await func()
+
+
+def syncwrap(func: Callable):
+    with contextlib.suppress(Exception):
+        return func()
+
+
 @dataclass(repr=True)
 class ConfigValue:
     option: str
@@ -232,6 +245,7 @@ class ConfigValue:
     doc: Union[callable, str] = "No description"
     value: Any = field(default_factory=_Placeholder)
     validator: Optional[callable] = None
+    on_change: Optional[Union[Awaitable, Callable]] = None
 
     def __post_init__(self):
         if isinstance(self.value, _Placeholder):
@@ -299,5 +313,11 @@ class ConfigValue:
 
             # This attribute will tell the `Loader` to save this value in db
             self._save_marker = True
+
+            if not ignore_validation and callable(self.on_change):
+                if inspect.iscoroutinefunction(self.on_change):
+                    asyncio.ensure_future(wrap(self.on_change))
+                else:
+                    syncwrap(self.on_change)
 
         object.__setattr__(self, key, value)

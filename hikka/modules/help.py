@@ -65,12 +65,6 @@ class HelpMod(loader.Module):
             "🌘 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>"
         ),
         "join": "🌘 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
-        "_cmd_doc_helphide": (
-            "<модуль(-и)> - Скрывает модуль(-и) из помощи\n*Разделяй имена модулей"
-            " пробелами"
-        ),
-        "_cmd_doc_help": "[модуль] [-f] - Показывает помощь",
-        "_cmd_doc_support": "Вступает в чат помощи Hikka",
         "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
         "partial_load": (
             "⚠️ <b>Юзербот еще не загрузился полностью, поэтому показаны не все"
@@ -110,7 +104,8 @@ class HelpMod(loader.Module):
             ),
         )
 
-    async def helphidecmd(self, message: Message):
+    @loader.command(ru_doc="<модуль или модули> - Спрятать модуль(-и) из помощи\n*Разделяй модули пробелами")
+    async def helphide(self, message: Message):
         """<module or modules> - Hide module(-s) from help
         *Split modules by spaces"""
         modules = utils.get_args(message)
@@ -229,7 +224,8 @@ class HelpMod(loader.Module):
         )
 
     @loader.unrestricted
-    async def helpcmd(self, message: Message):
+    @loader.command(ru_doc="[модуль] [-f] - Показать помощь")
+    async def help(self, message: Message):
         """[module] [-f] - Show help"""
         args = utils.get_args_raw(message)
         force = False
@@ -374,7 +370,8 @@ class HelpMod(loader.Module):
             f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}{no_commands_}{partial_load}",
         )
 
-    async def supportcmd(self, message):
+    @loader.command(ru_doc="Вступить в чат помощи")
+    async def support(self, message):
         """Joins the support Hikka chat"""
         if await self.allmodules.check_security(
             message,

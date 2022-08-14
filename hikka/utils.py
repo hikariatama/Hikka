@@ -333,14 +333,14 @@ async def answer(
     )
 
     if isinstance(response, str) and not kwargs.pop("asfile", False):
-        text, entity = parse_mode.parse(response)
+        text, entities = parse_mode.parse(response)
 
         if len(text) >= 4096:
             try:
                 if not message.client.loader.inline.init_complete:
                     raise
 
-                strings = list(smart_split(text, entity, 4096))
+                strings = list(smart_split(text, entities, 4096))
 
                 if len(strings) > 10:
                     raise
@@ -374,7 +374,7 @@ async def answer(
 
         result = await (message.edit if edit else message.respond)(
             text,
-            parse_mode=lambda t: (t, entity),
+            parse_mode=lambda t: (t, entities),
             **kwargs,
         )
     elif isinstance(response, Message):
@@ -1086,6 +1086,12 @@ def find_caller(stack: Optional[List[inspect.FrameInfo]]) -> Any:
         ),
         None,
     )
+
+
+def validate_html(html: str) -> str:
+    """Removes broken tags from html"""
+    text, entities = telethon.extensions.html.parse(html)
+    return telethon.extensions.html.unparse(escape_html(text), entities)
 
 
 init_ts = time.perf_counter()

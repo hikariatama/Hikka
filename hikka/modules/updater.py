@@ -122,10 +122,6 @@ class UpdaterMod(loader.Module):
         ),
         "no_update": "🚸 <b>У тебя последняя версия. Обновиться принудительно?</b>",
         "cancel": "🚫 Отмена",
-        "_cmd_doc_restart": "Перезагружает юзербот",
-        "_cmd_doc_download": "Скачивает обновления",
-        "_cmd_doc_update": "Обновляет юзербот",
-        "_cmd_doc_source": "Ссылка на исходный код проекта",
         "_cls_doc": "Обновляет юзербот",
         "lavhost_restart": "✌️ <b>Твой lavHost перезагружается...\n&gt;///&lt;</b>",
         "lavhost_update": "✌️ <b>Твой lavHost обновляется...\n&gt;///&lt;</b>",
@@ -148,7 +144,8 @@ class UpdaterMod(loader.Module):
         )
 
     @loader.owner
-    async def restartcmd(self, message: Message):
+    @loader.command(ru_doc="Перезагружает юзербот")
+    async def restart(self, message: Message):
         """Restarts the userbot"""
         secure_boot = "--secure-boot" in utils.get_args_raw(message)
         try:
@@ -289,7 +286,8 @@ class UpdaterMod(loader.Module):
             logger.exception("Req install failed")
 
     @loader.owner
-    async def updatecmd(self, message: Message):
+    @loader.command(ru_doc="Скачивает обновления юзербота")
+    async def update(self, message: Message):
         """Downloads userbot updates"""
         try:
             current = utils.get_git_hash()
@@ -392,17 +390,18 @@ class UpdaterMod(loader.Module):
             return
 
     @loader.unrestricted
-    async def sourcecmd(self, message: Message):
+    @loader.command(ru_doc="Показать ссылку на исходный код проекта")
+    async def source(self, message: Message):
         """Links the source code of this project"""
         await utils.answer(
             message,
             self.strings("source").format(self.config["GIT_ORIGIN_URL"]),
         )
 
-    async def client_ready(self, client, _):
+    async def client_ready(self):
         if self.get("selfupdatemsg") is not None:
             try:
-                await self.update_complete(client)
+                await self.update_complete()
             except Exception:
                 logger.exception("Failed to complete update!")
 
@@ -503,7 +502,7 @@ class UpdaterMod(loader.Module):
                 "Ignoring error and adding folder addition to ignore list"
             )
 
-    async def update_complete(self, client: "TelegramClient"):  # type: ignore
+    async def update_complete(self):
         logger.debug("Self update successful! Edit message")
         start = self.get("restart_ts")
         try:

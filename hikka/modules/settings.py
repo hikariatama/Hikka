@@ -35,30 +35,60 @@ class CoreMod(loader.Module):
     strings = {
         "name": "Settings",
         "too_many_args": "🚫 <b>Too many args</b>",
-        "blacklisted": "✅ <b>Chat {} blacklisted from userbot</b>",
-        "unblacklisted": "✅ <b>Chat {} unblacklisted from userbot</b>",
-        "user_blacklisted": "✅ <b>User {} blacklisted from userbot</b>",
-        "user_unblacklisted": "✅ <b>User {} unblacklisted from userbot</b>",
+        "blacklisted": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Chat {} blacklisted'
+            " from userbot</b>"
+        ),
+        "unblacklisted": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Chat {}'
+            " unblacklisted from userbot</b>"
+        ),
+        "user_blacklisted": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>User {} blacklisted'
+            " from userbot</b>"
+        ),
+        "user_unblacklisted": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>User {}'
+            " unblacklisted from userbot</b>"
+        ),
         "what_prefix": "❓ <b>What should the prefix be set to?</b>",
         "prefix_incorrect": "🚫 <b>Prefix must be one symbol in length</b>",
         "prefix_set": (
-            "✅ <b>Command prefix updated. Type</b> <code>{newprefix}setprefix"
-            " {oldprefix}</code> <b>to change it back</b>"
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Command prefix'
+            " updated. Type</b> <code>{newprefix}setprefix {oldprefix}</code> <b>to"
+            " change it back</b>"
         ),
-        "alias_created": "✅ <b>Alias created. Access it with</b> <code>{}</code>",
+        "alias_created": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Alias created.'
+            " Access it with</b> <code>{}</code>"
+        ),
         "aliases": "<b>🔗 Aliases:</b>\n",
         "no_command": "🚫 <b>Command</b> <code>{}</code> <b>does not exist</b>",
         "alias_args": "🚫 <b>You must provide a command and the alias for it</b>",
         "delalias_args": "🚫 <b>You must provide the alias name</b>",
-        "alias_removed": "✅ <b>Alias</b> <code>{}</code> <b>removed.",
+        "alias_removed": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Alias</b>'
+            " <code>{}</code> <b>removed</b>."
+        ),
         "no_alias": "<b>🚫 Alias</b> <code>{}</code> <b>does not exist</b>",
-        "db_cleared": "<b>✅ Database cleared</b>",
-        "hikka": "🌘 <b>Hikka userbot</b>\n<b>Version: {}.{}.{}</b>",
+        "db_cleared": (
+            '<emoji document_id="5368324170671202286">👍</emoji><b> Database cleared</b>'
+        ),
+        "hikka": (
+            '<emoji document_id="6318565919471699564">🌌</emoji> <b>Hikka'
+            " userbot</b>\n<b>Version: {}.{}.{}</b>"
+        ),
         "check_url": "🚫 <b>You need to specify valid url containing a langpack</b>",
         "lang_saved": "{} <b>Language saved!</b>",
-        "pack_saved": "✅ <b>Translate pack saved!</b>",
+        "pack_saved": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Translate pack'
+            " saved!</b>"
+        ),
         "incorrect_language": "🚫 <b>Incorrect language specified</b>",
-        "lang_removed": "✅ <b>Translations reset to default ones</b>",
+        "lang_removed": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Translations reset'
+            " to default ones</b>"
+        ),
         "check_pack": "🚫 <b>Invalid pack format in url</b>",
         "confirm_cleardb": "⚠️ <b>Are you sure, that you want to clear database?</b>",
         "cleardb_confirm": "🗑 Clear database",
@@ -67,59 +97,61 @@ class CoreMod(loader.Module):
 
     strings_ru = {
         "too_many_args": "🚫 <b>Слишком много аргументов</b>",
-        "blacklisted": "✅ <b>Чат {} добавлен в черный список юзербота</b>",
-        "unblacklisted": "✅ <b>Чат {} удален из черного списка юзербота</b>",
+        "blacklisted": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Чат {} добавлен в'
+            " черный список юзербота</b>"
+        ),
+        "unblacklisted": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Чат {} удален из'
+            " черного списка юзербота</b>"
+        ),
         "user_blacklisted": (
-            "✅ <b>Пользователь {} добавлен в черный список юзербота</b>"
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Пользователь {}'
+            " добавлен в черный список юзербота</b>"
         ),
         "user_unblacklisted": (
-            "✅ <b>Пользователь {} удален из черного списка юзербота</b>"
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Пользователь {}'
+            " удален из черного списка юзербота</b>"
         ),
         "what_prefix": "❓ <b>А какой префикс ставить то?</b>",
         "prefix_incorrect": "🚫 <b>Префикс должен состоять только из одного символа</b>",
         "prefix_set": (
-            "✅ <b>Префикс обновлен. Чтобы вернуть его, используй</b>"
-            " <code>{newprefix}setprefix {oldprefix}</code>"
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Префикс обновлен.'
+            " Чтобы вернуть его, используй</b> <code>{newprefix}setprefix"
+            " {oldprefix}</code>"
         ),
-        "alias_created": "✅ <b>Алиас создан. Используй его через</b> <code>{}</code>",
+        "alias_created": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Алиас создан.'
+            " Используй его через</b> <code>{}</code>"
+        ),
         "aliases": "<b>🔗 Алиасы:</b>\n",
         "no_command": "🚫 <b>Команда</b> <code>{}</code> <b>не существует</b>",
         "alias_args": "🚫 <b>Требуется ввести команду и алиас для нее</b>",
         "delalias_args": "🚫 <b>Требуется имя алиаса</b>",
-        "alias_removed": "✅ <b>Алиас</b> <code>{}</code> <b>удален.",
+        "alias_removed": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Алиас</b>'
+            " <code>{}</code> <b>удален</b>."
+        ),
         "no_alias": "<b>🚫 Алиас</b> <code>{}</code> <b>не существует</b>",
-        "db_cleared": "<b>✅ База очищена</b>",
-        "hikka": "🌘 <b>Hikka userbot</b>\n<b>Версия: {}.{}.{}</b>",
+        "db_cleared": (
+            '<emoji document_id="5368324170671202286">👍</emoji><b> База очищена</b>'
+        ),
+        "hikka": (
+            '<emoji document_id="6318565919471699564">🌌</emoji> <b>Hikka'
+            " userbot</b>\n<b>Версия: {}.{}.{}</b>"
+        ),
         "check_url": "🚫 <b>Укажи правильную ссылку, ведущую на пак с переводом</b>",
         "lang_saved": "{} <b>Язык сохранен!</b>",
-        "pack_saved": "✅ <b>Пак перевода сохранен!</b>",
+        "pack_saved": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Пак перевода'
+            " сохранен!</b>"
+        ),
         "incorrect_language": "🚫 <b>Указан неверный язык</b>",
-        "lang_removed": "✅ <b>Переводы сброшены</b>",
+        "lang_removed": (
+            '<emoji document_id="5368324170671202286">👍</emoji> <b>Переводы'
+            " сброшены</b>"
+        ),
         "check_pack": "🚫 <b>По ссылке находится неправильный пак</b>",
-        "_cmd_doc_hikka": "Показать версию Hikka",
-        "_cmd_doc_blacklist": "[чат] [модуль] - Отключить бота где-либо",
-        "_cmd_doc_unblacklist": "<чат> - Включить бота где-либо",
-        "_cmd_doc_blacklistuser": (
-            "[пользователь] - Запретить пользователю выполнять все команды"
-        ),
-        "_cmd_doc_unblacklistuser": (
-            "[пользователь] - Разрешить пользователю выполнять команды, на которые ему"
-            " хватает разрешений"
-        ),
-        "_cmd_doc_setprefix": "<префикс> - Установить префикс",
-        "_cmd_doc_aliases": "Показать алиасы",
-        "_cmd_doc_addalias": "Установить алиас для команды",
-        "_cmd_doc_delalias": "Удалить алиас для команды",
-        "_cmd_doc_addtrnsl": (
-            "Установить пак перевода\n.addtrnsl <пак>\nТребуется перезагрузка после"
-            " выполнения"
-        ),
-        "_cmd_doc_cleartrnsl": "Удалить все паки перевода",
-        "_cmd_doc_setlang": (
-            "Выбрать предпочитаемый язык перевода\nТребуется перезагрузка после"
-            " выполнения"
-        ),
-        "_cmd_doc_cleardb": "Сброс до заводских настроек - сброс базы данных",
         "_cls_doc": "Управление базовыми настройками юзербота",
         "confirm_cleardb": "⚠️ <b>Вы уверены, что хотите сбросить базу данных?</b>",
         "cleardb_confirm": "🗑 Очистить базу",
@@ -151,11 +183,13 @@ class CoreMod(loader.Module):
         module = self.allmodules.get_classname(module)
         return f"{str(chatid)}.{module}" if module else chatid
 
+    @loader.command(ru_doc="Показать версию Hikka")
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
         await utils.answer(message, self.strings("hikka").format(*main.__version__))
 
-    async def blacklistcmd(self, message: Message):
+    @loader.command(ru_doc="[чат] [модуль] - Отключить бота где-либо")
+    async def blacklist(self, message: Message):
         """[chat_id] [module] - Blacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
@@ -167,7 +201,8 @@ class CoreMod(loader.Module):
 
         await utils.answer(message, self.strings("blacklisted").format(chatid))
 
-    async def unblacklistcmd(self, message: Message):
+    @loader.command(ru_doc="[чат] - Включить бота где-либо")
+    async def unblacklist(self, message: Message):
         """<chat_id> - Unblacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
@@ -190,7 +225,8 @@ class CoreMod(loader.Module):
 
             return message.to_id.user_id if message.is_private else False
 
-    async def blacklistusercmd(self, message: Message):
+    @loader.command(ru_doc="[пользователь] - Запретить пользователю выполнять команды")
+    async def blacklistuser(self, message: Message):
         """[user_id] - Prevent this user from running any commands"""
         user = await self.getuser(message)
 
@@ -206,7 +242,8 @@ class CoreMod(loader.Module):
 
         await utils.answer(message, self.strings("user_blacklisted").format(user))
 
-    async def unblacklistusercmd(self, message: Message):
+    @loader.command(ru_doc="[пользователь] - Разрешить пользователю выполнять команды")
+    async def unblacklistuser(self, message: Message):
         """[user_id] - Allow this user to run permitted commands"""
         user = await self.getuser(message)
 
@@ -226,7 +263,8 @@ class CoreMod(loader.Module):
         )
 
     @loader.owner
-    async def setprefixcmd(self, message: Message):
+    @loader.command(ru_doc="<префикс> - Установить префикс команд")
+    async def setprefix(self, message: Message):
         """<prefix> - Sets command prefix"""
         args = utils.get_args_raw(message)
 
@@ -249,7 +287,8 @@ class CoreMod(loader.Module):
         )
 
     @loader.owner
-    async def aliasescmd(self, message: Message):
+    @loader.command(ru_doc="Показать список алиасов")
+    async def aliases(self, message: Message):
         """Print all your aliases"""
         aliases = self.allmodules.aliases
         string = self.strings("aliases")
@@ -261,7 +300,8 @@ class CoreMod(loader.Module):
         await utils.answer(message, string)
 
     @loader.owner
-    async def addaliascmd(self, message: Message):
+    @loader.command(ru_doc="Установить алиас для команды")
+    async def addalias(self, message: Message):
         """Set an alias for a command"""
         args = utils.get_args(message)
 
@@ -289,7 +329,8 @@ class CoreMod(loader.Module):
             )
 
     @loader.owner
-    async def delaliascmd(self, message: Message):
+    @loader.command(ru_doc="Удалить алиас для команды")
+    async def delalias(self, message: Message):
         """Remove an alias for a command"""
         args = utils.get_args(message)
 
@@ -315,6 +356,7 @@ class CoreMod(loader.Module):
             self.strings("alias_removed").format(utils.escape_html(alias)),
         )
 
+    @loader.command(ru_doc="[ссылка на пак] - Изменить внешний пак перевода")
     async def dllangpackcmd(self, message: Message):
         """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""
         args = utils.get_args_raw(message)
@@ -335,7 +377,8 @@ class CoreMod(loader.Module):
             message, self.strings("pack_saved" if success else "check_pack")
         )
 
-    async def setlangcmd(self, message: Message):
+    @loader.command(ru_doc="[языки] - Изменить стандартный язык")
+    async def setlang(self, message: Message):
         """[languages in the order of priority] - Change default language"""
         args = utils.get_args_raw(message)
         if not args or any(len(i) != 2 for i in args.split(" ")):
@@ -360,8 +403,9 @@ class CoreMod(loader.Module):
         )
 
     @loader.owner
-    async def cleardbcmd(self, message: Message):
-        """Clears the entire database, effectively performing a factory reset"""
+    @loader.command(ru_doc="Очистить базу данных")
+    async def cleardb(self, message: Message):
+        """Clear the entire database, effectively performing a factory reset"""
         await self.inline.form(
             self.strings("confirm_cleardb"),
             message,
