@@ -43,6 +43,32 @@ from .loader import Modules
 # Keys for layout switch
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
 en_keys = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?"
+ALL_TAGS = [
+    "no_commands",
+    "only_commands",
+    "out",
+    "in",
+    "only_messages",
+    "editable",
+    "no_media",
+    "only_media",
+    "only_photos",
+    "only_videos",
+    "only_audios",
+    "only_stickers",
+    "only_docs",
+    "only_inline",
+    "only_channels",
+    "only_groups",
+    "only_pm",
+    "startswith",
+    "endswith",
+    "contains",
+    "func",
+    "from_id",
+    "chat_id",
+    "regex",
+]
 
 
 def _decrement_ratelimit(delay, data, key, severity):
@@ -409,10 +435,8 @@ class CommandDispatcher:
             )
             or (
                 getattr(func, "no_media", False)
-                and (
-                    not isinstance(message, types.Message)
-                    or getattr(message, "media", False)
-                )
+                and isinstance(message, types.Message)
+                and getattr(message, "media", False)
             )
             or (
                 getattr(func, "only_media", False)
@@ -447,8 +471,11 @@ class CommandDispatcher:
             )
             or (
                 getattr(func, "only_channels", False)
-                and not getattr(message, "is_channel", False)
-                and getattr(message, "is_group", False)
+                and (
+                    not getattr(message, "is_channel", False)
+                    and getattr(message, "is_group", False)
+                    or getattr(message, "is_private", False)
+                )
             )
             or (
                 getattr(func, "only_groups", False)
@@ -459,22 +486,28 @@ class CommandDispatcher:
                 and not getattr(message, "is_private", False)
             )
             or (
-                not isinstance(message, Message)
-                or getattr(func, "startswith", False)
-                and isinstance(func.startswith, str)
-                and not message.raw_text.startswith(getattr(func, "startswith"))
+                getattr(func, "startswith", False)
+                and (
+                    not isinstance(message, Message)
+                    or isinstance(func.startswith, str)
+                    and not message.raw_text.startswith(getattr(func, "startswith"))
+                )
             )
             or (
-                not isinstance(message, Message)
-                or getattr(func, "endswith", False)
-                and isinstance(func.endswith, str)
-                and not message.raw_text.endswith(getattr(func, "endswith"))
+                getattr(func, "endswith", False)
+                and (
+                    not isinstance(message, Message)
+                    or isinstance(func.endswith, str)
+                    and not message.raw_text.endswith(getattr(func, "endswith"))
+                )
             )
             or (
-                not isinstance(message, Message)
-                or getattr(func, "contains", False)
-                and isinstance(func.contains, str)
-                and getattr(func, "contains") not in message.raw_text
+                getattr(func, "contains", False)
+                and (
+                    not isinstance(message, Message)
+                    or isinstance(func.contains, str)
+                    and getattr(func, "contains") not in message.raw_text
+                )
             )
             or (
                 getattr(func, "func", False)
@@ -495,9 +528,11 @@ class CommandDispatcher:
                 )
             )
             or (
-                not isinstance(message, Message)
-                or getattr(func, "regex", False)
-                and not re.search(func.regex, message.raw_text)
+                getattr(func, "regex", False)
+                and (
+                    not isinstance(message, Message)
+                    or not re.search(func.regex, message.raw_text)
+                )
             )
         )
 
@@ -541,7 +576,10 @@ class CommandDispatcher:
                 not in whitelist_modules
                 or await self._handle_tags(event, func)
             ):
-                logging.debug(f"Ignored watcher of module {modname}")
+                tags = ", ".join(
+                    f"{tag}={getattr(func, tag, None)}" for tag in ALL_TAGS
+                )
+                logging.debug(f"Ignored watcher of module {modname} {tags}")
                 continue
 
             # Avoid weird AttributeErrors in weird dochub modules by settings placeholder
