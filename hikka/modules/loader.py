@@ -1011,8 +1011,11 @@ class LoaderMod(loader.Module):
 
                 return await self.load_module(**kwargs)  # Try again
             except loader.LoadError as e:
-                with contextlib.suppress(ImportError):
+                with contextlib.suppress(Exception):
                     self.allmodules.unload_module(instance.__class__.__name__)
+
+                with contextlib.suppress(Exception):
+                    self.allmodules.modules.remove(instance)
 
                 if message:
                     await utils.answer(
@@ -1078,8 +1081,11 @@ class LoaderMod(loader.Module):
                 )
                 task.cancel()
             except loader.LoadError as e:
-                with contextlib.suppress(ImportError):
+                with contextlib.suppress(Exception):
                     self.allmodules.unload_module(instance.__class__.__name__)
+
+                with contextlib.suppress(Exception):
+                    self.allmodules.modules.remove(instance)
 
                 if message:
                     await utils.answer(
@@ -1090,8 +1096,11 @@ class LoaderMod(loader.Module):
                 return
             except loader.SelfUnload as e:
                 logging.debug(f"Unloading {instance}, because it raised `SelfUnload`")
-                with contextlib.suppress(ImportError):
+                with contextlib.suppress(Exception):
                     self.allmodules.unload_module(instance.__class__.__name__)
+
+                with contextlib.suppress(Exception):
+                    self.allmodules.modules.remove(instance)
 
                 if message:
                     await utils.answer(
