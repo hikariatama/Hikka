@@ -1,5 +1,12 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.3.2
+
+- Add `on_change` param to `loader.ConfigValue`
+- Rework commands\inline handlers\callback handlers\watchers registration and unload process
+- Rework tags processing
+- Add junk collector aka reloader to `Modules`
+
 ## 🌑 Hikka 1.3.1
 
 - Add caching to `utils.asset_channel`

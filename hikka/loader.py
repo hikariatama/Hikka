@@ -59,6 +59,8 @@ from .types import (
     CoreOverwriteError,
     CoreUnloadError,
     StringLoader,
+    get_commands,
+    get_inline_handlers,
 )
 from .inline.core import InlineManager
 from .inline.types import InlineCall
@@ -502,44 +504,6 @@ def callback_handler(*args, **kwargs):
     return _mark_method("is_callback_handler", *args, **kwargs)
 
 
-def _get_members(
-    mod: Module,
-    ending: str,
-    attribute: Optional[str] = None,
-    strict: bool = False,
-) -> dict:
-    """Get method of module, which end with ending"""
-    return {
-        (
-            method_name.rsplit(ending, maxsplit=1)[0]
-            if (method_name == ending if strict else method_name.endswith(ending))
-            else method_name
-        ): getattr(mod, method_name)
-        for method_name in dir(mod)
-        if callable(getattr(mod, method_name))
-        and (
-            (method_name == ending if strict else method_name.endswith(ending))
-            or attribute
-            and getattr(getattr(mod, method_name), attribute, False)
-        )
-    }
-
-
-def get_commands(mod: Module) -> dict:
-    """Introspect the module to get its commands"""
-    return _get_members(mod, "cmd", "is_command")
-
-
-def get_inline_handlers(mod: Module) -> dict:
-    """Introspect the module to get its inline handlers"""
-    return _get_members(mod, "_inline_handler", "is_inline_handler")
-
-
-def get_callback_handlers(mod: Module) -> dict:
-    """Introspect the module to get its callback handlers"""
-    return _get_members(mod, "_callback_handler", "is_callback_handler")
-
-
 class Modules:
     """Stores all registered modules"""
 
@@ -566,6 +530,36 @@ class Modules:
         self._db = db
         self._translator = translator
         self.secure_boot = False
+        asyncio.ensure_future(self._junk_collector())
+
+    async def _junk_collector(self):
+        """
+        Periodically reloads commands, inline handlers, callback handlers and watchers from loaded
+        modules to prevent zombie handlers
+        """
+        while True:
+            await asyncio.sleep(30)
+            commands = {}
+            inline_handlers = {}
+            callback_handlers = {}
+            watchers = []
+            for module in self.modules:
+                commands.update(module.hikka_commands)
+                inline_handlers.update(module.hikka_inline_handlers)
+                callback_handlers.update(module.hikka_callback_handlers)
+                watchers.extend(module.hikka_watchers.values())
+
+            self.commands = commands
+            self.inline_handlers = inline_handlers
+            self.callback_handlers = callback_handlers
+            self.watchers = watchers
+
+            logger.debug(
+                f"Reloaded {len(self.commands)} commands,"
+                f" {len(self.inline_handlers)} inline handlers,"
+                f" {len(self.callback_handlers)} callback handlers and"
+                f" {len(self.watchers)} watchers"
+            )
 
     def register_all(self, mods: list = None):
         """Load all modules in the module directory"""
@@ -692,9 +686,16 @@ class Modules:
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         if getattr(instance, "__origin__", "") == "<core>":
-            self._core_commands += list(map(lambda x: x.lower(), instance.commands))
+            self._core_commands += list(
+                map(lambda x: x.lower(), list(instance.hikka_commands))
+            )
 
-        for _command in instance.commands.copy():
+        for name, cmd in self.commands.copy().items():
+            if cmd.__self__.__class__.__name__ == instance.__class__.__name__:
+                logger.debug(f"Removing command {name} for update")
+                del self.commands[name]
+
+        for _command, cmd in instance.hikka_commands.items():
             # Restrict overwriting core modules' commands
             if (
                 _command.lower() in self._core_commands
@@ -705,87 +706,54 @@ class Modules:
 
                 raise CoreOverwriteError(command=_command)
 
-            # Verify that command does not already exist, or,
-            # if it does, the command must be from the same class name
-            if _command.lower() in self.commands:
-                if (
-                    hasattr(instance.commands[_command], "__self__")
-                    and hasattr(self.commands[_command], "__self__")
-                    and instance.commands[_command].__self__.__class__.__name__
-                    != self.commands[_command].__self__.__class__.__name__
-                ):
-                    logger.debug(f"Duplicate command {_command}")
-                logger.debug(f"Replacing command for {self.commands[_command]}")
+            self.commands.update({_command.lower(): cmd})
 
-            if not instance.commands[_command].__doc__:
-                logger.debug(f"Missing docs for {_command}")
-
-            self.commands.update({_command.lower(): instance.commands[_command]})
-
-        for alias, cmd in self.aliases.items():
-            if cmd in instance.commands:
+        for alias, cmd in self.aliases.copy().items():
+            if cmd in instance.hikka_commands:
                 self.add_alias(alias, cmd)
 
-        for handler in instance.inline_handlers.copy():
-            if handler.lower() in self.inline_handlers:
+        for name, func in instance.hikka_inline_handlers.copy().items():
+            if name.lower() in self.inline_handlers:
                 if (
-                    hasattr(instance.inline_handlers[handler], "__self__")
-                    and hasattr(self.inline_handlers[handler], "__self__")
-                    and instance.inline_handlers[handler].__self__.__class__.__name__
-                    != self.inline_handlers[handler].__self__.__class__.__name__
+                    hasattr(func, "__self__")
+                    and hasattr(self.inline_handlers[name], "__self__")
+                    and func.__self__.__class__.__name__
+                    != self.inline_handlers[name].__self__.__class__.__name__
                 ):
-                    logger.debug(f"Duplicate inline_handler {handler}")
+                    logger.debug(f"Duplicate inline_handler {name}")
+
                 logger.debug(
-                    f"Replacing inline_handler for {self.inline_handlers[handler]}"
+                    f"Replacing inline_handler for {self.inline_handlers[name]}"
                 )
 
-            if not instance.inline_handlers[handler].__doc__:
-                logger.debug(f"Missing docs for {handler}")
+            if not func.__doc__:
+                logger.debug(f"Missing docs for {name}")
 
-            self.inline_handlers.update(
-                {handler.lower(): instance.inline_handlers[handler]}
-            )
+            self.inline_handlers.update({name.lower(): func})
 
-        for handler in instance.callback_handlers.copy():
-            if handler.lower() in self.callback_handlers and (
-                hasattr(instance.callback_handlers[handler], "__self__")
-                and hasattr(self.callback_handlers[handler], "__self__")
-                and instance.callback_handlers[handler].__self__.__class__.__name__
-                != self.callback_handlers[handler].__self__.__class__.__name__
+        for name, func in instance.hikka_callback_handlers.copy().items():
+            if name.lower() in self.callback_handlers and (
+                hasattr(func, "__self__")
+                and hasattr(self.callback_handlers[name], "__self__")
+                and func.__self__.__class__.__name__
+                != self.callback_handlers[name].__self__.__class__.__name__
             ):
-                logger.debug(f"Duplicate callback_handler {handler}")
-            self.callback_handlers.update(
-                {handler.lower(): instance.callback_handlers[handler]}
-            )
+                logger.debug(f"Duplicate callback_handler {name}")
+
+            self.callback_handlers.update({name.lower(): func})
 
     def register_watcher(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        for _watcher in _get_members(
-            instance,
-            "watcher",
-            "is_watcher",
-            strict=True,
-        ).values():
-            with contextlib.suppress(AttributeError, ValueError):
-                if existing_watcher := next(
-                    (
-                        existing_watcher
-                        for existing_watcher in self.watchers
-                        if (
-                            hasattr(existing_watcher, "__self__")
-                            and f"{existing_watcher.__self__.__class__.__name__}.{existing_watcher.__name__}"
-                            == f"{_watcher.__self__.__class__.__name__}.{_watcher.__name__}"
-                        )
-                    ),
-                    None,
-                ):
-                    logger.debug(f"Removing watcher for update {existing_watcher}")
-                    self.watchers.remove(existing_watcher)
+        for _watcher in self.watchers:
+            if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
+                logger.debug(f"Removing watcher {_watcher} for update")
+                self.watchers.remove(_watcher)
 
-                self.watchers += [_watcher]
+        for _watcher in instance.hikka_watchers.values():
+            self.watchers += [_watcher]
 
     def _lookup(self, modname: str):
         return next(
@@ -1220,13 +1188,13 @@ class Modules:
                 {},
             )
 
-            for conf in lib_obj.config.keys():
+            for conf in lib_obj.config:
                 with contextlib.suppress(Exception):
                     lib_obj.config.set_no_raise(
                         conf,
                         (
                             libcfg[conf]
-                            if conf in libcfg.keys()
+                            if conf in libcfg
                             else os.environ.get(f"{lib_obj.__class__.__name__}.{conf}")
                             or lib_obj.config.getdef(conf)
                         ),
@@ -1244,6 +1212,7 @@ class Modules:
 
     def dispatch(self, _command: str) -> tuple:
         """Dispatch command to appropriate module"""
+
         return next(
             (
                 (cmd, self.commands[cmd.lower()])
@@ -1270,13 +1239,13 @@ class Modules:
                 {},
             )
             try:
-                for conf in mod.config.keys():
+                for conf in mod.config:
                     with contextlib.suppress(validators.ValidationError):
                         mod.config.set_no_raise(
                             conf,
                             (
                                 modcfg[conf]
-                                if conf in modcfg.keys()
+                                if conf in modcfg
                                 else os.environ.get(f"{mod.__class__.__name__}.{conf}")
                                 or mod.config.getdef(conf)
                             ),
@@ -1423,15 +1392,6 @@ class Modules:
             self.modules.remove(mod)
             raise
 
-        if not hasattr(mod, "commands"):
-            mod.commands = get_commands(mod)
-
-        if not hasattr(mod, "inline_handlers"):
-            mod.inline_handlers = get_inline_handlers(mod)
-
-        if not hasattr(mod, "callback_handlers"):
-            mod.callback_handlers = get_callback_handlers(mod)
-
         self.register_commands(mod)
         self.register_watcher(mod)
 
@@ -1448,7 +1408,6 @@ class Modules:
     def unload_module(self, classname: str) -> bool:
         """Remove module and all stuff from it"""
         worked = []
-        to_remove = []
 
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -1484,32 +1443,23 @@ class Modules:
                         getattr(module, method).stop()
                         logger.debug(f"Stopped loop in {module=}, {method=}")
 
-                to_remove += (
-                    module.commands
-                    if isinstance(getattr(module, "commands", None), dict)
-                    else {}
-                ).values()
-                if hasattr(module, "watcher"):
-                    to_remove += [module.watcher]
+                for name, cmd in self.commands.copy().items():
+                    if cmd.__self__.__class__.__name__ == module.__class__.__name__:
+                        logger.debug(f"Removing command {name} for unload")
+                        del self.commands[name]
+                        for alias, _command in self.aliases.copy().items():
+                            if _command == name:
+                                del self.aliases[alias]
 
-        logger.debug(f"{to_remove=}, {worked=}")
-        for _watcher in self.watchers.copy():
-            if _watcher in to_remove:
-                logger.debug(f"Removing {_watcher=} for unload")
-                self.watchers.remove(_watcher)
+                for _watcher in self.watchers.copy():
+                    if (
+                        _watcher.__self__.__class__.__name__
+                        == module.__class__.__name__
+                    ):
+                        logger.debug(f"Removing watcher {_watcher} for unload")
+                        self.watchers.remove(_watcher)
 
-        aliases_to_remove = []
-
-        for name, _command in self.commands.copy().items():
-            if _command in to_remove:
-                logger.debug(f"Removing {_command=} for unload")
-                del self.commands[name]
-                aliases_to_remove.append(name)
-
-        for alias, _command in self.aliases.copy().items():
-            if _command in aliases_to_remove:
-                del self.aliases[alias]
-
+        logger.debug(f"{worked=}")
         return worked
 
     def add_alias(self, alias: str, cmd: str) -> bool:
