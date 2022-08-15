@@ -544,9 +544,9 @@ class Modules:
             callback_handlers = {}
             watchers = []
             for module in self.modules:
-                commands.update(module.hikka_commands)
-                inline_handlers.update(module.hikka_inline_handlers)
-                callback_handlers.update(module.hikka_callback_handlers)
+                commands |= module.hikka_commands
+                inline_handlers |= module.hikka_inline_handlers
+                callback_handlers |= module.hikka_callback_handlers
                 watchers.extend(module.hikka_watchers.values())
 
             self.commands = commands
