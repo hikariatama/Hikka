@@ -84,6 +84,21 @@ class Module:
         send a message to logs with verbosity INFO and exception traceback
         """
 
+    def __getattr__(self, name: str):
+        if name in {"hikka_commands", "commands"}:
+            return get_commands(self)
+
+        if name in {"hikka_inline_handlers", "inline_handlers"}:
+            return get_inline_handlers(self)
+
+        if name in {"hikka_callback_handlers", "callback_handlers"}:
+            return get_callback_handlers(self)
+
+        if name in {"hikka_watchers", "watchers"}:
+            return get_watchers(self)
+        
+        raise AttributeError(f"Module has no attribute {name}")
+
 
 class Library:
     """All external libraries must have a class-inheritant from this class"""
@@ -321,3 +336,51 @@ class ConfigValue:
                     syncwrap(self.on_change)
 
         object.__setattr__(self, key, value)
+
+
+def _get_members(
+    mod: Module,
+    ending: str,
+    attribute: Optional[str] = None,
+    strict: bool = False,
+) -> dict:
+    """Get method of module, which end with ending"""
+    return {
+        (
+            method_name.rsplit(ending, maxsplit=1)[0]
+            if (method_name == ending if strict else method_name.endswith(ending))
+            else method_name
+        ): getattr(mod, method_name)
+        for method_name in dir(mod)
+        if callable(getattr(mod, method_name))
+        and (
+            (method_name == ending if strict else method_name.endswith(ending))
+            or attribute
+            and getattr(getattr(mod, method_name), attribute, False)
+        )
+    }
+
+
+def get_commands(mod: Module) -> dict:
+    """Introspect the module to get its commands"""
+    return _get_members(mod, "cmd", "is_command")
+
+
+def get_inline_handlers(mod: Module) -> dict:
+    """Introspect the module to get its inline handlers"""
+    return _get_members(mod, "_inline_handler", "is_inline_handler")
+
+
+def get_callback_handlers(mod: Module) -> dict:
+    """Introspect the module to get its callback handlers"""
+    return _get_members(mod, "_callback_handler", "is_callback_handler")
+
+
+def get_watchers(mod: Module) -> dict:
+    """Introspect the module to get its watchers"""
+    return _get_members(
+        mod,
+        "watcher",
+        "is_watcher",
+        strict=True,
+    )
