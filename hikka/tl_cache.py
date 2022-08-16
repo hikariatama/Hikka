@@ -451,7 +451,7 @@ def install_fulluser_caching(client: TelegramClient):
             and not client._hikka_fulluser_cache[hashable_entity].expired()
             and client._hikka_fulluser_cache[hashable_entity].ts + exp > time.time()
         ):
-            return client._hikka_fulluser_cache[hashable_entity].full_channel
+            return client._hikka_fulluser_cache[hashable_entity].full_user
 
         result = await client(GetFullUserRequest(entity))
         client._hikka_fulluser_cache[hashable_entity] = CacheRecordFullUser(

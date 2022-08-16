@@ -1,5 +1,9 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.3.3
+
+- Fix typo, which broke `client.get_fulluser`
+
 ## 🌑 Hikka 1.3.2
 
 - Add `on_change` param to `loader.ConfigValue`
