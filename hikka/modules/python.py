@@ -66,7 +66,7 @@ class PythonMod(loader.Module):
     @loader.command(ru_doc="Алиас для команды .e")
     async def eval(self, message: Message):
         """Alias for .e command"""
-        await self.ecmd(message)
+        await self.e(message)
 
     @loader.owner
     @loader.command(ru_doc="Выполняет Python код")

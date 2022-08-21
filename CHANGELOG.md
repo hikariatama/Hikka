@@ -8,6 +8,7 @@
 - Fix translation flaw in `HikkaSecurity`
 - Fix `.uninstall_hikka` being accessible by sudo
 - Fix `utils.find_caller` for :method:`hikka.inline.utils.Utils._find_caller_sec_map`
+- Fix `.eval`
 - Add more animated emojis to modules
 - Add targeted security for users and chats (`.tsec`)
 - Add support for `tg_level` in `.config Tester`
