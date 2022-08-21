@@ -923,9 +923,7 @@ class Modules:
         instance.hikka = True
         instance.get = partial(self._get, _owner=instance.__class__.__name__)
         instance.set = partial(self._set, _owner=instance.__class__.__name__)
-        instance.pointer = partial(
-            self._pointer, _owner=instance.__class__.__name__
-        )
+        instance.pointer = partial(self._pointer, _owner=instance.__class__.__name__)
         instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
         instance.client = self.client
         instance._client = self.client
@@ -1031,7 +1029,9 @@ class Modules:
         module = f"hikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
         origin = f"<library {url}>"
 
-        spec = importlib.machinery.ModuleSpec(module, StringLoader(code, origin), origin=origin)
+        spec = importlib.machinery.ModuleSpec(
+            module, StringLoader(code, origin), origin=origin
+        )
         try:
             instance = importlib.util.module_from_spec(spec)
             sys.modules[module] = instance
@@ -1125,9 +1125,15 @@ class Modules:
         lib_obj.inline = self.inline
         lib_obj.tg_id = self.client.tg_id
         lib_obj.allmodules = self
-        lib_obj._lib_get = partial(self._get, _owner=lib_obj)  # skipcq
-        lib_obj._lib_set = partial(self._set, _owner=lib_obj)  # skipcq
-        lib_obj._lib_pointer = partial(self._pointer, _owner=lib_obj)  # skipcq
+        lib_obj._lib_get = partial(
+            self._get, _owner=lib_obj.__class__.__name__
+        )  # skipcq
+        lib_obj._lib_set = partial(
+            self._set, _owner=lib_obj.__class__.__name__
+        )  # skipcq
+        lib_obj._lib_pointer = partial(
+            self._pointer, _owner=lib_obj.__class__.__name__
+        )  # skipcq
         lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
         for old_lib in self.libraries:
