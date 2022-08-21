@@ -189,6 +189,7 @@ class UpdaterMod(loader.Module):
         try:
             if (
                 "--force" in (utils.get_args_raw(message) or "")
+                or "-f" in (utils.get_args_raw(message) or "")
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
@@ -339,6 +340,7 @@ class UpdaterMod(loader.Module):
             ).hexsha
             if (
                 "--force" in (utils.get_args_raw(message) or "")
+                or "-f" in (utils.get_args_raw(message) or "")
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,

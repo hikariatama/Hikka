@@ -13,6 +13,7 @@
 - Add more animated emojis to modules
 - Add targeted security for users and chats (`.tsec`)
 - Add support for `tg_level` in `.config Tester`
+- Add `-f` param to `.restart` and `.update`
 
 ## 🌑 Hikka 1.3.3
 
