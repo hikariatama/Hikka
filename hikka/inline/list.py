@@ -27,6 +27,7 @@ from aiogram.utils.exceptions import RetryAfter
 
 from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
+from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import utils, main
 from .types import InlineMessage, InlineUnit
@@ -161,10 +162,8 @@ class List(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        '<emoji document_id="5193024268736142032">🌘</emoji><emoji'
-                        ' document_id="5190581591985889078">🌘</emoji><emoji'
-                        ' document_id="5193009970790013437">🌘</emoji>'
-                        if self._client.hikka_me.premium
+                        utils.get_platform_emoji()
+                        if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
                     + " <b>Loading inline list...</b>"

@@ -23,7 +23,9 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import os
+
 from telethon.tl.types import Message
+from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import loader, main, translations, utils
 from ..inline.types import InlineCall
@@ -266,18 +268,17 @@ class CoreMod(loader.Module):
             message,
             self.strings("hikka").format(
                 (
-                    '<emoji document_id="5193024268736142032">🌘</emoji><emoji'
-                    ' document_id="5190581591985889078">🌘</emoji><emoji'
-                    ' document_id="5193009970790013437">🌘</emoji>'
+                    utils.get_platform_emoji()
                     + (
-                        ' <emoji document_id="5190511863191838549">☁️</emoji><emoji'
-                        ' document_id="5193109876024286021">☁️</emoji><emoji'
-                        ' document_id="5190647687237607235">☁️</emoji>'
+                        '<emoji document_id="5192756799647785066">✌️</emoji><emoji'
+                        ' document_id="5193117564015747203">✌️</emoji><emoji'
+                        ' document_id="5195050806105087456">✌️</emoji><emoji'
+                        ' document_id="5195457642587233944">✌️</emoji>'
                         if "LAVHOST" in os.environ
                         else ""
                     )
                 )
-                if self._client.hikka_me.premium
+                if self._client.hikka_me.premium and CUSTOM_EMOJIS
                 else "🌘 <b>Hikka userbot</b>",
                 *main.__version__,
                 utils.get_commit_url(),

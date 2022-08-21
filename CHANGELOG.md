@@ -14,6 +14,8 @@
 - Add targeted security for users and chats (`.tsec`)
 - Add support for `tg_level` in `.config Tester`
 - Add `-f` param to `.restart` and `.update`
+- Add platform-specific Hikka emojis to premium users
+- Add codepaces to `utils.get_named_platform`
 
 ## 🌑 Hikka 1.3.3
 

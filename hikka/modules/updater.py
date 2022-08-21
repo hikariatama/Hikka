@@ -34,11 +34,13 @@ import time
 
 import git
 from git import GitCommandError, Repo
+
 from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
 from telethon.tl.types import DialogFilter, Message
+from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import loader, utils, heroku, main
 from ..inline.types import InlineCall
@@ -57,7 +59,8 @@ class UpdaterMod(loader.Module):
             " from</b> <a href='{}'>here</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Restarting...</b>"
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Your {} is"
+            " restarting...</b>"
         ),
         "downloading": (
             "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Downloading"
@@ -115,7 +118,8 @@ class UpdaterMod(loader.Module):
             " прочитать</b> <a href='{}'>здесь</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Перезагрузка...</b>"
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Твоя {}"
+            " перезагружается...</b>"
         ),
         "downloading": (
             "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Скачивание"
@@ -242,14 +246,18 @@ class UpdaterMod(loader.Module):
 
         msg_obj = await utils.answer(
             msg_obj,
-            self.strings("restarting_caption")
+            self.strings("restarting_caption").format(
+                utils.get_platform_emoji()
+                if self._client.hikka_me.premium and CUSTOM_EMOJIS
+                else "Hikka"
+            )
             if "LAVHOST" not in os.environ
             else self.strings("lavhost_restart").format(
-                "</b><b><emoji"
-                ' document_id="5190511863191838549">☁️</emoji></b><b><emoji'
-                ' document_id="5193109876024286021">☁️</emoji></b><b><emoji'
-                ' document_id="5190647687237607235">☁️</emoji></b><b>'
-                if self._client.hikka_me.premium
+                '</b><emoji document_id="5192756799647785066">✌️</emoji><emoji'
+                ' document_id="5193117564015747203">✌️</emoji><emoji'
+                ' document_id="5195050806105087456">✌️</emoji><emoji'
+                ' document_id="5195457642587233944">✌️</emoji><b>'
+                if self._client.hikka_me.premium and CUSTOM_EMOJIS
                 else "lavHost"
             ),
         )
@@ -380,11 +388,11 @@ class UpdaterMod(loader.Module):
                 msg_obj = await utils.answer(
                     msg_obj,
                     self.strings("lavhost_update").format(
-                        "</b><b><emoji"
-                        ' document_id="5190511863191838549">☁️</emoji></b><b><emoji'
-                        ' document_id="5193109876024286021">☁️</emoji></b><b><emoji'
-                        ' document_id="5190647687237607235">☁️</emoji></b><b>'
-                        if self._client.hikka_me.premium
+                        '</b><emoji document_id="5192756799647785066">✌️</emoji><emoji'
+                        ' document_id="5193117564015747203">✌️</emoji><emoji'
+                        ' document_id="5195050806105087456">✌️</emoji><emoji'
+                        ' document_id="5195457642587233944">✌️</emoji><b>'
+                        if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "lavHost"
                     ),
                 )

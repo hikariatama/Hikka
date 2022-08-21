@@ -401,9 +401,9 @@ class HelpMod(loader.Module):
         await utils.answer(
             message,
             self.strings("support").format(
-                '<emoji document_id="5193024268736142032">🌘</emoji><emoji'
-                ' document_id="5190581591985889078">🌘</emoji><emoji'
-                ' document_id="5193009970790013437">🌘</emoji>'
+                '<emoji document_id="5192765204898783881">🌘</emoji><emoji'
+                ' document_id="5195311729663286630">🌘</emoji><emoji'
+                ' document_id="5195045669324201904">🌘</emoji>'
                 if self._client.hikka_me.premium
                 else "🌘",
             ),
