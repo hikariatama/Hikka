@@ -671,11 +671,8 @@ class HikkaSecurityMod(loader.Module):
             )
             return
 
-        self._db.set(
-            security.__name__,
-            group,
-            list(set(self._db.get(security.__name__, group, []) + [user.id])),
-        )
+        if user.id not in getattr(self._client.dispatcher.security, group):
+            getattr(self._client.dispatcher.security, group).append(user.id)
 
         m = (
             self.strings(f"{group}_added").format(
@@ -723,11 +720,8 @@ class HikkaSecurityMod(loader.Module):
         if not user:
             return
 
-        self._db.set(
-            security.__name__,
-            group,
-            list(set(self._db.get(security.__name__, group, [])) - {user.id}),
-        )
+        if user.id in getattr(self._client.dispatcher.security, group):
+            getattr(self._client.dispatcher.security, group).remove(user.id)
 
         m = self.strings(f"{group}_removed").format(
             user.id,
@@ -738,7 +732,7 @@ class HikkaSecurityMod(loader.Module):
 
     async def _list_group(self, message: Message, group: str):
         _resolved_users = []
-        for user in self._db.get(security.__name__, group, []) + (
+        for user in getattr(self._client.dispatcher.security, group) + (
             [self.tg_id] if group == "owner" else []
         ):
             try:
