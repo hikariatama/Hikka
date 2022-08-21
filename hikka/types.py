@@ -35,6 +35,9 @@ from .pointers import (  # skipcq: PY-W2000
 logger = logging.getLogger(__name__)
 
 
+JSONSerializable = Union[str, int, float, bool, list, dict, None]
+
+
 class StringLoader(SourceLoader):
     """Load a python module/file from a string"""
 

@@ -10,12 +10,16 @@
 - Fix `utils.find_caller` for :method:`hikka.inline.utils.Utils._find_caller_sec_map`
 - Fix `.eval`
 - Fix: use old lib if its version is higher than new one
+- Fix grep for messages bigger than 4096 UTF-8 characters
 - Add more animated emojis to modules
 - Add targeted security for users and chats (`.tsec`)
 - Add support for `tg_level` in `.config Tester`
 - Add `-f` param to `.restart` and `.update`
 - Add platform-specific Hikka emojis to premium users
 - Add codepaces to `utils.get_named_platform`
+- Rename `func` tag to `filter` due to internal python conflict with dynamically generated methods
+- Partially rework security unit
+- Internal refactoring and typehints
 
 ## 🌑 Hikka 1.3.3
 

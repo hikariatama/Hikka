@@ -27,8 +27,9 @@ except ImportError as e:
         raise e
 
 
-from typing import Any, Union
+from typing import Optional, Union
 
+from telethon import TelegramClient
 from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
 
@@ -37,6 +38,7 @@ from .pointers import (
     PointerList,
     PointerDict,
 )
+from .types import JSONSerializable
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -60,7 +62,7 @@ class Database(dict):
     _redis = None
     _saving_task = None
 
-    def __init__(self, client):
+    def __init__(self, client: TelegramClient):
         super().__init__()
         self._client = client
 
@@ -347,14 +349,19 @@ class Database(dict):
 
         return asset[0] if asset else None
 
-    def get(self, owner: str, key: str, default: Any = None) -> Any:
+    def get(
+        self,
+        owner: str,
+        key: str,
+        default: Optional[JSONSerializable] = None,
+    ) -> JSONSerializable:
         """Get database key"""
         try:
             return self[owner][key]
         except KeyError:
             return default
 
-    def set(self, owner: str, key: str, value: Any) -> bool:
+    def set(self, owner: str, key: str, value: JSONSerializable) -> bool:
         """Set database key"""
         if not utils.is_serializable(owner):
             raise RuntimeError(
@@ -380,7 +387,12 @@ class Database(dict):
         super().setdefault(owner, {})[key] = value
         return self.save()
 
-    def pointer(self, owner: str, key: str, default: Any = None) -> Any:
+    def pointer(
+        self,
+        owner: str,
+        key: str,
+        default: Optional[JSONSerializable] = None,
+    ) -> JSONSerializable:
         """Get a pointer to database key"""
         value = self.get(owner, key, default)
         mapping = {

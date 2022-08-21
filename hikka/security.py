@@ -28,12 +28,14 @@ import logging
 import time
 from typing import Optional
 
+from telethon import TelegramClient
 from telethon.hints import EntityLike
 from telethon.utils import get_display_name
 from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
 
 from . import main, utils
+from .database import Database
 
 logger = logging.getLogger(__name__)
 
@@ -153,24 +155,33 @@ def _sec(func: callable, flags: int) -> callable:
 
 
 class SecurityManager:
-    def __init__(self, db):
-        self._any_admin = db.get(__name__, "any_admin", False)
-        self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
+    def __init__(self, client: TelegramClient, db: Database):
+        self._client = client
         self._db = db
         self._cache = {}
-        self._tsec_chat = self._db.pointer(__name__, "tsec_chat", [])
-        self._tsec_user = self._db.pointer(__name__, "tsec_user", [])
+
+        self._any_admin = db.get(__name__, "any_admin", False)
+        self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
+        self._tsec_chat = db.pointer(__name__, "tsec_chat", [])
+        self._tsec_user = db.pointer(__name__, "tsec_user", [])
+        self._owner = db.pointer(__name__, "owner", [])
+        self._sudo = db.pointer(__name__, "sudo", [])
+        self._support = db.pointer(__name__, "support", [])
+
         self._reload_rights()
 
+        self.any_admin = self._any_admin
+        self.default = self._default
+        self.tsec_chat = self._tsec_chat
+        self.tsec_user = self._tsec_user
+        self.owner = self._owner
+        self.sudo = self._sudo
+        self.support = self._support
+
     def _reload_rights(self):
-        self._owner = list(
-            set(
-                self._db.get(__name__, "owner", []).copy()
-                + ([self._client.tg_id] if hasattr(self, "_client") else [])
-            )
-        )
-        self._sudo = list(set(self._db.get(__name__, "sudo", []).copy()))
-        self._support = list(set(self._db.get(__name__, "support", []).copy()))
+        if self._client.tg_id not in self._owner:
+            self._owner.append(self._client.tg_id)
+
         for info in self._tsec_user.copy():
             if info["expires"] < time.time():
                 self._tsec_user.remove(info)
@@ -178,9 +189,6 @@ class SecurityManager:
         for info in self._tsec_chat.copy():
             if info["expires"] < time.time():
                 self._tsec_chat.remove(info)
-
-    async def init(self, client):
-        self._client = client
 
     def add_rule(
         self,
@@ -208,6 +216,22 @@ class SecurityManager:
                 "entity_url": utils.get_entity_url(target),
             }
         )
+
+    def remove_rules(self, target_type: str, target_id: int) -> bool:
+        any_ = False
+
+        if target_type == "user":
+            for rule in self.tsec_user.copy():
+                if rule["target"] == target_id:
+                    self.tsec_user.remove(rule)
+                    any_ = True
+        elif target_type == "chat":
+            for rule in self.tsec_chat.copy():
+                if rule["target"] == target_id:
+                    self.tsec_chat.remove(rule)
+                    any_ = True
+
+        return any_
 
     def get_flags(self, func: callable) -> int:
         if isinstance(func, int):
@@ -297,7 +321,7 @@ class SecurityManager:
             cmd = message.raw_text[1:].split()[0].strip()
         except Exception:
             cmd = None
-        
+
         if callable(func):
             for info in self._tsec_user.copy():
                 if info["target"] == user:

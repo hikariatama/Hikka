@@ -625,9 +625,8 @@ class Hikka:
 
     async def _add_dispatcher(self, client, modules, db):
         """Inits and adds dispatcher instance to client"""
-        dispatcher = CommandDispatcher(modules, db, self.arguments.no_nickname)
+        dispatcher = CommandDispatcher(modules, client, db, self.arguments.no_nickname)
         client.dispatcher = dispatcher
-        await dispatcher.init(client)
         modules.check_security = dispatcher.check_security
 
         client.add_event_handler(

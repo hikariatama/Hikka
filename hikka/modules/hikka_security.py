@@ -543,7 +543,7 @@ class HikkaSecurityMod(loader.Module):
     ) -> dict:
         config = self._db.get(security.__name__, "masks", {}).get(
             f"{command.__module__}.{command.__name__}",
-            getattr(command, "security", self._client.dispatcher.security._default),
+            getattr(command, "security", self._client.dispatcher.security.default),
         )
 
         return self._perms_map(config, is_inline)
@@ -938,7 +938,7 @@ class HikkaSecurityMod(loader.Module):
             try:
                 if not args[1].isdigit() and not args[1].startswith("@"):
                     raise ValueError
- 
+
                 target = await self._client.get_entity(
                     int(args[1]) if args[1].isdigit() else args[1]
                 )
@@ -1011,7 +1011,7 @@ class HikkaSecurityMod(loader.Module):
                     await utils.answer(message, self.strings("no_target"))
                     return
 
-        if target.id in self._client.dispatcher.security._owner:
+        if target.id in self._client.dispatcher.security.owner:
             await utils.answer(message, self.strings("owner_target"))
             return
 
@@ -1059,8 +1059,8 @@ class HikkaSecurityMod(loader.Module):
     async def tsecrm(self, message: Message):
         """<"user"/"chat"> - Remove targeted security rule"""
         if (
-            not self._client.dispatcher.security._tsec_chat
-            and not self._client.dispatcher.security._tsec_user
+            not self._client.dispatcher.security.tsec_chat
+            and not self._client.dispatcher.security.tsec_user
         ):
             await utils.answer(message, self.strings("no_rules"))
             return
@@ -1084,18 +1084,10 @@ class HikkaSecurityMod(loader.Module):
                 await utils.answer(message, self.strings("no_target"))
                 return
 
-            if not any(
-                rule["target"] == target.id
-                for rule in self._client.dispatcher.security._tsec_user
-            ):
+            if not self._client.dispatcher.security.remove_rules("user", target.id):
                 await utils.answer(message, self.strings("no_rules"))
                 return
 
-            self._client.dispatcher.security._tsec_user = [
-                rule
-                for rule in self._client.dispatcher.security._tsec_user
-                if rule["target"] != target.id
-            ]
             await utils.answer(
                 message,
                 self.strings("rules_removed").format(
@@ -1111,18 +1103,10 @@ class HikkaSecurityMod(loader.Module):
 
             target = await self._client.get_entity(message.peer_id)
 
-            if not any(
-                rule["target"] == target.id
-                for rule in self._client.dispatcher.security._tsec_chat
-            ):
+            if not self._client.dispatcher.security.remove_rules("chat", target.id):
                 await utils.answer(message, self.strings("no_rules"))
                 return
 
-            self._client.dispatcher.security._tsec_chat = [
-                rule
-                for rule in self._client.dispatcher.security._tsec_chat
-                if rule["target"] != target.id
-            ]
             await utils.answer(
                 message,
                 self.strings("rules_removed").format(
@@ -1143,8 +1127,8 @@ class HikkaSecurityMod(loader.Module):
         args = utils.get_args(message)
         if not args:
             if (
-                not self._client.dispatcher.security._tsec_chat
-                and not self._client.dispatcher.security._tsec_user
+                not self._client.dispatcher.security.tsec_chat
+                and not self._client.dispatcher.security.tsec_user
             ):
                 await utils.answer(message, self.strings("no_rules"))
                 return
@@ -1158,14 +1142,14 @@ class HikkaSecurityMod(loader.Module):
                             f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
                             f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
                             f" <code>{rule['rule']}</code>"
-                            for rule in self._client.dispatcher.security._tsec_chat
+                            for rule in self._client.dispatcher.security.tsec_chat
                         ]
                         + [
                             "<emoji document_id='6037122016849432064'>👤</emoji> <b><a"
                             f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
                             f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
                             f" <code>{rule['rule']}</code>"
-                            for rule in self._client.dispatcher.security._tsec_user
+                            for rule in self._client.dispatcher.security.tsec_user
                         ]
                     )
                 ),

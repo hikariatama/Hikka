@@ -17,6 +17,38 @@ class PointerList(list):
         self._default = default
         super().__init__(db.get(module, key, default))
 
+    def sync(self):
+        super().__init__(self._db.get(self._module, self._key, self._default))
+
+    def __getitem__(self, index: int) -> Any:
+        self.sync()
+        return super().__getitem__(index)
+
+    def __iter__(self) -> Iterable:
+        self.sync()
+        return super().__iter__()
+
+    def __reversed__(self) -> Iterable:
+        self.sync()
+        return super().__reversed__()
+
+    def __contains__(self, item: Any) -> bool:
+        self.sync()
+        return super().__contains__(item)
+
+    def __len__(self) -> int:
+        self.sync()
+        return super().__len__()
+
+    def __bool__(self) -> bool:
+        return bool(self._db.get(self._module, self._key, self._default))
+
+    def __repr__(self):
+        return f"PointerList({list(self)})"
+
+    def __str__(self):
+        return f"PointerList({list(self)})"
+
     def __delitem__(self, __i: Union[SupportsIndex, slice]) -> None:
         a = super().__delitem__(__i)
         self._save()
@@ -36,9 +68,6 @@ class PointerList(list):
         a = super().__imul__(__x)
         self._save()
         return a
-
-    def __str__(self):
-        return f"PointerList({list(self)})"
 
     def append(self, value: Any):
         super().append(value)
@@ -84,6 +113,43 @@ class PointerDict(dict):
         self._key = key
         self._default = default
         super().__init__(db.get(module, key, default))
+
+    def sync(self):
+        super().__init__(self._db.get(self._module, self._key, self._default))
+
+    def __repr__(self):
+        return f"PointerDict({dict(self)})"
+
+    def __bool__(self) -> bool:
+        return bool(self._db.get(self._module, self._key, self._default))
+
+    def __reversed__(self) -> Iterable:
+        self.sync()
+        return super().__reversed__()
+
+    def __contains__(self, item: Any) -> bool:
+        self.sync()
+        return super().__contains__(item)
+
+    def __getitem__(self, key: str) -> Any:
+        self.sync()
+        return super().__getitem__(key)
+
+    def __iter__(self) -> Iterable:
+        self.sync()
+        return super().__iter__()
+
+    def items(self) -> Iterable:
+        self.sync()
+        return super().items()
+
+    def keys(self) -> Iterable:
+        self.sync()
+        return super().keys()
+
+    def values(self) -> Iterable:
+        self.sync()
+        return super().values()
 
     def __setitem__(self, key: str, value: Any):
         super().__setitem__(key, value)

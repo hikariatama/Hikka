@@ -335,7 +335,7 @@ async def answer(
     if isinstance(response, str) and not kwargs.pop("asfile", False):
         text, entities = parse_mode.parse(response)
 
-        if len(text) >= 4096:
+        if len(text) >= 4096 and not hasattr(message, "hikka_grepped"):
             try:
                 if not message.client.loader.inline.init_complete:
                     raise
@@ -404,7 +404,9 @@ async def answer(
                 "reply_to",
                 getattr(message, "reply_to_msg_id", None),
             )
-            result = await message.client.send_file(message.chat_id, response, **kwargs)
+            result = await message.client.send_file(message.peer_id, response, **kwargs)
+            if message.out:
+                await message.delete()
 
     return result
 
@@ -670,7 +672,7 @@ def get_named_platform() -> str:
 
     if is_okteto:
         return "☁️ Okteto"
-    
+
     if is_codespaces:
         return "🐈‍⬛ Codespaces"
 
