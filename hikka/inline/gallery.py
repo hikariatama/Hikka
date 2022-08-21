@@ -224,7 +224,16 @@ class Gallery(InlineUnit):
             try:
                 status_message = await (
                     message.edit if message.out else message.respond
-                )("🌘 <b>Loading inline gallery...</b>")
+                )(
+                    (
+                        '<emoji document_id="5193024268736142032">🌘</emoji><emoji'
+                        ' document_id="5190581591985889078">🌘</emoji><emoji'
+                        ' document_id="5193009970790013437">🌘</emoji>'
+                        if self._client.hikka_me.premium
+                        else "🌘"
+                    )
+                    + " <b>Loading inline gallery...</b>"
+                )
             except Exception:
                 status_message = None
         else:

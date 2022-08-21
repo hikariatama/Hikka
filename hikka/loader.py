@@ -561,7 +561,7 @@ class Modules:
                 f" {len(self.watchers)} watchers"
             )
 
-    def register_all(self, mods: list = None):
+    async def register_all(self, mods: list = None):
         """Load all modules in the module directory"""
         external_mods = []
 
@@ -590,10 +590,10 @@ class Modules:
             else:
                 external_mods = []
 
-        self._register_modules(mods)
-        self._register_modules(external_mods, "<file>")
+        await self._register_modules(mods)
+        await self._register_modules(external_mods, "<file>")
 
-    def _register_modules(self, modules: list, origin: str = "<core>"):
+    async def _register_modules(self, modules: list, origin: str = "<core>"):
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
@@ -618,11 +618,11 @@ class Modules:
                         origin=user_friendly_origin,
                     )
 
-                self.register_module(spec, module_name, origin)
+                await self.register_module(spec, module_name, origin)
             except BaseException as e:
                 logger.exception(f"Failed to load module {mod} due to {e}:")
 
-    def register_module(
+    async def register_module(
         self,
         spec: ModuleSpec,
         module_name: str,
@@ -655,7 +655,7 @@ class Modules:
             if not isinstance(ret, Module):
                 raise TypeError(f"Instance is not a Module, it is {type(ret)}")
 
-        self.complete_registration(ret)
+        await self.complete_registration(ret)
         ret.__origin__ = origin
 
         cls_name = ret.__class__.__name__
@@ -909,7 +909,7 @@ class Modules:
 
         return event.status
 
-    def complete_registration(self, instance: Module):
+    async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -945,7 +945,7 @@ class Modules:
                     )
 
                 logger.debug(f"Removing module for update {module}")
-                asyncio.ensure_future(module.on_unload())
+                await module.on_unload()
 
                 self.modules.remove(module)
                 for method in dir(module):
@@ -1405,7 +1405,7 @@ class Modules:
             name,
         )
 
-    def unload_module(self, classname: str) -> bool:
+    async def unload_module(self, classname: str) -> bool:
         """Remove module and all stuff from it"""
         worked = []
 
@@ -1436,7 +1436,7 @@ class Modules:
                 logger.debug(f"Removing module for unload {module}")
                 self.modules.remove(module)
 
-                asyncio.ensure_future(module.on_unload())
+                await module.on_unload()
 
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):

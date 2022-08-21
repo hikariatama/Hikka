@@ -10,28 +10,27 @@ import difflib
 import inspect
 import logging
 
-from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.types import Message
 
-from .. import loader, security, utils
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 
 
 @loader.tds
 class HelpMod(loader.Module):
-    """Help module, made specifically for Hikka with <3"""
+    """Shows help for modules and commands"""
 
     strings = {
         "name": "Help",
         "bad_module": "<b>🚫 <b>Module</b> <code>{}</code> <b>not found</b>",
         "single_mod_header": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{}</b>:"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{}</b>:"
         ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 No docs",
         "all_header": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} mods available,"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} mods available,"
             " {} hidden:</b>"
         ),
         "mod_tmpl": "\n{} <code>{}</code>",
@@ -39,38 +38,34 @@ class HelpMod(loader.Module):
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Specify module to hide</b>",
         "hidden_shown": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} modules hidden,"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} modules hidden,"
             " {} modules shown:</b>\n{}\n{}"
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
-        "joined": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Joined the</b> <a"
-            " href='https://t.me/hikka_talks'>support chat</a>"
-        ),
-        "join": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Join the</b> <a"
-            " href='https://t.me/hikka_talks'>support chat</a>"
+        "support": (
+            "{} <b>Link to </b><a href='https://t.me/hikka_talks'>support chat</a>"
         ),
         "partial_load": (
-            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>Userbot is not"
+            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>Userbot is not"
             " fully loaded, so not all modules are shown</b>"
         ),
         "not_exact": (
-            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>No exact match"
+            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>No exact match"
             " occured, so the closest result is shown instead</b>"
         ),
+        "request_join": "You requested link for Hikka support chat",
     }
 
     strings_ru = {
         "bad_module": "<b>🚫 <b>Модуль</b> <code>{}</code> <b>не найден</b>",
         "single_mod_header": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{}</b>:"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{}</b>:"
         ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
         "all_header": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} модулей доступно,"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} модулей доступно,"
             " {} скрыто:</b>"
         ),
         "mod_tmpl": "\n{} <code>{}</code>",
@@ -78,24 +73,24 @@ class HelpMod(loader.Module):
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Укажи модуль(-и), которые нужно скрыть</b>",
         "hidden_shown": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>{} модулей скрыто,"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} модулей скрыто,"
             " {} модулей показано:</b>\n{}\n{}"
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
-        "joined": (
-            "🌌 <b>Вступил в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>"
+        "support": (
+            "{} <b>Ссылка на </b><a href='https://t.me/hikka_talks'>чат помощи</a>"
         ),
-        "join": "🌌 <b>Вступи в</b> <a href='https://t.me/hikka_talks'>чат помощи</a>",
-        "_cls_doc": "Модуль помощи, сделанный специально для Hikka <3",
+        "_cls_doc": "Показывает помощь по модулям",
         "partial_load": (
-            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>Юзербот еще не"
+            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>Юзербот еще не"
             " загрузился полностью, поэтому показаны не все модули</b>"
         ),
         "not_exact": (
-            "<emoji document_id='5370740716840425754'>☝️</emoji> <b>Точного совпадения"
+            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>Точного совпадения"
             " не нашлось, поэтому было выбрано наиболее подходящее</b>"
         ),
+        "request_join": "Вы запросили ссылку на чат помощи Hikka",
     }
 
     def __init__(self):
@@ -397,35 +392,19 @@ class HelpMod(loader.Module):
             f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}{no_commands_}{partial_load}",
         )
 
-    @loader.command(ru_doc="Вступить в чат помощи")
+    @loader.command(ru_doc="Показать ссылку на чат помощи Hikka")
     async def support(self, message):
-        """Joins the support Hikka chat"""
-        if await self.allmodules.check_security(
-            message,
-            security.OWNER | security.SUDO,
-        ):
-            await self._client(JoinChannelRequest("https://t.me/hikka_talks"))
+        """Get link of Hikka support chat"""
+        if message.out:
+            await self.request_join("@hikka_talks", self.strings("request_join"))
 
-            try:
-                await self.inline.form(
-                    self.strings("joined"),
-                    reply_markup=[
-                        [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
-                    ],
-                    ttl=10,
-                    message=message,
-                )
-            except Exception:
-                await utils.answer(message, self.strings("joined"))
-        else:
-            try:
-                await self.inline.form(
-                    self.strings("join"),
-                    reply_markup=[
-                        [{"text": "👩‍💼 Chat", "url": "https://t.me/hikka_talks"}]
-                    ],
-                    ttl=10,
-                    message=message,
-                )
-            except Exception:
-                await utils.answer(message, self.strings("join"))
+        await utils.answer(
+            message,
+            self.strings("support").format(
+                '<emoji document_id="5193024268736142032">🌘</emoji><emoji'
+                ' document_id="5190581591985889078">🌘</emoji><emoji'
+                ' document_id="5193009970790013437">🌘</emoji>'
+                if self._client.hikka_me.premium
+                else "🌘",
+            ),
+        )

@@ -28,6 +28,8 @@ import logging
 import time
 from typing import Optional
 
+from telethon.hints import EntityLike
+from telethon.utils import get_display_name
 from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
 
@@ -155,8 +157,10 @@ class SecurityManager:
         self._any_admin = db.get(__name__, "any_admin", False)
         self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
         self._db = db
-        self._reload_rights()
         self._cache = {}
+        self._tsec_chat = self._db.pointer(__name__, "tsec_chat", [])
+        self._tsec_user = self._db.pointer(__name__, "tsec_user", [])
+        self._reload_rights()
 
     def _reload_rights(self):
         self._owner = list(
@@ -167,9 +171,43 @@ class SecurityManager:
         )
         self._sudo = list(set(self._db.get(__name__, "sudo", []).copy()))
         self._support = list(set(self._db.get(__name__, "support", []).copy()))
+        for info in self._tsec_user.copy():
+            if info["expires"] < time.time():
+                self._tsec_user.pop(info)
+
+        for info in self._tsec_chat.copy():
+            if info["expires"] < time.time():
+                self._tsec_chat.pop(info)
 
     async def init(self, client):
         self._client = client
+
+    def add_rule(
+        self,
+        target_type: str,
+        target: EntityLike,
+        rule: str,
+        duration: int,
+    ):
+        if target_type not in {"chat", "user"}:
+            raise ValueError(f"Invalid target_type: {target_type}")
+
+        if not rule.startswith("command") and not rule.startswith("module"):
+            raise ValueError(f"Invalid rule: {rule}")
+
+        if duration < 0:
+            raise ValueError(f"Invalid duration: {duration}")
+
+        (self._tsec_chat if target_type == "chat" else self._tsec_user).append(
+            {
+                "target": target.id,
+                "rule_type": rule.split("/")[0],
+                "rule": rule.split("/", maxsplit=1)[1],
+                "expires": int(time.time() + duration),
+                "entity_name": get_display_name(target),
+                "entity_url": utils.get_entity_url(target),
+            }
+        )
 
     def get_flags(self, func: callable) -> int:
         if isinstance(func, int):
@@ -249,6 +287,46 @@ class SecurityManager:
 
         if message is None:  # In case of checking inline query security map
             return bool(config & EVERYONE)
+
+        try:
+            chat = utils.get_chat_id(message)
+        except Exception:
+            chat = None
+
+        try:
+            cmd = message.raw_text[1:].split()[0].strip()
+        except Exception:
+            cmd = None
+        
+        if callable(func):
+            for info in self._tsec_user.copy():
+                if info["target"] == user:
+                    if info["rule_type"] == "command" and info["rule"] == cmd:
+                        logger.debug(f"tsec match for user {cmd}")
+                        return True
+                    elif (
+                        info["rule_type"] == "module"
+                        and info["rule"] == func.__self__.__class__.__name__
+                    ):
+                        logger.debug(
+                            f"tsec match for user {func.__self__.__class__.__name__}"
+                        )
+                        return True
+
+            if chat:
+                for info in self._tsec_chat.copy():
+                    if info["target"] == chat:
+                        if info["rule_type"] == "command" and info["rule"] == cmd:
+                            logger.debug(f"tsec match for {cmd}")
+                            return True
+                        elif (
+                            info["rule_type"] == "module"
+                            and info["rule"] == func.__self__.__class__.__name__
+                        ):
+                            logger.debug(
+                                f"tsec match for {func.__self__.__class__.__name__}"
+                            )
+                            return True
 
         if f_group_member and message.is_group or f_pm and message.is_private:
             return True

@@ -1027,7 +1027,7 @@ def remove_html(text: str, escape: Optional[bool] = False) -> str:
     """
     return (escape_html if escape else str)(
         re.sub(
-            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>)",
+            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>|<\/?emoji.*?>)",
             "",
             text,
         )
@@ -1058,7 +1058,7 @@ def mime_type(message: Message) -> str:
     )
 
 
-def find_caller(stack: Optional[List[inspect.FrameInfo]]) -> Any:
+def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
     """Attempts to find command in stack"""
     caller = next(
         (

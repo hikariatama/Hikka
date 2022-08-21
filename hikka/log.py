@@ -168,6 +168,7 @@ class TelegramLogsHandler(logging.Handler):
         self.tg_buff = []
         self._mods = {}
         self.force_send_all = False
+        self.tg_level = 20
 
     def install_tg_log(self, mod: Module):
         if getattr(self, "_task", False):
@@ -323,7 +324,7 @@ class TelegramLogsHandler(logging.Handler):
 
         record.hikka_caller = caller
 
-        if record.levelno >= 20:
+        if record.levelno >= self.tg_level:
             if record.exc_info:
                 logging.debug(record.__dict__)
                 self.tg_buff += [

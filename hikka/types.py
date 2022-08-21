@@ -96,7 +96,7 @@ class Module:
 
         if name in {"hikka_watchers", "watchers"}:
             return get_watchers(self)
-        
+
         raise AttributeError(f"Module has no attribute {name}")
 
 

@@ -87,12 +87,12 @@ class UpdaterMod(loader.Module):
         "no_update": "🚸 <b>You are on the latest version, pull updates anyway?</b>",
         "cancel": "🚫 Cancel",
         "lavhost_restart": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Your lavHost is"
-            " restarting...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Your {} is"
+            " restarting...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Your lavHost is"
-            " updating...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Your {} is"
+            " updating...</b>"
         ),
         "heroku_update": (
             "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
@@ -156,12 +156,12 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Отмена",
         "_cls_doc": "Обновляет юзербот",
         "lavhost_restart": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Твой lavHost"
-            " перезагружается...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Твой {}"
+            " перезагружается...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Твой lavHost"
-            " обновляется...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Твой {}"
+            " обновляется...</b>"
         ),
         "heroku_update": (
             "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
@@ -241,10 +241,15 @@ class UpdaterMod(loader.Module):
 
         msg_obj = await utils.answer(
             msg_obj,
-            self.strings(
-                "restarting_caption"
-                if "LAVHOST" not in os.environ
-                else "lavhost_restart"
+            self.strings("restarting_caption")
+            if "LAVHOST" not in os.environ
+            else self.strings("lavhost_restart").format(
+                "</b><b><emoji"
+                ' document_id="5190511863191838549">☁️</emoji></b><b><emoji'
+                ' document_id="5193109876024286021">☁️</emoji></b><b><emoji'
+                ' document_id="5190647687237607235">☁️</emoji></b><b>'
+                if self._client.hikka_me.premium
+                else "lavHost"
             ),
         )
 
@@ -370,7 +375,17 @@ class UpdaterMod(loader.Module):
 
         try:
             if "LAVHOST" in os.environ:
-                msg_obj = await utils.answer(msg_obj, self.strings("lavhost_update"))
+                msg_obj = await utils.answer(
+                    msg_obj,
+                    self.strings("lavhost_update").format(
+                        "</b><b><emoji"
+                        ' document_id="5190511863191838549">☁️</emoji></b><b><emoji'
+                        ' document_id="5193109876024286021">☁️</emoji></b><b><emoji'
+                        ' document_id="5190647687237607235">☁️</emoji></b><b>'
+                        if self._client.hikka_me.premium
+                        else "lavHost"
+                    ),
+                )
                 await self.process_restart_message(msg_obj)
                 os.system("lavhost update")
                 return

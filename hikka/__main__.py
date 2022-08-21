@@ -48,11 +48,7 @@ if (
 
 
 def deps(error):
-    print(
-        "🚫 Error: you have not installed all dependencies correctly.\n"
-        f"{str(error)}\n"
-        "🔄 Attempting dependencies installation... Just wait ⏱"
-    )
+    print(f"{str(error)}\n🔄 Attempting dependencies installation... Just wait ⏱")
 
     subprocess.run(
         [
@@ -116,12 +112,12 @@ else:
             # version is installed
             from telethon.tl.types import MessageEntityCustomEmoji  # noqa: F401
             from telethon.extensions.html import CUSTOM_EMOJIS  # noqa: F401
+            import telethon
+
+            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 8):
+                raise ImportError
         except ImportError:
-            print(
-                "⚠️ Warning: Classic telethon is used as main one. This can cause"
-                " errors and enables DAR. Attempting to reinstall custom hikka"
-                " telethon..."
-            )
+            print("🔄 Reinstalling Hikka-specific telethon version")
             subprocess.run(
                 [
                     sys.executable,
@@ -129,7 +125,7 @@ else:
                     "pip",
                     "uninstall",
                     "-y",
-                    "telethon",
+                    "telethon telethon-mod",
                 ],
                 check=True,
             )
@@ -144,7 +140,7 @@ else:
                     "-q",
                     "--disable-pip-version-check",
                     "--no-warn-script-location",
-                    "git+https://github.com/hikariatama/Telethon",
+                    "hikka-tl",
                 ],
                 check=True,
             )
