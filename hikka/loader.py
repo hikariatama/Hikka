@@ -1149,7 +1149,7 @@ class Modules:
             if old_lib.name == lib_obj.name and (
                 not isinstance(getattr(old_lib, "version", None), tuple)
                 and not isinstance(getattr(lib_obj, "version", None), tuple)
-                or old_lib.version == lib_obj.version
+                or old_lib.version >= lib_obj.version
             ):
                 logging.debug(f"Using existing instance of library {old_lib.name}")
                 return old_lib

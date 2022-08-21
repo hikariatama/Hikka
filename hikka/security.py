@@ -173,11 +173,11 @@ class SecurityManager:
         self._support = list(set(self._db.get(__name__, "support", []).copy()))
         for info in self._tsec_user.copy():
             if info["expires"] < time.time():
-                self._tsec_user.pop(info)
+                self._tsec_user.remove(info)
 
         for info in self._tsec_chat.copy():
             if info["expires"] < time.time():
-                self._tsec_chat.pop(info)
+                self._tsec_chat.remove(info)
 
     async def init(self, client):
         self._client = client
