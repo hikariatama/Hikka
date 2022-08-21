@@ -125,7 +125,8 @@ else:
                     "pip",
                     "uninstall",
                     "-y",
-                    "telethon telethon-mod",
+                    "telethon",
+                    "telethon-mod",
                 ],
                 check=True,
             )
