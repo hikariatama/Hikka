@@ -564,8 +564,8 @@ async def asset_channel(
         except Exception:
             folder = None
 
-        if folder is not None and not any(
-            peer.id == getattr(folder_peer, "channel_id", None)
+        if folder is not None and all(
+            peer.id != getattr(folder_peer, "channel_id", None)
             for folder_peer in folder.include_peers
         ):
             folder.include_peers += [await client.get_input_entity(peer)]
@@ -1101,8 +1101,17 @@ def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
         None,
     )
 
-    if not caller:
-        return next(
+    return (
+        next(
+            (
+                getattr(cls_, caller.function, None)
+                for cls_ in caller.frame.f_globals.values()
+                if inspect.isclass(cls_) and issubclass(cls_, Module)
+            ),
+            None,
+        )
+        if caller
+        else next(
             (
                 frame_info.frame.f_locals["func"]
                 for frame_info in stack or inspect.stack()
@@ -1110,19 +1119,13 @@ def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
                 and frame_info.function == "future_dispatcher"
                 and (
                     "CommandDispatcher"
-                    in getattr(getattr(frame_info, "frame", None), "f_globals", {})
+                    in getattr(
+                        getattr(frame_info, "frame", None), "f_globals", {}
+                    )
                 )
             ),
             None,
         )
-
-    return next(
-        (
-            getattr(cls_, caller.function, None)
-            for cls_ in caller.frame.f_globals.values()
-            if inspect.isclass(cls_) and issubclass(cls_, Module)
-        ),
-        None,
     )
 
 
