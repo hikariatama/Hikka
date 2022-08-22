@@ -1103,8 +1103,17 @@ def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
         None,
     )
 
-    if not caller:
-        return next(
+    return (
+        next(
+            (
+                getattr(cls_, caller.function, None)
+                for cls_ in caller.frame.f_globals.values()
+                if inspect.isclass(cls_) and issubclass(cls_, Module)
+            ),
+            None,
+        )
+        if caller
+        else next(
             (
                 frame_info.frame.f_locals["func"]
                 for frame_info in stack or inspect.stack()
@@ -1112,19 +1121,13 @@ def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
                 and frame_info.function == "future_dispatcher"
                 and (
                     "CommandDispatcher"
-                    in getattr(getattr(frame_info, "frame", None), "f_globals", {})
+                    in getattr(
+                        getattr(frame_info, "frame", None), "f_globals", {}
+                    )
                 )
             ),
             None,
         )
-
-    return next(
-        (
-            getattr(cls_, caller.function, None)
-            for cls_ in caller.frame.f_globals.values()
-            if inspect.isclass(cls_) and issubclass(cls_, Module)
-        ),
-        None,
     )
 
 
