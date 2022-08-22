@@ -17,9 +17,12 @@
 - Add `-f` param to `.restart` and `.update`
 - Add platform-specific Hikka emojis to premium users
 - Add codepaces to `utils.get_named_platform`
+- Add `Presets` core module
+- Add handler for `/start` command in inlinebot with userbot info
 - Rename `func` tag to `filter` due to internal python conflict with dynamically generated methods
 - Partially rework security unit
 - Internal refactoring and typehints
+- Remove custom :obj:`BotInlineMessage` hook for :method:`answer`
 
 ## 🌑 Hikka 1.3.3
 
