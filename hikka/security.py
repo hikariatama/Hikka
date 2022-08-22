@@ -328,7 +328,8 @@ class SecurityManager:
                     if info["rule_type"] == "command" and info["rule"] == cmd:
                         logger.debug(f"tsec match for user {cmd}")
                         return True
-                    elif (
+
+                    if (
                         info["rule_type"] == "module"
                         and info["rule"] == func.__self__.__class__.__name__
                     ):
@@ -343,7 +344,8 @@ class SecurityManager:
                         if info["rule_type"] == "command" and info["rule"] == cmd:
                             logger.debug(f"tsec match for {cmd}")
                             return True
-                        elif (
+
+                        if (
                             info["rule_type"] == "module"
                             and info["rule"] == func.__self__.__class__.__name__
                         ):

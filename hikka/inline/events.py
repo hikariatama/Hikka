@@ -6,7 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import functools
 import inspect
 import logging
 import re

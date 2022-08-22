@@ -838,6 +838,8 @@ class HikkaSecurityMod(loader.Module):
             if duration is not None:
                 return duration * quantifier
 
+        return 0
+
     def _convert_time(self, duration: int) -> str:
         return (
             (
@@ -1090,25 +1092,24 @@ class HikkaSecurityMod(loader.Module):
                 ),
             )
             return
-        elif args == "chat":
-            if message.is_private:
-                await utils.answer(message, self.strings("no_target"))
-                return
 
-            target = await self._client.get_entity(message.peer_id)
-
-            if not self._client.dispatcher.security.remove_rules("chat", target.id):
-                await utils.answer(message, self.strings("no_rules"))
-                return
-
-            await utils.answer(
-                message,
-                self.strings("rules_removed").format(
-                    utils.get_entity_url(target),
-                    utils.escape_html(get_display_name(target)),
-                ),
-            )
+        if message.is_private:
+            await utils.answer(message, self.strings("no_target"))
             return
+
+        target = await self._client.get_entity(message.peer_id)
+
+        if not self._client.dispatcher.security.remove_rules("chat", target.id):
+            await utils.answer(message, self.strings("no_rules"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("rules_removed").format(
+                utils.get_entity_url(target),
+                utils.escape_html(get_display_name(target)),
+            ),
+        )
 
     @loader.command(
         ru_doc=(

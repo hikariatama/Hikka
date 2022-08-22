@@ -8,8 +8,7 @@
 
 import logging
 
-from aiogram.types import Message as AiogramMessage
-from typing import Optional, Union
+from typing import Union
 from .types import InlineUnit
 
 

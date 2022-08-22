@@ -444,7 +444,7 @@ def tag(*tags, **kwarg_tags):
     @loader.tag("no_commands", "out")
     @loader.tag("no_commands", out=True)
     @loader.tag(only_messages=True)
-    @loader.tag("only_messages", "only_pm", regex=r"^\. ?hikka$", from_id=659800858)
+    @loader.tag("only_messages", "only_pm", regex=r"^[.] ?hikka$", from_id=659800858)
 
     💡 These tags can be used directly in `@loader.watcher`:
     @loader.watcher("no_commands", out=True)
