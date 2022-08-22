@@ -562,22 +562,20 @@ async def asset_channel(
         try:
             folder = next(folder for folder in folders if folder.title == "hikka")
         except Exception:
-            return
+            folder = None
 
-        if any(
+        if folder is not None and not any(
             peer.id == getattr(folder_peer, "channel_id", None)
             for folder_peer in folder.include_peers
         ):
-            return
+            folder.include_peers += [await client.get_input_entity(peer)]
 
-        folder.include_peers += [await client.get_input_entity(peer)]
-
-        await client(
-            UpdateDialogFilterRequest(
-                folder.id,
-                folder,
+            await client(
+                UpdateDialogFilterRequest(
+                    folder.id,
+                    folder,
+                )
             )
-        )
 
     client._channels_cache[title] = {"peer": peer, "exp": int(time.time())}
     return peer, True
