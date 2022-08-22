@@ -176,11 +176,6 @@ class Presets(loader.Module):
     }
 
     async def client_ready(self):
-        if self.get("sent"):
-            return
-
-        self.set("sent", True)
-
         self._markup = utils.chunks(
             [
                 {
@@ -192,6 +187,11 @@ class Presets(loader.Module):
             ],
             1,
         )
+
+        if self.get("sent"):
+            return
+
+        self.set("sent", True)
 
         await self._menu()
 
