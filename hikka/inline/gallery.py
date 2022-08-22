@@ -28,6 +28,7 @@ from aiogram.utils.exceptions import BadRequest, InvalidHTTPUrlContent, RetryAft
 
 from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
+from telethon.extensions.html import CUSTOM_EMOJIS
 
 from urllib.parse import urlparse
 import os
@@ -224,7 +225,14 @@ class Gallery(InlineUnit):
             try:
                 status_message = await (
                     message.edit if message.out else message.respond
-                )("🌘 <b>Loading inline gallery...</b>")
+                )(
+                    (
+                        utils.get_platform_emoji()
+                        if self._client.hikka_me.premium and CUSTOM_EMOJIS
+                        else "🌘"
+                    )
+                    + " <b>Loading inline gallery...</b>"
+                )
             except Exception:
                 status_message = None
         else:

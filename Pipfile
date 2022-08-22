@@ -7,7 +7,8 @@ name = 'pypi'
 python_version = '3.9.13'
 
 [packages]
-telethon-mod = {git = "https://github.com/hikariatama/Telethon.git"}
+hikka-tl = '==1.24.8'
+aiofile = '==3.8.1'
 pythondialog = '==3.5.3'
 gitpython = '==3.1.27'
 meval = '==2.5'

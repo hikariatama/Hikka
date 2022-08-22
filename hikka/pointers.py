@@ -17,6 +17,12 @@ class PointerList(list):
         self._default = default
         super().__init__(db.get(module, key, default))
 
+    def __repr__(self):
+        return f"PointerList({list(self)})"
+
+    def __str__(self):
+        return f"PointerList({list(self)})"
+
     def __delitem__(self, __i: Union[SupportsIndex, slice]) -> None:
         a = super().__delitem__(__i)
         self._save()
@@ -36,9 +42,6 @@ class PointerList(list):
         a = super().__imul__(__x)
         self._save()
         return a
-
-    def __str__(self):
-        return f"PointerList({list(self)})"
 
     def append(self, value: Any):
         super().append(value)
@@ -84,6 +87,12 @@ class PointerDict(dict):
         self._key = key
         self._default = default
         super().__init__(db.get(module, key, default))
+
+    def __repr__(self):
+        return f"PointerDict({dict(self)})"
+
+    def __bool__(self) -> bool:
+        return bool(self._db.get(self._module, self._key, self._default))
 
     def __setitem__(self, key: str, value: Any):
         super().__setitem__(key, value)

@@ -1,4 +1,5 @@
-git+https://github.com/hikariatama/Telethon
+hikka-tl==1.24.8
+aiofile==3.8.1
 pythondialog==3.5.3
 gitpython==3.1.27
 meval==2.5

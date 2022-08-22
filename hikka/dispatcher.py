@@ -1,4 +1,4 @@
-"""Obviously, dispatches stuff"""
+"""Processes incoming events and dispatches them to appropriate handlers"""
 
 #    Friendly Telegram (telegram userbot)
 #    Copyright (C) 2018-2022 The Authors
@@ -33,7 +33,7 @@ import re
 import traceback
 from typing import Tuple, Union
 
-from telethon import types
+from telethon import TelegramClient
 from telethon.tl.types import Message
 
 from . import main, security, utils
@@ -64,7 +64,7 @@ ALL_TAGS = [
     "startswith",
     "endswith",
     "contains",
-    "func",
+    "filter",
     "from_id",
     "chat_id",
     "regex",
@@ -79,25 +79,33 @@ def _decrement_ratelimit(delay, data, key, severity):
 
 
 class CommandDispatcher:
-    def __init__(self, modules: Modules, db: Database, no_nickname: bool = False):
+    def __init__(
+        self,
+        modules: Modules,
+        client: TelegramClient,
+        db: Database,
+        no_nickname: bool = False,
+    ):
         self._modules = modules
+        self._client = client
+        self.client = client
         self._db = db
-        self.security = security.SecurityManager(db)
         self.no_nickname = no_nickname
+
         self._ratelimit_storage_user = collections.defaultdict(int)
         self._ratelimit_storage_chat = collections.defaultdict(int)
         self._ratelimit_max_user = db.get(__name__, "ratelimit_max_user", 30)
         self._ratelimit_max_chat = db.get(__name__, "ratelimit_max_chat", 100)
+
+        self.security = security.SecurityManager(client, db)
+
         self.check_security = self.security.check
-
-    async def init(self, client: "TelegramClient"):  # type: ignore
-        await self.security.init(client)
-        me = await client.get_me()
-
-        self.client = client  # Intended to be used to track user in logging
-
-        self._me = me.id
-        self._cached_username = me.username.lower() if me.username else str(me.id)
+        self._me = self._client.hikka_me.id
+        self._cached_username = (
+            self._client.hikka_me.username.lower()
+            if self._client.hikka_me.username
+            else str(self._client.hikka_me.id)
+        )
 
     async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
         if await self.security.check(
@@ -227,6 +235,7 @@ class CommandDispatcher:
         message.edit = my_edit
         message.reply = my_reply
         message.respond = my_respond
+        message.hikka_grepped = True
 
         return message
 
@@ -422,7 +431,7 @@ class CommandDispatcher:
             or (getattr(func, "in", False) and getattr(message, "out", True))
             or (
                 getattr(func, "only_messages", False)
-                and not isinstance(message, types.Message)
+                and not isinstance(message, Message)
             )
             or (
                 getattr(func, "editable", False)
@@ -435,13 +444,13 @@ class CommandDispatcher:
             )
             or (
                 getattr(func, "no_media", False)
-                and isinstance(message, types.Message)
+                and isinstance(message, Message)
                 and getattr(message, "media", False)
             )
             or (
                 getattr(func, "only_media", False)
                 and (
-                    not isinstance(message, types.Message)
+                    not isinstance(message, Message)
                     or not getattr(message, "media", False)
                 )
             )
@@ -510,9 +519,9 @@ class CommandDispatcher:
                 )
             )
             or (
-                getattr(func, "func", False)
-                and callable(func.func)
-                and not func.func(message)
+                getattr(func, "filter", False)
+                and callable(func.filter)
+                and not func.filter(message)
             )
             or (
                 getattr(func, "from_id", False)
@@ -556,7 +565,7 @@ class CommandDispatcher:
 
             if (
                 modname in bl
-                and isinstance(message, types.Message)
+                and isinstance(message, Message)
                 and (
                     "*" in bl[modname]
                     or utils.get_chat_id(message) in bl[modname]
@@ -584,7 +593,7 @@ class CommandDispatcher:
 
             # Avoid weird AttributeErrors in weird dochub modules by settings placeholder
             # of attributes
-            for placeholder in {"text", "raw_text"}:
+            for placeholder in {"text", "raw_text", "out"}:
                 try:
                     if not hasattr(message, placeholder):
                         setattr(message, placeholder, "")

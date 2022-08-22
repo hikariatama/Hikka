@@ -9,13 +9,15 @@
 # scope: inline
 
 import logging
+import time
 from typing import List, Union
 
 from telethon.tl.types import Message, PeerUser, User
 from telethon.utils import get_display_name
+from telethon.hints import EntityLike
 
 from .. import loader, security, utils, main
-from ..inline.types import InlineCall
+from ..inline.types import InlineCall, InlineMessage
 from ..security import (
     DEFAULT_PERMISSIONS,
     EVERYONE,
@@ -40,6 +42,40 @@ logger = logging.getLogger(__name__)
 class HikkaSecurityMod(loader.Module):
     """Control security settings"""
 
+    service_strings = {
+        "for": "for",
+        "forever": "forever",
+        "user": "user",
+        "chat": "chat",
+        "command": "command",
+        "module": "module",
+        "day": "day",
+        "days": "days",
+        "hour": "hour",
+        "hours": "hours",
+        "minute": "minute",
+        "minutes": "minutes",
+        "second": "second",
+        "seconds": "seconds",
+    }
+
+    service_strings_ru = {
+        "for": "на",
+        "forever": "навсегда",
+        "command": "команду",
+        "module": "модуль",
+        "chat": "чату",
+        "user": "пользователю",
+        "day": "день",
+        "days": "дня(-ей)",
+        "hour": "час",
+        "hours": "часа(-ов)",
+        "minute": "минута",
+        "minutes": "минут(-ы)",
+        "second": "секунда",
+        "seconds": "секунд(-ы)",
+    }
+
     strings = {
         "name": "HikkaSecurity",
         "no_command": "🚫 <b>Command </b><code>{}</code><b> not found!</b>",
@@ -51,9 +87,9 @@ class HikkaSecurityMod(loader.Module):
             "🔐 <b>Here you can configure global bounding mask. If the permission is"
             " excluded here, it is excluded everywhere!</b>"
         ),
-        "owner": "<emoji document_id='5386399931378440814'>😎</emoji> Owner",
-        "sudo": "🤵 Sudo",
-        "support": "<emoji document_id='5415729507128580146'>🤓</emoji> Support",
+        "owner": "😎 Owner",
+        "sudo": "🧐 Sudo",
+        "support": "🤓 Support",
         "group_owner": "🧛‍♂️ Group owner",
         "group_admin_add_admins": "🧑‍⚖️ Admin (add members)",
         "group_admin_change_info": "🧑‍⚖️ Admin (change info)",
@@ -137,6 +173,50 @@ class HikkaSecurityMod(loader.Module):
         ),
         "suggest_nonick": "🔰 <i>Do you want to enable NoNick for this user?</i>",
         "user_nn": '🔰 <b>NoNick for <a href="tg://user?id={}">{}</a> enabled</b>',
+        "what": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>You need to specify"
+            " the type of target as first argument (</b><code>user</code><b> or"
+            " </b><code>chat</code><b>)</b>"
+        ),
+        "no_target": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>You didn't specify"
+            " the target of security rule</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>You didn't specify"
+            " the rule (module or command)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Please, confirm that you want to give {} <a href='{}'>{}</a> a"
+            " permission to use {} </b><code>{}</code><b> {}?</b>"
+        ),
+        "rule_added": (
+            "🔐 <b>You gave {} <a href='{}'>{}</a> a"
+            " permission to use {} </b><code>{}</code><b> {}</b>"
+        ),
+        "confirm_btn": "👑 Confirm",
+        "cancel_btn": "🚫 Cancel",
+        "multiple_rules": (
+            "🔐 <b>Unable to unambiguously determine the security rule. Please, choose"
+            " the one you meant:</b>\n\n{}"
+        ),
+        "rules": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Targeted security"
+            " rules:</b>\n\n{}"
+        ),
+        "no_rules": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>No targeted security"
+            " rules</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>This user is owner"
+            " and can't be promoted by targeted security</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Targeted security"
+            ' rules for <a href="{}">{}</a> removed</b>'
+        ),
+        **service_strings,
     }
 
     strings_ru = {
@@ -152,9 +232,9 @@ class HikkaSecurityMod(loader.Module):
             "🔐 <b>Здесь можно настроить глобальную исключающую маску. Если тумблер"
             " выключен здесь, он выключен для всех команд</b>"
         ),
-        "owner": "<emoji document_id='5386399931378440814'>😎</emoji> Владелец",
-        "sudo": "🤵 Sudo",
-        "support": "<emoji document_id='5415729507128580146'>🤓</emoji> Помощник",
+        "owner": "😎 Владелец",
+        "sudo": "🧐 Sudo",
+        "support": "🤓 Помощник",
         "group_owner": "🧛‍♂️ Влад. группы",
         "group_admin_add_admins": "🧑‍⚖️ Админ (добавлять участников)",
         "group_admin_change_info": "🧑‍⚖️ Админ (изменять инфо)",
@@ -238,6 +318,49 @@ class HikkaSecurityMod(loader.Module):
             ' href="tg://user?id={}">{}</a> удален из группы </b><code>support</code>'
         ),
         "_cls_doc": "Управление настройками безопасности",
+        "what": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Вам нужно указать"
+            " тип цели первым аргументов (</b><code>user</code><b> or"
+            " </b><code>chat</code><b>)</b>"
+        ),
+        "no_target": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Не указана цель"
+            " правила безопасности</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Не указано правило"
+            " безопасности (модуль или команда)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Пожалуйста, подтвердите что хотите выдать {} <a href='{}'>{}</a>"
+            " право использовать {} </b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": (
+            "🔐 <b>Не получилось однозначно распознать правила безопасности. Выберите"
+            " то, которое имели ввиду:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>Вы выдали {} <a href='{}'>{}</a> право"
+            " использовать {} </b><code>{}</code><b> {}</b>"
+        ),
+        "rules": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Таргетированные"
+            " правила безопасности:</b>\n\n{}"
+        ),
+        "no_rules": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Нет таргетированных"
+            " правил безопасности</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Этот пользователь -"
+            " владелец, его права не могут управляться таргетированной"
+            " безопасностью</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Правила"
+            ' таргетированной безопасности для <a href="{}">{}</a> удалены</b>'
+        ),
+        **service_strings_ru,
     }
 
     async def inline__switch_perm(
@@ -420,7 +543,7 @@ class HikkaSecurityMod(loader.Module):
     ) -> dict:
         config = self._db.get(security.__name__, "masks", {}).get(
             f"{command.__module__}.{command.__name__}",
-            getattr(command, "security", self._client.dispatcher.security._default),
+            getattr(command, "security", self._client.dispatcher.security.default),
         )
 
         return self._perms_map(config, is_inline)
@@ -548,11 +671,8 @@ class HikkaSecurityMod(loader.Module):
             )
             return
 
-        self._db.set(
-            security.__name__,
-            group,
-            list(set(self._db.get(security.__name__, group, []) + [user.id])),
-        )
+        if user.id not in getattr(self._client.dispatcher.security, group):
+            getattr(self._client.dispatcher.security, group).append(user.id)
 
         m = (
             self.strings(f"{group}_added").format(
@@ -600,11 +720,8 @@ class HikkaSecurityMod(loader.Module):
         if not user:
             return
 
-        self._db.set(
-            security.__name__,
-            group,
-            list(set(self._db.get(security.__name__, group, [])) - {user.id}),
-        )
+        if user.id in getattr(self._client.dispatcher.security, group):
+            getattr(self._client.dispatcher.security, group).remove(user.id)
 
         m = self.strings(f"{group}_removed").format(
             user.id,
@@ -615,7 +732,7 @@ class HikkaSecurityMod(loader.Module):
 
     async def _list_group(self, message: Message, group: str):
         _resolved_users = []
-        for user in self._db.get(security.__name__, group, []) + (
+        for user in getattr(self._client.dispatcher.security, group) + (
             [self.tg_id] if group == "owner" else []
         ):
             try:
@@ -684,3 +801,358 @@ class HikkaSecurityMod(loader.Module):
     async def supportlist(self, message: Message):
         """List users in `support`"""
         await self._list_group(message, "support")
+
+    def _lookup(self, needle: str) -> str:
+        return (
+            []
+            if needle.lower().startswith(self.get_prefix())
+            else (
+                [f"module/{self.lookup(needle).__class__.__name__}"]
+                if self.lookup(needle)
+                else []
+            )
+        ) + (
+            [f"command/{needle.lower().strip(self.get_prefix())}"]
+            if needle.lower().strip(self.get_prefix()) in self.allmodules.commands
+            else []
+        )
+
+    @staticmethod
+    def _extract_time(args: list) -> int:
+        suffixes = {
+            "d": 24 * 60 * 60,
+            "h": 60 * 60,
+            "m": 60,
+            "s": 1,
+        }
+        for suffix, quantifier in suffixes.items():
+            duration = next(
+                (
+                    int(arg.rsplit(suffix, maxsplit=1)[0])
+                    for arg in args
+                    if arg.endswith(suffix)
+                    and arg.rsplit(suffix, maxsplit=1)[0].isdigit()
+                ),
+                None,
+            )
+            if duration is not None:
+                return duration * quantifier
+
+        return 0
+
+    def _convert_time(self, duration: int) -> str:
+        return (
+            (
+                f"{duration // (24 * 60 * 60)} "
+                + self.strings(f"day{'s' if duration // (24 * 60 * 60) > 1 else ''}")
+            )
+            if duration >= 24 * 60 * 60
+            else (
+                (
+                    f"{duration // (60 * 60)} "
+                    + self.strings(f"hour{'s' if duration // (60 * 60) > 1 else ''}")
+                )
+                if duration >= 60 * 60
+                else (
+                    (
+                        f"{duration // 60} "
+                        + self.strings(f"minute{'s' if duration // 60 > 1 else ''}")
+                    )
+                    if duration >= 60
+                    else (
+                        f"{duration} "
+                        + self.strings(f"second{'s' if duration > 1 else ''}")
+                    )
+                )
+            )
+        )
+
+    async def _add_rule(
+        self,
+        call: InlineCall,
+        target_type: str,
+        target: EntityLike,
+        rule: str,
+        duration: int,
+    ):
+        self._client.dispatcher.security.add_rule(
+            target_type,
+            target,
+            rule,
+            duration,
+        )
+
+        await call.edit(
+            self.strings("rule_added").format(
+                self.strings(target_type),
+                utils.get_entity_url(target),
+                utils.escape_html(get_display_name(target)),
+                self.strings(rule.split("/", maxsplit=1)[0]),
+                rule.split("/", maxsplit=1)[1],
+                (self.strings("for") + " " + self._convert_time(duration))
+                if duration
+                else self.strings("forever"),
+            )
+        )
+
+    async def _confirm(
+        self,
+        obj: Union[Message, InlineMessage],
+        target_type: str,
+        target: EntityLike,
+        rule: str,
+        duration: int,
+    ):
+        await utils.answer(
+            obj,
+            self.strings("confirm_rule").format(
+                self.strings(target_type),
+                utils.get_entity_url(target),
+                utils.escape_html(get_display_name(target)),
+                self.strings(rule.split("/", maxsplit=1)[0]),
+                rule.split("/", maxsplit=1)[1],
+                (self.strings("for") + " " + self._convert_time(duration))
+                if duration
+                else self.strings("forever"),
+            ),
+            reply_markup=[
+                {
+                    "text": self.strings("confirm_btn"),
+                    "callback": self._add_rule,
+                    "args": (target_type, target, rule, duration),
+                },
+                {"text": self.strings("cancel_btn"), "action": "close"},
+            ],
+        )
+
+    async def _tsec_chat(self, message: Message, args: list):
+        if len(args) == 1 and message.is_private:
+            await utils.answer(message, self.strings("no_target"))
+            return
+
+        if len(args) >= 2:
+            try:
+                if not args[1].isdigit() and not args[1].startswith("@"):
+                    raise ValueError
+
+                target = await self._client.get_entity(
+                    int(args[1]) if args[1].isdigit() else args[1]
+                )
+            except (ValueError, TypeError):
+                if not message.is_private:
+                    target = await self._client.get_entity(message.peer_id)
+                else:
+                    await utils.answer(message, self.strings("no_target"))
+                    return
+
+        duration = self._extract_time(args)
+
+        possible_rules = utils.array_sum([self._lookup(arg) for arg in args])
+        if not possible_rules:
+            await utils.answer(message, self.strings("no_rule"))
+            return
+
+        if len(possible_rules) > 1:
+
+            def case(text: str) -> str:
+                return text.upper()[0] + text[1:]
+
+            await self.inline.form(
+                message=message,
+                text=self.strings("multiple_rules").format(
+                    "\n".join(
+                        f"🛡 <b>{case(self.strings(i.split('/')[0]))} </b><code>{i.split('/', maxsplit=1)[1]}</code>"
+                        for i in possible_rules
+                    )
+                ),
+                reply_markup=utils.chunks(
+                    [
+                        {
+                            "text": (
+                                f"🛡 {case(self.strings(i.split('/')[0]))} {i.split('/', maxsplit=1)[1]}"
+                            ),
+                            "callback": self._confirm,
+                            "args": ("chat", target, i, duration),
+                        }
+                        for i in possible_rules
+                    ],
+                    3,
+                ),
+            )
+            return
+
+        await self._confirm(message, "chat", target, possible_rules[0], duration)
+
+    async def _tsec_user(self, message: Message, args: list):
+        if len(args) == 1 and not message.is_private and not message.is_reply:
+            await utils.answer(message, self.strings("no_target"))
+            return
+
+        if len(args) >= 2:
+            try:
+                if not args[1].isdigit() and not args[1].startswith("@"):
+                    raise ValueError
+
+                target = await self._client.get_entity(
+                    int(args[1]) if args[1].isdigit() else args[1]
+                )
+            except (ValueError, TypeError):
+                if message.is_private:
+                    target = await self._client.get_entity(message.peer_id)
+                elif message.is_reply:
+                    target = await self._client.get_entity(
+                        (await message.get_reply_message()).sender_id
+                    )
+                else:
+                    await utils.answer(message, self.strings("no_target"))
+                    return
+
+        if target.id in self._client.dispatcher.security.owner:
+            await utils.answer(message, self.strings("owner_target"))
+            return
+
+        duration = self._extract_time(args)
+
+        possible_rules = utils.array_sum([self._lookup(arg) for arg in args])
+        if not possible_rules:
+            await utils.answer(message, self.strings("no_rule"))
+            return
+
+        if len(possible_rules) > 1:
+
+            def case(text: str) -> str:
+                return text.upper()[0] + text[1:]
+
+            await self.inline.form(
+                message=message,
+                text=self.strings("multiple_rules").format(
+                    "\n".join(
+                        f"🛡 <b>{case(self.strings(i.split('/')[0]))} </b><code>{i.split('/', maxsplit=1)[1]}</code>"
+                        for i in possible_rules
+                    )
+                ),
+                reply_markup=utils.chunks(
+                    [
+                        {
+                            "text": (
+                                f"🛡 {case(self.strings(i.split('/')[0]))} {i.split('/', maxsplit=1)[1]}"
+                            ),
+                            "callback": self._confirm,
+                            "args": ("user", target, i, duration),
+                        }
+                        for i in possible_rules
+                    ],
+                    3,
+                ),
+            )
+            return
+
+        await self._confirm(message, "user", target, possible_rules[0], duration)
+
+    @loader.command(
+        ru_doc='<"user"/"chat"> - Удалить правило таргетированной безопасности'
+    )
+    async def tsecrm(self, message: Message):
+        """<"user"/"chat"> - Remove targeted security rule"""
+        if (
+            not self._client.dispatcher.security.tsec_chat
+            and not self._client.dispatcher.security.tsec_user
+        ):
+            await utils.answer(message, self.strings("no_rules"))
+            return
+
+        args = utils.get_args_raw(message)
+        if not args or args not in {"user", "chat"}:
+            await utils.answer(message, self.strings("no_target"))
+            return
+
+        if args == "user":
+            if not message.is_private and not message.is_reply:
+                await utils.answer(message, self.strings("no_target"))
+                return
+            if message.is_private:
+                target = await self._client.get_entity(message.peer_id)
+            elif message.is_reply:
+                target = await self._client.get_entity(
+                    (await message.get_reply_message()).sender_id
+                )
+            else:
+                await utils.answer(message, self.strings("no_target"))
+                return
+
+            if not self._client.dispatcher.security.remove_rules("user", target.id):
+                await utils.answer(message, self.strings("no_rules"))
+                return
+
+            await utils.answer(
+                message,
+                self.strings("rules_removed").format(
+                    utils.get_entity_url(target),
+                    utils.escape_html(get_display_name(target)),
+                ),
+            )
+            return
+
+        if message.is_private:
+            await utils.answer(message, self.strings("no_target"))
+            return
+
+        target = await self._client.get_entity(message.peer_id)
+
+        if not self._client.dispatcher.security.remove_rules("chat", target.id):
+            await utils.answer(message, self.strings("no_rules"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("rules_removed").format(
+                utils.get_entity_url(target),
+                utils.escape_html(get_display_name(target)),
+            ),
+        )
+
+    @loader.command(
+        ru_doc=(
+            '<"user"/"chat"> [цель - пользователь или чат] [правило - команда или'
+            " модуль] [время] - Настроить таргетированную безопасность"
+        )
+    )
+    async def tsec(self, message: Message):
+        """<"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule"""
+        args = utils.get_args(message)
+        if not args:
+            if (
+                not self._client.dispatcher.security.tsec_chat
+                and not self._client.dispatcher.security.tsec_user
+            ):
+                await utils.answer(message, self.strings("no_rules"))
+                return
+
+            await utils.answer(
+                message,
+                self.strings("rules").format(
+                    "\n".join(
+                        [
+                            "<emoji document_id='6037355667365300960'>👥</emoji> <b><a"
+                            f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
+                            f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
+                            f" <code>{rule['rule']}</code>"
+                            for rule in self._client.dispatcher.security.tsec_chat
+                        ]
+                        + [
+                            "<emoji document_id='6037122016849432064'>👤</emoji> <b><a"
+                            f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
+                            f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
+                            f" <code>{rule['rule']}</code>"
+                            for rule in self._client.dispatcher.security.tsec_user
+                        ]
+                    )
+                ),
+            )
+            return
+
+        if args[0] not in {"user", "chat"}:
+            await utils.answer(message, self.strings("what"))
+            return
+
+        await getattr(self, f"_tsec_{args[0]}")(message, args)

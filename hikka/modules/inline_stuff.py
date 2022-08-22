@@ -11,6 +11,7 @@
 import logging
 import re
 import string
+from hikka.inline.types import BotInlineMessage
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
@@ -40,6 +41,12 @@ class InlineStuffMod(loader.Module):
             "<emoji document_id='6318792204118656433'>🎉</emoji> <b>Config successfully"
             " saved. Restart userbot to apply changes</b>"
         ),
+        "this_is_hikka": (
+            "🌘 <b>Hi! This is Hikka — powerful modular Telegram userbot. You can"
+            " install it to your account!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikaraitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Support chat</a></b>'
+        ),
     }
 
     strings_ru = {
@@ -55,6 +62,12 @@ class InlineStuffMod(loader.Module):
         "bot_updated": (
             "<emoji document_id='6318792204118656433'>🎉</emoji> <b>Настройки сохранены."
             " Для их применения нужно перезагрузить юзербот</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Привет! Это Hikka — мощный модульный Telegram юзербот. Вы можете"
+            " установить его на свой аккаунт!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Чат поддержки</a></b>'
         ),
     }
 
@@ -150,3 +163,12 @@ class InlineStuffMod(loader.Module):
         self._db.set("hikka.inline", "custom_bot", args)
         self._db.set("hikka.inline", "bot_token", None)
         await utils.answer(message, self.strings("bot_updated"))
+
+    async def aiogram_watcher(self, message: BotInlineMessage):
+        if message.text != "/start":
+            return
+
+        await message.answer_photo(
+            "https://github.com/hikariatama/assets/raw/master/hikka_banner.png",
+            caption=self.strings("this_is_hikka"),
+        )

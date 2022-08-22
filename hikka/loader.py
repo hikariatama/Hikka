@@ -26,32 +26,35 @@
 
 import asyncio
 import contextlib
-import copy
-from functools import partial, wraps
-import importlib
-import importlib.util
 import inspect
 import logging
 import os
 import re
 import sys
-from importlib.machinery import ModuleSpec
-from types import FunctionType
-from typing import Any, Awaitable, Hashable, Optional, Union, List
 import requests
+import copy
+
+import importlib
+import importlib.util
+import importlib.machinery
+from functools import partial, wraps
+
 from telethon import TelegramClient
 from telethon.tl.types import Message, InputPeerNotifySettings, Channel
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
 
+from types import FunctionType
+from typing import Any, Optional, Union, List
+
 from . import security, utils, validators, version
 from .types import (
     ConfigValue,  # skipcq
-    LoadError,  # skipcq
+    LoadError,
     Module,
-    Library,  # skipcq
+    Library,
     ModuleConfig,  # skipcq
-    LibraryConfig,  # skipcq
+    LibraryConfig,
     SelfUnload,
     SelfSuspend,
     StopLoop,
@@ -61,6 +64,7 @@ from .types import (
     StringLoader,
     get_commands,
     get_inline_handlers,
+    JSONSerializable,
 )
 from .inline.core import InlineManager
 from .inline.types import InlineCall
@@ -431,7 +435,7 @@ def tag(*tags, **kwarg_tags):
         • `endswith` - Capture only messages that end with given text
         • `contains` - Capture only messages that contain given text
         • `regex` - Capture only messages that match given regex
-        • `func` - Capture only messages that pass given function
+        • `filter` - Capture only messages that pass given function
         • `from_id` - Capture only messages from given user
         • `chat_id` - Capture only messages from given chat
 
@@ -440,7 +444,7 @@ def tag(*tags, **kwarg_tags):
     @loader.tag("no_commands", "out")
     @loader.tag("no_commands", out=True)
     @loader.tag(only_messages=True)
-    @loader.tag("only_messages", "only_pm", regex=r"^\. ?hikka$", from_id=659800858)
+    @loader.tag("only_messages", "only_pm", regex=r"^[.] ?hikka$", from_id=659800858)
 
     💡 These tags can be used directly in `@loader.watcher`:
     @loader.watcher("no_commands", out=True)
@@ -561,7 +565,7 @@ class Modules:
                 f" {len(self.watchers)} watchers"
             )
 
-    def register_all(self, mods: list = None):
+    async def register_all(self, mods: list = None):
         """Load all modules in the module directory"""
         external_mods = []
 
@@ -590,10 +594,10 @@ class Modules:
             else:
                 external_mods = []
 
-        self._register_modules(mods)
-        self._register_modules(external_mods, "<file>")
+        await self._register_modules(mods)
+        await self._register_modules(external_mods, "<file>")
 
-    def _register_modules(self, modules: list, origin: str = "<core>"):
+    async def _register_modules(self, modules: list, origin: str = "<core>"):
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
@@ -612,19 +616,19 @@ class Modules:
                 logger.debug(f"Loading {module_name} from filesystem")
 
                 with open(mod, "r") as file:
-                    spec = ModuleSpec(
+                    spec = importlib.machinery.ModuleSpec(
                         module_name,
                         StringLoader(file.read(), user_friendly_origin),
                         origin=user_friendly_origin,
                     )
 
-                self.register_module(spec, module_name, origin)
+                await self.register_module(spec, module_name, origin)
             except BaseException as e:
                 logger.exception(f"Failed to load module {mod} due to {e}:")
 
-    def register_module(
+    async def register_module(
         self,
-        spec: ModuleSpec,
+        spec: importlib.machinery.ModuleSpec,
         module_name: str,
         origin: str = "<core>",
         save_fs: bool = False,
@@ -655,7 +659,7 @@ class Modules:
             if not isinstance(ret, Module):
                 raise TypeError(f"Instance is not a Module, it is {type(ret)}")
 
-        self.complete_registration(ret)
+        await self.complete_registration(ret)
         ret.__origin__ = origin
 
         cls_name = ret.__class__.__name__
@@ -909,7 +913,7 @@ class Modules:
 
         return event.status
 
-    def complete_registration(self, instance: Module):
+    async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -917,11 +921,9 @@ class Modules:
         instance.allclients = self.allclients
         instance.allmodules = self
         instance.hikka = True
-        instance.get = partial(self._mod_get, _modname=instance.__class__.__name__)
-        instance.set = partial(self._mod_set, _modname=instance.__class__.__name__)
-        instance.pointer = partial(
-            self._mod_pointer, _modname=instance.__class__.__name__
-        )
+        instance.get = partial(self._get, _owner=instance.__class__.__name__)
+        instance.set = partial(self._set, _owner=instance.__class__.__name__)
+        instance.pointer = partial(self._pointer, _owner=instance.__class__.__name__)
         instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
         instance.client = self.client
         instance._client = self.client
@@ -945,7 +947,7 @@ class Modules:
                     )
 
                 logger.debug(f"Removing module for update {module}")
-                asyncio.ensure_future(module.on_unload())
+                await module.on_unload()
 
                 self.modules.remove(module)
                 for method in dir(module):
@@ -955,43 +957,24 @@ class Modules:
 
         self.modules += [instance]
 
-    def _mod_get(
+    def _get(
         self,
         key: str,
-        default: Optional[Hashable] = None,
-        _modname: str = None,
-    ) -> Hashable:
-        return self._db.get(_modname, key, default)
+        default: Optional[JSONSerializable] = None,
+        _owner: str = None,
+    ) -> JSONSerializable:
+        return self._db.get(_owner, key, default)
 
-    def _mod_set(self, key: str, value: Hashable, _modname: str = None) -> bool:
-        return self._db.set(_modname, key, value)
+    def _set(self, key: str, value: JSONSerializable, _owner: str = None) -> bool:
+        return self._db.set(_owner, key, value)
 
-    def _mod_pointer(
+    def _pointer(
         self,
         key: str,
-        default: Optional[Hashable] = None,
-        _modname: str = None,
-    ) -> Any:
-        return self._db.pointer(_modname, key, default)
-
-    def _lib_get(
-        self,
-        key: str,
-        default: Optional[Hashable] = None,
-        _lib: Library = None,
-    ) -> Hashable:
-        return self._db.get(_lib.__class__.__name__, key, default)
-
-    def _lib_set(self, key: str, value: Hashable, _lib: Library = None) -> bool:
-        return self._db.set(_lib.__class__.__name__, key, value)
-
-    def _lib_pointer(
-        self,
-        key: str,
-        default: Optional[Hashable] = None,
-        _lib: Library = None,
-    ) -> Any:
-        return self._db.pointer(_lib.__class__.__name__, key, default)
+        default: Optional[JSONSerializable] = None,
+        _owner: str = None,
+    ) -> JSONSerializable:
+        return self._db.pointer(_owner, key, default)
 
     async def _mod_import_lib(
         self,
@@ -1046,7 +1029,9 @@ class Modules:
         module = f"hikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
         origin = f"<library {url}>"
 
-        spec = ModuleSpec(module, StringLoader(code, origin), origin=origin)
+        spec = importlib.machinery.ModuleSpec(
+            module, StringLoader(code, origin), origin=origin
+        )
         try:
             instance = importlib.util.module_from_spec(spec)
             sys.modules[module] = instance
@@ -1140,16 +1125,22 @@ class Modules:
         lib_obj.inline = self.inline
         lib_obj.tg_id = self.client.tg_id
         lib_obj.allmodules = self
-        lib_obj._lib_get = partial(self._lib_get, _lib=lib_obj)  # skipcq
-        lib_obj._lib_set = partial(self._lib_set, _lib=lib_obj)  # skipcq
-        lib_obj._lib_pointer = partial(self._lib_pointer, _lib=lib_obj)  # skipcq
+        lib_obj._lib_get = partial(
+            self._get, _owner=lib_obj.__class__.__name__
+        )  # skipcq
+        lib_obj._lib_set = partial(
+            self._set, _owner=lib_obj.__class__.__name__
+        )  # skipcq
+        lib_obj._lib_pointer = partial(
+            self._pointer, _owner=lib_obj.__class__.__name__
+        )  # skipcq
         lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
 
         for old_lib in self.libraries:
             if old_lib.name == lib_obj.name and (
                 not isinstance(getattr(old_lib, "version", None), tuple)
                 and not isinstance(getattr(lib_obj, "version", None), tuple)
-                or old_lib.version == lib_obj.version
+                or old_lib.version >= lib_obj.version
             ):
                 logging.debug(f"Using existing instance of library {old_lib.name}")
                 return old_lib
@@ -1405,7 +1396,7 @@ class Modules:
             name,
         )
 
-    def unload_module(self, classname: str) -> bool:
+    async def unload_module(self, classname: str) -> bool:
         """Remove module and all stuff from it"""
         worked = []
 
@@ -1436,7 +1427,7 @@ class Modules:
                 logger.debug(f"Removing module for unload {module}")
                 self.modules.remove(module)
 
-                asyncio.ensure_future(module.on_unload())
+                await module.on_unload()
 
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):

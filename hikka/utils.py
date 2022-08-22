@@ -335,7 +335,7 @@ async def answer(
     if isinstance(response, str) and not kwargs.pop("asfile", False):
         text, entities = parse_mode.parse(response)
 
-        if len(text) >= 4096:
+        if len(text) >= 4096 and not hasattr(message, "hikka_grepped"):
             try:
                 if not message.client.loader.inline.init_complete:
                     raise
@@ -404,7 +404,9 @@ async def answer(
                 "reply_to",
                 getattr(message, "reply_to_msg_id", None),
             )
-            result = await message.client.send_file(message.chat_id, response, **kwargs)
+            result = await message.client.send_file(message.peer_id, response, **kwargs)
+            if message.out:
+                await message.delete()
 
     return result
 
@@ -657,6 +659,7 @@ def get_named_platform() -> str:
     is_okteto = "OKTETO" in os.environ
     is_docker = "DOCKER" in os.environ
     is_heroku = "DYNO" in os.environ
+    is_codespaces = "CODESPACES" in os.environ
 
     if is_heroku:
         return "♓️ Heroku"
@@ -670,8 +673,33 @@ def get_named_platform() -> str:
     if is_okteto:
         return "☁️ Okteto"
 
+    if is_codespaces:
+        return "🐈‍⬛ Codespaces"
+
     is_lavhost = "LAVHOST" in os.environ
     return f"✌️ lavHost {os.environ['LAVHOST']}" if is_lavhost else "📻 VDS"
+
+
+def get_platform_emoji() -> str:
+    BASE = (
+        '<emoji document_id="{}">🌘</emoji><emoji'
+        ' document_id="5195311729663286630">🌘</emoji><emoji'
+        ' document_id="5195045669324201904">🌘</emoji>'
+    )
+
+    if "OKTETO" in os.environ:
+        return BASE.format(5192767786174128165)
+
+    if "CODESPACES" in os.environ:
+        return BASE.format(5194976881127989720)
+
+    if "DYNO" in os.environ:
+        return BASE.format(5192845434887873156)
+
+    if "com.termux" in os.environ.get("PREFIX", ""):
+        return BASE.format(5193051778001673828)
+
+    return BASE.format(5192765204898783881)
 
 
 def uptime() -> int:
@@ -1027,7 +1055,7 @@ def remove_html(text: str, escape: Optional[bool] = False) -> str:
     """
     return (escape_html if escape else str)(
         re.sub(
-            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>)",
+            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>|<\/?emoji.*?>)",
             "",
             text,
         )
@@ -1058,7 +1086,7 @@ def mime_type(message: Message) -> str:
     )
 
 
-def find_caller(stack: Optional[List[inspect.FrameInfo]]) -> Any:
+def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
     """Attempts to find command in stack"""
     caller = next(
         (

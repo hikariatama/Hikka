@@ -22,7 +22,10 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import os
+
 from telethon.tl.types import Message
+from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import loader, main, translations, utils
 from ..inline.types import InlineCall
@@ -92,8 +95,7 @@ class CoreMod(loader.Module):
             '<emoji document_id="5368324170671202286">👍</emoji><b> Database cleared</b>'
         ),
         "hikka": (
-            '<emoji document_id="6318565919471699564">🌌</emoji> <b>Hikka'
-            " userbot</b>\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
+            "{}\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
             " <b>Version: {}.{}.{}</b>\n<emoji"
             " document_id='6318902906900711458'>🧱</emoji> <b>Build:"
             " </b><i>{}</i>\n\n<emoji document_id='5454182070156794055'>⌨️</emoji>"
@@ -193,8 +195,7 @@ class CoreMod(loader.Module):
             '<emoji document_id="5368324170671202286">👍</emoji><b> База очищена</b>'
         ),
         "hikka": (
-            '<emoji document_id="6318565919471699564">🌌</emoji> <b>Hikka'
-            " userbot</b>\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
+            "{}\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
             " <b>Версия: {}.{}.{}</b>\n<emoji"
             " document_id='6318902906900711458'>🧱</emoji> <b>Сборка:"
             " </b><i>{}</i>\n\n<emoji document_id='5454182070156794055'>⌨️</emoji>"
@@ -265,7 +266,23 @@ class CoreMod(loader.Module):
         """Get Hikka version"""
         await utils.answer(
             message,
-            self.strings("hikka").format(*main.__version__, utils.get_commit_url()),
+            self.strings("hikka").format(
+                (
+                    utils.get_platform_emoji()
+                    + (
+                        '<emoji document_id="5192756799647785066">✌️</emoji><emoji'
+                        ' document_id="5193117564015747203">✌️</emoji><emoji'
+                        ' document_id="5195050806105087456">✌️</emoji><emoji'
+                        ' document_id="5195457642587233944">✌️</emoji>'
+                        if "LAVHOST" in os.environ
+                        else ""
+                    )
+                )
+                if self._client.hikka_me.premium and CUSTOM_EMOJIS
+                else "🌘 <b>Hikka userbot</b>",
+                *main.__version__,
+                utils.get_commit_url(),
+            ),
         )
 
     @loader.command(ru_doc="[чат] [модуль] - Отключить бота где-либо")

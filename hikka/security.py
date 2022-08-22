@@ -28,10 +28,14 @@ import logging
 import time
 from typing import Optional
 
+from telethon import TelegramClient
+from telethon.hints import EntityLike
+from telethon.utils import get_display_name
 from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
 
 from . import main, utils
+from .database import Database
 
 logger = logging.getLogger(__name__)
 
@@ -151,25 +155,83 @@ def _sec(func: callable, flags: int) -> callable:
 
 
 class SecurityManager:
-    def __init__(self, db):
-        self._any_admin = db.get(__name__, "any_admin", False)
-        self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
+    def __init__(self, client: TelegramClient, db: Database):
+        self._client = client
         self._db = db
-        self._reload_rights()
         self._cache = {}
 
-    def _reload_rights(self):
-        self._owner = list(
-            set(
-                self._db.get(__name__, "owner", []).copy()
-                + ([self._client.tg_id] if hasattr(self, "_client") else [])
-            )
-        )
-        self._sudo = list(set(self._db.get(__name__, "sudo", []).copy()))
-        self._support = list(set(self._db.get(__name__, "support", []).copy()))
+        self._any_admin = db.get(__name__, "any_admin", False)
+        self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
+        self._tsec_chat = db.pointer(__name__, "tsec_chat", [])
+        self._tsec_user = db.pointer(__name__, "tsec_user", [])
+        self._owner = db.pointer(__name__, "owner", [])
+        self._sudo = db.pointer(__name__, "sudo", [])
+        self._support = db.pointer(__name__, "support", [])
 
-    async def init(self, client):
-        self._client = client
+        self._reload_rights()
+
+        self.any_admin = self._any_admin
+        self.default = self._default
+        self.tsec_chat = self._tsec_chat
+        self.tsec_user = self._tsec_user
+        self.owner = self._owner
+        self.sudo = self._sudo
+        self.support = self._support
+
+    def _reload_rights(self):
+        if self._client.tg_id not in self._owner:
+            self._owner.append(self._client.tg_id)
+
+        for info in self._tsec_user.copy():
+            if info["expires"] < time.time():
+                self._tsec_user.remove(info)
+
+        for info in self._tsec_chat.copy():
+            if info["expires"] < time.time():
+                self._tsec_chat.remove(info)
+
+    def add_rule(
+        self,
+        target_type: str,
+        target: EntityLike,
+        rule: str,
+        duration: int,
+    ):
+        if target_type not in {"chat", "user"}:
+            raise ValueError(f"Invalid target_type: {target_type}")
+
+        if not rule.startswith("command") and not rule.startswith("module"):
+            raise ValueError(f"Invalid rule: {rule}")
+
+        if duration < 0:
+            raise ValueError(f"Invalid duration: {duration}")
+
+        (self._tsec_chat if target_type == "chat" else self._tsec_user).append(
+            {
+                "target": target.id,
+                "rule_type": rule.split("/")[0],
+                "rule": rule.split("/", maxsplit=1)[1],
+                "expires": int(time.time() + duration),
+                "entity_name": get_display_name(target),
+                "entity_url": utils.get_entity_url(target),
+            }
+        )
+
+    def remove_rules(self, target_type: str, target_id: int) -> bool:
+        any_ = False
+
+        if target_type == "user":
+            for rule in self.tsec_user.copy():
+                if rule["target"] == target_id:
+                    self.tsec_user.remove(rule)
+                    any_ = True
+        elif target_type == "chat":
+            for rule in self.tsec_chat.copy():
+                if rule["target"] == target_id:
+                    self.tsec_chat.remove(rule)
+                    any_ = True
+
+        return any_
 
     def get_flags(self, func: callable) -> int:
         if isinstance(func, int):
@@ -249,6 +311,48 @@ class SecurityManager:
 
         if message is None:  # In case of checking inline query security map
             return bool(config & EVERYONE)
+
+        try:
+            chat = utils.get_chat_id(message)
+        except Exception:
+            chat = None
+
+        try:
+            cmd = message.raw_text[1:].split()[0].strip()
+        except Exception:
+            cmd = None
+
+        if callable(func):
+            for info in self._tsec_user.copy():
+                if info["target"] == user:
+                    if info["rule_type"] == "command" and info["rule"] == cmd:
+                        logger.debug(f"tsec match for user {cmd}")
+                        return True
+
+                    if (
+                        info["rule_type"] == "module"
+                        and info["rule"] == func.__self__.__class__.__name__
+                    ):
+                        logger.debug(
+                            f"tsec match for user {func.__self__.__class__.__name__}"
+                        )
+                        return True
+
+            if chat:
+                for info in self._tsec_chat.copy():
+                    if info["target"] == chat:
+                        if info["rule_type"] == "command" and info["rule"] == cmd:
+                            logger.debug(f"tsec match for {cmd}")
+                            return True
+
+                        if (
+                            info["rule_type"] == "module"
+                            and info["rule"] == func.__self__.__class__.__name__
+                        ):
+                            logger.debug(
+                                f"tsec match for {func.__self__.__class__.__name__}"
+                            )
+                            return True
 
         if f_group_member and message.is_group or f_pm and message.is_private:
             return True

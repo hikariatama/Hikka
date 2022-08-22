@@ -1,5 +1,29 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.4.0
+
+- Publish hikka telethon fork and migrate to it in requirements, thereby fixing the deployment error on Heroku
+- Add custom emojis filter to `utils.remove_html`
+- Fix `client.get_perms_cached`
+- Fix translation flaw in `HikkaSecurity`
+- Fix `.uninstall_hikka` being accessible by sudo
+- Fix `utils.find_caller` for :method:`hikka.inline.utils.Utils._find_caller_sec_map`
+- Fix `.eval`
+- Fix: use old lib if its version is higher than new one
+- Fix grep for messages bigger than 4096 UTF-8 characters
+- Add more animated emojis to modules
+- Add targeted security for users and chats (`.tsec`)
+- Add support for `tg_level` in `.config Tester`
+- Add `-f` param to `.restart` and `.update`
+- Add platform-specific Hikka emojis to premium users
+- Add codepaces to `utils.get_named_platform`
+- Add `Presets` core module
+- Add handler for `/start` command in inlinebot with userbot info
+- Rename `func` tag to `filter` due to internal python conflict with dynamically generated methods
+- Partially rework security unit
+- Internal refactoring and typehints
+- Remove custom :obj:`BotInlineMessage` hook for :method:`answer`
+
 ## 🌑 Hikka 1.3.3
 
 - Fix typo, which broke `client.get_fulluser`

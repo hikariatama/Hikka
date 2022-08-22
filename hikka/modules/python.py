@@ -32,13 +32,13 @@ class PythonMod(loader.Module):
     strings = {
         "name": "Python",
         "eval": (
-            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
             " Code:</b>\n<code>{}</code>\n<emoji"
-            " document_id='6321231595218929203'>🌠</emoji><b>"
+            " document_id='5472164874886846699'>✨</emoji><b>"
             " Result:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
             " document_id='6323575131239089635'>🚫</emoji><b> Error:</b>\n{}"
         ),
@@ -46,13 +46,13 @@ class PythonMod(loader.Module):
 
     strings_ru = {
         "eval": (
-            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
             " Код:</b>\n<code>{}</code>\n<emoji"
-            " document_id='6321231595218929203'>🌠</emoji><b>"
+            " document_id='5472164874886846699'>✨</emoji><b>"
             " Результат:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id='5444965061749644170'>🎬</emoji><b>"
+            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
             " document_id='6323575131239089635'>🚫</emoji><b> Ошибка:</b>\n{}"
         ),
@@ -66,7 +66,7 @@ class PythonMod(loader.Module):
     @loader.command(ru_doc="Алиас для команды .e")
     async def eval(self, message: Message):
         """Alias for .e command"""
-        await self.ecmd(message)
+        await self.e(message)
 
     @loader.owner
     @loader.command(ru_doc="Выполняет Python код")

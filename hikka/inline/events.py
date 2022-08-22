@@ -6,7 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import functools
 import inspect
 import logging
 import re
@@ -34,21 +33,16 @@ logger = logging.getLogger(__name__)
 class Events(InlineUnit):
     async def _message_handler(self, message: AiogramMessage):
         """Processes incoming messages"""
-        if message.chat.type != "private":
+        if message.chat.type != "private" or message.text == "/start hikka init":
             return
 
         for mod in self._allmodules.modules:
-            if not hasattr(mod, "aiogram_watcher"):
+            if (
+                not hasattr(mod, "aiogram_watcher")
+                or message.text == "/start"
+                and mod.__class__.__name__ != "InlineStuffMod"
+            ):
                 continue
-
-            setattr(
-                message,
-                "answer",
-                functools.partial(
-                    self._bot_message_answer,
-                    message=message,
-                ),
-            )
 
             try:
                 await mod.aiogram_watcher(message)

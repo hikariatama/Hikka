@@ -114,7 +114,7 @@ class InlineManager(
 
         # Start the bot in case it can send you messages
         try:
-            m = await self._client.send_message(self.bot_username, "/start")
+            m = await self._client.send_message(self.bot_username, "/start hikka init")
         except (InputUserDeactivatedError, ValueError):
             self._db.set("hikka.inline", "bot_token", None)
             self._token = False
@@ -127,7 +127,9 @@ class InlineManager(
         except YouBlockedUserError:
             await self._client(UnblockRequest(id=self.bot_username))
             try:
-                m = await self._client.send_message(self.bot_username, "/start")
+                m = await self._client.send_message(
+                    self.bot_username, "/start hikka init"
+                )
             except Exception:
                 logger.critical("Can't unblock users bot", exc_info=True)
                 return False

@@ -335,7 +335,7 @@ def install_perms_caching(client: TelegramClient):
     async def cleaner(client: TelegramClient):
         while True:
             for chat, chat_data in client._hikka_perms_cache.copy().items():
-                for user, user_data in chat_data.items().copy():
+                for user, user_data in chat_data.copy().items():
                     if user_data.expired():
                         del client._hikka_perms_cache[chat][user]
                         logger.debug(f"Cleaned outdated perms cache {chat=} {user=}")

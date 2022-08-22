@@ -58,13 +58,11 @@ def install_join_forbidder(client: TelegramClient) -> TelegramClient:
                     not in {
                         "APIRatelimiterMod",
                         "ForbidJoinMod",
-                        "HelpMod",
                         "LoaderMod",
                         "HikkaSettingsMod",
                     }
                     # APIRatelimiterMod is a core proxy, so it wraps around every module in Hikka, if installed
                     # ForbidJoinMod is also a Core proxy, so it wraps around every module in Hikka, if installed
-                    # HelpMod uses JoinChannelRequest for .support command
                     # LoaderMod prompts user to join developers' channels
                     # HikkaSettings prompts user to join channels, required by modules
                 ),

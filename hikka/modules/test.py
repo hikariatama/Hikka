@@ -46,7 +46,7 @@ class TestMod(loader.Module):
         "no_logs": "ℹ️ <b>You don't have any logs at verbosity {}.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Hikka logs with"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>Hikka logs with"
             " verbosity </b><code>{}</code>\n\n<emoji"
             " document_id='5454390891466726015'>👋</emoji> <b>Hikka version:"
             " {}.{}.{}</b>{}\n<emoji document_id='6321050180095313397'>⏱</emoji>"
@@ -67,7 +67,7 @@ class TestMod(loader.Module):
             " document_id='5377371691078916778'>😎</emoji> <b>Uptime: {}</b>"
         ),
         "ping_hint": (
-            "<emoji document_id='6318918617891080008'>💡</emoji> <i>Telegram ping mostly"
+            "<emoji document_id='5472146462362048818'>💡</emoji> <i>Telegram ping mostly"
             " depends on Telegram servers latency and other external factors and has"
             " nothing to do with the parameters of server on which userbot is"
             " installed</i>"
@@ -97,7 +97,7 @@ class TestMod(loader.Module):
         "no_logs": "ℹ️ <b>У тебя нет логов уровня {}.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
-            "<emoji document_id='6318565919471699564'>🌌</emoji> <b>Логи Hikka уровня"
+            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>Логи Hikka уровня"
             " </b><code>{}</code>\n\n<emoji document_id='5454390891466726015'>👋</emoji>"
             " <b>Версия Hikka: {}.{}.{}</b>{}\n<emoji"
             " document_id='6321050180095313397'>⏱</emoji> <b>Uptime:"
@@ -126,7 +126,7 @@ class TestMod(loader.Module):
             " перезагрузки: {}</b>"
         ),
         "ping_hint": (
-            "<emoji document_id='6318918617891080008'>💡</emoji> <i>Скорость отклика"
+            "<emoji document_id='5472146462362048818'>💡</emoji> <i>Скорость отклика"
             " Telegram в большей степени зависит от загруженности серверов Telegram и"
             " других внешних факторов и никак не связана с параметрами сервера, на"
             " который установлен юзербот</i>"

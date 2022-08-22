@@ -412,9 +412,11 @@ class Hikka:
         if hasattr(client, "_tg_id"):
             telegram_id = client._tg_id
         else:
-            telegram_id = (await client.get_me()).id
+            me = await client.get_me()
+            telegram_id = me.id
             client._tg_id = telegram_id
             client.tg_id = telegram_id
+            client.hikka_me = me
 
         if "DYNO" in os.environ:
             session = StringSession()
@@ -571,8 +573,10 @@ class Hikka:
         """Wrapper around amain"""
         async with client:
             first = True
-            client._tg_id = (await client.get_me()).id
-            client.tg_id = client._tg_id
+            me = await client.get_me()
+            client._tg_id = me.id
+            client.tg_id = me.id
+            client.hikka_me = me
             while await self.amain(first, client):
                 first = False
 
@@ -621,9 +625,8 @@ class Hikka:
 
     async def _add_dispatcher(self, client, modules, db):
         """Inits and adds dispatcher instance to client"""
-        dispatcher = CommandDispatcher(modules, db, self.arguments.no_nickname)
+        dispatcher = CommandDispatcher(modules, client, db, self.arguments.no_nickname)
         client.dispatcher = dispatcher
-        await dispatcher.init(client)
         modules.check_security = dispatcher.check_security
 
         client.add_event_handler(
@@ -680,7 +683,7 @@ class Hikka:
         if not web_only:
             await self._add_dispatcher(client, modules, db)
 
-        modules.register_all(to_load)
+        await modules.register_all(to_load)
         modules.send_config()
         await modules.send_ready()
 

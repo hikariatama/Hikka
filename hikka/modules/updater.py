@@ -34,11 +34,13 @@ import time
 
 import git
 from git import GitCommandError, Repo
+
 from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
 from telethon.tl.types import DialogFilter, Message
+from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import loader, utils, heroku, main
 from ..inline.types import InlineCall
@@ -57,7 +59,8 @@ class UpdaterMod(loader.Module):
             " from</b> <a href='{}'>here</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Restarting...</b>"
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Your {} is"
+            " restarting...</b>"
         ),
         "downloading": (
             "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Downloading"
@@ -87,12 +90,12 @@ class UpdaterMod(loader.Module):
         "no_update": "🚸 <b>You are on the latest version, pull updates anyway?</b>",
         "cancel": "🚫 Cancel",
         "lavhost_restart": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Your lavHost is"
-            " restarting...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Your {} is"
+            " restarting...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Your lavHost is"
-            " updating...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Your {} is"
+            " updating...</b>"
         ),
         "heroku_update": (
             "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
@@ -115,7 +118,8 @@ class UpdaterMod(loader.Module):
             " прочитать</b> <a href='{}'>здесь</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Перезагрузка...</b>"
+            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Твоя {}"
+            " перезагружается...</b>"
         ),
         "downloading": (
             "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Скачивание"
@@ -156,12 +160,12 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Отмена",
         "_cls_doc": "Обновляет юзербот",
         "lavhost_restart": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Твой lavHost"
-            " перезагружается...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Твой {}"
+            " перезагружается...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id='6318862826265905418'>✌️</emoji> <b>Твой lavHost"
-            " обновляется...\n&gt;///&lt;</b>"
+            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Твой {}"
+            " обновляется...</b>"
         ),
         "heroku_update": (
             "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
@@ -189,6 +193,7 @@ class UpdaterMod(loader.Module):
         try:
             if (
                 "--force" in (utils.get_args_raw(message) or "")
+                or "-f" in (utils.get_args_raw(message) or "")
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
@@ -241,10 +246,23 @@ class UpdaterMod(loader.Module):
 
         msg_obj = await utils.answer(
             msg_obj,
-            self.strings(
-                "restarting_caption"
-                if "LAVHOST" not in os.environ
-                else "lavhost_restart"
+            self.strings("restarting_caption").format(
+                utils.get_platform_emoji()
+                if self._client.hikka_me.premium
+                and CUSTOM_EMOJIS
+                and isinstance(msg_obj, Message)
+                else "Hikka"
+            )
+            if "LAVHOST" not in os.environ
+            else self.strings("lavhost_restart").format(
+                '</b><emoji document_id="5192756799647785066">✌️</emoji><emoji'
+                ' document_id="5193117564015747203">✌️</emoji><emoji'
+                ' document_id="5195050806105087456">✌️</emoji><emoji'
+                ' document_id="5195457642587233944">✌️</emoji><b>'
+                if self._client.hikka_me.premium
+                and CUSTOM_EMOJIS
+                and isinstance(msg_obj, Message)
+                else "lavHost"
             ),
         )
 
@@ -334,6 +352,7 @@ class UpdaterMod(loader.Module):
             ).hexsha
             if (
                 "--force" in (utils.get_args_raw(message) or "")
+                or "-f" in (utils.get_args_raw(message) or "")
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
@@ -370,7 +389,19 @@ class UpdaterMod(loader.Module):
 
         try:
             if "LAVHOST" in os.environ:
-                msg_obj = await utils.answer(msg_obj, self.strings("lavhost_update"))
+                msg_obj = await utils.answer(
+                    msg_obj,
+                    self.strings("lavhost_update").format(
+                        '</b><emoji document_id="5192756799647785066">✌️</emoji><emoji'
+                        ' document_id="5193117564015747203">✌️</emoji><emoji'
+                        ' document_id="5195050806105087456">✌️</emoji><emoji'
+                        ' document_id="5195457642587233944">✌️</emoji><b>'
+                        if self._client.hikka_me.premium
+                        and CUSTOM_EMOJIS
+                        and isinstance(msg_obj, Message)
+                        else "lavHost"
+                    ),
+                )
                 await self.process_restart_message(msg_obj)
                 os.system("lavhost update")
                 return
