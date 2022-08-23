@@ -655,12 +655,16 @@ def get_named_platform() -> str:
 
     is_termux = "com.termux" in os.environ.get("PREFIX", "")
     is_okteto = "OKTETO" in os.environ
+    is_railway = "RAILWAY" in os.environ
     is_docker = "DOCKER" in os.environ
     is_heroku = "DYNO" in os.environ
     is_codespaces = "CODESPACES" in os.environ
 
     if is_heroku:
         return "♓️ Heroku"
+
+    if is_railway:
+        return "🚂 Railway"
 
     if is_docker:
         return "🐳 Docker"
@@ -696,6 +700,9 @@ def get_platform_emoji() -> str:
 
     if "com.termux" in os.environ.get("PREFIX", ""):
         return BASE.format(5193051778001673828)
+
+    if "RAILWAY" in os.environ:
+        return BASE.format(5199607521593007466)
 
     return BASE.format(5192765204898783881)
 

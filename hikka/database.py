@@ -23,7 +23,7 @@ except ImportError as e:
 try:
     import redis
 except ImportError as e:
-    if "DYNO" in os.environ:
+    if "DYNO" in os.environ or "RAILWAY" in os.environ:
         raise e
 
 
