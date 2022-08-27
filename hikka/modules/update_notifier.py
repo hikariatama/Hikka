@@ -155,8 +155,8 @@ class UpdateNotifierMod(loader.Module):
             return
 
         if call.data == "hikka_upd_ignore":
-            self.set("ignore_permanent", self._pending)
-            await call.answer("Notifications about this update have been suppressed")
+            self.set("ignore_permanent", self.get_latest())
+            await call.answer("Notifications about the latest have been suppressed")
             return
 
         await self._delete_all_upd_messages()
