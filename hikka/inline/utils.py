@@ -237,7 +237,7 @@ class Utils(InlineUnit):
             logger.debug(f"Found caller: {caller}")
 
             return lambda: self._client.dispatcher.security.get_flags(
-                getattr(caller.__self__, caller),
+                getattr(caller, "__self__", caller),
             )
         except Exception:
             logger.debug("Can't parse security mask in form", exc_info=True)
