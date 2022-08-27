@@ -25,8 +25,8 @@ class QueryGallery(InlineUnit):
         query: InlineQuery,
         items: List[dict],
         *,
-        force_me: Optional[bool] = False,
-        disable_security: Optional[bool] = False,
+        force_me: bool = False,
+        disable_security: bool = False,
         always_allow: Optional[list] = None,
     ) -> bool:
         """

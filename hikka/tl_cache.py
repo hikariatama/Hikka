@@ -7,15 +7,28 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import copy
+import inspect
 import time
 import asyncio
 import logging
 from typing import Optional, Union
-from telethon.hints import EntityLike
+
 from telethon import TelegramClient
+from telethon.hints import EntityLike
+from telethon.utils import is_list_like
+from telethon.network import MTProtoSender
+from telethon.tl.tlobject import TLRequest
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import ChannelFull, UserFull
+
+from .types import (
+    CacheRecord,
+    CacheRecordPerms,
+    CacheRecordFullChannel,
+    CacheRecordFullUser,
+    Module,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -30,128 +43,27 @@ def hashable(value):
     return True
 
 
-class CacheRecord:
-    def __init__(
+class CustomTelegramClient(TelegramClient):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._hikka_entity_cache = {}
+        self._hikka_perms_cache = {}
+        self._hikka_fullchannel_cache = {}
+        self._hikka_fulluser_cache = {}
+        self.__forbidden_constructors = []
+
+    async def force_get_entity(self, *args, **kwargs):
+        return await self.get_entity(*args, force=True, **kwargs)
+
+    async def get_entity(
         self,
-        hashable_entity: "Hashable",  # type: ignore
-        resolved_entity: EntityLike,
-        exp: int,
-    ):
-        self.entity = copy.deepcopy(resolved_entity)
-        self._hashable_entity = copy.deepcopy(hashable_entity)
-        self._exp = round(time.time() + exp)
-        self.ts = time.time()
-
-    def expired(self):
-        return self._exp < time.time()
-
-    def __eq__(self, record: "CacheRecord"):
-        return hash(record) == hash(self)
-
-    def __hash__(self):
-        return hash(self._hashable_entity)
-
-    def __str__(self):
-        return f"CacheRecord of {self.entity}"
-
-    def __repr__(self):
-        return f"CacheRecord(entity={type(self.entity).__name__}(...), exp={self._exp})"
-
-
-class CacheRecordPerms:
-    def __init__(
-        self,
-        hashable_entity: "Hashable",  # type: ignore
-        hashable_user: "Hashable",  # type: ignore
-        resolved_perms: EntityLike,
-        exp: int,
-    ):
-        self.perms = copy.deepcopy(resolved_perms)
-        self._hashable_entity = copy.deepcopy(hashable_entity)
-        self._hashable_user = copy.deepcopy(hashable_user)
-        self._exp = round(time.time() + exp)
-        self.ts = time.time()
-
-    def expired(self):
-        return self._exp < time.time()
-
-    def __eq__(self, record: "CacheRecordPerms"):
-        return hash(record) == hash(self)
-
-    def __hash__(self):
-        return hash((self._hashable_entity, self._hashable_user))
-
-    def __str__(self):
-        return f"CacheRecordPerms of {self.perms}"
-
-    def __repr__(self):
-        return (
-            f"CacheRecordPerms(perms={type(self.perms).__name__}(...), exp={self._exp})"
-        )
-
-
-class CacheRecordFullChannel:
-    def __init__(self, channel_id: int, full_channel: ChannelFull, exp: int):
-        self.channel_id = channel_id
-        self.full_channel = full_channel
-        self._exp = round(time.time() + exp)
-        self.ts = time.time()
-
-    def expired(self):
-        return self._exp < time.time()
-
-    def __eq__(self, record: "CacheRecordFullChannel"):
-        return hash(record) == hash(self)
-
-    def __hash__(self):
-        return hash((self._hashable_entity, self._hashable_user))
-
-    def __str__(self):
-        return f"CacheRecordFullChannel of {self.channel_id}"
-
-    def __repr__(self):
-        return (
-            f"CacheRecordFullChannel(channel_id={self.channel_id}(...),"
-            f" exp={self._exp})"
-        )
-
-
-class CacheRecordFullUser:
-    def __init__(self, user_id: int, full_user: UserFull, exp: int):
-        self.user_id = user_id
-        self.full_user = full_user
-        self._exp = round(time.time() + exp)
-        self.ts = time.time()
-
-    def expired(self):
-        return self._exp < time.time()
-
-    def __eq__(self, record: "CacheRecordFullUser"):
-        return hash(record) == hash(self)
-
-    def __hash__(self):
-        return hash((self._hashable_entity, self._hashable_user))
-
-    def __str__(self):
-        return f"CacheRecordFullUser of {self.user_id}"
-
-    def __repr__(self):
-        return f"CacheRecordFullUser(channel_id={self.user_id}(...), exp={self._exp})"
-
-
-def install_entity_caching(client: TelegramClient):
-    client._hikka_entity_cache = {}
-
-    old = client.get_entity
-
-    async def new(
         entity: EntityLike,
-        exp: Optional[int] = 5 * 60,
-        force: Optional[bool] = False,
+        exp: int = 5 * 60,
+        force: bool = False,
     ):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(client.tg_id)  # skipcq
+        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # skipcq
 
         if not hashable(entity):
             try:
@@ -164,7 +76,7 @@ def install_entity_caching(client: TelegramClient):
                 logger.debug(
                     f"Can't parse hashable from {entity=}, using legacy resolve"
                 )
-                return await old(entity)
+                return await TelegramClient.get_entity(self, entity)
         else:
             hashable_entity = entity
 
@@ -174,73 +86,52 @@ def install_entity_caching(client: TelegramClient):
         if (
             not force
             and hashable_entity
-            and hashable_entity in client._hikka_entity_cache
+            and hashable_entity in self._hikka_entity_cache
             and (
                 not exp
-                or client._hikka_entity_cache[hashable_entity].ts + exp > time.time()
+                or self._hikka_entity_cache[hashable_entity].ts + exp > time.time()
             )
         ):
             logger.debug(
                 "Using cached entity"
-                f" {entity} ({type(client._hikka_entity_cache[hashable_entity].entity).__name__})"
+                f" {entity} ({type(self._hikka_entity_cache[hashable_entity].entity).__name__})"
             )
-            return copy.deepcopy(client._hikka_entity_cache[hashable_entity].entity)
+            return copy.deepcopy(self._hikka_entity_cache[hashable_entity].entity)
 
-        resolved_entity = await old(entity)
+        resolved_entity = await TelegramClient.get_entity(self, entity)
 
         if resolved_entity:
             cache_record = CacheRecord(hashable_entity, resolved_entity, exp)
-            client._hikka_entity_cache[hashable_entity] = cache_record
+            self._hikka_entity_cache[hashable_entity] = cache_record
             logger.debug(f"Saved hashable_entity {hashable_entity} to cache")
 
             if getattr(resolved_entity, "id", None):
                 logger.debug(f"Saved resolved_entity id {resolved_entity.id} to cache")
-                client._hikka_entity_cache[resolved_entity.id] = cache_record
+                self._hikka_entity_cache[resolved_entity.id] = cache_record
 
             if getattr(resolved_entity, "username", None):
                 logger.debug(
                     f"Saved resolved_entity username @{resolved_entity.username} to"
                     " cache"
                 )
-                client._hikka_entity_cache[
-                    f"@{resolved_entity.username}"
-                ] = cache_record
-                client._hikka_entity_cache[resolved_entity.username] = cache_record
+                self._hikka_entity_cache[f"@{resolved_entity.username}"] = cache_record
+                self._hikka_entity_cache[resolved_entity.username] = cache_record
 
         return copy.deepcopy(resolved_entity)
 
-    async def cleaner(client: TelegramClient):
-        while True:
-            for record, record_data in client._hikka_entity_cache.copy().items():
-                if record_data.expired():
-                    del client._hikka_entity_cache[record]
-                    logger.debug(f"Cleaned outdated cache {record=}")
-
-            await asyncio.sleep(3)
-
-    client.get_entity = new
-    client.force_get_entity = old
-    asyncio.ensure_future(cleaner(client))
-    logger.debug("Monkeypatched client with entity cacher")
-
-
-def install_perms_caching(client: TelegramClient):
-    client._hikka_perms_cache = {}
-
-    old = client.get_permissions
-
-    async def new(
+    async def get_perms_cached(
+        self,
         entity: EntityLike,
         user: Optional[EntityLike] = None,
-        exp: Optional[int] = 5 * 60,
-        force: Optional[bool] = False,
+        exp: int = 5 * 60,
+        force: bool = False,
     ):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(client.tg_id)  # skipcq
+        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # skipcq
 
-        entity = await client.get_entity(entity)
-        user = await client.get_entity(user) if user else None
+        entity = await self.get_entity(entity)
+        user = await self.get_entity(user) if user else None
 
         if not hashable(entity) or not hashable(user):
             try:
@@ -253,7 +144,7 @@ def install_perms_caching(client: TelegramClient):
                 logger.debug(
                     f"Can't parse hashable from {entity=}, using legacy method"
                 )
-                return await old(entity, user)
+                return await self.get_permissions(entity, user)
 
             try:
                 hashable_user = next(
@@ -263,7 +154,7 @@ def install_perms_caching(client: TelegramClient):
                 )
             except StopIteration:
                 logger.debug(f"Can't parse hashable from {user=}, using legacy method")
-                return await old(entity, user)
+                return await self.get_permissions(entity, user)
         else:
             hashable_entity = entity
             hashable_user = user
@@ -278,19 +169,19 @@ def install_perms_caching(client: TelegramClient):
             not force
             and hashable_entity
             and hashable_user
-            and hashable_user in client._hikka_perms_cache.get(hashable_entity, {})
+            and hashable_user in self._hikka_perms_cache.get(hashable_entity, {})
             and (
                 not exp
-                or client._hikka_perms_cache[hashable_entity][hashable_user].ts + exp
+                or self._hikka_perms_cache[hashable_entity][hashable_user].ts + exp
                 > time.time()
             )
         ):
             logger.debug(f"Using cached perms {hashable_entity} ({hashable_user})")
             return copy.deepcopy(
-                client._hikka_perms_cache[hashable_entity][hashable_user].perms
+                self._hikka_perms_cache[hashable_entity][hashable_user].perms
             )
 
-        resolved_perms = await old(entity, user)
+        resolved_perms = await self.get_permissions(entity, user)
 
         if resolved_perms:
             cache_record = CacheRecordPerms(
@@ -299,23 +190,21 @@ def install_perms_caching(client: TelegramClient):
                 resolved_perms,
                 exp,
             )
-            client._hikka_perms_cache.setdefault(hashable_entity, {})[
+            self._hikka_perms_cache.setdefault(hashable_entity, {})[
                 hashable_user
             ] = cache_record
             logger.debug(f"Saved hashable_entity {hashable_entity} perms to cache")
 
             def save_user(key: Union[str, int]):
-                nonlocal client, cache_record, user, hashable_user
+                nonlocal self, cache_record, user, hashable_user
                 if getattr(user, "id", None):
-                    client._hikka_perms_cache.setdefault(key, {})[
-                        user.id
-                    ] = cache_record
+                    self._hikka_perms_cache.setdefault(key, {})[user.id] = cache_record
 
                 if getattr(user, "username", None):
-                    client._hikka_perms_cache.setdefault(key, {})[
+                    self._hikka_perms_cache.setdefault(key, {})[
                         f"@{user.username}"
                     ] = cache_record
-                    client._hikka_perms_cache.setdefault(key, {})[
+                    self._hikka_perms_cache.setdefault(key, {})[
                         user.username
                     ] = cache_record
 
@@ -332,28 +221,11 @@ def install_perms_caching(client: TelegramClient):
 
         return copy.deepcopy(resolved_perms)
 
-    async def cleaner(client: TelegramClient):
-        while True:
-            for chat, chat_data in client._hikka_perms_cache.copy().items():
-                for user, user_data in chat_data.copy().items():
-                    if user_data.expired():
-                        del client._hikka_perms_cache[chat][user]
-                        logger.debug(f"Cleaned outdated perms cache {chat=} {user=}")
-
-            await asyncio.sleep(3)
-
-    client.get_perms_cached = new
-    asyncio.ensure_future(cleaner(client))
-    logger.debug("Monkeypatched client with perms cacher")
-
-
-def install_fullchannel_caching(client: TelegramClient):
-    client._hikka_fullchannel_cache = {}
-
     async def get_fullchannel(
+        self,
         entity: EntityLike,
-        exp: Optional[int] = 300,
-        force: Optional[bool] = False,
+        exp: int = 300,
+        force: bool = False,
     ) -> ChannelFull:
         """
         Gets the FullChannelRequest and cache it
@@ -374,7 +246,7 @@ def install_fullchannel_caching(client: TelegramClient):
                     f"Can't parse hashable from {entity=}, using legacy fullchannel"
                     " request"
                 )
-                return await client(GetFullChannelRequest(channel=entity))
+                return await self(GetFullChannelRequest(channel=entity))
         else:
             hashable_entity = entity
 
@@ -383,42 +255,26 @@ def install_fullchannel_caching(client: TelegramClient):
 
         if (
             not force
-            and client._hikka_fullchannel_cache.get(hashable_entity)
-            and not client._hikka_fullchannel_cache[hashable_entity].expired()
-            and client._hikka_fullchannel_cache[hashable_entity].ts + exp > time.time()
+            and self._hikka_fullchannel_cache.get(hashable_entity)
+            and not self._hikka_fullchannel_cache[hashable_entity].expired()
+            and self._hikka_fullchannel_cache[hashable_entity].ts + exp > time.time()
         ):
-            return client._hikka_fullchannel_cache[hashable_entity].full_channel
+            return self._hikka_fullchannel_cache[hashable_entity].full_channel
 
-        result = await client(GetFullChannelRequest(channel=entity))
-        client._hikka_fullchannel_cache[hashable_entity] = CacheRecordFullChannel(
+        result = await self(GetFullChannelRequest(channel=entity))
+        self._hikka_fullchannel_cache[hashable_entity] = CacheRecordFullChannel(
             hashable_entity,
             result,
             exp,
         )
         return result
 
-    async def cleaner(client: TelegramClient):
-        while True:
-            for channel_id, record in client._hikka_fullchannel_cache.copy().items():
-                if record.expired():
-                    del client._hikka_fullchannel_cache[channel_id]
-                    logger.debug(f"Cleaned outdated fullchannel cache {channel_id=}")
-
-            await asyncio.sleep(3)
-
-    client.get_fullchannel = get_fullchannel
-    asyncio.ensure_future(cleaner(client))
-    logger.debug("Monkeypatched client with fullchannel cacher")
-
-
-def install_fulluser_caching(client: TelegramClient):
-    client._hikka_fulluser_cache = {}
-
     async def get_fulluser(
+        self,
         entity: EntityLike,
-        exp: Optional[int] = 300,
-        force: Optional[bool] = False,
-    ) -> ChannelFull:
+        exp: int = 300,
+        force: bool = False,
+    ) -> UserFull:
         """
         Gets the FullUserRequest and cache it
         :param entity: User to fetch UserFull of
@@ -438,7 +294,7 @@ def install_fulluser_caching(client: TelegramClient):
                     f"Can't parse hashable from {entity=}, using legacy fulluser"
                     " request"
                 )
-                return await client(GetFullUserRequest(entity))
+                return await self(GetFullUserRequest(entity))
         else:
             hashable_entity = entity
 
@@ -447,29 +303,118 @@ def install_fulluser_caching(client: TelegramClient):
 
         if (
             not force
-            and client._hikka_fulluser_cache.get(hashable_entity)
-            and not client._hikka_fulluser_cache[hashable_entity].expired()
-            and client._hikka_fulluser_cache[hashable_entity].ts + exp > time.time()
+            and self._hikka_fulluser_cache.get(hashable_entity)
+            and not self._hikka_fulluser_cache[hashable_entity].expired()
+            and self._hikka_fulluser_cache[hashable_entity].ts + exp > time.time()
         ):
-            return client._hikka_fulluser_cache[hashable_entity].full_user
+            return self._hikka_fulluser_cache[hashable_entity].full_user
 
-        result = await client(GetFullUserRequest(entity))
-        client._hikka_fulluser_cache[hashable_entity] = CacheRecordFullUser(
+        result = await self(GetFullUserRequest(entity))
+        self._hikka_fulluser_cache[hashable_entity] = CacheRecordFullUser(
             hashable_entity,
             result,
             exp,
         )
         return result
 
+    async def _call(
+        self,
+        sender: MTProtoSender,
+        request: TLRequest,
+        ordered: bool = False,
+        flood_sleep_threshold: int = None,
+    ):
+        # ⚠️⚠️  WARNING!  ⚠️⚠️
+        # If you are a module developer, and you'll try to bypass this protection to
+        # force user join your channel, you will be added to SCAM modules
+        # list and you will be banned from Hikka federation.
+        # Let USER decide, which channel he will follow. Do not be so petty
+        # I hope, you understood me.
+        # Thank you
+
+        if not self.__forbidden_constructors:
+            return await TelegramClient._call(
+                self,
+                sender,
+                request,
+                ordered,
+                flood_sleep_threshold,
+            )
+
+        not_tuple = False
+        if not is_list_like(request):
+            not_tuple = True
+            request = (request,)
+
+        new_request = []
+
+        for item in request:
+            if item.CONSTRUCTOR_ID in self.__forbidden_constructors and next(
+                (
+                    frame_info.frame.f_locals["self"]
+                    for frame_info in inspect.stack()
+                    if hasattr(frame_info, "frame")
+                    and hasattr(frame_info.frame, "f_locals")
+                    and isinstance(frame_info.frame.f_locals, dict)
+                    and "self" in frame_info.frame.f_locals
+                    and isinstance(frame_info.frame.f_locals["self"], Module)
+                    and frame_info.frame.f_locals["self"].__class__.__name__
+                    not in {
+                        "APIRatelimiterMod",
+                        "ForbidJoinMod",
+                        "LoaderMod",
+                        "HikkaSettingsMod",
+                    }
+                    # APIRatelimiterMod is a core proxy, so it wraps around every module in Hikka, if installed
+                    # ForbidJoinMod is also a Core proxy, so it wraps around every module in Hikka, if installed
+                    # LoaderMod prompts user to join developers' channels
+                    # HikkaSettings prompts user to join channels, required by modules
+                ),
+                None,
+            ):
+                logger.debug(
+                    "🎉 I protected you from unintented"
+                    f" {item.__class__.__name__} ({item})!"
+                )
+                continue
+
+            new_request += [item]
+
+        if not new_request:
+            return
+
+        return await TelegramClient._call(
+            self,
+            sender,
+            new_request[0] if not_tuple else tuple(new_request),
+            ordered,
+            flood_sleep_threshold,
+        )
+
+    def forbid_joins(self):
+        self.__forbidden_constructors.extend([615851205, 1817183516])
+
     async def cleaner(client: TelegramClient):
         while True:
+            for record, record_data in client._hikka_entity_cache.copy().items():
+                if record_data.expired():
+                    del client._hikka_entity_cache[record]
+                    logger.debug(f"Cleaned outdated cache {record=}")
+
+            for chat, chat_data in client._hikka_perms_cache.copy().items():
+                for user, user_data in chat_data.copy().items():
+                    if user_data.expired():
+                        del client._hikka_perms_cache[chat][user]
+                        logger.debug(f"Cleaned outdated perms cache {chat=} {user=}")
+
+            for channel_id, record in client._hikka_fullchannel_cache.copy().items():
+                if record.expired():
+                    del client._hikka_fullchannel_cache[channel_id]
+                    logger.debug(f"Cleaned outdated fullchannel cache {channel_id=}")
+
             for user_id, record in client._hikka_fulluser_cache.copy().items():
                 if record.expired():
                     del client._hikka_fulluser_cache[user_id]
                     logger.debug(f"Cleaned outdated fulluser cache {user_id=}")
 
             await asyncio.sleep(3)
-
-    client.get_fulluser = get_fulluser
-    asyncio.ensure_future(cleaner(client))
-    logger.debug("Monkeypatched client with fulluser cacher")

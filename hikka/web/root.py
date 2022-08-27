@@ -29,9 +29,8 @@ import collections
 import os
 import string
 
-import aiohttp_jinja2
-import telethon
 from aiohttp import web
+import aiohttp_jinja2
 import atexit
 import functools
 import logging
@@ -40,11 +39,14 @@ import re
 import requests
 import time
 
-from .. import utils, main, database, heroku
-
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+import telethon
 from telethon.errors.rpcerrorlist import YouBlockedUserError, FloodWaitError
 from telethon.tl.functions.contacts import UnblockRequest
+
+from .. import utils, main, database, heroku
+from ..tl_cache import CustomTelegramClient
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -115,7 +117,7 @@ class Web:
 
     async def _check_bot(
         self,
-        client: "TelegramClient",  # type: ignore
+        client: CustomTelegramClient,
         username: str,
     ) -> bool:
         async with client.conversation("@BotFather", exclusive=False) as conv:
@@ -223,7 +225,7 @@ class Web:
         if not phone:
             return web.Response(status=400, body="Invalid phone number")
 
-        client = telethon.TelegramClient(
+        client = CustomTelegramClient(
             telethon.sessions.MemorySession(),
             self.api_token.ID,
             self.api_token.HASH,

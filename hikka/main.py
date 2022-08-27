@@ -41,7 +41,7 @@ from math import ceil
 from typing import Union
 
 import telethon
-from telethon import TelegramClient, events
+from telethon import events
 from telethon.errors.rpcerrorlist import (
     ApiIdInvalidError,
     AuthKeyDuplicatedError,
@@ -53,16 +53,11 @@ from telethon.network.connection import (
 )
 from telethon.sessions import SQLiteSession, StringSession, MemorySession
 
-from . import database, loader, utils, heroku
+from . import database, loader, utils, heroku, version
 from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
-from .tl_cache import (
-    install_entity_caching,
-    install_perms_caching,
-    install_fullchannel_caching,
-    install_fulluser_caching,
-)
+from .tl_cache import CustomTelegramClient
 
 try:
     from .web import core
@@ -405,7 +400,7 @@ class Hikka:
 
     async def save_client_session(
         self,
-        client: TelegramClient,
+        client: CustomTelegramClient,
         heroku_config: "ConfigVars" = None,  # type: ignore
         heroku_app: "App" = None,  # type: ignore
     ):
@@ -477,7 +472,7 @@ class Hikka:
         if not self.web:
             try:
                 phone = input("Phone: ")
-                client = TelegramClient(
+                client = CustomTelegramClient(
                     MemorySession(),
                     self.api_token.ID,
                     self.api_token.HASH,
@@ -517,7 +512,7 @@ class Hikka:
         """
         for session in self.sessions.copy():
             try:
-                client = TelegramClient(
+                client = CustomTelegramClient(
                     session,
                     self.api_token.ID,
                     self.api_token.HASH,
@@ -530,11 +525,6 @@ class Hikka:
                 client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
 
                 client.phone = "never gonna give you up"
-
-                install_entity_caching(client)
-                install_perms_caching(client)
-                install_fullchannel_caching(client)
-                install_fulluser_caching(client)
 
                 self.clients += [client]
             except sqlite3.OperationalError:
@@ -588,7 +578,7 @@ class Hikka:
             repo = git.Repo()
 
             build = repo.heads[0].commit.hexsha
-            diff = repo.git.log(["HEAD..origin/master", "--oneline"])
+            diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
             upd = r"Update required" if diff else r"Up-to-date"
 
             _platform = utils.get_named_platform()

@@ -234,7 +234,7 @@ class Utils(InlineUnit):
             if not caller:
                 return None
 
-            logger.debug(f"Found caller: {caller.function}")
+            logger.debug(f"Found caller: {caller}")
 
             return lambda: self._client.dispatcher.security.get_flags(
                 getattr(caller.__self__, caller),

@@ -66,10 +66,10 @@ class Form(InlineUnit):
         message: Union[Message, int],
         reply_markup: Union[List[List[dict]], List[dict], dict] = None,
         *,
-        force_me: Optional[bool] = False,
+        force_me: bool = False,
         always_allow: Optional[List[list]] = None,
-        manual_security: Optional[bool] = False,
-        disable_security: Optional[bool] = False,
+        manual_security: bool = False,
+        disable_security: bool = False,
         ttl: Optional[int] = None,
         on_unload: Optional[callable] = None,
         photo: Optional[str] = None,
@@ -79,7 +79,7 @@ class Form(InlineUnit):
         video: Optional[str] = None,
         location: Optional[str] = None,
         audio: Optional[Union[dict, str]] = None,
-        silent: Optional[bool] = False,
+        silent: bool = False,
     ) -> Union[InlineMessage, bool]:
         """
         Send inline form to chat

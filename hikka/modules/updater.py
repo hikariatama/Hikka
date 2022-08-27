@@ -42,7 +42,7 @@ from telethon.tl.functions.messages import (
 from telethon.tl.types import DialogFilter, Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
-from .. import loader, utils, heroku, main
+from .. import loader, utils, heroku, main, version
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -348,7 +348,7 @@ class UpdaterMod(loader.Module):
         try:
             current = utils.get_git_hash()
             upcoming = next(
-                git.Repo().iter_commits("origin/master", max_count=1)
+                git.Repo().iter_commits(f"origin/{version.branch}", max_count=1)
             ).hexsha
             if (
                 "--force" in (utils.get_args_raw(message) or "")

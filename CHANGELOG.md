@@ -1,5 +1,15 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.4.1
+
+- Create new type :obj:`hikka.tl_cache.CustomTelegramClient` to avoid monkeypatching
+- Add `ttl` param for :method:`hikka.utils.asset_channel`
+- Add support for custom branches (e.g. for beta testers and users, who rolled back)
+- Fix automatic modules reactions
+- Fix :method:`hikka.inline.utils.Utils._find_caller_sec_map`
+- Refactor validators to be classes, not functions
+- Refactor typehints
+
 ## 🌑 Hikka 1.4.0
 
 - Publish hikka telethon fork and migrate to it in requirements, thereby fixing the deployment error on Heroku

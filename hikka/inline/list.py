@@ -41,13 +41,13 @@ class List(InlineUnit):
         message: Union[Message, int],
         strings: _List[str],
         *,
-        force_me: Optional[bool] = False,
+        force_me: bool = False,
         always_allow: Optional[list] = None,
-        manual_security: Optional[bool] = False,
-        disable_security: Optional[bool] = False,
-        ttl: Optional[Union[int, bool]] = False,
+        manual_security: bool = False,
+        disable_security: bool = False,
+        ttl: Union[int, bool] = False,
         on_unload: Optional[callable] = None,
-        silent: Optional[bool] = False,
+        silent: bool = False,
         custom_buttons: Optional[Union[_List[_List[dict]], _List[dict], dict]] = None,
     ) -> Union[bool, InlineMessage]:
         """

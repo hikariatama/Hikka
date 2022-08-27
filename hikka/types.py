@@ -10,12 +10,16 @@
 import ast
 import asyncio
 import contextlib
+import copy
 import inspect
 import logging
 from dataclasses import dataclass, field
+import time
 from typing import Any, Awaitable, Callable, Optional, Union
 from importlib.abc import SourceLoader
-from telethon.tl.types import Message
+
+from telethon.tl.types import Message, ChannelFull, UserFull
+from telethon.hints import EntityLike
 
 from .inline.types import (  # skipcq: PY-W2000
     InlineMessage,
@@ -147,7 +151,7 @@ class CoreUnloadError(Exception):
 class SelfUnload(Exception):
     """Silently unloads module, if raised in `client_ready`"""
 
-    def __init__(self, error_message: Optional[str] = ""):
+    def __init__(self, error_message: str = ""):
         super().__init__()
         self._error = error_message
 
@@ -163,7 +167,7 @@ class SelfSuspend(Exception):
     the exception is raised again
     """
 
-    def __init__(self, error_message: Optional[str] = ""):
+    def __init__(self, error_message: str = ""):
         super().__init__()
         self._error = error_message
 
@@ -281,7 +285,7 @@ class ConfigValue:
         key: str,
         value: Any,
         *,
-        ignore_validation: Optional[bool] = False,
+        ignore_validation: bool = False,
     ) -> bool:
         if key == "value":
             try:
@@ -362,6 +366,115 @@ def _get_members(
             and getattr(getattr(mod, method_name), attribute, False)
         )
     }
+
+
+class CacheRecord:
+    def __init__(
+        self,
+        hashable_entity: "Hashable",  # type: ignore
+        resolved_entity: EntityLike,
+        exp: int,
+    ):
+        self.entity = copy.deepcopy(resolved_entity)
+        self._hashable_entity = copy.deepcopy(hashable_entity)
+        self._exp = round(time.time() + exp)
+        self.ts = time.time()
+
+    def expired(self):
+        return self._exp < time.time()
+
+    def __eq__(self, record: "CacheRecord"):
+        return hash(record) == hash(self)
+
+    def __hash__(self):
+        return hash(self._hashable_entity)
+
+    def __str__(self):
+        return f"CacheRecord of {self.entity}"
+
+    def __repr__(self):
+        return f"CacheRecord(entity={type(self.entity).__name__}(...), exp={self._exp})"
+
+
+class CacheRecordPerms:
+    def __init__(
+        self,
+        hashable_entity: "Hashable",  # type: ignore
+        hashable_user: "Hashable",  # type: ignore
+        resolved_perms: EntityLike,
+        exp: int,
+    ):
+        self.perms = copy.deepcopy(resolved_perms)
+        self._hashable_entity = copy.deepcopy(hashable_entity)
+        self._hashable_user = copy.deepcopy(hashable_user)
+        self._exp = round(time.time() + exp)
+        self.ts = time.time()
+
+    def expired(self):
+        return self._exp < time.time()
+
+    def __eq__(self, record: "CacheRecordPerms"):
+        return hash(record) == hash(self)
+
+    def __hash__(self):
+        return hash((self._hashable_entity, self._hashable_user))
+
+    def __str__(self):
+        return f"CacheRecordPerms of {self.perms}"
+
+    def __repr__(self):
+        return (
+            f"CacheRecordPerms(perms={type(self.perms).__name__}(...), exp={self._exp})"
+        )
+
+
+class CacheRecordFullChannel:
+    def __init__(self, channel_id: int, full_channel: ChannelFull, exp: int):
+        self.channel_id = channel_id
+        self.full_channel = full_channel
+        self._exp = round(time.time() + exp)
+        self.ts = time.time()
+
+    def expired(self):
+        return self._exp < time.time()
+
+    def __eq__(self, record: "CacheRecordFullChannel"):
+        return hash(record) == hash(self)
+
+    def __hash__(self):
+        return hash((self._hashable_entity, self._hashable_user))
+
+    def __str__(self):
+        return f"CacheRecordFullChannel of {self.channel_id}"
+
+    def __repr__(self):
+        return (
+            f"CacheRecordFullChannel(channel_id={self.channel_id}(...),"
+            f" exp={self._exp})"
+        )
+
+
+class CacheRecordFullUser:
+    def __init__(self, user_id: int, full_user: UserFull, exp: int):
+        self.user_id = user_id
+        self.full_user = full_user
+        self._exp = round(time.time() + exp)
+        self.ts = time.time()
+
+    def expired(self):
+        return self._exp < time.time()
+
+    def __eq__(self, record: "CacheRecordFullUser"):
+        return hash(record) == hash(self)
+
+    def __hash__(self):
+        return hash((self._hashable_entity, self._hashable_user))
+
+    def __str__(self):
+        return f"CacheRecordFullUser of {self.user_id}"
+
+    def __repr__(self):
+        return f"CacheRecordFullUser(channel_id={self.user_id}(...), exp={self._exp})"
 
 
 def get_commands(mod: Module) -> dict:

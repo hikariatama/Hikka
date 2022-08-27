@@ -27,7 +27,7 @@ import os
 from telethon.tl.types import Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
-from .. import loader, main, translations, utils
+from .. import loader, main, translations, utils, version
 from ..inline.types import InlineCall
 
 
@@ -133,6 +133,10 @@ class CoreMod(loader.Module):
             "<emoji document_id='5384612769716774600'>❓</emoji> <b>Who to"
             " unblacklist?</b>"
         ),
+        "unstable": (
+            "\n\n<emoji document_id='5467370583282950466'>🙈</emoji> <b>You are using an"
+            " unstable branch </b><code>{}</code><b>!</b>"
+        ),
     }
 
     strings_ru = {
@@ -234,6 +238,10 @@ class CoreMod(loader.Module):
             "<emoji document_id='5384612769716774600'>❓</emoji> <b>Кого разблокировать"
             " то?</b>"
         ),
+        "unstable": (
+            "\n\n<emoji document_id='5467370583282950466'>🙈</emoji> <b>Ты используешь"
+            " нестабильную ветку </b><code>{}</code><b>!</b>"
+        ),
     }
 
     async def blacklistcommon(self, message: Message):
@@ -280,8 +288,13 @@ class CoreMod(loader.Module):
                 )
                 if self._client.hikka_me.premium and CUSTOM_EMOJIS
                 else "🌘 <b>Hikka userbot</b>",
-                *main.__version__,
+                *version.__version__,
                 utils.get_commit_url(),
+            )
+            + (
+                ""
+                if version.branch == "master"
+                else self.strings("unstable").format(version.branch)
             ),
         )
 

@@ -604,7 +604,7 @@ class LoaderMod(loader.Module):
     async def get_repo_list(
         self,
         preset: Optional[str] = None,
-        only_primary: Optional[bool] = False,
+        only_primary: bool = False,
     ) -> dict:
         if preset is None or preset == "none":
             preset = "minimal"
@@ -692,7 +692,7 @@ class LoaderMod(loader.Module):
         self,
         call: InlineCall,
         doc: str,
-        path_: Optional[str],
+        path_: str,
         mode: str,
     ):
         save = False
@@ -835,11 +835,11 @@ class LoaderMod(loader.Module):
         self,
         doc: str,
         message: Message,
-        name: Optional[Union[str, None]] = None,
-        origin: Optional[str] = "<string>",
-        did_requirements: Optional[bool] = False,
-        save_fs: Optional[bool] = False,
-        blob_link: Optional[bool] = False,
+        name: Optional[str] = None,
+        origin: str = "<string>",
+        did_requirements: bool = False,
+        save_fs: bool = False,
+        blob_link: bool = False,
     ):
         if any(
             line.replace(" ", "") == "#scope:ffmpeg" for line in doc.splitlines()
@@ -1176,7 +1176,7 @@ class LoaderMod(loader.Module):
             modname = getattr(instance, "name", "ERROR")
 
         try:
-            if developer in self._client._hikka_cache and getattr(
+            if developer in self._client._hikka_entity_cache and getattr(
                 await self._client.get_entity(developer), "left", True
             ):
                 developer_entity = await self._client.force_get_entity(developer)
@@ -1430,9 +1430,7 @@ class LoaderMod(loader.Module):
                 "https://raw.githubusercontent.com/hikariatama/ftg/master/forbid_joins.py",
             }
         ):
-            from ..forbid_joins import install_join_forbidder
-
-            install_join_forbidder(self._client)
+            self._client.forbid_joins()
 
         secure_boot = False
 
