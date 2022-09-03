@@ -102,27 +102,27 @@ class HikkaSecurityMod(loader.Module):
         "pm": "🤙 In PM",
         "everyone": "🌍 Everyone (Inline)",
         "owner_list": (
-            "<emoji document_id='5386399931378440814'>😎</emoji> <b>Users in group"
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Users in group"
             " </b><code>owner</code><b>:</b>\n\n{}"
         ),
         "sudo_list": (
-            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>Users in group"
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Users in group"
             " </b><code>sudo</code><b>:</b>\n\n{}"
         ),
         "support_list": (
-            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>Users in group"
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Users in group"
             " </b><code>support</code><b>:</b>\n\n{}"
         ),
         "no_owner": (
-            "<emoji document_id='5386399931378440814'>😎</emoji> <b>There is no users in"
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>There is no users in"
             " group </b><code>owner</code>"
         ),
         "no_sudo": (
-            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>There is no users in"
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>There is no users in"
             " group </b><code>sudo</code>"
         ),
         "no_support": (
-            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>There is no users in"
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>There is no users in"
             " group </b><code>support</code>"
         ),
         "owner_added": (
@@ -150,11 +150,11 @@ class HikkaSecurityMod(loader.Module):
             ' href="tg://user?id={}">{}</a> removed from group </b><code>support</code>'
         ),
         "no_user": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Specify user to"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Specify user to"
             " permit</b>"
         ),
         "not_a_user": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Specified entity is"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Specified entity is"
             " not a user</b>"
         ),
         "li": '⦿ <b><a href="tg://user?id={}">{}</a></b>',
@@ -168,22 +168,22 @@ class HikkaSecurityMod(loader.Module):
         "confirm": "👑 Confirm",
         "enable_nonick_btn": "🔰 Enable",
         "self": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>You can't"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>You can't"
             " promote/demote yourself!</b>"
         ),
         "suggest_nonick": "🔰 <i>Do you want to enable NoNick for this user?</i>",
         "user_nn": '🔰 <b>NoNick for <a href="tg://user?id={}">{}</a> enabled</b>',
         "what": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>You need to specify"
             " the type of target as first argument (</b><code>user</code><b> or"
             " </b><code>chat</code><b>)</b>"
         ),
         "no_target": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>You didn't specify"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>You didn't specify"
             " the target of security rule</b>"
         ),
         "no_rule": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>You didn't specify"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>You didn't specify"
             " the rule (module or command)</b>"
         ),
         "confirm_rule": (
@@ -201,19 +201,19 @@ class HikkaSecurityMod(loader.Module):
             " the one you meant:</b>\n\n{}"
         ),
         "rules": (
-            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Targeted security"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Targeted security"
             " rules:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>No targeted security"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No targeted security"
             " rules</b>"
         ),
         "owner_target": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>This user is owner"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>This user is owner"
             " and can't be promoted by targeted security</b>"
         ),
         "rules_removed": (
-            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Targeted security"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Targeted security"
             ' rules for <a href="{}">{}</a> removed</b>'
         ),
         **service_strings,
@@ -221,7 +221,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_ru = {
         "no_command": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Команда"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Команда"
             " </b><code>{}</code><b> не найдена!</b>"
         ),
         "permissions": (
@@ -246,41 +246,41 @@ class HikkaSecurityMod(loader.Module):
         "group_member": "👥 В группе",
         "pm": "🤙 В лс",
         "owner_list": (
-            "<emoji document_id='5386399931378440814'>😎</emoji> <b>Пользователи группы"
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Пользователи группы"
             " </b><code>owner</code><b>:</b>\n\n{}"
         ),
         "sudo_list": (
-            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>Пользователи группы"
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Пользователи группы"
             " </b><code>sudo</code><b>:</b>\n\n{}"
         ),
         "support_list": (
-            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>Пользователи группы"
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Пользователи группы"
             " </b><code>support</code><b>:</b>\n\n{}"
         ),
         "no_owner": (
-            "<emoji document_id='5386399931378440814'>😎</emoji> <b>Нет пользователей в"
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Нет пользователей в"
             " группе </b><code>owner</code>"
         ),
         "no_sudo": (
-            "<emoji document_id='5418133868475587618'>🧐</emoji> <b>Нет пользователей в"
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Нет пользователей в"
             " группе </b><code>sudo</code>"
         ),
         "no_support": (
-            "<emoji document_id='5415729507128580146'>🤓</emoji> <b>Нет пользователей в"
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Нет пользователей в"
             " группе </b><code>support</code>"
         ),
         "no_user": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Укажи, кому выдавать"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Укажи, кому выдавать"
             " права</b>"
         ),
         "not_a_user": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Указанная цель - не"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Указанная цель - не"
             " пользователь</b>"
         ),
         "cancel": "🚫 Отмена",
         "confirm": "👑 Подтвердить",
         "self": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Нельзя управлять"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Нельзя управлять"
             " своими правами!</b>"
         ),
         "warning": (
@@ -319,16 +319,16 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Управление настройками безопасности",
         "what": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Вам нужно указать"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Вам нужно указать"
             " тип цели первым аргументов (</b><code>user</code><b> or"
             " </b><code>chat</code><b>)</b>"
         ),
         "no_target": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Не указана цель"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Не указана цель"
             " правила безопасности</b>"
         ),
         "no_rule": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Не указано правило"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Не указано правило"
             " безопасности (модуль или команда)</b>"
         ),
         "confirm_rule": (
@@ -344,20 +344,20 @@ class HikkaSecurityMod(loader.Module):
             " использовать {} </b><code>{}</code><b> {}</b>"
         ),
         "rules": (
-            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Таргетированные"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Таргетированные"
             " правила безопасности:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Нет таргетированных"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Нет таргетированных"
             " правил безопасности</b>"
         ),
         "owner_target": (
-            "<emoji document_id='6053166094816905153'>🚫</emoji> <b>Этот пользователь -"
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Этот пользователь -"
             " владелец, его права не могут управляться таргетированной"
             " безопасностью</b>"
         ),
         "rules_removed": (
-            "<emoji document_id='5472308992514464048'>🔐</emoji> <b>Правила"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Правила"
             ' таргетированной безопасности для <a href="{}">{}</a> удалены</b>'
         ),
         **service_strings_ru,
@@ -842,26 +842,34 @@ class HikkaSecurityMod(loader.Module):
 
     def _convert_time(self, duration: int) -> str:
         return (
-            (
-                f"{duration // (24 * 60 * 60)} "
-                + self.strings(f"day{'s' if duration // (24 * 60 * 60) > 1 else ''}")
-            )
-            if duration >= 24 * 60 * 60
+            self.strings("forever")
+            if not duration or duration < 0
             else (
                 (
-                    f"{duration // (60 * 60)} "
-                    + self.strings(f"hour{'s' if duration // (60 * 60) > 1 else ''}")
+                    f"{duration // (24 * 60 * 60)} "
+                    + self.strings(
+                        f"day{'s' if duration // (24 * 60 * 60) > 1 else ''}"
+                    )
                 )
-                if duration >= 60 * 60
+                if duration >= 24 * 60 * 60
                 else (
                     (
-                        f"{duration // 60} "
-                        + self.strings(f"minute{'s' if duration // 60 > 1 else ''}")
+                        f"{duration // (60 * 60)} "
+                        + self.strings(
+                            f"hour{'s' if duration // (60 * 60) > 1 else ''}"
+                        )
                     )
-                    if duration >= 60
+                    if duration >= 60 * 60
                     else (
-                        f"{duration} "
-                        + self.strings(f"second{'s' if duration > 1 else ''}")
+                        (
+                            f"{duration // 60} "
+                            + self.strings(f"minute{'s' if duration // 60 > 1 else ''}")
+                        )
+                        if duration >= 60
+                        else (
+                            f"{duration} "
+                            + self.strings(f"second{'s' if duration > 1 else ''}")
+                        )
                     )
                 )
             )
@@ -1133,14 +1141,14 @@ class HikkaSecurityMod(loader.Module):
                 self.strings("rules").format(
                     "\n".join(
                         [
-                            "<emoji document_id='6037355667365300960'>👥</emoji> <b><a"
+                            "<emoji document_id=6037355667365300960>👥</emoji> <b><a"
                             f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
                             f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
                             f" <code>{rule['rule']}</code>"
                             for rule in self._client.dispatcher.security.tsec_chat
                         ]
                         + [
-                            "<emoji document_id='6037122016849432064'>👤</emoji> <b><a"
+                            "<emoji document_id=6037122016849432064>👤</emoji> <b><a"
                             f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
                             f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
                             f" <code>{rule['rule']}</code>"

@@ -117,17 +117,17 @@ class Presets(loader.Module):
         "back": "🔙 Back",
         "install": "📦 Install",
         "installing": (
-            "<emoji document_id='5451732530048802485'>⏳</emoji> <b>Installing preset"
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installing preset"
             " </b><code>{}</code><b>...</b>"
         ),
         "installing_module": (
-            "<emoji document_id='5451732530048802485'>⏳</emoji> <b>Installing preset"
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installing preset"
             " </b><code>{}</code><b> ({}/{} modules)...</b>\n\n<emoji"
-            " document_id='5188377234380954537'>🌘</emoji> <i>Installing module"
+            " document_id=5188377234380954537>🌘</emoji> <i>Installing module"
             " {}...</i>"
         ),
         "installed": (
-            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Preset"
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Preset"
             " </b><code>{}</code><b> installed!</b>"
         ),
         "already_installed": "✅ [Installed]",
@@ -160,16 +160,16 @@ class Presets(loader.Module):
         "back": "🔙 Назад",
         "install": "📦 Установить",
         "installing": (
-            "<emoji document_id='5451732530048802485'>⏳</emoji> <b>Установка набора"
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Установка набора"
             " >/b><code>{}</code><b>...</b>"
         ),
         "installing_module": (
-            "<emoji document_id='5451732530048802485'>⏳</emoji> <b>Установка набора"
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Установка набора"
             " </b><code>{}</code><b> ({}/{} модулей)...</b>\n\n<emoji"
-            " document_id='5188377234380954537'>🌘</emoji> <i>Установка модуля {}...</i>"
+            " document_id=5188377234380954537>🌘</emoji> <i>Установка модуля {}...</i>"
         ),
         "installed": (
-            "<emoji document_id='5436040291507247633'>🎉</emoji> <b>Набор"
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Набор"
             " </b><code>{}</code><b> установлен!</b>"
         ),
         "already_installed": "✅ [Установлен]",

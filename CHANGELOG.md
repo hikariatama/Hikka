@@ -7,6 +7,9 @@
 - Add support for custom branches (e.g. for beta testers and users, who rolled back)
 - Fix automatic modules reactions
 - Fix :method:`hikka.inline.utils.Utils._find_caller_sec_map`
+- Fix the targeted security rules without time limit
+- Require Hikka-TL >= 1.24.9
+- Refactor `document_id` of custom emojis
 - Refactor validators to be classes, not functions
 - Refactor typehints
 

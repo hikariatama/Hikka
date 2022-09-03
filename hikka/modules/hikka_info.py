@@ -186,7 +186,7 @@ class HikkaInfoMod(loader.Module):
 
         await utils.answer(
             message,
-            "<emoji document_id='6318565919471699564'>🌌</emoji>"
+            "<emoji document_id=6318565919471699564>🌌</emoji>"
             " <b>Hikka</b>\n\nTelegram userbot with a lot of features, like inline"
             " galleries, forms, lists and animated emojis support. Userbot - software,"
             " running on your Telegram account. If you write a command to any chat, it"
@@ -194,7 +194,7 @@ class HikkaInfoMod(loader.Module):
             ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
             if args == "en"
             else (
-                "<emoji document_id='6318565919471699564'>🌌</emoji>"
+                "<emoji document_id=6318565919471699564>🌌</emoji>"
                 " <b>Hikka</b>\n\nTelegram юзербот с огромным количеством функций, из"
                 " которых: инлайн галереи, формы, списки, а также поддержка"
                 " анимированных эмодзи. Юзербот - программа, которая запускается на"

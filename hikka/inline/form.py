@@ -107,7 +107,7 @@ class Form(InlineUnit):
                          Example: (55.749931, 48.742371)
                          ⚠️ If you pass this parameter, you'll need to pass empty string to `text` ⚠️
         :param audio: Attach a audio to the form. Dict or URL must be supplied
-        :param silent: Whether the form must be sent silently (w/o "Loading inline form..." message)
+        :param silent: Whether the form must be sent silently (w/o "Opening form..." message)
         :return: If form is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
@@ -232,7 +232,7 @@ class Form(InlineUnit):
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + " <b>Loading inline form...</b>"
+                    + " <b>Opening form...</b>"
                 )
             except Exception:
                 status_message = None

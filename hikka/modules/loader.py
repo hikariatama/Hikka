@@ -65,51 +65,50 @@ class LoaderMod(loader.Module):
         "name": "Loader",
         "repo_config_doc": "URL to a module repo",
         "avail_header": (
-            "<emoji document_id='6321352876505434037'>🎢</emoji><b> Modules"
-            " from repo</b>"
+            "<emoji document_id=6321352876505434037>🎢</emoji><b> Modules from repo</b>"
         ),
         "select_preset": "<b>⚠️ Please select a preset</b>",
         "no_preset": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Preset not found</b>"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Preset not found</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id='6323332130579416910'>✅</emoji><b> Preset loaded</b>"
+            "<emoji document_id=6323332130579416910>✅</emoji><b> Preset loaded</b>"
         ),
         "no_module": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Module not available"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Module not available"
             " in repo.</b>"
         ),
         "no_file": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> File not found</b>"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> File not found</b>"
         ),
         "provide_module": "<b>⚠️ Provide a module to load</b>",
         "bad_unicode": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Invalid Unicode"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Invalid Unicode"
             " formatting in module</b>"
         ),
         "load_failed": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Loading failed. See"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Loading failed. See"
             " logs for details</b>"
         ),
         "loaded": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji><b> Module"
+            "<emoji document_id=5188377234380954537>🌘</emoji><b> Module"
             " </b><code>{}</code>{}<b> loaded {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>What class needs to be unloaded?</b>",
         "unloaded": (
-            "<emoji document_id='5469654973308476699'>💣</emoji><b> Module {}"
+            "<emoji document_id=5469654973308476699>💣</emoji><b> Module {}"
             " unloaded.</b>"
         ),
         "not_unloaded": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Module not"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Module not"
             " unloaded.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Requirements"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Requirements"
             " installation failed</b>"
         ),
         "requirements_failed_termux": (
-            "<emoji document_id='5386399931378440814'>🕶</emoji> <b>Requirements"
+            "<emoji document_id=5386399931378440814>🕶</emoji> <b>Requirements"
             " installation failed</b>\n<b>The most common reason is that Termux doesn't"
             " support many libraries. Don't report it as bug, this can't be solved.</b>"
         ),
@@ -119,16 +118,16 @@ class LoaderMod(loader.Module):
             " solved.</b>"
         ),
         "requirements_installing": (
-            "<emoji document_id='5445284980978621387'>🚀</emoji><b> Installing"
+            "<emoji document_id=5445284980978621387>🚀</emoji><b> Installing"
             " requirements:\n\n{}</b>"
         ),
         "requirements_restart": (
-            "<emoji document_id='5445284980978621387'>🚀</emoji><b> Requirements"
+            "<emoji document_id=5445284980978621387>🚀</emoji><b> Requirements"
             " installed, but a restart is required for </b><code>{}</code><b> to"
             " apply</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id='6323332130579416910'>✅</emoji><b> All modules"
+            "<emoji document_id=6323332130579416910>✅</emoji><b> All modules"
             " deleted</b>"
         ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
@@ -136,25 +135,25 @@ class LoaderMod(loader.Module):
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
         "inline_init_failed": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>This module requires"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>This module requires"
             " Hikka inline feature and initialization of InlineManager"
             " failed</b>\n<i>Please, remove one of your old bots from @BotFather and"
             " restart userbot to load this module</i>"
         ),
         "version_incompatible": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>This module requires"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>This module requires"
             " Hikka {}+\nPlease, update with </b><code>.update</code>"
         ),
         "ffmpeg_required": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>This module requires"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>This module requires"
             " FFMPEG, which is not installed</b>"
         ),
         "developer": (
-            "\n\n<emoji document_id='5431376038628171216'>👨‍💻</emoji> <b>Developer:"
+            "\n\n<emoji document_id=5431376038628171216>👨‍💻</emoji> <b>Developer:"
             " </b>{}"
         ),
         "depends_from": (
-            "\n\n<emoji document_id='5431736674147114227'>📦</emoji> <b>Dependencies:"
+            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>Dependencies:"
             " </b>\n{}"
         ),
         "by": "by",
@@ -172,7 +171,7 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Additional repos to load from",
         "share_link_doc": "Share module link in result message of .dlmod",
         "modlink": (
-            "\n\n<emoji document_id='6037284117505116849'>🌐</emoji> <b>Link:"
+            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Link:"
             " </b><code>{}</code>"
         ),
         "blob_link": (
@@ -180,7 +179,7 @@ class LoaderMod(loader.Module):
             " `raw` instead</b>"
         ),
         "suggest_subscribe": (
-            "\n\n<emoji document_id='5456129670321806826'>⭐️</emoji><b>This module is"
+            "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>This module is"
             " made by {}. Do you want to join this channel to support developer?</b>"
         ),
         "subscribe": "💬 Subscribe",
@@ -191,33 +190,33 @@ class LoaderMod(loader.Module):
         "clearmodules": "🗑 Clear modules",
         "cancel": "🚫 Cancel",
         "overwrite_module": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>This module"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>This module"
             " attempted to override the core one (</b><code>{}</code><b>)</b>\n\n<emoji"
-            " document_id='5472146462362048818'>💡</emoji><i> Don't report it as bug."
+            " document_id=5472146462362048818>💡</emoji><i> Don't report it as bug."
             " It's a security measure to prevent replacing core modules with some"
             " junk</i>"
         ),
         "overwrite_command": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>This module"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>This module"
             " attempted to override the core command"
             " (</b><code>{}{}</code><b>)</b>\n\n<emoji"
-            " document_id='5472146462362048818'>💡</emoji><i> Don't report it as bug."
+            " document_id=5472146462362048818>💡</emoji><i> Don't report it as bug."
             " It's a security measure to prevent replacing core modules' commands with"
             " some junk</i>"
         ),
         "unload_core": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>You can't unload"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>You can't unload"
             " core module </b><code>{}</code><b></b>\n\n<emoji"
-            " document_id='5472146462362048818'>💡</emoji><i> Don't report it as bug."
+            " document_id=5472146462362048818>💡</emoji><i> Don't report it as bug."
             " It's a security measure to prevent replacing core modules with some"
             " junk</i>"
         ),
         "cannot_unload_lib": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>You can't unload"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>You can't unload"
             " library</b>"
         ),
         "wait_channel_approve": (
-            "<emoji document_id='5469741319330996757'>💫</emoji> <b>Module"
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Module"
             " </b><code>{}</code><b> requests permission to join channel <a"
             ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
             ' document_id="5467666648263564704">❓</emoji> Reason: {}</b>\n\n<i>Waiting'
@@ -229,51 +228,51 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Ссылка для загрузки модулей",
         "add_repo_config_doc": "Дополнительные репозитории",
         "avail_header": (
-            "<emoji document_id='6321352876505434037'>🎢</emoji><b> Официальные модули"
+            "<emoji document_id=6321352876505434037>🎢</emoji><b> Официальные модули"
             " из репозитория</b>"
         ),
         "select_preset": "<b>⚠️ Выбери пресет</b>",
         "no_preset": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Пресет не найден</b>"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Пресет не найден</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id='6323332130579416910'>✅</emoji><b> Пресет загружен</b>"
+            "<emoji document_id=6323332130579416910>✅</emoji><b> Пресет загружен</b>"
         ),
         "no_module": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Модуль недоступен в"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Модуль недоступен в"
             " репозитории.</b>"
         ),
         "no_file": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Файл не найден</b>"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Файл не найден</b>"
         ),
         "provide_module": "<b>⚠️ Укажи модуль для загрузки</b>",
         "bad_unicode": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Неверная кодировка"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Неверная кодировка"
             " модуля</b>"
         ),
         "load_failed": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Загрузка не"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Загрузка не"
             " увенчалась успехом. Смотри логи.</b>"
         ),
         "loaded": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji><b> Модуль"
+            "<emoji document_id=5188377234380954537>🌘</emoji><b> Модуль"
             " </b><code>{}</code>{}<b> загружен {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>А что выгружать то?</b>",
         "unloaded": (
-            "<emoji document_id='5469654973308476699'>💣</emoji><b> Модуль {}"
+            "<emoji document_id=5469654973308476699>💣</emoji><b> Модуль {}"
             " выгружен.</b>"
         ),
         "not_unloaded": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Модуль не"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Модуль не"
             " выгружен.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id='5375201396859607943'>🚫</emoji><b> Ошибка установки"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Ошибка установки"
             " зависимостей</b>"
         ),
         "requirements_failed_termux": (
-            "<emoji document_id='5386399931378440814'>🕶</emoji> <b>Ошибка установки"
+            "<emoji document_id=5386399931378440814>🕶</emoji> <b>Ошибка установки"
             " зависимостей</b>\n<b>Наиболее часто возникает из-за того, что Termux не"
             " поддерживает многие библиотеки. Не сообщайте об этом как об ошибке, это"
             " не может быть исправлено.</b>"
@@ -284,34 +283,34 @@ class LoaderMod(loader.Module):
             " быть исправлено</b>"
         ),
         "requirements_installing": (
-            "<emoji document_id='5445284980978621387'>🚀</emoji><b> Устанавливаю"
+            "<emoji document_id=5445284980978621387>🚀</emoji><b> Устанавливаю"
             " зависимости:\n\n{}</b>"
         ),
         "requirements_restart": (
-            "<emoji document_id='5445284980978621387'>🚀</emoji><b> Зависимости"
+            "<emoji document_id=5445284980978621387>🚀</emoji><b> Зависимости"
             " установлены, но нужна перезагрузка для применения </b><code>{}</code>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id='6323332130579416910'>✅</emoji><b> Модули удалены</b>"
+            "<emoji document_id=6323332130579416910>✅</emoji><b> Модули удалены</b>"
         ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
         "version_incompatible": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>Этому модулю"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Этому модулю"
             " требуется Hikka версии {}+\nОбновись с помощью </b><code>.update</code>"
         ),
         "ffmpeg_required": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>Этому модулю"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Этому модулю"
             " требуется FFMPEG, который не установлен</b>"
         ),
         "developer": (
-            "\n\n<emoji document_id='5431376038628171216'>👨‍💻</emoji> <b>Разработчик:"
+            "\n\n<emoji document_id=5431376038628171216>👨‍💻</emoji> <b>Разработчик:"
             " </b>{}"
         ),
         "depends_from": (
-            "\n\n<emoji document_id='5431736674147114227'>📦</emoji> <b>Зависимости:"
+            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>Зависимости:"
             " </b>\n{}"
         ),
         "by": "от",
@@ -328,7 +327,7 @@ class LoaderMod(loader.Module):
             " диск"
         ),
         "inline_init_failed": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>Этому модулю нужен"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Этому модулю нужен"
             " HikkaInline, а инициализация менеджера инлайна неудачна</b>\n<i>Попробуй"
             " удалить одного из старых ботов в @BotFather и перезагрузить юзербота</i>"
         ),
@@ -340,7 +339,7 @@ class LoaderMod(loader.Module):
         "_cls_doc": "Загружает модули",
         "share_link_doc": "Указывать ссылку на модуль после загрузки через .dlmod",
         "modlink": (
-            "\n\n<emoji document_id='6037284117505116849'>🌐</emoji> <b>Ссылка:"
+            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Ссылка:"
             " </b><code>{}</code>"
         ),
         "blob_link": (
@@ -348,11 +347,11 @@ class LoaderMod(loader.Module):
             " `raw`</b>"
         ),
         "raw_link": (
-            "\n<emoji document_id='6037284117505116849'>🌐</emoji> <b>Ссылка:"
+            "\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Ссылка:"
             " </b><code>{}</code>"
         ),
         "suggest_subscribe": (
-            "\n\n<emoji document_id='5456129670321806826'>⭐️</emoji><b>Этот модуль"
+            "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>Этот модуль"
             " сделан {}. Подписаться на него, чтобы поддержать разработчика?</b>"
         ),
         "subscribe": "💬 Подписаться",
@@ -365,33 +364,33 @@ class LoaderMod(loader.Module):
         "clearmodules": "🗑 Выгрузить модули",
         "cancel": "🚫 Отмена",
         "overwrite_module": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>Этот модуль"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Этот модуль"
             " попытался перезаписать встроенный (</b><code>{}</code><b>)</b>\n\n<emoji"
-            " document_id='5472146462362048818'>💡</emoji><i> Это не ошибка, а мера"
+            " document_id=5472146462362048818>💡</emoji><i> Это не ошибка, а мера"
             " безопасности, требуемая для предотвращения замены встроенных модулей"
             " всяким хламом. Не сообщайте о ней в support чате</i>"
         ),
         "overwrite_command": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>Этот модуль"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Этот модуль"
             " попытался перезаписать встроенную команду"
             " (</b><code>{}</code><b>)</b>\n\n<emoji"
-            " document_id='5472146462362048818'>💡</emoji><i> Это не ошибка, а мера"
+            " document_id=5472146462362048818>💡</emoji><i> Это не ошибка, а мера"
             " безопасности, требуемая для предотвращения замены команд встроенных"
             " модулей всяким хламом. Не сообщайте о ней в support чате</i>"
         ),
         "unload_core": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>Ты не можешь"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ты не можешь"
             " выгрузить встроенный модуль </b><code>{}</code><b></b>\n\n<emoji"
-            " document_id='5472146462362048818'>💡</emoji><i> Это не ошибка, а мера"
+            " document_id=5472146462362048818>💡</emoji><i> Это не ошибка, а мера"
             " безопасности, требуемая для предотвращения замены встроенных модулей"
             " всяким хламом. Не сообщайте о ней в support чате</i>"
         ),
         "cannot_unload_lib": (
-            "<emoji document_id='5454225457916420314'>😖</emoji> <b>Ты не можешь"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ты не можешь"
             " выгрузить библиотеку</b>"
         ),
         "wait_channel_approve": (
-            "<emoji document_id='5469741319330996757'>💫</emoji> <b>Модуль"
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Модуль"
             " </b><code>{}</code><b> запрашивает разрешение на вступление в канал <a"
             ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
             ' document_id="5467666648263564704">❓</emoji> Причина:'
@@ -1045,7 +1044,7 @@ class LoaderMod(loader.Module):
                 if message:
                     await utils.answer(
                         message,
-                        "<emoji document_id='5454225457916420314'>😖</emoji>"
+                        "<emoji document_id=5454225457916420314>😖</emoji>"
                         f" <b>{utils.escape_html(str(e))}</b>",
                     )
                 return
@@ -1115,7 +1114,7 @@ class LoaderMod(loader.Module):
                 if message:
                     await utils.answer(
                         message,
-                        "<emoji document_id='5454225457916420314'>😖</emoji>"
+                        "<emoji document_id=5454225457916420314>😖</emoji>"
                         f" <b>{utils.escape_html(str(e))}</b>",
                     )
                 return
@@ -1130,7 +1129,7 @@ class LoaderMod(loader.Module):
                 if message:
                     await utils.answer(
                         message,
-                        "<emoji document_id='5454225457916420314'>😖</emoji>"
+                        "<emoji document_id=5454225457916420314>😖</emoji>"
                         f" <b>{utils.escape_html(str(e))}</b>",
                     )
                 return

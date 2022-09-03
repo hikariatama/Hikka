@@ -65,7 +65,7 @@ class List(InlineUnit):
                                 If you want to avoid this, pass `manual_security=True`
         :param disable_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
                                  If you want to disable all security checks on this list in particular, pass `disable_security=True`
-        :param silent: Whether the list must be sent silently (w/o "Loading inline list..." message)
+        :param silent: Whether the list must be sent silently (w/o "Opening list..." message)
         :param custom_buttons: Custom buttons to add above native ones
         :return: If list is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
@@ -166,7 +166,7 @@ class List(InlineUnit):
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + " <b>Loading inline list...</b>"
+                    + " <b>Opening list...</b>"
                 )
             except Exception:
                 status_message = None

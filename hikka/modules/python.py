@@ -32,29 +32,29 @@ class PythonMod(loader.Module):
     strings = {
         "name": "Python",
         "eval": (
-            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
             " Code:</b>\n<code>{}</code>\n<emoji"
-            " document_id='5472164874886846699'>✨</emoji><b>"
+            " document_id=5472164874886846699>✨</emoji><b>"
             " Result:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id='6323575131239089635'>🚫</emoji><b> Error:</b>\n{}"
+            " document_id=6323575131239089635>🚫</emoji><b> Error:</b>\n{}"
         ),
     }
 
     strings_ru = {
         "eval": (
-            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
             " Код:</b>\n<code>{}</code>\n<emoji"
-            " document_id='5472164874886846699'>✨</emoji><b>"
+            " document_id=5472164874886846699>✨</emoji><b>"
             " Результат:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id='5431376038628171216'>🎬</emoji><b>"
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id='6323575131239089635'>🚫</emoji><b> Ошибка:</b>\n{}"
+            " document_id=6323575131239089635>🚫</emoji><b> Ошибка:</b>\n{}"
         ),
         "_cls_doc": "Выполняет Python код",
     }
