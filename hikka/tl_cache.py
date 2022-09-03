@@ -51,6 +51,7 @@ class CustomTelegramClient(TelegramClient):
         self._hikka_fullchannel_cache = {}
         self._hikka_fulluser_cache = {}
         self.__forbidden_constructors = []
+        asyncio.ensure_future(self.cleaner())
 
     async def force_get_entity(self, *args, **kwargs):
         return await self.get_entity(*args, force=True, **kwargs)
@@ -394,27 +395,27 @@ class CustomTelegramClient(TelegramClient):
     def forbid_joins(self):
         self.__forbidden_constructors.extend([615851205, 1817183516])
 
-    async def cleaner(client: TelegramClient):
+    async def cleaner(self):
         while True:
-            for record, record_data in client._hikka_entity_cache.copy().items():
+            for record, record_data in self._hikka_entity_cache.copy().items():
                 if record_data.expired():
-                    del client._hikka_entity_cache[record]
+                    del self._hikka_entity_cache[record]
                     logger.debug(f"Cleaned outdated cache {record=}")
 
-            for chat, chat_data in client._hikka_perms_cache.copy().items():
+            for chat, chat_data in self._hikka_perms_cache.copy().items():
                 for user, user_data in chat_data.copy().items():
                     if user_data.expired():
-                        del client._hikka_perms_cache[chat][user]
+                        del self._hikka_perms_cache[chat][user]
                         logger.debug(f"Cleaned outdated perms cache {chat=} {user=}")
 
-            for channel_id, record in client._hikka_fullchannel_cache.copy().items():
+            for channel_id, record in self._hikka_fullchannel_cache.copy().items():
                 if record.expired():
-                    del client._hikka_fullchannel_cache[channel_id]
+                    del self._hikka_fullchannel_cache[channel_id]
                     logger.debug(f"Cleaned outdated fullchannel cache {channel_id=}")
 
-            for user_id, record in client._hikka_fulluser_cache.copy().items():
+            for user_id, record in self._hikka_fulluser_cache.copy().items():
                 if record.expired():
-                    del client._hikka_fulluser_cache[user_id]
+                    del self._hikka_fulluser_cache[user_id]
                     logger.debug(f"Cleaned outdated fulluser cache {user_id=}")
 
             await asyncio.sleep(3)

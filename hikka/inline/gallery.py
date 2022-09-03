@@ -24,7 +24,7 @@ from aiogram.types import (
     InputMediaAnimation,
     InputMediaPhoto,
 )
-from aiogram.utils.exceptions import BadRequest, InvalidHTTPUrlContent, RetryAfter
+from aiogram.utils.exceptions import BadRequest, RetryAfter
 
 from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
@@ -512,7 +512,7 @@ class Gallery(InlineUnit):
                 media=self._get_current_media(unit_id),
                 reply_markup=self._gallery_markup(unit_id),
             )
-        except (InvalidHTTPUrlContent, BadRequest):
+        except BadRequest:
             logger.debug("Error fetching photo content, attempting load next one")
             del self._units[unit_id]["photos"][self._units[unit_id]["current_index"]]
             self._units[unit_id]["current_index"] -= 1
