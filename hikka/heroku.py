@@ -28,7 +28,7 @@ from . import utils
 def publish(
     key: Optional[str] = None,
     api_token: Optional[str] = None,
-    create_new: Optional[bool] = True,
+    create_new: bool = True,
 ):
     """Push to heroku"""
     logging.debug("Configuring heroku...")
@@ -76,7 +76,7 @@ def publish(
 def get_app(
     key: Optional[str] = None,
     api_token: Optional[namedtuple] = None,
-    create_new: Optional[bool] = True,
+    create_new: bool = True,
 ):
     if key is None:
         key = os.environ.get("heroku_api_token")

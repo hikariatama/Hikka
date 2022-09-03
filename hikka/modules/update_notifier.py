@@ -15,7 +15,7 @@ from typing import Union
 
 import git
 
-from .. import loader, utils
+from .. import loader, utils, version
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -66,7 +66,9 @@ class UpdateNotifierMod(loader.Module):
             for remote in repo.remotes:
                 remote.fetch()
 
-            if not (diff := repo.git.log(["HEAD..origin/master", "--oneline"])):
+            if not (
+                diff := repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
+            ):
                 return False
         except Exception:
             return False
@@ -84,7 +86,9 @@ class UpdateNotifierMod(loader.Module):
 
     def get_latest(self) -> str:
         try:
-            return list(git.Repo().iter_commits("origin/master", max_count=1))[0].hexsha
+            return list(
+                git.Repo().iter_commits(f"origin/{version.branch}", max_count=1)
+            )[0].hexsha
         except Exception:
             return ""
 
@@ -151,8 +155,8 @@ class UpdateNotifierMod(loader.Module):
             return
 
         if call.data == "hikka_upd_ignore":
-            self.set("ignore_permanent", self._pending)
-            await call.answer("Notifications about this update have been suppressed")
+            self.set("ignore_permanent", self.get_latest())
+            await call.answer("Notifications about the latest have been suppressed")
             return
 
         await self._delete_all_upd_messages()

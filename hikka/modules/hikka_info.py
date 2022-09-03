@@ -14,7 +14,7 @@ import git
 from telethon.tl.types import Message
 from telethon.utils import get_display_name
 
-from .. import loader, main, utils
+from .. import loader, utils, version
 from ..inline.types import InlineQuery
 
 logger = logging.getLogger(__name__)
@@ -31,13 +31,14 @@ class HikkaInfoMod(loader.Module):
         "build": "Build",
         "prefix": "Prefix",
         "uptime": "Uptime",
+        "branch": "Branch",
         "send_info": "Send userbot info",
         "description": "ℹ This will not compromise any sensitive info",
         "up-to-date": "<b>😌 Up-to-date</b>",
         "update_required": "<b>😕 Update required </b><code>.update</code>",
         "_cfg_cst_msg": (
             "Custom message for info. May contain {me}, {version}, {build}, {prefix},"
-            " {platform}, {upd}, {uptime} keywords"
+            " {platform}, {upd}, {uptime}, {branch} keywords"
         ),
         "_cfg_cst_btn": "Custom button for info. Leave empty to remove button",
         "_cfg_banner": "URL to image banner",
@@ -49,6 +50,7 @@ class HikkaInfoMod(loader.Module):
         "build": "Сборка",
         "prefix": "Префикс",
         "uptime": "Аптайм",
+        "branch": "Ветка",
         "send_info": "Отправить информацию о юзерботе",
         "description": "ℹ Это не раскроет никакой личной информации",
         "_ihandle_doc_info": "Отправить информацию о юзерботе",
@@ -56,7 +58,7 @@ class HikkaInfoMod(loader.Module):
         "update_required": "<b>😕 Требуется обновление </b><code>.update</code>",
         "_cfg_cst_msg": (
             "Кастомный текст сообщения в info. Может содержать ключевые слова {me},"
-            " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}"
+            " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}, {branch}"
         ),
         "_cfg_cst_btn": (
             "Кастомная кнопка в сообщении в info. Оставь пустым, чтобы убрать кнопку"
@@ -93,7 +95,7 @@ class HikkaInfoMod(loader.Module):
     def _render_info(self) -> str:
         try:
             repo = git.Repo(search_parent_directories=True)
-            diff = repo.git.log(["HEAD..origin/master", "--oneline"])
+            diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
             upd = (
                 self.strings("update_required") if diff else self.strings("up-to-date")
             )
@@ -105,7 +107,7 @@ class HikkaInfoMod(loader.Module):
             f' href="tg://user?id={self._me.id}">{utils.escape_html(get_display_name(self._me))}</a></b>'
         )
         build = utils.get_commit_url()
-        version = f'<i>{".".join(list(map(str, list(main.__version__))))}</i>'
+        _version = f'<i>{".".join(list(map(str, list(version.__version__))))}</i>'
         prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"
         platform = utils.get_named_platform()
 
@@ -117,18 +119,20 @@ class HikkaInfoMod(loader.Module):
             )
             + self.config["custom_message"].format(
                 me=me,
-                version=version,
+                version=_version,
                 build=build,
                 prefix=prefix,
                 platform=platform,
                 upd=upd,
                 uptime=utils.formatted_uptime(),
+                branch=version.branch,
             )
             if self.config["custom_message"]
             else (
                 "<b>🌘 Hikka</b>\n"
                 f'<b>🤴 {self.strings("owner")}: </b>{me}\n\n'
-                f"<b>🔮 {self.strings('version')}: </b>{version} {build}\n"
+                f"<b>🔮 {self.strings('version')}: </b>{_version} {build}\n"
+                f"<b>🌳 {self.strings('branch')}: </b><code>{version.branch}</code>\n"
                 f"{upd}\n\n"
                 f"<b>📼 {self.strings('prefix')}: </b>{prefix}\n"
                 f"<b>⌚️ {self.strings('uptime')}: </b>{utils.formatted_uptime()}\n"
@@ -182,7 +186,7 @@ class HikkaInfoMod(loader.Module):
 
         await utils.answer(
             message,
-            "<emoji document_id='6318565919471699564'>🌌</emoji>"
+            "<emoji document_id=6318565919471699564>🌌</emoji>"
             " <b>Hikka</b>\n\nTelegram userbot with a lot of features, like inline"
             " galleries, forms, lists and animated emojis support. Userbot - software,"
             " running on your Telegram account. If you write a command to any chat, it"
@@ -190,7 +194,7 @@ class HikkaInfoMod(loader.Module):
             ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
             if args == "en"
             else (
-                "<emoji document_id='6318565919471699564'>🌌</emoji>"
+                "<emoji document_id=6318565919471699564>🌌</emoji>"
                 " <b>Hikka</b>\n\nTelegram юзербот с огромным количеством функций, из"
                 " которых: инлайн галереи, формы, списки, а также поддержка"
                 " анимированных эмодзи. Юзербот - программа, которая запускается на"

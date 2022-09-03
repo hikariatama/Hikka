@@ -30,7 +30,7 @@ class APIRatelimiterMod(loader.Module):
     strings = {
         "name": "APIRatelimiter",
         "warning": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji>"
+            "<emoji document_id=6319093650693293883>☣️</emoji>"
             " <b>WARNING!</b>\n\nYour account exceeded the limit of requests, specified"
             " in config. In order to prevent Telegram API Flood, userbot has been"
             " <b>fully frozen</b> for {} seconds. Further info is provided in attached"
@@ -41,35 +41,33 @@ class APIRatelimiterMod(loader.Module):
             " in seconds&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji> <b>Invalid"
-            " arguments</b>"
+            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Invalid arguments</b>"
         ),
         "suspended_for": (
-            "<emoji document_id='5458450833857322148'>👌</emoji> <b>API Flood Protection"
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>API Flood Protection"
             " is disabled for {} seconds</b>"
         ),
         "test": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji> <b>This action will"
+            "<emoji document_id=6319093650693293883>☣️</emoji> <b>This action will"
             " expose your account to flooding Telegram API.</b> <i>In order to confirm,"
             " that you really know, what you are doing, complete this simple test -"
             " find the emoji, differing from others</i>"
         ),
         "on": (
-            "<emoji document_id='5458450833857322148'>👌</emoji> <b>Protection"
-            " enabled</b>"
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection enabled</b>"
         ),
         "off": (
-            "<emoji document_id='5458450833857322148'>👌</emoji> <b>Protection"
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection"
             " disabled</b>"
         ),
         "u_sure": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji> <b>Are you sure?</b>"
+            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Are you sure?</b>"
         ),
     }
 
     strings_ru = {
         "warning": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji>"
+            "<emoji document_id=6319093650693293883>☣️</emoji>"
             " <b>ВНИМАНИЕ!</b>\n\nАккаунт вышел за лимиты запросов, указанные в"
             " конфиге. С целью предотвращения флуда Telegram API, юзербот был"
             " <b>полностью заморожен</b> на {} секунд. Дополнительная информация"
@@ -81,28 +79,24 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;время в секундах&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji> <b>Неверные"
+            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Неверные"
             " аргументы</b>"
         ),
         "suspended_for": (
-            "<emoji document_id='5458450833857322148'>👌</emoji> <b>Защита API отключена"
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита API отключена"
             " на {} секунд</b>"
         ),
         "test": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji> <b>Это действие"
+            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Это действие"
             " открывает юзерботу возможность флудить Telegram API.</b> <i>Для того,"
             " чтобы убедиться, что ты действительно уверен в том, что делаешь - реши"
             " простенький тест - найди отличающийся эмодзи.</i>"
         ),
-        "on": (
-            "<emoji document_id='5458450833857322148'>👌</emoji> <b>Защита включена</b>"
-        ),
+        "on": "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита включена</b>",
         "off": (
-            "<emoji document_id='5458450833857322148'>👌</emoji> <b>Защита отключена</b>"
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита отключена</b>"
         ),
-        "u_sure": (
-            "<emoji document_id='6319093650693293883'>☣️</emoji> <b>Ты уверен?</b>"
-        ),
+        "u_sure": "<emoji document_id=6319093650693293883>☣️</emoji> <b>Ты уверен?</b>",
     }
 
     _ratelimiter = []

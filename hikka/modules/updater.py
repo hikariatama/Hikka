@@ -42,7 +42,7 @@ from telethon.tl.functions.messages import (
 from telethon.tl.types import DialogFilter, Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
-from .. import loader, utils, heroku, main
+from .. import loader, utils, heroku, main, version
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -55,23 +55,23 @@ class UpdaterMod(loader.Module):
     strings = {
         "name": "Updater",
         "source": (
-            "<emoji document_id='5456255401194429832'>📖</emoji> <b>Read the source code"
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Read the source code"
             " from</b> <a href='{}'>here</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Your {} is"
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Your {} is"
             " restarting...</b>"
         ),
         "downloading": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Downloading"
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Downloading"
             " updates...</b>"
         ),
         "installing": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Installing"
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Installing"
             " updates...</b>"
         ),
         "success": (
-            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Restart successful!"
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Restart successful!"
             " {}</b>\n<i>But still loading modules...</i>\n<i>Restart took {}s</i>"
         ),
         "origin_cfg_doc": "Git origin URL, for where to update from",
@@ -90,11 +90,11 @@ class UpdaterMod(loader.Module):
         "no_update": "🚸 <b>You are on the latest version, pull updates anyway?</b>",
         "cancel": "🚫 Cancel",
         "lavhost_restart": (
-            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Your {} is"
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Your {} is"
             " restarting...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Your {} is"
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Your {} is"
             " updating...</b>"
         ),
         "heroku_update": (
@@ -104,7 +104,7 @@ class UpdaterMod(loader.Module):
             "😔 <b>Update complete. Nothing to push...</b>"
         ),
         "full_success": (
-            "<emoji document_id='6323332130579416910'>👍</emoji> <b>Userbot is fully"
+            "<emoji document_id=6323332130579416910>👍</emoji> <b>Userbot is fully"
             " loaded! {}</b>\n<i>Full restart took {}s</i>"
         ),
         "secure_boot_complete": (
@@ -114,28 +114,28 @@ class UpdaterMod(loader.Module):
 
     strings_ru = {
         "source": (
-            "<emoji document_id='5456255401194429832'>📖</emoji> <b>Исходный код можно"
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Исходный код можно"
             " прочитать</b> <a href='{}'>здесь</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Твоя {}"
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Твоя {}"
             " перезагружается...</b>"
         ),
         "downloading": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Скачивание"
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Скачивание"
             " обновлений...</b>"
         ),
         "installing": (
-            "<emoji document_id='6318970114548958978'>🕗</emoji> <b>Установка"
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Установка"
             " обновлений...</b>"
         ),
         "success": (
-            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Перезагрузка"
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Перезагрузка"
             " успешна! {}</b>\n<i>Но модули еще загружаются...</i>\n<i>Перезагрузка"
             " заняла {} сек</i>"
         ),
         "full_success": (
-            "<emoji document_id='6323332130579416910'>👍</emoji> <b>Юзербот полностью"
+            "<emoji document_id=6323332130579416910>👍</emoji> <b>Юзербот полностью"
             " загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>"
         ),
         "secure_boot_complete": (
@@ -160,11 +160,11 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Отмена",
         "_cls_doc": "Обновляет юзербот",
         "lavhost_restart": (
-            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Твой {}"
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
             " перезагружается...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id='5469986291380657759'>✌️</emoji> <b>Твой {}"
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
             " обновляется...</b>"
         ),
         "heroku_update": (
@@ -348,7 +348,7 @@ class UpdaterMod(loader.Module):
         try:
             current = utils.get_git_hash()
             upcoming = next(
-                git.Repo().iter_commits("origin/master", max_count=1)
+                git.Repo().iter_commits(f"origin/{version.branch}", max_count=1)
             ).hexsha
             if (
                 "--force" in (utils.get_args_raw(message) or "")
@@ -392,10 +392,10 @@ class UpdaterMod(loader.Module):
                 msg_obj = await utils.answer(
                     msg_obj,
                     self.strings("lavhost_update").format(
-                        '</b><emoji document_id="5192756799647785066">✌️</emoji><emoji'
-                        ' document_id="5193117564015747203">✌️</emoji><emoji'
-                        ' document_id="5195050806105087456">✌️</emoji><emoji'
-                        ' document_id="5195457642587233944">✌️</emoji><b>'
+                        '</b><emoji document_id=5192756799647785066>✌️</emoji><emoji'
+                        ' document_id=5193117564015747203>✌️</emoji><emoji'
+                        ' document_id=5195050806105087456>✌️</emoji><emoji'
+                        ' document_id=5195457642587233944>✌️</emoji><b>'
                         if self._client.hikka_me.premium
                         and CUSTOM_EMOJIS
                         and isinstance(msg_obj, Message)

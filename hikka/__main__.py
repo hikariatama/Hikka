@@ -110,14 +110,14 @@ else:
         try:
             # This is used as verification markers to ensure that supported
             # version is installed
-            from telethon.tl.types import MessageEntityCustomEmoji  # noqa: F401
-            from telethon.extensions.html import CUSTOM_EMOJIS  # noqa: F401
+            from telethon.tl.types import MessageEntityCustomEmoji  # skipcq
+            from telethon.extensions.html import CUSTOM_EMOJIS  # skipcq
             import telethon
 
-            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 8):
+            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 9):
                 raise ImportError
         except ImportError:
-            print("🔄 Reinstalling Hikka-specific telethon version")
+            print("🔄 Reinstalling Hikka-TL...")
             subprocess.run(
                 [
                     sys.executable,

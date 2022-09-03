@@ -24,10 +24,11 @@
 
 import os
 
+import telethon
 from telethon.tl.types import Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
-from .. import loader, main, translations, utils
+from .. import loader, main, translations, utils, version
 from ..inline.types import InlineCall
 
 
@@ -38,7 +39,7 @@ class CoreMod(loader.Module):
     strings = {
         "name": "Settings",
         "too_many_args": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Too many args</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Too many args</b>"
         ),
         "blacklisted": (
             '<emoji document_id="5368324170671202286">👍</emoji> <b>Chat {} blacklisted'
@@ -58,7 +59,7 @@ class CoreMod(loader.Module):
         ),
         "what_prefix": "❓ <b>What should the prefix be set to?</b>",
         "prefix_incorrect": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Prefix must be one"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Prefix must be one"
             " symbol in length</b>"
         ),
         "prefix_set": (
@@ -72,15 +73,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Aliases:</b>\n",
         "no_command": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Command</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Command</b>"
             " <code>{}</code> <b>does not exist</b>"
         ),
         "alias_args": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>You must provide a"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>You must provide a"
             " command and the alias for it</b>"
         ),
         "delalias_args": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>You must provide the"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>You must provide the"
             " alias name</b>"
         ),
         "alias_removed": (
@@ -88,21 +89,21 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>removed</b>."
         ),
         "no_alias": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Alias</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Alias</b>"
             " <code>{}</code> <b>does not exist</b>"
         ),
         "db_cleared": (
             '<emoji document_id="5368324170671202286">👍</emoji><b> Database cleared</b>'
         ),
         "hikka": (
-            "{}\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji>"
             " <b>Version: {}.{}.{}</b>\n<emoji"
-            " document_id='6318902906900711458'>🧱</emoji> <b>Build:"
-            " </b><i>{}</i>\n\n<emoji document_id='5454182070156794055'>⌨️</emoji>"
+            " document_id=6318902906900711458>🧱</emoji> <b>Build:"
+            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL: </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
             " <b>Developer: t.me/hikariatama</b>"
         ),
         "check_url": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>You need to specify"
             " valid url containing a langpack</b>"
         ),
         "lang_saved": "{} <b>Language saved!</b>",
@@ -111,7 +112,7 @@ class CoreMod(loader.Module):
             " saved!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Incorrect language"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Incorrect language"
             " specified</b>"
         ),
         "lang_removed": (
@@ -119,25 +120,28 @@ class CoreMod(loader.Module):
             " to default ones</b>"
         ),
         "check_pack": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Invalid pack format"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Invalid pack format"
             " in url</b>"
         ),
         "confirm_cleardb": "⚠️ <b>Are you sure, that you want to clear database?</b>",
         "cleardb_confirm": "🗑 Clear database",
         "cancel": "🚫 Cancel",
         "who_to_blacklist": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Who to"
-            " blacklist?</b>"
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Who to blacklist?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Who to"
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Who to"
             " unblacklist?</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>You are using an"
+            " unstable branch </b><code>{}</code><b>!</b>"
         ),
     }
 
     strings_ru = {
         "too_many_args": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Слишком много"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Слишком много"
             " аргументов</b>"
         ),
         "blacklisted": (
@@ -158,7 +162,7 @@ class CoreMod(loader.Module):
         ),
         "what_prefix": "❓ <b>А какой префикс ставить то?</b>",
         "prefix_incorrect": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Префикс должен"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Префикс должен"
             " состоять только из одного символа</b>"
         ),
         "prefix_set": (
@@ -172,15 +176,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Алиасы:</b>\n",
         "no_command": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Команда</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Команда</b>"
             " <code>{}</code> <b>не существует</b>"
         ),
         "alias_args": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Требуется ввести"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Требуется ввести"
             " команду и алиас для нее</b>"
         ),
         "delalias_args": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Требуется имя"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Требуется имя"
             " алиаса</b>"
         ),
         "alias_removed": (
@@ -188,21 +192,21 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>удален</b>."
         ),
         "no_alias": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji><b> Алиас</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji><b> Алиас</b>"
             " <code>{}</code> <b>не существует</b>"
         ),
         "db_cleared": (
             '<emoji document_id="5368324170671202286">👍</emoji><b> База очищена</b>'
         ),
         "hikka": (
-            "{}\n\n<emoji document_id='5406931726184225260'>🧐</emoji>"
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji>"
             " <b>Версия: {}.{}.{}</b>\n<emoji"
-            " document_id='6318902906900711458'>🧱</emoji> <b>Сборка:"
-            " </b><i>{}</i>\n\n<emoji document_id='5454182070156794055'>⌨️</emoji>"
+            " document_id=6318902906900711458>🧱</emoji> <b>Сборка:"
+            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL: </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
             " <b>Developer: t.me/hikariatama</b>"
         ),
         "check_url": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Укажи правильную"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Укажи правильную"
             " ссылку, ведущую на пак с переводом</b>"
         ),
         "lang_saved": "{} <b>Язык сохранен!</b>",
@@ -211,7 +215,7 @@ class CoreMod(loader.Module):
             " сохранен!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>Указан неверный"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Указан неверный"
             " язык</b>"
         ),
         "lang_removed": (
@@ -219,7 +223,7 @@ class CoreMod(loader.Module):
             " сброшены</b>"
         ),
         "check_pack": (
-            "<emoji document_id='5436162517686557387'>🚫</emoji> <b>По ссылке находится"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>По ссылке находится"
             " неправильный пак</b>"
         ),
         "_cls_doc": "Управление базовыми настройками юзербота",
@@ -227,12 +231,16 @@ class CoreMod(loader.Module):
         "cleardb_confirm": "🗑 Очистить базу",
         "cancel": "🚫 Отмена",
         "who_to_blacklist": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Кого заблокировать"
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кого заблокировать"
             " то?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id='5384612769716774600'>❓</emoji> <b>Кого разблокировать"
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кого разблокировать"
             " то?</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Ты используешь"
+            " нестабильную ветку </b><code>{}</code><b>!</b>"
         ),
     }
 
@@ -270,18 +278,24 @@ class CoreMod(loader.Module):
                 (
                     utils.get_platform_emoji()
                     + (
-                        '<emoji document_id="5192756799647785066">✌️</emoji><emoji'
-                        ' document_id="5193117564015747203">✌️</emoji><emoji'
-                        ' document_id="5195050806105087456">✌️</emoji><emoji'
-                        ' document_id="5195457642587233944">✌️</emoji>'
+                        '<emoji document_id=5192756799647785066>✌️</emoji><emoji'
+                        ' document_id=5193117564015747203>✌️</emoji><emoji'
+                        ' document_id=5195050806105087456>✌️</emoji><emoji'
+                        ' document_id=5195457642587233944>✌️</emoji>'
                         if "LAVHOST" in os.environ
                         else ""
                     )
                 )
                 if self._client.hikka_me.premium and CUSTOM_EMOJIS
                 else "🌘 <b>Hikka userbot</b>",
-                *main.__version__,
+                *version.__version__,
                 utils.get_commit_url(),
+                f"{telethon.__version__} #{telethon.tl.alltlobjects.LAYER}",
+            )
+            + (
+                ""
+                if version.branch == "master"
+                else self.strings("unstable").format(version.branch)
             ),
         )
 

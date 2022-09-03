@@ -29,16 +29,16 @@ class InlineStuffMod(loader.Module):
     strings = {
         "name": "InlineStuff",
         "bot_username_invalid": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Specified bot"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Specified bot"
             " username is invalid. It must end with </b><code>bot</code><b> and contain"
             " at least 4 symbols</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>This username is"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>This username is"
             " already occupied</b>"
         ),
         "bot_updated": (
-            "<emoji document_id='6318792204118656433'>🎉</emoji> <b>Config successfully"
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Config successfully"
             " saved. Restart userbot to apply changes</b>"
         ),
         "this_is_hikka": (
@@ -51,16 +51,16 @@ class InlineStuffMod(loader.Module):
 
     strings_ru = {
         "bot_username_invalid": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Неправильный ник"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Неправильный ник"
             " бота. Он должен заканчиваться на </b><code>bot</code><b> и быть не короче"
             " чем 5 символов</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id='5415905755406539934'>🚫</emoji> <b>Такой ник бота уже"
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Такой ник бота уже"
             " занят</b>"
         ),
         "bot_updated": (
-            "<emoji document_id='6318792204118656433'>🎉</emoji> <b>Настройки сохранены."
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Настройки сохранены."
             " Для их применения нужно перезагрузить юзербот</b>"
         ),
         "this_is_hikka": (
@@ -86,7 +86,7 @@ class InlineStuffMod(loader.Module):
             not getattr(message, "out", False)
             or not getattr(message, "via_bot_id", False)
             or message.via_bot_id != self.inline.bot_id
-            or "Loading Hikka gallery..." not in getattr(message, "raw_text", "")
+            or "Opening gallery..." not in getattr(message, "raw_text", "")
         ):
             return
 
@@ -94,7 +94,7 @@ class InlineStuffMod(loader.Module):
 
         await message.delete()
 
-        m = await message.respond("🌘 <b>Opening gallery... wait</b>")
+        m = await message.respond("🌘 <b>Opening gallery...</b>")
 
         await self.inline.gallery(
             message=m,
@@ -104,6 +104,7 @@ class InlineStuffMod(loader.Module):
             disable_security=self.inline._custom_map[id_].get(
                 "disable_security", False
             ),
+            silent=True,
         )
 
     async def _check_bot(self, username: str) -> bool:

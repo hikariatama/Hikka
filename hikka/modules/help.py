@@ -25,12 +25,12 @@ class HelpMod(loader.Module):
         "name": "Help",
         "bad_module": "<b>🚫 <b>Module</b> <code>{}</code> <b>not found</b>",
         "single_mod_header": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{}</b>:"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{}</b>:"
         ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 No docs",
         "all_header": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} mods available,"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} mods available,"
             " {} hidden:</b>"
         ),
         "mod_tmpl": "\n{} <code>{}</code>",
@@ -38,7 +38,7 @@ class HelpMod(loader.Module):
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Specify module to hide</b>",
         "hidden_shown": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} modules hidden,"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} modules hidden,"
             " {} modules shown:</b>\n{}\n{}"
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
@@ -47,11 +47,11 @@ class HelpMod(loader.Module):
             "{} <b>Link to </b><a href='https://t.me/hikka_talks'>support chat</a>"
         ),
         "partial_load": (
-            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>Userbot is not"
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Userbot is not"
             " fully loaded, so not all modules are shown</b>"
         ),
         "not_exact": (
-            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>No exact match"
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>No exact match"
             " occured, so the closest result is shown instead</b>"
         ),
         "request_join": "You requested link for Hikka support chat",
@@ -60,12 +60,12 @@ class HelpMod(loader.Module):
     strings_ru = {
         "bad_module": "<b>🚫 <b>Модуль</b> <code>{}</code> <b>не найден</b>",
         "single_mod_header": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{}</b>:"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{}</b>:"
         ),
         "single_cmd": "\n▫️ <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
         "all_header": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} модулей доступно,"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} модулей доступно,"
             " {} скрыто:</b>"
         ),
         "mod_tmpl": "\n{} <code>{}</code>",
@@ -73,7 +73,7 @@ class HelpMod(loader.Module):
         "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Укажи модуль(-и), которые нужно скрыть</b>",
         "hidden_shown": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>{} модулей скрыто,"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} модулей скрыто,"
             " {} модулей показано:</b>\n{}\n{}"
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
@@ -83,11 +83,11 @@ class HelpMod(loader.Module):
         ),
         "_cls_doc": "Показывает помощь по модулям",
         "partial_load": (
-            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>Юзербот еще не"
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Юзербот еще не"
             " загрузился полностью, поэтому показаны не все модули</b>"
         ),
         "not_exact": (
-            "<emoji document_id='5472105307985419058'>☝️</emoji> <b>Точного совпадения"
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Точного совпадения"
             " не нашлось, поэтому было выбрано наиболее подходящее</b>"
         ),
         "request_join": "Вы запросили ссылку на чат помощи Hikka",

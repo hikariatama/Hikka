@@ -12,7 +12,7 @@ import ast
 import functools
 import logging
 from math import ceil
-from typing import Optional, Union, Any
+from typing import Union, Any
 
 from telethon.tl.types import Message
 
@@ -706,7 +706,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         config_opt: str,
-        force_hidden: Optional[bool] = False,
+        force_hidden: bool = False,
         obj_type: Union[bool, str] = False,
     ):
         module = self.lookup(mod)

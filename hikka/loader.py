@@ -39,7 +39,6 @@ import importlib.util
 import importlib.machinery
 from functools import partial, wraps
 
-from telethon import TelegramClient
 from telethon.tl.types import Message, InputPeerNotifySettings, Channel
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
@@ -69,6 +68,7 @@ from .types import (
 from .inline.core import InlineManager
 from .inline.types import InlineCall
 from .translations import Strings, Translator
+from .database import Database
 
 import gc as _gc
 import types as _types
@@ -513,8 +513,8 @@ class Modules:
 
     def __init__(
         self,
-        client: TelegramClient,
-        db: "Database",  # type: ignore
+        client: "CustomTelegramClient",  # type: ignore
+        db: Database,
         allclients: list,
         translator: Translator,
     ):

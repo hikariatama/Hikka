@@ -33,12 +33,12 @@ import re
 import traceback
 from typing import Tuple, Union
 
-from telethon import TelegramClient
 from telethon.tl.types import Message
 
 from . import main, security, utils
 from .database import Database
 from .loader import Modules
+from .tl_cache import CustomTelegramClient
 
 # Keys for layout switch
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
@@ -82,7 +82,7 @@ class CommandDispatcher:
     def __init__(
         self,
         modules: Modules,
-        client: TelegramClient,
+        client: CustomTelegramClient,
         db: Database,
         no_nickname: bool = False,
     ):

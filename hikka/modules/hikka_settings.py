@@ -46,40 +46,39 @@ class HikkaSettingsMod(loader.Module):
     strings = {
         "name": "HikkaSettings",
         "watchers": (
-            "<emoji document_id='5424885441100782420'>👀</emoji>"
+            "<emoji document_id=5424885441100782420>👀</emoji>"
             " <b>Watchers:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>Watcher {} not"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Watcher {} not"
             " found</b>"
         ),
         "disabled": (
-            "<emoji document_id='5424885441100782420'>👀</emoji> <b>Watcher {} is now"
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Watcher {} is now"
             " <u>disabled</u></b>"
         ),
         "enabled": (
-            "<emoji document_id='5424885441100782420'>👀</emoji> <b>Watcher {} is now"
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Watcher {} is now"
             " <u>enabled</u></b>"
         ),
         "args": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>You need to specify"
             " watcher name</b>"
         ),
         "user_nn": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick for this user"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick for this user"
             " is now {}</b>"
         ),
         "no_cmd": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>Please, specify"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Please, specify"
             " command to toggle NoNick for</b>"
         ),
         "cmd_nn": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick for"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick for"
             " </b><code>{}</code><b> is now {}</b>"
         ),
         "cmd404": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>Command not"
-            " found</b>"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Command not found</b>"
         ),
         "inline_settings": "⚙️ <b>Here you can configure your Hikka settings</b>",
         "confirm_update": (
@@ -99,7 +98,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Suggest subscribe to channel",
         "do_not_suggest_subscribe": "🚫 Suggest subscribe to channel",
         "private_not_allowed": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>This command must be"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>This command must be"
             " executed in chat</b>"
         ),
         "nonick_warning": (
@@ -108,7 +107,7 @@ class HikkaSettingsMod(loader.Module):
             "disable NoNick!"
         ),
         "reply_required": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>Reply to a message"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Reply to a message"
             " of user, which needs to be added to NoNick</b>"
         ),
         "deauth_confirm": (
@@ -132,19 +131,19 @@ class HikkaSettingsMod(loader.Module):
         ),
         "logs_cleared": "🗑 <b>Logs cleared</b>",
         "cmd_nn_list": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick is enabled"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick is enabled"
             " for these commands:</b>\n\n{}"
         ),
         "user_nn_list": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick is enabled"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick is enabled"
             " for these users:</b>\n\n{}"
         ),
         "chat_nn_list": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick is enabled"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick is enabled"
             " for these chats:</b>\n\n{}"
         ),
         "nothing": (
-            "<emoji document_id='5427052514094619126'>🤷‍♀️</emoji> <b>Nothing to"
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>Nothing to"
             " show...</b>"
         ),
         "privacy_leak": (
@@ -174,40 +173,39 @@ class HikkaSettingsMod(loader.Module):
 
     strings_ru = {
         "watchers": (
-            "<emoji document_id='5424885441100782420'>👀</emoji>"
+            "<emoji document_id=5424885441100782420>👀</emoji>"
             " <b>Смотрители:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>Смотритель {} не"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Смотритель {} не"
             " найден</b>"
         ),
         "disabled": (
-            "<emoji document_id='5424885441100782420'>👀</emoji> <b>Смотритель {} теперь"
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Смотритель {} теперь"
             " <u>выключен</u></b>"
         ),
         "enabled": (
-            "<emoji document_id='5424885441100782420'>👀</emoji> <b>Смотритель {} теперь"
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Смотритель {} теперь"
             " <u>включен</u></b>"
         ),
         "args": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>Укажи имя"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Укажи имя"
             " смотрителя</b>"
         ),
         "user_nn": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>Состояние NoNick для"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Состояние NoNick для"
             " этого пользователя: {}</b>"
         ),
         "no_cmd": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>Укажи команду, для"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Укажи команду, для"
             " которой надо включить\\выключить NoNick</b>"
         ),
         "cmd_nn": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>Состояние NoNick для"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Состояние NoNick для"
             " </b><code>{}</code><b>: {}</b>"
         ),
         "cmd404": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>Команда не"
-            " найдена</b>"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Команда не найдена</b>"
         ),
         "inline_settings": "⚙️ <b>Здесь можно управлять настройками Hikka</b>",
         "confirm_update": "🧭 <b>Подтвердите обновление. Юзербот будет перезагружен</b>",
@@ -224,7 +222,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Предлагать подписку на канал",
         "do_not_suggest_subscribe": "🚫 Предлагать подписку на канал",
         "private_not_allowed": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>Эту команду нужно"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Эту команду нужно"
             " выполнять в чате</b>"
         ),
         "_cls_doc": "Дополнительные настройки Hikka",
@@ -234,7 +232,7 @@ class HikkaSettingsMod(loader.Module):
             "отключи глобальный NoNick!"
         ),
         "reply_required": (
-            "<emoji document_id='5447207618793708263'>🚫</emoji> <b>Ответь на сообщение"
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Ответь на сообщение"
             " пользователя, для которого нужно включить NoNick</b>"
         ),
         "deauth_confirm": (
@@ -256,19 +254,19 @@ class HikkaSettingsMod(loader.Module):
         ),
         "logs_cleared": "🗑 <b>Логи очищены</b>",
         "cmd_nn_list": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick включен для"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick включен для"
             " этих команд:</b>\n\n{}"
         ),
         "user_nn_list": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick включен для"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick включен для"
             " этих пользователей:</b>\n\n{}"
         ),
         "chat_nn_list": (
-            "<emoji document_id='5469791106591890404'>🪄</emoji> <b>NoNick включен для"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick включен для"
             " этих чатов:</b>\n\n{}"
         ),
         "nothing": (
-            "<emoji document_id='5427052514094619126'>🤷‍♀️</emoji> <b>Нечего"
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>Нечего"
             " показывать...</b>"
         ),
         "privacy_leak": (

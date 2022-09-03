@@ -46,28 +46,28 @@ class TestMod(loader.Module):
         "no_logs": "ℹ️ <b>You don't have any logs at verbosity {}.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>Hikka logs with"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka logs with"
             " verbosity </b><code>{}</code>\n\n<emoji"
-            " document_id='5454390891466726015'>👋</emoji> <b>Hikka version:"
-            " {}.{}.{}</b>{}\n<emoji document_id='6321050180095313397'>⏱</emoji>"
+            " document_id=5454390891466726015>👋</emoji> <b>Hikka version:"
+            " {}.{}.{}</b>{}\n<emoji document_id=6321050180095313397>⏱</emoji>"
             " <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
             " InlineLogs</b>"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id='5416024721705673488'>💀</emoji> <b>Invalid time to"
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>Invalid time to"
             " suspend</b>"
         ),
         "suspended": (
-            "<emoji document_id='5452023368054216810'>🥶</emoji> <b>Bot suspended"
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot suspended"
             " for</b> <code>{}</code> <b>seconds</b>"
         ),
         "results_ping": (
-            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Telegram ping:</b>"
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegram ping:</b>"
             " <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id='5377371691078916778'>😎</emoji> <b>Uptime: {}</b>"
+            " document_id=5377371691078916778>😎</emoji> <b>Uptime: {}</b>"
         ),
         "ping_hint": (
-            "<emoji document_id='5472146462362048818'>💡</emoji> <i>Telegram ping mostly"
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram ping mostly"
             " depends on Telegram servers latency and other external factors and has"
             " nothing to do with the parameters of server on which userbot is"
             " installed</i>"
@@ -97,10 +97,10 @@ class TestMod(loader.Module):
         "no_logs": "ℹ️ <b>У тебя нет логов уровня {}.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
-            "<emoji document_id='5188377234380954537'>🌘</emoji> <b>Логи Hikka уровня"
-            " </b><code>{}</code>\n\n<emoji document_id='5454390891466726015'>👋</emoji>"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Логи Hikka уровня"
+            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
             " <b>Версия Hikka: {}.{}.{}</b>{}\n<emoji"
-            " document_id='6321050180095313397'>⏱</emoji> <b>Uptime:"
+            " document_id=6321050180095313397>⏱</emoji> <b>Uptime:"
             " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
             " InlineLogs</b>"
         ),
@@ -112,21 +112,21 @@ class TestMod(loader.Module):
         ),
         "debugging_disabled": "✅ <b>Режим разработчика выключен</b>",
         "suspend_invalid_time": (
-            "<emoji document_id='5416024721705673488'>💀</emoji> <b>Неверное время"
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>Неверное время"
             " заморозки</b>"
         ),
         "suspended": (
-            "<emoji document_id='5452023368054216810'>🥶</emoji> <b>Бот заморожен на</b>"
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Бот заморожен на</b>"
             " <code>{}</code> <b>секунд</b>"
         ),
         "results_ping": (
-            "<emoji document_id='6321050180095313397'>⏱</emoji> <b>Скорость отклика"
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Скорость отклика"
             " Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id='5377371691078916778'>😎</emoji> <b>Прошло с последней"
+            " document_id=5377371691078916778>😎</emoji> <b>Прошло с последней"
             " перезагрузки: {}</b>"
         ),
         "ping_hint": (
-            "<emoji document_id='5472146462362048818'>💡</emoji> <i>Скорость отклика"
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>Скорость отклика"
             " Telegram в большей степени зависит от загруженности серверов Telegram и"
             " других внешних факторов и никак не связана с параметрами сервера, на"
             " который установлен юзербот</i>"

@@ -32,44 +32,44 @@ class HerokuMod(loader.Module):
     strings = {
         "name": "Heroku",
         "redisdocs": (
-            "<emoji document_id='5458675903028535170'>🛍</emoji> <b>Redis"
+            "<emoji document_id=5458675903028535170>🛍</emoji> <b>Redis"
             " Database</b>\n\n🇷🇺 <b>If you are from Russia, or just want to use"
             " external service:</b>\n1. Go to https://redis.com\n2. Register"
             " account\n3. Create database instance\n4. Enter your Redis Database URL"
             " via <code>.setredis &lt;redis_url&gt;</code>\n<i><emoji"
-            " document_id='6318918617891080008'>💡</emoji> Hint: URL structure is"
+            " document_id=6318918617891080008>💡</emoji> Hint: URL structure is"
             " <code>redis://:PASSWORD@ENDPOINT</code></i>\n\n♓️ <b>If you are not from"
             " Russia, just enable </b><code>heroku-redis</code><b> plugin for your app."
             " For this action Heroku account verification is required!</b>"
         ),
         "url_invalid": (
-            "<emoji document_id='5379568936218009290'>👎</emoji> <b>Invalid URL"
+            "<emoji document_id=5379568936218009290>👎</emoji> <b>Invalid URL"
             " specified</b>"
         ),
         "url_saved": (
-            "<emoji document_id='5368324170671202286'>👍</emoji> <b>URL saved</b>"
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>URL saved</b>"
         ),
     }
 
     strings_ru = {
         "redisdocs": (
-            "<emoji document_id='5458675903028535170'>🛍</emoji> <b>База данных"
+            "<emoji document_id=5458675903028535170>🛍</emoji> <b>База данных"
             " Redis</b>\n\n🇷🇺 <b>Если ты из России, или просто хочешь использовать"
             " внешний сервис:</b>\n1. Перейди на https://redis.com\n2."
             " Зарегистрируйся\n3. Создай базу данных\n4. Введи Database URL в"
             " <code>.setredis &lt;redis_url&gt;</code>\n<i><emoji"
-            " document_id='6318918617891080008'>💡</emoji> Подсказка: URL выглядит так:"
+            " document_id=6318918617891080008>💡</emoji> Подсказка: URL выглядит так:"
             " <code>redis://:PASSWORD@ENDPOINT</code></i>\n\n♓️ <b>Если ты не из"
             " России, можешь просто активировать плагин"
             " </b><code>heroku-redis</code><b> в Hikka app Heroku. Для этого тебе нужно"
             " будет верифицировать аккаунт</b>"
         ),
         "url_invalid": (
-            "<emoji document_id='5379568936218009290'>👎</emoji> <b>Указан неверный"
+            "<emoji document_id=5379568936218009290>👎</emoji> <b>Указан неверный"
             " URL</b>"
         ),
         "url_saved": (
-            "<emoji document_id='5368324170671202286'>👍</emoji> <b>URL сохранен</b>"
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>URL сохранен</b>"
         ),
     }
 

@@ -39,6 +39,7 @@ from logging.handlers import RotatingFileHandler
 
 from . import utils
 from .types import Module, BotInlineCall
+from .tl_cache import CustomTelegramClient
 
 
 class HikkaException:
@@ -65,8 +66,10 @@ class HikkaException:
                     ):
                         dictionary[key] = "<Database>"
 
-                    if isinstance(value, telethon.TelegramClient):
-                        dictionary[key] = "<TelegramClient>"
+                    if isinstance(
+                        value, (telethon.TelegramClient, CustomTelegramClient)
+                    ):
+                        dictionary[key] = f"<{value.__class__.__name__}>"
 
                     dictionary[key] = to_hashable(value)
                 else:
@@ -190,7 +193,7 @@ class TelegramLogsHandler(logging.Handler):
         """Return a list of logging entries"""
         return self.handledbuffer + self.buffer
 
-    def dumps(self, lvl: Optional[int] = 0, client_id: Optional[int] = None) -> list:
+    def dumps(self, lvl: int = 0, client_id: Optional[int] = None) -> list:
         """Return all entries of minimum level as list of strings"""
         return [
             self.targets[0].format(record)

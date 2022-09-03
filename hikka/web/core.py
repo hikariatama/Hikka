@@ -38,6 +38,9 @@ import jinja2
 from aiohttp import web
 
 from . import root
+from ..tl_cache import CustomTelegramClient
+from ..database import Database
+from ..loader import Modules
 
 
 class Web(root.Web):
@@ -199,9 +202,9 @@ class Web(root.Web):
 
     async def add_loader(
         self,
-        client: "TelegramClient",  # type: ignore
-        loader: "Modules",  # type: ignore
-        db: "Database",  # type: ignore
+        client: CustomTelegramClient,
+        loader: Modules,
+        db: Database,
     ):
         self.client_data[client.tg_id] = (loader, client, db)
 

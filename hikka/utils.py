@@ -51,6 +51,7 @@ from telethon.tl.functions.channels import CreateChannelRequest, EditPhotoReques
 from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
+    SetHistoryTTLRequest,
 )
 from telethon.tl.types import (
     Channel,
@@ -87,6 +88,7 @@ from aiogram.types import Message as AiogramMessage
 
 from .inline.types import InlineCall, InlineMessage
 from .types import Module
+from .tl_cache import CustomTelegramClient
 
 
 FormattingEntity = Union[
@@ -246,7 +248,7 @@ def run_async(loop, coro):
 def censor(
     obj,
     to_censor: Optional[List[str]] = None,
-    replace_with: Optional[str] = "redacted_{count}_chars",
+    replace_with: str = "redacted_{count}_chars",
 ):
     """May modify the original object, but don't rely on it"""
     if to_censor is None:
@@ -411,7 +413,7 @@ async def answer(
     return result
 
 
-async def get_target(message: Message, arg_no: Optional[int] = 0) -> Union[int, None]:
+async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
     if any(
         isinstance(entity, MessageEntityMentionName)
         for entity in (message.entities or [])
@@ -457,7 +459,7 @@ def merge(a: dict, b: dict) -> dict:
 
 
 async def set_avatar(
-    client: "TelegramClient",  # type: ignore
+    client: CustomTelegramClient,
     peer: Entity,
     avatar: str,
 ) -> bool:
@@ -499,15 +501,16 @@ async def set_avatar(
 
 
 async def asset_channel(
-    client: "TelegramClient",  # type: ignore
+    client: CustomTelegramClient,
     title: str,
     description: str,
     *,
-    channel: Optional[bool] = False,
-    silent: Optional[bool] = False,
-    archive: Optional[bool] = False,
-    avatar: Optional[str] = "",
-    _folder: Optional[str] = "",
+    channel: bool = False,
+    silent: bool = False,
+    archive: bool = False,
+    avatar: Optional[str] = None,
+    ttl: Optional[int] = None,
+    _folder: Optional[str] = None,
 ) -> Tuple[Channel, bool]:
     """
     Create new channel (if needed) and return its entity
@@ -518,6 +521,7 @@ async def asset_channel(
     :param silent: Automatically mute channel
     :param archive: Automatically archive channel
     :param avatar: Url to an avatar to set as pfp of created peer
+    :param ttl: Time to live for messages in channel
     :param _folder: Do not use it, or things will go wrong
     :returns: Peer and bool: is channel new or pre-existent
     """
@@ -553,6 +557,9 @@ async def asset_channel(
     if avatar:
         await set_avatar(client, peer, avatar)
 
+    if ttl:
+        await client(SetHistoryTTLRequest(peer=peer, period=ttl))
+
     if _folder:
         if _folder != "hikka":
             raise NotImplementedError
@@ -582,9 +589,9 @@ async def asset_channel(
 
 
 async def dnd(
-    client: "TelegramClient",  # type: ignore
+    client: CustomTelegramClient,
     peer: Entity,
-    archive: Optional[bool] = True,
+    archive: bool = True,
 ) -> bool:
     """
     Mutes and optionally archives peer
@@ -684,9 +691,9 @@ def get_named_platform() -> str:
 
 def get_platform_emoji() -> str:
     BASE = (
-        '<emoji document_id="{}">🌘</emoji><emoji'
-        ' document_id="5195311729663286630">🌘</emoji><emoji'
-        ' document_id="5195045669324201904">🌘</emoji>'
+        "<emoji document_id={}>🌘</emoji><emoji"
+        " document_id=5195311729663286630>🌘</emoji><emoji"
+        " document_id=5195045669324201904>🌘</emoji>"
     )
 
     if "OKTETO" in os.environ:
@@ -804,9 +811,9 @@ def rand(size: int, /) -> str:
 def smart_split(
     text: str,
     entities: List[FormattingEntity],
-    length: Optional[int] = 4096,
-    split_on: Optional[ListLike] = ("\n", " "),
-    min_length: Optional[int] = 1,
+    length: int = 4096,
+    split_on: ListLike = ("\n", " "),
+    min_length: int = 1,
 ):
     """
     Split the message into smaller messages.
@@ -1009,7 +1016,7 @@ def get_lang_flag(countrycode: str) -> str:
 
 def get_entity_url(
     entity: Union[User, Channel],
-    openmessage: Optional[bool] = False,
+    openmessage: bool = False,
 ) -> str:
     """
     Get link to object, if available
@@ -1051,16 +1058,19 @@ async def get_message_link(
     )
 
 
-def remove_html(text: str, escape: Optional[bool] = False) -> str:
+def remove_html(text: str, escape: bool = False, keep_emojis: bool = False) -> str:
     """
     Removes HTML tags from text
     :param text: Text to remove HTML from
     :param escape: Escape HTML
+    :param keep_emojis: Keep custom emojis
     :return: Text without HTML
     """
     return (escape_html if escape else str)(
         re.sub(
-            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>|<\/?emoji.*?>)",
+            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>)"
+            if keep_emojis
+            else r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>|<\/?emoji.*?>)",
             "",
             text,
         )
