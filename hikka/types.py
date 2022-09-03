@@ -288,11 +288,8 @@ class ConfigValue:
         ignore_validation: bool = False,
     ) -> bool:
         if key == "value":
-            try:
+            with contextlib.suppress(Exception):
                 value = ast.literal_eval(value)
-            except Exception:
-                pass
-
             # Convert value to list if it's tuple just not to mess up
             # with json convertations
             if isinstance(value, (set, tuple)):
