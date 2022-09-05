@@ -1,5 +1,9 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.4.2
+
+- Fix authorization error
+
 ## 🌑 Hikka 1.4.1
 
 - Create new type :obj:`hikka.tl_cache.CustomTelegramClient` to avoid monkeypatching

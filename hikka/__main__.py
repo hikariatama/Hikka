@@ -103,7 +103,9 @@ elif __package__ != "hikka":  # In case they did python __main__.py
     print("🚫 Error: you cannot run this as a script; you must execute as a package")
 else:
     try:
-        import telethon  # noqa: F401
+        # If telethon is not installed, just skip to a part of main startup
+        # then main.py will through an error and re-install all deps
+        import telethon
     except Exception:
         pass
     else:
@@ -114,7 +116,7 @@ else:
             from telethon.extensions.html import CUSTOM_EMOJIS  # skipcq
             import telethon
 
-            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 9):
+            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 10):
                 raise ImportError
         except ImportError:
             print("🔄 Reinstalling Hikka-TL...")
