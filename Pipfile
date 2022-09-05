@@ -7,7 +7,7 @@ name = 'pypi'
 python_version = '3.9.13'
 
 [packages]
-hikka-tl = '==1.24.9'
+hikka-tl = '==1.24.10'
 aiofile = '==3.8.1'
 pythondialog = '==3.5.3'
 gitpython = '==3.1.27'
