@@ -6,9 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
-import logging
 import time
 from typing import List, Union
 
@@ -34,8 +31,6 @@ from ..security import (
     SUDO,
     SUPPORT,
 )
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds

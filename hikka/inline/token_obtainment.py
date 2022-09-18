@@ -9,9 +9,9 @@
 import asyncio
 import io
 import logging
+import os
 import re
 
-import requests
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
 
@@ -20,25 +20,27 @@ from .types import InlineUnit
 
 logger = logging.getLogger(__name__)
 
-photo = io.BytesIO(
-    requests.get(
-        "https://github.com/hikariatama/Hikka/raw/master/assets/bot_pfp.png"
-    ).content
-)
-photo.name = "avatar.png"
+with open(
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "assets", "bot_pfp.png")
+    ),
+    "rb",
+) as f:
+    photo = io.BytesIO(f.read())
+    photo.name = "avatar.png"
 
 
 class TokenObtainment(InlineUnit):
     async def _create_bot(self):
         # This is called outside of conversation, so we can start the new one
         # We create new bot
-        logger.info("User don't have bot, attempting creating new one")
+        logger.info("User doesn't have bot, attempting creating new one")
         async with self._client.conversation("@BotFather", exclusive=False) as conv:
             m = await conv.send_message("/newbot")
             r = await conv.get_response()
 
-            logger.debug(f">> {m.raw_text}")
-            logger.debug(f"<< {r.raw_text}")
+            logger.debug(">> %s", m.raw_text)
+            logger.debug("<< %s", r.raw_text)
 
             if "20" in r.raw_text:
                 return False
@@ -71,8 +73,8 @@ class TokenObtainment(InlineUnit):
                 m = await conv.send_message(msg)
                 r = await conv.get_response()
 
-                logger.debug(f">> {m.raw_text}")
-                logger.debug(f"<< {r.raw_text}")
+                logger.debug(">> %s", m.raw_text)
+                logger.debug("<< %s", r.raw_text)
 
                 await m.delete()
                 await r.delete()
@@ -82,7 +84,7 @@ class TokenObtainment(InlineUnit):
                 r = await conv.get_response()
 
                 logger.debug(">> <Photo>")
-                logger.debug(f"<< {r.raw_text}")
+                logger.debug("<< %s", r.raw_text)
             except Exception:
                 # In case user was not able to send photo to
                 # BotFather, it is not a critical issue, so
@@ -90,8 +92,8 @@ class TokenObtainment(InlineUnit):
                 m = await conv.send_message("/cancel")
                 r = await conv.get_response()
 
-                logger.debug(f">> {m.raw_text}")
-                logger.debug(f"<< {r.raw_text}")
+                logger.debug(">> %s", m.raw_text)
+                logger.debug("<< %s", r.raw_text)
 
             await m.delete()
             await r.delete()
@@ -102,9 +104,9 @@ class TokenObtainment(InlineUnit):
 
     async def _assert_token(
         self,
-        create_new_if_needed=True,
-        revoke_token=False,
-    ):
+        create_new_if_needed: bool = True,
+        revoke_token: bool = False,
+    ) -> bool:
         # If the token is set in db
         if self._token:
             # Just return `True`
@@ -112,7 +114,13 @@ class TokenObtainment(InlineUnit):
 
         logger.info("Bot token not found in db, attempting search in BotFather")
 
-        await utils.dnd(self._client, await self._client.get_entity("@BotFather"), True)
+        if not self._db.get(__name__, "no_mute", False):
+            await utils.dnd(
+                self._client,
+                await self._client.get_entity("@BotFather"),
+                True,
+            )
+            self._db._set(__name__, "no_mute", True)
 
         # Start conversation with BotFather to attempt search
         async with self._client.conversation("@BotFather", exclusive=False) as conv:
@@ -128,8 +136,8 @@ class TokenObtainment(InlineUnit):
 
             r = await conv.get_response()
 
-            logger.debug(f">> {m.raw_text}")
-            logger.debug(f"<< {r.raw_text}")
+            logger.debug(">> %s", m.raw_text)
+            logger.debug("<< %s", r.raw_text)
 
             await m.delete()
             await r.delete()
@@ -163,8 +171,8 @@ class TokenObtainment(InlineUnit):
                     m = await conv.send_message(button.text)
                     r = await conv.get_response()
 
-                    logger.debug(f">> {m.raw_text}")
-                    logger.debug(f"<< {r.raw_text}")
+                    logger.debug(">> %s", m.raw_text)
+                    logger.debug("<< %s", r.raw_text)
 
                     if revoke_token:
                         await m.delete()
@@ -173,8 +181,8 @@ class TokenObtainment(InlineUnit):
                         m = await conv.send_message("/revoke")
                         r = await conv.get_response()
 
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
+                        logger.debug(">> %s", m.raw_text)
+                        logger.debug("<< %s", r.raw_text)
 
                         await m.delete()
                         await r.delete()
@@ -182,8 +190,8 @@ class TokenObtainment(InlineUnit):
                         m = await conv.send_message(button.text)
                         r = await conv.get_response()
 
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
+                        logger.debug(">> %s", m.raw_text)
+                        logger.debug("<< %s", r.raw_text)
 
                     token = r.raw_text.splitlines()[1]
 
@@ -200,7 +208,7 @@ class TokenObtainment(InlineUnit):
                     for msg in [
                         "/setinline",
                         button.text,
-                        "HikkaQuery",
+                        "user@hikka:~$",
                         "/setinlinefeedback",
                         button.text,
                         "Enabled",
@@ -210,8 +218,8 @@ class TokenObtainment(InlineUnit):
                         m = await conv.send_message(msg)
                         r = await conv.get_response()
 
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
+                        logger.debug(">> %s", m.raw_text)
+                        logger.debug("<< %s", r.raw_text)
 
                         await m.delete()
                         await r.delete()
@@ -221,7 +229,7 @@ class TokenObtainment(InlineUnit):
                         r = await conv.get_response()
 
                         logger.debug(">> <Photo>")
-                        logger.debug(f"<< {r.raw_text}")
+                        logger.debug("<< %s", r.raw_text)
                     except Exception:
                         # In case user was not able to send photo to
                         # BotFather, it is not a critical issue, so
@@ -229,8 +237,8 @@ class TokenObtainment(InlineUnit):
                         m = await conv.send_message("/cancel")
                         r = await conv.get_response()
 
-                        logger.debug(f">> {m.raw_text}")
-                        logger.debug(f"<< {r.raw_text}")
+                        logger.debug(">> %s", m.raw_text)
+                        logger.debug("<< %s", r.raw_text)
 
                     await m.delete()
                     await r.delete()

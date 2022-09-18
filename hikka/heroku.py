@@ -20,16 +20,16 @@ except ImportError:
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError
-from typing import Optional
+import typing
 
 from . import utils
 
 
 def publish(
-    key: Optional[str] = None,
-    api_token: Optional[str] = None,
+    key: typing.Optional[str] = None,
+    api_token: typing.Optional[str] = None,
     create_new: bool = True,
-):
+) -> "heroku3.models.app.App":
     """Push to heroku"""
     logging.debug("Configuring heroku...")
 
@@ -74,10 +74,10 @@ def publish(
 
 
 def get_app(
-    key: Optional[str] = None,
-    api_token: Optional[namedtuple] = None,
+    key: typing.Optional[str] = None,
+    api_token: typing.Optional[namedtuple] = None,
     create_new: bool = True,
-):
+) -> "typing.Tuple[heroku3.models.app.App, heroku3.models.config.ConfigVars]":
     if key is None:
         key = os.environ.get("heroku_api_token")
 
@@ -106,7 +106,7 @@ def get_app(
     return app, config
 
 
-def get_repo():
+def get_repo() -> Repo:
     """Helper to get the repo, making it if not found"""
     try:
         repo = Repo(os.path.dirname(utils.get_base_dir()))

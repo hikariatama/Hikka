@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class InlineMessage:
-    """Aiogram message, send via inline bot"""
+    """Aiogram message, sent via inline bot"""
 
     def __init__(
         self,
@@ -49,25 +49,18 @@ class InlineMessage:
             **kwargs,
         )
 
-    async def delete(self):
+    async def delete(self) -> bool:
         return await self.inline_manager._delete_unit_message(
             self,
             unit_id=self.unit_id,
         )
 
-    async def unload(self, *args, **kwargs):
-        if "unit_id" in kwargs:
-            kwargs.pop("unit_id")
-
-        return await self.inline_manager._unload_unit(
-            *args,
-            unit_id=self.unit_id,
-            **kwargs,
-        )
+    async def unload(self) -> bool:
+        return await self.inline_manager._unload_unit(unit_id=self.unit_id)
 
 
 class BotInlineMessage:
-    """Aiogram message, send through inline bot itself"""
+    """Aiogram message, sent through inline bot itself"""
 
     def __init__(
         self,
@@ -103,7 +96,7 @@ class BotInlineMessage:
             **kwargs,
         )
 
-    async def delete(self):
+    async def delete(self) -> bool:
         return await self.inline_manager._delete_unit_message(
             self,
             unit_id=self.unit_id,
@@ -111,7 +104,7 @@ class BotInlineMessage:
             message_id=self.message_id,
         )
 
-    async def unload(self, *args, **kwargs):
+    async def unload(self, *args, **kwargs) -> bool:
         if "unit_id" in kwargs:
             kwargs.pop("unit_id")
 

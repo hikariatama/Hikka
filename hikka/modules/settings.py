@@ -96,11 +96,12 @@ class CoreMod(loader.Module):
             '<emoji document_id="5368324170671202286">👍</emoji><b> Database cleared</b>'
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji>"
-            " <b>Version: {}.{}.{}</b>\n<emoji"
-            " document_id=6318902906900711458>🧱</emoji> <b>Build:"
-            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL: </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
-            " <b>Developer: t.me/hikariatama</b>"
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Version:"
+            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji> <b>Build:"
+            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
+            " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
+            " t.me/hikariatama</b>"
         ),
         "check_url": (
             "<emoji document_id=5436162517686557387>🚫</emoji> <b>You need to specify"
@@ -199,11 +200,12 @@ class CoreMod(loader.Module):
             '<emoji document_id="5368324170671202286">👍</emoji><b> База очищена</b>'
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji>"
-            " <b>Версия: {}.{}.{}</b>\n<emoji"
-            " document_id=6318902906900711458>🧱</emoji> <b>Сборка:"
-            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL: </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
-            " <b>Developer: t.me/hikariatama</b>"
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Версия:"
+            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji> <b>Сборка:"
+            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
+            " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
+            " t.me/hikariatama</b>"
         ),
         "check_url": (
             "<emoji document_id=5436162517686557387>🚫</emoji> <b>Укажи правильную"
@@ -278,10 +280,10 @@ class CoreMod(loader.Module):
                 (
                     utils.get_platform_emoji()
                     + (
-                        '<emoji document_id=5192756799647785066>✌️</emoji><emoji'
-                        ' document_id=5193117564015747203>✌️</emoji><emoji'
-                        ' document_id=5195050806105087456>✌️</emoji><emoji'
-                        ' document_id=5195457642587233944>✌️</emoji>'
+                        "<emoji document_id=5192756799647785066>✌️</emoji><emoji"
+                        " document_id=5193117564015747203>✌️</emoji><emoji"
+                        " document_id=5195050806105087456>✌️</emoji><emoji"
+                        " document_id=5195457642587233944>✌️</emoji>"
                         if "LAVHOST" in os.environ
                         else ""
                     )

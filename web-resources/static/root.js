@@ -1,47 +1,51 @@
 function auth(callback) {
-    $(".main").fadeOut(500, () => {
+    $(".main").fadeOut(500);
+    setTimeout(() => {
         $(".auth").hide().fadeIn(500, () => {
+            $("#tg_icon").html("");
             bodymovin.loadAnimation({
                 container: document.getElementById("tg_icon"),
-                renderer: 'canvas',
+                renderer: "canvas",
                 loop: true,
                 autoplay: true,
-                path: 'https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json',
+                path: "https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json",
                 rendererSettings: {
                     clearCanvas: true,
                 }
             });
         });
         fetch("/web_auth", {
-            method: "POST",
-            credentials: "include",
-            timeout: 300000
-        })
-        .then(response => response.text())
-        .then((response) => {
-            if (response == "TIMEOUT") {
-                error_message("Code waiting timeout exceeded. Reload page and try again.");
-                $(".auth").fadeOut(500);
-                return
-            }
+                method: "POST",
+                credentials: "include",
+                timeout: 300000
+            })
+            .then(response => response.text())
+            .then((response) => {
+                if (response == "TIMEOUT") {
+                    error_message("Code waiting timeout exceeded. Reload page and try again.");
+                    $(".auth").fadeOut(500);
+                    return
+                }
 
-            if (response.startsWith("hikka_")) {
-                $.cookie("session", response)
-                auth_required = false;
-                $(".authorized").hide().fadeIn(100);
-                $(".auth").fadeOut(500, () => {
-                    $(".main").fadeIn(500);
-                });
-                callback();
-                return;
-            }
-        })
-    })
+                if (response.startsWith("hikka_")) {
+                    $.cookie("session", response)
+                    auth_required = false;
+                    $(".authorized").hide().fadeIn(100);
+                    $(".auth").fadeOut(500, () => {
+                        $(".installation").fadeIn(500);
+                    });
+                    callback();
+                    return;
+                }
+            })
+    }, 500);
 }
 
 $("#get_started")
     .click(() => {
-        if (auth_required) return auth(() => { $("#get_started").click(); });
+        if (auth_required) return auth(() => {
+            $("#get_started").click();
+        });
         $("#enter_api").fadeOut(500);
         $("#get_started").fadeOut(500, () => {
             $("#continue_btn").hide().fadeIn(500);
@@ -51,7 +55,9 @@ $("#get_started")
 
 $("#enter_api")
     .click(() => {
-        if (auth_required) return auth(() => { $("#enter_api").click(); });
+        if (auth_required) return auth(() => {
+            $("#enter_api").click();
+        });
         $("#get_started").fadeOut(500);
         $("#enter_api")
             .fadeOut(500, () => {
@@ -75,29 +81,31 @@ function isValidPhone(p) {
 
 function finish_login() {
     fetch("/finishLogin", {
-        method: "POST",
-        credentials: "include"
-    })
-    .then(() => {
-        window.expanse = true;
-        $(".installation").fadeOut(2000, () => {
-            bodymovin.loadAnimation({
-                container: document.getElementById("installation_icon"),
-                renderer: 'canvas',
-                loop: true,
-                autoplay: true,
-                path: 'https://assets1.lottiefiles.com/animated_stickers/lf_tgs_j7miwfxd.json',
-                rendererSettings: {
-                    clearCanvas: true,
-                }
-            });
-            $(".finish_block").fadeIn(300);
+            method: "POST",
+            credentials: "include"
+        })
+        .then(() => {
+            window.expanse = true;
+            $(".installation").fadeOut(2000);
+            setTimeout(() => {
+                $("#installation_icon").html("");
+                bodymovin.loadAnimation({
+                    container: document.getElementById("installation_icon"),
+                    renderer: "canvas",
+                    loop: true,
+                    autoplay: true,
+                    path: "https://assets1.lottiefiles.com/animated_stickers/lf_tgs_j7miwfxd.json",
+                    rendererSettings: {
+                        clearCanvas: true,
+                    }
+                });
+                $(".finish_block").fadeIn(300);
+            }, 2000);
+        })
+        .catch((err) => {
+            error_state();
+            error_message("Login confirmation error: " + err.toString());
         });
-    })
-    .catch((err) => {
-        error_state();
-        error_message("Login confirmation error: " + err.toString());
-    });
 }
 
 function tg_code() {
@@ -152,11 +160,11 @@ function error_message(message) {
 }
 
 function error_state() {
-    $("#blackhole").addClass("red_state");
+    $("body").addClass("red_state");
     cnt_btn.disabled = true;
     setTimeout(() => {
         cnt_btn.disabled = false;
-        $("#blackhole").removeClass("red_state");
+        $("body").removeClass("red_state");
     }, 1000);
 }
 
@@ -241,13 +249,14 @@ function process_next() {
                             autocapitalize: "off"
                         },
                         showCancelButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
                         confirmButtonText: "Confirm",
                         showLoaderOnConfirm: true,
                         preConfirm: (login) => {
                             _tg_pass = login
                             tg_code();
                         },
-                        allowOutsideClick: () => !Swal.isLoading()
                     })
                 }
             })
@@ -275,7 +284,7 @@ function process_next() {
             return
         }
 
-        if(custom_bot == "") {
+        if (custom_bot == "") {
             finish_login();
             return
         }
@@ -308,14 +317,18 @@ function process_next() {
 
 cnt_btn.onclick = () => {
     if (cnt_btn.disabled) return;
-    if (auth_required) return auth(() => { cnt_btn.click(); });
+    if (auth_required) return auth(() => {
+        cnt_btn.click();
+    });
 
     process_next();
 }
 
 $("input").on("keyup", (e) => {
     if (cnt_btn.disabled) return;
-    if (auth_required) return auth(() => { cnt_btn.click(); });
+    if (auth_required) return auth(() => {
+        cnt_btn.click();
+    });
 
     if (e.key === "Enter" || e.keyCode === 13) {
         process_next();

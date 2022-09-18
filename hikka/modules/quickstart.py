@@ -6,14 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import logging
 import os
 from random import choice
 
 from .. import loader, translations
 from ..inline.types import BotInlineCall
 
-logger = logging.getLogger(__name__)
 imgs = [
     "https://i.gifer.com/GmUB.gif",
     "https://i.gifer.com/Afdn.gif",

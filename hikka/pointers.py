@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Optional, SupportsIndex, Union
+import typing
 
 
 class PointerList(list):
@@ -9,7 +9,7 @@ class PointerList(list):
         db: "Database",  # type: ignore
         module: str,
         key: str,
-        default: Optional[Any] = None,
+        default: typing.Optional[typing.Any] = None,
     ):
         self._db = db
         self._module = module
@@ -23,17 +23,19 @@ class PointerList(list):
     def __str__(self):
         return f"PointerList({list(self)})"
 
-    def __delitem__(self, __i: Union[SupportsIndex, slice]) -> None:
+    def __delitem__(self, __i: typing.Union[typing.SupportsIndex, slice]) -> None:
         a = super().__delitem__(__i)
         self._save()
         return a
 
-    def __setitem__(self, __i: Union[SupportsIndex, slice], __v: Any) -> None:
+    def __setitem__(
+        self, __i: typing.Union[typing.SupportsIndex, slice], __v: typing.Any
+    ) -> None:
         a = super().__setitem__(__i, __v)
         self._save()
         return a
 
-    def __iadd__(self, __x: Iterable) -> "Self":  # type: ignore
+    def __iadd__(self, __x: typing.Iterable) -> "Self":  # type: ignore
         a = super().__iadd__(__x)
         self._save()
         return a
@@ -43,23 +45,23 @@ class PointerList(list):
         self._save()
         return a
 
-    def append(self, value: Any):
+    def append(self, value: typing.Any):
         super().append(value)
         self._save()
 
-    def extend(self, value: Iterable):
+    def extend(self, value: typing.Iterable):
         super().extend(value)
         self._save()
 
-    def insert(self, index: int, value: Any):
+    def insert(self, index: int, value: typing.Any):
         super().insert(index, value)
         self._save()
 
-    def remove(self, value: Any):
+    def remove(self, value: typing.Any):
         super().remove(value)
         self._save()
 
-    def pop(self, index: int = -1) -> Any:
+    def pop(self, index: int = -1) -> typing.Any:
         a = super().pop(index)
         self._save()
         return a
@@ -80,7 +82,7 @@ class PointerDict(dict):
         db: "Database",  # type: ignore
         module: str,
         key: str,
-        default: Optional[Any] = None,
+        default: typing.Optional[typing.Any] = None,
     ):
         self._db = db
         self._module = module
@@ -94,7 +96,7 @@ class PointerDict(dict):
     def __bool__(self) -> bool:
         return bool(self._db.get(self._module, self._key, self._default))
 
-    def __setitem__(self, key: str, value: Any):
+    def __setitem__(self, key: str, value: typing.Any):
         super().__setitem__(key, value)
         self._save()
 
@@ -109,12 +111,12 @@ class PointerDict(dict):
         super().update(__m)
         self._save()
 
-    def setdefault(self, key: str, default: Any = None) -> Any:
+    def setdefault(self, key: str, default: typing.Any = None) -> typing.Any:
         a = super().setdefault(key, default)
         self._save()
         return a
 
-    def pop(self, key: str, default: Any = None) -> Any:
+    def pop(self, key: str, default: typing.Any = None) -> typing.Any:
         a = super().pop(key, default)
         self._save()
         return a

@@ -37,14 +37,14 @@ import string
 import time
 import inspect
 from datetime import timedelta
-from typing import Any, List, Optional, Tuple, Union
+import typing
 from urllib.parse import urlparse
 
 import git
 import grapheme
 import requests
 import telethon
-from telethon.hints import Entity
+from telethon import hints
 from telethon.tl.custom.message import Message
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.tl.functions.channels import CreateChannelRequest, EditPhotoRequest
@@ -87,11 +87,11 @@ from telethon.tl.types import (
 from aiogram.types import Message as AiogramMessage
 
 from .inline.types import InlineCall, InlineMessage
-from .types import Module
+from .types import Module, ListLike
 from .tl_cache import CustomTelegramClient
 
 
-FormattingEntity = Union[
+FormattingEntity = typing.Union[
     MessageEntityUnknown,
     MessageEntityMention,
     MessageEntityHashtag,
@@ -113,8 +113,6 @@ FormattingEntity = Union[
     MessageEntitySpoiler,
 ]
 
-ListLike = Union[list, set, tuple]
-
 emoji_pattern = re.compile(
     "["
     "\U0001F600-\U0001F64F"  # emoticons
@@ -126,10 +124,15 @@ emoji_pattern = re.compile(
 )
 
 parser = telethon.utils.sanitize_parse_mode("html")
+logger = logging.getLogger(__name__)
 
 
-def get_args(message: Message) -> List[str]:
-    """Get arguments from message (str or Message), return list of arguments"""
+def get_args(message: typing.Union[Message, str]) -> typing.List[str]:
+    """
+    Get arguments from message
+    :param message: Message or string to get arguments from
+    :return: List of arguments
+    """
     if not (message := getattr(message, "message", message)):
         return False
 
@@ -146,62 +149,128 @@ def get_args(message: Message) -> List[str]:
     return list(filter(lambda x: len(x) > 0, split))
 
 
-def get_args_raw(message: Message) -> str:
-    """Get the parameters to the command as a raw string (not split)"""
+def get_args_raw(message: typing.Union[Message, str]) -> str:
+    """
+    Get the parameters to the command as a raw string (not split)
+    :param message: Message or string to get arguments from
+    :return: Raw string of arguments
+    """
     if not (message := getattr(message, "message", message)):
         return False
 
     return args[1] if len(args := message.split(maxsplit=1)) > 1 else ""
 
 
-def get_args_split_by(message: Message, separator: str) -> List[str]:
-    """Split args with a specific separator"""
+def get_args_html(message: Message) -> str:
+    """
+    Get the parameters to the command as string with HTML (not split)
+    :param message: Message to get arguments from
+    :return: String with HTML arguments
+    """
+    prefix = message.client.loader.get_prefix()
+
+    if not (message := message.text):
+        return False
+
+    if prefix not in message:
+        return message
+
+    raw_text, entities = parser.parse(message)
+
+    raw_text = parser._add_surrogate(raw_text)
+
+    command = raw_text[
+        raw_text.index(prefix) : raw_text.index(" ", raw_text.index(prefix) + 1)
+    ]
+    command_len = len(command) + 1
+
+    return parser.unparse(
+        parser._del_surrogate(raw_text[command_len:]),
+        relocate_entities(entities, -command_len, raw_text[command_len:]),
+    )
+
+
+def get_args_split_by(
+    message: typing.Union[Message, str],
+    separator: str,
+) -> typing.List[str]:
+    """
+    Split args with a specific separator
+    :param message: Message or string to get arguments from
+    :param separator: Separator to split by
+    :return: List of arguments
+    """
     return [
         section.strip() for section in get_args_raw(message).split(separator) if section
     ]
 
 
-def get_chat_id(message: Union[Message, AiogramMessage]) -> int:
-    """Get the chat ID, but without -100 if its a channel"""
+def get_chat_id(message: typing.Union[Message, AiogramMessage]) -> int:
+    """
+    Get the chat ID, but without -100 if its a channel
+    :param message: Message to get chat ID from
+    :return: Chat ID
+    """
     return telethon.utils.resolve_id(
         getattr(message, "chat_id", None)
         or getattr(getattr(message, "chat", None), "id", None)
     )[0]
 
 
-def get_entity_id(entity: Entity) -> int:
-    """Get entity ID"""
+def get_entity_id(entity: hints.Entity) -> int:
+    """
+    Get entity ID
+    :param entity: Entity to get ID from
+    :return: Entity ID
+    """
     return telethon.utils.get_peer_id(entity)
 
 
 def escape_html(text: str, /) -> str:  # sourcery skip
-    """Pass all untrusted/potentially corrupt input here"""
+    """
+    Pass all untrusted/potentially corrupt input here
+    :param text: Text to escape
+    :return: Escaped text
+    """
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def escape_quotes(text: str, /) -> str:
-    """Escape quotes to html quotes"""
+    """
+    Escape quotes to html quotes
+    :param text: Text to escape
+    :return: Escaped text
+    """
     return escape_html(text).replace('"', "&quot;")
 
 
 def get_base_dir() -> str:
-    """Get directory of this file"""
-    from . import __main__
-
-    return get_dir(__main__.__file__)
+    """
+    Get directory of this file
+    :return: Directory of this file
+    """
+    return get_dir(__file__)
 
 
 def get_dir(mod: str) -> str:
-    """Get directory of given module"""
+    """
+    Get directory of given module
+    :param mod: Module's `__file__` to get directory of
+    :return: Directory of given module
+    """
     return os.path.abspath(os.path.dirname(os.path.abspath(mod)))
 
 
-async def get_user(message: Message) -> Union[None, User]:
-    """Get user who sent message, searching if not found easily"""
+async def get_user(message: Message) -> typing.Optional[User]:
+    """
+    Get user who sent message, searching if not found easily
+    :param message: Message to get user from
+    :return: User who sent message
+    """
     try:
         return await message.client.get_entity(message.sender_id)
     except ValueError:  # Not in database. Lets go looking for them.
-        logging.debug("User not in session cache. Searching...")
+        logger.debug("User not in session cache. Searching...")
 
     if isinstance(message.peer_id, PeerUser):
         await message.client.get_dialogs()
@@ -220,10 +289,10 @@ async def get_user(message: Message) -> Union[None, User]:
             if user.id == message.sender_id:
                 return user
 
-        logging.error("User isn't in the group where they sent the message")
+        logger.error("User isn't in the group where they sent the message")
         return None
 
-    logging.error("`peer_id` is not a user, chat or channel")
+    logger.error("`peer_id` is not a user, chat or channel")
     return None
 
 
@@ -231,7 +300,7 @@ def run_sync(func, *args, **kwargs):
     """
     Run a non-async function in a new thread and return an awaitable
     :param func: Sync-only function to execute
-    :returns: Awaitable coroutine
+    :return: Awaitable coroutine
     """
     return asyncio.get_event_loop().run_in_executor(
         None,
@@ -239,18 +308,29 @@ def run_sync(func, *args, **kwargs):
     )
 
 
-def run_async(loop, coro):
-    """Run an async function as a non-async function, blocking till it's done"""
+def run_async(loop: asyncio.AbstractEventLoop, coro: typing.Awaitable) -> typing.Any:
+    """
+    Run an async function as a non-async function, blocking till it's done
+    :param loop: Event loop to run the coroutine in
+    :param coro: Coroutine to run
+    :return: Result of the coroutine
+    """
     # When we bump minimum support to 3.7, use run()
     return asyncio.run_coroutine_threadsafe(coro, loop).result()
 
 
 def censor(
-    obj,
-    to_censor: Optional[List[str]] = None,
+    obj: typing.Any,
+    to_censor: typing.Optional[typing.Iterable[str]] = None,
     replace_with: str = "redacted_{count}_chars",
 ):
-    """May modify the original object, but don't rely on it"""
+    """
+    May modify the original object, but don't rely on it
+    :param obj: Object to censor, preferrably telethon
+    :param to_censor: Iterable of strings to censor
+    :param replace_with: String to replace with, {count} will be replaced with the number of characters
+    :return: Censored object
+    """
     if to_censor is None:
         to_censor = ["phone"]
 
@@ -264,11 +344,17 @@ def censor(
 
 
 def relocate_entities(
-    entities: list,
+    entities: typing.List[FormattingEntity],
     offset: int,
-    text: Optional[str] = None,
-) -> list:
-    """Move all entities by offset (truncating at text)"""
+    text: typing.Optional[str] = None,
+) -> typing.List[FormattingEntity]:
+    """
+    Move all entities by offset (truncating at text)
+    :param entities: List of entities
+    :param offset: Offset to move by
+    :param text: Text to truncate at
+    :return: List of entities
+    """
     length = len(text) if text is not None else 0
 
     for ent in entities.copy() if entities else ():
@@ -285,13 +371,37 @@ def relocate_entities(
 
 
 async def answer(
-    message: Union[Message, InlineCall, InlineMessage],
+    message: typing.Union[Message, InlineCall, InlineMessage],
     response: str,
     *,
-    reply_markup: Optional[Union[List[List[dict]], List[dict], dict]] = None,
+    reply_markup: typing.Optional[
+        typing.Union[typing.List[typing.List[dict]], typing.List[dict], dict]
+    ] = None,
     **kwargs,
-) -> Union[InlineCall, InlineMessage, Message]:
-    """Use this to give the response to a command"""
+) -> typing.Union[InlineCall, InlineMessage, Message]:
+    """
+    Use this to give the response to a command
+    :param message: Message to answer to. Can be a tl message or hikka inline object
+    :param response: Response to send
+    :param reply_markup: Reply markup to send. If specified, inline form will be used
+    :return: Message or inline object
+
+    :example:
+        >>> await utils.answer(message, "Hello world!")
+        >>> await utils.answer(
+            message,
+            "https://some-url.com/photo.jpg",
+            caption="Hello, this is your photo!",
+            asfile=True,
+        )
+        >>> await utils.answer(
+            message,
+            "Hello world!",
+            reply_markup={"text": "Hello!", "data": "world"},
+            silent=True,
+            disable_security=True,
+        )
+    """
     # Compatibility with FTG\GeekTG
 
     if isinstance(message, list) and message:
@@ -302,8 +412,9 @@ async def answer(
             raise ValueError("reply_markup must be a list or dict")
 
         if reply_markup:
+            kwargs.pop("message", None)
             if isinstance(message, (InlineMessage, InlineCall)):
-                await message.edit(response, reply_markup)
+                await message.edit(response, reply_markup, **kwargs)
                 return
 
             reply_markup = message.client.loader.inline._normalize_markup(reply_markup)
@@ -413,7 +524,14 @@ async def answer(
     return result
 
 
-async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
+async def get_target(message: Message, arg_no: int = 0) -> typing.Optional[int]:
+    """
+    Get target from message
+    :param message: Message to get target from
+    :param arg_no: Argument number to get target from
+    :return: Target
+    """
+
     if any(
         isinstance(entity, MessageEntityMentionName)
         for entity in (message.entities or [])
@@ -442,8 +560,13 @@ async def get_target(message: Message, arg_no: int = 0) -> Union[int, None]:
             return entity.id
 
 
-def merge(a: dict, b: dict) -> dict:
-    """Merge with replace dictionary a to dictionary b"""
+def merge(a: dict, b: dict, /) -> dict:
+    """
+    Merge with replace dictionary a to dictionary b
+    :param a: Dictionary to merge
+    :param b: Dictionary to merge to
+    :return: Merged dictionary
+    """
     for key in a:
         if key in b:
             if isinstance(a[key], dict) and isinstance(b[key], dict):
@@ -460,10 +583,16 @@ def merge(a: dict, b: dict) -> dict:
 
 async def set_avatar(
     client: CustomTelegramClient,
-    peer: Entity,
+    peer: hints.Entity,
     avatar: str,
 ) -> bool:
-    """Sets an entity avatar"""
+    """
+    Sets an entity avatar
+    :param client: Client to use
+    :param peer: Peer to set avatar to
+    :param avatar: Avatar to set
+    :return: True if avatar was set, False otherwise
+    """
     if isinstance(avatar, str) and check_url(avatar):
         f = (
             await run_sync(
@@ -508,10 +637,10 @@ async def asset_channel(
     channel: bool = False,
     silent: bool = False,
     archive: bool = False,
-    avatar: Optional[str] = None,
-    ttl: Optional[int] = None,
-    _folder: Optional[str] = None,
-) -> Tuple[Channel, bool]:
+    avatar: typing.Optional[str] = None,
+    ttl: typing.Optional[int] = None,
+    _folder: typing.Optional[str] = None,
+) -> typing.Tuple[Channel, bool]:
     """
     Create new channel (if needed) and return its entity
     :param client: Telegram client to create channel by
@@ -522,8 +651,7 @@ async def asset_channel(
     :param archive: Automatically archive channel
     :param avatar: Url to an avatar to set as pfp of created peer
     :param ttl: Time to live for messages in channel
-    :param _folder: Do not use it, or things will go wrong
-    :returns: Peer and bool: is channel new or pre-existent
+    :return: Peer and bool: is channel new or pre-existent
     """
     if not hasattr(client, "_channels_cache"):
         client._channels_cache = {}
@@ -590,14 +718,14 @@ async def asset_channel(
 
 async def dnd(
     client: CustomTelegramClient,
-    peer: Entity,
+    peer: hints.Entity,
     archive: bool = True,
 ) -> bool:
     """
     Mutes and optionally archives peer
     :param peer: Anything entity-link
     :param archive: Archive peer, or just mute?
-    :returns: `True` on success, otherwise `False`
+    :return: `True` on success, otherwise `False`
     """
     try:
         await client(
@@ -614,14 +742,18 @@ async def dnd(
         if archive:
             await client.edit_folder(peer, 1)
     except Exception:
-        logging.exception("utils.dnd error")
+        logger.exception("utils.dnd error")
         return False
 
     return True
 
 
-def get_link(user: Union[User, Channel], /) -> str:
-    """Get telegram permalink to entity"""
+def get_link(user: typing.Union[User, Channel], /) -> str:
+    """
+    Get telegram permalink to entity
+    :param user: User or channel
+    :return: Link to entity
+    """
     return (
         f"tg://user?id={user.id}"
         if isinstance(user, User)
@@ -633,13 +765,21 @@ def get_link(user: Union[User, Channel], /) -> str:
     )
 
 
-def chunks(_list: Union[list, tuple, set], n: int, /) -> list:
-    """Split provided `_list` into chunks of `n`"""
+def chunks(_list: ListLike, n: int, /) -> typing.List[typing.List[typing.Any]]:
+    """
+    Split provided `_list` into chunks of `n`
+    :param _list: List to split
+    :param n: Chunk size
+    :return: List of chunks
+    """
     return [_list[i : i + n] for i in range(0, len(_list), n)]
 
 
 def get_named_platform() -> str:
-    """Returns formatted platform name"""
+    """
+    Returns formatted platform name
+    :return: Platform name
+    """
     try:
         if os.path.isfile("/proc/device-tree/model"):
             with open("/proc/device-tree/model") as f:
@@ -690,6 +830,10 @@ def get_named_platform() -> str:
 
 
 def get_platform_emoji() -> str:
+    """
+    Returns custom emoji for current platform
+    :return: Emoji entity in string
+    """
     BASE = (
         "<emoji document_id={}>🌘</emoji><emoji"
         " document_id=5195311729663286630>🌘</emoji><emoji"
@@ -715,17 +859,26 @@ def get_platform_emoji() -> str:
 
 
 def uptime() -> int:
-    """Returns userbot uptime in seconds"""
+    """
+    Returns userbot uptime in seconds
+    :return: Uptime in seconds
+    """
     return round(time.perf_counter() - init_ts)
 
 
 def formatted_uptime() -> str:
-    """Returnes formmated uptime"""
+    """
+    Returnes formmated uptime
+    :return: Formatted uptime
+    """
     return f"{str(timedelta(seconds=uptime()))}"
 
 
 def ascii_face() -> str:
-    """Returnes cute ASCII-art face"""
+    """
+    Returnes cute ASCII-art face
+    :return: ASCII-art face
+    """
     return escape_html(
         random.choice(
             [
@@ -792,8 +945,14 @@ def ascii_face() -> str:
     )
 
 
-def array_sum(array: List[Any], /) -> List[Any]:
-    """Performs basic sum operation on array"""
+def array_sum(
+    array: typing.List[typing.List[typing.Any]], /
+) -> typing.List[typing.Any]:
+    """
+    Performs basic sum operation on array
+    :param array: Array to sum
+    :return: Sum of array
+    """
     result = []
     for item in array:
         result += item
@@ -802,7 +961,11 @@ def array_sum(array: List[Any], /) -> List[Any]:
 
 
 def rand(size: int, /) -> str:
-    """Return random string of len `size`"""
+    """
+    Return random string of len `size`
+    :param size: Length of string
+    :return: Random string
+    """
     return "".join(
         [random.choice("abcdefghijklmnopqrstuvwxyz1234567890") for _ in range(size)]
     )
@@ -810,11 +973,11 @@ def rand(size: int, /) -> str:
 
 def smart_split(
     text: str,
-    entities: List[FormattingEntity],
+    entities: typing.List[FormattingEntity],
     length: int = 4096,
     split_on: ListLike = ("\n", " "),
     min_length: int = 1,
-):
+) -> typing.Iterator[str]:
     """
     Split the message into smaller messages.
     A grapheme will never be broken. Entities will be displaced to match the right location. No inputs will be mutated.
@@ -824,7 +987,15 @@ def smart_split(
     :param length: the maximum length of a single message
     :param split_on: characters (or strings) which are preferred for a message break
     :param min_length: ignore any matches on [split_on] strings before this number of characters into each message
-    :return:
+    :return: iterator, which returns strings
+
+    :example:
+        >>> utils.smart_split(
+            *telethon.extensions.html.parse(
+                "<b>Hello, world!</b>"
+            )
+        )
+        <<< ["<b>Hello, world!</b>"]
     """
 
     # Authored by @bsolute
@@ -956,27 +1127,35 @@ def _copy_tl(o, **kwargs):
 
 
 def check_url(url: str) -> bool:
-    """Checks url for validity"""
+    """
+    Statically checks url for validity
+    :param url: URL to check
+    :return: True if valid, False otherwise
+    """
     try:
         return bool(urlparse(url).netloc)
     except Exception:
         return False
 
 
-def get_git_hash() -> Union[str, bool]:
-    """Get current Hikka git hash"""
+def get_git_hash() -> typing.Union[str, bool]:
+    """
+    Get current Hikka git hash
+    :return: Git commit hash
+    """
     try:
-        repo = git.Repo()
-        return repo.heads[0].commit.hexsha
+        return git.Repo().head.commit.hexsha
     except Exception:
         return False
 
 
 def get_commit_url() -> str:
-    """Get current Hikka git commit url"""
+    """
+    Get current Hikka git commit url
+    :return: Git commit url
+    """
     try:
-        repo = git.Repo()
-        hash_ = repo.heads[0].commit.hexsha
+        hash_ = get_git_hash()
         return (
             f'<a href="https://github.com/hikariatama/Hikka/commit/{hash_}">#{hash_[:7]}</a>'
         )
@@ -984,8 +1163,12 @@ def get_commit_url() -> str:
         return "Unknown"
 
 
-def is_serializable(x: Any, /) -> bool:
-    """Checks if object is JSON-serializable"""
+def is_serializable(x: typing.Any, /) -> bool:
+    """
+    Checks if object is JSON-serializable
+    :param x: Object to check
+    :return: True if object is JSON-serializable, False otherwise
+    """
     try:
         json.dumps(x)
         return True
@@ -997,7 +1180,7 @@ def get_lang_flag(countrycode: str) -> str:
     """
     Gets an emoji of specified countrycode
     :param countrycode: 2-letter countrycode
-    :returns: Emoji flag
+    :return: Emoji flag
     """
     if (
         len(
@@ -1015,7 +1198,7 @@ def get_lang_flag(countrycode: str) -> str:
 
 
 def get_entity_url(
-    entity: Union[User, Channel],
+    entity: typing.Union[User, Channel],
     openmessage: bool = False,
 ) -> str:
     """
@@ -1041,8 +1224,14 @@ def get_entity_url(
 
 async def get_message_link(
     message: Message,
-    chat: Optional[Union[Chat, Channel]] = None,
+    chat: typing.Optional[typing.Union[Chat, Channel]] = None,
 ) -> str:
+    """
+    Get link to message
+    :param message: Message to get link of
+    :param chat: Chat, where message was sent
+    :return: Link to message
+    """
     if message.is_private:
         return (
             f"tg://openmessage?user_id={get_chat_id(message)}&message_id={message.id}"
@@ -1077,7 +1266,7 @@ def remove_html(text: str, escape: bool = False, keep_emojis: bool = False) -> s
     )
 
 
-def get_kwargs() -> dict:
+def get_kwargs() -> typing.Dict[str, typing.Any]:
     """
     Get kwargs of function, in which is called
     :return: kwargs
@@ -1101,8 +1290,14 @@ def mime_type(message: Message) -> str:
     )
 
 
-def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
-    """Attempts to find command in stack"""
+def find_caller(
+    stack: typing.Optional[typing.List[inspect.FrameInfo]] = None,
+) -> typing.Any:
+    """
+    Attempts to find command in stack
+    :param stack: Stack to search in
+    :return: Command-caller or None
+    """
     caller = next(
         (
             frame_info
@@ -1144,7 +1339,11 @@ def find_caller(stack: Optional[List[inspect.FrameInfo]] = None) -> Any:
 
 
 def validate_html(html: str) -> str:
-    """Removes broken tags from html"""
+    """
+    Removes broken tags from html
+    :param html: HTML to validate
+    :return: Valid HTML
+    """
     text, entities = telethon.extensions.html.parse(html)
     return telethon.extensions.html.unparse(escape_html(text), entities)
 
@@ -1153,26 +1352,26 @@ init_ts = time.perf_counter()
 
 
 # GeekTG Compatibility
-def get_git_info():
-    # https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/utils.py#L133
-    try:
-        repo = git.Repo()
-        ver = repo.heads[0].commit.hexsha
-    except Exception:
-        ver = ""
-
-    return [
-        ver,
-        f"https://github.com/hikariatama/Hikka/commit/{ver}" if ver else "",
-    ]
+def get_git_info() -> typing.Tuple[str, str]:
+    """
+    Get git info
+    :return: Git info
+    """
+    hash_ = get_git_hash()
+    return (
+        hash_,
+        f"https://github.com/hikariatama/Hikka/commit/{hash_}" if hash_ else "",
+    )
 
 
-def get_version_raw():
-    """Get the version of the userbot"""
-    # https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/utils.py#L128
+def get_version_raw() -> str:
+    """
+    Get the version of the userbot
+    :return: Version in format %s.%s.%s
+    """
     from . import version
 
-    return ".".join(list(map(str, list(version.__version__))))
+    return ".".join(map(str, list(version.__version__)))
 
 
 get_platform_name = get_named_platform

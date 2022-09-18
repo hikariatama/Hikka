@@ -13,7 +13,7 @@ import io
 import os
 from copy import deepcopy
 import re
-from typing import List, Optional, Union
+import typing
 from urllib.parse import urlparse
 import functools
 
@@ -37,6 +37,7 @@ from aiogram.utils.exceptions import (
 )
 
 from .. import utils
+from ..types import HikkaReplyMarkup
 from .types import InlineUnit, InlineCall
 
 from telethon.utils import resolve_inline_message_id
@@ -47,8 +48,8 @@ logger = logging.getLogger(__name__)
 class Utils(InlineUnit):
     def _generate_markup(
         self,
-        markup_obj: Union[str, list],
-    ) -> Union[None, InlineKeyboardMarkup]:
+        markup_obj: typing.Optional[typing.Union[HikkaReplyMarkup, str]],
+    ) -> typing.Optional[InlineKeyboardMarkup]:
         """Generate markup for form or list of `dict`s"""
         if not markup_obj:
             return None
@@ -223,12 +224,12 @@ class Utils(InlineUnit):
     async def check_inline_security(self, *, func: callable, user: int) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
-            func=func,
-            user=user,
             message=None,
+            func=func,
+            user_id=user,
         )
 
-    def _find_caller_sec_map(self) -> Union[callable, None]:
+    def _find_caller_sec_map(self) -> typing.Optional[callable]:
         try:
             caller = utils.find_caller()
             if not caller:
@@ -244,7 +245,7 @@ class Utils(InlineUnit):
 
         return None
 
-    def _normalize_markup(self, reply_markup: Union[dict, list]) -> list:
+    def _normalize_markup(self, reply_markup: typing.Union[dict, list]) -> list:
         if isinstance(reply_markup, dict):
             return [[reply_markup]]
 
@@ -261,24 +262,24 @@ class Utils(InlineUnit):
 
     async def _edit_unit(
         self,
-        text: Optional[str] = None,
-        reply_markup: List[List[dict]] = None,
+        text: typing.Optional[str] = None,
+        reply_markup: typing.Optional[HikkaReplyMarkup] = None,
         *,
-        photo: Optional[str] = None,
-        file: Optional[str] = None,
-        video: Optional[str] = None,
-        audio: Optional[Union[dict, str]] = None,
-        gif: Optional[str] = None,
-        mime_type: Optional[str] = None,
-        force_me: Union[bool, None] = None,
-        disable_security: Union[bool, None] = None,
-        always_allow: Union[List[int], None] = None,
+        photo: typing.Optional[str] = None,
+        file: typing.Optional[str] = None,
+        video: typing.Optional[str] = None,
+        audio: typing.Optional[typing.Union[dict, str]] = None,
+        gif: typing.Optional[str] = None,
+        mime_type: typing.Optional[str] = None,
+        force_me: typing.Optional[bool] = None,
+        disable_security: typing.Optional[bool] = None,
+        always_allow: typing.Optional[typing.List[int]] = None,
         disable_web_page_preview: bool = True,
-        query: CallbackQuery = None,
-        unit_id: str = None,
-        inline_message_id: Optional[str] = None,
-        chat_id: Optional[int] = None,
-        message_id: Optional[int] = None,
+        query: typing.Optional[CallbackQuery] = None,
+        unit_id: typing.Optional[str] = None,
+        inline_message_id: typing.Optional[str] = None,
+        chat_id: typing.Optional[int] = None,
+        message_id: typing.Optional[int] = None,
     ) -> bool:
         """
         Edits unit message
@@ -295,11 +296,14 @@ class Utils(InlineUnit):
         :param always_allow: List of user ids, which will always be allowed
         :param disable_web_page_preview: Disable web page preview
         :param query: Callback query
-        :return: Status of edit"""
+        :return: Status of edit
+        """
         reply_markup = self._validate_markup(reply_markup) or []
 
         if text is not None and not isinstance(text, str):
-            logger.error("Invalid type for `text`")
+            logger.error(
+                "Invalid type for `text`. Expected `str`, got `%s`", type(text)
+            )
             return False
 
         if file and not mime_type:
@@ -513,10 +517,10 @@ class Utils(InlineUnit):
 
     async def _delete_unit_message(
         self,
-        call: CallbackQuery = None,
-        unit_id: str = None,
-        chat_id: Optional[int] = None,
-        message_id: Optional[int] = None,
+        call: typing.Optional[CallbackQuery] = None,
+        unit_id: typing.Optional[str] = None,
+        chat_id: typing.Optional[int] = None,
+        message_id: typing.Optional[int] = None,
     ) -> bool:
         """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
         if getattr(getattr(call, "message", None), "chat", None):
@@ -547,17 +551,13 @@ class Utils(InlineUnit):
             )
 
             await self._client.delete_messages(peer, [message_id])
-            await self._unload_unit(None, unit_id)
+            await self._unload_unit(unit_id)
         except Exception:
             return False
 
         return True
 
-    async def _unload_unit(
-        self,
-        call: CallbackQuery = None,
-        unit_id: str = None,
-    ) -> bool:
+    async def _unload_unit(self, unit_id: str) -> bool:
         """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
         try:
             if "on_unload" in self._units[unit_id] and callable(
@@ -578,9 +578,9 @@ class Utils(InlineUnit):
         self,
         callback: callable,
         total_pages: int,
-        unit_id: Optional[str] = None,
-        current_page: Optional[int] = None,
-    ) -> List[dict]:
+        unit_id: typing.Optional[str] = None,
+        current_page: typing.Optional[int] = None,
+    ) -> typing.List[dict]:
         # Based on https://github.com/pystorage/pykeyboard/blob/master/pykeyboard/inline_pagination_keyboard.py#L4
         if current_page is None:
             current_page = self._units[unit_id]["current_index"] + 1
@@ -683,8 +683,8 @@ class Utils(InlineUnit):
 
     def _validate_markup(
         self,
-        buttons: Optional[Union[List[List[dict]], List[dict], dict]],
-    ) -> list:
+        buttons: typing.Optional[HikkaReplyMarkup],
+    ) -> typing.List[typing.List[dict]]:
         if buttons is None:
             buttons = []
 

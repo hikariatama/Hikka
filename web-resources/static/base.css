@@ -10,8 +10,35 @@ html {
 }
 
 body {
-    background: #16181d;
+    /* background: #16181d; */
     font-family: Hubballi;
+}
+
+.bg {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    z-index: -2;
+    background: #111;
+}
+
+.bg_inner {
+    width: 90%;
+    height: 90%;
+    padding: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    position: fixed;
+    z-index: -1;
+    border-radius: 50%;
+    background: rgb(127, 35, 112);
+    filter: blur(100px);
+    transition: background .5s ease;
 }
 
 #sky {
@@ -126,26 +153,6 @@ body {
     z-index: 99;
 }
 
-.bg {
-    background: url(https://github.com/hikariatama/assets/raw/master/bg.png);
-    background-repeat: no-repeat;
-    background-size: contain;
-    width: 80vw;
-    height: 60vh;
-    position: absolute;
-    z-index: 1;
-    background-position: center;
-    display: none;
-    animation: floating 5s infinite ease-in-out;
-    filter: hue-rotate(286deg);
-
-    transition: filter .25s cubic-bezier(0, .77, 0, .68);
-}
-
-.mountains {
-    transition: filter .25s cubic-bezier(0, .77, 0, .68);
-}
-
 @media screen and (max-width: 736px) {
     .blur {
         width: 100%;
@@ -157,18 +164,14 @@ body {
         align-items: center;
         justify-content: center;
     }
-    .bg {
-        width: 100vw;
-        top: 0;
-        height: 50vh;
-    }
 
     .title {
         height: auto;
         line-height: auto;
     }
 
-    .finish_block, .auth {
+    .finish_block,
+    .auth {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -180,9 +183,11 @@ body {
     from {
         transform: translateY(-10px);
     }
+
     50% {
         transform: translateY(10px);
     }
+
     to {
         transform: translateY(-10px);
     }
@@ -190,20 +195,22 @@ body {
 
 
 .button {
-    border-radius: 5px;
+    border-radius: 3px;
     padding: 10px 20px;
     border: none;
     color: #eee;
     margin: 5px 0;
     background: transparent;
-    border: 2px solid #aaa;
+    border: 1px solid #aaa;
     cursor: pointer;
     transition: box-shadow .2s ease;
     user-select: none;
+    min-height: 42px;
+    box-sizing: border-box;
 }
 
 .button:hover {
-    box-shadow: inset 5px 5px 3px rgba(255, 255, 255, .1), inset -5px -5px 3px rgba(255, 255, 255, .1);
+    box-shadow: inset 3px 3px 1px rgba(255, 255, 255, .1), inset -3px -3px 1px rgba(255, 255, 255, .1);
 }
 
 input {
@@ -214,12 +221,12 @@ input {
     padding: 10px 20px;
     border: none;
     background: transparent;
-    border: 2px solid #aaa;
+    border: 1px solid #aaa;
     transition: box-shadow .2s ease;
 }
 
 input:focus {
-    box-shadow: inset 5px 5px 3px rgba(255, 255, 255, .1), inset -5px -5px 3px rgba(255, 255, 255, .1);
+    box-shadow: inset 3px 3px 1px rgba(255, 255, 255, .1), inset -3px -3px 1px rgba(255, 255, 255, .1);
 }
 
 label {
@@ -237,8 +244,8 @@ label {
     display: none;
 }
 
-.red_state {
-    filter: hue-rotate(66deg);
+.red_state .bg_inner {
+    background: rgb(148, 55, 55);
 }
 
 .horiz_center {
@@ -254,14 +261,321 @@ label {
     flex-direction: column;
 }
 
-#blackhole {
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    position: absolute;
-} 
-
 #installation_icon {
     height: 200px;
     margin-bottom: 35px;
+}
+
+
+
+.light {
+    position: absolute;
+    width: 3px;
+    filter: blur(4px);
+    top: 100vh;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    z-index: -1;
+    background: #fff;
+}
+
+.x1 {
+    filter: blur(3px);
+    -webkit-animation: floatUp 4s infinite linear;
+    -moz-animation: floatUp 4s infinite linear;
+    -o-animation: floatUp 4s infinite linear;
+    animation: floatUp 4s infinite linear;
+    -webkit-transform: scale(1.0);
+    -moz-transform: scale(1.0);
+    -o-transform: scale(1.0);
+    transform: scale(1.0);
+}
+
+.x2 {
+    filter: blur(3px);
+    -webkit-animation: floatUp 7s infinite linear;
+    -moz-animation: floatUp 7s infinite linear;
+    -o-animation: floatUp 7s infinite linear;
+    animation: floatUp 7s infinite linear;
+    -webkit-transform: scale(1.6);
+    -moz-transform: scale(1.6);
+    -o-transform: scale(1.6);
+    transform: scale(1.6);
+    left: 15%;
+}
+
+.x3 {
+    filter: blur(3px);
+    -webkit-animation: floatUp 2.5s infinite linear;
+    -moz-animation: floatUp 2.5s infinite linear;
+    -o-animation: floatUp 2.5s infinite linear;
+    animation: floatUp 2.5s infinite linear;
+    -webkit-transform: scale(.5);
+    -moz-transform: scale(.5);
+    -o-transform: scale(.5);
+    transform: scale(.5);
+    left: -15%;
+}
+
+.x4 {
+    filter: blur(5px);
+    -webkit-animation: floatUp 4.5s infinite linear;
+    -moz-animation: floatUp 4.5s infinite linear;
+    -o-animation: floatUp 4.5s infinite linear;
+    animation: floatUp 4.5s infinite linear;
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2);
+    left: -34%;
+}
+
+.x5 {
+    filter: blur(6px);
+    -webkit-animation: floatUp 8s infinite linear;
+    -moz-animation: floatUp 8s infinite linear;
+    -o-animation: floatUp 8s infinite linear;
+    animation: floatUp 8s infinite linear;
+    -webkit-transform: scale(2.2);
+    -moz-transform: scale(2.2);
+    -o-transform: scale(2.2);
+    transform: scale(2.2);
+    left: -57%;
+}
+
+.x6 {
+    filter: blur(4px);
+    -webkit-animation: floatUp 3s infinite linear;
+    -moz-animation: floatUp 3s infinite linear;
+    -o-animation: floatUp 3s infinite linear;
+    animation: floatUp 3s infinite linear;
+    -webkit-transform: scale(.8);
+    -moz-transform: scale(.8);
+    -o-transform: scale(.8);
+    transform: scale(.8);
+    left: -81%;
+}
+
+.x7 {
+    filter: blur(3px);
+    -webkit-animation: floatUp 5.3s infinite linear;
+    -moz-animation: floatUp 5.3s infinite linear;
+    -o-animation: floatUp 5.3s infinite linear;
+    animation: floatUp 5.3s infinite linear;
+    -webkit-transform: scale(3.2);
+    -moz-transform: scale(3.2);
+    -o-transform: scale(3.2);
+    transform: scale(3.2);
+    left: 37%;
+}
+
+.x8 {
+    filter: blur(6px);
+    -webkit-animation: floatUp 4.7s infinite linear;
+    -moz-animation: floatUp 4.7s infinite linear;
+    -o-animation: floatUp 4.7s infinite linear;
+    animation: floatUp 4.7s infinite linear;
+    -webkit-transform: scale(1.7);
+    -moz-transform: scale(1.7);
+    -o-transform: scale(1.7);
+    transform: scale(1.7);
+    left: 62%;
+}
+
+.x9 {
+    filter: blur(3px);
+    -webkit-animation: floatUp 4.1s infinite linear;
+    -moz-animation: floatUp 4.1s infinite linear;
+    -o-animation: floatUp 4.1s infinite linear;
+    animation: floatUp 4.1s infinite linear;
+    -webkit-transform: scale(0.9);
+    -moz-transform: scale(0.9);
+    -o-transform: scale(0.9);
+    transform: scale(0.9);
+    left: 85%;
+}
+
+@keyframes floatUp {
+    0% {
+        top: 100vh;
+        opacity: 0;
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    50% {
+        top: 0vh;
+        opacity: .8;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    100% {
+        top: -100vh;
+        opacity: 0;
+    }
+}
+
+.gg-add {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    width: 20px;
+    height: 20px;
+    border: 1px solid;
+    transform: scale(var(--ggs, 1));
+    border-radius: 20px
+}
+
+.gg-add::after,
+.gg-add::before {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    width: 9px;
+    height: 1px;
+    background: currentColor;
+    border-radius: 5px;
+    top: 9px;
+    left: 5px
+}
+
+.gg-add::after {
+    width: 1px;
+    height: 9px;
+    top: 5px;
+    left: 9px
+}
+
+.gg-brackets {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    transform: scale(var(--ggs, 1));
+    width: 18px;
+    height: 18px;
+    border: 1px solid;
+    border-radius: 2px
+}
+
+.gg-brackets::after,
+.gg-brackets::before {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    border: 1px solid;
+    width: 4px;
+    height: 11px;
+    top: 2px
+}
+
+.gg-brackets::before {
+    border-right: 0;
+    left: 3px
+}
+
+.gg-brackets::after {
+    border-left: 0;
+    right: 3px
+}
+
+.gg-chevron-right-o {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    transform: scale(var(--ggs, 1));
+    width: 20px;
+    height: 20px;
+    border: 1px solid;
+    border-radius: 100px
+}
+
+.gg-chevron-right-o::after {
+    content: "";
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    transform: rotate(-45deg);
+    left: 5px;
+    top: 6px
+}
+
+.button i {
+    margin-left: .5em;
+}
+
+.button {
+    margin: 10px 5px;
+}
+
+.mountains {
+    display: none;
+}
+
+#tg_icon {
+    height: 40vh;
+}
+
+.auth {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+    width: 70%;
+    height: 60%;
+    padding: 2rem;
+    display: none;
+}
+
+@media screen and (max-width: 736px) {
+    .auth {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+}
+
+.confirm_auth {
+    font-size: 36px;
+    text-align: center;
+    color: #fff;
+    padding: 10px 0;
+}
+
+.waiting_for_auth {
+    font-size: 22px;
+    text-align: center;
+    color: #fff;
+    padding: 15px 0;
+}
+
+.finish_block {
+    display: none;
+}
+
+.lights {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    z-index: -1;
+    overflow: hidden;
 }

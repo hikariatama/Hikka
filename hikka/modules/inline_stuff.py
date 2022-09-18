@@ -6,9 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
-import logging
 import re
 import string
 from hikka.inline.types import BotInlineMessage
@@ -18,8 +15,6 @@ from telethon.tl.functions.contacts import UnblockRequest
 from telethon.tl.types import Message
 
 from .. import loader, utils
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -173,3 +168,21 @@ class InlineStuffMod(loader.Module):
             "https://github.com/hikariatama/assets/raw/master/hikka_banner.png",
             caption=self.strings("this_is_hikka"),
         )
+
+    async def client_ready(self, client, db):
+        if self.get("migrated"):
+            return
+
+        self.set("migrated", True)
+        async with self._client.conversation("@BotFather") as conv:
+            for msg in [
+                "/cancel",
+                "/setinline",
+                f"@{self.inline.bot_username}",
+                "user@hikka:~$",
+            ]:
+                m = await conv.send_message(msg)
+                r = await conv.get_response()
+
+                await m.delete()
+                await r.delete()

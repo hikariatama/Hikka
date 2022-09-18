@@ -38,8 +38,7 @@ import socket
 import sqlite3
 import sys
 from math import ceil
-from typing import Union
-
+import typing
 import telethon
 from telethon import events
 from telethon.errors.rpcerrorlist import (
@@ -86,19 +85,14 @@ if "DYNO" in os.environ:
     heroku.init()
 
 
-def run_config(
-    db: database.Database,
-    data_root: str,
-    phone: Union[str, int] = None,
-    modules: list = None,
-):
+def run_config(data_root: str):
     """Load configurator.py"""
     from . import configurator
 
-    return configurator.run(db, data_root, phone, phone is None, modules)
+    return configurator.api_config(data_root)
 
 
-def get_config_key(key: str) -> Union[str, bool]:
+def get_config_key(key: str) -> typing.Union[str, bool]:
     """
     Parse and return key from config
     :param key: Key name in config
@@ -186,10 +180,6 @@ def parse_arguments() -> dict:
         type=int,
     )
     parser.add_argument("--phone", "-p", action="append")
-    parser.add_argument("--token", "-t", action="append", dest="tokens")
-    parser.add_argument("--no-nickname", "-nn", dest="no_nickname", action="store_true")
-    parser.add_argument("--hosting", "-lh", dest="hosting", action="store_true")
-    parser.add_argument("--web-only", dest="web_only", action="store_true")
     parser.add_argument("--no-web", dest="disable_web", action="store_true")
     parser.add_argument(
         "--data-root",
@@ -223,12 +213,6 @@ def parse_arguments() -> dict:
         help="MTProto proxy secret",
     )
     parser.add_argument(
-        "--docker-deps-internal",
-        dest="docker_deps_internal",
-        action="store_true",
-        help="This is for internal use only. If you use it, things will go wrong.",
-    )
-    parser.add_argument(
         "--root",
         dest="disable_root_check",
         action="store_true",
@@ -248,7 +232,7 @@ class SuperList(list):
     Makes able: await self.allclients.send_message("foo", "bar")
     """
 
-    def __getattribute__(self, attr):
+    def __getattribute__(self, attr: str) -> typing.Any:
         if hasattr(list, attr):
             return list.__getattribute__(self, attr)
 
@@ -303,7 +287,9 @@ class Hikka:
             and self.arguments.proxy_secret is not None
         ):
             logging.debug(
-                f"Using proxy: {self.arguments.proxy_host}:{self.arguments.proxy_port}"
+                "Using proxy: %s:%s",
+                self.arguments.proxy_host,
+                self.arguments.proxy_port,
             )
             self.proxy, self.conn = (
                 (
@@ -394,15 +380,15 @@ class Hikka:
                 self.loop.run_until_complete(self.web.wait_for_api_token_setup())
                 self.api_token = self.web.api_token
             else:
-                run_config({}, self.arguments.data_root)
+                run_config(self.arguments.data_root)
                 importlib.invalidate_caches()
                 self._get_api_token()
 
     async def save_client_session(
         self,
         client: CustomTelegramClient,
-        heroku_config: "ConfigVars" = None,  # type: ignore
-        heroku_app: "App" = None,  # type: ignore
+        heroku_config: "typing.Optional[ConfigVars]" = None,  # type: ignore
+        heroku_app: "typing.Optional[App]" = None,  # type: ignore
     ):
         if hasattr(client, "_tg_id"):
             telegram_id = client._tg_id
@@ -451,10 +437,14 @@ class Hikka:
     async def _web_banner(self):
         """Shows web banner"""
         logging.info("✅ Web mode ready for configuration")
-        logging.info(f"🌐 Please visit {self.web.url}")
+        logging.info("🌐 Please visit %s", self.web.url)
 
-    async def wait_for_web_auth(self, token: str):
-        """Waits for web auth confirmation in Telegram"""
+    async def wait_for_web_auth(self, token: str) -> bool:
+        """
+        Waits for web auth confirmation in Telegram
+        :param token: Token to wait for
+        :return: True if auth was successful, False otherwise
+        """
         timeout = 5 * 60
         polling_interval = 1
         for _ in range(ceil(timeout * polling_interval)):
@@ -463,6 +453,8 @@ class Hikka:
             for client in self.clients:
                 if client.loader.inline.pop_web_auth_token(token):
                     return True
+
+        return False
 
     def _initial_setup(self) -> bool:
         """Responsible for first start"""
@@ -530,7 +522,8 @@ class Hikka:
             except sqlite3.OperationalError:
                 logging.error(
                     "Check that this is the only instance running. "
-                    f"If that doesn't help, delete the file named '{session}'"
+                    "If that doesn't help, delete the file '%s'",
+                    session.filename,
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
@@ -538,7 +531,7 @@ class Hikka:
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
-                run_config({}, self.arguments.data_root)
+                run_config(self.arguments.data_root)
                 return False
             except PhoneNumberInvalidError:
                 logging.error(
@@ -548,7 +541,8 @@ class Hikka:
                 self.sessions.remove(session)
             except InteractiveAuthRequired:
                 logging.error(
-                    f"Session {session} was terminated and re-auth is required"
+                    "Session %s was terminated and re-auth is required",
+                    session.filename,
                 )
                 self.sessions.remove(session)
 
@@ -559,7 +553,7 @@ class Hikka:
         loops = [self.amain_wrapper(client) for client in self.clients]
         self.loop.run_until_complete(asyncio.gather(*loops))
 
-    async def amain_wrapper(self, client):
+    async def amain_wrapper(self, client: CustomTelegramClient):
         """Wrapper around amain"""
         async with client:
             first = True
@@ -570,7 +564,7 @@ class Hikka:
             while await self.amain(first, client):
                 first = False
 
-    async def _badge(self, client):
+    async def _badge(self, client: CustomTelegramClient):
         """Call the badge in shell"""
         try:
             import git
@@ -602,20 +596,27 @@ class Hikka:
                     else ""
                 )
                 logging.info(
-                    f"🌘 Hikka {'.'.join(list(map(str, list(__version__))))} started\n"
-                    f"🔏 GitHub commit SHA: {build[:7]} ({upd})\n"
-                    f"{web_url}"
-                    f"{_platform}"
+                    "🌘 Hikka %s started\n🔏 GitHub commit SHA: %s (%s)\n%s%s",
+                    ".".join(list(map(str, list(__version__)))),
+                    build[:7],
+                    upd,
+                    web_url,
+                    _platform,
                 )
                 self.omit_log = True
 
-            logging.info(f"- Started for {client._tg_id} -")
+            logging.info("- Started for %s -", client._tg_id)
         except Exception:
             logging.exception("Badge error")
 
-    async def _add_dispatcher(self, client, modules, db):
+    async def _add_dispatcher(
+        self,
+        client: CustomTelegramClient,
+        modules: loader.Modules,
+        db: database.Database,
+    ):
         """Inits and adds dispatcher instance to client"""
-        dispatcher = CommandDispatcher(modules, client, db, self.arguments.no_nickname)
+        dispatcher = CommandDispatcher(modules, client, db)
         client.dispatcher = dispatcher
         modules.check_security = dispatcher.check_security
 
@@ -639,9 +640,8 @@ class Hikka:
             events.MessageEdited(),
         )
 
-    async def amain(self, first, client):
+    async def amain(self, first: bool, client: CustomTelegramClient):
         """Entrypoint for async init, run once for each user"""
-        web_only = self.arguments.web_only
         client.parse_mode = "HTML"
         await client.start()
 
@@ -651,17 +651,11 @@ class Hikka:
         logging.debug("Got DB")
         logging.debug("Loading logging config...")
 
-        to_load = ["loader.py"] if self.arguments.docker_deps_internal else None
-
         translator = Translator(client, db)
 
         await translator.init()
         modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
-
-        if self.arguments.docker_deps_internal:
-            # Loader has installed all dependencies
-            return  # We are done
 
         if self.web:
             await self.web.add_loader(client, modules, db)
@@ -670,10 +664,9 @@ class Hikka:
                 self.arguments.port,
             )
 
-        if not web_only:
-            await self._add_dispatcher(client, modules, db)
+        await self._add_dispatcher(client, modules, db)
 
-        await modules.register_all(to_load)
+        await modules.register_all(None)
         modules.send_config()
         await modules.send_ready()
 
@@ -697,7 +690,8 @@ class Hikka:
 
         self.loop.set_exception_handler(
             lambda _, x: logging.error(
-                f"Exception on event loop! {x['message']}",
+                "Exception on event loop! %s",
+                x["message"],
                 exc_info=x.get("exception", None),
             )
         )

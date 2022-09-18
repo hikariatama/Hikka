@@ -216,7 +216,11 @@ class Presets(loader.Module):
                     preset, i, len(PRESETS[preset]), module
                 )
             )
-            await self.lookup("loader").download_and_install(module, None)
+            try:
+                await self.lookup("loader").download_and_install(module, None)
+            except Exception:
+                logger.exception("Failed to install module %s", module)
+
             await asyncio.sleep(1)
 
         if self.lookup("loader")._fully_loaded:

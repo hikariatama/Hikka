@@ -1,5 +1,40 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.5.0
+
+- Fix `on_change` param processing in config
+- Fix `hikka.types.CoreOverwriteError`
+- Fix incorrect commit in info for users with multiple origins
+- Fix error with module configs not being updated to values which were set by user
+- Fix core unload and core overwrite errors not being raised correctly
+- Fix config descriptions in `APIRatelimiter`
+- Fix `CoreOverwriteError` handling
+- Fix `TelegramID` validator to work with values between 2^32 and 2^64 - 1
+- Fix web authorization messages being sent twice
+- Fix duplicated animations in web
+- Fix installation banner being shown after auth in web
+- Fix form placeholder button being shown when not necessary
+- Add `@loader.tag(thumb_url="")` decorator
+- Add new inline help format
+- Add internal method for debug calls (`.invoke`)
+- Add Internal Debug Method (IDM) to inspect cache (`inspect_cache`)
+- Add IDM `inspect_modules`
+- Add IDM `clear_cache`, `clear_entity_cache`, `clear_fulluser_cache`, `clear_fullchannel_cache`, `clear_perms_cache`
+- Add IDM `reload_core` to automatically reload core modules from disk
+- Add `hikka.validators.MultiChoice`
+- Add `utils.get_args_html` to get arguments of command with HTML
+- Add switch to mute @BotFather only once in hikka inline
+- Add ability to forbid certain tl methods using `.config APIRatelimiter`
+- Add new web interface design
+- Clean type-hint mess, document utils and other methods, which were undocumented
+- Remove redundant non-working code from configurator
+- Remove redundant useless params `--hosting`, `--no-nickname`, `--token`, `--web-only`, `--docker-deps-internal`
+- Migrate to lazy string interpolation in logging
+- Reformat the whole code to match the desired code style
+- Rename `APIRatelimiter` -> `APILimiter`
+- Enable `joinChannel` and `importChatInvite` calls-by-external-modules blockage for all users by default
+- Change inline query placeholder to `user@hikka:~$` + legacy migration
+
 ## 🌑 Hikka 1.4.2
 
 - Fix authorization error

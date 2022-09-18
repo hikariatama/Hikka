@@ -6,7 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import logging
 import os
 
 try:
@@ -21,8 +20,6 @@ from .. import loader, main, utils, heroku
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds

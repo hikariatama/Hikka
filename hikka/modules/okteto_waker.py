@@ -108,7 +108,7 @@ class OktetoMod(loader.Module):
                             schedule=last_date,
                         )
 
-                    logger.debug(f"Scheduled Okteto pinger to {last_date}")
+                    logger.debug("Scheduled Okteto pinger to %s", last_date)
                     await asyncio.sleep(self._send_interval)
 
                 await asyncio.sleep(self._overall_polling_interval)

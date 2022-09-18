@@ -43,17 +43,6 @@ class InlineManager(
     List,
     BotPM,
 ):
-    _units = {}
-    _custom_map = {}
-
-    fsm = {}
-
-    _web_auth_tokens = []
-
-    _markup_ttl = 60 * 60 * 24
-
-    init_complete = False
-
     def __init__(
         self,
         client: CustomTelegramClient,
@@ -64,6 +53,14 @@ class InlineManager(
         self._client = client
         self._db = db
         self._allmodules = allmodules
+
+        self._units = {}
+        self._custom_map = {}
+        self.fsm = {}
+        self._web_auth_tokens = []
+
+        self._markup_ttl = 60 * 60 * 24
+        self.init_complete = False
 
         self._token = db.get("hikka.inline", "bot_token", False)
 
@@ -82,9 +79,8 @@ class InlineManager(
         ignore_token_checks: bool = False,
     ):
         # Get info about user to use it in this class
-        me = await self._client.get_me()
-        self._me = me.id
-        self._name = get_display_name(me)
+        self._me = self._client.tg_id
+        self._name = get_display_name(self._client.hikka_me)
 
         if not ignore_token_checks:
             # Assert that token is set to valid, and if not,
@@ -159,7 +155,7 @@ class InlineManager(
 
         self._dp.register_message_handler(
             self._message_handler,
-            lambda *args: True,
+            lambda *_: True,
             content_types=["any"],
         )
 

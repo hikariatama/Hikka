@@ -9,16 +9,19 @@
 import json
 import logging
 import os
-
+import typing
 import requests
 
 from . import utils
+from .types import Module
+from .tl_cache import CustomTelegramClient
+from .database import Database
 
 logger = logging.getLogger(__name__)
 
 
 class Translator:
-    def __init__(self, client, db):
+    def __init__(self, client: CustomTelegramClient, db: Database):
         self._client = client
         self.db = db
 
@@ -59,20 +62,20 @@ class Translator:
 
         return True
 
-    def getkey(self, key):
+    def getkey(self, key: str) -> typing.Any:
         return self._data.get(key, False)
 
-    def gettext(self, text):
+    def gettext(self, text: str) -> typing.Any:
         return self.getkey(text) or text
 
 
 class Strings:
-    def __init__(self, mod, translator):
+    def __init__(self, mod: Module, translator: Translator):
         self._mod = mod
         self._translator = translator
 
         if not translator:
-            logger.debug(f"Module {mod=} got empty translator {translator=}")
+            logger.debug("Module %s got empty translator %s", mod, translator)
 
         self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
 
@@ -110,7 +113,7 @@ class Strings:
     def __call__(
         self,
         key: str,
-        _=None,  # Compatibility tweak for FTG\GeekTG
+        _: typing.Optional[typing.Any] = None,  # Compatibility tweak for FTG\GeekTG
     ) -> str:
         return self.__getitem__(key)
 

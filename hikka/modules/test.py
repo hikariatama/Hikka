@@ -6,8 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
 import inspect
 import logging
 import os
@@ -549,7 +547,7 @@ class TestMod(loader.Module):
             for participant in (await self._client.get_participants(chat, limit=3))
         ):
             logging.getLogger().handlers[0].install_tg_log(self)
-            logger.debug(f"Bot logging installed for {self._logchat}")
+            logger.debug("Bot logging installed for %s", self._logchat)
             return
 
         logger.debug("New logging chat created, init setup...")
@@ -572,4 +570,4 @@ class TestMod(loader.Module):
             pass
 
         logging.getLogger().handlers[0].install_tg_log(self)
-        logger.debug(f"Bot logging installed for {self._logchat}")
+        logger.debug("Bot logging installed for %s", self._logchat)

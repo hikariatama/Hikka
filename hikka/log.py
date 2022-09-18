@@ -34,7 +34,7 @@ import os
 import re
 import telethon
 import traceback
-from typing import List, Optional
+import typing
 from logging.handlers import RotatingFileHandler
 
 from . import utils
@@ -54,7 +54,7 @@ class HikkaException:
         exc_type: object,
         exc_value: Exception,
         tb: traceback.TracebackException,
-        stack: Optional[List[inspect.FrameInfo]] = None,
+        stack: typing.Optional[typing.List[inspect.FrameInfo]] = None,
     ) -> "HikkaException":
         def to_hashable(dictionary: dict) -> dict:
             dictionary = dictionary.copy()
@@ -67,7 +67,8 @@ class HikkaException:
                         dictionary[key] = "<Database>"
 
                     if isinstance(
-                        value, (telethon.TelegramClient, CustomTelegramClient)
+                        value,
+                        (telethon.TelegramClient, CustomTelegramClient),
                     ):
                         dictionary[key] = f"<{value.__class__.__name__}>"
 
@@ -193,7 +194,9 @@ class TelegramLogsHandler(logging.Handler):
         """Return a list of logging entries"""
         return self.handledbuffer + self.buffer
 
-    def dumps(self, lvl: int = 0, client_id: Optional[int] = None) -> list:
+    def dumps(
+        self, lvl: int = 0, client_id: typing.Optional[int] = None
+    ) -> typing.List[str]:
         """Return all entries of minimum level as list of strings"""
         return [
             self.targets[0].format(record)

@@ -27,7 +27,7 @@ except ImportError as e:
         raise e
 
 
-from typing import Optional, Union
+import typing
 
 from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
@@ -247,7 +247,8 @@ class Database(dict):
         for key, value in db.copy().items():
             if not isinstance(key, (str, int)):
                 logger.warning(
-                    f"DbAutoFix: Dropped {key=} , because it is not string or int"
+                    "DbAutoFix: Dropped key %s, because it is not string or int",
+                    key,
                 )
                 continue
 
@@ -256,7 +257,9 @@ class Database(dict):
                 # otherwise it may cause problems
                 del db[key]
                 logger.warning(
-                    f"DbAutoFix: Dropped {key=}, because it is non-dict {type(value)=}"
+                    "DbAutoFix: Dropped key %s, because it is non-dict, but %s",
+                    key,
+                    type(value),
                 )
                 continue
 
@@ -264,8 +267,10 @@ class Database(dict):
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
                     logger.warning(
-                        f"DbAutoFix: Dropped {subkey=} of db[{key}], because it is not"
-                        " string or int"
+                        "DbAutoFix: Dropped subkey %s of db key %s, because it is not"
+                        " string or int",
+                        subkey,
+                        key,
                     )
                     continue
 
@@ -338,7 +343,7 @@ class Database(dict):
             ).id
         )
 
-    async def fetch_asset(self, asset_id: int) -> Union[None, Message]:
+    async def fetch_asset(self, asset_id: int) -> typing.Optional[Message]:
         """Fetch previously saved asset by its asset_id"""
         if not self._assets:
             raise NoAssetsChannel(
@@ -353,7 +358,7 @@ class Database(dict):
         self,
         owner: str,
         key: str,
-        default: Optional[JSONSerializable] = None,
+        default: typing.Optional[JSONSerializable] = None,
     ) -> JSONSerializable:
         """Get database key"""
         try:
@@ -391,7 +396,7 @@ class Database(dict):
         self,
         owner: str,
         key: str,
-        default: Optional[JSONSerializable] = None,
+        default: typing.Optional[JSONSerializable] = None,
     ) -> JSONSerializable:
         """Get a pointer to database key"""
         value = self.get(owner, key, default)

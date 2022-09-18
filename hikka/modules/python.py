@@ -8,7 +8,6 @@
 
 import contextlib
 import itertools
-import logging
 import sys
 from types import ModuleType
 import os
@@ -21,8 +20,6 @@ from telethon.tl.types import Message
 
 from .. import loader, main, utils
 from ..log import HikkaException
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -59,9 +56,6 @@ class PythonMod(loader.Module):
         "_cls_doc": "Выполняет Python код",
     }
 
-    async def client_ready(self):
-        self._phone = (await self._client.get_me()).phone
-
     @loader.owner
     @loader.command(ru_doc="Алиас для команды .e")
     async def eval(self, message: Message):
@@ -88,7 +82,7 @@ class PythonMod(loader.Module):
                 + "🚫 "
                 + item.full_stack.splitlines()[-1]
             )
-            exc = exc.replace(str(self._phone), "📵")
+            exc = exc.replace(str(self._client.hikka_me.phone), "📵")
 
             if os.environ.get("DATABASE_URL"):
                 exc = exc.replace(
@@ -123,7 +117,7 @@ class PythonMod(loader.Module):
             utils.escape_html(result),
         )
 
-        ret = ret.replace(str(self._phone), "📵")
+        ret = ret.replace(str(self._client.hikka_me.phone), "📵")
 
         if postgre := os.environ.get("DATABASE_URL") or main.get_config_key(
             "postgre_uri"

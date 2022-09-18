@@ -6,18 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
-import logging
-
 import git
 from telethon.tl.types import Message
 from telethon.utils import get_display_name
 
 from .. import loader, utils, version
 from ..inline.types import InlineQuery
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -150,8 +144,11 @@ class HikkaInfoMod(loader.Module):
             else None
         )
 
+    @loader.inline_handler(
+        thumb_url="https://img.icons8.com/external-others-inmotus-design/344/external-Moon-round-icons-others-inmotus-design-2.png"
+    )
     @loader.inline_everyone
-    async def info_inline_handler(self, _: InlineQuery) -> dict:
+    async def info(self, _: InlineQuery) -> dict:
         """Send userbot info"""
 
         return {

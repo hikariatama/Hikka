@@ -251,7 +251,7 @@ class InfiniteLoop:
             )
 
         if self._task:
-            logger.debug(f"Stopped loop for {self.func}")
+            logger.debug("Stopped loop for method %s", self.func)
             self._wait_for_stop = asyncio.Event()
             self.status = False
             self._task.add_done_callback(self._stop)
@@ -268,7 +268,7 @@ class InfiniteLoop:
             )
 
         if not self._task:
-            logger.debug(f"Started loop for {self.func}")
+            logger.debug("Started loop for method %s", self.func)
             self._task = asyncio.ensure_future(self.actual_loop(*args, **kwargs))
         else:
             logger.debug("Attempted to start already running loop")
@@ -438,6 +438,7 @@ def tag(*tags, **kwarg_tags):
         • `filter` - Capture only messages that pass given function
         • `from_id` - Capture only messages from given user
         • `chat_id` - Capture only messages from given chat
+        • `thumb_url` - Works for inline command handlers. Will be shown in help
 
     Usage example:
 
@@ -559,13 +560,21 @@ class Modules:
             self.watchers = watchers
 
             logger.debug(
-                f"Reloaded {len(self.commands)} commands,"
-                f" {len(self.inline_handlers)} inline handlers,"
-                f" {len(self.callback_handlers)} callback handlers and"
-                f" {len(self.watchers)} watchers"
+                "Reloaded %s commands,"
+                " %s inline handlers,"
+                " %s callback handlers and"
+                " %s watchers",
+                len(self.commands),
+                len(self.inline_handlers),
+                len(self.callback_handlers),
+                len(self.watchers),
             )
 
-    async def register_all(self, mods: list = None):
+    async def register_all(
+        self,
+        mods: Optional[List[str]] = None,
+        no_external: bool = False,
+    ) -> List[Module]:
         """Load all modules in the module directory"""
         external_mods = []
 
@@ -594,12 +603,21 @@ class Modules:
             else:
                 external_mods = []
 
-        await self._register_modules(mods)
-        await self._register_modules(external_mods, "<file>")
+        loaded = []
+        loaded += await self._register_modules(mods)
 
-    async def _register_modules(self, modules: list, origin: str = "<core>"):
+        if not no_external:
+            loaded += await self._register_modules(external_mods, "<file>")
+
+        return loaded
+
+    async def _register_modules(
+        self, modules: list, origin: str = "<core>"
+    ) -> List[Module]:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+
+        loaded = []
 
         for mod in modules:
             try:
@@ -613,7 +631,7 @@ class Modules:
                     "<core {}>" if origin == "<core>" else "<file {}>"
                 ).format(mod_shortname)
 
-                logger.debug(f"Loading {module_name} from filesystem")
+                logger.debug("Loading %s from filesystem", module_name)
 
                 with open(mod, "r") as file:
                     spec = importlib.machinery.ModuleSpec(
@@ -622,9 +640,11 @@ class Modules:
                         origin=user_friendly_origin,
                     )
 
-                await self.register_module(spec, module_name, origin)
+                loaded += [await self.register_module(spec, module_name, origin)]
             except BaseException as e:
-                logger.exception(f"Failed to load module {mod} due to {e}:")
+                logger.exception("Failed to load module %s due to %s:", mod, e)
+
+        return loaded
 
     async def register_module(
         self,
@@ -674,7 +694,7 @@ class Modules:
                 with open(path, "w") as f:
                     f.write(spec.loader.data.decode("utf-8"))
 
-                logger.debug(f"Saved {cls_name=} to {path=}")
+                logger.debug("Saved class %s to path %s", cls_name, path)
 
         return ret
 
@@ -689,21 +709,21 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        if getattr(instance, "__origin__", "") == "<core>":
+        if instance.__origin__.startswith("<core"):
             self._core_commands += list(
                 map(lambda x: x.lower(), list(instance.hikka_commands))
             )
 
         for name, cmd in self.commands.copy().items():
             if cmd.__self__.__class__.__name__ == instance.__class__.__name__:
-                logger.debug(f"Removing command {name} for update")
+                logger.debug("Removing command %s for update", name)
                 del self.commands[name]
 
         for _command, cmd in instance.hikka_commands.items():
             # Restrict overwriting core modules' commands
             if (
                 _command.lower() in self._core_commands
-                and getattr(instance, "__origin__", "") != "<core>"
+                and not instance.__origin__.startswith("<core")
             ):
                 with contextlib.suppress(Exception):
                     self.modules.remove(instance)
@@ -724,14 +744,14 @@ class Modules:
                     and func.__self__.__class__.__name__
                     != self.inline_handlers[name].__self__.__class__.__name__
                 ):
-                    logger.debug(f"Duplicate inline_handler {name}")
+                    logger.debug("Duplicate inline_handler %s", name)
 
                 logger.debug(
-                    f"Replacing inline_handler for {self.inline_handlers[name]}"
+                    "Replacing inline_handler for %s", self.inline_handlers[name]
                 )
 
             if not func.__doc__:
-                logger.debug(f"Missing docs for {name}")
+                logger.debug("Missing docs for %s", name)
 
             self.inline_handlers.update({name.lower(): func})
 
@@ -742,7 +762,7 @@ class Modules:
                 and func.__self__.__class__.__name__
                 != self.callback_handlers[name].__self__.__class__.__name__
             ):
-                logger.debug(f"Duplicate callback_handler {name}")
+                logger.debug("Duplicate callback_handler %s", name)
 
             self.callback_handlers.update({name.lower(): func})
 
@@ -753,7 +773,7 @@ class Modules:
 
         for _watcher in self.watchers:
             if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
-                logger.debug(f"Removing watcher {_watcher} for update")
+                logger.debug("Removing watcher %s for update", _watcher)
                 self.watchers.remove(_watcher)
 
         for _watcher in instance.hikka_watchers.values():
@@ -913,6 +933,9 @@ class Modules:
 
         return event.status
 
+    def get_prefix(self) -> str:
+        return self._db.get("hikka.main", "command_prefix", ".")
+
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
@@ -924,7 +947,7 @@ class Modules:
         instance.get = partial(self._get, _owner=instance.__class__.__name__)
         instance.set = partial(self._set, _owner=instance.__class__.__name__)
         instance.pointer = partial(self._pointer, _owner=instance.__class__.__name__)
-        instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
+        instance.get_prefix = self.get_prefix
         instance.client = self.client
         instance._client = self.client
         instance.db = self._db
@@ -939,21 +962,23 @@ class Modules:
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
-                if getattr(module, "__origin__", "") == "<core>":
+                if module.__origin__.startswith("<core"):
                     raise CoreOverwriteError(
                         module=module.__class__.__name__[:-3]
                         if module.__class__.__name__.endswith("Mod")
                         else module.__class__.__name__
                     )
 
-                logger.debug(f"Removing module for update {module}")
+                logger.debug("Removing module %s for update", module)
                 await module.on_unload()
 
                 self.modules.remove(module)
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):
                         getattr(module, method).stop()
-                        logger.debug(f"Stopped loop in {module=}, {method=}")
+                        logger.debug(
+                            "Stopped loop in module %s, method %s", module, method
+                        )
 
         self.modules += [instance]
 
@@ -1038,7 +1063,8 @@ class Modules:
             spec.loader.exec_module(instance)
         except ImportError as e:
             logger.info(
-                f"Library loading failed, attemping dependency installation ({e.name})"
+                "Library loading failed, attemping dependency installation (%s)",
+                e.name,
             )
             # Let's try to reinstall dependencies
             try:
@@ -1058,7 +1084,7 @@ class Modules:
                 )
                 requirements = [e.name]
 
-            logger.debug(f"Installing requirements: {requirements}")
+            logger.debug("Installing requirements: %s", requirements)
 
             if not requirements or _did_requirements:
                 _raise(e)
@@ -1243,8 +1269,9 @@ class Modules:
                         )
             except AttributeError:
                 logger.warning(
-                    "Got invalid config instance. Expected `ModuleConfig`, got"
-                    f" {type(mod.config)=}, {mod.config=}"
+                    "Got invalid config instance. Expected `ModuleConfig`, got %s, %s",
+                    type(mod.config),
+                    mod.config,
                 )
 
         if skip_hook:
@@ -1261,7 +1288,7 @@ class Modules:
         try:
             mod.config_complete()
         except Exception as e:
-            logger.exception(f"Failed to send mod config complete signal due to {e}")
+            logger.exception("Failed to send mod config complete signal due to %s", e)
             raise
 
     async def send_ready(self):
@@ -1280,7 +1307,7 @@ class Modules:
         try:
             await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
         except Exception as e:
-            logger.exception(f"Failed to send mod init complete signal due to {e}")
+            logger.exception("Failed to send mod init complete signal due to %s", e)
 
     async def _animate(
         self,
@@ -1347,7 +1374,7 @@ class Modules:
                 if getattr(mod, method).autostart:
                     getattr(mod, method).start()
 
-                logger.debug(f"Added {mod=} to {method=}")
+                logger.debug("Added module %s to method %s", mod, method)
 
         if from_dlmod:
             try:
@@ -1367,18 +1394,20 @@ class Modules:
             if no_self_unload:
                 raise e
 
-            logger.debug(f"Unloading {mod}, because it raised SelfUnload")
+            logger.debug("Unloading %s, because it raised SelfUnload", mod)
             self.modules.remove(mod)
         except SelfSuspend as e:
             if no_self_unload:
                 raise e
 
-            logger.debug(f"Suspending {mod}, because it raised SelfSuspend")
+            logger.debug("Suspending %s, because it raised SelfSuspend", mod)
             return
         except Exception as e:
             logger.exception(
-                f"Failed to send mod init complete signal for {mod} due to {e},"
-                " attempting unload"
+                "Failed to send mod init complete signal for %s due to %s,"
+                " attempting unload",
+                mod,
+                e,
             )
             self.modules.remove(mod)
             raise
@@ -1408,7 +1437,7 @@ class Modules:
                 module.name.lower(),
                 module.__class__.__name__.lower(),
             ):
-                if getattr(module, "__origin__", "") == "<core>":
+                if module.__origin__.startswith("<core"):
                     raise CoreUnloadError(module.__class__.__name__)
 
                 worked += [module.__class__.__name__]
@@ -1422,9 +1451,9 @@ class Modules:
 
                     if os.path.isfile(path):
                         os.remove(path)
-                        logger.debug(f"Removed {name} file at {path=}")
+                        logger.debug("Removed %s file at path %s", name, path)
 
-                logger.debug(f"Removing module for unload {module}")
+                logger.debug("Removing module %s for unload", module)
                 self.modules.remove(module)
 
                 await module.on_unload()
@@ -1432,11 +1461,13 @@ class Modules:
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):
                         getattr(module, method).stop()
-                        logger.debug(f"Stopped loop in {module=}, {method=}")
+                        logger.debug(
+                            "Stopped loop in module %s, method %s", module, method
+                        )
 
                 for name, cmd in self.commands.copy().items():
                     if cmd.__self__.__class__.__name__ == module.__class__.__name__:
-                        logger.debug(f"Removing command {name} for unload")
+                        logger.debug("Removing command %s for unload", name)
                         del self.commands[name]
                         for alias, _command in self.aliases.copy().items():
                             if _command == name:
@@ -1447,10 +1478,10 @@ class Modules:
                         _watcher.__self__.__class__.__name__
                         == module.__class__.__name__
                     ):
-                        logger.debug(f"Removing watcher {_watcher} for unload")
+                        logger.debug("Removing watcher %s for unload", _watcher)
                         self.watchers.remove(_watcher)
 
-        logger.debug(f"{worked=}")
+        logger.debug("Worked: %s", worked)
         return worked
 
     def add_alias(self, alias: str, cmd: str) -> bool:

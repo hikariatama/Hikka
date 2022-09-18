@@ -29,8 +29,8 @@ import logging
 import os
 import subprocess
 import sys
-from typing import Union
 import time
+import typing
 
 import git
 from git import GitCommandError, Repo
@@ -217,7 +217,7 @@ class UpdaterMod(loader.Module):
     async def inline_restart(self, call: InlineCall, secure_boot: bool = False):
         await self.restart_common(call, secure_boot=secure_boot)
 
-    async def process_restart_message(self, msg_obj: Union[InlineCall, Message]):
+    async def process_restart_message(self, msg_obj: typing.Union[InlineCall, Message]):
         self.set(
             "selfupdatemsg",
             msg_obj.inline_message_id
@@ -227,7 +227,7 @@ class UpdaterMod(loader.Module):
 
     async def restart_common(
         self,
-        msg_obj: Union[InlineCall, Message],
+        msg_obj: typing.Union[InlineCall, Message],
         secure_boot: bool = False,
     ):
         if (
@@ -380,7 +380,7 @@ class UpdaterMod(loader.Module):
 
     async def inline_update(
         self,
-        msg_obj: Union[InlineCall, Message],
+        msg_obj: typing.Union[InlineCall, Message],
         hard: bool = False,
     ):
         # We don't really care about asyncio at this point, as we are shutting down
@@ -392,10 +392,10 @@ class UpdaterMod(loader.Module):
                 msg_obj = await utils.answer(
                     msg_obj,
                     self.strings("lavhost_update").format(
-                        '</b><emoji document_id=5192756799647785066>✌️</emoji><emoji'
-                        ' document_id=5193117564015747203>✌️</emoji><emoji'
-                        ' document_id=5195050806105087456>✌️</emoji><emoji'
-                        ' document_id=5195457642587233944>✌️</emoji><b>'
+                        "</b><emoji document_id=5192756799647785066>✌️</emoji><emoji"
+                        " document_id=5193117564015747203>✌️</emoji><emoji"
+                        " document_id=5195050806105087456>✌️</emoji><emoji"
+                        " document_id=5195457642587233944>✌️</emoji><b>"
                         if self._client.hikka_me.premium
                         and CUSTOM_EMOJIS
                         and isinstance(msg_obj, Message)

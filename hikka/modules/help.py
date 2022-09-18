@@ -279,7 +279,7 @@ class HelpMod(loader.Module):
 
         for mod in self.allmodules.modules:
             if not hasattr(mod, "commands"):
-                logger.debug(f"Module {mod.__class__.__name__} is not inited yet")
+                logger.debug("Module %s is not inited yet", mod.__class__.__name__)
                 continue
 
             if mod.strings["name"] in self.get("hide", []) and not force:
@@ -308,7 +308,7 @@ class HelpMod(loader.Module):
                     except Exception:
                         pass
 
-            core = mod.__origin__ == "<core>"
+            core = mod.__origin__.startswith("<core")
 
             if core:
                 emoji = self.config["core_emoji"]

@@ -26,7 +26,7 @@
 
 import logging
 import time
-from typing import Optional
+import typing
 
 from telethon.hints import EntityLike
 from telethon.utils import get_display_name
@@ -233,7 +233,7 @@ class SecurityManager:
 
         return any_
 
-    def get_flags(self, func: callable) -> int:
+    def get_flags(self, func: typing.Union[callable, int]) -> int:
         if isinstance(func, int):
             config = func
         else:
@@ -254,9 +254,9 @@ class SecurityManager:
 
     async def _check(
         self,
-        message: Message,
-        func: callable,
-        user: Optional[int] = None,
+        message: typing.Optional[Message],
+        func: typing.Union[callable, int],
+        user_id: typing.Optional[int] = None,
     ) -> bool:
         """Checks if message sender is permitted to execute certain function"""
         self._reload_rights()
@@ -264,13 +264,13 @@ class SecurityManager:
         if not (config := self.get_flags(func)):
             return False
 
-        if not user:
-            user = message.sender_id
+        if not user_id:
+            user_id = message.sender_id
 
-        if user == self._client.tg_id or getattr(message, "out", False):
+        if user_id == self._client.tg_id or getattr(message, "out", False):
             return True
 
-        logger.debug(f"Checking security match for {config}")
+        logger.debug("Checking security match for %s", config)
 
         f_owner = config & OWNER
         f_sudo = config & SUDO
@@ -298,15 +298,15 @@ class SecurityManager:
 
         if (
             f_owner
-            and user in self._owner
+            and user_id in self._owner
             or f_sudo
-            and user in self._sudo
+            and user_id in self._sudo
             or f_support
-            and user in self._support
+            and user_id in self._support
         ):
             return True
 
-        if user in self._db.get(main.__name__, "blacklist_users", []):
+        if user_id in self._db.get(main.__name__, "blacklist_users", []):
             return False
 
         if message is None:  # In case of checking inline query security map
@@ -324,9 +324,9 @@ class SecurityManager:
 
         if callable(func):
             for info in self._tsec_user.copy():
-                if info["target"] == user:
+                if info["target"] == user_id:
                     if info["rule_type"] == "command" and info["rule"] == cmd:
-                        logger.debug(f"tsec match for user {cmd}")
+                        logger.debug("tsec match for user %s", cmd)
                         return True
 
                     if (
@@ -334,7 +334,8 @@ class SecurityManager:
                         and info["rule"] == func.__self__.__class__.__name__
                     ):
                         logger.debug(
-                            f"tsec match for user {func.__self__.__class__.__name__}"
+                            "tsec match for user %s",
+                            func.__self__.__class__.__name__,
                         )
                         return True
 
@@ -342,7 +343,7 @@ class SecurityManager:
                 for info in self._tsec_chat.copy():
                     if info["target"] == chat:
                         if info["rule_type"] == "command" and info["rule"] == cmd:
-                            logger.debug(f"tsec match for {cmd}")
+                            logger.debug("tsec match for %s", cmd)
                             return True
 
                         if (
@@ -350,7 +351,8 @@ class SecurityManager:
                             and info["rule"] == func.__self__.__class__.__name__
                         ):
                             logger.debug(
-                                f"tsec match for {func.__self__.__class__.__name__}"
+                                "tsec match for %s",
+                                func.__self__.__class__.__name__,
                             )
                             return True
 
@@ -384,7 +386,7 @@ class SecurityManager:
                     return True
             elif f_group_admin_any or f_group_owner:
                 chat_id = utils.get_chat_id(message)
-                cache_obj = f"{chat_id}/{user}"
+                cache_obj = f"{chat_id}/{user_id}"
                 if (
                     cache_obj in self._cache
                     and self._cache[cache_obj]["exp"] >= time.time()
@@ -393,7 +395,7 @@ class SecurityManager:
                 else:
                     participant = await message.client.get_permissions(
                         message.peer_id,
-                        user,
+                        user_id,
                     )
                     self._cache[cache_obj] = {
                         "user": participant,
@@ -426,7 +428,7 @@ class SecurityManager:
 
         if message.is_group and (f_group_admin_any or f_group_owner):
             chat_id = utils.get_chat_id(message)
-            cache_obj = f"{chat_id}/{user}"
+            cache_obj = f"{chat_id}/{user_id}"
 
             if (
                 cache_obj in self._cache

@@ -66,17 +66,16 @@ def restart(*argv):
 
 
 class Web:
-    sign_in_clients = {}
-    _pending_client = None
-    _sessions = []
-    _ratelimit = {}
-
     def __init__(self, **kwargs):
+        self.sign_in_clients = {}
+        self._pending_client = None
+        self._sessions = []
+        self._ratelimit = {}
         self.api_token = kwargs.pop("api_token")
         self.data_root = kwargs.pop("data_root")
         self.connection = kwargs.pop("connection")
         self.proxy = kwargs.pop("proxy")
-        super().__init__(**kwargs)
+
         self.app.router.add_get("/", self.root)
         self.app.router.add_put("/setApi", self.set_tg_api)
         self.app.router.add_post("/sendTgCode", self.send_tg_code)
@@ -99,7 +98,7 @@ class Web:
             "heroku": "DYNO" in os.environ,
         }
 
-    async def check_session(self, request):
+    async def check_session(self, request: web.Request) -> web.Response:
         return web.Response(body=("1" if self._check_session(request) else "0"))
 
     def wait_for_api_token_setup(self):
@@ -108,7 +107,7 @@ class Web:
     def wait_for_clients_setup(self):
         return self.clients_set.wait()
 
-    def _check_session(self, request) -> bool:
+    def _check_session(self, request: web.Request) -> bool:
         return (
             request.cookies.get("session", None) in self._sessions
             if main.hikka.clients
@@ -148,7 +147,7 @@ class Web:
 
                     return True
 
-    async def custom_bot(self, request):
+    async def custom_bot(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401)
 
@@ -176,7 +175,7 @@ class Web:
         db.set("hikka.inline", "custom_bot", text)
         return web.Response(body="OK")
 
-    async def set_tg_api(self, request):
+    async def set_tg_api(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401, body="Authorization required")
 
@@ -215,7 +214,7 @@ class Web:
         self.api_set.set()
         return web.Response(body="ok")
 
-    async def send_tg_code(self, request):
+    async def send_tg_code(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401, body="Authorization required")
 
@@ -251,7 +250,7 @@ class Web:
 
         return web.Response(body="ok")
 
-    async def okteto(self, request):
+    async def okteto(self, request: web.Request) -> web.Response:
         if main.get_config_key("okteto_uri"):
             return web.Response(status=418)
 
@@ -259,7 +258,7 @@ class Web:
         main.save_config_key("okteto_uri", text)
         return web.Response(body="URI_SAVED")
 
-    async def tg_code(self, request):
+    async def tg_code(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401)
 
@@ -331,7 +330,7 @@ class Web:
 
         return web.Response()
 
-    async def finish_login(self, request):
+    async def finish_login(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401)
 
@@ -369,7 +368,7 @@ class Web:
 
         return web.Response()
 
-    async def web_auth(self, request):
+    async def web_auth(self, request: web.Request) -> web.Response:
         if self._check_session(request):
             return web.Response(body=request.cookies.get("session", "unauthorized"))
 

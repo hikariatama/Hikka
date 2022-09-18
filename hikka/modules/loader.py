@@ -24,8 +24,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
 import asyncio
 import contextlib
 import copy
@@ -453,7 +451,7 @@ class LoaderMod(loader.Module):
                 self.get("reacted", []) + [f"{developer_entity.id}/{modname}"],
             )
         except Exception:
-            logger.debug(f"Unable to react to {developer_entity.id} about {modname}")
+            logger.debug("Unable to react to %s about %s", developer_entity.id, modname)
 
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
@@ -574,7 +572,7 @@ class LoaderMod(loader.Module):
             todo = {}
 
         todo.update(**self.get("loaded_modules", {}))
-        logger.debug(f"Loading modules: {todo}")
+        logger.debug("Loading modules: %s", todo)
         return todo
 
     async def _get_repo(self, repo: str, preset: str) -> str:
@@ -590,7 +588,12 @@ class LoaderMod(loader.Module):
         )
 
         if not str(res.status_code).startswith("2"):
-            logger.debug(f"Can't load {repo=}, {preset=}, {res.status_code=}")
+            logger.debug(
+                "Can't load repo %s, preset %s because of %s status code",
+                repo,
+                preset,
+                res.status_code,
+            )
             return []
 
         self._links_cache[preset_id] = {
@@ -685,7 +688,7 @@ class LoaderMod(loader.Module):
                 blob_link=blob_link,
             )
         except Exception:
-            logger.exception(f"Failed to load {module_name}")
+            logger.exception("Failed to load %s", module_name)
 
     async def _inline__load(
         self,
@@ -949,8 +952,8 @@ class LoaderMod(loader.Module):
                 )
             except ImportError as e:
                 logger.info(
-                    "Module loading failed, attemping dependency installation"
-                    f" ({e.name})"
+                    "Module loading failed, attemping dependency installation (%s)",
+                    e.name,
                 )
                 # Let's try to reinstall dependencies
                 try:
@@ -970,7 +973,7 @@ class LoaderMod(loader.Module):
                     )
                     requirements = [e.name]
 
-                logger.debug(f"Installing requirements: {requirements}")
+                logger.debug("Installing requirements: %s", requirements)
 
                 if not requirements:
                     raise Exception("Nothing to install") from e
@@ -1034,6 +1037,9 @@ class LoaderMod(loader.Module):
                 kwargs["did_requirements"] = True
 
                 return await self.load_module(**kwargs)  # Try again
+            except CoreOverwriteError as e:
+                await core_overwrite(e)
+                return
             except loader.LoadError as e:
                 with contextlib.suppress(Exception):
                     await self.allmodules.unload_module(instance.__class__.__name__)
@@ -1048,11 +1054,8 @@ class LoaderMod(loader.Module):
                         f" <b>{utils.escape_html(str(e))}</b>",
                     )
                 return
-            except CoreOverwriteError as e:
-                await core_overwrite(e)
-                return
         except BaseException as e:
-            logger.exception(f"Loading external module failed due to {e}")
+            logger.exception("Loading external module failed due to %s", e)
 
             if message is not None:
                 await utils.answer(message, self.strings("load_failed"))
@@ -1104,6 +1107,9 @@ class LoaderMod(loader.Module):
                     from_dlmod=bool(message),
                 )
                 task.cancel()
+            except CoreOverwriteError as e:
+                await core_overwrite(e)
+                return
             except loader.LoadError as e:
                 with contextlib.suppress(Exception):
                     await self.allmodules.unload_module(instance.__class__.__name__)
@@ -1142,16 +1148,22 @@ class LoaderMod(loader.Module):
                         f" {utils.escape_html(str(e))}</b>",
                     )
                 return
-            except CoreOverwriteError as e:
-                await core_overwrite(e)
-                return
         except Exception as e:
-            logger.exception(f"Module threw because {e}")
+            logger.exception("Module threw because of %s", e)
 
             if message is not None:
                 await utils.answer(message, self.strings("load_failed"))
 
             return
+
+        instance.hikka_meta_pic = next(
+            (
+                line.replace(" ", "").split("#metapic:", maxsplit=1)[1]
+                for line in doc.splitlines()
+                if line.replace(" ", "").startswith("#metapic:")
+            ),
+            None,
+        )
 
         with contextlib.suppress(Exception):
             if (
@@ -1228,9 +1240,11 @@ class LoaderMod(loader.Module):
                 modhelp,
                 developer if not subscribe or not use_subscribe else "",
                 depends_from,
-                self.strings("modlink").format(origin)
-                if origin != "<string>" and self.config["share_link"]
-                else "",
+                (
+                    self.strings("modlink").format(origin)
+                    if origin != "<string>" and self.config["share_link"]
+                    else ""
+                ),
                 blob_link,
                 subscribe if use_subscribe else "",
             )
@@ -1412,30 +1426,11 @@ class LoaderMod(loader.Module):
     async def _update_modules(self):
         todo = await self._get_modules_to_load()
 
-        # ⚠️⚠️  WARNING!  ⚠️⚠️
-        # If you are a module developer, and you'll try to bypass this protection to
-        # force user join your channel, you will be added to SCAM modules
-        # list and you will be banned from Hikka federation.
-        # Let USER decide, which channel he will follow. Do not be so petty
-        # I hope, you understood me.
-        # Thank you
-
-        if any(
-            arg in todo.values()
-            for arg in {
-                "https://mods.hikariatama.ru/forbid_joins.py",
-                "https://heta.hikariatama.ru/hikariatama/ftg/forbid_joins.py",
-                "https://github.com/hikariatama/ftg/raw/master/forbid_joins.py",
-                "https://raw.githubusercontent.com/hikariatama/ftg/master/forbid_joins.py",
-            }
-        ):
-            self._client.forbid_joins()
-
-        secure_boot = False
+        self._secure_boot = False
 
         if self._db.get(loader.__name__, "secure_boot", False):
             self._db.set(loader.__name__, "secure_boot", False)
-            secure_boot = True
+            self._secure_boot = True
         else:
             for mod in todo.values():
                 await self.download_and_install(mod)
@@ -1453,4 +1448,27 @@ class LoaderMod(loader.Module):
         self._fully_loaded = True
 
         with contextlib.suppress(AttributeError):
-            await self.lookup("Updater").full_restart_complete(secure_boot)
+            await self.lookup("Updater").full_restart_complete(self._secure_boot)
+
+    async def reload_core(self) -> int:
+        """Forcefully reload all core modules"""
+        self._fully_loaded = False
+
+        if self._secure_boot:
+            self._db.set(loader.__name__, "secure_boot", True)
+
+        for module in self.allmodules.modules:
+            if module.__origin__.startswith("<core"):
+                module.__origin__ = "<reload-core>"
+
+        loaded = await self.allmodules.register_all(no_external=True)
+        for instance in loaded:
+            self.allmodules.send_config_one(instance)
+            await self.allmodules.send_ready_one(
+                instance,
+                no_self_unload=False,
+                from_dlmod=False,
+            )
+
+        self._fully_loaded = True
+        return len(loaded)
