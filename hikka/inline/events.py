@@ -417,7 +417,7 @@ class Events(InlineUnit):
                                 "text": "🏌️ Run command",
                                 "switch_inline_query_current_chat": f"{name} ",
                             }
-                        )
+                        ),
                     ),
                     f"🎹 <code>@{self.bot_username} {utils.escape_html(name)}</code> -"
                     f" {utils.escape_html(doc)}\n",
