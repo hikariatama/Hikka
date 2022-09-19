@@ -135,11 +135,7 @@ class HelpMod(loader.Module):
             await utils.answer(message, self.strings("no_mod"))
             return
 
-        mods = [
-            i.strings["name"]
-            for i in self.allmodules.modules
-            if hasattr(i, "strings") and "name" in i.strings
-        ]
+        mods = [i.__class__.__name__ for i in self.allmodules.modules]
 
         modules = list(filter(lambda module: module in mods, modules))
         currently_hidden = self.get("hide", [])
@@ -269,7 +265,18 @@ class HelpMod(loader.Module):
 
         hidden = self.get("hide", [])
 
-        reply = self.strings("all_header").format(count, 0 if force else len(hidden))
+        reply = self.strings("all_header").format(
+            count,
+            0
+            if force
+            else len(
+                [
+                    module
+                    for module in self.allmodules.modules
+                    if module.__class__.__name__ in hidden
+                ]
+            ),
+        )
         shown_warn = False
 
         plain_ = []
@@ -282,7 +289,7 @@ class HelpMod(loader.Module):
                 logger.debug("Module %s is not inited yet", mod.__class__.__name__)
                 continue
 
-            if mod.strings["name"] in self.get("hide", []) and not force:
+            if mod.__class__.__name__ in self.get("hide", []) and not force:
                 continue
 
             tmp = ""

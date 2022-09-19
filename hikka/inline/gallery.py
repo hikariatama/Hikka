@@ -332,7 +332,8 @@ class Gallery(InlineUnit):
         return InlineMessage(self, unit_id, self._units[unit_id]["inline_message_id"])
 
     async def _call_photo(self, callback: callable) -> typing.Union[str, bool]:
-        """Parses photo url from `callback`. Returns url on success, otherwise `False`"""
+        """Parses photo url from `callback`. Returns url on success, otherwise `False`
+        """
         if isinstance(callback, str):
             photo_url = callback
         elif isinstance(callback, list):

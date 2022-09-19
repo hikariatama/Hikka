@@ -33,8 +33,13 @@ from .types import (
 logger = logging.getLogger(__name__)
 
 
-def hashable(value):
-    """Determine whether `value` can be hashed."""
+def hashable(value: typing.Any) -> bool:
+    """
+    Determine whether `value` can be hashed.
+
+    This is a copy of `collections.abc.Hashable` from Python 3.8.
+    """
+
     try:
         hash(value)
     except TypeError:
@@ -54,6 +59,8 @@ class CustomTelegramClient(TelegramClient):
         asyncio.ensure_future(self.cleaner())
 
     async def force_get_entity(self, *args, **kwargs):
+        """Forcefully makes a request to Telegram to get the entity."""
+
         return await self.get_entity(*args, force=True, **kwargs)
 
     async def get_entity(
@@ -62,6 +69,15 @@ class CustomTelegramClient(TelegramClient):
         exp: int = 5 * 60,
         force: bool = False,
     ):
+        """
+        Gets the entity and cache it
+
+        :param entity: Entity to fetch
+        :param exp: Expiration time of the cache record and maximum time of already cached record
+        :param force: Whether to force refresh the cache (make API request)
+        :return: :obj:`Entity`
+        """
+
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
         _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # skipcq
@@ -129,6 +145,16 @@ class CustomTelegramClient(TelegramClient):
         exp: int = 5 * 60,
         force: bool = False,
     ):
+        """
+        Gets the permissions of the user in the entity and cache it
+
+        :param entity: Entity to fetch
+        :param user: User to fetch
+        :param exp: Expiration time of the cache record and maximum time of already cached record
+        :param force: Whether to force refresh the cache (make API request)
+        :return: :obj:`ChatPermissions`
+        """
+
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
         _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # skipcq
@@ -237,6 +263,7 @@ class CustomTelegramClient(TelegramClient):
     ) -> ChannelFull:
         """
         Gets the FullChannelRequest and cache it
+
         :param entity: Channel to fetch ChannelFull of
         :param exp: Expiration time of the cache record and maximum time of already cached record
         :param force: Whether to force refresh the cache (make API request)
@@ -286,6 +313,7 @@ class CustomTelegramClient(TelegramClient):
     ) -> UserFull:
         """
         Gets the FullUserRequest and cache it
+
         :param entity: User to fetch UserFull of
         :param exp: Expiration time of the cache record and maximum time of already cached record
         :param force: Whether to force refresh the cache (make API request)
@@ -334,6 +362,16 @@ class CustomTelegramClient(TelegramClient):
         ordered: bool = False,
         flood_sleep_threshold: typing.Optional[int] = None,
     ):
+        """
+        Calls the given request and handles user-side forbidden constructors
+
+        :param sender: Sender to use
+        :param request: Request to send
+        :param ordered: Whether to send the request ordered
+        :param flood_sleep_threshold: Flood sleep threshold
+        :return: The result of the request
+        """
+
         # ⚠️⚠️  WARNING!  ⚠️⚠️
         # If you are a module developer, and you'll try to bypass this protection to
         # force user join your channel, you will be added to SCAM modules
@@ -395,13 +433,26 @@ class CustomTelegramClient(TelegramClient):
         )
 
     def forbid_constructor(self, constructor: int):
+        """
+        Forbids the given constructor to be called
+
+        :param constructor: Constructor id to forbid
+        """
         self.__forbidden_constructors.extend([constructor])
         self.__forbidden_constructors = list(set(self.__forbidden_constructors))
 
     def forbid_constructors(self, constructors: list):
+        """
+        Forbids the given constructors to be called.
+        All existing forbidden constructors will be removed
+
+        :param constructors: Constructor ids to forbid
+        """
         self.__forbidden_constructors = list(set(constructors))
 
     async def cleaner(self):
+        """Cleans outdated cache records"""
+
         while True:
             for record, record_data in self._hikka_entity_cache.copy().items():
                 if record_data.expired():

@@ -257,7 +257,13 @@ class Utils(InlineUnit):
         return reply_markup
 
     def sanitise_text(self, text: str) -> str:
-        """Replaces all animated emojis in text with normal ones, bc aiogram doesn't support them"""
+        """
+        Replaces all animated emojis in text with normal ones,
+        bc aiogram doesn't support them
+
+        :param text: text to sanitise
+        :return: sanitised text
+        """
         return re.sub(r"</?emoji.*?>", "", text)
 
     async def _edit_unit(
@@ -522,7 +528,8 @@ class Utils(InlineUnit):
         chat_id: typing.Optional[int] = None,
         message_id: typing.Optional[int] = None,
     ) -> bool:
-        """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
+        """Params `self`, `unit_id` are for internal use only, do not try to pass them
+        """
         if getattr(getattr(call, "message", None), "chat", None):
             try:
                 await self.bot.delete_message(
@@ -558,7 +565,8 @@ class Utils(InlineUnit):
         return True
 
     async def _unload_unit(self, unit_id: str) -> bool:
-        """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
+        """Params `self`, `unit_id` are for internal use only, do not try to pass them
+        """
         try:
             if "on_unload" in self._units[unit_id] and callable(
                 self._units[unit_id]["on_unload"]

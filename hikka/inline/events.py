@@ -114,10 +114,10 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultArticle(
                             id=utils.rand(20),
-                            title=res["title"],
-                            description=res.get("description"),
+                            title=self.sanitise_text(res["title"]),
+                            description=self.sanitise_text(res.get("description")),
                             input_message_content=InputTextMessageContent(
-                                res["message"],
+                                self.sanitise_text(res["message"]),
                                 "HTML",
                                 disable_web_page_preview=True,
                             ),
@@ -131,9 +131,9 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultPhoto(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            description=res.get("description"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            description=self.sanitise_text(res.get("description")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["photo"]),
                             photo_url=res["photo"],
@@ -144,8 +144,8 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultGif(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["gif"]),
                             gif_url=res["gif"],
@@ -156,9 +156,9 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultVideo(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            description=res.get("description"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            description=self.sanitise_text(res.get("description")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["video"]),
                             video_url=res["video"],
@@ -170,9 +170,9 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultDocument(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            description=res.get("description"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            description=self.sanitise_text(res.get("description")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["file"]),
                             document_url=res["file"],
@@ -356,7 +356,6 @@ class Events(InlineUnit):
                     + self._client.dispatcher.security._owner
                     + unit.get("always_allow", [])
                 ):
-
                     query = query.split(maxsplit=1)[1] if len(query.split()) > 1 else ""
 
                     try:
@@ -419,8 +418,10 @@ class Events(InlineUnit):
                             }
                         ),
                     ),
-                    f"🎹 <code>@{self.bot_username} {utils.escape_html(name)}</code> -"
-                    f" {utils.escape_html(doc)}\n",
+                    (
+                        f"🎹 <code>@{self.bot_username} {utils.escape_html(name)}</code>"
+                        f" - {utils.escape_html(doc)}\n"
+                    ),
                 )
             ]
 

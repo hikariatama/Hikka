@@ -7,7 +7,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import time
-from typing import List, Union
+import typing
 
 from telethon.tl.types import Message, PeerUser, User
 from telethon.utils import get_display_name
@@ -436,7 +436,7 @@ class HikkaSecurityMod(loader.Module):
         self,
         command: callable,
         is_inline: bool = False,
-    ) -> List[List[dict]]:
+    ) -> typing.List[typing.List[dict]]:
         perms = self._get_current_perms(command, is_inline)
         return (
             utils.chunks(
@@ -483,7 +483,9 @@ class HikkaSecurityMod(loader.Module):
             ]
         )
 
-    def _build_markup_global(self, is_inline: bool = False) -> List[List[dict]]:
+    def _build_markup_global(
+        self, is_inline: bool = False
+    ) -> typing.List[typing.List[dict]]:
         perms = self._get_current_bm(is_inline)
         return utils.chunks(
             [
@@ -630,7 +632,7 @@ class HikkaSecurityMod(loader.Module):
 
     async def _add_to_group(
         self,
-        message: Union[Message, InlineCall],  # noqa: F821
+        message: typing.Union[Message, InlineCall],
         group: str,
         confirmed: bool = False,
         user: int = None,
@@ -900,7 +902,7 @@ class HikkaSecurityMod(loader.Module):
 
     async def _confirm(
         self,
-        obj: Union[Message, InlineMessage],
+        obj: typing.Union[Message, InlineMessage],
         target_type: str,
         target: EntityLike,
         rule: str,
@@ -1121,7 +1123,8 @@ class HikkaSecurityMod(loader.Module):
         )
     )
     async def tsec(self, message: Message):
-        """<"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule"""
+        """<"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule
+        """
         args = utils.get_args(message)
         if not args:
             if (

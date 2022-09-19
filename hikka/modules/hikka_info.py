@@ -28,8 +28,21 @@ class HikkaInfoMod(loader.Module):
         "branch": "Branch",
         "send_info": "Send userbot info",
         "description": "ℹ This will not compromise any sensitive info",
-        "up-to-date": "<b>😌 Up-to-date</b>",
-        "update_required": "<b>😕 Update required </b><code>.update</code>",
+        "up-to-date": (
+            "<emoji document_id=5370699111492229743>😌</emoji><b> Up-to-date</b>"
+        ),
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji><b> Update required"
+            " </b><code>.update</code>"
+        ),
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>You need to specify"
+            " text to change info to</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Info changed"
+            " successfully</b>"
+        ),
         "_cfg_cst_msg": (
             "Custom message for info. May contain {me}, {version}, {build}, {prefix},"
             " {platform}, {upd}, {uptime}, {branch} keywords"
@@ -48,8 +61,13 @@ class HikkaInfoMod(loader.Module):
         "send_info": "Отправить информацию о юзерботе",
         "description": "ℹ Это не раскроет никакой личной информации",
         "_ihandle_doc_info": "Отправить информацию о юзерботе",
-        "up-to-date": "<b>😌 Актуальная версия</b>",
-        "update_required": "<b>😕 Требуется обновление </b><code>.update</code>",
+        "up-to-date": (
+            "<emoji document_id=5370699111492229743>😌</emoji><b> Актуальная версия</b>"
+        ),
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji><b> Требуется обновление"
+            " </b><code>.update</code>"
+        ),
         "_cfg_cst_msg": (
             "Кастомный текст сообщения в info. Может содержать ключевые слова {me},"
             " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}, {branch}"
@@ -58,6 +76,14 @@ class HikkaInfoMod(loader.Module):
             "Кастомная кнопка в сообщении в info. Оставь пустым, чтобы убрать кнопку"
         ),
         "_cfg_banner": "Ссылка на баннер-картинку",
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>Тебе нужно указать"
+            " текст для кастомного инфо</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Текст инфо успешно"
+            " изменен</b>"
+        ),
     }
 
     def __init__(self):
@@ -86,7 +112,7 @@ class HikkaInfoMod(loader.Module):
     async def client_ready(self):
         self._me = await self._client.get_me()
 
-    def _render_info(self) -> str:
+    def _render_info(self, inline: bool) -> str:
         try:
             repo = git.Repo(search_parent_directories=True)
             diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
@@ -123,14 +149,28 @@ class HikkaInfoMod(loader.Module):
             )
             if self.config["custom_message"]
             else (
-                "<b>🌘 Hikka</b>\n"
-                f'<b>🤴 {self.strings("owner")}: </b>{me}\n\n'
-                f"<b>🔮 {self.strings('version')}: </b>{_version} {build}\n"
-                f"<b>🌳 {self.strings('branch')}: </b><code>{version.branch}</code>\n"
+                "<b>{}</b>\n\n"
+                f'<b>{{}} {self.strings("owner")}: </b>{me}\n\n'
+                f"<b>{{}} {self.strings('version')}: </b>{_version} {build}\n"
+                f"<b>{{}} {self.strings('branch')}: </b><code>{version.branch}</code>\n"
                 f"{upd}\n\n"
-                f"<b>📼 {self.strings('prefix')}: </b>{prefix}\n"
-                f"<b>⌚️ {self.strings('uptime')}: </b>{utils.formatted_uptime()}\n"
+                f"<b>{{}} {self.strings('prefix')}: </b>{prefix}\n"
+                f"<b>{{}} {self.strings('uptime')}: </b>{utils.formatted_uptime()}\n"
                 f"<b>{platform}</b>\n"
+            ).format(
+                *map(
+                    lambda x: utils.remove_html(x) if inline else x,
+                    (
+                        utils.get_platform_emoji()
+                        if self._client.hikka_me.premium and not inline
+                        else "🌘 Hikka",
+                        "<emoji document_id=5373141891321699086>😎</emoji>",
+                        "<emoji document_id=5469741319330996757>💫</emoji>",
+                        "<emoji document_id=5449918202718985124>🌳</emoji>",
+                        "<emoji document_id=5472111548572900003>⌨️</emoji>",
+                        "<emoji document_id=5451646226975955576>⌛️</emoji>",
+                    ),
+                )
             )
         )
 
@@ -154,7 +194,11 @@ class HikkaInfoMod(loader.Module):
         return {
             "title": self.strings("send_info"),
             "description": self.strings("description"),
-            "message": self._render_info(),
+            **(
+                {"photo": self.config["banner_url"], "caption": self._render_info(True)}
+                if self.config["banner_url"]
+                else {"message": self._render_info(True)}
+            ),
             "thumb": (
                 "https://github.com/hikariatama/Hikka/raw/master/assets/hikka_pfp.png"
             ),
@@ -164,16 +208,30 @@ class HikkaInfoMod(loader.Module):
     @loader.unrestricted
     async def infocmd(self, message: Message):
         """Send userbot info"""
-        await self.inline.form(
-            message=message,
-            text=self._render_info(),
-            reply_markup=self._get_mark(),
-            **(
-                {"photo": self.config["banner_url"]}
-                if self.config["banner_url"]
-                else {}
-            ),
-        )
+
+        if self.config["custom_button"]:
+            await self.inline.form(
+                message=message,
+                text=self._render_info(False),
+                reply_markup=self._get_mark(),
+                **(
+                    {"photo": self.config["banner_url"]}
+                    if self.config["banner_url"]
+                    else {}
+                ),
+            )
+        else:
+            try:
+                await self._client.send_file(
+                    message.peer_id,
+                    self.config["banner_url"],
+                    caption=self._render_info(False),
+                )
+            except Exception:
+                await utils.answer(message, self._render_info(False))
+            else:
+                if message.out:
+                    await message.delete()
 
     @loader.unrestricted
     async def hikkainfocmd(self, message: Message):
@@ -200,3 +258,13 @@ class HikkaInfoMod(loader.Module):
                 ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
             ),
         )
+
+    @loader.command(ru_doc="<текст> - Изменить текст в .info")
+    async def setinfo(self, message: Message):
+        """<text> - Change text in .info"""
+        args = utils.get_args_html(message)
+        if not args:
+            return await utils.answer(message, self.strings("setinfo_no_args"))
+
+        self.config["custom_message"] = args
+        await utils.answer(message, self.strings("setinfo_success"))

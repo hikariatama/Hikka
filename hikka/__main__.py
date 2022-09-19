@@ -24,11 +24,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import atexit
 import getpass
 import os
 import subprocess
 import sys
+
+from ._internal import restart
 
 if (
     getpass.getuser() == "root"
@@ -67,34 +68,6 @@ def deps(error):
     )
 
     restart()
-
-
-def restart():
-    if "HIKKA_DO_NOT_RESTART" in os.environ:
-        print("Got in a loop, exiting")
-        sys.exit(0)
-
-    print("🔄 Restarting...")
-
-    atexit.register(
-        lambda: os.execl(
-            sys.executable,
-            sys.executable,
-            "-m",
-            os.path.relpath(
-                os.path.abspath(
-                    os.path.dirname(
-                        os.path.abspath(__file__),
-                    ),
-                ),
-            ),
-            *(sys.argv[1:]),
-        )
-    )
-
-    os.environ["HIKKA_DO_NOT_RESTART"] = "1"
-
-    sys.exit(0)
 
 
 if sys.version_info < (3, 8, 0):

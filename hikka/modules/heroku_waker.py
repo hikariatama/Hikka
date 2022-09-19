@@ -16,7 +16,10 @@ except ImportError as e:
 
 from telethon.tl.types import Message
 
-from .. import loader, main, utils, heroku
+from .. import loader, main, utils
+
+if "DYNO" in os.environ:
+    from .. import heroku
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest

@@ -42,7 +42,11 @@ from telethon.tl.functions.messages import (
 from telethon.tl.types import DialogFilter, Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
-from .. import loader, utils, heroku, main, version
+from .. import loader, utils, main, version
+
+if "DYNO" in os.environ:
+    from .. import heroku
+
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)

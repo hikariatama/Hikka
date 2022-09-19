@@ -12,7 +12,7 @@ import os
 import random
 import time
 from io import BytesIO
-from typing import Union
+import typing
 
 from telethon.tl.functions.channels import EditAdminRequest, InviteToChannelRequest
 from telethon.tl.types import ChatAdminRights, Message
@@ -297,9 +297,9 @@ class TestMod(loader.Module):
     @loader.command(ru_doc="<уровень> - Показать логи")
     async def logs(
         self,
-        message: Union[Message, InlineCall],
+        message: typing.Union[Message, InlineCall],
         force: bool = False,
-        lvl: Union[int, None] = None,
+        lvl: typing.Union[int, None] = None,
     ):
         """<level> - Dump logs"""
         if not isinstance(lvl, int):

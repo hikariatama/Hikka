@@ -155,6 +155,8 @@ def _sec(func: callable, flags: int) -> callable:
 
 
 class SecurityManager:
+    """Manages command execution security policy"""
+
     def __init__(self, client: CustomTelegramClient, db: Database):
         self._client = client
         self._db = db
@@ -179,6 +181,11 @@ class SecurityManager:
         self.support = self._support
 
     def _reload_rights(self):
+        """
+        Internal method to ensure that account owner is always in the owner list
+        and to clear out outdated tsec rules
+        """
+
         if self._client.tg_id not in self._owner:
             self._owner.append(self._client.tg_id)
 
@@ -197,6 +204,16 @@ class SecurityManager:
         rule: str,
         duration: int,
     ):
+        """
+        Adds a targeted security rule
+
+        :param target_type: "user" or "chat"
+        :param target: target entity
+        :param rule: rule name
+        :param duration: rule duration in seconds
+        :return: None
+        """
+
         if target_type not in {"chat", "user"}:
             raise ValueError(f"Invalid target_type: {target_type}")
 
@@ -218,6 +235,14 @@ class SecurityManager:
         )
 
     def remove_rules(self, target_type: str, target_id: int) -> bool:
+        """
+        Removes all targeted security rules for the given target
+
+        :param target_type: "user" or "chat"
+        :param target_id: target entity ID
+        :return: True if any rules were removed
+        """
+
         any_ = False
 
         if target_type == "user":
@@ -234,6 +259,13 @@ class SecurityManager:
         return any_
 
     def get_flags(self, func: typing.Union[callable, int]) -> int:
+        """
+        Gets the security flags for the given function
+
+        :param func: function or flags
+        :return: security flags
+        """
+
         if isinstance(func, int):
             config = func
         else:
@@ -252,13 +284,21 @@ class SecurityManager:
 
         return config & self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS)
 
-    async def _check(
+    async def check(
         self,
         message: typing.Optional[Message],
         func: typing.Union[callable, int],
         user_id: typing.Optional[int] = None,
     ) -> bool:
-        """Checks if message sender is permitted to execute certain function"""
+        """
+        Checks if message sender is permitted to execute certain function
+
+        :param message: Message to check or None if you manually pass user_id
+        :param func: function or flags
+        :param user_id: user ID
+        :return: True if permitted, False otherwise
+        """
+
         self._reload_rights()
 
         if not (config := self.get_flags(func)):
@@ -463,4 +503,4 @@ class SecurityManager:
 
         return False
 
-    check = _check
+    _check = check  # Legacy

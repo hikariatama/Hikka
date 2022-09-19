@@ -9,7 +9,7 @@
 import ast
 import functools
 from math import ceil
-from typing import Union, Any
+import typing
 
 from telethon.tl.types import Message
 
@@ -156,7 +156,7 @@ class HikkaConfigMod(loader.Module):
     _num_rows = 5
 
     @staticmethod
-    def prep_value(value: Any) -> Any:
+    def prep_value(value: typing.Any) -> typing.Any:
         if isinstance(value, str):
             return f"</b><code>{utils.escape_html(value.strip())}</code><b>"
 
@@ -171,7 +171,7 @@ class HikkaConfigMod(loader.Module):
 
         return f"</b><code>{utils.escape_html(value)}</code><b>"
 
-    def hide_value(self, value: Any) -> str:
+    def hide_value(self, value: typing.Any) -> str:
         if isinstance(value, list) and value:
             return self.prep_value(["*" * len(str(i)) for i in value])
 
@@ -184,7 +184,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = query
@@ -231,7 +231,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         mod_instance = self.lookup(mod)
         mod_instance.config[option] = mod_instance.config.getdef(option)
@@ -267,7 +267,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         value: bool,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = value
@@ -326,7 +326,7 @@ class HikkaConfigMod(loader.Module):
         self,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ) -> list:
         return [
             [
@@ -383,7 +383,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             try:
@@ -443,7 +443,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             try:
@@ -513,7 +513,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ) -> list:
         return [
             [
@@ -579,7 +579,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         value: bool,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = value
@@ -628,7 +628,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         value: bool,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             if value in self.lookup(mod).config._config[option].value:
@@ -657,7 +657,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ) -> list:
         possible_values = list(
             self.lookup(mod)
@@ -724,7 +724,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ) -> list:
         possible_values = list(
             self.lookup(mod)
@@ -792,7 +792,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         config_opt: str,
         force_hidden: bool = False,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         module = self.lookup(mod)
         args = [
@@ -953,7 +953,7 @@ class HikkaConfigMod(loader.Module):
         self,
         call: InlineCall,
         mod: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         btns = [
             {
@@ -1000,7 +1000,7 @@ class HikkaConfigMod(loader.Module):
             ],
         )
 
-    async def inline__choose_category(self, call: Union[Message, InlineCall]):
+    async def inline__choose_category(self, call: typing.Union[Message, InlineCall]):
         await utils.answer(
             call,
             self.strings("choose_core"),
@@ -1038,7 +1038,7 @@ class HikkaConfigMod(loader.Module):
         self,
         call: InlineCall,
         page: int = 0,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         if isinstance(obj_type, bool):
             to_config = [
@@ -1127,7 +1127,8 @@ class HikkaConfigMod(loader.Module):
         )
     )
     async def fconfig(self, message: Message):
-        """<module_name> <property_name> <config_value> - set the config value for the module"""
+        """<module_name> <property_name> <config_value> - set the config value for the module
+        """
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:

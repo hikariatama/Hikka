@@ -52,7 +52,7 @@ from telethon.network.connection import (
 )
 from telethon.sessions import SQLiteSession, StringSession, MemorySession
 
-from . import database, loader, utils, heroku, version
+from . import database, loader, utils, version
 from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
@@ -82,6 +82,8 @@ except Exception:
     pass
 
 if "DYNO" in os.environ:
+    from . import heroku
+
     heroku.init()
 
 

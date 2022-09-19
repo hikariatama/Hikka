@@ -29,7 +29,7 @@ def publish(
     key: typing.Optional[str] = None,
     api_token: typing.Optional[str] = None,
     create_new: bool = True,
-) -> "heroku3.models.app.App":
+) -> heroku3.models.app.App:
     """Push to heroku"""
     logging.debug("Configuring heroku...")
 
@@ -77,7 +77,7 @@ def get_app(
     key: typing.Optional[str] = None,
     api_token: typing.Optional[namedtuple] = None,
     create_new: bool = True,
-) -> "typing.Tuple[heroku3.models.app.App, heroku3.models.config.ConfigVars]":
+) -> typing.Tuple[heroku3.models.app.App, heroku3.models.app.ConfigVars]:
     if key is None:
         key = os.environ.get("heroku_api_token")
 

@@ -1120,7 +1120,8 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def invoke(self, message: Message):
-        """<method> [params] - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER"""
+        """<method> [params] - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER
+        """
         args = utils.get_args_raw(message)
         if not args:
             await utils.answer(message, self.strings("no_args"))

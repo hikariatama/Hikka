@@ -34,7 +34,8 @@ from . import utils
 
 
 def _safe_input(*args, **kwargs):
-    """Try to invoke input(*), print an error message if an EOFError or OSError occurs)"""
+    """Try to invoke input(*), print an error message if an EOFError or OSError occurs)
+    """
     try:
         return input(*args, **kwargs)
     except (EOFError, OSError):

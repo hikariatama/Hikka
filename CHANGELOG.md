@@ -26,6 +26,8 @@
 - Add switch to mute @BotFather only once in hikka inline
 - Add ability to forbid certain tl methods using `.config APIRatelimiter`
 - Add new web interface design
+- Add ability to set custom emojis in `.info` using command `.setinfo`. In order to use it, remove buttons using config
+- Patch internal help module with bugfixes
 - Clean type-hint mess, document utils and other methods, which were undocumented
 - Remove redundant non-working code from configurator
 - Remove redundant useless params `--hosting`, `--no-nickname`, `--token`, `--web-only`, `--docker-deps-internal`

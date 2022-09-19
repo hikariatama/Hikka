@@ -39,7 +39,8 @@ import time
 import uuid
 from collections import ChainMap
 from importlib.machinery import ModuleSpec
-from typing import Optional, Union
+import typing
+
 from urllib.parse import urlparse
 
 import requests
@@ -605,7 +606,7 @@ class LoaderMod(loader.Module):
 
     async def get_repo_list(
         self,
-        preset: Optional[str] = None,
+        preset: typing.Optional[str] = None,
         only_primary: bool = False,
     ) -> dict:
         if preset is None or preset == "none":
@@ -633,7 +634,7 @@ class LoaderMod(loader.Module):
         del links[self.config["MODULES_REPO"]]
         return main_repo + converter(links)
 
-    async def _find_link(self, module_name: str) -> Union[str, bool]:
+    async def _find_link(self, module_name: str) -> typing.Union[str, bool]:
         links = await self.get_links_list()
         return next(
             (
@@ -647,7 +648,7 @@ class LoaderMod(loader.Module):
     async def download_and_install(
         self,
         module_name: str,
-        message: Optional[Message] = None,
+        message: typing.Optional[Message] = None,
     ):
         try:
             blob_link = False
@@ -837,7 +838,7 @@ class LoaderMod(loader.Module):
         self,
         doc: str,
         message: Message,
-        name: Optional[str] = None,
+        name: typing.Optional[str] = None,
         origin: str = "<string>",
         did_requirements: bool = False,
         save_fs: bool = False,

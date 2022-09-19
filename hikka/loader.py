@@ -117,14 +117,12 @@ def replace_all_refs(replace_from: typing.Any, replace_to: typing.Any) -> typing
 
     hit = False
     for referrer in _gc.get_referrers(replace_from):
-
         # FRAMES -- PASS THEM UP
         if isinstance(referrer, _types.FrameType):
             continue
 
         # DICTS
         if isinstance(referrer, dict):
-
             cls = None
 
             # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
@@ -405,7 +403,8 @@ tds = translatable_docstring  # Shorter name for modules to use
 
 
 def ratelimit(func: callable):
-    """Decorator that causes ratelimiting for this command to be enforced more strictly"""
+    """Decorator that causes ratelimiting for this command to be enforced more strictly
+    """
     func.ratelimit = True
     return func
 

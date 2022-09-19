@@ -77,8 +77,11 @@ class Web(root.Web):
         await callback(data.decode("utf-8"))
 
     async def _read_stream(
-        self, callback: callable, stream: typing.BinaryIO, delay: int
-    ):
+        self,
+        callback: callable,
+        stream: typing.BinaryIO,
+        delay: int,
+    ) -> None:
         last_task = None
         for getline in iter(stream.readline, ""):
             data_chunk = await getline
@@ -118,7 +121,7 @@ class Web(root.Web):
         self._tunnel_url = url
         asyncio.ensure_future(self._reopen_tunnel())
 
-    async def _process_stream(self, stdout_line: str):
+    async def _process_stream(self, stdout_line: str) -> None:
         if self._stream_processed.is_set():
             return
 

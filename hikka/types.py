@@ -106,7 +106,9 @@ class Module:
         if name in {"hikka_watchers", "watchers"}:
             return get_watchers(self)
 
-        raise AttributeError(f"Module has no attribute {name}")
+        raise AttributeError(
+            f"Module {self.__class__.__name__} has no attribute {name}"
+        )
 
 
 class Library:

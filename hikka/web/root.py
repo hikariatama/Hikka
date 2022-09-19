@@ -45,24 +45,18 @@ import telethon
 from telethon.errors.rpcerrorlist import YouBlockedUserError, FloodWaitError
 from telethon.tl.functions.contacts import UnblockRequest
 
-from .. import utils, main, database, heroku
+from .. import utils, main, database
 from ..tl_cache import CustomTelegramClient
+from .._internal import restart
+
+if "DYNO" in os.environ:
+    from .. import heroku
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
     if "OKTETO" not in os.environ and "DOCKER" not in os.environ
     else "/data"
 )
-
-
-def restart(*argv):
-    os.execl(
-        sys.executable,
-        sys.executable,
-        "-m",
-        os.path.relpath(utils.get_base_dir()),
-        *argv,
-    )
 
 
 class Web:

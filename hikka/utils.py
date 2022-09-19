@@ -179,9 +179,13 @@ def get_args_html(message: Message) -> str:
 
     raw_text = parser._add_surrogate(raw_text)
 
-    command = raw_text[
-        raw_text.index(prefix) : raw_text.index(" ", raw_text.index(prefix) + 1)
-    ]
+    try:
+        command = raw_text[
+            raw_text.index(prefix) : raw_text.index(" ", raw_text.index(prefix) + 1)
+        ]
+    except ValueError:
+        return ""
+
     command_len = len(command) + 1
 
     return parser.unparse(

@@ -11,7 +11,7 @@ import itertools
 import sys
 from types import ModuleType
 import os
-from typing import Any
+import typing
 
 import telethon
 from meval import meval
@@ -161,7 +161,7 @@ class PythonMod(loader.Module):
             },
         }
 
-    def get_sub(self, obj: Any, _depth: int = 1) -> dict:
+    def get_sub(self, obj: typing.Any, _depth: int = 1) -> dict:
         """Get all callable capitalised objects in an object recursively, ignoring _*"""
         return {
             **dict(
