@@ -103,7 +103,7 @@ class HikkaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "banner_url",
-                "https://github.com/hikariatama/assets/raw/master/hikka_banner.png",
+                "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
                 lambda: self.strings("_cfg_banner"),
                 validator=loader.validators.Link(),
             ),
@@ -111,6 +111,15 @@ class HikkaInfoMod(loader.Module):
 
     async def client_ready(self):
         self._me = await self._client.get_me()
+
+        # Legacy migration
+        if (
+            self.config["banner_url"]
+            == "https://github.com/hikariatama/assets/raw/master/hikka_banner.png"
+        ):
+            self.config[
+                "banner_url"
+            ] = "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4"
 
     def _render_info(self, inline: bool) -> str:
         try:
@@ -212,7 +221,7 @@ class HikkaInfoMod(loader.Module):
         if self.config["custom_button"]:
             await self.inline.form(
                 message=message,
-                text=self._render_info(False),
+                text=self._render_info(True),
                 reply_markup=self._get_mark(),
                 **(
                     {"photo": self.config["banner_url"]}
