@@ -81,12 +81,6 @@ try:
 except Exception:
     pass
 
-if "DYNO" in os.environ:
-    from . import heroku
-
-    heroku.init()
-
-
 def run_config(data_root: str):
     """Load configurator.py"""
     from . import configurator
@@ -139,12 +133,12 @@ def save_config_key(key: str, value: str) -> bool:
 def gen_port() -> int:
     """
     Generates random free port in case of VDS, and
-    8080 in case of Okteto and Heroku
+    8080 in case of Okteto
     In case of Docker, also return 8080, as it's already
     exposed by default
     :returns: Integer value of generated port
     """
-    if any(trigger in os.environ for trigger in {"OKTETO", "DOCKER", "DYNO"}):
+    if any(trigger in os.environ for trigger in {"OKTETO", "DOCKER"}):
         return 8080
 
     # But for own server we generate new free port, and assign to it
@@ -308,23 +302,18 @@ class Hikka:
     def _read_sessions(self):
         """Gets sessions from environment and data directory"""
         self.sessions = []
-        if "DYNO" not in os.environ:
-            self.sessions += [
-                SQLiteSession(
-                    os.path.join(
-                        self.arguments.data_root or BASE_DIR,
-                        session.rsplit(".session", maxsplit=1)[0],
-                    )
+        self.sessions += [
+            SQLiteSession(
+                os.path.join(
+                    self.arguments.data_root or BASE_DIR,
+                    session.rsplit(".session", maxsplit=1)[0],
                 )
-                for session in filter(
-                    lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                    os.listdir(self.arguments.data_root or BASE_DIR),
-                )
-            ]
-
-        for key, value in os.environ.items():
-            if key.startswith("hikka_session"):
-                self.sessions += [StringSession(value)]
+            )
+            for session in filter(
+                lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                os.listdir(self.arguments.data_root or BASE_DIR),
+            )
+        ]
 
     def _get_api_token(self):
         """Get API Token from disk or environment"""
@@ -388,9 +377,7 @@ class Hikka:
 
     async def save_client_session(
         self,
-        client: CustomTelegramClient,
-        heroku_config: "typing.Optional[ConfigVars]" = None,  # type: ignore
-        heroku_app: "typing.Optional[App]" = None,  # type: ignore
+        client: CustomTelegramClient
     ):
         if hasattr(client, "_tg_id"):
             telegram_id = client._tg_id
@@ -401,35 +388,22 @@ class Hikka:
             client.tg_id = telegram_id
             client.hikka_me = me
 
-        if "DYNO" in os.environ:
-            session = StringSession()
-        else:
-            session = SQLiteSession(
-                os.path.join(
-                    self.arguments.data_root or BASE_DIR,
-                    f"hikka-{telegram_id}",
-                )
+        session = SQLiteSession(
+            os.path.join(
+                self.arguments.data_root or BASE_DIR,
+                f"hikka-{telegram_id}",
             )
+        )
 
         session.set_dc(
             client.session.dc_id,
             client.session.server_address,
             client.session.port,
         )
+
         session.auth_key = client.session.auth_key
 
-        if "DYNO" not in os.environ:
-            session.save()
-        else:
-            key = (
-                f"hikka_session_{utils.rand(6)}"
-                if "hikka_session" in heroku_config
-                else "hikka_session"
-            )
-            heroku_config[key] = session.save()
-            heroku_app.update_config(heroku_config.to_dict())
-            # Heroku will restart the app after updating config
-
+        session.save()
         client.session = session
         # Set db attribute to this client in order to save
         # custom bot nickname from web

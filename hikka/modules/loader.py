@@ -111,11 +111,6 @@ class LoaderMod(loader.Module):
             " installation failed</b>\n<b>The most common reason is that Termux doesn't"
             " support many libraries. Don't report it as bug, this can't be solved.</b>"
         ),
-        "heroku_install_failed": (
-            "♓️⚠️ <b>This module requires additional libraries to be installed, which"
-            " can't be done on Heroku. Don't report it as bug, this can't be"
-            " solved.</b>"
-        ),
         "requirements_installing": (
             "<emoji document_id=5445284980978621387>🚀</emoji><b> Installing"
             " requirements:\n\n{}</b>"
@@ -275,11 +270,6 @@ class LoaderMod(loader.Module):
             " зависимостей</b>\n<b>Наиболее часто возникает из-за того, что Termux не"
             " поддерживает многие библиотеки. Не сообщайте об этом как об ошибке, это"
             " не может быть исправлено.</b>"
-        ),
-        "heroku_install_failed": (
-            "♓️⚠️ <b>Этому модулю требуются дополнительные библиотеки, которые нельзя"
-            " установить на Heroku. Не сообщайте об этом как об ошибке, это не может"
-            " быть исправлено</b>"
         ),
         "requirements_installing": (
             "<emoji document_id=5445284980978621387>🚀</emoji><b> Устанавливаю"
@@ -749,7 +739,6 @@ class LoaderMod(loader.Module):
                 False,
             )
             and not self._db.get(main.__name__, "permanent_modules_fs", False)
-            and "DYNO" not in os.environ
         ):
             if message.file:
                 await message.edit("")
@@ -981,16 +970,10 @@ class LoaderMod(loader.Module):
 
                 if did_requirements:
                     if message is not None:
-                        if "DYNO" in os.environ:
-                            await utils.answer(
-                                message,
-                                self.strings("heroku_install_failed"),
-                            )
-                        else:
-                            await utils.answer(
-                                message,
-                                self.strings("requirements_restart").format(e.name),
-                            )
+                        await utils.answer(
+                            message,
+                            self.strings("requirements_restart").format(e.name),
+                        )
 
                     return
 
@@ -1415,9 +1398,8 @@ class LoaderMod(loader.Module):
     async def _inline__clearmodules(self, call: InlineCall):
         self.set("loaded_modules", {})
 
-        if "DYNO" not in os.environ:
-            for file in os.scandir(loader.LOADED_MODULES_DIR):
-                os.remove(file)
+        for file in os.scandir(loader.LOADED_MODULES_DIR):
+            os.remove(file)
 
         self.set("chosen_preset", "none")
 

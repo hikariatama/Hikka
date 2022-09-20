@@ -345,7 +345,7 @@ BASE_DIR = (
 
 LOADED_MODULES_DIR = os.path.join(BASE_DIR, "loaded_modules")
 
-if not os.path.isdir(LOADED_MODULES_DIR) and "DYNO" not in os.environ:
+if not os.path.isdir(LOADED_MODULES_DIR):
     os.mkdir(LOADED_MODULES_DIR, mode=0o755)
 
 
@@ -588,7 +588,7 @@ class Modules:
 
             self.secure_boot = self._db.get(__name__, "secure_boot", False)
 
-            if "DYNO" not in os.environ and not self.secure_boot:
+            if not self.secure_boot:
                 external_mods = [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
@@ -683,7 +683,7 @@ class Modules:
 
         cls_name = ret.__class__.__name__
 
-        if save_fs and "DYNO" not in os.environ:
+        if save_fs:
             path = os.path.join(
                 LOADED_MODULES_DIR,
                 f"{cls_name}_{self.client.tg_id}.py",
@@ -1454,15 +1454,14 @@ class Modules:
                 worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
-                if "DYNO" not in os.environ:
-                    path = os.path.join(
-                        LOADED_MODULES_DIR,
-                        f"{name}_{self.client.tg_id}.py",
-                    )
+                path = os.path.join(
+                    LOADED_MODULES_DIR,
+                    f"{name}_{self.client.tg_id}.py",
+                )
 
-                    if os.path.isfile(path):
-                        os.remove(path)
-                        logger.debug("Removed %s file at path %s", name, path)
+                if os.path.isfile(path):
+                    os.remove(path)
+                    logger.debug("Removed %s file at path %s", name, path)
 
                 logger.debug("Removing module %s for unload", module)
                 self.modules.remove(module)

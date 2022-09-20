@@ -22,14 +22,13 @@ from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
-if "DYNO" not in os.environ:
-    DEBUG_MODS_DIR = os.path.join(utils.get_base_dir(), "debug_modules")
+DEBUG_MODS_DIR = os.path.join(utils.get_base_dir(), "debug_modules")
 
-    if not os.path.isdir(DEBUG_MODS_DIR):
-        os.mkdir(DEBUG_MODS_DIR, mode=0o755)
+if not os.path.isdir(DEBUG_MODS_DIR):
+    os.mkdir(DEBUG_MODS_DIR, mode=0o755)
 
-    for mod in os.scandir(DEBUG_MODS_DIR):
-        os.remove(mod.path)
+for mod in os.scandir(DEBUG_MODS_DIR):
+    os.remove(mod.path)
 
 
 @loader.tds
@@ -87,7 +86,6 @@ class TestMod(loader.Module):
             " in real time</i>"
         ),
         "debugging_disabled": "✅ <b>Debugging disabled</b>",
-        "heroku_debug": "🚫 <b>Debugging is not available on Heroku</b>",
     }
 
     strings_ru = {
@@ -148,7 +146,6 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<время> - Заморозить бота на некоторое время",
         "_cmd_doc_ping": "Проверяет скорость отклика юзербота",
         "_cls_doc": "Операции, связанные с самотестированием",
-        "heroku_debug": "🚫 <b>Режим разработчика не доступен на Heroku</b>",
     }
 
     def __init__(self):
@@ -240,10 +237,6 @@ class TestMod(loader.Module):
     async def debugmod(self, message: Message):
         """[module] - For developers: Open module for debugging
         You will be able to track changes in real-time"""
-        if "DYNO" in os.environ:
-            await utils.answer(message, self.strings("heroku_debug"))
-            return
-
         args = utils.get_args_raw(message)
         instance = None
         for module in self.allmodules.modules:
@@ -539,8 +532,7 @@ class TestMod(loader.Module):
 
         self._logchat = int(f"-100{chat.id}")
 
-        if "DYNO" not in os.environ:
-            self.watchdog.start()
+        self.watchdog.start()
 
         if not is_new and any(
             participant.id == self.inline.bot_id

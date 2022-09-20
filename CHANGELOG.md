@@ -36,6 +36,7 @@
 - Rename `APIRatelimiter` -> `APILimiter`
 - Enable `joinChannel` and `importChatInvite` calls-by-external-modules blockage for all users by default
 - Change inline query placeholder to `user@hikka:~$` + legacy migration
+- Completely drop Heroku support due to legacy code, limits and removing of free tier
 
 ## 🌑 Hikka 1.4.2
 

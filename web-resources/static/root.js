@@ -85,7 +85,6 @@ function finish_login() {
             credentials: "include"
         })
         .then(() => {
-            window.expanse = true;
             $(".installation").fadeOut(2000);
             setTimeout(() => {
                 $("#installation_icon").html("");

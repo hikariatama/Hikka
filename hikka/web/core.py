@@ -163,7 +163,7 @@ class Web(root.Web):
         if all(option in os.environ for option in {"LAVHOST", "USER", "SERVER"}):
             return f"https://{os.environ['USER']}.{os.environ['SERVER']}.lavhost.ml"
 
-        if "DYNO" not in os.environ and proxy_pass:
+        if proxy_pass:
             with contextlib.suppress(Exception):
                 self._kill_tunnel()
                 url = await asyncio.wait_for(

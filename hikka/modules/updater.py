@@ -44,9 +44,6 @@ from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import loader, utils, main, version
 
-if "DYNO" in os.environ:
-    from .. import heroku
-
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -100,12 +97,6 @@ class UpdaterMod(loader.Module):
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Your {} is"
             " updating...</b>"
-        ),
-        "heroku_update": (
-            "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
-        ),
-        "heroku_update_done_nothing_to_push": (
-            "😔 <b>Update complete. Nothing to push...</b>"
         ),
         "full_success": (
             "<emoji document_id=6323332130579416910>👍</emoji> <b>Userbot is fully"
@@ -170,12 +161,6 @@ class UpdaterMod(loader.Module):
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
             " обновляется...</b>"
-        ),
-        "heroku_update": (
-            "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
-        ),
-        "heroku_update_done_nothing_to_push": (
-            "😔 <b>Обновление завершено. Ничего не изменилось, нечего обновлять...</b>"
         ),
     }
 
@@ -280,11 +265,6 @@ class UpdaterMod(loader.Module):
             os.system("lavhost restart")
             return
 
-        if "DYNO" in os.environ:
-            app = heroku.get_app(api_token=main.hikka.api_token)[0]
-            app.restart()
-            return
-
         with contextlib.suppress(Exception):
             await main.hikka.web.stop()
 
@@ -360,14 +340,8 @@ class UpdaterMod(loader.Module):
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
-                    text=self.strings("update_confirm").format(
-                        *(
-                            [current, current[:8], upcoming, upcoming[:8]]
-                            if "DYNO" not in os.environ
-                            else ["", "", "", ""]
-                        )
-                    )
-                    if upcoming != current or "DYNO" in os.environ
+                    text=self.strings("update_confirm").format(current, current[:8], upcoming, upcoming[:8])
+                    if upcoming != current
                     else self.strings("no_update"),
                     reply_markup=[
                         {
@@ -408,40 +382,6 @@ class UpdaterMod(loader.Module):
                 )
                 await self.process_restart_message(msg_obj)
                 os.system("lavhost update")
-                return
-
-            if "DYNO" in os.environ:
-                msg_obj = await utils.answer(msg_obj, self.strings("heroku_update"))
-                await self.process_restart_message(msg_obj)
-                try:
-                    nosave = "--no-save" in utils.get_args_raw(msg_obj)
-                except Exception:
-                    nosave = False
-
-                if not nosave:
-                    await self._db.remote_force_save()
-
-                app, _ = heroku.get_app(
-                    api_token=main.hikka.api_token,
-                    create_new=False,
-                )
-                repo = heroku.get_repo()
-                url = app.git_url.replace(
-                    "https://",
-                    f"https://api:{os.environ.get('heroku_api_token')}@",
-                )
-
-                if "heroku" in repo.remotes:
-                    remote = repo.remote("heroku")
-                    remote.set_url(url)
-                else:
-                    remote = repo.create_remote("heroku", url)
-
-                await utils.run_sync(remote.push, refspec="HEAD:refs/heads/master")
-                await utils.answer(
-                    msg_obj,
-                    self.strings("heroku_update_done_nothing_to_push"),
-                )
                 return
 
             with contextlib.suppress(Exception):

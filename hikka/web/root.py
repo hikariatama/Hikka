@@ -49,9 +49,6 @@ from .. import utils, main, database
 from ..tl_cache import CustomTelegramClient
 from .._internal import restart
 
-if "DYNO" in os.environ:
-    from .. import heroku
-
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
     if "OKTETO" not in os.environ and "DOCKER" not in os.environ
@@ -89,7 +86,6 @@ class Web:
             "tg_done": bool(self.client_data),
             "okteto": "OKTETO" in os.environ,
             "lavhost": "LAVHOST" in os.environ,
-            "heroku": "DYNO" in os.environ,
         }
 
     async def check_session(self, request: web.Request) -> web.Response:
@@ -192,13 +188,11 @@ class Web:
                 body="You specified invalid API ID and/or API HASH",
             )
 
-        if "DYNO" not in os.environ:
-            # On Heroku it'll be saved later
-            with open(
-                os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
-                "w",
-            ) as f:
-                f.write(api_id + "\n" + api_hash)
+        with open(
+            os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
+            "w",
+        ) as f:
+            f.write(api_id + "\n" + api_hash)
 
         self.api_token = collections.namedtuple("api_token", ("ID", "HASH"))(
             api_id,
@@ -314,14 +308,7 @@ class Web:
                     ),
                 )
 
-        # At this step we don't want `main.hikka` to "know" about our client
-        # so it doesn't create bot immediately. That's why we only save its session
-        # in case user closes web early. It will be handled on restart
-        # If user finishes login further, client will be passed to main
-        # To prevent Heroku from restarting too soon, we'll do it after setting bot
-        if "DYNO" not in os.environ:
-            await main.hikka.save_client_session(self._pending_client)
-
+        await main.hikka.save_client_session(self._pending_client)
         return web.Response()
 
     async def finish_login(self, request: web.Request) -> web.Response:
@@ -330,18 +317,6 @@ class Web:
 
         if not self._pending_client:
             return web.Response(status=400)
-
-        if "DYNO" in os.environ:
-            app, config = heroku.get_app()
-            config["api_id"] = self.api_token.ID
-            config["api_hash"] = self.api_token.HASH
-            await main.hikka.save_client_session(
-                self._pending_client,
-                heroku_config=config,
-                heroku_app=app,
-            )
-            # We don't care what happens next, bc Heroku will restart anyway
-            return
 
         first_session = not bool(main.hikka.clients)
 

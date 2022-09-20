@@ -68,16 +68,6 @@ if "OKTETO" in os.environ:
         " @WebpageBot. Не блокируй его."
     )
 
-if "DYNO" in os.environ:
-    TEXT += (
-        "♓️ <b>Your userbot is installed on Heroku</b>. You will get notifications from"
-        " @WebpageBot. Do not block him."
-    )
-    TEXT_RU += (
-        "♓️ <b>Твой юзербот установлен на Heroku</b>. Ты будешь получать уведомления от"
-        " @WebpageBot. Не блокируй его."
-    )
-
 if "RAILWAY" in os.environ:
     TEXT += (
         "🚂 <b>Your userbot is installed on Railway</b>. This platform has only <b>500"

@@ -21,7 +21,9 @@
 {% endblock %}
 
 {% block after %}
-<div class="bg"><div class="bg_inner"></div></div>
+<div class="bg">
+  <div class="bg_inner"></div>
+</div>
 <div class="blur auth vert_center">
   <div id="tg_icon"></div>
   <div class="waiting_for_auth">Waiting for permission...</div>
@@ -32,11 +34,10 @@
     <div id="installation_icon"></div>
     <div class="title">Hikka is installed</div>
     <div class="description">
-      {% if heroku %}
-      Wait for a while, Hikka will be ready in a few minutes.
-      {% else %}
-      Hikka is ready to use.
-      {% endif %}
+      Hikka is ready to use. You can close this page now.
+      <br>
+      <span style="font-size: 24px;">Check <span style="color:#28a0dc">Telegram</span> for a message from your <b>inline
+          bot</b></span>
     </div>
   </div>
   <div class="blur main installation">
@@ -138,9 +139,9 @@
   var skip_creds = "{{ skip_creds }}" == "True";
   var auth_required = true;
   fetch("/check_session", {
-    method: "POST",
-    credentials: "include"
-  })
+      method: "POST",
+      credentials: "include"
+    })
     .then(response => response.text())
     .then((response) => {
       auth_required = response != "1";
@@ -148,6 +149,6 @@
 </script>
 <script src="{{ static("root.js") }}"></script>
 {% if okteto %}
-  <script src="{{ static("okteto.js") }}"></script>
+<script src="{{ static("okteto.js") }}"></script>
 {% endif %}
 {% endblock %}
