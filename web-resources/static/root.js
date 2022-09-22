@@ -117,7 +117,7 @@ function tg_code() {
                 if (response.status == 401) {
                     $(".auth-code-form").hide().fadeIn(300, () => {
                         $("#monkey-close").html();
-                        anim = bodymovin.loadAnimation({
+                        bodymovin.loadAnimation({
                             container: document.getElementById("monkey-close"),
                             renderer: "canvas",
                             loop: false,
@@ -127,11 +127,6 @@ function tg_code() {
                                 clearCanvas: true,
                             }
                         });
-                        anim.addEventListener("complete", function () {
-                            setTimeout(function () {
-                                anim.goToAndPlay(0);
-                            }, 2000);
-                        })
                     });
                     $(".code-input").removeAttr("disabled");
                     $(".code-caption").html("Enter your Telegram 2FA password, then press <span style='color: #dc137b;'>Enter</span>");
@@ -272,7 +267,7 @@ function process_next() {
                 } else {
                     $(".auth-code-form").hide().fadeIn(300, () => {
                         $("#monkey").html();
-                        anim2 = bodymovin.loadAnimation({
+                        anim = bodymovin.loadAnimation({
                             container: document.getElementById("monkey"),
                             renderer: "canvas",
                             loop: false,
@@ -282,9 +277,9 @@ function process_next() {
                                 clearCanvas: true,
                             }
                         });
-                        anim2.addEventListener("complete", function () {
+                        anim.addEventListener("complete", function () {
                             setTimeout(function () {
-                                anim2.goToAndPlay(0);
+                                anim.goToAndPlay(0);
                             }, 2000);
                         })
                     });
