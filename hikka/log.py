@@ -60,23 +60,21 @@ class HikkaException:
             dictionary = dictionary.copy()
             for key, value in dictionary.items():
                 if isinstance(value, dict):
+                    dictionary[key] = to_hashable(value)
+                else:
                     if (
                         getattr(getattr(value, "__class__", None), "__name__", None)
                         == "Database"
                     ):
                         dictionary[key] = "<Database>"
-
-                    if isinstance(
+                    elif isinstance(
                         value,
                         (telethon.TelegramClient, CustomTelegramClient),
                     ):
                         dictionary[key] = f"<{value.__class__.__name__}>"
-
-                    dictionary[key] = to_hashable(value)
-                else:
-                    try:
-                        json.dumps([value])
-                    except Exception:
+                    elif len(str(value)) > 512:
+                        dictionary[key] = f"{str(value)[:512]}..."
+                    else:
                         dictionary[key] = str(value)
 
             return dictionary

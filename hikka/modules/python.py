@@ -84,12 +84,6 @@ class PythonMod(loader.Module):
             )
             exc = exc.replace(str(self._client.hikka_me.phone), "📵")
 
-            if os.environ.get("DATABASE_URL"):
-                exc = exc.replace(
-                    os.environ.get("DATABASE_URL"),
-                    "postgre://**************************",
-                )
-
             if os.environ.get("hikka_session"):
                 exc = exc.replace(
                     os.environ.get("hikka_session"),
@@ -118,11 +112,6 @@ class PythonMod(loader.Module):
         )
 
         ret = ret.replace(str(self._client.hikka_me.phone), "📵")
-
-        if postgre := os.environ.get("DATABASE_URL") or main.get_config_key(
-            "postgre_uri"
-        ):
-            ret = ret.replace(postgre, "postgre://**************************")
 
         if redis := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             ret = ret.replace(redis, "redis://**************************")

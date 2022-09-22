@@ -29,6 +29,8 @@
 - Add new code input design
 - Add new 2fa password input design
 - Add ability to set custom emojis in `.info` using command `.setinfo`. In order to use it, remove buttons using config
+- Add full trace locals length limit
+- Rework full trace locals to hashable converter
 - Patch internal help module with bugfixes
 - Clean type-hint mess, document utils and other methods, which were undocumented
 - Remove redundant non-working code from configurator
