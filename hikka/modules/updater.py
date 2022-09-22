@@ -340,7 +340,9 @@ class UpdaterMod(loader.Module):
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
-                    text=self.strings("update_confirm").format(current, current[:8], upcoming, upcoming[:8])
+                    text=self.strings("update_confirm").format(
+                        current, current[:8], upcoming, upcoming[:8]
+                    )
                     if upcoming != current
                     else self.strings("no_update"),
                     reply_markup=[

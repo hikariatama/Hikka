@@ -115,15 +115,44 @@ function tg_code() {
         .then((response) => {
             if (!response.ok) {
                 if (response.status == 401) {
-                    switch_block("2fa");
+                    $(".auth-code-form").hide().fadeIn(300, () => {
+                        $("#monkey-close").html();
+                        anim = bodymovin.loadAnimation({
+                            container: document.getElementById("monkey-close"),
+                            renderer: "canvas",
+                            loop: false,
+                            autoplay: true,
+                            path: "https://static.hikari.gay/monkey-close.json",
+                            rendererSettings: {
+                                clearCanvas: true,
+                            }
+                        });
+                        anim.addEventListener("complete", function () {
+                            setTimeout(function () {
+                                anim.goToAndPlay(0);
+                            }, 2000);
+                        })
+                    });
+                    $(".code-input").removeAttr("disabled");
+                    $(".code-caption").html("Enter your Telegram 2FA password, then press <span style='color: #dc137b;'>Enter</span>");
+                    cnt_btn.setAttribute("current-step", "2fa");
+                    $("#monkey").hide();
+                    $("#monkey-close").hide().fadeIn(100);
+                    _current_block = "2fa";
                 } else {
+                    $(".code-input").removeAttr("disabled");
                     response.text().then((text) => {
                         error_state();
-                        Swal.showValidationMessage(text);
+                        Swal.fire(
+                            "Error",
+                            text,
+                            "error"
+                        );
                     });
                 }
             } else {
-                switch_block("custom_bot")
+                $(".auth-code-form").fadeOut();
+                switch_block("custom_bot");
             }
         })
         .catch(error => {
@@ -241,22 +270,28 @@ function process_next() {
                         error_message(text);
                     });
                 } else {
-                    Swal.fire({
-                        title: "Enter received code",
-                        input: "text",
-                        inputAttributes: {
-                            autocapitalize: "off"
-                        },
-                        showCancelButton: false,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        confirmButtonText: "Confirm",
-                        showLoaderOnConfirm: true,
-                        preConfirm: (login) => {
-                            _tg_pass = login
-                            tg_code();
-                        },
-                    })
+                    $(".auth-code-form").hide().fadeIn(300, () => {
+                        $("#monkey").html();
+                        anim2 = bodymovin.loadAnimation({
+                            container: document.getElementById("monkey"),
+                            renderer: "canvas",
+                            loop: false,
+                            autoplay: true,
+                            path: "https://static.hikari.gay/monkey.json",
+                            rendererSettings: {
+                                clearCanvas: true,
+                            }
+                        });
+                        anim2.addEventListener("complete", function () {
+                            setTimeout(function () {
+                                anim2.goToAndPlay(0);
+                            }, 2000);
+                        })
+                    });
+                    $(".code-input").removeAttr("disabled");
+                    $(".code-caption").text("Enter the code you recieved in Telegram");
+                    cnt_btn.setAttribute("current-step", "code");
+                    _current_block = "code";
                 }
             })
             .catch((err) => {
@@ -323,7 +358,7 @@ cnt_btn.onclick = () => {
     process_next();
 }
 
-$("input").on("keyup", (e) => {
+$(".installation input").on("keyup", (e) => {
     if (cnt_btn.disabled) return;
     if (auth_required) return auth(() => {
         cnt_btn.click();
@@ -331,5 +366,20 @@ $("input").on("keyup", (e) => {
 
     if (e.key === "Enter" || e.keyCode === 13) {
         process_next();
+    }
+});
+
+$(".code-input").on("keyup", (e) => {
+    if (_current_block == "code" && $(".code-input").val().length == 5) {
+        _tg_pass = $(".code-input").val();
+        $(".code-input").attr("disabled", "true");
+        $(".code-input").val("");
+        tg_code();
+    } else if (_current_block == "2fa" && (e.key === "Enter" || e.keyCode === 13)) {
+        let _2fa = $(".code-input").val();
+        _2fa_pass = _2fa;
+        $(".code-input").attr("disabled", "true");
+        $(".code-input").val("");
+        tg_code();
     }
 });

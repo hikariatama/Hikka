@@ -732,14 +732,11 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("bad_unicode"))
             return
 
-        if (
-            not self._db.get(
-                main.__name__,
-                "disable_modules_fs",
-                False,
-            )
-            and not self._db.get(main.__name__, "permanent_modules_fs", False)
-        ):
+        if not self._db.get(
+            main.__name__,
+            "disable_modules_fs",
+            False,
+        ) and not self._db.get(main.__name__, "permanent_modules_fs", False):
             if message.file:
                 await message.edit("")
                 message = await message.respond("🌘")

@@ -206,6 +206,9 @@ class Web:
         if not self._check_session(request):
             return web.Response(status=401, body="Authorization required")
 
+        if self._pending_client:
+            return web.Response(status=208, body="Already pending")
+
         text = await request.text()
         phone = telethon.utils.parse_phone(text)
 

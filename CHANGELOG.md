@@ -26,6 +26,8 @@
 - Add switch to mute @BotFather only once in hikka inline
 - Add ability to forbid certain tl methods using `.config APIRatelimiter`
 - Add new web interface design
+- Add new code input design
+- Add new 2fa password input design
 - Add ability to set custom emojis in `.info` using command `.setinfo`. In order to use it, remove buttons using config
 - Patch internal help module with bugfixes
 - Clean type-hint mess, document utils and other methods, which were undocumented
@@ -37,6 +39,7 @@
 - Enable `joinChannel` and `importChatInvite` calls-by-external-modules blockage for all users by default
 - Change inline query placeholder to `user@hikka:~$` + legacy migration
 - Completely drop Heroku support due to legacy code, limits and removing of free tier
+- Allow user to send code only once to prevent FloodWaits
 
 ## 🌑 Hikka 1.4.2
 

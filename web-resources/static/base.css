@@ -579,3 +579,49 @@ label {
     z-index: -1;
     overflow: hidden;
 }
+
+.auth-code-form {
+    display: none;
+    width: 60%;
+    height: 80%;
+    padding: 0;
+    border-radius: 15px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    z-index: 101;
+    text-align: center;
+}
+
+#monkey, #monkey-close {
+    height: 200px;
+    margin-top: 30px;
+}
+
+#monkey-close {
+    display: none;
+}
+
+.code-input {
+    width: 50%;
+    margin-top: 25px;
+    height: 32px;
+    border-radius: 15px;
+    border: 1px solid #121212;
+    background: #212121;
+    transition: border .2s ease-in;
+    font-size: 18px;
+}
+
+.code-input:focus {
+    border: 2px solid rgb(135, 116, 225);
+}
+
+.code-caption {
+    font-size: 26px;
+    color: #fefefe;
+    padding-top: 50px;
+}

@@ -81,6 +81,7 @@ try:
 except Exception:
     pass
 
+
 def run_config(data_root: str):
     """Load configurator.py"""
     from . import configurator
@@ -375,10 +376,7 @@ class Hikka:
                 importlib.invalidate_caches()
                 self._get_api_token()
 
-    async def save_client_session(
-        self,
-        client: CustomTelegramClient
-    ):
+    async def save_client_session(self, client: CustomTelegramClient):
         if hasattr(client, "_tg_id"):
             telegram_id = client._tg_id
         else:
