@@ -21,6 +21,11 @@
 - Add IDM `inspect_modules`
 - Add IDM `clear_cache`, `clear_entity_cache`, `clear_fulluser_cache`, `clear_fullchannel_cache`, `clear_perms_cache`
 - Add IDM `reload_core` to automatically reload core modules from disk
+- Add ability to create custom IDMs
+- Add fields `flags` and `description` to `RegExp` validator
+- Add fields `min_len` and `max_len` to `String` validator
+- Add `Emoji` validator
+- Add `EntityLike` validator
 - Add `hikka.validators.MultiChoice`
 - Add `utils.get_args_html` to get arguments of command with HTML
 - Add switch to mute @BotFather only once in hikka inline

@@ -66,6 +66,10 @@ class HikkaSettingsMod(loader.Module):
             "<emoji document_id=5447207618793708263>🚫</emoji> <b>Internal debug method"
             " </b><code>{}</code><b> not found, ergo can't be invoked</b>"
         ),
+        "module404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Module</b>"
+            " <code>{}</code> <b>not found</b>"
+        ),
         "invoke": (
             "<emoji document_id=5215519585150706301>👍</emoji> <b>Invoked internal debug"
             " method </b><code>{}</code>\n\n<emoji"
@@ -73,7 +77,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "invoking": (
             "<emoji document_id=5213452215527677338>⏳</emoji> <b>Invoking internal"
-            " debug method </b><code>{}</code><b>...</b>"
+            " debug method </b><code>{}</code><b> of </b><code>{}</code><b>...</b>"
         ),
         "mod404": (
             "<emoji document_id=5447207618793708263>🚫</emoji> <b>Watcher {} not"
@@ -1118,80 +1122,110 @@ class HikkaSettingsMod(loader.Module):
             event.status = True
             event.set()
 
+    def _get_all_IDM(self, module: str):
+        return {
+            getattr(getattr(self.lookup(module), name), "name", name): getattr(
+                self.lookup(module), name
+            )
+            for name in dir(self.lookup(module))
+            if getattr(getattr(self.lookup(module), name), "is_debug_method", False)
+        }
+
     @loader.command()
     async def invoke(self, message: Message):
-        """<method> [params] - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER
+        """<module or `core` for built-in methods> <method> - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER
         """
         args = utils.get_args_raw(message)
-        if not args:
+        if not args or len(args.split()) < 2:
             await utils.answer(message, self.strings("no_args"))
             return
 
-        method = args.split()[0]
-        params = args.split(maxsplit=1)[1] if len(args.split()) > 1 else None
+        module = args.split()[0]
+        method = args.split(maxsplit=1)[1]
 
-        if method not in ALL_INVOKES:
+        if module != "core" and not self.lookup(module):
+            await utils.answer(message, self.strings("module404").format(module))
+            return
+
+        if (
+            module == "core"
+            and method not in ALL_INVOKES
+            or module != "core"
+            and method not in self._get_all_IDM(module)
+        ):
             await utils.answer(message, self.strings("invoke404").format(method))
             return
 
-        message = await utils.answer(message, self.strings("invoking").format(method))
+        message = await utils.answer(
+            message, self.strings("invoking").format(method, module)
+        )
         result = ""
 
-        if method == "clear_entity_cache":
-            result = f"Dropped {len(self._client._hikka_entity_cache)} cache records"
-            self._client._hikka_entity_cache = {}
-        elif method == "clear_fulluser_cache":
-            result = f"Dropped {len(self._client._hikka_fulluser_cache)} cache records"
-            self._client._hikka_fulluser_cache = {}
-        elif method == "clear_fullchannel_cache":
-            result = (
-                f"Dropped {len(self._client._hikka_fullchannel_cache)} cache records"
-            )
-            self._client._hikka_fullchannel_cache = {}
-        elif method == "clear_perms_cache":
-            result = f"Dropped {len(self._client._hikka_perms_cache)} cache records"
-            self._client._hikka_perms_cache = {}
-        elif method == "clear_cache":
-            result = (
-                f"Dropped {len(self._client._hikka_entity_cache)} entity cache"
-                f" records\nDropped {len(self._client._hikka_fulluser_cache)} fulluser"
-                " cache records\nDropped"
-                f" {len(self._client._hikka_fullchannel_cache)} fullchannel cache"
-                " records"
-            )
-            self._client._hikka_entity_cache = {}
-            self._client._hikka_fulluser_cache = {}
-            self._client._hikka_fullchannel_cache = {}
-        elif method == "reload_core":
-            core_quantity = await self.lookup("loader").reload_core()
-            result = f"Reloaded {core_quantity} core modules"
-        elif method == "inspect_cache":
-            result = (
-                "Entity cache:"
-                f" {len(self._client._hikka_entity_cache)} records\nFulluser cache:"
-                f" {len(self._client._hikka_fulluser_cache)} records\nFullchannel"
-                f" cache: {len(self._client._hikka_fullchannel_cache)} records"
-            )
-        elif method == "inspect_modules":
-            result = (
-                "Loaded modules: {}\nLoaded core modules: {}\nLoaded user modules: {}"
-            ).format(
-                len(self.allmodules.modules),
-                len(
-                    [
-                        1
-                        for module in self.allmodules.modules
-                        if module.__origin__.startswith("<core")
-                    ]
-                ),
-                len(
-                    [
-                        1
-                        for module in self.allmodules.modules
-                        if not module.__origin__.startswith("<core")
-                    ]
-                ),
-            )
+        if module == "core":
+            if method == "clear_entity_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_entity_cache)} cache records"
+                )
+                self._client._hikka_entity_cache = {}
+            elif method == "clear_fulluser_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_fulluser_cache)} cache records"
+                )
+                self._client._hikka_fulluser_cache = {}
+            elif method == "clear_fullchannel_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_fullchannel_cache)} cache"
+                    " records"
+                )
+                self._client._hikka_fullchannel_cache = {}
+            elif method == "clear_perms_cache":
+                result = f"Dropped {len(self._client._hikka_perms_cache)} cache records"
+                self._client._hikka_perms_cache = {}
+            elif method == "clear_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_entity_cache)} entity cache"
+                    " records\nDropped"
+                    f" {len(self._client._hikka_fulluser_cache)} fulluser cache"
+                    " records\nDropped"
+                    f" {len(self._client._hikka_fullchannel_cache)} fullchannel cache"
+                    " records"
+                )
+                self._client._hikka_entity_cache = {}
+                self._client._hikka_fulluser_cache = {}
+                self._client._hikka_fullchannel_cache = {}
+            elif method == "reload_core":
+                core_quantity = await self.lookup("loader").reload_core()
+                result = f"Reloaded {core_quantity} core modules"
+            elif method == "inspect_cache":
+                result = (
+                    "Entity cache:"
+                    f" {len(self._client._hikka_entity_cache)} records\nFulluser cache:"
+                    f" {len(self._client._hikka_fulluser_cache)} records\nFullchannel"
+                    f" cache: {len(self._client._hikka_fullchannel_cache)} records"
+                )
+            elif method == "inspect_modules":
+                result = (
+                    "Loaded modules: {}\nLoaded core modules: {}\nLoaded user"
+                    " modules: {}"
+                ).format(
+                    len(self.allmodules.modules),
+                    len(
+                        [
+                            1
+                            for module in self.allmodules.modules
+                            if module.__origin__.startswith("<core")
+                        ]
+                    ),
+                    len(
+                        [
+                            1
+                            for module in self.allmodules.modules
+                            if not module.__origin__.startswith("<core")
+                        ]
+                    ),
+                )
+        else:
+            result = await self._get_all_IDM(module)[method](message)
 
         await utils.answer(
             message,

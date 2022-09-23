@@ -487,6 +487,14 @@ def command(*args, **kwargs):
     return _mark_method("is_command", *args, **kwargs)
 
 
+def debug_method(*args, **kwargs):
+    """
+    Decorator that marks function as IDM (Internal Debug Method)
+    :param name: Name of the method
+    """
+    return _mark_method("is_debug_method", *args, **kwargs)
+
+
 def inline_handler(*args, **kwargs):
     """
     Decorator that marks function as inline handler
@@ -611,7 +619,9 @@ class Modules:
         return loaded
 
     async def _register_modules(
-        self, modules: list, origin: str = "<core>"
+        self,
+        modules: list,
+        origin: str = "<core>",
     ) -> typing.List[Module]:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -1285,11 +1295,11 @@ class Modules:
                     mod.config,
                 )
 
-        if skip_hook:
-            return
-
         if not hasattr(mod, "name"):
             mod.name = mod.strings["name"]
+
+        if skip_hook:
+            return
 
         if hasattr(mod, "strings"):
             mod.strings = Strings(mod, self._translator)
