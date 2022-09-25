@@ -246,8 +246,13 @@ class Presets(loader.Module):
                         sorted(
                             [
                                 (
-                                    (
-                                        f"{self.strings('already_installed') if self._is_installed(link) else '▫️'} <b>{link.rsplit('/', maxsplit=1)[1].split('.')[0]}</b>"
+                                    "{} <b>{}</b>".format(
+                                        (
+                                            self.strings("already_installed")
+                                            if self._is_installed(link)
+                                            else "▫️"
+                                        ),
+                                        link.rsplit("/", maxsplit=1)[1].split(".")[0],
                                     ),
                                     int(self._is_installed(link)),
                                 )

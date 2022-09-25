@@ -804,29 +804,25 @@ def get_named_platform() -> str:
     except Exception:
         pass
 
-    is_termux = "com.termux" in os.environ.get("PREFIX", "")
-    is_okteto = "OKTETO" in os.environ
-    is_railway = "RAILWAY" in os.environ
-    is_docker = "DOCKER" in os.environ
-    is_codespaces = "CODESPACES" in os.environ
+    if "GOORM" in os.environ:
+        return "🦾 GoormIDE"
 
-    if is_railway:
+    if "RAILWAY" in os.environ:
         return "🚂 Railway"
 
-    if is_docker:
+    if "DOCKER" in os.environ:
         return "🐳 Docker"
 
-    if is_termux:
+    if "com.termux" in os.environ.get("PREFIX", ""):
         return "🕶 Termux"
 
-    if is_okteto:
+    if "OKTETO" in os.environ:
         return "☁️ Okteto"
 
-    if is_codespaces:
+    if "CODESPACES" in os.environ:
         return "🐈‍⬛ Codespaces"
 
-    is_lavhost = "LAVHOST" in os.environ
-    return f"✌️ lavHost {os.environ['LAVHOST']}" if is_lavhost else "📻 VDS"
+    return f"✌️ lavHost {os.environ['LAVHOST']}" if "LAVHOST" in os.environ else "📻 VDS"
 
 
 def get_platform_emoji() -> str:
@@ -839,6 +835,9 @@ def get_platform_emoji() -> str:
         " document_id=5195311729663286630>🌘</emoji><emoji"
         " document_id=5195045669324201904>🌘</emoji>"
     )
+
+    if "GOORM" in os.environ:
+        return BASE.format(5298947740032573902)
 
     if "OKTETO" in os.environ:
         return BASE.format(5192767786174128165)
@@ -1269,8 +1268,7 @@ def get_kwargs() -> typing.Dict[str, typing.Any]:
     :return: kwargs
     """
     # https://stackoverflow.com/a/65927265/19170642
-    frame = inspect.currentframe().f_back
-    keys, _, _, values = inspect.getargvalues(frame)
+    keys, _, _, values = inspect.getargvalues(inspect.currentframe().f_back)
     return {key: values[key] for key in keys if key != "self"}
 
 

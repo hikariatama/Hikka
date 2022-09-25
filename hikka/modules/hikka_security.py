@@ -966,20 +966,24 @@ class HikkaSecurityMod(loader.Module):
                 message=message,
                 text=self.strings("multiple_rules").format(
                     "\n".join(
-                        f"🛡 <b>{case(self.strings(i.split('/')[0]))} </b><code>{i.split('/', maxsplit=1)[1]}</code>"
-                        for i in possible_rules
+                        "🛡 <b>{} </b><code>{}</code>".format(
+                            case(self.strings(rule.split("/")[0])),
+                            rule.split("/", maxsplit=1)[1],
+                        )
+                        for rule in possible_rules
                     )
                 ),
                 reply_markup=utils.chunks(
                     [
                         {
-                            "text": (
-                                f"🛡 {case(self.strings(i.split('/')[0]))} {i.split('/', maxsplit=1)[1]}"
+                            "text": "🛡 {} {}".format(
+                                case(self.strings(rule.split("/")[0])),
+                                rule.split("/", maxsplit=1)[1],
                             ),
                             "callback": self._confirm,
-                            "args": ("chat", target, i, duration),
+                            "args": ("chat", target, rule, duration),
                         }
-                        for i in possible_rules
+                        for rule in possible_rules
                     ],
                     3,
                 ),
@@ -1032,20 +1036,24 @@ class HikkaSecurityMod(loader.Module):
                 message=message,
                 text=self.strings("multiple_rules").format(
                     "\n".join(
-                        f"🛡 <b>{case(self.strings(i.split('/')[0]))} </b><code>{i.split('/', maxsplit=1)[1]}</code>"
-                        for i in possible_rules
+                        "🛡 <b>{} </b><code>{}</code>".format(
+                            case(self.strings(rule.split("/")[0])),
+                            rule.split("/", maxsplit=1)[1],
+                        )
+                        for rule in possible_rules
                     )
                 ),
                 reply_markup=utils.chunks(
                     [
                         {
-                            "text": (
-                                f"🛡 {case(self.strings(i.split('/')[0]))} {i.split('/', maxsplit=1)[1]}"
+                            "text": "🛡 {} {}".format(
+                                case(self.strings(rule.split("/")[0])),
+                                rule.split("/", maxsplit=1)[1],
                             ),
                             "callback": self._confirm,
-                            "args": ("user", target, i, duration),
+                            "args": ("user", target, rule, duration),
                         }
-                        for i in possible_rules
+                        for rule in possible_rules
                     ],
                     3,
                 ),
@@ -1140,16 +1148,26 @@ class HikkaSecurityMod(loader.Module):
                     "\n".join(
                         [
                             "<emoji document_id=6037355667365300960>👥</emoji> <b><a"
-                            f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
-                            f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
-                            f" <code>{rule['rule']}</code>"
+                            " href='{}'>{}</a> {} {} {}</b> <code>{}</code>".format(
+                                rule["entity_url"],
+                                utils.escape_html(rule["entity_name"]),
+                                self._convert_time(int(rule["expires"] - time.time())),
+                                self.strings("for"),
+                                self.strings(rule["rule_type"]),
+                                rule["rule"],
+                            )
                             for rule in self._client.dispatcher.security.tsec_chat
                         ]
                         + [
                             "<emoji document_id=6037122016849432064>👤</emoji> <b><a"
-                            f" href='{rule['entity_url']}'>{utils.escape_html(rule['entity_name'])}</a>"
-                            f" {self._convert_time(int(rule['expires'] - time.time()))} {self.strings('for')} {self.strings(rule['rule_type'])}</b>"
-                            f" <code>{rule['rule']}</code>"
+                            " href='{}'>{}</a> {} {} {}</b> <code>{}</code>".format(
+                                rule["entity_url"],
+                                utils.escape_html(rule["entity_name"]),
+                                self._convert_time(int(rule["expires"] - time.time())),
+                                self.strings("for"),
+                                self.strings(rule["rule_type"]),
+                                rule["rule"],
+                            )
                             for rule in self._client.dispatcher.security.tsec_user
                         ]
                     )

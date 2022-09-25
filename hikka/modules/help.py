@@ -55,6 +55,10 @@ class HelpMod(loader.Module):
             " occured, so the closest result is shown instead</b>"
         ),
         "request_join": "You requested link for Hikka support chat",
+        "core_notice": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>This is a core"
+            " module. You can't unload it nor replace</b>"
+        ),
     }
 
     strings_ru = {
@@ -91,6 +95,10 @@ class HelpMod(loader.Module):
             " не нашлось, поэтому было выбрано наиболее подходящее</b>"
         ),
         "request_join": "Вы запросили ссылку на чат помощи Hikka",
+        "core_notice": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Это встроенный"
+            " модуль. Вы не можете его выгрузить или заменить</b>"
+        ),
     }
 
     def __init__(self):
@@ -200,7 +208,12 @@ class HelpMod(loader.Module):
             name = getattr(module, "name", "ERROR")
 
         _name = (
-            f"{utils.escape_html(name)} (v{module.__version__[0]}.{module.__version__[1]}.{module.__version__[2]})"
+            "{} (v{}.{}.{})".format(
+                utils.escape_html(name),
+                module.__version__[0],
+                module.__version__[1],
+                module.__version__[2],
+            )
             if hasattr(module, "__version__")
             else utils.escape_html(name)
         )
@@ -238,7 +251,13 @@ class HelpMod(loader.Module):
             )
 
         await utils.answer(
-            message, f"{reply}\n\n{'' if exact else self.strings('not_exact')}"
+            message,
+            f"{reply}\n\n{'' if exact else self.strings('not_exact')}"
+            + (
+                f"\n\n{self.strings('core_notice')}"
+                if module.__origin__.startswith("<core")
+                else ""
+            ),
         )
 
     @loader.unrestricted
@@ -396,7 +415,14 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            f"{reply}\n{''.join(core_)}{''.join(plain_)}{''.join(inline_)}{no_commands_}{partial_load}",
+            "{}\n{}{}{}{}{}".format(
+                reply,
+                "".join(core_),
+                "".join(plain_),
+                "".join(inline_),
+                no_commands_,
+                partial_load,
+            ),
         )
 
     @loader.command(ru_doc="Показать ссылку на чат помощи Hikka")

@@ -735,8 +735,10 @@ class HikkaSettingsMod(loader.Module):
                 continue
 
             users += [
-                "▫️ <b><a"
-                f' href="tg://user?id={user_id}">{utils.escape_html(get_display_name(user))}</a></b>'
+                '▫️ <b><a href="tg://user?id={}">{}</a></b>'.format(
+                    user_id,
+                    utils.escape_html(get_display_name(user)),
+                )
             ]
 
         if not users:
@@ -768,8 +770,10 @@ class HikkaSettingsMod(loader.Module):
                 continue
 
             chats += [
-                "▫️ <b><a"
-                f' href="{utils.get_entity_url(chat_entity)}">{utils.escape_html(get_display_name(chat_entity))}</a></b>'
+                '▫️ <b><a href="{}">{}</a></b>'.format(
+                    utils.get_entity_url(chat_entity),
+                    utils.escape_html(get_display_name(chat_entity)),
+                )
             ]
 
         if not chats:
@@ -1101,7 +1105,7 @@ class HikkaSettingsMod(loader.Module):
         await form.edit(
             self.strings("tunnel_opened"),
             reply_markup={"text": self.strings("web_btn"), "url": url},
-            gif="https://t.me/hikari_assets/28",
+            gif="https://t.me/hikari_assets/48",
         )
 
     @loader.loop(interval=1, autostart=True)
@@ -1209,19 +1213,13 @@ class HikkaSettingsMod(loader.Module):
                     " modules: {}"
                 ).format(
                     len(self.allmodules.modules),
-                    len(
-                        [
-                            1
-                            for module in self.allmodules.modules
-                            if module.__origin__.startswith("<core")
-                        ]
+                    sum(
+                        module.__origin__.startswith("<core")
+                        for module in self.allmodules.modules
                     ),
-                    len(
-                        [
-                            1
-                            for module in self.allmodules.modules
-                            if not module.__origin__.startswith("<core")
-                        ]
+                    sum(
+                        not module.__origin__.startswith("<core")
+                        for module in self.allmodules.modules
                     ),
                 )
         else:

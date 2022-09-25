@@ -37,6 +37,8 @@ TEXT = """🌘🇬🇧 <b>Hello.</b> You've just installed <b>Hikka</b> userbot.
 3️⃣ <b>Type </b><code>.dlmod &lt;link&gt;</code> <b>to load module from link</b>
 4️⃣ <b>Type </b><code>.loadmod</code> <b>with reply to file to install module from it</b>
 5️⃣ <b>Type </b><code>.unloadmod &lt;ModuleName&gt;</code> <b>to unload module ModuleName</b>
+
+💡 <b>Hikka supports modules from Friendly-Telegram and GeekTG, as well as its own ones.</b>
 """
 
 
@@ -56,6 +58,7 @@ TEXT_RU = """🌘🇷🇺 <b>Привет.</b> Твой юзербот <b>Hikka<
 4️⃣ <b>Напиши </b><code>.loadmod</code> <b>ответом на файл, чтобы загрузить модуль из него</b>
 5️⃣ <b>Напиши </b><code>.unloadmod &lt;Название модуля&gt;</code> <b>чтобы выгрузить модуль</b>
 
+💡 <b>Hikka поддерживает модули из Friendly-Telegram и GeekTG, а также свои собственные.</b>
 """
 
 if "OKTETO" in os.environ:

@@ -131,9 +131,9 @@ class HikkaInfoMod(loader.Module):
         except Exception:
             upd = ""
 
-        me = (
-            "<b><a"
-            f' href="tg://user?id={self._me.id}">{utils.escape_html(get_display_name(self._me))}</a></b>'
+        me = '<b><a href="tg://user?id={}">{}</a></b>'.format(
+            self._me.id,
+            utils.escape_html(get_display_name(self._me)),
         )
         build = utils.get_commit_url()
         _version = f'<i>{".".join(list(map(str, list(version.__version__))))}</i>'

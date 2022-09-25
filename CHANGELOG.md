@@ -47,6 +47,9 @@
 - Change inline query placeholder to `user@hikka:~$` + legacy migration
 - Completely drop Heroku support due to legacy code, limits and removing of free tier
 - Allow user to send code only once to prevent FloodWaits
+- Remove junk collector from tl cacher to keep old records so devs can access them w\o making new requests
+- Remove FTG License in fully changed files
+- Add official GoormIDE support
 
 ## 🌑 Hikka 1.4.2
 

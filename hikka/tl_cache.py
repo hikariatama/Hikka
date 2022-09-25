@@ -56,7 +56,6 @@ class CustomTelegramClient(TelegramClient):
         self._hikka_fullchannel_cache = {}
         self._hikka_fulluser_cache = {}
         self.__forbidden_constructors = []
-        asyncio.ensure_future(self.cleaner())
 
     async def force_get_entity(self, *args, **kwargs):
         """Forcefully makes a request to Telegram to get the entity."""
@@ -449,37 +448,3 @@ class CustomTelegramClient(TelegramClient):
         :param constructors: Constructor ids to forbid
         """
         self.__forbidden_constructors = list(set(constructors))
-
-    async def cleaner(self):
-        """Cleans outdated cache records"""
-
-        while True:
-            for record, record_data in self._hikka_entity_cache.copy().items():
-                if record_data.expired():
-                    del self._hikka_entity_cache[record]
-                    logger.debug("Cleaned outdated cache record %s", record)
-
-            for chat, chat_data in self._hikka_perms_cache.copy().items():
-                for user, user_data in chat_data.copy().items():
-                    if user_data.expired():
-                        del self._hikka_perms_cache[chat][user]
-                        logger.debug(
-                            "Cleaned outdated perms cache chat %s user %s",
-                            chat,
-                            user,
-                        )
-
-            for channel_id, record in self._hikka_fullchannel_cache.copy().items():
-                if record.expired():
-                    del self._hikka_fullchannel_cache[channel_id]
-                    logger.debug(
-                        "Cleaned outdated fullchannel cache channel_id %s",
-                        channel_id,
-                    )
-
-            for user_id, record in self._hikka_fulluser_cache.copy().items():
-                if record.expired():
-                    del self._hikka_fulluser_cache[user_id]
-                    logger.debug("Cleaned outdated fulluser cache user_id %s", user_id)
-
-            await asyncio.sleep(3)
