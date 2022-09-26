@@ -86,7 +86,7 @@ else:
                     "telethon",
                     "telethon-mod",
                 ],
-                check=True,
+                check=False,
             )
 
             subprocess.run(
@@ -112,7 +112,9 @@ else:
         log.init()
 
         from . import main
-    except ModuleNotFoundError as e:  # pragma: no cover
+    except ModuleNotFoundError as e:
+        deps(e)
+    except ImportError as e:
         deps(e)
 
     if __name__ == "__main__":
