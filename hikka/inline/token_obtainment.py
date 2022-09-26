@@ -120,7 +120,7 @@ class TokenObtainment(InlineUnit):
                 await self._client.get_entity("@BotFather"),
                 True,
             )
-            self._db._set(__name__, "no_mute", True)
+            self._db.set(__name__, "no_mute", True)
 
         # Start conversation with BotFather to attempt search
         async with self._client.conversation("@BotFather", exclusive=False) as conv:
