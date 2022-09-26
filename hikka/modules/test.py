@@ -6,15 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
 import inspect
 import logging
 import os
 import random
 import time
 from io import BytesIO
-from typing import Union
+import typing
 
 from telethon.tl.functions.channels import EditAdminRequest, InviteToChannelRequest
 from telethon.tl.types import ChatAdminRights, Message
@@ -24,14 +22,13 @@ from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
-if "DYNO" not in os.environ:
-    DEBUG_MODS_DIR = os.path.join(utils.get_base_dir(), "debug_modules")
+DEBUG_MODS_DIR = os.path.join(utils.get_base_dir(), "debug_modules")
 
-    if not os.path.isdir(DEBUG_MODS_DIR):
-        os.mkdir(DEBUG_MODS_DIR, mode=0o755)
+if not os.path.isdir(DEBUG_MODS_DIR):
+    os.mkdir(DEBUG_MODS_DIR, mode=0o755)
 
-    for mod in os.scandir(DEBUG_MODS_DIR):
-        os.remove(mod.path)
+for mod in os.scandir(DEBUG_MODS_DIR):
+    os.remove(mod.path)
 
 
 @loader.tds
@@ -89,7 +86,6 @@ class TestMod(loader.Module):
             " in real time</i>"
         ),
         "debugging_disabled": "✅ <b>Debugging disabled</b>",
-        "heroku_debug": "🚫 <b>Debugging is not available on Heroku</b>",
     }
 
     strings_ru = {
@@ -150,7 +146,6 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<время> - Заморозить бота на некоторое время",
         "_cmd_doc_ping": "Проверяет скорость отклика юзербота",
         "_cls_doc": "Операции, связанные с самотестированием",
-        "heroku_debug": "🚫 <b>Режим разработчика не доступен на Heroku</b>",
     }
 
     def __init__(self):
@@ -242,10 +237,6 @@ class TestMod(loader.Module):
     async def debugmod(self, message: Message):
         """[module] - For developers: Open module for debugging
         You will be able to track changes in real-time"""
-        if "DYNO" in os.environ:
-            await utils.answer(message, self.strings("heroku_debug"))
-            return
-
         args = utils.get_args_raw(message)
         instance = None
         for module in self.allmodules.modules:
@@ -299,9 +290,9 @@ class TestMod(loader.Module):
     @loader.command(ru_doc="<уровень> - Показать логи")
     async def logs(
         self,
-        message: Union[Message, InlineCall],
+        message: typing.Union[Message, InlineCall],
         force: bool = False,
-        lvl: Union[int, None] = None,
+        lvl: typing.Union[int, None] = None,
     ):
         """<level> - Dump logs"""
         if not isinstance(lvl, int):
@@ -541,15 +532,14 @@ class TestMod(loader.Module):
 
         self._logchat = int(f"-100{chat.id}")
 
-        if "DYNO" not in os.environ:
-            self.watchdog.start()
+        self.watchdog.start()
 
         if not is_new and any(
             participant.id == self.inline.bot_id
             for participant in (await self._client.get_participants(chat, limit=3))
         ):
             logging.getLogger().handlers[0].install_tg_log(self)
-            logger.debug(f"Bot logging installed for {self._logchat}")
+            logger.debug("Bot logging installed for %s", self._logchat)
             return
 
         logger.debug("New logging chat created, init setup...")
@@ -572,4 +562,4 @@ class TestMod(loader.Module):
             pass
 
         logging.getLogger().handlers[0].install_tg_log(self)
-        logger.debug(f"Bot logging installed for {self._logchat}")
+        logger.debug("Bot logging installed for %s", self._logchat)

@@ -9,9 +9,14 @@
 import re
 import grapheme
 import functools
-from typing import Any, Optional, Union as TypeUnion
+import typing
+from emoji import get_emoji_unicode_dict
 
 from . import utils
+
+ConfigAllowedTypes = typing.Union[tuple, list, str, int, bool, None]
+
+ALLOWED_EMOJIS = set(get_emoji_unicode_dict("en").values())
 
 
 class ValidationError(Exception):
@@ -43,8 +48,8 @@ class Validator:
     def __init__(
         self,
         validator: callable,
-        doc: Optional[TypeUnion[str, dict]] = None,
-        _internal_id: Optional[int] = None,
+        doc: typing.Optional[typing.Union[str, dict]] = None,
+        _internal_id: typing.Optional[int] = None,
     ):
         self.validate = validator
 
@@ -69,7 +74,7 @@ class Boolean(Validator):
         )
 
     @staticmethod
-    def _validate(value: Any, /) -> bool:
+    def _validate(value: ConfigAllowedTypes, /) -> bool:
         true_cases = ["True", "true", "1", 1, True]
         false_cases = ["False", "false", "0", 0, False]
         if value not in true_cases + false_cases:
@@ -89,9 +94,9 @@ class Integer(Validator):
     def __init__(
         self,
         *,
-        digits: Optional[int] = None,
-        minimum: Optional[int] = None,
-        maximum: Optional[int] = None,
+        digits: typing.Optional[int] = None,
+        minimum: typing.Optional[int] = None,
+        maximum: typing.Optional[int] = None,
     ):
         _sign_en = "positive " if minimum is not None and minimum == 0 else ""
         _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
@@ -143,13 +148,13 @@ class Integer(Validator):
 
     @staticmethod
     def _validate(
-        value: Any,
+        value: ConfigAllowedTypes,
         /,
         *,
         digits: int,
         minimum: int,
         maximum: int,
-    ) -> TypeUnion[int, None]:
+    ) -> typing.Union[int, None]:
         try:
             value = int(str(value).strip())
         except ValueError:
@@ -176,27 +181,83 @@ class Choice(Validator):
     :param possible_values: Allowed values to be passed to config param
     """
 
-    def __init__(self, possible_values: list, /):
+    def __init__(
+        self,
+        possible_values: typing.List[ConfigAllowedTypes],
+        /,
+    ):
         super().__init__(
             functools.partial(self._validate, possible_values=possible_values),
             {
                 "en": (
-                    f"one of the following: {'/'.join(list(map(str, possible_values)))}"
+                    "one of the following:"
+                    f" {' / '.join(list(map(str, possible_values)))}"
                 ),
-                "ru": f"одним из: {'/'.join(list(map(str, possible_values)))}",
+                "ru": f"одним из: {' / '.join(list(map(str, possible_values)))}",
             },
             _internal_id="Choice",
         )
 
     @staticmethod
-    def _validate(value: Any, /, *, possible_values: list) -> Any:
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        possible_values: typing.List[ConfigAllowedTypes],
+    ) -> ConfigAllowedTypes:
         if value not in possible_values:
             raise ValidationError(
                 f"Passed value ({value}) is not one of the following:"
-                f" {'/'.join(list(map(str, possible_values)))}"
+                f" {' / '.join(list(map(str, possible_values)))}"
             )
 
         return value
+
+
+class MultiChoice(Validator):
+    """
+    Check whether every entered value is in the allowed list
+    :param possible_values: Allowed values to be passed to config param
+    """
+
+    def __init__(
+        self,
+        possible_values: typing.List[ConfigAllowedTypes],
+        /,
+    ):
+        super().__init__(
+            functools.partial(self._validate, possible_values=possible_values),
+            {
+                "en": (
+                    "list of values, where each one must be one of:"
+                    f" {' / '.join(list(map(str, possible_values)))}"
+                ),
+                "ru": (
+                    "список значений, каждое из которых должно быть одним из"
+                    f" следующего: {' / '.join(list(map(str, possible_values)))}"
+                ),
+            },
+            _internal_id="MultiChoice",
+        )
+
+    @staticmethod
+    def _validate(
+        value: typing.List[ConfigAllowedTypes],
+        /,
+        *,
+        possible_values: typing.List[ConfigAllowedTypes],
+    ) -> typing.List[ConfigAllowedTypes]:
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+
+        for item in value:
+            if item not in possible_values:
+                raise ValidationError(
+                    f"One of passed values ({item}) is not one of the following:"
+                    f" {' / '.join(list(map(str, possible_values)))}"
+                )
+
+        return list(set(value))
 
 
 class Series(Validator):
@@ -211,10 +272,10 @@ class Series(Validator):
 
     def __init__(
         self,
-        validator: Optional[Validator] = None,
-        min_len: Optional[int] = None,
-        max_len: Optional[int] = None,
-        fixed_len: Optional[int] = None,
+        validator: typing.Optional[Validator] = None,
+        min_len: typing.Optional[int] = None,
+        max_len: typing.Optional[int] = None,
+        fixed_len: typing.Optional[int] = None,
     ):
         _each_en = (
             f" (each must be {validator.doc['en']})" if validator is not None else ""
@@ -261,14 +322,14 @@ class Series(Validator):
 
     @staticmethod
     def _validate(
-        value: Any,
+        value: ConfigAllowedTypes,
         /,
         *,
-        validator: Optional[Validator] = None,
-        min_len: Optional[int] = None,
-        max_len: Optional[int] = None,
-        fixed_len: Optional[int] = None,
-    ):
+        validator: typing.Optional[Validator] = None,
+        min_len: typing.Optional[int] = None,
+        max_len: typing.Optional[int] = None,
+        fixed_len: typing.Optional[int] = None,
+    ) -> typing.List[ConfigAllowedTypes]:
         if not isinstance(value, (list, tuple, set)):
             value = str(value).split(",")
 
@@ -321,7 +382,7 @@ class Link(Validator):
         )
 
     @staticmethod
-    def _validate(value: Any, /) -> str:
+    def _validate(value: ConfigAllowedTypes, /) -> str:
         try:
             if not utils.check_url(value):
                 raise Exception("Invalid URL")
@@ -335,28 +396,64 @@ class String(Validator):
     """
     Checks for length of passed value and automatically converts it to string
     :param length: Exact length of string
+    :param min_len: Minimal length of string
+    :param max_len: Maximum length of string
     """
 
-    def __init__(self, length: Optional[int] = None):
+    def __init__(
+        self,
+        length: typing.Optional[int] = None,
+        min_len: typing.Optional[int] = None,
+        max_len: typing.Optional[int] = None,
+    ):
         if length is not None:
             doc = {
                 "en": f"string of length {length}",
                 "ru": f"строкой из {length} символа(-ов)",
             }
         else:
-            doc = {
-                "en": "string",
-                "ru": "строкой",
-            }
+            if min_len is None:
+                if max_len is None:
+                    doc = {
+                        "en": "string",
+                        "ru": "строкой",
+                    }
+                else:
+                    doc = {
+                        "en": f"string of length up to {max_len}",
+                        "ru": f"строкой не более чем из {max_len} символа(-ов)",
+                    }
+            elif max_len is not None:
+                doc = {
+                    "en": f"string of length from {min_len} to {max_len}",
+                    "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
+                }
+            else:
+                doc = {
+                    "en": f"string of length at least {min_len}",
+                    "ru": f"строкой не менее чем из {min_len} символа(-ов)",
+                }
 
         super().__init__(
-            functools.partial(self._validate, length=length),
+            functools.partial(
+                self._validate,
+                length=length,
+                min_len=min_len,
+                max_len=max_len,
+            ),
             doc,
             _internal_id="String",
         )
 
     @staticmethod
-    def _validate(value: Any, /, *, length: int) -> str:
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        length: typing.Optional[int],
+        min_len: typing.Optional[int],
+        max_len: typing.Optional[int],
+    ) -> str:
         if (
             isinstance(length, int)
             and len(list(grapheme.graphemes(str(value)))) != length
@@ -372,28 +469,50 @@ class RegExp(Validator):
     """
     Checks if value matches the regex
     :param regex: Regex to match
+    :param flags: Flags to pass to re.compile
+    :param description: Description of regex
     """
 
-    def __init__(self, regex: str):
+    def __init__(
+        self,
+        regex: str,
+        flags: typing.Optional[re.RegexFlag] = None,
+        description: typing.Optional[typing.Union[dict, str]] = None,
+    ):
         try:
-            re.compile(regex)
+            re.compile(regex, flags=flags)
         except re.error as e:
             raise Exception(f"{regex} is not a valid regex") from e
 
-        doc = {
-            "en": f"string matching pattern «{regex}»",
-            "ru": f"строкой, соответствующей шаблону «{regex}»",
-        }
+        if description is None:
+            doc = {
+                "en": f"string matching pattern «{regex}»",
+                "ru": f"строкой, соответствующей шаблону «{regex}»",
+            }
+        else:
+            if isinstance(description, str):
+                doc = {
+                    "en": description,
+                    "ru": description,
+                }
+            else:
+                doc = description
 
         super().__init__(
-            functools.partial(self._validate, regex=regex),
+            functools.partial(self._validate, regex=regex, flags=flags),
             doc,
             _internal_id="RegExp",
         )
 
     @staticmethod
-    def _validate(value: Any, /, *, regex: str) -> str:
-        if not re.match(regex, value):
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        regex: str,
+        flags: typing.Optional[re.RegexFlag],
+    ) -> str:
+        if not re.match(regex, value, flags=flags):
             raise ValidationError(f"Passed value ({value}) must follow pattern {regex}")
 
         return value
@@ -408,8 +527,8 @@ class Float(Validator):
 
     def __init__(
         self,
-        minimum: Optional[float] = None,
-        maximum: Optional[float] = None,
+        minimum: typing.Optional[float] = None,
+        maximum: typing.Optional[float] = None,
     ):
         _sign_en = "positive " if minimum is not None and minimum == 0 else ""
         _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
@@ -458,12 +577,12 @@ class Float(Validator):
 
     @staticmethod
     def _validate(
-        value: Any,
+        value: ConfigAllowedTypes,
         /,
         *,
-        minimum: Optional[float] = None,
-        maximum: Optional[float] = None,
-    ) -> TypeUnion[int, None]:
+        minimum: typing.Optional[float] = None,
+        maximum: typing.Optional[float] = None,
+    ) -> float:
         try:
             value = float(str(value).strip().replace(",", "."))
         except ValueError:
@@ -487,7 +606,7 @@ class TelegramID(Validator):
         )
 
     @staticmethod
-    def _validate(value: Any, /):
+    def _validate(value: ConfigAllowedTypes, /) -> int:
         e = ValidationError(f"Passed value ({value}) is not a valid telegram id")
 
         try:
@@ -498,7 +617,7 @@ class TelegramID(Validator):
         if str(value).startswith("-100"):
             value = int(str(value)[4:])
 
-        if value > 2**32 - 1 or value < 0:
+        if value > 2**64 - 1 or value < 0:
             raise e
 
         return value
@@ -528,7 +647,12 @@ class Union(Validator):
         )
 
     @staticmethod
-    def _validate(value: Any, /, *, validators: list):
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        validators: list,
+    ) -> ConfigAllowedTypes:
         for validator in validators:
             try:
                 return validator.validate(value)
@@ -547,7 +671,7 @@ class NoneType(Validator):
         )
 
     @staticmethod
-    def _validate(value: Any, /) -> None:
+    def _validate(value: ConfigAllowedTypes, /) -> None:
         if value not in {None, False, ""}:
             raise ValidationError(f"Passed value ({value}) is not None")
 
@@ -555,7 +679,7 @@ class NoneType(Validator):
 
 
 class Hidden(Validator):
-    def __init__(self, validator: Optional[Validator] = None):
+    def __init__(self, validator: typing.Optional[Validator] = None):
         if not validator:
             validator = String()
 
@@ -566,5 +690,115 @@ class Hidden(Validator):
         )
 
     @staticmethod
-    def _validate(value: Any, /, *, validator: Validator) -> Any:
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        validator: Validator,
+    ) -> ConfigAllowedTypes:
         return validator.validate(value)
+
+
+class Emoji(Validator):
+    """
+    Checks whether passed argument is a valid emoji
+    :param quantity: Number of emojis to be passed
+    :param min_len: Minimum number of emojis
+    :param max_len: Maximum number of emojis
+    """
+
+    def __init__(
+        self,
+        length: typing.Optional[int] = None,
+        min_len: typing.Optional[int] = None,
+        max_len: typing.Optional[int] = None,
+    ):
+        if length is not None:
+            doc = {
+                "en": f"{length} emojis",
+                "ru": f"ровно {length} эмодзи",
+            }
+        elif min_len is not None and max_len is not None:
+            doc = {
+                "en": f"{min_len} to {max_len} emojis",
+                "ru": f"от {min_len} до {max_len} эмодзи",
+            }
+        elif min_len is not None:
+            doc = {
+                "en": f"at least {min_len} emoji",
+                "ru": f"не менее {min_len} эмодзи",
+            }
+        elif max_len is not None:
+            doc = {
+                "en": f"no more than {max_len} emojis",
+                "ru": f"не более {max_len} эмодзи",
+            }
+        else:
+            doc = {
+                "en": "emoji",
+                "ru": "эмодзи",
+            }
+
+        super().__init__(
+            functools.partial(
+                self._validate,
+                length=length,
+                min_len=min_len,
+                max_len=max_len,
+            ),
+            doc,
+            _internal_id="Emoji",
+        )
+
+    @staticmethod
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        length: typing.Optional[int],
+        min_len: typing.Optional[int],
+        max_len: typing.Optional[int],
+    ) -> str:
+        value = str(value)
+        passed_length = len(list(grapheme.graphemes(value)))
+
+        if length is not None and passed_length != length:
+            raise ValidationError(f"Passed value ({value}) is not {length} emojis long")
+
+        if (
+            min_len is not None
+            and max_len is not None
+            and (passed_length < min_len or passed_length > max_len)
+        ):
+            raise ValidationError(
+                f"Passed value ({value}) is not between {min_len} and {max_len} emojis"
+                " long"
+            )
+
+        if min_len is not None and passed_length < min_len:
+            raise ValidationError(
+                f"Passed value ({value}) is not at least {min_len} emojis long"
+            )
+
+        if max_len is not None and passed_length > max_len:
+            raise ValidationError(
+                f"Passed value ({value}) is not no more than {max_len} emojis long"
+            )
+
+        if any(emoji not in ALLOWED_EMOJIS for emoji in grapheme.graphemes(value)):
+            raise ValidationError(
+                f"Passed value ({value}) is not a valid string with emojis"
+            )
+
+        return value
+
+
+class EntityLike(RegExp):
+    def __init__(self):
+        super().__init__(
+            regex=r"^(?:@|https?://t\.me/)?(?:[a-zA-Z0-9_]{5,32}|[a-zA-Z0-9_]{1,32}\?[a-zA-Z0-9_]{1,32})$",
+            description={
+                "en": "link to entity, username or Telegram ID",
+                "ru": "ссылка на сущность, имя пользователя или Telegram ID",
+            },
+        )

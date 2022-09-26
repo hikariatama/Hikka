@@ -15,7 +15,7 @@ import inspect
 import logging
 from dataclasses import dataclass, field
 import time
-from typing import Any, Awaitable, Callable, Optional, Union
+import typing
 from importlib.abc import SourceLoader
 
 from telethon.tl.types import Message, ChannelFull, UserFull
@@ -39,7 +39,9 @@ from .pointers import (  # skipcq: PY-W2000
 logger = logging.getLogger(__name__)
 
 
-JSONSerializable = Union[str, int, float, bool, list, dict, None]
+JSONSerializable = typing.Union[str, int, float, bool, list, dict, None]
+HikkaReplyMarkup = typing.Union[typing.List[typing.List[dict]], typing.List[dict], dict]
+ListLike = typing.Union[list, set, tuple]
 
 
 class StringLoader(SourceLoader):
@@ -104,7 +106,9 @@ class Module:
         if name in {"hikka_watchers", "watchers"}:
             return get_watchers(self)
 
-        raise AttributeError(f"Module has no attribute {name}")
+        raise AttributeError(
+            f"Module {self.__class__.__name__} has no attribute {name}"
+        )
 
 
 class Library:
@@ -124,10 +128,14 @@ class LoadError(Exception):
 class CoreOverwriteError(LoadError):
     """Is being raised when core module or command is overwritten"""
 
-    def __init__(self, module: Optional[str] = None, command: Optional[str] = None):
+    def __init__(
+        self,
+        module: typing.Optional[str] = None,
+        command: typing.Optional[str] = None,
+    ):
         self.type = "module" if module else "command"
         self.target = module or command
-        super().__init__()
+        super().__init__(str(self))
 
     def __str__(self) -> str:
         return (
@@ -228,19 +236,23 @@ class ModuleConfig(dict):
         """Get the default value by key"""
         return self._config[key].default
 
-    def __setitem__(self, key: str, value: Any):
+    def __setitem__(self, key: str, value: typing.Any):
         self._config[key].value = value
-        self.update({key: value})
+        super().__setitem__(key, value)
 
-    def set_no_raise(self, key: str, value: Any):
+    def set_no_raise(self, key: str, value: typing.Any):
         self._config[key].set_no_raise(value)
-        self.update({key: value})
+        super().__setitem__(key, value)
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: str) -> typing.Any:
         try:
             return self._config[key].value
         except KeyError:
             return None
+
+    def reload(self):
+        for key in self._config:
+            super().__setitem__(key, self._config[key].value)
 
 
 LibraryConfig = ModuleConfig
@@ -250,12 +262,12 @@ class _Placeholder:
     """Placeholder to determine if the default value is going to be set"""
 
 
-async def wrap(func: Awaitable):
+async def wrap(func: typing.Awaitable):
     with contextlib.suppress(Exception):
         return await func()
 
 
-def syncwrap(func: Callable):
+def syncwrap(func: typing.Callable):
     with contextlib.suppress(Exception):
         return func()
 
@@ -263,17 +275,17 @@ def syncwrap(func: Callable):
 @dataclass(repr=True)
 class ConfigValue:
     option: str
-    default: Any = None
-    doc: Union[callable, str] = "No description"
-    value: Any = field(default_factory=_Placeholder)
-    validator: Optional[callable] = None
-    on_change: Optional[Union[Awaitable, Callable]] = None
+    default: typing.Any = None
+    doc: typing.Union[callable, str] = "No description"
+    value: typing.Any = field(default_factory=_Placeholder)
+    validator: typing.Optional[callable] = None
+    on_change: typing.Optional[typing.Union[typing.Awaitable, typing.Callable]] = None
 
     def __post_init__(self):
         if isinstance(self.value, _Placeholder):
             self.value = self.default
 
-    def set_no_raise(self, value: Any) -> bool:
+    def set_no_raise(self, value: typing.Any) -> bool:
         """
         Sets the config value w/o ValidationError being raised
         Should not be used uninternally
@@ -283,7 +295,7 @@ class ConfigValue:
     def __setattr__(
         self,
         key: str,
-        value: Any,
+        value: typing.Any,
         *,
         ignore_validation: bool = False,
     ) -> bool:
@@ -312,8 +324,9 @@ class ConfigValue:
                             raise e
 
                         logger.debug(
-                            f"Config value was broken ({value}), so it was reset to"
-                            f" {self.default}"
+                            "Config value was broken (%s), so it was reset to %s",
+                            value,
+                            self.default,
                         )
 
                         value = self.default
@@ -328,27 +341,27 @@ class ConfigValue:
 
                     if self.validator.internal_id in defaults:
                         logger.debug(
-                            "Config value was None, so it was reset to"
-                            f" {defaults[self.validator.internal_id]}"
+                            "Config value was None, so it was reset to %s",
+                            defaults[self.validator.internal_id],
                         )
                         value = defaults[self.validator.internal_id]
 
             # This attribute will tell the `Loader` to save this value in db
             self._save_marker = True
 
-            if not ignore_validation and callable(self.on_change):
-                if inspect.iscoroutinefunction(self.on_change):
-                    asyncio.ensure_future(wrap(self.on_change))
-                else:
-                    syncwrap(self.on_change)
-
         object.__setattr__(self, key, value)
+
+        if key == "value" and not ignore_validation and callable(self.on_change):
+            if inspect.iscoroutinefunction(self.on_change):
+                asyncio.ensure_future(wrap(self.on_change))
+            else:
+                syncwrap(self.on_change)
 
 
 def _get_members(
     mod: Module,
     ending: str,
-    attribute: Optional[str] = None,
+    attribute: typing.Optional[str] = None,
     strict: bool = False,
 ) -> dict:
     """Get method of module, which end with ending"""

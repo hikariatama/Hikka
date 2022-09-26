@@ -1,21 +1,5 @@
 """Main logging part"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -34,7 +18,7 @@ import os
 import re
 import telethon
 import traceback
-from typing import List, Optional
+import typing
 from logging.handlers import RotatingFileHandler
 
 from . import utils
@@ -54,28 +38,27 @@ class HikkaException:
         exc_type: object,
         exc_value: Exception,
         tb: traceback.TracebackException,
-        stack: Optional[List[inspect.FrameInfo]] = None,
+        stack: typing.Optional[typing.List[inspect.FrameInfo]] = None,
     ) -> "HikkaException":
         def to_hashable(dictionary: dict) -> dict:
             dictionary = dictionary.copy()
             for key, value in dictionary.items():
                 if isinstance(value, dict):
+                    dictionary[key] = to_hashable(value)
+                else:
                     if (
                         getattr(getattr(value, "__class__", None), "__name__", None)
                         == "Database"
                     ):
                         dictionary[key] = "<Database>"
-
-                    if isinstance(
-                        value, (telethon.TelegramClient, CustomTelegramClient)
+                    elif isinstance(
+                        value,
+                        (telethon.TelegramClient, CustomTelegramClient),
                     ):
                         dictionary[key] = f"<{value.__class__.__name__}>"
-
-                    dictionary[key] = to_hashable(value)
-                else:
-                    try:
-                        json.dumps([value])
-                    except Exception:
+                    elif len(str(value)) > 512:
+                        dictionary[key] = f"{str(value)[:512]}..."
+                    else:
                         dictionary[key] = str(value)
 
             return dictionary
@@ -193,7 +176,9 @@ class TelegramLogsHandler(logging.Handler):
         """Return a list of logging entries"""
         return self.handledbuffer + self.buffer
 
-    def dumps(self, lvl: int = 0, client_id: Optional[int] = None) -> list:
+    def dumps(
+        self, lvl: int = 0, client_id: typing.Optional[int] = None
+    ) -> typing.List[str]:
         """Return all entries of minimum level as list of strings"""
         return [
             self.targets[0].format(record)
@@ -270,7 +255,7 @@ class TelegramLogsHandler(logging.Handler):
             for client_id in self._mods
         }
 
-        for client_id, exceptions in self._exc_queue.items():
+        for exceptions in self._exc_queue.values():
             for exc in exceptions:
                 await exc
 

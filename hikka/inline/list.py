@@ -13,8 +13,7 @@ import functools
 import logging
 import time
 import traceback
-from typing import List as _List
-from typing import Optional, Union
+import typing
 
 from aiogram.types import (
     CallbackQuery,
@@ -30,6 +29,7 @@ from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import utils, main
+from ..types import HikkaReplyMarkup
 from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
@@ -38,18 +38,18 @@ logger = logging.getLogger(__name__)
 class List(InlineUnit):
     async def list(
         self,
-        message: Union[Message, int],
-        strings: _List[str],
+        message: typing.Union[Message, int],
+        strings: typing.List[str],
         *,
         force_me: bool = False,
-        always_allow: Optional[list] = None,
+        always_allow: typing.Optional[typing.List[int]] = None,
         manual_security: bool = False,
         disable_security: bool = False,
-        ttl: Union[int, bool] = False,
-        on_unload: Optional[callable] = None,
+        ttl: typing.Union[int, bool] = False,
+        on_unload: typing.Optional[callable] = None,
         silent: bool = False,
-        custom_buttons: Optional[Union[_List[_List[dict]], _List[dict], dict]] = None,
-    ) -> Union[bool, InlineMessage]:
+        custom_buttons: typing.Optional[HikkaReplyMarkup] = None,
+    ) -> typing.Union[bool, InlineMessage]:
         """
         Send inline list to chat
         :param message: Where to send list. Can be either `Message` or `int`
@@ -75,42 +75,67 @@ class List(InlineUnit):
         custom_buttons = self._validate_markup(custom_buttons)
 
         if not isinstance(manual_security, bool):
-            logger.error("Invalid type for `manual_security`")
+            logger.error(
+                "Invalid type for `manual_security`. Expected `bool`, got `%s`",
+                type(manual_security),
+            )
             return False
 
         if not isinstance(silent, bool):
-            logger.error("Invalid type for `silent`")
+            logger.error(
+                "Invalid type for `silent`. Expected `bool`, got `%s`",
+                type(silent),
+            )
             return False
 
         if not isinstance(disable_security, bool):
-            logger.error("Invalid type for `disable_security`")
+            logger.error(
+                "Invalid type for `disable_security`. Expected `bool`, got `%s`",
+                type(disable_security),
+            )
             return False
 
         if not isinstance(message, (Message, int)):
-            logger.error("Invalid type for `message`")
+            logger.error(
+                "Invalid type for `message`. Expected `Message` or `int`, got `%s`",
+                type(message),
+            )
             return False
 
         if not isinstance(force_me, bool):
-            logger.error("Invalid type for `force_me`")
+            logger.error(
+                "Invalid type for `force_me`. Expected `bool`, got `%s`",
+                type(force_me),
+            )
             return False
 
         if not isinstance(strings, list) or not strings:
-            logger.error("Invalid type for `strings`")
+            logger.error(
+                "Invalid type for `strings`. Expected `list` with at least one element,"
+                " got `%s`",
+                type(strings),
+            )
             return False
 
         if len(strings) > 50:
-            logger.error(f"Too much pages for `strings` ({len(strings)})")
+            logger.error("Too much pages for `strings` (%s)", len(strings))
             return False
 
         if always_allow and not isinstance(always_allow, list):
-            logger.error("Invalid type for `always_allow`")
+            logger.error(
+                "Invalid type for `always_allow`. Expected `list`, got `%s`",
+                type(always_allow),
+            )
             return False
 
         if not always_allow:
             always_allow = []
 
         if not isinstance(ttl, int) and ttl:
-            logger.error("Invalid type for `ttl`")
+            logger.error(
+                "Invalid type for `ttl`. Expected `int` or `False`, got `%s`",
+                type(ttl),
+            )
             return False
 
         unit_id = utils.rand(16)
@@ -226,7 +251,7 @@ class List(InlineUnit):
     async def _list_page(
         self,
         call: CallbackQuery,
-        page: Union[int, str],
+        page: typing.Union[int, str],
         unit_id: str = None,
     ):
         if page == "close":

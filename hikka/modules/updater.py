@@ -1,19 +1,3 @@
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -29,8 +13,8 @@ import logging
 import os
 import subprocess
 import sys
-from typing import Union
 import time
+import typing
 
 import git
 from git import GitCommandError, Repo
@@ -42,7 +26,8 @@ from telethon.tl.functions.messages import (
 from telethon.tl.types import DialogFilter, Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
-from .. import loader, utils, heroku, main, version
+from .. import loader, utils, main, version
+
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -96,12 +81,6 @@ class UpdaterMod(loader.Module):
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Your {} is"
             " updating...</b>"
-        ),
-        "heroku_update": (
-            "♓️ <b>Deploying new version to Heroku...\nThis might take some time</b>"
-        ),
-        "heroku_update_done_nothing_to_push": (
-            "😔 <b>Update complete. Nothing to push...</b>"
         ),
         "full_success": (
             "<emoji document_id=6323332130579416910>👍</emoji> <b>Userbot is fully"
@@ -167,12 +146,6 @@ class UpdaterMod(loader.Module):
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
             " обновляется...</b>"
         ),
-        "heroku_update": (
-            "♓️ <b>Обновляю Heroku...\nЭто может занять некоторое время</b>"
-        ),
-        "heroku_update_done_nothing_to_push": (
-            "😔 <b>Обновление завершено. Ничего не изменилось, нечего обновлять...</b>"
-        ),
     }
 
     def __init__(self):
@@ -217,7 +190,7 @@ class UpdaterMod(loader.Module):
     async def inline_restart(self, call: InlineCall, secure_boot: bool = False):
         await self.restart_common(call, secure_boot=secure_boot)
 
-    async def process_restart_message(self, msg_obj: Union[InlineCall, Message]):
+    async def process_restart_message(self, msg_obj: typing.Union[InlineCall, Message]):
         self.set(
             "selfupdatemsg",
             msg_obj.inline_message_id
@@ -227,7 +200,7 @@ class UpdaterMod(loader.Module):
 
     async def restart_common(
         self,
-        msg_obj: Union[InlineCall, Message],
+        msg_obj: typing.Union[InlineCall, Message],
         secure_boot: bool = False,
     ):
         if (
@@ -274,11 +247,6 @@ class UpdaterMod(loader.Module):
 
         if "LAVHOST" in os.environ:
             os.system("lavhost restart")
-            return
-
-        if "DYNO" in os.environ:
-            app = heroku.get_app(api_token=main.hikka.api_token)[0]
-            app.restart()
             return
 
         with contextlib.suppress(Exception):
@@ -357,13 +325,9 @@ class UpdaterMod(loader.Module):
                 or not await self.inline.form(
                     message=message,
                     text=self.strings("update_confirm").format(
-                        *(
-                            [current, current[:8], upcoming, upcoming[:8]]
-                            if "DYNO" not in os.environ
-                            else ["", "", "", ""]
-                        )
+                        current, current[:8], upcoming, upcoming[:8]
                     )
-                    if upcoming != current or "DYNO" in os.environ
+                    if upcoming != current
                     else self.strings("no_update"),
                     reply_markup=[
                         {
@@ -380,7 +344,7 @@ class UpdaterMod(loader.Module):
 
     async def inline_update(
         self,
-        msg_obj: Union[InlineCall, Message],
+        msg_obj: typing.Union[InlineCall, Message],
         hard: bool = False,
     ):
         # We don't really care about asyncio at this point, as we are shutting down
@@ -392,10 +356,10 @@ class UpdaterMod(loader.Module):
                 msg_obj = await utils.answer(
                     msg_obj,
                     self.strings("lavhost_update").format(
-                        '</b><emoji document_id=5192756799647785066>✌️</emoji><emoji'
-                        ' document_id=5193117564015747203>✌️</emoji><emoji'
-                        ' document_id=5195050806105087456>✌️</emoji><emoji'
-                        ' document_id=5195457642587233944>✌️</emoji><b>'
+                        "</b><emoji document_id=5192756799647785066>✌️</emoji><emoji"
+                        " document_id=5193117564015747203>✌️</emoji><emoji"
+                        " document_id=5195050806105087456>✌️</emoji><emoji"
+                        " document_id=5195457642587233944>✌️</emoji><b>"
                         if self._client.hikka_me.premium
                         and CUSTOM_EMOJIS
                         and isinstance(msg_obj, Message)
@@ -404,40 +368,6 @@ class UpdaterMod(loader.Module):
                 )
                 await self.process_restart_message(msg_obj)
                 os.system("lavhost update")
-                return
-
-            if "DYNO" in os.environ:
-                msg_obj = await utils.answer(msg_obj, self.strings("heroku_update"))
-                await self.process_restart_message(msg_obj)
-                try:
-                    nosave = "--no-save" in utils.get_args_raw(msg_obj)
-                except Exception:
-                    nosave = False
-
-                if not nosave:
-                    await self._db.remote_force_save()
-
-                app, _ = heroku.get_app(
-                    api_token=main.hikka.api_token,
-                    create_new=False,
-                )
-                repo = heroku.get_repo()
-                url = app.git_url.replace(
-                    "https://",
-                    f"https://api:{os.environ.get('heroku_api_token')}@",
-                )
-
-                if "heroku" in repo.remotes:
-                    remote = repo.remote("heroku")
-                    remote.set_url(url)
-                else:
-                    remote = repo.create_remote("heroku", url)
-
-                await utils.run_sync(remote.push, refspec="HEAD:refs/heads/master")
-                await utils.answer(
-                    msg_obj,
-                    self.strings("heroku_update_done_nothing_to_push"),
-                )
                 return
 
             with contextlib.suppress(Exception):

@@ -10,7 +10,11 @@ import re
 
 
 def compat(code: str) -> str:
-    """Reformats modules, built for GeekTG to work with Hikka"""
+    """
+    Reformats modules, built for GeekTG to work with Hikka
+    :param code: code to reformat
+    :return: reformatted code
+    """
     return "\n".join(
         [
             re.sub(
@@ -31,7 +35,8 @@ def compat(code: str) -> str:
                                 r"\1from ..inline.types import \2, \3\n\1from ..utils"
                                 r" import rand",
                                 line.replace("GeekInlineQuery", "InlineQuery").replace(
-                                    "self.inline._bot", "self.inline.bot"
+                                    "self.inline._bot",
+                                    "self.inline.bot",
                                 ),
                                 flags=re.M,
                             ),

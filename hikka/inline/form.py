@@ -10,10 +10,9 @@ import contextlib
 import copy
 import logging
 import os
-import re
 import time
 from asyncio import Event
-from typing import List, Optional, Union
+import typing
 import random
 from urllib.parse import urlparse
 import grapheme
@@ -35,6 +34,7 @@ from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import utils, main
+from ..types import HikkaReplyMarkup
 from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
@@ -63,24 +63,24 @@ class Form(InlineUnit):
     async def form(
         self,
         text: str,
-        message: Union[Message, int],
-        reply_markup: Union[List[List[dict]], List[dict], dict] = None,
+        message: typing.Union[Message, int],
+        reply_markup: typing.Optional[HikkaReplyMarkup] = None,
         *,
         force_me: bool = False,
-        always_allow: Optional[List[list]] = None,
+        always_allow: typing.Optional[typing.List[int]] = None,
         manual_security: bool = False,
         disable_security: bool = False,
-        ttl: Optional[int] = None,
-        on_unload: Optional[callable] = None,
-        photo: Optional[str] = None,
-        gif: Optional[str] = None,
-        file: Optional[str] = None,
-        mime_type: Optional[str] = None,
-        video: Optional[str] = None,
-        location: Optional[str] = None,
-        audio: Optional[Union[dict, str]] = None,
+        ttl: typing.Optional[int] = None,
+        on_unload: typing.Optional[callable] = None,
+        photo: typing.Optional[str] = None,
+        gif: typing.Optional[str] = None,
+        file: typing.Optional[str] = None,
+        mime_type: typing.Optional[str] = None,
+        video: typing.Optional[str] = None,
+        location: typing.Optional[str] = None,
+        audio: typing.Optional[typing.Union[dict, str]] = None,
         silent: bool = False,
-    ) -> Union[InlineMessage, bool]:
+    ) -> typing.Union[InlineMessage, bool]:
         """
         Send inline form to chat
         :param text: Content of inline form. HTML markdown supported
@@ -120,33 +120,54 @@ class Form(InlineUnit):
             always_allow = []
 
         if not isinstance(text, str):
-            logger.error("Invalid type for `text`")
+            logger.error(
+                "Invalid type for `text`. Expected `str`, got `%s`",
+                type(text),
+            )
             return False
 
         text = self.sanitise_text(text)
 
         if not isinstance(silent, bool):
-            logger.error("Invalid type for `silent`")
+            logger.error(
+                "Invalid type for `silent`. Expected `bool`, got `%s`",
+                type(silent),
+            )
             return False
 
         if not isinstance(manual_security, bool):
-            logger.error("Invalid type for `manual_security`")
+            logger.error(
+                "Invalid type for `manual_security`. Expected `bool`, got `%s`",
+                type(manual_security),
+            )
             return False
 
         if not isinstance(disable_security, bool):
-            logger.error("Invalid type for `disable_security`")
+            logger.error(
+                "Invalid type for `disable_security`. Expected `bool`, got `%s`",
+                type(disable_security),
+            )
             return False
 
         if not isinstance(message, (Message, int)):
-            logger.error("Invalid type for `message`")
+            logger.error(
+                "Invalid type for `message`. Expected `Message` or `int`, got `%s`",
+                type(message),
+            )
             return False
 
         if not isinstance(reply_markup, (list, dict)):
-            logger.error("Invalid type for `reply_markup`")
+            logger.error(
+                "Invalid type for `reply_markup`. Expected `list` or `dict`, got `%s`",
+                type(reply_markup),
+            )
             return False
 
         if photo and (not isinstance(photo, str) or not utils.check_url(photo)):
-            logger.error("Invalid type for `photo`")
+            logger.error(
+                "Invalid type for `photo`. Expected `str` with URL, got `%s`",
+                type(photo),
+            )
             return False
 
         try:
@@ -160,11 +181,17 @@ class Form(InlineUnit):
             photo = None
 
         if gif and (not isinstance(gif, str) or not utils.check_url(gif)):
-            logger.error("Invalid type for `gif`")
+            logger.error(
+                "Invalid type for `gif`. Expected `str` with URL, got `%s`",
+                type(gif),
+            )
             return False
 
         if file and (not isinstance(file, str) or not utils.check_url(file)):
-            logger.error("Invalid type for `file`")
+            logger.error(
+                "Invalid type for `file`. Expected `str` with URL, got `%s`",
+                type(file),
+            )
             return False
 
         if file and not mime_type:
@@ -175,7 +202,10 @@ class Form(InlineUnit):
             return False
 
         if video and (not isinstance(video, str) or not utils.check_url(video)):
-            logger.error("Invalid type for `video`")
+            logger.error(
+                "Invalid type for `video`. Expected `str` with URL, got `%s`",
+                type(video),
+            )
             return False
 
         if isinstance(audio, str):
@@ -186,7 +216,10 @@ class Form(InlineUnit):
             or "url" not in audio
             or not utils.check_url(audio["url"])
         ):
-            logger.error("Invalid type for `audio`")
+            logger.error(
+                "Invalid type for `audio`. Expected `dict` with `url` key, got `%s`",
+                type(audio),
+            )
             return False
 
         if location and (
@@ -194,7 +227,11 @@ class Form(InlineUnit):
             or len(location) != 2
             or not all(isinstance(item, float) for item in location)
         ):
-            logger.error("Invalid type for `location`")
+            logger.error(
+                "Invalid type for `location`. Expected `list` or `tuple` with 2 `float`"
+                " items, got `%s`",
+                type(location),
+            )
             return False
 
         if [
@@ -211,15 +248,21 @@ class Form(InlineUnit):
         reply_markup = self._validate_markup(reply_markup) or []
 
         if not isinstance(force_me, bool):
-            logger.error("Invalid type for `force_me`")
+            logger.error(
+                "Invalid type for `force_me`. Expected `bool`, got `%s`",
+                type(force_me),
+            )
             return False
 
         if not isinstance(always_allow, list):
-            logger.error("Invalid type for `always_allow`")
+            logger.error(
+                "Invalid type for `always_allow`. Expected `list`, got `%s`",
+                type(always_allow),
+            )
             return False
 
         if not isinstance(ttl, int) and ttl:
-            logger.error("Invalid type for `ttl`")
+            logger.error("Invalid type for `ttl`. Expected `int`, got `%s`", type(ttl))
             return False
 
         if isinstance(message, Message) and not silent:
@@ -243,16 +286,7 @@ class Form(InlineUnit):
 
         perms_map = None if manual_security else self._find_caller_sec_map()
 
-        if (
-            not any(
-                any(
-                    "callback" in button or "input" in button or "data" in button
-                    for button in row
-                )
-                for row in reply_markup
-            )
-            and not ttl
-        ):
+        if not reply_markup and not ttl:
             logger.debug("Patching form reply markup with empty data")
             base_reply_markup = copy.deepcopy(reply_markup) or None
             reply_markup = self._validate_markup({"text": "­", "data": "­"})

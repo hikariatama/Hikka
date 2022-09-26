@@ -6,20 +6,15 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
 import ast
 import functools
-import logging
 from math import ceil
-from typing import Union, Any
+import typing
 
 from telethon.tl.types import Message
 
 from .. import loader, utils, translations
 from ..inline.types import InlineCall
-
-logger = logging.getLogger(__name__)
 
 # Everywhere in this module, we use the following naming convention:
 # `obj_type` of non-core module = False
@@ -161,7 +156,7 @@ class HikkaConfigMod(loader.Module):
     _num_rows = 5
 
     @staticmethod
-    def prep_value(value: Any) -> Any:
+    def prep_value(value: typing.Any) -> typing.Any:
         if isinstance(value, str):
             return f"</b><code>{utils.escape_html(value.strip())}</code><b>"
 
@@ -176,7 +171,7 @@ class HikkaConfigMod(loader.Module):
 
         return f"</b><code>{utils.escape_html(value)}</code><b>"
 
-    def hide_value(self, value: Any) -> str:
+    def hide_value(self, value: typing.Any) -> str:
         if isinstance(value, list) and value:
             return self.prep_value(["*" * len(str(i)) for i in value])
 
@@ -189,7 +184,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = query
@@ -236,7 +231,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         mod_instance = self.lookup(mod)
         mod_instance.config[option] = mod_instance.config.getdef(option)
@@ -272,7 +267,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         value: bool,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = value
@@ -331,7 +326,7 @@ class HikkaConfigMod(loader.Module):
         self,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ) -> list:
         return [
             [
@@ -388,7 +383,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             try:
@@ -448,7 +443,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         inline_message_id: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             try:
@@ -518,7 +513,7 @@ class HikkaConfigMod(loader.Module):
         call: InlineCall,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ) -> list:
         return [
             [
@@ -584,7 +579,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         option: str,
         value: bool,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         try:
             self.lookup(mod).config[option] = value
@@ -601,18 +596,6 @@ class HikkaConfigMod(loader.Module):
             return
 
         validator = self.lookup(mod).config._config[option].validator
-        doc = utils.escape_html(
-            next(
-                (
-                    validator.doc[lang]
-                    for lang in self._db.get(translations.__name__, "lang", "en").split(
-                        " "
-                    )
-                    if lang in validator.doc
-                ),
-                validator.doc["en"],
-            )
-        )
 
         await call.edit(
             self.strings(
@@ -639,12 +622,42 @@ class HikkaConfigMod(loader.Module):
 
         await call.answer("✅")
 
+    async def _multi_choice_set_value(
+        self,
+        call: InlineCall,
+        mod: str,
+        option: str,
+        value: bool,
+        obj_type: typing.Union[bool, str] = False,
+    ):
+        try:
+            if value in self.lookup(mod).config._config[option].value:
+                self.lookup(mod).config._config[option].value.remove(value)
+            else:
+                self.lookup(mod).config._config[option].value += [value]
+
+            self.lookup(mod).config.reload()
+        except loader.validators.ValidationError as e:
+            await call.edit(
+                self.strings("validation_error").format(e.args[0]),
+                reply_markup={
+                    "text": self.strings("try_again"),
+                    "callback": self.inline__configure_option,
+                    "args": (mod, option),
+                    "kwargs": {"obj_type": obj_type},
+                },
+            )
+            return
+
+        await self.inline__configure_option(call, mod, option, False, obj_type)
+        await call.answer("✅")
+
     def _generate_choice_markup(
         self,
         call: InlineCall,
         mod: str,
         option: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ) -> list:
         possible_values = list(
             self.lookup(mod)
@@ -674,7 +687,79 @@ class HikkaConfigMod(loader.Module):
                     for value in possible_values
                 ],
                 2,
-            )[:6],
+            )[
+                : 6
+                if self.lookup(mod).config[option]
+                != self.lookup(mod).config.getdef(option)
+                else 7
+            ],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
+            [
+                {
+                    "text": self.strings("back_btn"),
+                    "callback": self.inline__configure,
+                    "args": (mod,),
+                    "kwargs": {"obj_type": obj_type},
+                },
+                {"text": self.strings("close_btn"), "action": "close"},
+            ],
+        ]
+
+    def _generate_multi_choice_markup(
+        self,
+        call: InlineCall,
+        mod: str,
+        option: str,
+        obj_type: typing.Union[bool, str] = False,
+    ) -> list:
+        possible_values = list(
+            self.lookup(mod)
+            .config._config[option]
+            .validator.validate.keywords["possible_values"]
+        )
+        return [
+            [
+                {
+                    "text": self.strings("enter_value_btn"),
+                    "input": self.strings("enter_value_desc"),
+                    "handler": self.inline__set_config,
+                    "args": (mod, option, call.inline_message_id),
+                    "kwargs": {"obj_type": obj_type},
+                }
+            ],
+            *utils.chunks(
+                [
+                    {
+                        "text": (
+                            f"{'☑️' if value in self.lookup(mod).config[option] else '◻️'} "
+                            f"{value if len(str(value)) < 20 else str(value)[:20]}"
+                        ),
+                        "callback": self._multi_choice_set_value,
+                        "args": (mod, option, value, obj_type),
+                    }
+                    for value in possible_values
+                ],
+                2,
+            )[
+                : 6
+                if self.lookup(mod).config[option]
+                != self.lookup(mod).config.getdef(option)
+                else 7
+            ],
             [
                 *(
                     [
@@ -707,7 +792,7 @@ class HikkaConfigMod(loader.Module):
         mod: str,
         config_opt: str,
         force_hidden: bool = False,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         module = self.lookup(mod)
         args = [
@@ -813,6 +898,20 @@ class HikkaConfigMod(loader.Module):
                 )
                 return
 
+            if validator.internal_id == "MultiChoice":
+                await call.edit(
+                    self.strings(
+                        "configuring_option"
+                        if isinstance(obj_type, bool)
+                        else "configuring_option_lib"
+                    ).format(*args),
+                    reply_markup=additonal_button_row
+                    + self._generate_multi_choice_markup(
+                        call, mod, config_opt, obj_type
+                    ),
+                )
+                return
+
         await call.edit(
             self.strings(
                 "configuring_option"
@@ -854,7 +953,7 @@ class HikkaConfigMod(loader.Module):
         self,
         call: InlineCall,
         mod: str,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         btns = [
             {
@@ -873,8 +972,17 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 "\n".join(
                     [
-                        f"▫️ <code>{utils.escape_html(key)}</code>:"
-                        f" <b>{self.prep_value(value) if not self.lookup(mod).config._config[key].validator or self.lookup(mod).config._config[key].validator.internal_id != 'Hidden' else self.hide_value(value)}</b>"
+                        f"▫️ <code>{utils.escape_html(key)}</code>: <b>{{}}</b>".format(
+                            self.prep_value(value)
+                            if (
+                                not self.lookup(mod).config._config[key].validator
+                                or self.lookup(mod)
+                                .config._config[key]
+                                .validator.internal_id
+                                != "Hidden"
+                            )
+                            else self.hide_value(value)
+                        )
                         for key, value in self.lookup(mod).config.items()
                     ]
                 ),
@@ -892,7 +1000,7 @@ class HikkaConfigMod(loader.Module):
             ],
         )
 
-    async def inline__choose_category(self, call: Union[Message, InlineCall]):
+    async def inline__choose_category(self, call: typing.Union[Message, InlineCall]):
         await utils.answer(
             call,
             self.strings("choose_core"),
@@ -930,7 +1038,7 @@ class HikkaConfigMod(loader.Module):
         self,
         call: InlineCall,
         page: int = 0,
-        obj_type: Union[bool, str] = False,
+        obj_type: typing.Union[bool, str] = False,
     ):
         if isinstance(obj_type, bool):
             to_config = [
@@ -938,8 +1046,8 @@ class HikkaConfigMod(loader.Module):
                 for mod in self.allmodules.modules
                 if hasattr(mod, "config")
                 and callable(mod.strings)
-                and (getattr(mod, "__origin__", None) == "<core>" or not obj_type)
-                and (getattr(mod, "__origin__", None) != "<core>" or obj_type)
+                and (mod.__origin__.startswith("<core") or not obj_type)
+                and (not mod.__origin__.startswith("<core") or obj_type)
             ]
         else:
             to_config = [
@@ -1006,7 +1114,7 @@ class HikkaConfigMod(loader.Module):
             if isinstance(mod, loader.Library):
                 type_ = "library"
             else:
-                type_ = getattr(mod, "__origin__", None) == "<core>"
+                type_ = mod.__origin__.startswith("<core")
 
             await self.inline__configure(form, args, obj_type=type_)
             return
@@ -1019,7 +1127,8 @@ class HikkaConfigMod(loader.Module):
         )
     )
     async def fconfig(self, message: Message):
-        """<module_name> <property_name> <config_value> - set the config value for the module"""
+        """<module_name> <property_name> <config_value> - set the config value for the module
+        """
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:

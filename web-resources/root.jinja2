@@ -1,6 +1,6 @@
 <!--
     █ █ ▀ █▄▀ ▄▀█ █▀█ ▀   ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-    █▀█ █ █ █ █▀█ █▀▄ █ ▄ █▀█ █ █▀█ █ ▀ █ █▀█
+    █▀█ █ █ █ █▀█ █▀▄ █ ▄ █▀█  █  █▀█ █ ▀ █ █▀█
 
     Copyright 2022 t.me/hikariatama
     Licensed under the GNU GPLv3
@@ -9,133 +9,85 @@
 {% extends "base.jinja2" %}
 
 {% block head %}
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/bodymovin/5.8.1/lottie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bodymovin/5.8.1/lottie.min.js"></script>
 
-  <link href="//cdn.jsdelivr.net/npm/css.gg/icons/all.css" rel="stylesheet">
+<link href="//cdn.jsdelivr.net/npm/css.gg/icons/all.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="{{ static("base.css") }}">
-
-  <style>
-    .button i {
-      margin-left: .5em;
-    }
-
-    .button {
-      margin: 10px 5px;
-    }
-
-    .mountains {
-      display: none;
-    }
-
-    #tg_icon {
-      height: 40vh;
-    }
-
-    .auth {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      margin: auto;
-      width: 70%;
-      height: 60%;
-      padding: 2rem;
-      display: none;
-    }
-
-    @media screen and (max-width: 736px) {
-      .auth {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-      }
-    }
-
-    .confirm_auth {
-      font-size: 36px;
-      text-align: center;
-      color: #fff;
-      padding: 10px 0;
-    }
-
-    .waiting_for_auth {
-      font-size: 22px;
-      text-align: center;
-      color: #fff;
-      padding: 15px 0;
-    }
-
-    .finish_block {
-      display: none;
-    }
-  </style>
+<link rel="stylesheet" href="{{ static("base.css") }}">
 {% endblock %}
 
 {% block content %}
 {% endblock %}
 
 {% block after %}
+<div class="bg">
+  <div class="bg_inner"></div>
+</div>
 <div class="blur auth vert_center">
   <div id="tg_icon"></div>
   <div class="waiting_for_auth">Waiting for permission...</div>
   <div class="confirm_auth">Please, confirm action in <span style="color:#28a0dc">Telegram</span></div>
+</div>
+<div class="auth-code-form blur">
+  <div id="monkey"></div>
+  <div id="monkey-close"></div>
+  <span class="code-caption">Enter the code you recieved from Telegram</span>
+  <input type="text" class="code-input" inputmode="numeric" autocomplete="off">
 </div>
 <div class="wrapper">
   <div class="blur main finish_block">
     <div id="installation_icon"></div>
     <div class="title">Hikka is installed</div>
     <div class="description">
-      {% if heroku %}
-      Wait for a while, Hikka will be ready in a few minutes.
-      {% else %}
-      Hikka is ready to use.
-      {% endif %}
+      Hikka is ready to use. You can close this page now.
+      <br>
+      <span style="font-size: 24px;">Check <span style="color:#28a0dc">Telegram</span> for a message from your <b>inline
+          bot</b></span>
     </div>
   </div>
   <div class="blur main installation">
     <div class="title">Hikka</div>
-    <div class="description">Fresh and cute<br><span style="color:#28a0dc">Telegram</span> userbot.<br><span style="color: #18cc18; display: none" class="authorized">Authorized!</span></div>
+    <div class="description"><span style="color:#28a0dc">Awesomeness</span> is in your hands<br><span
+        style="color: #18cc18; display: none" class="authorized">Authorized!</span></div>
     <div class="center">
       {% if not tg_done %}
-        <div class="button" id="get_started">
-          <div class="horiz_center">
-            <div class="vert_center">
-              Get started
-            </div>
+      <div class="button" id="get_started">
+        <div class="horiz_center">
+          <div class="vert_center">
+            Get started
+          </div>
 
-            <div class="vert_center">
-              <i class="gg-arrow-right-r"></i>
-            </div>
+          <div class="vert_center">
+            <i class="gg-arrow-right-r"></i>
           </div>
         </div>
+      </div>
       {% elif not lavhost %}
-        <div class="button" id="get_started">
-          <div class="horiz_center">
-            <div class="vert_center">
-              Add phone
-            </div>
+      <div class="button" id="get_started">
+        <div class="horiz_center">
+          <div class="vert_center">
+            Add phone
+          </div>
 
-            <div class="vert_center">
-              <i class="gg-add-r"></i>
-            </div>
+          <div class="vert_center">
+            <i class="gg-add"></i>
           </div>
         </div>
+      </div>
       {% endif %}
       {% if skip_creds and not lavhost %}
-        <div class="button" id="enter_api">
-          <div class="horiz_center">
-            <div class="vert_center">
-              Change API Creds
-            </div>
+      <div class="button" id="enter_api">
+        <div class="horiz_center">
+          <div class="vert_center">
+            Change API Creds
+          </div>
 
-            <div class="vert_center">
-              <i class="gg-brackets"></i>
-            </div>
+          <div class="vert_center">
+            <i class="gg-brackets"></i>
           </div>
         </div>
+      </div>
       {% endif %}
       <span id="block_api_id">
         <label class="api_id" for="api_id">Telegram API ID: </label>
@@ -155,7 +107,8 @@
       </span>
       <span id="block_custom_bot">
         <label class="custom_bot" for="custom_bot">Inline bot username (E.g. @username_bot): </label>
-        <input class="custom_bot" id="custom_bot" placeholder="Leave empty to generate automatically" style="width: 20em;" type="text">
+        <input class="custom_bot" id="custom_bot" placeholder="Leave empty to generate automatically"
+          style="width: 20em;" type="text">
       </span>
     </div>
 
@@ -167,7 +120,7 @@
           </div>
 
           <div class="vert_center">
-            <i class="gg-arrow-right-r"></i>
+            <i class="gg-chevron-right-o"></i>
           </div>
         </div>
       </div>
@@ -177,21 +130,31 @@
 
   </div>
 </div>
+<div class="lights">
+  <div class="light x1"></div>
+  <div class="light x2"></div>
+  <div class="light x3"></div>
+  <div class="light x4"></div>
+  <div class="light x5"></div>
+  <div class="light x6"></div>
+  <div class="light x7"></div>
+  <div class="light x8"></div>
+  <div class="light x9"></div>
+</div>
 <script>
   var skip_creds = "{{ skip_creds }}" == "True";
   var auth_required = true;
   fetch("/check_session", {
       method: "POST",
       credentials: "include"
-  })
-  .then(response => response.text())
-  .then((response) => {
-    auth_required = response != "1";
-  })
+    })
+    .then(response => response.text())
+    .then((response) => {
+      auth_required = response != "1";
+    })
 </script>
 <script src="{{ static("root.js") }}"></script>
-<script src="{{ static("blackhole.js") }}"></script>
 {% if okteto %}
-  <script src="{{ static("okteto.js") }}"></script>
+<script src="{{ static("okteto.js") }}"></script>
 {% endif %}
 {% endblock %}

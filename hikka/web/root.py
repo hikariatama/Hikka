@@ -1,21 +1,5 @@
 """Main bot page"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -45,8 +29,9 @@ import telethon
 from telethon.errors.rpcerrorlist import YouBlockedUserError, FloodWaitError
 from telethon.tl.functions.contacts import UnblockRequest
 
-from .. import utils, main, database, heroku
+from .. import utils, main, database
 from ..tl_cache import CustomTelegramClient
+from .._internal import restart
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -55,28 +40,17 @@ DATA_DIR = (
 )
 
 
-def restart(*argv):
-    os.execl(
-        sys.executable,
-        sys.executable,
-        "-m",
-        os.path.relpath(utils.get_base_dir()),
-        *argv,
-    )
-
-
 class Web:
-    sign_in_clients = {}
-    _pending_client = None
-    _sessions = []
-    _ratelimit = {}
-
     def __init__(self, **kwargs):
+        self.sign_in_clients = {}
+        self._pending_client = None
+        self._sessions = []
+        self._ratelimit = {}
         self.api_token = kwargs.pop("api_token")
         self.data_root = kwargs.pop("data_root")
         self.connection = kwargs.pop("connection")
         self.proxy = kwargs.pop("proxy")
-        super().__init__(**kwargs)
+
         self.app.router.add_get("/", self.root)
         self.app.router.add_put("/setApi", self.set_tg_api)
         self.app.router.add_post("/sendTgCode", self.send_tg_code)
@@ -96,10 +70,9 @@ class Web:
             "tg_done": bool(self.client_data),
             "okteto": "OKTETO" in os.environ,
             "lavhost": "LAVHOST" in os.environ,
-            "heroku": "DYNO" in os.environ,
         }
 
-    async def check_session(self, request):
+    async def check_session(self, request: web.Request) -> web.Response:
         return web.Response(body=("1" if self._check_session(request) else "0"))
 
     def wait_for_api_token_setup(self):
@@ -108,7 +81,7 @@ class Web:
     def wait_for_clients_setup(self):
         return self.clients_set.wait()
 
-    def _check_session(self, request) -> bool:
+    def _check_session(self, request: web.Request) -> bool:
         return (
             request.cookies.get("session", None) in self._sessions
             if main.hikka.clients
@@ -148,7 +121,7 @@ class Web:
 
                     return True
 
-    async def custom_bot(self, request):
+    async def custom_bot(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401)
 
@@ -176,7 +149,7 @@ class Web:
         db.set("hikka.inline", "custom_bot", text)
         return web.Response(body="OK")
 
-    async def set_tg_api(self, request):
+    async def set_tg_api(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401, body="Authorization required")
 
@@ -199,13 +172,11 @@ class Web:
                 body="You specified invalid API ID and/or API HASH",
             )
 
-        if "DYNO" not in os.environ:
-            # On Heroku it'll be saved later
-            with open(
-                os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
-                "w",
-            ) as f:
-                f.write(api_id + "\n" + api_hash)
+        with open(
+            os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
+            "w",
+        ) as f:
+            f.write(api_id + "\n" + api_hash)
 
         self.api_token = collections.namedtuple("api_token", ("ID", "HASH"))(
             api_id,
@@ -215,9 +186,12 @@ class Web:
         self.api_set.set()
         return web.Response(body="ok")
 
-    async def send_tg_code(self, request):
+    async def send_tg_code(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401, body="Authorization required")
+
+        if self._pending_client:
+            return web.Response(status=208, body="Already pending")
 
         text = await request.text()
         phone = telethon.utils.parse_phone(text)
@@ -251,7 +225,7 @@ class Web:
 
         return web.Response(body="ok")
 
-    async def okteto(self, request):
+    async def okteto(self, request: web.Request) -> web.Response:
         if main.get_config_key("okteto_uri"):
             return web.Response(status=418)
 
@@ -259,7 +233,7 @@ class Web:
         main.save_config_key("okteto_uri", text)
         return web.Response(body="URI_SAVED")
 
-    async def tg_code(self, request):
+    async def tg_code(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401)
 
@@ -321,34 +295,15 @@ class Web:
                     ),
                 )
 
-        # At this step we don't want `main.hikka` to "know" about our client
-        # so it doesn't create bot immediately. That's why we only save its session
-        # in case user closes web early. It will be handled on restart
-        # If user finishes login further, client will be passed to main
-        # To prevent Heroku from restarting too soon, we'll do it after setting bot
-        if "DYNO" not in os.environ:
-            await main.hikka.save_client_session(self._pending_client)
-
+        await main.hikka.save_client_session(self._pending_client)
         return web.Response()
 
-    async def finish_login(self, request):
+    async def finish_login(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401)
 
         if not self._pending_client:
             return web.Response(status=400)
-
-        if "DYNO" in os.environ:
-            app, config = heroku.get_app()
-            config["api_id"] = self.api_token.ID
-            config["api_hash"] = self.api_token.HASH
-            await main.hikka.save_client_session(
-                self._pending_client,
-                heroku_config=config,
-                heroku_app=app,
-            )
-            # We don't care what happens next, bc Heroku will restart anyway
-            return
 
         first_session = not bool(main.hikka.clients)
 
@@ -369,7 +324,7 @@ class Web:
 
         return web.Response()
 
-    async def web_auth(self, request):
+    async def web_auth(self, request: web.Request) -> web.Response:
         if self._check_session(request):
             return web.Response(body=request.cookies.get("session", "unauthorized"))
 

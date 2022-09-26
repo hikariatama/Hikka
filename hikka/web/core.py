@@ -32,6 +32,7 @@ import os
 import re
 import subprocess
 import atexit
+import typing
 
 import aiohttp_jinja2
 import jinja2
@@ -41,6 +42,8 @@ from . import root
 from ..tl_cache import CustomTelegramClient
 from ..database import Database
 from ..loader import Modules
+
+logger = logging.getLogger(__name__)
 
 
 class Web(root.Web):
@@ -73,7 +76,12 @@ class Web(root.Web):
         await asyncio.sleep(delay)
         await callback(data.decode("utf-8"))
 
-    async def _read_stream(self, callback: callable, stream, delay: int):
+    async def _read_stream(
+        self,
+        callback: callable,
+        stream: typing.BinaryIO,
+        delay: int,
+    ) -> None:
         last_task = None
         for getline in iter(stream.readline, ""):
             data_chunk = await getline
@@ -98,7 +106,7 @@ class Web(root.Web):
         except Exception:
             pass
         else:
-            logging.debug("Proxy pass tunnel killed")
+            logger.debug("Proxy pass tunnel killed")
 
     async def _reopen_tunnel(self):
         await asyncio.sleep(3600)
@@ -113,20 +121,20 @@ class Web(root.Web):
         self._tunnel_url = url
         asyncio.ensure_future(self._reopen_tunnel())
 
-    async def _process_stream(self, stdout_line: str):
+    async def _process_stream(self, stdout_line: str) -> None:
         if self._stream_processed.is_set():
             return
 
         regex = r"[a-zA-Z0-9]\.lhrtunnel\.link tunneled.*(https:\/\/.*\.link)"
 
         if re.search(regex, stdout_line):
-            logging.debug(f"Proxy pass tunneled: {stdout_line}")
+            logger.debug("Proxy pass tunneled: %s", stdout_line)
             self._tunnel_url = re.search(regex, stdout_line)[1]
             self._stream_processed.set()
             atexit.register(self._kill_tunnel)
 
-    async def _get_proxy_pass_url(self, port: int) -> str:
-        logging.debug("Starting proxy pass shell")
+    async def _get_proxy_pass_url(self, port: int) -> typing.Optional[str]:
+        logger.debug("Starting proxy pass shell")
         self._sproc = await asyncio.create_subprocess_shell(
             "ssh -o StrictHostKeyChecking=no -R"
             f" 80:localhost:{port} nokey@localhost.run",
@@ -136,7 +144,7 @@ class Web(root.Web):
         )
 
         self._stream_processed = asyncio.Event()
-        logging.debug("Starting proxy pass reader")
+        logger.debug("Starting proxy pass reader")
         asyncio.ensure_future(
             self._read_stream(
                 self._process_stream,
@@ -149,13 +157,13 @@ class Web(root.Web):
 
         return self._tunnel_url if hasattr(self, "_tunnel_url") else None
 
-    async def get_url(self, proxy_pass: bool):
+    async def get_url(self, proxy_pass: bool) -> str:
         url = None
 
         if all(option in os.environ for option in {"LAVHOST", "USER", "SERVER"}):
             return f"https://{os.environ['USER']}.{os.environ['SERVER']}.lavhost.ml"
 
-        if "DYNO" not in os.environ and proxy_pass:
+        if proxy_pass:
             with contextlib.suppress(Exception):
                 self._kill_tunnel()
                 url = await asyncio.wait_for(

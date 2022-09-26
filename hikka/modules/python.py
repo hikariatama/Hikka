@@ -8,11 +8,10 @@
 
 import contextlib
 import itertools
-import logging
 import sys
 from types import ModuleType
 import os
-from typing import Any
+import typing
 
 import telethon
 from meval import meval
@@ -21,8 +20,6 @@ from telethon.tl.types import Message
 
 from .. import loader, main, utils
 from ..log import HikkaException
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -59,9 +56,6 @@ class PythonMod(loader.Module):
         "_cls_doc": "Выполняет Python код",
     }
 
-    async def client_ready(self):
-        self._phone = (await self._client.get_me()).phone
-
     @loader.owner
     @loader.command(ru_doc="Алиас для команды .e")
     async def eval(self, message: Message):
@@ -88,13 +82,7 @@ class PythonMod(loader.Module):
                 + "🚫 "
                 + item.full_stack.splitlines()[-1]
             )
-            exc = exc.replace(str(self._phone), "📵")
-
-            if os.environ.get("DATABASE_URL"):
-                exc = exc.replace(
-                    os.environ.get("DATABASE_URL"),
-                    "postgre://**************************",
-                )
+            exc = exc.replace(str(self._client.hikka_me.phone), "📵")
 
             if os.environ.get("hikka_session"):
                 exc = exc.replace(
@@ -123,12 +111,7 @@ class PythonMod(loader.Module):
             utils.escape_html(result),
         )
 
-        ret = ret.replace(str(self._phone), "📵")
-
-        if postgre := os.environ.get("DATABASE_URL") or main.get_config_key(
-            "postgre_uri"
-        ):
-            ret = ret.replace(postgre, "postgre://**************************")
+        ret = ret.replace(str(self._client.hikka_me.phone), "📵")
 
         if redis := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             ret = ret.replace(redis, "redis://**************************")
@@ -167,7 +150,7 @@ class PythonMod(loader.Module):
             },
         }
 
-    def get_sub(self, obj: Any, _depth: int = 1) -> dict:
+    def get_sub(self, obj: typing.Any, _depth: int = 1) -> dict:
         """Get all callable capitalised objects in an object recursively, ignoring _*"""
         return {
             **dict(

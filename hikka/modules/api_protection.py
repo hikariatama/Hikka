@@ -6,9 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# meta pic: https://img.icons8.com/emoji/344/shield-emoji.png
-# meta developer: @hikariatama
-
 import asyncio
 import io
 import json
@@ -16,11 +13,54 @@ import logging
 import time
 
 from telethon.tl.types import Message
+from telethon.tl import functions
+from telethon.tl.tlobject import TLRequest
 
 from .. import loader, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
+
+GROUPS = [
+    "auth",
+    "account",
+    "users",
+    "contacts",
+    "messages",
+    "updates",
+    "photos",
+    "upload",
+    "help",
+    "channels",
+    "bots",
+    "payments",
+    "stickers",
+    "phone",
+    "langpack",
+    "folders",
+    "stats",
+]
+
+
+def decapitalize(string: str) -> str:
+    return string[0].lower() + string[1:]
+
+
+CONSTRUCTORS = {
+    decapitalize(
+        method.__class__.__name__.rsplit("Request", 1)[0]
+    ): method.CONSTRUCTOR_ID
+    for method in utils.array_sum(
+        [
+            [
+                method
+                for method in dir(getattr(functions, group))
+                if isinstance(method, TLRequest)
+            ]
+            for group in GROUPS
+        ]
+    )
+}
 
 
 @loader.tds
@@ -28,7 +68,7 @@ class APIRatelimiterMod(loader.Module):
     """Helps userbot avoid spamming Telegram API"""
 
     strings = {
-        "name": "APIRatelimiter",
+        "name": "APILimiter",
         "warning": (
             "<emoji document_id=6319093650693293883>☣️</emoji>"
             " <b>WARNING!</b>\n\nYour account exceeded the limit of requests, specified"
@@ -108,20 +148,37 @@ class APIRatelimiterMod(loader.Module):
             loader.ConfigValue(
                 "time_sample",
                 15,
-                lambda: "Time sample DO NOT TOUCH",
+                lambda: "Time sample through which the bot will count requests",
                 validator=loader.validators.Integer(minimum=1),
             ),
             loader.ConfigValue(
                 "threshold",
                 100,
-                lambda: "Threshold DO NOT TOUCH",
+                lambda: "Threshold of requests to trigger protection",
                 validator=loader.validators.Integer(minimum=10),
             ),
             loader.ConfigValue(
                 "local_floodwait",
                 30,
-                lambda: "Local FW DO NOT TOUCH",
+                lambda: "Freeze userbot for this amount of time, if request limit exceeds",
                 validator=loader.validators.Integer(minimum=10, maximum=3600),
+            ),
+            loader.ConfigValue(
+                "forbidden_methods",
+                ["joinChannel", "importChatInvite"],
+                lambda: "Forbid specified methods from being executed throughout external modules",
+                validator=loader.validators.MultiChoice(
+                    [
+                        "sendReaction",
+                        "joinChannel",
+                        "importChatInvite",
+                    ]
+                ),
+                on_change=lambda: self._client.forbid_constructors(
+                    map(
+                        lambda x: CONSTRUCTORS[x], self.config["forbidden_constructors"]
+                    )
+                ),
             ),
         )
 

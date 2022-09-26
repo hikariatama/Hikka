@@ -31,14 +31,17 @@ import inspect
 import logging
 import re
 import traceback
-from typing import Tuple, Union
+import typing
 
 from telethon.tl.types import Message
+from telethon import events
 
 from . import main, security, utils
 from .database import Database
 from .loader import Modules
 from .tl_cache import CustomTelegramClient
+
+logger = logging.getLogger(__name__)
 
 # Keys for layout switch
 ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
@@ -84,13 +87,11 @@ class CommandDispatcher:
         modules: Modules,
         client: CustomTelegramClient,
         db: Database,
-        no_nickname: bool = False,
     ):
         self._modules = modules
         self._client = client
         self.client = client
         self._db = db
-        self.no_nickname = no_nickname
 
         self._ratelimit_storage_user = collections.defaultdict(int)
         self._ratelimit_storage_chat = collections.defaultdict(int)
@@ -241,9 +242,9 @@ class CommandDispatcher:
 
     async def _handle_command(
         self,
-        event,
+        event: typing.Union[events.NewMessage, events.MessageDeleted],
         watcher: bool = False,
-    ) -> Union[bool, Tuple[Message, str, str, callable]]:
+    ) -> typing.Union[bool, typing.Tuple[Message, str, str, callable]]:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return False
 
@@ -323,7 +324,6 @@ class CommandDispatcher:
             pass
         elif (
             not event.is_private
-            and not self.no_nickname
             and not self._db.get(main.__name__, "no_nickname", False)
             and command not in self._db.get(main.__name__, "nonickcmds", [])
             and initiator not in self._db.get(main.__name__, "nonickusers", [])
@@ -348,7 +348,7 @@ class CommandDispatcher:
             and message.chat.title != "hikka-logs"
         ):
             if not watcher:
-                logging.warning("Ignoring message in datachat \\ logging chat")
+                logger.warning("Ignoring message in datachat \\ logging chat")
             return False
 
         message.message = prefix + txt + message.message[len(prefix + command) :]
@@ -370,7 +370,10 @@ class CommandDispatcher:
 
         return message, prefix, txt, func
 
-    async def handle_command(self, event: Message):
+    async def handle_command(
+        self,
+        event: typing.Union[events.NewMessage, events.MessageDeleted],
+    ):
         """Handle all commands"""
         message = await self._handle_command(event)
         if not message:
@@ -386,8 +389,8 @@ class CommandDispatcher:
             )
         )
 
-    async def command_exc(self, e, message: Message):
-        logging.exception("Command failed", extra={"stack": inspect.stack()})
+    async def command_exc(self, _, message: Message):
+        logger.exception("Command failed", extra={"stack": inspect.stack()})
         if not self._db.get(main.__name__, "inlinelogs", True):
             try:
                 txt = (
@@ -413,10 +416,14 @@ class CommandDispatcher:
         except Exception:
             pass
 
-    async def watcher_exc(self, e, message: Message):
-        logging.exception("Error running watcher", extra={"stack": inspect.stack()})
+    async def watcher_exc(self, *_):
+        logger.exception("Error running watcher", extra={"stack": inspect.stack()})
 
-    async def _handle_tags(self, event, func: callable) -> bool:
+    async def _handle_tags(
+        self,
+        event: typing.Union[events.NewMessage, events.MessageDeleted],
+        func: callable,
+    ) -> bool:
         message = getattr(event, "message", event)
         return (
             (
@@ -499,7 +506,7 @@ class CommandDispatcher:
                 and (
                     not isinstance(message, Message)
                     or isinstance(func.startswith, str)
-                    and not message.raw_text.startswith(getattr(func, "startswith"))
+                    and not message.raw_text.startswith(func.startswith)
                 )
             )
             or (
@@ -507,7 +514,7 @@ class CommandDispatcher:
                 and (
                     not isinstance(message, Message)
                     or isinstance(func.endswith, str)
-                    and not message.raw_text.endswith(getattr(func, "endswith"))
+                    and not message.raw_text.endswith(func.endswith)
                 )
             )
             or (
@@ -515,7 +522,7 @@ class CommandDispatcher:
                 and (
                     not isinstance(message, Message)
                     or isinstance(func.contains, str)
-                    and getattr(func, "contains") not in message.raw_text
+                    and func.contains not in message.raw_text
                 )
             )
             or (
@@ -545,7 +552,10 @@ class CommandDispatcher:
             )
         )
 
-    async def handle_incoming(self, event):
+    async def handle_incoming(
+        self,
+        event: typing.Union[events.NewMessage, events.MessageDeleted],
+    ):
         """Handle all incoming messages"""
         message = utils.censor(getattr(event, "message", event))
 
@@ -556,7 +566,7 @@ class CommandDispatcher:
         if utils.get_chat_id(message) in blacklist_chats or (
             whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
         ):
-            logging.debug("Message is blacklisted")
+            logger.debug("Message is blacklisted")
             return
 
         for func in self._modules.watchers:
@@ -585,10 +595,7 @@ class CommandDispatcher:
                 not in whitelist_modules
                 or await self._handle_tags(event, func)
             ):
-                tags = ", ".join(
-                    f"{tag}={getattr(func, tag, None)}" for tag in ALL_TAGS
-                )
-                logging.debug(f"Ignored watcher of module {modname} {tags}")
+                logger.debug("Ignored watcher of module %s", modname)
                 continue
 
             # Avoid weird AttributeErrors in weird dochub modules by settings placeholder

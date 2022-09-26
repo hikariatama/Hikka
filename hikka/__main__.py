@@ -1,21 +1,5 @@
 """Entry point. Checks for user and starts main script"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -24,17 +8,17 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import atexit
 import getpass
 import os
 import subprocess
 import sys
 
+from ._internal import restart
+
 if (
     getpass.getuser() == "root"
     and "--root" not in " ".join(sys.argv)
-    and "OKTETO" not in os.environ
-    and "DOCKER" not in os.environ
+    and all(trigger not in os.environ for trigger in {"OKTETO", "DOCKER", "GOORM"})
 ):
     print("🚫" * 15)
     print("You attempted to run Hikka on behalf of root user")
@@ -67,34 +51,6 @@ def deps(error):
     )
 
     restart()
-
-
-def restart():
-    if "HIKKA_DO_NOT_RESTART" in os.environ:
-        print("Got in a loop, exiting")
-        sys.exit(0)
-
-    print("🔄 Restarting...")
-
-    atexit.register(
-        lambda: os.execl(
-            sys.executable,
-            sys.executable,
-            "-m",
-            os.path.relpath(
-                os.path.abspath(
-                    os.path.dirname(
-                        os.path.abspath(__file__),
-                    ),
-                ),
-            ),
-            *(sys.argv[1:]),
-        )
-    )
-
-    os.environ["HIKKA_DO_NOT_RESTART"] = "1"
-
-    sys.exit(0)
 
 
 if sys.version_info < (3, 8, 0):

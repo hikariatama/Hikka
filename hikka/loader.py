@@ -1,21 +1,5 @@
 """Registers modules"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 #             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
 #             █▀█ █ █ █ █▀█ █▀▄ █
 #              © Copyright 2022
@@ -44,7 +28,7 @@ from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
 
 from types import FunctionType
-from typing import Any, Optional, Union, List
+import typing
 
 from . import security, utils, validators, version
 from .types import (
@@ -102,7 +86,7 @@ def proxy0(data):
 _CELLTYPE = type(proxy0(None).__closure__[0])
 
 
-def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
+def replace_all_refs(replace_from: typing.Any, replace_to: typing.Any) -> typing.Any:
     """
     :summary: Uses the :mod:`gc` module to replace all references to obj
               :attr:`replace_from` with :attr:`replace_to` (it tries it's best,
@@ -117,14 +101,12 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
 
     hit = False
     for referrer in _gc.get_referrers(replace_from):
-
         # FRAMES -- PASS THEM UP
         if isinstance(referrer, _types.FrameType):
             continue
 
         # DICTS
         if isinstance(referrer, dict):
-
             cls = None
 
             # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
@@ -196,7 +178,7 @@ def replace_all_refs(replace_from: Any, replace_to: Any) -> Any:
             replace_all_refs(referrer, newfn)
 
         else:
-            logging.debug(f"{referrer} is not supported.")
+            logger.debug("%s is not supported.", referrer)
 
     if hit is False:
         raise AttributeError(f"Object '{replace_from}' not found")
@@ -233,7 +215,7 @@ class InfiniteLoop:
         interval: int,
         autostart: bool,
         wait_before: bool,
-        stop_clause: Union[str, None],
+        stop_clause: typing.Union[str, None],
     ):
         self.func = func
         self.interval = interval
@@ -251,7 +233,7 @@ class InfiniteLoop:
             )
 
         if self._task:
-            logger.debug(f"Stopped loop for {self.func}")
+            logger.debug("Stopped loop for method %s", self.func)
             self._wait_for_stop = asyncio.Event()
             self.status = False
             self._task.add_done_callback(self._stop)
@@ -268,7 +250,7 @@ class InfiniteLoop:
             )
 
         if not self._task:
-            logger.debug(f"Started loop for {self.func}")
+            logger.debug("Started loop for method %s", self.func)
             self._task = asyncio.ensure_future(self.actual_loop(*args, **kwargs))
         else:
             logger.debug("Attempted to start already running loop")
@@ -314,9 +296,9 @@ class InfiniteLoop:
 
 def loop(
     interval: int = 5,
-    autostart: Optional[bool] = False,
-    wait_before: Optional[bool] = False,
-    stop_clause: Optional[str] = None,
+    autostart: typing.Optional[bool] = False,
+    wait_before: typing.Optional[bool] = False,
+    stop_clause: typing.Optional[str] = None,
 ) -> FunctionType:
     """
     Create new infinite loop from class method
@@ -347,7 +329,7 @@ BASE_DIR = (
 
 LOADED_MODULES_DIR = os.path.join(BASE_DIR, "loaded_modules")
 
-if not os.path.isdir(LOADED_MODULES_DIR) and "DYNO" not in os.environ:
+if not os.path.isdir(LOADED_MODULES_DIR):
     os.mkdir(LOADED_MODULES_DIR, mode=0o755)
 
 
@@ -405,7 +387,8 @@ tds = translatable_docstring  # Shorter name for modules to use
 
 
 def ratelimit(func: callable):
-    """Decorator that causes ratelimiting for this command to be enforced more strictly"""
+    """Decorator that causes ratelimiting for this command to be enforced more strictly
+    """
     func.ratelimit = True
     return func
 
@@ -438,6 +421,7 @@ def tag(*tags, **kwarg_tags):
         • `filter` - Capture only messages that pass given function
         • `from_id` - Capture only messages from given user
         • `chat_id` - Capture only messages from given chat
+        • `thumb_url` - Works for inline command handlers. Will be shown in help
 
     Usage example:
 
@@ -485,6 +469,14 @@ def command(*args, **kwargs):
     Decorator that marks function as userbot command
     """
     return _mark_method("is_command", *args, **kwargs)
+
+
+def debug_method(*args, **kwargs):
+    """
+    Decorator that marks function as IDM (Internal Debug Method)
+    :param name: Name of the method
+    """
+    return _mark_method("is_debug_method", *args, **kwargs)
 
 
 def inline_handler(*args, **kwargs):
@@ -559,13 +551,21 @@ class Modules:
             self.watchers = watchers
 
             logger.debug(
-                f"Reloaded {len(self.commands)} commands,"
-                f" {len(self.inline_handlers)} inline handlers,"
-                f" {len(self.callback_handlers)} callback handlers and"
-                f" {len(self.watchers)} watchers"
+                "Reloaded %s commands,"
+                " %s inline handlers,"
+                " %s callback handlers and"
+                " %s watchers",
+                len(self.commands),
+                len(self.inline_handlers),
+                len(self.callback_handlers),
+                len(self.watchers),
             )
 
-    async def register_all(self, mods: list = None):
+    async def register_all(
+        self,
+        mods: typing.Optional[typing.List[str]] = None,
+        no_external: bool = False,
+    ) -> typing.List[Module]:
         """Load all modules in the module directory"""
         external_mods = []
 
@@ -580,8 +580,10 @@ class Modules:
 
             self.secure_boot = self._db.get(__name__, "secure_boot", False)
 
-            if "DYNO" not in os.environ and not self.secure_boot:
-                external_mods = [
+            external_mods = (
+                []
+                if self.secure_boot
+                else [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
                         lambda x: (
@@ -591,15 +593,25 @@ class Modules:
                         os.listdir(LOADED_MODULES_DIR),
                     )
                 ]
-            else:
-                external_mods = []
+            )
 
-        await self._register_modules(mods)
-        await self._register_modules(external_mods, "<file>")
+        loaded = []
+        loaded += await self._register_modules(mods)
 
-    async def _register_modules(self, modules: list, origin: str = "<core>"):
+        if not no_external:
+            loaded += await self._register_modules(external_mods, "<file>")
+
+        return loaded
+
+    async def _register_modules(
+        self,
+        modules: list,
+        origin: str = "<core>",
+    ) -> typing.List[Module]:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+
+        loaded = []
 
         for mod in modules:
             try:
@@ -613,7 +625,7 @@ class Modules:
                     "<core {}>" if origin == "<core>" else "<file {}>"
                 ).format(mod_shortname)
 
-                logger.debug(f"Loading {module_name} from filesystem")
+                logger.debug("Loading %s from filesystem", module_name)
 
                 with open(mod, "r") as file:
                     spec = importlib.machinery.ModuleSpec(
@@ -622,9 +634,11 @@ class Modules:
                         origin=user_friendly_origin,
                     )
 
-                await self.register_module(spec, module_name, origin)
+                loaded += [await self.register_module(spec, module_name, origin)]
             except BaseException as e:
-                logger.exception(f"Failed to load module {mod} due to {e}:")
+                logger.exception("Failed to load module %s due to %s:", mod, e)
+
+        return loaded
 
     async def register_module(
         self,
@@ -664,7 +678,7 @@ class Modules:
 
         cls_name = ret.__class__.__name__
 
-        if save_fs and "DYNO" not in os.environ:
+        if save_fs:
             path = os.path.join(
                 LOADED_MODULES_DIR,
                 f"{cls_name}_{self.client.tg_id}.py",
@@ -674,7 +688,7 @@ class Modules:
                 with open(path, "w") as f:
                     f.write(spec.loader.data.decode("utf-8"))
 
-                logger.debug(f"Saved {cls_name=} to {path=}")
+                logger.debug("Saved class %s to path %s", cls_name, path)
 
         return ret
 
@@ -689,21 +703,21 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        if getattr(instance, "__origin__", "") == "<core>":
+        if instance.__origin__.startswith("<core"):
             self._core_commands += list(
                 map(lambda x: x.lower(), list(instance.hikka_commands))
             )
 
         for name, cmd in self.commands.copy().items():
             if cmd.__self__.__class__.__name__ == instance.__class__.__name__:
-                logger.debug(f"Removing command {name} for update")
+                logger.debug("Removing command %s for update", name)
                 del self.commands[name]
 
         for _command, cmd in instance.hikka_commands.items():
             # Restrict overwriting core modules' commands
             if (
                 _command.lower() in self._core_commands
-                and getattr(instance, "__origin__", "") != "<core>"
+                and not instance.__origin__.startswith("<core")
             ):
                 with contextlib.suppress(Exception):
                     self.modules.remove(instance)
@@ -724,14 +738,14 @@ class Modules:
                     and func.__self__.__class__.__name__
                     != self.inline_handlers[name].__self__.__class__.__name__
                 ):
-                    logger.debug(f"Duplicate inline_handler {name}")
+                    logger.debug("Duplicate inline_handler %s", name)
 
                 logger.debug(
-                    f"Replacing inline_handler for {self.inline_handlers[name]}"
+                    "Replacing inline_handler for %s", self.inline_handlers[name]
                 )
 
             if not func.__doc__:
-                logger.debug(f"Missing docs for {name}")
+                logger.debug("Missing docs for %s", name)
 
             self.inline_handlers.update({name.lower(): func})
 
@@ -742,7 +756,7 @@ class Modules:
                 and func.__self__.__class__.__name__
                 != self.callback_handlers[name].__self__.__class__.__name__
             ):
-                logger.debug(f"Duplicate callback_handler {name}")
+                logger.debug("Duplicate callback_handler %s", name)
 
             self.callback_handlers.update({name.lower(): func})
 
@@ -753,7 +767,7 @@ class Modules:
 
         for _watcher in self.watchers:
             if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
-                logger.debug(f"Removing watcher {_watcher} for update")
+                logger.debug("Removing watcher %s for update", _watcher)
                 self.watchers.remove(_watcher)
 
         for _watcher in instance.hikka_watchers.values():
@@ -817,7 +831,7 @@ class Modules:
         self,
         peer: EntityLike,
         reason: str,
-        assure_joined: Optional[bool] = False,
+        assure_joined: typing.Optional[bool] = False,
         _module: Module = None,
     ) -> bool:
         """
@@ -913,6 +927,9 @@ class Modules:
 
         return event.status
 
+    def get_prefix(self) -> str:
+        return self._db.get("hikka.main", "command_prefix", ".")
+
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
@@ -924,7 +941,7 @@ class Modules:
         instance.get = partial(self._get, _owner=instance.__class__.__name__)
         instance.set = partial(self._set, _owner=instance.__class__.__name__)
         instance.pointer = partial(self._pointer, _owner=instance.__class__.__name__)
-        instance.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
+        instance.get_prefix = self.get_prefix
         instance.client = self.client
         instance._client = self.client
         instance.db = self._db
@@ -939,28 +956,30 @@ class Modules:
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
-                if getattr(module, "__origin__", "") == "<core>":
+                if module.__origin__.startswith("<core"):
                     raise CoreOverwriteError(
                         module=module.__class__.__name__[:-3]
                         if module.__class__.__name__.endswith("Mod")
                         else module.__class__.__name__
                     )
 
-                logger.debug(f"Removing module for update {module}")
+                logger.debug("Removing module %s for update", module)
                 await module.on_unload()
 
                 self.modules.remove(module)
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):
                         getattr(module, method).stop()
-                        logger.debug(f"Stopped loop in {module=}, {method=}")
+                        logger.debug(
+                            "Stopped loop in module %s, method %s", module, method
+                        )
 
         self.modules += [instance]
 
     def _get(
         self,
         key: str,
-        default: Optional[JSONSerializable] = None,
+        default: typing.Optional[JSONSerializable] = None,
         _owner: str = None,
     ) -> JSONSerializable:
         return self._db.get(_owner, key, default)
@@ -971,7 +990,7 @@ class Modules:
     def _pointer(
         self,
         key: str,
-        default: Optional[JSONSerializable] = None,
+        default: typing.Optional[JSONSerializable] = None,
         _owner: str = None,
     ) -> JSONSerializable:
         return self._db.pointer(_owner, key, default)
@@ -980,7 +999,7 @@ class Modules:
         self,
         url: str,
         *,
-        suspend_on_error: Optional[bool] = False,
+        suspend_on_error: typing.Optional[bool] = False,
         _did_requirements: bool = False,
     ) -> object:
         """
@@ -1030,7 +1049,9 @@ class Modules:
         origin = f"<library {url}>"
 
         spec = importlib.machinery.ModuleSpec(
-            module, StringLoader(code, origin), origin=origin
+            module,
+            StringLoader(code, origin),
+            origin=origin,
         )
         try:
             instance = importlib.util.module_from_spec(spec)
@@ -1038,7 +1059,8 @@ class Modules:
             spec.loader.exec_module(instance)
         except ImportError as e:
             logger.info(
-                f"Library loading failed, attemping dependency installation ({e.name})"
+                "Library loading failed, attemping dependency installation (%s)",
+                e.name,
             )
             # Let's try to reinstall dependencies
             try:
@@ -1058,7 +1080,7 @@ class Modules:
                 )
                 requirements = [e.name]
 
-            logger.debug(f"Installing requirements: {requirements}")
+            logger.debug("Installing requirements: %s", requirements)
 
             if not requirements or _did_requirements:
                 _raise(e)
@@ -1101,7 +1123,13 @@ class Modules:
             _raise(ImportError("Invalid library. No class found"))
 
         if not lib_obj.__class__.__name__.endswith("Lib"):
-            _raise(ImportError("Invalid library. Class name must end with 'Lib'"))
+            _raise(
+                ImportError(
+                    "Invalid library. Classname {} does not end with 'Lib'".format(
+                        lib_obj.__class__.__name__
+                    )
+                )
+            )
 
         if (
             all(
@@ -1126,15 +1154,18 @@ class Modules:
         lib_obj.tg_id = self.client.tg_id
         lib_obj.allmodules = self
         lib_obj._lib_get = partial(
-            self._get, _owner=lib_obj.__class__.__name__
-        )  # skipcq
+            self._get,
+            _owner=lib_obj.__class__.__name__,
+        )
         lib_obj._lib_set = partial(
-            self._set, _owner=lib_obj.__class__.__name__
-        )  # skipcq
+            self._set,
+            _owner=lib_obj.__class__.__name__,
+        )
         lib_obj._lib_pointer = partial(
-            self._pointer, _owner=lib_obj.__class__.__name__
-        )  # skipcq
-        lib_obj.get_prefix = partial(self._db.get, "hikka.main", "command_prefix", ".")
+            self._pointer,
+            _owner=lib_obj.__class__.__name__,
+        )
+        lib_obj.get_prefix = self.get_prefix
 
         for old_lib in self.libraries:
             if old_lib.name == lib_obj.name and (
@@ -1142,26 +1173,13 @@ class Modules:
                 and not isinstance(getattr(lib_obj, "version", None), tuple)
                 or old_lib.version >= lib_obj.version
             ):
-                logging.debug(f"Using existing instance of library {old_lib.name}")
+                logger.debug("Using existing instance of library %s", old_lib.name)
                 return old_lib
 
-        new = True
+        if hasattr(lib_obj, "init"):
+            if not callable(lib_obj.init):
+                _raise(ValueError("Library init() must be callable"))
 
-        for old_lib in self.libraries:
-            if old_lib.name == lib_obj.name:
-                if hasattr(old_lib, "on_lib_update") and callable(
-                    old_lib.on_lib_update
-                ):
-                    await old_lib.on_lib_update(lib_obj)
-
-                replace_all_refs(old_lib, lib_obj)
-                new = False
-                logging.debug(
-                    "Replacing existing instance of library"
-                    f" {lib_obj.name} with updated object"
-                )
-
-        if hasattr(lib_obj, "init") and callable(lib_obj.init):
             try:
                 await lib_obj.init()
             except Exception:
@@ -1196,9 +1214,21 @@ class Modules:
 
         lib_obj.translator = self._translator
 
-        if new:
-            self.libraries += [lib_obj]
+        for old_lib in self.libraries:
+            if old_lib.name == lib_obj.name:
+                if hasattr(old_lib, "on_lib_update") and callable(
+                    old_lib.on_lib_update
+                ):
+                    await old_lib.on_lib_update(lib_obj)
 
+                replace_all_refs(old_lib, lib_obj)
+                logger.debug(
+                    "Replacing existing instance of library %s with updated object",
+                    lib_obj.name,
+                )
+                return lib_obj
+
+        self.libraries += [lib_obj]
         return lib_obj
 
     def dispatch(self, _command: str) -> tuple:
@@ -1218,7 +1248,7 @@ class Modules:
         for mod in self.modules:
             self.send_config_one(mod, skip_hook)
 
-    def send_config_one(self, mod: "Module", skip_hook: bool = False):
+    def send_config_one(self, mod: Module, skip_hook: bool = False):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -1243,15 +1273,16 @@ class Modules:
                         )
             except AttributeError:
                 logger.warning(
-                    "Got invalid config instance. Expected `ModuleConfig`, got"
-                    f" {type(mod.config)=}, {mod.config=}"
+                    "Got invalid config instance. Expected `ModuleConfig`, got %s, %s",
+                    type(mod.config),
+                    mod.config,
                 )
-
-        if skip_hook:
-            return
 
         if not hasattr(mod, "name"):
             mod.name = mod.strings["name"]
+
+        if skip_hook:
+            return
 
         if hasattr(mod, "strings"):
             mod.strings = Strings(mod, self._translator)
@@ -1261,7 +1292,7 @@ class Modules:
         try:
             mod.config_complete()
         except Exception as e:
-            logger.exception(f"Failed to send mod config complete signal due to {e}")
+            logger.exception("Failed to send mod config complete signal due to %s", e)
             raise
 
     async def send_ready(self):
@@ -1280,13 +1311,13 @@ class Modules:
         try:
             await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
         except Exception as e:
-            logger.exception(f"Failed to send mod init complete signal due to {e}")
+            logger.exception("Failed to send mod init complete signal due to %s", e)
 
     async def _animate(
         self,
-        message: Union[Message, InlineMessage],
-        frames: List[str],
-        interval: Union[float, int],
+        message: typing.Union[Message, InlineMessage],
+        frames: typing.List[str],
+        interval: typing.Union[float, int],
         *,
         inline: bool = False,
     ) -> None:
@@ -1347,7 +1378,7 @@ class Modules:
                 if getattr(mod, method).autostart:
                     getattr(mod, method).start()
 
-                logger.debug(f"Added {mod=} to {method=}")
+                logger.debug("Added module %s to method %s", mod, method)
 
         if from_dlmod:
             try:
@@ -1367,18 +1398,20 @@ class Modules:
             if no_self_unload:
                 raise e
 
-            logger.debug(f"Unloading {mod}, because it raised SelfUnload")
+            logger.debug("Unloading %s, because it raised SelfUnload", mod)
             self.modules.remove(mod)
         except SelfSuspend as e:
             if no_self_unload:
                 raise e
 
-            logger.debug(f"Suspending {mod}, because it raised SelfSuspend")
+            logger.debug("Suspending %s, because it raised SelfSuspend", mod)
             return
         except Exception as e:
             logger.exception(
-                f"Failed to send mod init complete signal for {mod} due to {e},"
-                " attempting unload"
+                "Failed to send mod init complete signal for %s due to %s,"
+                " attempting unload",
+                mod,
+                e,
             )
             self.modules.remove(mod)
             raise
@@ -1396,7 +1429,7 @@ class Modules:
             name,
         )
 
-    async def unload_module(self, classname: str) -> bool:
+    async def unload_module(self, classname: str) -> typing.List[str]:
         """Remove module and all stuff from it"""
         worked = []
 
@@ -1408,23 +1441,22 @@ class Modules:
                 module.name.lower(),
                 module.__class__.__name__.lower(),
             ):
-                if getattr(module, "__origin__", "") == "<core>":
+                if module.__origin__.startswith("<core"):
                     raise CoreUnloadError(module.__class__.__name__)
 
                 worked += [module.__class__.__name__]
 
                 name = module.__class__.__name__
-                if "DYNO" not in os.environ:
-                    path = os.path.join(
-                        LOADED_MODULES_DIR,
-                        f"{name}_{self.client.tg_id}.py",
-                    )
+                path = os.path.join(
+                    LOADED_MODULES_DIR,
+                    f"{name}_{self.client.tg_id}.py",
+                )
 
-                    if os.path.isfile(path):
-                        os.remove(path)
-                        logger.debug(f"Removed {name} file at {path=}")
+                if os.path.isfile(path):
+                    os.remove(path)
+                    logger.debug("Removed %s file at path %s", name, path)
 
-                logger.debug(f"Removing module for unload {module}")
+                logger.debug("Removing module %s for unload", module)
                 self.modules.remove(module)
 
                 await module.on_unload()
@@ -1432,11 +1464,13 @@ class Modules:
                 for method in dir(module):
                     if isinstance(getattr(module, method), InfiniteLoop):
                         getattr(module, method).stop()
-                        logger.debug(f"Stopped loop in {module=}, {method=}")
+                        logger.debug(
+                            "Stopped loop in module %s, method %s", module, method
+                        )
 
                 for name, cmd in self.commands.copy().items():
                     if cmd.__self__.__class__.__name__ == module.__class__.__name__:
-                        logger.debug(f"Removing command {name} for unload")
+                        logger.debug("Removing command %s for unload", name)
                         del self.commands[name]
                         for alias, _command in self.aliases.copy().items():
                             if _command == name:
@@ -1447,10 +1481,10 @@ class Modules:
                         _watcher.__self__.__class__.__name__
                         == module.__class__.__name__
                     ):
-                        logger.debug(f"Removing watcher {_watcher} for unload")
+                        logger.debug("Removing watcher %s for unload", _watcher)
                         self.watchers.remove(_watcher)
 
-        logger.debug(f"{worked=}")
+        logger.debug("Worked: %s", worked)
         return worked
 
     def add_alias(self, alias: str, cmd: str) -> bool:
@@ -1463,12 +1497,7 @@ class Modules:
 
     def remove_alias(self, alias: str) -> bool:
         """Remove an alias"""
-        try:
-            del self.aliases[alias.lower().strip()]
-        except KeyError:
-            return False
-
-        return True
+        return bool(self.aliases.pop(alias.lower().strip(), None))
 
     async def log(self, *args, **kwargs):
         """Unnecessary placeholder for logging"""

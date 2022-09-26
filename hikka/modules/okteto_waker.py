@@ -68,7 +68,8 @@ class OktetoMod(loader.Module):
         self._task.cancel()
 
     async def _okteto_pinger(self):
-        """Creates queue to Webpage bot to reset Okteto polling after app goes to sleep"""
+        """Creates queue to Webpage bot to reset Okteto polling after app goes to sleep
+        """
         while True:
             try:
                 if not main.get_config_key("okteto_uri"):
@@ -108,7 +109,7 @@ class OktetoMod(loader.Module):
                             schedule=last_date,
                         )
 
-                    logger.debug(f"Scheduled Okteto pinger to {last_date}")
+                    logger.debug("Scheduled Okteto pinger to %s", last_date)
                     await asyncio.sleep(self._send_interval)
 
                 await asyncio.sleep(self._overall_polling_interval)

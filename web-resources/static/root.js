@@ -1,47 +1,51 @@
 function auth(callback) {
-    $(".main").fadeOut(500, () => {
+    $(".main").fadeOut(500);
+    setTimeout(() => {
         $(".auth").hide().fadeIn(500, () => {
+            $("#tg_icon").html("");
             bodymovin.loadAnimation({
                 container: document.getElementById("tg_icon"),
-                renderer: 'canvas',
+                renderer: "canvas",
                 loop: true,
                 autoplay: true,
-                path: 'https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json',
+                path: "https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json",
                 rendererSettings: {
                     clearCanvas: true,
                 }
             });
         });
         fetch("/web_auth", {
-            method: "POST",
-            credentials: "include",
-            timeout: 300000
-        })
-        .then(response => response.text())
-        .then((response) => {
-            if (response == "TIMEOUT") {
-                error_message("Code waiting timeout exceeded. Reload page and try again.");
-                $(".auth").fadeOut(500);
-                return
-            }
+                method: "POST",
+                credentials: "include",
+                timeout: 300000
+            })
+            .then(response => response.text())
+            .then((response) => {
+                if (response == "TIMEOUT") {
+                    error_message("Code waiting timeout exceeded. Reload page and try again.");
+                    $(".auth").fadeOut(500);
+                    return
+                }
 
-            if (response.startsWith("hikka_")) {
-                $.cookie("session", response)
-                auth_required = false;
-                $(".authorized").hide().fadeIn(100);
-                $(".auth").fadeOut(500, () => {
-                    $(".main").fadeIn(500);
-                });
-                callback();
-                return;
-            }
-        })
-    })
+                if (response.startsWith("hikka_")) {
+                    $.cookie("session", response)
+                    auth_required = false;
+                    $(".authorized").hide().fadeIn(100);
+                    $(".auth").fadeOut(500, () => {
+                        $(".installation").fadeIn(500);
+                    });
+                    callback();
+                    return;
+                }
+            })
+    }, 500);
 }
 
 $("#get_started")
     .click(() => {
-        if (auth_required) return auth(() => { $("#get_started").click(); });
+        if (auth_required) return auth(() => {
+            $("#get_started").click();
+        });
         $("#enter_api").fadeOut(500);
         $("#get_started").fadeOut(500, () => {
             $("#continue_btn").hide().fadeIn(500);
@@ -51,7 +55,9 @@ $("#get_started")
 
 $("#enter_api")
     .click(() => {
-        if (auth_required) return auth(() => { $("#enter_api").click(); });
+        if (auth_required) return auth(() => {
+            $("#enter_api").click();
+        });
         $("#get_started").fadeOut(500);
         $("#enter_api")
             .fadeOut(500, () => {
@@ -75,29 +81,30 @@ function isValidPhone(p) {
 
 function finish_login() {
     fetch("/finishLogin", {
-        method: "POST",
-        credentials: "include"
-    })
-    .then(() => {
-        window.expanse = true;
-        $(".installation").fadeOut(2000, () => {
-            bodymovin.loadAnimation({
-                container: document.getElementById("installation_icon"),
-                renderer: 'canvas',
-                loop: true,
-                autoplay: true,
-                path: 'https://assets1.lottiefiles.com/animated_stickers/lf_tgs_j7miwfxd.json',
-                rendererSettings: {
-                    clearCanvas: true,
-                }
-            });
-            $(".finish_block").fadeIn(300);
+            method: "POST",
+            credentials: "include"
+        })
+        .then(() => {
+            $(".installation").fadeOut(2000);
+            setTimeout(() => {
+                $("#installation_icon").html("");
+                bodymovin.loadAnimation({
+                    container: document.getElementById("installation_icon"),
+                    renderer: "canvas",
+                    loop: true,
+                    autoplay: true,
+                    path: "https://assets1.lottiefiles.com/animated_stickers/lf_tgs_j7miwfxd.json",
+                    rendererSettings: {
+                        clearCanvas: true,
+                    }
+                });
+                $(".finish_block").fadeIn(300);
+            }, 2000);
+        })
+        .catch((err) => {
+            error_state();
+            error_message("Login confirmation error: " + err.toString());
         });
-    })
-    .catch((err) => {
-        error_state();
-        error_message("Login confirmation error: " + err.toString());
-    });
 }
 
 function tg_code() {
@@ -108,15 +115,44 @@ function tg_code() {
         .then((response) => {
             if (!response.ok) {
                 if (response.status == 401) {
-                    switch_block("2fa");
+                    $(".auth-code-form").hide().fadeIn(300, () => {
+                        $("#monkey-close").html();
+                        anim = bodymovin.loadAnimation({
+                            container: document.getElementById("monkey-close"),
+                            renderer: "canvas",
+                            loop: false,
+                            autoplay: true,
+                            path: "https://static.hikari.gay/monkey-close.json",
+                            rendererSettings: {
+                                clearCanvas: true,
+                            }
+                        });
+                        anim.addEventListener("complete", () => {
+                            setTimeout(() => {
+                                anim.goToAndPlay(0);
+                            }, 2000);
+                        })
+                    });
+                    $(".code-input").removeAttr("disabled");
+                    $(".code-caption").html("Enter your Telegram 2FA password, then press <span style='color: #dc137b;'>Enter</span>");
+                    cnt_btn.setAttribute("current-step", "2fa");
+                    $("#monkey").hide();
+                    $("#monkey-close").hide().fadeIn(100);
+                    _current_block = "2fa";
                 } else {
+                    $(".code-input").removeAttr("disabled");
                     response.text().then((text) => {
                         error_state();
-                        Swal.showValidationMessage(text);
+                        Swal.fire(
+                            "Error",
+                            text,
+                            "error"
+                        );
                     });
                 }
             } else {
-                switch_block("custom_bot")
+                $(".auth-code-form").fadeOut();
+                switch_block("custom_bot");
             }
         })
         .catch(error => {
@@ -152,11 +188,11 @@ function error_message(message) {
 }
 
 function error_state() {
-    $("#blackhole").addClass("red_state");
+    $("body").addClass("red_state");
     cnt_btn.disabled = true;
     setTimeout(() => {
         cnt_btn.disabled = false;
-        $("#blackhole").removeClass("red_state");
+        $("body").removeClass("red_state");
     }, 1000);
 }
 
@@ -234,21 +270,28 @@ function process_next() {
                         error_message(text);
                     });
                 } else {
-                    Swal.fire({
-                        title: "Enter received code",
-                        input: "text",
-                        inputAttributes: {
-                            autocapitalize: "off"
-                        },
-                        showCancelButton: false,
-                        confirmButtonText: "Confirm",
-                        showLoaderOnConfirm: true,
-                        preConfirm: (login) => {
-                            _tg_pass = login
-                            tg_code();
-                        },
-                        allowOutsideClick: () => !Swal.isLoading()
-                    })
+                    $(".auth-code-form").hide().fadeIn(300, () => {
+                        $("#monkey").html();
+                        anim2 = bodymovin.loadAnimation({
+                            container: document.getElementById("monkey"),
+                            renderer: "canvas",
+                            loop: false,
+                            autoplay: true,
+                            path: "https://static.hikari.gay/monkey.json",
+                            rendererSettings: {
+                                clearCanvas: true,
+                            }
+                        });
+                        anim2.addEventListener("complete", () => {
+                            setTimeout(() => {
+                                anim2.goToAndPlay(0);
+                            }, 2000);
+                        })
+                    });
+                    $(".code-input").removeAttr("disabled");
+                    $(".code-caption").text("Enter the code you recieved in Telegram");
+                    cnt_btn.setAttribute("current-step", "code");
+                    _current_block = "code";
                 }
             })
             .catch((err) => {
@@ -275,7 +318,7 @@ function process_next() {
             return
         }
 
-        if(custom_bot == "") {
+        if (custom_bot == "") {
             finish_login();
             return
         }
@@ -308,16 +351,35 @@ function process_next() {
 
 cnt_btn.onclick = () => {
     if (cnt_btn.disabled) return;
-    if (auth_required) return auth(() => { cnt_btn.click(); });
+    if (auth_required) return auth(() => {
+        cnt_btn.click();
+    });
 
     process_next();
 }
 
-$("input").on("keyup", (e) => {
+$(".installation input").on("keyup", (e) => {
     if (cnt_btn.disabled) return;
-    if (auth_required) return auth(() => { cnt_btn.click(); });
+    if (auth_required) return auth(() => {
+        cnt_btn.click();
+    });
 
     if (e.key === "Enter" || e.keyCode === 13) {
         process_next();
+    }
+});
+
+$(".code-input").on("keyup", (e) => {
+    if (_current_block == "code" && $(".code-input").val().length == 5) {
+        _tg_pass = $(".code-input").val();
+        $(".code-input").attr("disabled", "true");
+        $(".code-input").val("");
+        tg_code();
+    } else if (_current_block == "2fa" && (e.key === "Enter" || e.keyCode === 13)) {
+        let _2fa = $(".code-input").val();
+        _2fa_pass = _2fa;
+        $(".code-input").attr("disabled", "true");
+        $(".code-input").val("");
+        tg_code();
     }
 });

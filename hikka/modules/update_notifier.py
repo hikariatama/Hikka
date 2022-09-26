@@ -6,19 +6,13 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
 import asyncio
 import contextlib
-import logging
-from typing import Union
 
 import git
 
 from .. import loader, utils, version
 from ..inline.types import InlineCall
-
-logger = logging.getLogger(__name__)
 
 
 @loader.tds
@@ -52,12 +46,6 @@ class UpdateNotifierMod(loader.Module):
                 validator=loader.validators.Boolean(),
             )
         )
-
-    def get_commit(self) -> Union[str, bool]:
-        try:
-            return git.Repo().heads[0].commit.hexsha
-        except Exception:
-            return False
 
     def get_changelog(self) -> str:
         try:
@@ -121,12 +109,17 @@ class UpdateNotifierMod(loader.Module):
             await asyncio.sleep(60)
             return
 
-        if self._pending not in [self.get_commit(), self._notified]:
+        if self._pending not in [utils.get_git_hash(), self._notified]:
             m = await self.inline.bot.send_message(
                 self.tg_id,
                 self.strings("update_required").format(
-                    self.get_commit()[:6],
-                    f'<a href="https://github.com/hikariatama/Hikka/compare/{self.get_commit()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
+                    utils.get_git_hash()[:6],
+                    '<a href="https://github.com/hikariatama/Hikka/compare/{}...{}">{}</a>'
+                    .format(
+                        utils.get_git_hash()[:12],
+                        self.get_latest()[:12],
+                        self.get_latest()[:6],
+                    ),
                     self.get_changelog(),
                 ),
                 disable_web_page_preview=True,

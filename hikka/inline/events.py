@@ -9,8 +9,8 @@
 import inspect
 import logging
 import re
+import typing
 from asyncio import Event
-from typing import List
 
 from aiogram.types import CallbackQuery, ChosenInlineResult
 from aiogram.types import InlineQuery as AiogramInlineQuery
@@ -84,8 +84,8 @@ class Events(InlineUnit):
 
             if not isinstance(result, list):
                 logger.error(
-                    "Got invalid type from inline handler. It must be `dict`, got"
-                    f" `{type(result)}`"
+                    "Got invalid type from inline handler. It must be `dict`, got `%s`",
+                    type(result),
                 )
                 await instance.e500()
                 return
@@ -95,7 +95,8 @@ class Events(InlineUnit):
                 if all(item not in res for item in mandatory):
                     logger.error(
                         "Got invalid type from inline handler. It must contain one of"
-                        f" `{mandatory}`"
+                        " `%s`",
+                        mandatory,
                     )
                     await instance.e500()
                     return
@@ -113,10 +114,10 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultArticle(
                             id=utils.rand(20),
-                            title=res["title"],
-                            description=res.get("description"),
+                            title=self.sanitise_text(res["title"]),
+                            description=self.sanitise_text(res.get("description")),
                             input_message_content=InputTextMessageContent(
-                                res["message"],
+                                self.sanitise_text(res["message"]),
                                 "HTML",
                                 disable_web_page_preview=True,
                             ),
@@ -130,9 +131,9 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultPhoto(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            description=res.get("description"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            description=self.sanitise_text(res.get("description")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["photo"]),
                             photo_url=res["photo"],
@@ -143,8 +144,8 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultGif(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["gif"]),
                             gif_url=res["gif"],
@@ -155,9 +156,9 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultVideo(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            description=res.get("description"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            description=self.sanitise_text(res.get("description")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["video"]),
                             video_url=res["video"],
@@ -169,9 +170,9 @@ class Events(InlineUnit):
                     inline_result += [
                         InlineQueryResultDocument(
                             id=utils.rand(20),
-                            title=res.get("title"),
-                            description=res.get("description"),
-                            caption=res.get("caption"),
+                            title=self.sanitise_text(res.get("title")),
+                            description=self.sanitise_text(res.get("description")),
+                            caption=self.sanitise_text(res.get("caption")),
                             parse_mode="HTML",
                             thumb_url=res.get("thumb", res["file"]),
                             document_url=res["file"],
@@ -184,7 +185,8 @@ class Events(InlineUnit):
                 await inline_query.answer(inline_result, cache_time=0)
             except Exception:
                 logger.exception(
-                    f"Exception when answering inline query with result from {cmd}"
+                    "Exception when answering inline query with result from %s",
+                    cmd,
                 )
                 return
 
@@ -195,7 +197,7 @@ class Events(InlineUnit):
     async def _callback_query_handler(
         self,
         call: CallbackQuery,
-        reply_markup: List[List[dict]] = None,
+        reply_markup: typing.Optional[typing.List[typing.List[dict]]] = None,
     ):
         """Callback query handler (buttons' presses)"""
         if reply_markup is None:
@@ -228,7 +230,8 @@ class Events(InlineUnit):
             for button in utils.array_sum(unit.get("buttons", [])):
                 if not isinstance(button, dict):
                     logger.warning(
-                        f"Can't process update, because of corrupted button: {button}"
+                        "Can't process update, because of corrupted button: %s",
+                        button,
                     )
                     continue
 
@@ -254,9 +257,8 @@ class Events(InlineUnit):
                         )
                     ):
                         pass
-                    elif (
-                        call.from_user.id
-                        not in self._client.dispatcher.security._owner
+                    elif call.from_user.id not in (
+                        self._client.dispatcher.security._owner
                         + unit.get("always_allow", [])
                         + button.get("always_allow", [])
                     ):
@@ -276,9 +278,8 @@ class Events(InlineUnit):
                     except Exception:
                         logger.exception("Error on running callback watcher!")
                         await call.answer(
-                            "Error occurred while "
-                            "processing request. "
-                            "More info in logs",
+                            "Error occurred while processing request. More info in"
+                            " logs",
                             show_alert=True,
                         )
                         return
@@ -355,7 +356,6 @@ class Events(InlineUnit):
                     + self._client.dispatcher.security._owner
                     + unit.get("always_allow", [])
                 ):
-
                     query = query.split(maxsplit=1)[1] if len(query.split()) > 1 else ""
 
                     try:
@@ -372,7 +372,7 @@ class Events(InlineUnit):
                         return
 
     async def _query_help(self, inline_query: InlineQuery):
-        _help = ""
+        _help = []
         for name, fun in self._allmodules.inline_handlers.items():
             # If user doesn't have enough permissions
             # to run this inline command, do not show it
@@ -385,11 +385,45 @@ class Events(InlineUnit):
 
             # Retrieve docs from func
             try:
-                doc = utils.escape_html(inspect.getdoc(fun))
+                doc = inspect.getdoc(fun)
             except Exception:
                 doc = "🦥 No docs"
 
-            _help += f"🎹 <code>@{self.bot_username} {name}</code> - {doc}\n"
+            try:
+                thumb = getattr(fun, "thumb_url", None) or fun.__self__.hikka_meta_pic
+            except Exception:
+                thumb = None
+
+            thumb = thumb or "https://img.icons8.com/fluency/50/000000/info-squared.png"
+
+            _help += [
+                (
+                    InlineQueryResultArticle(
+                        id=utils.rand(20),
+                        title=f"🌘 Command «{name}»",
+                        description=doc,
+                        input_message_content=InputTextMessageContent(
+                            "<b>🌘 Command"
+                            f" «{utils.escape_html(name)}»</b>\n\n<i>{utils.escape_html(doc)}</i>",
+                            "HTML",
+                            disable_web_page_preview=True,
+                        ),
+                        thumb_url=thumb,
+                        thumb_width=128,
+                        thumb_height=128,
+                        reply_markup=self.generate_markup(
+                            {
+                                "text": "🏌️ Run command",
+                                "switch_inline_query_current_chat": f"{name} ",
+                            }
+                        ),
+                    ),
+                    (
+                        f"🎹 <code>@{self.bot_username} {utils.escape_html(name)}</code>"
+                        f" - {utils.escape_html(doc)}\n"
+                    ),
+                )
+            ]
 
         if not _help:
             await inline_query.answer(
@@ -419,12 +453,12 @@ class Events(InlineUnit):
             [
                 InlineQueryResultArticle(
                     id=utils.rand(20),
-                    title="Show available inline commands",
-                    description=(
-                        f"You have {len(_help.splitlines())} available command(-s)"
-                    ),
+                    title="📄 Show all available inline commands",
+                    description=f"ℹ️ You have {len(_help)} available command(-s)",
                     input_message_content=InputTextMessageContent(
-                        f"<b>ℹ️ Available inline commands:</b>\n\n{_help}",
+                        "<b>ℹ️ Available inline commands:</b>\n\n{}".format(
+                            "\n".join(i[1] for i in _help)
+                        ),
                         "HTML",
                         disable_web_page_preview=True,
                     ),
@@ -434,6 +468,7 @@ class Events(InlineUnit):
                     thumb_width=128,
                     thumb_height=128,
                 )
-            ],
+            ]
+            + [i[0] for i in _help],
             cache_time=0,
         )

@@ -13,7 +13,7 @@ import functools
 import logging
 import time
 import traceback
-from typing import List, Optional, Union
+import typing
 
 from aiogram.types import (
     CallbackQuery,
@@ -34,43 +34,44 @@ from urllib.parse import urlparse
 import os
 
 from .. import utils, main
+from ..types import HikkaReplyMarkup
 from .types import InlineUnit, InlineMessage
 
 logger = logging.getLogger(__name__)
 
 
 class ListGalleryHelper:
-    def __init__(self, lst: List[str]):
+    def __init__(self, lst: typing.List[str]):
         self.lst = lst
         self._current_index = -1
 
-    def __call__(self):
+    def __call__(self) -> str:
         self._current_index += 1
         return self.lst[self._current_index % len(self.lst)]
 
-    def by_index(self, index: int):
+    def by_index(self, index: int) -> str:
         return self.lst[index % len(self.lst)]
 
 
 class Gallery(InlineUnit):
     async def gallery(
         self,
-        message: Union[Message, int],
-        next_handler: Union[callable, List[str]],
-        caption: Union[List[str], str, callable] = "",
+        message: typing.Union[Message, int],
+        next_handler: typing.Union[callable, typing.List[str]],
+        caption: typing.Union[typing.List[str], str, callable] = "",
         *,
-        custom_buttons: Optional[Union[List[List[dict]], List[dict], dict]] = None,
+        custom_buttons: typing.Optional[HikkaReplyMarkup] = None,
         force_me: bool = False,
-        always_allow: Optional[list] = None,
+        always_allow: typing.Optional[typing.List[int]] = None,
         manual_security: bool = False,
         disable_security: bool = False,
-        ttl: Union[int, bool] = False,
-        on_unload: Optional[callable] = None,
-        preload: Union[bool, int] = False,
+        ttl: typing.Union[int, bool] = False,
+        on_unload: typing.Optional[callable] = None,
+        preload: typing.Union[bool, int] = False,
         gif: bool = False,
         silent: bool = False,
         _reattempt: bool = False,
-    ) -> Union[bool, InlineMessage]:
+    ) -> typing.Union[bool, InlineMessage]:
         """
         Send inline gallery to chat
         :param caption: Caption for photo, or callable, returning caption
@@ -106,34 +107,51 @@ class Gallery(InlineUnit):
             or isinstance(caption, list)
             and all(isinstance(item, str) for item in caption)
         ) and not callable(caption):
-            logger.error("Invalid type for `caption`")
+            logger.error(
+                "Invalid type for `caption`. Expected `str` or `list` or `callable`,"
+                " got `%s`",
+                type(caption),
+            )
             return False
 
         if isinstance(caption, list):
             caption = ListGalleryHelper(caption)
 
         if not isinstance(manual_security, bool):
-            logger.error("Invalid type for `manual_security`")
+            logger.error(
+                "Invalid type for `manual_security`. Expected `bool`, got `%s`",
+                type(manual_security),
+            )
             return False
 
         if not isinstance(silent, bool):
-            logger.error("Invalid type for `silent`")
+            logger.error(
+                "Invalid type for `silent`. Expected `bool`, got `%s`", type(silent)
+            )
             return False
 
         if not isinstance(disable_security, bool):
-            logger.error("Invalid type for `disable_security`")
+            logger.error(
+                "Invalid type for `disable_security`. Expected `bool`, got `%s`",
+                type(disable_security),
+            )
             return False
 
         if not isinstance(message, (Message, int)):
-            logger.error("Invalid type for `message`")
+            logger.error(
+                "Invalid type for `message`. Expected `Message` or `int`, got `%s`",
+                type(message),
+            )
             return False
 
         if not isinstance(force_me, bool):
-            logger.error("Invalid type for `force_me`")
+            logger.error(
+                "Invalid type for `force_me`. Expected `bool`, got `%s`", type(force_me)
+            )
             return False
 
         if not isinstance(gif, bool):
-            logger.error("Invalid type for `gif`")
+            logger.error("Invalid type for `gif`. Expected `bool`, got `%s`", type(gif))
             return False
 
         if (
@@ -141,25 +159,37 @@ class Gallery(InlineUnit):
             or isinstance(preload, bool)
             and preload
         ):
-            logger.error("Invalid type for `preload`")
+            logger.error(
+                "Invalid type for `preload`. Expected `int` or `False`, got `%s`",
+                type(preload),
+            )
             return False
 
         if always_allow and not isinstance(always_allow, list):
-            logger.error("Invalid type for `always_allow`")
+            logger.error(
+                "Invalid type for `always_allow`. Expected `list`, got `%s`",
+                type(always_allow),
+            )
             return False
 
         if not always_allow:
             always_allow = []
 
         if not isinstance(ttl, int) and ttl:
-            logger.error("Invalid type for `ttl`")
+            logger.error(
+                "Invalid type for `ttl`. Expected `int` or `False`, got `%s`", type(ttl)
+            )
             return False
 
         if isinstance(next_handler, list):
             if all(isinstance(i, str) for i in next_handler):
                 next_handler = ListGalleryHelper(next_handler)
             else:
-                logger.error("Invalid type for `next_handler`")
+                logger.error(
+                    "Invalid type for `next_handler`. Expected `callable` or `list` of"
+                    " `str`, got `%s`",
+                    type(next_handler),
+                )
                 return False
 
         unit_id = utils.rand(16)
@@ -301,8 +331,9 @@ class Gallery(InlineUnit):
 
         return InlineMessage(self, unit_id, self._units[unit_id]["inline_message_id"])
 
-    async def _call_photo(self, callback: callable) -> Union[str, bool]:
-        """Parses photo url from `callback`. Returns url on success, otherwise `False`"""
+    async def _call_photo(self, callback: callable) -> typing.Union[str, bool]:
+        """Parses photo url from `callback`. Returns url on success, otherwise `False`
+        """
         if isinstance(callback, str):
             photo_url = callback
         elif isinstance(callback, list):
@@ -312,11 +343,19 @@ class Gallery(InlineUnit):
         elif callable(callback):
             photo_url = callback()
         else:
-            logger.error("Invalid type for `next_handler`")
+            logger.error(
+                "Invalid type for `next_handler`. Expected `str`, `list`, `callable` or"
+                " `asyncio.coroutine`, got %s",
+                type(callback),
+            )
             return False
 
         if not isinstance(photo_url, (str, list)):
-            logger.error("Got invalid result from `next_handler`")
+            logger.error(
+                "Got invalid result from `next_handler`. Expected `str` or `list`,"
+                " got %s",
+                type(photo_url),
+            )
             return False
 
         return photo_url
@@ -431,7 +470,7 @@ class Gallery(InlineUnit):
     def _get_current_media(
         self,
         unit_id: str,
-    ) -> Union[InputMediaPhoto, InputMediaAnimation]:
+    ) -> typing.Union[InputMediaPhoto, InputMediaAnimation]:
         """Return current media, which should be updated in gallery"""
         media = self._get_next_photo(unit_id)
         try:
@@ -462,7 +501,7 @@ class Gallery(InlineUnit):
     async def _gallery_page(
         self,
         call: CallbackQuery,
-        page: Union[int, str],
+        page: typing.Union[int, str],
         unit_id: str = None,
     ):
         if page == "slideshow":

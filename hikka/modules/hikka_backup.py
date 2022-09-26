@@ -6,8 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
 import asyncio
 import datetime
 import io
@@ -158,14 +156,11 @@ class HikkaBackupMod(loader.Module):
             )
 
             backup = io.BytesIO(json.dumps(self._db).encode("utf-8"))
-            backup.name = (
-                f"hikka-db-backup-{getattr(datetime, 'datetime', datetime).now().strftime('%d-%m-%Y-%H-%M')}.json"
+            backup.name = "hikka-db-backup-{}.json".format(
+                getattr(datetime, "datetime", datetime).now().strftime("%d-%m-%Y-%H-%M")
             )
 
-            await self._client.send_file(
-                self._backup_channel,
-                backup,
-            )
+            await self._client.send_file(self._backup_channel, backup)
             self.set("last_backup", round(time.time()))
         except loader.StopLoop:
             raise

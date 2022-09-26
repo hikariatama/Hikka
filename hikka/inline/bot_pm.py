@@ -7,8 +7,8 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
+import typing
 
-from typing import Union
 from .types import InlineUnit
 
 
@@ -16,13 +16,25 @@ logger = logging.getLogger(__name__)
 
 
 class BotPM(InlineUnit):
-    def set_fsm_state(self, user: Union[str, int], state: Union[str, bool]) -> bool:
+    def set_fsm_state(
+        self,
+        user: typing.Union[str, int],
+        state: typing.Union[str, bool],
+    ) -> bool:
         if not isinstance(user, (str, int)):
-            logger.error("Invalid type for `user` in `set_fsm_state`")
+            logger.error(
+                "Invalid type for `user` in `set_fsm_state`. Expected `str` or `int`,"
+                " got %s",
+                type(user),
+            )
             return False
 
         if not isinstance(state, (str, bool)):
-            logger.error("Invalid type for `state` in `set_fsm_state`")
+            logger.error(
+                "Invalid type for `state` in `set_fsm_state`. Expected `str` or `bool`,"
+                " got %s",
+                type(state),
+            )
             return False
 
         if state:
@@ -34,9 +46,13 @@ class BotPM(InlineUnit):
 
     ss = set_fsm_state
 
-    def get_fsm_state(self, user: Union[str, int]) -> Union[bool, str]:
+    def get_fsm_state(self, user: typing.Union[str, int]) -> typing.Union[bool, str]:
         if not isinstance(user, (str, int)):
-            logger.error("Invalid type for `user` in `get_fsm_state`")
+            logger.error(
+                "Invalid type for `user` in `get_fsm_state`. Expected `str` or `int`,"
+                " got %s",
+                type(user),
+            )
             return False
 
         return self.fsm.get(str(user), False)

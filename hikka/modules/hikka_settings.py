@@ -6,8 +6,6 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-# scope: inline
-
 import logging
 import atexit
 import random
@@ -27,6 +25,17 @@ from .. import loader, main, utils
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
+
+ALL_INVOKES = [
+    "clear_entity_cache",
+    "clear_fulluser_cache",
+    "clear_fullchannel_cache",
+    "clear_perms_cache",
+    "clear_cache",
+    "reload_core",
+    "inspect_cache",
+    "inspect_modules",
+]
 
 
 def restart(*argv):
@@ -48,6 +57,27 @@ class HikkaSettingsMod(loader.Module):
         "watchers": (
             "<emoji document_id=5424885441100782420>👀</emoji>"
             " <b>Watchers:</b>\n\n<b>{}</b>"
+        ),
+        "no_args": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>No arguments"
+            " specified</b>"
+        ),
+        "invoke404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Internal debug method"
+            " </b><code>{}</code><b> not found, ergo can't be invoked</b>"
+        ),
+        "module404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Module</b>"
+            " <code>{}</code> <b>not found</b>"
+        ),
+        "invoke": (
+            "<emoji document_id=5215519585150706301>👍</emoji> <b>Invoked internal debug"
+            " method </b><code>{}</code>\n\n<emoji"
+            " document_id=5784891605601225888>🔵</emoji> <b>Result: \n{}</b>"
+        ),
+        "invoking": (
+            "<emoji document_id=5213452215527677338>⏳</emoji> <b>Invoking internal"
+            " debug method </b><code>{}</code><b> of </b><code>{}</code><b>...</b>"
         ),
         "mod404": (
             "<emoji document_id=5447207618793708263>🚫</emoji> <b>Watcher {} not"
@@ -316,8 +346,8 @@ class HikkaSettingsMod(loader.Module):
                 m = await conv.send_message(msg)
                 r = await conv.get_response()
 
-                logger.debug(f">> {m.raw_text}")
-                logger.debug(f"<< {r.raw_text}")
+                logger.debug(">> %s", m.raw_text)
+                logger.debug("<< %s", r.raw_text)
 
                 await m.delete()
                 await r.delete()
@@ -701,14 +731,14 @@ class HikkaSettingsMod(loader.Module):
                     ),
                 )
 
-                logger.warning(
-                    f"User {user_id} removed from nonickusers list", exc_info=True
-                )
+                logger.warning("User %s removed from nonickusers list", user_id)
                 continue
 
             users += [
-                "▫️ <b><a"
-                f' href="tg://user?id={user_id}">{utils.escape_html(get_display_name(user))}</a></b>'
+                '▫️ <b><a href="tg://user?id={}">{}</a></b>'.format(
+                    user_id,
+                    utils.escape_html(get_display_name(user)),
+                )
             ]
 
         if not users:
@@ -736,12 +766,14 @@ class HikkaSettingsMod(loader.Module):
                     ),
                 )
 
-                logger.warning(f"Chat {chat} removed from nonickchats list")
+                logger.warning("Chat %s removed from nonickchats list", chat)
                 continue
 
             chats += [
-                "▫️ <b><a"
-                f' href="{utils.get_entity_url(chat_entity)}">{utils.escape_html(get_display_name(chat_entity))}</a></b>'
+                '▫️ <b><a href="{}">{}</a></b>'.format(
+                    utils.get_entity_url(chat_entity),
+                    utils.escape_html(get_display_name(chat_entity)),
+                )
             ]
 
         if not chats:
@@ -1073,7 +1105,7 @@ class HikkaSettingsMod(loader.Module):
         await form.edit(
             self.strings("tunnel_opened"),
             reply_markup={"text": self.strings("web_btn"), "url": url},
-            gif="https://t.me/hikari_assets/28",
+            gif="https://t.me/hikari_assets/48",
         )
 
     @loader.loop(interval=1, autostart=True)
@@ -1093,3 +1125,107 @@ class HikkaSettingsMod(loader.Module):
         else:
             event.status = True
             event.set()
+
+    def _get_all_IDM(self, module: str):
+        return {
+            getattr(getattr(self.lookup(module), name), "name", name): getattr(
+                self.lookup(module), name
+            )
+            for name in dir(self.lookup(module))
+            if getattr(getattr(self.lookup(module), name), "is_debug_method", False)
+        }
+
+    @loader.command()
+    async def invoke(self, message: Message):
+        """<module or `core` for built-in methods> <method> - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER
+        """
+        args = utils.get_args_raw(message)
+        if not args or len(args.split()) < 2:
+            await utils.answer(message, self.strings("no_args"))
+            return
+
+        module = args.split()[0]
+        method = args.split(maxsplit=1)[1]
+
+        if module != "core" and not self.lookup(module):
+            await utils.answer(message, self.strings("module404").format(module))
+            return
+
+        if (
+            module == "core"
+            and method not in ALL_INVOKES
+            or module != "core"
+            and method not in self._get_all_IDM(module)
+        ):
+            await utils.answer(message, self.strings("invoke404").format(method))
+            return
+
+        message = await utils.answer(
+            message, self.strings("invoking").format(method, module)
+        )
+        result = ""
+
+        if module == "core":
+            if method == "clear_entity_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_entity_cache)} cache records"
+                )
+                self._client._hikka_entity_cache = {}
+            elif method == "clear_fulluser_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_fulluser_cache)} cache records"
+                )
+                self._client._hikka_fulluser_cache = {}
+            elif method == "clear_fullchannel_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_fullchannel_cache)} cache"
+                    " records"
+                )
+                self._client._hikka_fullchannel_cache = {}
+            elif method == "clear_perms_cache":
+                result = f"Dropped {len(self._client._hikka_perms_cache)} cache records"
+                self._client._hikka_perms_cache = {}
+            elif method == "clear_cache":
+                result = (
+                    f"Dropped {len(self._client._hikka_entity_cache)} entity cache"
+                    " records\nDropped"
+                    f" {len(self._client._hikka_fulluser_cache)} fulluser cache"
+                    " records\nDropped"
+                    f" {len(self._client._hikka_fullchannel_cache)} fullchannel cache"
+                    " records"
+                )
+                self._client._hikka_entity_cache = {}
+                self._client._hikka_fulluser_cache = {}
+                self._client._hikka_fullchannel_cache = {}
+            elif method == "reload_core":
+                core_quantity = await self.lookup("loader").reload_core()
+                result = f"Reloaded {core_quantity} core modules"
+            elif method == "inspect_cache":
+                result = (
+                    "Entity cache:"
+                    f" {len(self._client._hikka_entity_cache)} records\nFulluser cache:"
+                    f" {len(self._client._hikka_fulluser_cache)} records\nFullchannel"
+                    f" cache: {len(self._client._hikka_fullchannel_cache)} records"
+                )
+            elif method == "inspect_modules":
+                result = (
+                    "Loaded modules: {}\nLoaded core modules: {}\nLoaded user"
+                    " modules: {}"
+                ).format(
+                    len(self.allmodules.modules),
+                    sum(
+                        module.__origin__.startswith("<core")
+                        for module in self.allmodules.modules
+                    ),
+                    sum(
+                        not module.__origin__.startswith("<core")
+                        for module in self.allmodules.modules
+                    ),
+                )
+        else:
+            result = await self._get_all_IDM(module)[method](message)
+
+        await utils.answer(
+            message,
+            self.strings("invoke").format(method, utils.escape_html(result)),
+        )

@@ -216,7 +216,11 @@ class Presets(loader.Module):
                     preset, i, len(PRESETS[preset]), module
                 )
             )
-            await self.lookup("loader").download_and_install(module, None)
+            try:
+                await self.lookup("loader").download_and_install(module, None)
+            except Exception:
+                logger.exception("Failed to install module %s", module)
+
             await asyncio.sleep(1)
 
         if self.lookup("loader")._fully_loaded:
@@ -242,7 +246,14 @@ class Presets(loader.Module):
                         sorted(
                             [
                                 (
-                                    f"{self.strings('already_installed') if self._is_installed(link) else '▫️'} <b>{link.rsplit('/', maxsplit=1)[1].split('.')[0]}</b>",
+                                    "{} <b>{}</b>".format(
+                                        (
+                                            self.strings("already_installed")
+                                            if self._is_installed(link)
+                                            else "▫️"
+                                        ),
+                                        link.rsplit("/", maxsplit=1)[1].split(".")[0],
+                                    ),
                                     int(self._is_installed(link)),
                                 )
                                 for link in PRESETS[preset]
