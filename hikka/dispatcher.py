@@ -534,14 +534,12 @@ class CommandDispatcher:
                 getattr(func, "from_id", False)
                 and getattr(message, "sender_id", None) != func.from_id
             )
-            or (
-                getattr(func, "chat_id", False)
-                and utils.get_chat_id(message)
-                != (
-                    func.chat_id
-                    if not str(func.chat_id).startswith("-100")
-                    else int(str(func.chat_id)[4:])
-                )
+            or getattr(func, "chat_id", False)
+            and utils.get_chat_id(message)
+            != (
+                int(str(func.chat_id)[4:])
+                if str(func.chat_id).startswith("-100")
+                else func.chat_id
             )
             or (
                 getattr(func, "regex", False)

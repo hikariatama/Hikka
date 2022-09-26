@@ -208,15 +208,11 @@ class HelpMod(loader.Module):
             name = getattr(module, "name", "ERROR")
 
         _name = (
-            "{} (v{}.{}.{})".format(
-                utils.escape_html(name),
-                module.__version__[0],
-                module.__version__[1],
-                module.__version__[2],
-            )
+            f"{utils.escape_html(name)} (v{module.__version__[0]}.{module.__version__[1]}.{module.__version__[2]})"
             if hasattr(module, "__version__")
             else utils.escape_html(name)
         )
+
 
         reply = self.strings("single_mod_header").format(_name)
         if module.__doc__:
@@ -415,14 +411,7 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            "{}\n{}{}{}{}{}".format(
-                reply,
-                "".join(core_),
-                "".join(plain_),
-                "".join(inline_),
-                no_commands_,
-                partial_load,
-            ),
+            f'{reply}\n{"".join(core_)}{"".join(plain_)}{"".join(inline_)}{no_commands_}{partial_load}',
         )
 
     @loader.command(ru_doc="Показать ссылку на чат помощи Hikka")
