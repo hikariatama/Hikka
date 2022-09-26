@@ -580,8 +580,10 @@ class Modules:
 
             self.secure_boot = self._db.get(__name__, "secure_boot", False)
 
-            if not self.secure_boot:
-                external_mods = [
+            external_mods = (
+                []
+                if self.secure_boot
+                else [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
                         lambda x: (
@@ -591,8 +593,7 @@ class Modules:
                         os.listdir(LOADED_MODULES_DIR),
                     )
                 ]
-            else:
-                external_mods = []
+            )
 
         loaded = []
         loaded += await self._register_modules(mods)

@@ -1083,15 +1083,13 @@ class HikkaSecurityMod(loader.Module):
             if not message.is_private and not message.is_reply:
                 await utils.answer(message, self.strings("no_target"))
                 return
+
             if message.is_private:
                 target = await self._client.get_entity(message.peer_id)
             elif message.is_reply:
                 target = await self._client.get_entity(
                     (await message.get_reply_message()).sender_id
                 )
-            else:
-                await utils.answer(message, self.strings("no_target"))
-                return
 
             if not self._client.dispatcher.security.remove_rules("user", target.id):
                 await utils.answer(message, self.strings("no_rules"))

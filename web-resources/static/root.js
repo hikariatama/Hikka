@@ -127,8 +127,8 @@ function tg_code() {
                                 clearCanvas: true,
                             }
                         });
-                        anim.addEventListener("complete", function () {
-                            setTimeout(function () {
+                        anim.addEventListener("complete", () => {
+                            setTimeout(() => {
                                 anim.goToAndPlay(0);
                             }, 2000);
                         })
@@ -282,8 +282,8 @@ function process_next() {
                                 clearCanvas: true,
                             }
                         });
-                        anim2.addEventListener("complete", function () {
-                            setTimeout(function () {
+                        anim2.addEventListener("complete", () => {
+                            setTimeout(() => {
                                 anim2.goToAndPlay(0);
                             }, 2000);
                         })

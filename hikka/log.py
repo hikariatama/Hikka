@@ -255,7 +255,7 @@ class TelegramLogsHandler(logging.Handler):
             for client_id in self._mods
         }
 
-        for client_id, exceptions in self._exc_queue.items():
+        for exceptions in self._exc_queue.values():
             for exc in exceptions:
                 await exc
 

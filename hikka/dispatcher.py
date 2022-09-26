@@ -506,7 +506,7 @@ class CommandDispatcher:
                 and (
                     not isinstance(message, Message)
                     or isinstance(func.startswith, str)
-                    and not message.raw_text.startswith(getattr(func, "startswith"))
+                    and not message.raw_text.startswith(func.startswith)
                 )
             )
             or (
@@ -514,7 +514,7 @@ class CommandDispatcher:
                 and (
                     not isinstance(message, Message)
                     or isinstance(func.endswith, str)
-                    and not message.raw_text.endswith(getattr(func, "endswith"))
+                    and not message.raw_text.endswith(func.endswith)
                 )
             )
             or (
@@ -522,7 +522,7 @@ class CommandDispatcher:
                 and (
                     not isinstance(message, Message)
                     or isinstance(func.contains, str)
-                    and getattr(func, "contains") not in message.raw_text
+                    and func.contains not in message.raw_text
                 )
             )
             or (

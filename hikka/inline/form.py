@@ -249,7 +249,8 @@ class Form(InlineUnit):
 
         if not isinstance(force_me, bool):
             logger.error(
-                "Invalid type for `force_me`. Expected `bool`, got `%s`", type(force_me)
+                "Invalid type for `force_me`. Expected `bool`, got `%s`",
+                type(force_me),
             )
             return False
 
