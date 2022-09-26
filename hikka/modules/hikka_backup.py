@@ -156,9 +156,8 @@ class HikkaBackupMod(loader.Module):
             )
 
             backup = io.BytesIO(json.dumps(self._db).encode("utf-8"))
-            backup.name = "hikka-db-backup-{}.json".format(
-                getattr(datetime, "datetime", datetime).now().strftime("%d-%m-%Y-%H-%M")
-            )
+            backup.name = f'hikka-db-backup-{getattr(datetime, "datetime", datetime).now().strftime("%d-%m-%Y-%H-%M")}.json'
+
 
             await self._client.send_file(self._backup_channel, backup)
             self.set("last_backup", round(time.time()))

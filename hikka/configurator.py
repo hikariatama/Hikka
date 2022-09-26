@@ -53,10 +53,7 @@ class TDialog:
         print(query)
         print()
         inp = _safe_input("Please enter your response, or type nothing to cancel: ")
-        if inp == "" or inp is None:
-            return False, "Cancelled"
-
-        return True, inp
+        return (False, "Cancelled") if inp == "" or inp is None else (True, inp)
 
     def msgbox(self, msg: str) -> bool:
         """Print some info"""

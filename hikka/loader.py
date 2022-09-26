@@ -540,9 +540,9 @@ class Modules:
             callback_handlers = {}
             watchers = []
             for module in self.modules:
-                commands.update(module.hikka_commands)
-                inline_handlers.update(module.hikka_inline_handlers)
-                callback_handlers.update(module.hikka_callback_handlers)
+                commands |= module.hikka_commands
+                inline_handlers |= module.hikka_inline_handlers
+                callback_handlers |= module.hikka_callback_handlers
                 watchers.extend(module.hikka_watchers.values())
 
             self.commands = commands
@@ -580,8 +580,10 @@ class Modules:
 
             self.secure_boot = self._db.get(__name__, "secure_boot", False)
 
-            if not self.secure_boot:
-                external_mods = [
+            external_mods = (
+                []
+                if self.secure_boot
+                else [
                     os.path.join(LOADED_MODULES_DIR, mod)
                     for mod in filter(
                         lambda x: (
@@ -591,8 +593,7 @@ class Modules:
                         os.listdir(LOADED_MODULES_DIR),
                     )
                 ]
-            else:
-                external_mods = []
+            )
 
         loaded = []
         loaded += await self._register_modules(mods)
