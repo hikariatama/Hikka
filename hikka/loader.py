@@ -1175,8 +1175,6 @@ class Modules:
                 logger.debug("Using existing instance of library %s", old_lib.name)
                 return old_lib
 
-        new = True
-
         if hasattr(lib_obj, "init"):
             if not callable(lib_obj.init):
                 _raise(ValueError("Library init() must be callable"))

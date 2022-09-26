@@ -50,7 +50,7 @@ from telethon.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import SQLiteSession, StringSession, MemorySession
+from telethon.sessions import SQLiteSession, MemorySession
 
 from . import database, loader, utils, version
 from .dispatcher import CommandDispatcher

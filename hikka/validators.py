@@ -764,7 +764,8 @@ class Emoji(Validator):
 
         if length is not None and passed_length != length:
             raise ValidationError(f"Passed value ({value}) is not {length} emojis long")
-        elif (
+
+        if (
             min_len is not None
             and max_len is not None
             and (passed_length < min_len or passed_length > max_len)
@@ -773,20 +774,21 @@ class Emoji(Validator):
                 f"Passed value ({value}) is not between {min_len} and {max_len} emojis"
                 " long"
             )
-        elif min_len is not None and passed_length < min_len:
+
+        if min_len is not None and passed_length < min_len:
             raise ValidationError(
                 f"Passed value ({value}) is not at least {min_len} emojis long"
             )
-        elif max_len is not None and passed_length > max_len:
+
+        if max_len is not None and passed_length > max_len:
             raise ValidationError(
                 f"Passed value ({value}) is not no more than {max_len} emojis long"
             )
 
-        for emoji in grapheme.graphemes(value):
-            if emoji not in ALLOWED_EMOJIS:
-                raise ValidationError(
-                    f"Passed value ({value}) is not a valid string with emojis"
-                )
+        if any(emoji not in ALLOWED_EMOJIS for emoji in grapheme.graphemes(value)):
+            raise ValidationError(
+                f"Passed value ({value}) is not a valid string with emojis"
+            )
 
         return value
 

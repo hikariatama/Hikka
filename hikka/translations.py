@@ -35,7 +35,7 @@ class Translator:
                 try:
                     ndata = (await utils.run_sync(requests.get, lang)).json()
                 except Exception:
-                    logger.exception(f"Unable to decode {lang}")
+                    logger.exception("Unable to decode %s", lang)
                     continue
 
                 data = ndata.get("data", ndata)
