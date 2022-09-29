@@ -479,6 +479,9 @@ class RegExp(Validator):
         flags: typing.Optional[re.RegexFlag] = None,
         description: typing.Optional[typing.Union[dict, str]] = None,
     ):
+        if not flags:
+            flags = 0
+
         try:
             re.compile(regex, flags=flags)
         except re.error as e:
