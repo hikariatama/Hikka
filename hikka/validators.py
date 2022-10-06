@@ -462,6 +462,22 @@ class String(Validator):
                 f"Passed value ({value}) must be a length of {length}"
             )
 
+        if (
+            isinstance(min_len, int)
+            and len(list(grapheme.graphemes(str(value)))) < min_len
+        ):
+            raise ValidationError(
+                f"Passed value ({value}) must be a length of at least {min_len}"
+            )
+
+        if (
+            isinstance(max_len, int)
+            and len(list(grapheme.graphemes(str(value)))) > max_len
+        ):
+            raise ValidationError(
+                f"Passed value ({value}) must be a length of up to {max_len}"
+            )
+
         return str(value)
 
 

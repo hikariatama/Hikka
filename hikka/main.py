@@ -215,6 +215,12 @@ def parse_arguments() -> dict:
         action="store_true",
         help="Disable `force_insecure` warning",
     )
+    parser.add_argument(
+        "--proxy-pass",
+        dest="proxy_pass",
+        action="store_true",
+        help="Open proxy pass tunnel on start (not needed on setup)",
+    )
     arguments = parser.parse_args()
     logging.debug(arguments)
     if sys.platform == "win32":
@@ -636,6 +642,7 @@ class Hikka:
             await self.web.start_if_ready(
                 len(self.clients),
                 self.arguments.port,
+                proxy_pass=self.arguments.proxy_pass,
             )
 
         await self._add_dispatcher(client, modules, db)
