@@ -4,6 +4,8 @@
 
 - Fix `--no-web` arg
 - Fix `tglog_level` config option of module `Tester`
+- Fix duplicated monkey on login page
+- Add physical `Enter` button to login page on mobile devices
 - Add `--proxy-pass` arg
 - Add `utils.invite_inline_bot` method
 - Add `invite_bot` method to `utils.asset_channel`

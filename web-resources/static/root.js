@@ -116,7 +116,7 @@ function tg_code() {
             if (!response.ok) {
                 if (response.status == 401) {
                     $(".auth-code-form").hide().fadeIn(300, () => {
-                        $("#monkey-close").html();
+                        $("#monkey-close").html("");
                         anim = bodymovin.loadAnimation({
                             container: document.getElementById("monkey-close"),
                             renderer: "canvas",
@@ -134,6 +134,9 @@ function tg_code() {
                         })
                     });
                     $(".code-input").removeAttr("disabled");
+                    $(".code-input").attr("inputmode", "text");
+                    if($(".enter").hasClass("tgcode"))
+                        $(".enter").removeClass("tgcode");
                     $(".code-caption").html("Enter your Telegram 2FA password, then press <span style='color: #dc137b;'>Enter</span>");
                     cnt_btn.setAttribute("current-step", "2fa");
                     $("#monkey").hide();
@@ -271,7 +274,7 @@ function process_next() {
                     });
                 } else {
                     $(".auth-code-form").hide().fadeIn(300, () => {
-                        $("#monkey").html();
+                        $("#monkey").html("");
                         anim2 = bodymovin.loadAnimation({
                             container: document.getElementById("monkey"),
                             renderer: "canvas",
@@ -289,6 +292,7 @@ function process_next() {
                         })
                     });
                     $(".code-input").removeAttr("disabled");
+                    $(".enter").addClass("tgcode");
                     $(".code-caption").text("Enter the code you recieved in Telegram");
                     cnt_btn.setAttribute("current-step", "code");
                     _current_block = "code";
@@ -376,6 +380,16 @@ $(".code-input").on("keyup", (e) => {
         $(".code-input").val("");
         tg_code();
     } else if (_current_block == "2fa" && (e.key === "Enter" || e.keyCode === 13)) {
+        let _2fa = $(".code-input").val();
+        _2fa_pass = _2fa;
+        $(".code-input").attr("disabled", "true");
+        $(".code-input").val("");
+        tg_code();
+    }
+});
+
+$(".enter").on("click", () => {
+    if (_current_block == "2fa") {
         let _2fa = $(".code-input").val();
         _2fa_pass = _2fa;
         $(".code-input").attr("disabled", "true");
