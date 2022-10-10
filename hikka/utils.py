@@ -1394,6 +1394,15 @@ def validate_html(html: str) -> str:
     return telethon.extensions.html.unparse(escape_html(text), entities)
 
 
+def iter_attrs(obj: typing.Any, /) -> typing.Iterator[typing.Tuple[str, typing.Any]]:
+    """
+    Iterates over attributes of object
+    :param obj: Object to iterate over
+    :return: Iterator of attributes and their values
+    """
+    return ((attr, getattr(obj, attr)) for attr in dir(obj))
+
+
 init_ts = time.perf_counter()
 
 

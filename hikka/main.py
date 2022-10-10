@@ -620,6 +620,11 @@ class Hikka:
             events.MessageEdited(),
         )
 
+        client.add_event_handler(
+            dispatcher.handle_raw,
+            events.Raw(),
+        )
+
     async def amain(self, first: bool, client: CustomTelegramClient):
         """Entrypoint for async init, run once for each user"""
         client.parse_mode = "HTML"

@@ -108,6 +108,8 @@ class CommandDispatcher:
             else str(self._client.hikka_me.id)
         )
 
+        self.raw_handlers = []
+
     async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
         if await self.security.check(
             message,
@@ -369,6 +371,15 @@ class CommandDispatcher:
             message = self._handle_grep(message)
 
         return message, prefix, txt, func
+
+    async def handle_raw(self, event: events.Raw):
+        """Handle raw events."""
+        for handler in self.raw_handlers:
+            if isinstance(event, tuple(handler.updates)):
+                try:
+                    await handler(event)
+                except Exception as e:
+                    logger.exception("Error in raw handler %s: %s", handler.id, e)
 
     async def handle_command(
         self,

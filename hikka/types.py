@@ -370,7 +370,7 @@ def _get_members(
             method_name.rsplit(ending, maxsplit=1)[0]
             if (method_name == ending if strict else method_name.endswith(ending))
             else method_name
-        ): getattr(mod, method_name)
+        ).lower(): getattr(mod, method_name)
         for method_name in dir(mod)
         if callable(getattr(mod, method_name))
         and (

@@ -15,6 +15,7 @@ import logging
 import os
 import re
 import sys
+from uuid import uuid4
 import requests
 import copy
 
@@ -23,6 +24,8 @@ import importlib.util
 import importlib.machinery
 from functools import partial, wraps
 
+from telethon.utils import is_list_like
+from telethon.tl.tlobject import TLObject
 from telethon.tl.types import Message, InputPeerNotifySettings, Channel
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
@@ -500,6 +503,26 @@ def callback_handler(*args, **kwargs):
     return _mark_method("is_callback_handler", *args, **kwargs)
 
 
+def raw_handler(updates: typing.Union[TLObject, typing.List[TLObject]]):
+    """
+    Decorator that marks function as raw telethon events handler
+    Use it to prevent zombie-event-handlers, left by unloaded modules
+    :param updates: Update(-s) to handle
+    ⚠️ Do not try to simulate behavior of this decorator by yourself!
+    ⚠️ This feature won't work, if you dynamically declare method with decorator!
+    """
+    if not is_list_like(updates):
+        updates = [updates]
+
+    def inner(func: callable):
+        func.is_raw_handler = True
+        func.updates = updates
+        func.id = uuid4().hex
+        return func
+
+    return inner
+
+
 class Modules:
     """Stores all registered modules"""
 
@@ -698,6 +721,18 @@ class Modules:
         for alias, cmd in aliases.items():
             self.add_alias(alias, cmd)
 
+    def register_raw_handlers(self, instance: Module):
+        """Register event handlers for a module"""
+        for name, handler in utils.iter_attrs(instance):
+            if getattr(handler, "is_raw_handler", False):
+                self.client.dispatcher.raw_handlers.append(handler)
+                logger.debug(
+                    "Registered raw handler %s for %s. ID: %s",
+                    name,
+                    instance.__class__.__name__,
+                    handler.id,
+                )
+
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
@@ -707,11 +742,6 @@ class Modules:
             self._core_commands += list(
                 map(lambda x: x.lower(), list(instance.hikka_commands))
             )
-
-        for name, cmd in self.commands.copy().items():
-            if cmd.__self__.__class__.__name__ == instance.__class__.__name__:
-                logger.debug("Removing command %s for update", name)
-                del self.commands[name]
 
         for _command, cmd in instance.hikka_commands.items():
             # Restrict overwriting core modules' commands
@@ -730,22 +760,30 @@ class Modules:
             if cmd in instance.hikka_commands:
                 self.add_alias(alias, cmd)
 
+        self.register_inline_stuff(instance)
+
+    def register_inline_stuff(self, instance: Module):
         for name, func in instance.hikka_inline_handlers.copy().items():
             if name.lower() in self.inline_handlers:
                 if (
                     hasattr(func, "__self__")
                     and hasattr(self.inline_handlers[name], "__self__")
-                    and func.__self__.__class__.__name__
-                    != self.inline_handlers[name].__self__.__class__.__name__
+                    and (
+                        func.__self__.__class__.__name__
+                        != self.inline_handlers[name].__self__.__class__.__name__
+                    )
                 ):
-                    logger.debug("Duplicate inline_handler %s", name)
+                    logger.debug(
+                        "Duplicate inline_handler %s of %s",
+                        name,
+                        instance.__class__.__name__,
+                    )
 
                 logger.debug(
-                    "Replacing inline_handler for %s", self.inline_handlers[name]
+                    "Replacing inline_handler %s for %s",
+                    self.inline_handlers[name],
+                    instance.__class__.__name__,
                 )
-
-            if not func.__doc__:
-                logger.debug("Missing docs for %s", name)
 
             self.inline_handlers.update({name.lower(): func})
 
@@ -756,11 +794,46 @@ class Modules:
                 and func.__self__.__class__.__name__
                 != self.callback_handlers[name].__self__.__class__.__name__
             ):
-                logger.debug("Duplicate callback_handler %s", name)
+                logger.debug(
+                    "Duplicate callback_handler %s of %s",
+                    name,
+                    instance.__class__.__name__,
+                )
 
             self.callback_handlers.update({name.lower(): func})
 
-    def register_watcher(self, instance: Module):
+    def unregister_inline_stuff(self, instance: Module, purpose: str):
+        for name, func in instance.hikka_inline_handlers.copy().items():
+            if name.lower() in self.inline_handlers and (
+                hasattr(func, "__self__")
+                and hasattr(self.inline_handlers[name], "__self__")
+                and func.__self__.__class__.__name__
+                == self.inline_handlers[name].__self__.__class__.__name__
+            ):
+                del self.inline_handlers[name.lower()]
+                logger.debug(
+                    "Unregistered inline_handler %s of %s for %s",
+                    name,
+                    instance.__class__.__name__,
+                    purpose,
+                )
+
+        for name, func in instance.hikka_callback_handlers.copy().items():
+            if name.lower() in self.callback_handlers and (
+                hasattr(func, "__self__")
+                and hasattr(self.callback_handlers[name], "__self__")
+                and func.__self__.__class__.__name__
+                == self.callback_handlers[name].__self__.__class__.__name__
+            ):
+                del self.callback_handlers[name.lower()]
+                logger.debug(
+                    "Unregistered callback_handler %s of %s for %s",
+                    name,
+                    instance.__class__.__name__,
+                    purpose,
+                )
+
+    def register_watchers(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -1416,8 +1489,12 @@ class Modules:
             self.modules.remove(mod)
             raise
 
+        self.unregister_commands(mod, "update")
+        self.unregister_raw_handlers(mod, "update")
+
         self.register_commands(mod)
-        self.register_watcher(mod)
+        self.register_watchers(mod)
+        self.register_raw_handlers(mod)
 
     def get_classname(self, name: str) -> str:
         return next(
@@ -1461,31 +1538,62 @@ class Modules:
 
                 await module.on_unload()
 
-                for method in dir(module):
-                    if isinstance(getattr(module, method), InfiniteLoop):
-                        getattr(module, method).stop()
-                        logger.debug(
-                            "Stopped loop in module %s, method %s", module, method
-                        )
-
-                for name, cmd in self.commands.copy().items():
-                    if cmd.__self__.__class__.__name__ == module.__class__.__name__:
-                        logger.debug("Removing command %s for unload", name)
-                        del self.commands[name]
-                        for alias, _command in self.aliases.copy().items():
-                            if _command == name:
-                                del self.aliases[alias]
-
-                for _watcher in self.watchers.copy():
-                    if (
-                        _watcher.__self__.__class__.__name__
-                        == module.__class__.__name__
-                    ):
-                        logger.debug("Removing watcher %s for unload", _watcher)
-                        self.watchers.remove(_watcher)
+                self.unregister_raw_handlers(module, "unload")
+                self.unregister_loops(module, "unload")
+                self.unregister_commands(module, "unload")
+                self.unregister_watchers(module, "unload")
+                self.unregister_inline_stuff(module, "unload")
 
         logger.debug("Worked: %s", worked)
         return worked
+
+    def unregister_loops(self, instance: Module, purpose: str):
+        for name, method in utils.iter_attrs(instance):
+            if isinstance(method, InfiniteLoop):
+                logger.debug(
+                    "Stopping loop for %s in module %s, method %s",
+                    purpose,
+                    instance.__class__.__name__,
+                    name,
+                )
+                method.stop()
+
+    def unregister_commands(self, instance: Module, purpose: str):
+        for name, cmd in self.commands.copy().items():
+            if cmd.__self__.__class__.__name__ == instance.__class__.__name__:
+                logger.debug(
+                    "Removing command %s of module %s for %s",
+                    name,
+                    instance.__class__.__name__,
+                    purpose,
+                )
+                del self.commands[name]
+                for alias, _command in self.aliases.copy().items():
+                    if _command == name:
+                        del self.aliases[alias]
+
+    def unregister_watchers(self, instance: Module, purpose: str):
+        for _watcher in self.watchers.copy():
+            if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
+                logger.debug(
+                    "Removing watcher %s of module %s for %s",
+                    _watcher,
+                    instance.__class__.__name__,
+                    purpose,
+                )
+                self.watchers.remove(_watcher)
+
+    def unregister_raw_handlers(self, instance: Module, purpose: str):
+        """Unregister event handlers for a module"""
+        for handler in self.client.dispatcher.raw_handlers:
+            if handler.__self__.__class__.__name__ == instance.__class__.__name__:
+                self.client.dispatcher.raw_handlers.remove(handler)
+                logger.debug(
+                    "Unregistered raw handler of module %s for %s. ID: %s",
+                    instance.__class__.__name__,
+                    purpose,
+                    handler.id,
+                )
 
     def add_alias(self, alias: str, cmd: str) -> bool:
         """Make an alias"""
