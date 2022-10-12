@@ -14,8 +14,7 @@ import time
 from io import BytesIO
 import typing
 
-from telethon.tl.functions.channels import EditAdminRequest, InviteToChannelRequest
-from telethon.tl.types import ChatAdminRights, Message
+from telethon.tl.types import Message
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
@@ -177,7 +176,12 @@ class TestMod(loader.Module):
 
     def _pass_config_to_logger(self):
         logging.getLogger().handlers[0].force_send_all = self.config["force_send_all"]
-        logging.getLogger().handlers[0].tg_level = self.config["tglog_level"]
+        logging.getLogger().handlers[0].tg_level = {
+            "INFO": 20,
+            "WARNING": 30,
+            "ERROR": 40,
+            "CRITICAL": 50,
+        }[self.config["tglog_level"]]
 
     @loader.command(ru_doc="Ответь на сообщение, чтобы показать его дамп")
     async def dump(self, message: Message):
@@ -522,11 +526,12 @@ class TestMod(loader.Module):
         )
 
     async def client_ready(self):
-        chat, is_new = await utils.asset_channel(
+        chat, _ = await utils.asset_channel(
             self._client,
             "hikka-logs",
             "🌘 Your Hikka logs will appear in this chat",
             silent=True,
+            invite_bot=True,
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-logs.png",
         )
 
@@ -534,32 +539,7 @@ class TestMod(loader.Module):
 
         self.watchdog.start()
 
-        if not is_new and any(
-            participant.id == self.inline.bot_id
-            for participant in (await self._client.get_participants(chat, limit=3))
-        ):
-            logging.getLogger().handlers[0].install_tg_log(self)
-            logger.debug("Bot logging installed for %s", self._logchat)
-            return
-
-        logger.debug("New logging chat created, init setup...")
-
-        try:
-            await self._client(InviteToChannelRequest(chat, [self.inline.bot_username]))
-        except Exception:
-            logger.warning("Unable to invite logger to chat")
-
-        try:
-            await self._client(
-                EditAdminRequest(
-                    channel=chat,
-                    user_id=self.inline.bot_username,
-                    admin_rights=ChatAdminRights(ban_users=True),
-                    rank="Logger",
-                )
-            )
-        except Exception:
-            pass
-
         logging.getLogger().handlers[0].install_tg_log(self)
         logger.debug("Bot logging installed for %s", self._logchat)
+
+        self._pass_config_to_logger()

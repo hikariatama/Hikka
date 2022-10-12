@@ -77,25 +77,25 @@ else:
 def api_config(data_root: str):
     """Request API config from user and set"""
     code, hash_value = DIALOG.inputbox("Enter your API Hash")
-    if code == DIALOG.OK:
-        if len(hash_value) != 32 or any(
-            it not in string.hexdigits for it in hash_value
-        ):
-            DIALOG.msgbox("Invalid hash")
-            return
+    if not code:
+        return
 
-        code, id_value = DIALOG.inputbox("Enter your API ID")
+    if len(hash_value) != 32 or any(it not in string.hexdigits for it in hash_value):
+        DIALOG.msgbox("Invalid hash")
+        return
 
-        if not id_value or any(it not in string.digits for it in id_value):
-            DIALOG.msgbox("Invalid ID")
-            return
+    code, id_value = DIALOG.inputbox("Enter your API ID")
 
-        with open(
-            os.path.join(
-                data_root or os.path.dirname(utils.get_base_dir()), "api_token.txt"
-            ),
-            "w",
-        ) as file:
-            file.write(id_value + "\n" + hash_value)
+    if not id_value or any(it not in string.digits for it in id_value):
+        DIALOG.msgbox("Invalid ID")
+        return
 
-        DIALOG.msgbox("API Token and ID set.")
+    with open(
+        os.path.join(
+            data_root or os.path.dirname(utils.get_base_dir()), "api_token.txt"
+        ),
+        "w",
+    ) as file:
+        file.write(id_value + "\n" + hash_value)
+
+    DIALOG.msgbox("API Token and ID set.")

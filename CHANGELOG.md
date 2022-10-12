@@ -1,5 +1,19 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.5.1
+
+- Fix `--no-web` arg
+- Fix `tglog_level` config option of module `Tester`
+- Fix duplicated monkey on login page
+- Fix shit modules with uppercase commands
+- Add physical `Enter` button to login page on mobile devices
+- Add `--proxy-pass` arg
+- Add `utils.invite_inline_bot` method
+- Add `utils.iter_attrs` method
+- Add `@loader.raw_handler` decorator
+- Add `invite_bot` parameter to `utils.asset_channel`
+- Add support for `String` validator's `min_len` and `max_len` parameters
+
 ## 🌑 Hikka 1.5.0
 
 - Fix `on_change` param processing in config

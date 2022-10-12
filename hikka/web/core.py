@@ -65,10 +65,15 @@ class Web(root.Web):
         self.app.router.add_get("/favicon.ico", self.favicon)
         self.app.router.add_static("/static/", "web-resources/static")
 
-    async def start_if_ready(self, total_count: int, port: int):
+    async def start_if_ready(
+        self,
+        total_count: int,
+        port: int,
+        proxy_pass: bool = False,
+    ):
         if total_count <= len(self.client_data):
             if not self.running.is_set():
-                await self.start(port)
+                await self.start(port, proxy_pass=proxy_pass)
 
             self.ready.set()
 

@@ -596,7 +596,44 @@ label {
     text-align: center;
 }
 
-#monkey, #monkey-close {
+@media screen and (max-width: 736px) {
+    .auth-code-form {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.enter {
+    padding: 5px 10px;
+    border: 1px solid #dc137b;
+    color: #dc137b;
+    font-size: 30px;
+    border-radius: 8px;
+    width: 50%;
+    margin-left: 25%;
+    margin-top: 10px;
+    box-sizing: border-box;
+    transition: all .15s ease;
+    display: none;
+}
+
+@media screen and (max-width: 736px) {
+    .enter {
+        display: block;
+    }
+}
+
+.enter.tgcode {
+    display: none;
+}
+
+.enter:active {
+    background: #dc137b;
+    color: #fff;
+}
+
+#monkey,
+#monkey-close {
     height: 200px;
     margin-top: 30px;
 }
