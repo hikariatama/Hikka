@@ -288,11 +288,8 @@ async def get_user(message: Message) -> typing.Optional[User]:
         return await message.client.get_entity(message.sender_id)
 
     if isinstance(message.peer_id, (PeerChannel, PeerChat)):
-        try:
+        with contextlib.suppress(Exception):
             return await message.client.get_entity(message.sender_id)
-        except Exception:
-            pass
-
         async for user in message.client.iter_participants(
             message.peer_id,
             aggressive=True,
@@ -623,7 +620,7 @@ async def set_avatar(
         )
     )
 
-    try:
+    with contextlib.suppress(Exception):
         await client.delete_messages(
             peer,
             message_ids=[
@@ -634,9 +631,6 @@ async def set_avatar(
                 ).message.id
             ],
         )
-    except Exception:
-        pass
-
     return True
 
 
@@ -708,14 +702,13 @@ async def asset_channel(
     async for d in client.iter_dialogs():
         if d.title == title:
             client._channels_cache[title] = {"peer": d.entity, "exp": int(time.time())}
-            if invite_bot:
-                if all(
-                    participant.id != client.loader.inline.bot_id
-                    for participant in (
-                        await client.get_participants(d.entity, limit=100)
-                    )
-                ):
-                    await invite_inline_bot(client, d.entity)
+            if invite_bot and all(
+                participant.id != client.loader.inline.bot_id
+                for participant in (
+                    await client.get_participants(d.entity, limit=100)
+                )
+            ):
+                await invite_inline_bot(client, d.entity)
 
             return d.entity, False
 
@@ -754,8 +747,8 @@ async def asset_channel(
         except Exception:
             folder = None
 
-        if folder is not None and not any(
-            peer.id == getattr(folder_peer, "channel_id", None)
+        if folder is not None and all(
+            peer.id != getattr(folder_peer, "channel_id", None)
             for folder_peer in folder.include_peers
         ):
             folder.include_peers += [await client.get_input_entity(peer)]
@@ -835,7 +828,7 @@ def get_named_platform() -> str:
     Returns formatted platform name
     :return: Platform name
     """
-    try:
+    with contextlib.suppress(Exception):
         if os.path.isfile("/proc/device-tree/model"):
             with open("/proc/device-tree/model") as f:
                 model = f.read()
@@ -843,18 +836,11 @@ def get_named_platform() -> str:
                     return f"🍊 {model}"
 
                 return f"🍇 {model}" if "Raspberry" in model else f"❓ {model}"
-    except Exception:
-        # In case of weird fs, aka Termux
-        pass
-
-    try:
+    with contextlib.suppress(Exception):
         from platform import uname
 
         if "microsoft-standard" in uname().release:
             return "🍁 WSL"
-    except Exception:
-        pass
-
     if "GOORM" in os.environ:
         return "🦾 GoormIDE"
 
@@ -1359,8 +1345,17 @@ def find_caller(
         None,
     )
 
-    if not caller:
-        return next(
+    return (
+        next(
+            (
+                getattr(cls_, caller.function, None)
+                for cls_ in caller.frame.f_globals.values()
+                if inspect.isclass(cls_) and issubclass(cls_, Module)
+            ),
+            None,
+        )
+        if caller
+        else next(
             (
                 frame_info.frame.f_locals["func"]
                 for frame_info in stack or inspect.stack()
@@ -1368,19 +1363,13 @@ def find_caller(
                 and frame_info.function == "future_dispatcher"
                 and (
                     "CommandDispatcher"
-                    in getattr(getattr(frame_info, "frame", None), "f_globals", {})
+                    in getattr(
+                        getattr(frame_info, "frame", None), "f_globals", {}
+                    )
                 )
             ),
             None,
         )
-
-    return next(
-        (
-            getattr(cls_, caller.function, None)
-            for cls_ in caller.frame.f_globals.values()
-            if inspect.isclass(cls_) and issubclass(cls_, Module)
-        ),
-        None,
     )
 
 

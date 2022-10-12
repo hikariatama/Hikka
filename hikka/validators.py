@@ -411,28 +411,29 @@ class String(Validator):
                 "en": f"string of length {length}",
                 "ru": f"строкой из {length} символа(-ов)",
             }
+        elif min_len is None:
+            doc = (
+                {
+                    "en": "string",
+                    "ru": "строкой",
+                }
+                if max_len is None
+                else {
+                    "en": f"string of length up to {max_len}",
+                    "ru": f"строкой не более чем из {max_len} символа(-ов)",
+                }
+            )
+
+        elif max_len is not None:
+            doc = {
+                "en": f"string of length from {min_len} to {max_len}",
+                "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
+            }
         else:
-            if min_len is None:
-                if max_len is None:
-                    doc = {
-                        "en": "string",
-                        "ru": "строкой",
-                    }
-                else:
-                    doc = {
-                        "en": f"string of length up to {max_len}",
-                        "ru": f"строкой не более чем из {max_len} символа(-ов)",
-                    }
-            elif max_len is not None:
-                doc = {
-                    "en": f"string of length from {min_len} to {max_len}",
-                    "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
-                }
-            else:
-                doc = {
-                    "en": f"string of length at least {min_len}",
-                    "ru": f"строкой не менее чем из {min_len} символа(-ов)",
-                }
+            doc = {
+                "en": f"string of length at least {min_len}",
+                "ru": f"строкой не менее чем из {min_len} символа(-ов)",
+            }
 
         super().__init__(
             functools.partial(
@@ -508,14 +509,13 @@ class RegExp(Validator):
                 "en": f"string matching pattern «{regex}»",
                 "ru": f"строкой, соответствующей шаблону «{regex}»",
             }
+        elif isinstance(description, str):
+            doc = {
+                "en": description,
+                "ru": description,
+            }
         else:
-            if isinstance(description, str):
-                doc = {
-                    "en": description,
-                    "ru": description,
-                }
-            else:
-                doc = description
+            doc = description
 
         super().__init__(
             functools.partial(self._validate, regex=regex, flags=flags),
