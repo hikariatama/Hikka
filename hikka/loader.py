@@ -503,7 +503,7 @@ def callback_handler(*args, **kwargs):
     return _mark_method("is_callback_handler", *args, **kwargs)
 
 
-def raw_handler(updates: typing.Union[TLObject, typing.List[TLObject]]):
+def raw_handler(*updates: TLObject):
     """
     Decorator that marks function as raw telethon events handler
     Use it to prevent zombie-event-handlers, left by unloaded modules
@@ -511,8 +511,6 @@ def raw_handler(updates: typing.Union[TLObject, typing.List[TLObject]]):
     ⚠️ Do not try to simulate behavior of this decorator by yourself!
     ⚠️ This feature won't work, if you dynamically declare method with decorator!
     """
-    if not is_list_like(updates):
-        updates = [updates]
 
     def inner(func: callable):
         func.is_raw_handler = True
