@@ -1,5 +1,9 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.5.2
+
+- Change the behavior of `@loader.raw_handler` decorator to accept starred arguments instead of list-like value
+
 ## 🌑 Hikka 1.5.1
 
 - Fix `--no-web` arg
