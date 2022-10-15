@@ -222,7 +222,7 @@ class QuickstartMod(loader.Module):
     }
 
     async def client_ready(self):
-        if self._db.get("hikka", "disable_quickstart", False):
+        if self.get("disable_quickstart"):
             raise loader.SelfUnload
 
         self.mark = lambda: [
@@ -257,7 +257,7 @@ class QuickstartMod(loader.Module):
             disable_web_page_preview=True,
         )
 
-        self._db.set("hikka", "disable_quickstart", True)
+        self.set("disable_quickstart", True)
 
     async def _change_lang(self, call: BotInlineCall, lang: str):
         self._db.set(translations.__name__, "lang", lang)
