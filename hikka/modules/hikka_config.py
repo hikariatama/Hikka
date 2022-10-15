@@ -272,6 +272,8 @@ class HikkaConfigMod(loader.Module):
         "builtin": "🛰 बिल्ट-इन",
         "external": "🛸 बाहरी",
         "libraries": "🪴 लाइब्रेरी",
+        "close_btn": "🔻 बंद करें",
+        "back_btn": "👈 पीछे",
     }
 
     strings_uz = {
@@ -327,9 +329,11 @@ class HikkaConfigMod(loader.Module):
         "remove_item_btn": "➖ Elementni o'chirish",
         "show_hidden": "🚸 Qiymatni ko'rsatish",
         "hide_value": "🔒 Qiymatni yashirish",
-        "builtin": "🛰 Built-in",
+        "builtin": "🛰 Ichki",
         "external": "🛸 Tashqi",
         "libraries": "🪴 Kutubxona",
+        "close_btn": "🔻 Yopish",
+        "back_btn": "👈 Orqaga",
     }
 
     strings_tr = {
@@ -388,6 +392,7 @@ class HikkaConfigMod(loader.Module):
         "builtin": "🛰 Dahili",
         "external": "🛸 Harici",
         "libraries": "🪴 Kütüphane",
+        "back_btn": "👈 Geri",
     }
 
     _row_size = 3

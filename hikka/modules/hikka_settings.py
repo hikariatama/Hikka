@@ -621,16 +621,16 @@ class HikkaSettingsMod(loader.Module):
             "🧭 <b>Yangilanishni tasdiqlang. Userbot qayta ishga tushiriladi</b>"
         ),
         "confirm_restart": "🔄 <b>Qayta ishga tushirishni tasdiqlang</b>",
-        "suggest_fs": "✅ Saqlash modullarini taklif qilish",
+        "suggest_fs": "✅ Modullarni saqlashni taklif qilish",
         "do_not_suggest_fs": "🚫 Modullarni saqlashni taklif qilish",
-        "use_fs": "✅ Modullarni doimo saqlang",
+        "use_fs": "✅ Modullarni doimo saqlash",
         "do_not_use_fs": "🚫 Har doim modullarni saqlang",
         "btn_restart": "🔄 Qayta ishga tushirish",
         "btn_update": "🧭 Yangilash",
         "close_menu": "😌 Menyuni yopish",
-        "custom_emojis": "✅ Maxsus kulgichlar",
+        "custom_emojis": "✅ Maxsus emojilar",
         "no_custom_emojis": "🚫 Maxsus kulgichlar",
-        "suggest_subscribe": "✅ Kanalga obuna bo'lishni taklif qiling",
+        "suggest_subscribe": "✅ Kanalga obuna bo'lishni taklif qilish",
         "do_not_suggest_subscribe": "🚫 Kanalga obuna bo'lishni taklif qilish",
         "private_not_allowed": (
             "<emoji document_id=5447207618793708263>🚫</emoji> <b>Bu buyruq kerak"
@@ -708,7 +708,7 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Hisob ma'lumotlaringizdan foydalanib tizimga"
             " kirishingiz kerak,lavHost</i>ni sozlashda ko'rsatilgan"
         ),
-        "disable_stats": "✅ Anonim statistikaga ruxsat beriladi",
+        "disable_stats": "✅ Anonim statistika ruxsat berildi",
         "enable_stats": "🚫 Anonim statistika o'chirilgan",
     }
 

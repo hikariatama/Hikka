@@ -245,7 +245,11 @@ class Translations(loader.Module):
             try:
                 module.config_complete(reload_dynamic_translate=True)
             except Exception as e:
-                logger.debug("Can't complete dynamic translations reload of %s due to %s", module, e)
+                logger.debug(
+                    "Can't complete dynamic translations reload of %s due to %s",
+                    module,
+                    e,
+                )
 
         fixmap = {"en": "gb", "hi": "in"}
 
@@ -299,7 +303,11 @@ class Translations(loader.Module):
             try:
                 module.config_complete(reload_dynamic_translate=True)
             except Exception as e:
-                logger.debug("Can't complete dynamic translations reload of %s due to %s", module, e)
+                logger.debug(
+                    "Can't complete dynamic translations reload of %s due to %s",
+                    module,
+                    e,
+                )
 
         await utils.answer(
             message,

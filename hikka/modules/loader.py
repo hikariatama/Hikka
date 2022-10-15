@@ -963,9 +963,9 @@ class LoaderMod(loader.Module):
             " qayta ishga tushirishdami</b>"
         ),
         "save": "💿 Saqlash",
-        "no_save": "🚫 Saqlamang",
-        "save_for_all": "💽 Har doim saqlang",
-        "never_save": "🚫 Hech qachon saqlamang",
+        "no_save": "🚫 Kerakmas",
+        "save_for_all": "💽 Har vaqt saqlash",
+        "never_save": "🚫 Hechqachon saqlamaslik",
         "will_save_fs": (
             "💽 Endi fayldan yuklangan barcha modullar qattiq diskda saqlanadidisk"
         ),
@@ -1001,9 +1001,9 @@ class LoaderMod(loader.Module):
             " tomonidan amalga oshirildi. Ishlab chiquvchini qo'llab-quvvatlash uchun"
             " unga obuna bo'lasizmi?</b>"
         ),
-        "subscribe": "💬 Obuna bo'ling",
-        "no_subscribe": "🚫 Obuna bo'lmang",
-        "obuna bo'lgan": "💬 obuna bo'lgan!",
+        "subscribe": "💬 Obuna bo'lish",
+        "no_subscribe": "🚫 Shart emas",
+        "subscribed": "💬 Obuna bo'ldingiz",
         "unsubscribed": "🚫 Men bu kanalga boshqa obuna bo'lishni taklif qilmayman",
         "confirm_clearmodules": (
             "⚠️ <b>Haqiqatan ham barcha modullarni olib tashlamoqchimisiz?</b>"

@@ -307,27 +307,28 @@ class Presets(loader.Module):
     }
 
     strings_uz = {
-        "_fun_title": "🪩 O'ynak modul",
-        "_fun_desc": "O'ynak modul — animatsiya, spam, o'yin, va boshqa.",
-        "_chat_title": "👥 Chatni boshqarish",
+        "_fun_title": "🪩 Qiziqarli modullar",
+        "_fun_desc": "Qiziqarli modullar — animatsiya, spam, o'yin, va boshqa.",
+        "_chat_title": "👥 Chat boshqarish modullar",
         "_chat_desc": (
-            "Chatni boshqarish uchun yordam beruvchi koleksiya ham mavjud —"
+            "Chat boshqarish modullar uchun yordam beruvchi koleksiya ham mavjud —"
             " filtrlar, qaydlar, tili aniqlash, va boshqa."
         ),
-        "_service_title": "⚙️ Foydali modul",
+        "_service_title": "⚙️ Foydali modullar",
         "_service_desc": (
-            "Foydali modul — hisobni boshqarish, havola qisqartirish,"
+            "Foydali modullar — hisobni boshqarish, havola qisqartirish,"
             " qidiruv injini, va boshqa."
         ),
-        "_downloaders_title": "📥 Yuklab olish modullari",
+        "_downloaders_title": "📥 Yuklab oluvchilar",
         "_downloaders_desc": (
             "Internetdan fayllarni yuklab olish uchun yordam beruvchi koleksiya ham"
             " mavjud — YouTube, TikTok, Instagram, Spotify, VK Music, va boshqa."
         ),
         "welcome": (
-            "👋 <b>Salom! Kanalda ko'p modullar ro'yxati sabr qilganmisiz? Bir necha"
-            " oldin aniqlangan koleksiyalar ham mavjud. Agar menyu qayta ochmoqchi"
-            " bo'lsangiz, /presets buyrug'ini yuboring</b>"
+            "👋 <b>Salom! Kanallarda son-sanoqsiz modullarni almashtirishdan"
+            " charchadingizmi? Men sizga tayyor to'plamlarni taklif qila olaman. Agar"
+            " siz ushbu menyuni yana chaqirib olishingiz kerak bo'lsa, /presets"
+            " buyrug'ini menga yuboring</b>"
         ),
         "preset": (
             "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>Koleksiyada mavjud modullar:</b>\n\n{}"

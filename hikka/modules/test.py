@@ -184,8 +184,8 @@ class TestMod(loader.Module):
         "results_ping": (
             "<emoji document_id=6321050180095313397>⏱</emoji> <b>Reaktionsfähigkeit"
             " Telegramm:</b> <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Seit dem letzten Mal weg"
-            " neu laden: {}</b>"
+            " document_id=5377371691078916778>😎</emoji> <b>Zeit seit dem letzten"
+            " Neustart: {}</b>"
         ),
         "ping_hint": (
             "<emoji document_id=5472146462362048818>💡</emoji>"
