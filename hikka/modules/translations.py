@@ -242,7 +242,10 @@ class Translations(loader.Module):
         await self.translator.init()
 
         for module in self.allmodules.modules:
-            module.config_complete(reload_dynamic_translate=True)
+            try:
+                module.config_complete(reload_dynamic_translate=True)
+            except Exception as e:
+                logger.debug("Can't complete dynamic translations reload of %s due to %s", module, e)
 
         fixmap = {"en": "gb", "hi": "in"}
 

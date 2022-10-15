@@ -130,7 +130,7 @@ class QuickstartMod(loader.Module):
     }
 
     strings_uz = {
-        "base": """🌘🇺🇿 <b>Salom.</b> Sizning <b>Hikka</b> foydalanuvchi botingiz o'rnatildi.
+        "base": """🌘🇺🇿 <b>Salom.</b> Sizning <b>Hikka</b> userbotingiz o'rnatildi.
 
 ❓ <b>Yordam kerakmi?</b> Bizning qo'llab-quvvatlash chatingizga qo'shiling. Bizga <b>hamma</b> yordam bering.
 
@@ -149,13 +149,13 @@ class QuickstartMod(loader.Module):
 💡 <b>Hikka Friendly-Telegram va GeekTG modullarini hamda o'z modullarini qo'llab-quvvatlaydi.</b>
 """,
         "okteto": (
-            "☁️ <b>Sizning foydalanuvchi botingiz Okteto platformasida o'rnatilgan</b>."
+            "☁️ <b>Sizning userbotingiz Okteto platformasida o'rnatilgan</b>."
             " Sizdan @WebpageBotga xabarlar keladi. Uni bloklashmaslik."
         ),
         "railway": (
-            "🚂 <b>Sizning foydalanuvchi botingiz Railway platformasida o'rnatilgan</b>."
+            "🚂 <b>Sizning userbotingiz Railway platformasida o'rnatilgan</b>."
             " Sizga bu platformada <b>500 ta bepul soat</b> beriladi. Agar limit o'tgan"
-            " bo'lsa, <b>foydalanuvchi botingiz bloklanadi</b>. Keyingi oyda"
+            " bo'lsa, <b>userbotingiz bloklanadi</b>. Keyingi oyda"
             " https://railway.app ga o'tib, uni qayta ishga tushiring.</b>"
         ),
         "language_saved": "🇺🇿 Til saqlandi!",

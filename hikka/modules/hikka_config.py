@@ -153,6 +153,17 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_de = {
+        "choose_core": "🎚 <b>Wähle eine Kategorie</b>",
+        "configure": "🎚 <b>Modul zum Konfigurieren auswählen</b>",
+        "configure_lib": "🪴 <b>Wählen Sie eine zu konfigurierende Bibliothek aus</b>",
+        "configuring_mod": (
+            "🎚 <b>Wählen Sie einen Parameter für das Modul aus</b>"
+            " <code>{}</code>\n\n<b>Aktuell Einstellungen:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "🪴 <b>Wählen Sie eine Option für die Bibliothek aus</b>"
+            " <code>{}</code>\n\n<b>Aktuell Einstellungen:</b>\n\n{}"
+        ),
         "configuring_option": (
             "🎚 <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
             "<b> konfigurieren</b>\n<i>ℹ️ {}</i>\n\n<b>Standard: {}</b>\n\n<b>"
@@ -206,6 +217,17 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_hi = {
+        "choose_core": "🎚 <b>एक श्रेणी चुनें</b>",
+        "configure": "🎚 <b>कॉन्फ़िगर करने के लिए एक मॉड्यूल चुनें</b>",
+        "configure_lib": "🪴 <b>कॉन्फ़िगर करने के लिए लाइब्रेरी का चयन करें</b>",
+        "configuring_mod": (
+            "🎚 <b>मॉड्यूल के लिए एक पैरामीटर चुनें</b> <code>{}</code>\n\n<b>वर्तमान"
+            " सेटिंग:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "🪴 <b>लाइब्रेरी के लिए एक विकल्प चुनें</b> <code>{}</code>\n\n<b>वर्तमान"
+            " सेटिंग:</b>\n\n{}"
+        ),
         "configuring_option": (
             "🎚 <b>विकल्प </b><code>{}</code><b> मॉड्यूल </b><code>{}</code>"
             "<b> कॉन्फ़िगर कर रहा है</b>\n<i>ℹ️ {}</i>\n\n<b>डिफ़ॉल्ट: {}</b>\n\n<b>"
@@ -253,6 +275,17 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_uz = {
+        "choose_core": "🎚 <b>Kurum tanlang</b>",
+        "configure": "🎚 <b>Sozlash uchun modulni tanlang</b>",
+        "configure_lib": "🪴 <b>Sozlash uchun kutubxonani tanlang</b>",
+        "configuring_mod": (
+            "🎚 <b>Modul uchun parametrni tanlang</b> <code>{}</code>\n\n<b>Joriy"
+            " sozlamalar:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "🪴 <b>Kutubxona uchun variantni tanlang</b> <code>{}</code>\n\n<b>Hozirgi"
+            " sozlamalar:</b>\n\n{}"
+        ),
         "configuring_option": (
             "🎚 <b>Modul </b><code>{}</code><b> sozlamasi </b><code>{}</code><b>"
             " konfiguratsiya qilinmoqda</b>\n<i>ℹ️ {}</i>\n\n<b>Default:"
@@ -300,6 +333,17 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_tr = {
+        "choose_core": "🎚 <b>Bir kategori seçin</b>",
+        "configure": "🎚 <b>Yapılandırılacak bir modül seçin</b>",
+        "configure_lib": "🪴 <b>Yapılandırılacak bir kitaplık seçin</b>",
+        "configuring_mod": (
+            "🎚 <b>Modül için bir parametre seçin</b> <code>{}</code>\n\n<b>Mevcut"
+            " ayarlar:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "🪴 <b>Kitaplık için bir seçenek belirleyin</b>"
+            " <code>{}</code>\n\n<b>Geçerli ayarlar:</b>\n\n{}"
+        ),
         "configuring_option": (
             "🎚 <b>Modül </b><code>{}</code><b> seçeneği </b><code>{}</code>"
             "<b> yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"

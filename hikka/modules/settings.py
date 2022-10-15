@@ -12,7 +12,7 @@ import telethon
 from telethon.tl.types import Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
-from .. import loader, main, translations, utils, version
+from .. import loader, main, utils, version
 from ..inline.types import InlineCall
 
 
@@ -252,7 +252,7 @@ class CoreMod(loader.Module):
             " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
             " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
             "document_id=5454182070156794055>⌨️</emoji> <b>Entwickler:"
-            "t.me/hikariyatama</b>"
+            "t.me/hikariatama</b>"
         ),
         "_cls_doc": "Verwaltung der Grundeinstellungen des Userbots",
         "confirm_cleardb": (
@@ -337,7 +337,7 @@ class CoreMod(loader.Module):
             " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
             " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
             "document_id=5454182070156794055>⌨️</emoji> <b>Geliştirici:"
-            "t.me/hikariyatama</b>"
+            "t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot temel ayar yönetimi",
         "confirm_cleardb": (
@@ -423,7 +423,7 @@ class CoreMod(loader.Module):
             " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
             " <b>हिक्का-टीएल: </b><i>{}</i>\n\n<emoji"
             "document_id=5454182070156794055>⌨️</emoji> <b>डेवलपर:"
-            "t.me/hikariyatama</b>"
+            "t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot मूलभूत सेटिंग प्रबंधन",
         "confirm_cleardb": "⚠️ <b>क्या आप वाकई डेटाबेस को रीसेट करना चाहते हैं?</b>",
@@ -507,7 +507,7 @@ class CoreMod(loader.Module):
             " <b>Yaratish: </b><i>{}</i>\n\n<emoji"
             " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>Ishlab chiquvchi:t.me/hikariyatama</b>"
+            " <b>Ishlab chiquvchi: t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot asosiy sozlamalarini boshqarish",
         "confirm_cleardb": (
@@ -525,7 +525,7 @@ class CoreMod(loader.Module):
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Siz"
-            " foydalanmoqdasizbarqaror filial </b><code>{}</code><b>!</b>"
+            " foydalanayotgan versiya </b><code>{}</code><b>!</b>"
         ),
     }
 

@@ -187,12 +187,12 @@ class HikkaInfoMod(loader.Module):
         "version": "Versiya",
         "build": "Build",
         "prefix": "Prefix",
-        "uptime": "Uptime",
-        "branch": "Branch",
+        "uptime": "Ishlash vaqti",
+        "branch": "Vetkasi",
         "send_info": "Bot haqida ma'lumot",
         "description": "ℹ Bu shaxsiy ma'lumot emas",
         "_ihandle_doc_info": "Bot haqida ma'lumot",
-        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> Yangi</b>",
+        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> So'ngi versia</b>",
         "update_required": (
             "<emoji document_id=5424728541650494040>😕</emoji><b> Yangilash"
             " kerak </b><code>.update</code>"
