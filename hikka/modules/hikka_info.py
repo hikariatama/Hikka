@@ -210,19 +210,20 @@ class HikkaInfoMod(loader.Module):
         "_cfg_banner": "URL uchun rasmi",
         "setinfo_no_args": (
             "<emoji document_id=5370881342659631698>😢</emoji> <b>Ma'lumotni"
-            " o'zgartirish uchun hech qanday matn kiriting</b>"
+            " o'zgartirish uchun matn kiriting</b>"
         ),
         "setinfo_success": (
             "<emoji document_id=5436040291507247633>🎉</emoji> <b>Ma'lumotlar"
             " o'zgartirildi</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nTelegram"
-            " userbot ko'plab funksiyalar bilan, masalan, Inline-galereya, shakllar,"
-            " ro'yxat va animatsiya emoji qo'llab-quvvatlanadi. Userbot - Telegram"
-            " hisobingizda ishlaydigan dastur. Agar siz bir chatga buyruq yozsangiz,"
-            " unda tez orada ko'rasiz. <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nKo'p"
+            " funksiyali userbot, buning ichida: ichki-gallereya, formalar, ro'yhatlar,"
+            " hamda animatsiyalangan emojilar. Userbot - bu sening"
+            " telegram-akkauntingni ichida ishlaydigan ilova. Hohlagan chatga komanda"
+            " yozsangiz, tez orada bu komanda ishlaydi. <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a> da misollarni'
+            " ko'rishingiz mumkin"
         ),
     }
 

@@ -49,6 +49,18 @@ class Translations(loader.Module):
         "opening_list": " <b>Opening list...</b>",
         "inline403": "🚫 <b>You can't send inline units in this chat</b>",
         "invoke_failed": "<b>🚫 Unit invoke failed! More info in logs</b>",
+        "show_inline_cmds": "📄 Show all available inline commands",
+        "no_inline_cmds": "You have no available commands",
+        "no_inline_cmds_msg": (
+            "<b>😔 There are no available inline commands or you lack access to them</b>"
+        ),
+        "inline_cmds": "ℹ️ You have {} available command(-s)",
+        "inline_cmds_msg": "<b>ℹ️ Available inline commands:</b>\n\n{}",
+        "run_command": "🏌️ Run command",
+        "command_msg": "<b>🌘 Command «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 Command «{}»",
+        "button403": "You are not allowed to press this button!",
+        "keep_id": "⚠️ Do not remove ID! {}",
     }
 
     strings_ru = {
@@ -82,6 +94,18 @@ class Translations(loader.Module):
         "opening_list": " <b>Открываю список...</b>",
         "inline403": "🚫 <b>Вы не можете отправлять встроенные элементы в этом чате</b>",
         "invoke_failed": "<b>🚫 Вызов модуля не удался! Подробнее в логах</b>",
+        "show_inline_cmds": "📄 Показать все доступные встроенные команды",
+        "no_inline_cmds": "У вас нет доступных inline команд",
+        "no_inline_cmds_msg": (
+            "<b>😔 Нет доступных inline команд или у вас нет доступа к ним</b>"
+        ),
+        "inline_cmds": "ℹ️ У вас {} доступная(-ых) команда(-ы)",
+        "inline_cmds_msg": "<b>ℹ️ Доступные inline команды:</b>\n\n{}",
+        "run_command": "🏌️ Выполнить команду",
+        "command_msg": "<b>🌘 Команда «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 Команда «{}»",
+        "button403": "Вы не можете нажать на эту кнопку!",
+        "keep_id": "⚠️ Не удаляйте ID! {}",
     }
 
     strings_de = {
@@ -118,6 +142,19 @@ class Translations(loader.Module):
             "<b>🚫 Modulaufruf fehlgeschlagen! Weitere Informationen in den"
             " Protokollen</b>"
         ),
+        "show_inline_cmds": "📄 Zeige alle verfügbaren Inline-Befehle",
+        "no_inline_cmds": "Sie haben keine verfügbaren Inline-Befehle",
+        "no_inline_cmds_msg": (
+            "<b>😔 Keine verfügbaren Inline-Befehle oder Sie haben keinen Zugriff"
+            " auf sie</b>"
+        ),
+        "inline_cmds": "ℹ️ Sie haben {} verfügbare(n) Befehl(e)",
+        "inline_cmds_msg": "<b>ℹ️ Verfügbare Inline-Befehle:</b>\n\n{}",
+        "run_command": "🏌️ Befehl ausführen",
+        "command_msg": "<b>🌘 Befehl «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 Befehl «{}»",
+        "button403": "Sie können auf diese Schaltfläche nicht klicken!",
+        "keep_id": "⚠️ Löschen sie das ID nicht! {}",
     }
 
     strings_tr = {
@@ -151,6 +188,18 @@ class Translations(loader.Module):
         "opening_list": " <b>Liste açılıyor...</b>",
         "inline403": "🚫 <b>Bu sohbette inline öğeleri gönderemezsiniz</b>",
         "invoke_failed": "<b>🚫 Modül çağrısı başarısız! Ayrıntılar günlüklerde</b>",
+        "show_inline_cmds": "📄 Tüm kullanılabilir inline komutlarını göster",
+        "no_inline_cmds": "Kullanılabilir inline komutunuz yok",
+        "no_inline_cmds_msg": (
+            "<b>😔 Kullanılabilir inline komutunuz yok veya erişiminiz yok</b>"
+        ),
+        "inline_cmds": "ℹ️ {} kullanılabilir komutunuz var",
+        "inline_cmds_msg": "<b>ℹ️ Kullanılabilir inline komutlar:</b>\n\n{}",
+        "run_command": "🏌️ Komutu çalıştır",
+        "command_msg": "<b>🌘 Komut «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 Komut «{}»",
+        "button403": "Bu düğmeye basamazsınız!",
+        "keep_id": "⚠️ ID'yi silmeyin! {}",
     }
 
     strings_uz = {
@@ -189,6 +238,19 @@ class Translations(loader.Module):
             "<b>🚫 Modulni chaqirish muvaffaqiyatsiz! Batafsil ma'lumotlar"
             " jurnallarda</b>"
         ),
+        "show_inline_cmds": "📄 Barcha mavjud inline buyruqlarini ko'rsatish",
+        "no_inline_cmds": "Sizda mavjud inline buyruqlar yo'q",
+        "no_inline_cmds_msg": (
+            "<b>😔 Sizda mavjud inline buyruqlar yo'q yoki ularga kirish huquqingiz"
+            " yo'q</b>"
+        ),
+        "inline_cmds": "ℹ️ Sizda {} mavjud buyruq bor",
+        "inline_cmds_msg": "<b>ℹ️ Mavjud inline buyruqlar:</b>\n\n{}",
+        "run_command": "🏌️ Buyruqni bajarish",
+        "command_msg": "<b>🌘 Buyruq «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 Buyruq «{}»",
+        "button403": "Siz ushbu tugmani bosib bo'lmaysiz!",
+        "keep_id": "⚠️ ID-ni o'chirmang! {}",
     }
 
     strings_hi = {
@@ -222,6 +284,19 @@ class Translations(loader.Module):
         "opening_list": " <b>सूची खोल रहा है...</b>",
         "inline403": "🚫 <b>आप इस ग्रुप में इनलाइन आइटम नहीं भेज सकते हैं</b>",
         "invoke_failed": "<b>🚫 मॉड्यूल इन्वोक विफल! विस्तृत जानकारी लॉग में है</b>",
+        "show_inline_cmds": "📄 सभी उपलब्ध इनलाइन कमांड दिखाएं",
+        "no_inline_cmds": "आपके पास कोई उपलब्ध इनलाइन कमांड नहीं हैं",
+        "no_inline_cmds_msg": (
+            "<b>😔 आपके पास कोई उपलब्ध इनलाइन कमांड या इनलाइन कमांड के लिए अनुमति नहीं"
+            " हैं</b>"
+        ),
+        "inline_cmds": "ℹ️ आपके पास {} उपलब्ध कमांड हैं",
+        "inline_cmds_msg": "<b>ℹ️ उपलब्ध इनलाइन कमांड:</b>\n\n{}",
+        "run_command": "🏌️ कमांड चलाएं",
+        "command_msg": "<b>🌘 कमांड «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 कमांड «{}»",
+        "button403": "आप इस बटन को दबा नहीं सकते!",
+        "button404": "यह बटन अब उपलब्ध नहीं है!",
     }
 
     @loader.command(

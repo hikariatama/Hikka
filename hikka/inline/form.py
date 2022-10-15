@@ -415,8 +415,9 @@ class Form(InlineUnit):
                                 id=utils.rand(20),
                                 title=button["input"],
                                 description=(
-                                    "⚠️ Do not remove ID!"
-                                    f" {random.choice(VERIFICATION_EMOJIES)}"
+                                    self._client.loader._lookup("translations")
+                                    .strings("keep_id")
+                                    .format(random.choice(VERIFICATION_EMOJIES))
                                 ),
                                 input_message_content=InputTextMessageContent(
                                     "🔄 <b>Transferring value to userbot...</b>\n"

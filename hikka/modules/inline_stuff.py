@@ -148,8 +148,8 @@ class InlineStuffMod(loader.Module):
             " ishga tushiring</b>"
         ),
         "this_is_hikka": (
-            "🌘 <b>Salom! Bu Hikka — kuchli modulyor Telegram foydalanuvchisi. Siz uni"
-            " o'zingizga o'rnatishingiz mumkin!</b>\n\n<b>🌍 <a"
+            "🌘 <b>Salom! Bu Hikka - kuchli modulli Telegram userboti. Siz uni"
+            " o'zingizni akkauntingizga o'rnatishingiz mumkin!</b>\n\n<b>🌍 <a"
             ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
             ' href="https://t.me/hikka_talks">Yordam chati</a></b>'
         ),

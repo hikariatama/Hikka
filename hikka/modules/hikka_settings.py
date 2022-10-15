@@ -951,7 +951,13 @@ class HikkaSettingsMod(loader.Module):
         )
 
     @loader.owner
-    @loader.command(ru_doc="Удалить Hikka")
+    @loader.command(
+        ru_doc="Удалить Hikka",
+        de_doc="Hikka deinstallieren",
+        tr_doc="Hikka'yı kaldır",
+        uz_doc="Hikka'ni o'chirish",
+        hi_doc="हिक्का को अनइंस्टॉल करें",
+    )
     async def uninstall_hikka(self, message: Message):
         """Uninstall Hikka"""
         await self.inline.form(
@@ -966,7 +972,13 @@ class HikkaSettingsMod(loader.Module):
             ],
         )
 
-    @loader.command(ru_doc="Очистить логи")
+    @loader.command(
+        ru_doc="Очистить логи",
+        de_doc="Logs löschen",
+        tr_doc="Günlükleri temizle",
+        uz_doc="Jurnalni tozalash",
+        hi_doc="लॉग खाली करें",
+    )
     async def clearlogs(self, message: Message):
         """Clear logs"""
         for handler in logging.getLogger().handlers:
@@ -976,7 +988,13 @@ class HikkaSettingsMod(loader.Module):
 
         await utils.answer(message, self.strings("logs_cleared"))
 
-    @loader.command(ru_doc="Показать активные смотрители")
+    @loader.command(
+        ru_doc="Показать активные смотрители",
+        de_doc="Aktive Beobachter anzeigen",
+        tr_doc="Etkin gözlemcileri göster",
+        uz_doc="Faol ko'rib chiqqanlarni ko'rsatish",
+        hi_doc="सक्रिय दर्शक दिखाएं",
+    )
     async def watchers(self, message: Message):
         """List current watchers"""
         watchers, disabled_watchers = self.get_watchers()
@@ -990,7 +1008,13 @@ class HikkaSettingsMod(loader.Module):
             message, self.strings("watchers").format("\n".join(watchers))
         )
 
-    @loader.command(ru_doc="<module> - Включить/выключить смотрителя в текущем чате")
+    @loader.command(
+        ru_doc="<module> - Включить/выключить смотрителя в текущем чате",
+        de_doc="<module> - Aktiviere/Deaktiviere Beobachter in diesem Chat",
+        tr_doc="<module> - Bu sohbetteki gözlemciyi etkinleştirin/devre dışı bırakın",
+        uz_doc="<module> - Joriy suhbatda ko'rib chiqqanlarni yoqish/yopish",
+        hi_doc="<module> - इस चैट में दर्शक को सक्षम / अक्षम करें",
+    )
     async def watcherbl(self, message: Message):
         """<module> - Toggle watcher in current chat"""
         args = utils.get_args_raw(message)
@@ -1048,7 +1072,39 @@ class HikkaSettingsMod(loader.Module):
             "[-p - только в лс]\n"
             "[-o - только исходящие]\n"
             "[-i - только входящие]"
-        )
+        ),
+        de_doc=(
+            "<module> - Verwalte globale Beobachterregeln\n"
+            "Argumente:\n"
+            "[-c - Nur in Chats]\n"
+            "[-p - Nur in privaten Chats]\n"
+            "[-o - Nur ausgehende Nachrichten]\n"
+            "[-i - Nur eingehende Nachrichten]"
+        ),
+        tr_doc=(
+            "<module> - Genel gözlemci kurallarını yönetin\n"
+            "Argümanlar:\n"
+            "[-c - Yalnızca sohbetlerde]\n"
+            "[-p - Yalnızca özel sohbetlerde]\n"
+            "[-o - Yalnızca giden mesajlar]\n"
+            "[-i - Yalnızca gelen mesajlar]"
+        ),
+        uz_doc=(
+            "<module> - Umumiy ko'rib chiqqan qoidalarni boshqarish\n"
+            "Argumentlar:\n"
+            "[-c - Faqat suhbatlarda]\n"
+            "[-p - Faqat shaxsiy suhbatlarda]\n"
+            "[-o - Faqat chiqarilgan xabarlar]\n"
+            "[-i - Faqat kelgan xabarlar]"
+        ),
+        hi_doc=(
+            "<module> - सार्वजनिक निरीक्षक नियमों का प्रबंधन करें\ n"
+            "आर्ग्यूमेंट्स:\n"
+            "[-c - केवल चैट्स में]\n"
+            "[-p - केवल निजी चैट में]\n"
+            "[-o - केवल आउटगोइंग संदेश]\n"
+            "[-i - केवल इनकमिंग संदेश]"
+        ),
     )
     async def watchercmd(self, message: Message):
         """<module> - Toggle global watcher rules
@@ -1116,7 +1172,13 @@ class HikkaSettingsMod(loader.Module):
         self._db.set(main.__name__, "disabled_watchers", disabled_watchers)
         await utils.answer(message, self.strings("disabled").format(args))
 
-    @loader.command(ru_doc="Включить NoNick для определенного пользователя")
+    @loader.command(
+        ru_doc="Включить NoNick для определенного пользователя",
+        de_doc="Aktiviere NoNick für einen bestimmten Benutzer",
+        tr_doc="Belirli bir kullanıcı için NoNick'i etkinleştirin",
+        uz_doc="Belgilangan foydalanuvchi uchun NoNickni yoqish",
+        hi_doc="किसी विशिष्ट उपयोगकर्ता के लिए NoNick को सक्षम करें",
+    )
     async def nonickuser(self, message: Message):
         """Allow no nickname for certain user"""
         reply = await message.get_reply_message()
@@ -1139,7 +1201,13 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickusers", nn)
 
-    @loader.command(ru_doc="Включить NoNick для определенного чата")
+    @loader.command(
+        ru_doc="Включить NoNick для определенного чата",
+        de_doc="Aktiviere NoNick für einen bestimmten Chat",
+        tr_doc="Belirli bir sohbet için NoNick'i etkinleştirin",
+        uz_doc="Belgilangan suhbat uchun NoNickni yoqish",
+        hi_doc="किसी विशिष्ट चैट के लिए NoNick को सक्षम करें",
+    )
     async def nonickchat(self, message: Message):
         """Allow no nickname in certain chat"""
         if message.is_private:
@@ -1171,7 +1239,13 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickchats", nn)
 
-    @loader.command(ru_doc="Включить NoNick для определенной команды")
+    @loader.command(
+        ru_doc="Включить NoNick для определенной команды",
+        de_doc="Aktiviere NoNick für einen bestimmten Befehl",
+        tr_doc="Belirli bir komut için NoNick'i etkinleştirin",
+        uz_doc="Belgilangan buyruq uchun NoNickni yoqish",
+        hi_doc="किसी विशिष्ट आदेश के लिए NoNick को सक्षम करें",
+    )
     async def nonickcmdcmd(self, message: Message):
         """Allow certain command to be executed without nickname"""
         args = utils.get_args_raw(message)
@@ -1206,7 +1280,13 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickcmds", nn)
 
-    @loader.command(ru_doc="Показать список активных NoNick команд")
+    @loader.command(
+        ru_doc="Показать список активных NoNick команд",
+        de_doc="Zeige eine Liste der aktiven NoNick Befehle",
+        tr_doc="Etkin NoNick komutlarının listesini göster",
+        uz_doc="Yoqilgan NoNick buyruqlar ro'yxatini ko'rsatish",
+        hi_doc="सक्रिय NoNick कमांडों की सूची दिखाएं",
+    )
     async def nonickcmds(self, message: Message):
         """Returns the list of NoNick commands"""
         if not self._db.get(main.__name__, "nonickcmds", []):
@@ -1225,7 +1305,13 @@ class HikkaSettingsMod(loader.Module):
             ),
         )
 
-    @loader.command(ru_doc="Показать список активных NoNick пользователей")
+    @loader.command(
+        ru_doc="Показать список активных NoNick пользователей",
+        de_doc="Zeige eine Liste der aktiven NoNick Benutzer",
+        tr_doc="Etkin NoNick kullanıcılarının listesini göster",
+        uz_doc="Yoqilgan NoNick foydalanuvchilar ro'yxatini ko'rsatish",
+        hi_doc="सक्रिय NoNick उपयोगकर्ताओं की सूची दिखाएं",
+    )
     async def nonickusers(self, message: Message):
         """Returns the list of NoNick users"""
         users = []
@@ -1263,7 +1349,13 @@ class HikkaSettingsMod(loader.Module):
             self.strings("user_nn_list").format("\n".join(users)),
         )
 
-    @loader.command(ru_doc="Показать список активных NoNick чатов")
+    @loader.command(
+        ru_doc="Показать список активных NoNick чатов",
+        de_doc="Zeige eine Liste der aktiven NoNick Chats",
+        tr_doc="Etkin NoNick sohbetlerinin listesini göster",
+        uz_doc="Yoqilgan NoNick suhbatlar ro'yxatini ko'rsatish",
+        hi_doc="सक्रिय NoNick चैटों की सूची दिखाएं",
+    )
     async def nonickchats(self, message: Message):
         """Returns the list of NoNick chats"""
         chats = []
@@ -1538,7 +1630,13 @@ class HikkaSettingsMod(loader.Module):
         ]
 
     @loader.owner
-    @loader.command(ru_doc="Показать настройки")
+    @loader.command(
+        ru_doc="Показать настройки",
+        de_doc="Zeige die Einstellungen",
+        tr_doc="Ayarları göster",
+        uz_doc="Sozlamalarni ko'rsatish",
+        hi_doc="सेटिंग्स दिखाएं",
+    )
     async def settings(self, message: Message):
         """Show settings menu"""
         await self.inline.form(
@@ -1548,7 +1646,13 @@ class HikkaSettingsMod(loader.Module):
         )
 
     @loader.owner
-    @loader.command(ru_doc="Открыть тоннель к веб-интерфейсу Hikka")
+    @loader.command(
+        ru_doc="Открыть тоннель к веб-интерфейсу Hikka",
+        de_doc="Öffne einen Tunnel zum Hikka Webinterface",
+        tr_doc="Hikka Web Arayüzüne bir tünel aç",
+        uz_doc="Hikka veb-interfeysi uchun tunel ochish",
+        hi_doc="Hikka वेब इंटरफ़ेस के लिए ट्यूनल खोलें",
+    )
     async def weburl(self, message: Message, force: bool = False):
         """Opens web tunnel to your Hikka web interface"""
         if "LAVHOST" in os.environ:

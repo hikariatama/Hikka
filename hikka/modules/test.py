@@ -85,6 +85,8 @@ class TestMod(loader.Module):
             " in real time</i>"
         ),
         "debugging_disabled": "✅ <b>Debugging disabled</b>",
+        "send_anyway": "📤 Send anyway",
+        "cancel": "🚫 Cancel",
     }
 
     strings_ru = {
@@ -145,13 +147,15 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<время> - Заморозить бота на некоторое время",
         "_cmd_doc_ping": "Проверяет скорость отклика юзербота",
         "_cls_doc": "Операции, связанные с самотестированием",
+        "send_anyway": "📤 Все равно отправить",
+        "cancel": "🚫 Отмена",
     }
 
     strings_de = {
         "set_loglevel": (
             "🚫 <b>Geben Sie die Protokollebene als Zahl oder Zeichenfolge an</b>"
         ),
-        "no_logs": "ℹ️ <b>Du hast keine Logs der Stufe {}.</b>",
+        "no_logs": "ℹ️ <b>Du hast kein Protokollnachrichten des {} Ebene.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka-Level-Protokolle"
@@ -213,6 +217,8 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<Zeit> - Bot für eine Weile einfrieren",
         "_cmd_doc_ping": "Überprüft die Antwortgeschwindigkeit des Userbots",
         "_cls_doc": "Selbsttestbezogene Operationen",
+        "send_anyway": "📤 Trotzdem senden",
+        "cancel": "🚫 Abbrechen",
     }
 
     strings_uz = {
@@ -273,6 +279,8 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<Vaqt> - Botni bir necha vaqtga o'chirish",
         "_cmd_doc_ping": "Userbotning javob berish tezligini tekshirish",
         "_cls_doc": "O'z testi bilan bog'liq operatsiyalar",
+        "send_anyway": "📤 Yuboring",
+        "cancel": "🚫 Bekor qilish",
     }
 
     strings_tr = {
@@ -337,6 +345,8 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<Zaman> - Botu bir süreliğine dondurun",
         "_cmd_doc_ping": "Userbotun yanıt verme hızını kontrol edin",
         "_cls_doc": "İlgili testlerle ilgili işlemler",
+        "send_anyway": "📤 Gönder",
+        "cancel": "🚫 İptal",
     }
 
     strings_hi = {
@@ -397,6 +407,8 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<समय> - बॉट को थोड़ी देर के लिए फ़्रीज़ करें",
         "_cmd_doc_ping": "यूजरबॉट रिस्पॉन्सिबिलिटी चेक करें",
         "_cls_doc": "संबंधित परीक्षण संसाधित किए जा रहे हैं",
+        "send_anyway": "📤 फिर भी भेजें",
+        "cancel": "🚫 रद्द करें",
     }
 
     def __init__(self):
@@ -673,11 +685,11 @@ class TestMod(loader.Module):
                     "text": self.strings("confidential").format(named_lvl),
                     "reply_markup": [
                         {
-                            "text": "📤 Send anyway",
+                            "text": self.strings("send_anyway"),
                             "callback": self.logs,
                             "args": [True, lvl],
                         },
-                        {"text": "🚫 Cancel", "action": "close"},
+                        {"text": self.strings("cancel"), "action": "close"},
                     ],
                 }
                 if isinstance(message, Message):

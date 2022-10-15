@@ -639,6 +639,16 @@ class HikkaSecurityMod(loader.Module):
     }
 
     strings_uz = {
+        "global": (
+            "🔐 <b>Bu erda siz global chegaralash maskasini ta'hrirlashingiz mumkin."
+            " Agar bu erda ruxsat berilmasa, qolgan joylarda ham ruxsat berilmaydi!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>Iltimos, ta\'sdiqlang, siz <a href="tg://user?id={}">{}</a>'
+            " </b><code>{}</code><b> ega gruppasiga qushmoqchimisiz? Bu harakat shaxsiy"
+            " ma'lumotni oshkor va foydalanuvchiga userbot ishlatishiga toʻliq yoki"
+            " qisman ruxsat berishi mumkin</b>"
+        ),
         "owner_added": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
