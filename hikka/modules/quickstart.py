@@ -8,9 +8,12 @@
 
 import os
 from random import choice
+import logging
 
 from .. import loader, translations, utils
 from ..inline.types import BotInlineCall
+
+logger = logging.getLogger(__name__)
 
 imgs = [
     "https://i.gifer.com/GmUB.gif",
@@ -264,7 +267,10 @@ class QuickstartMod(loader.Module):
         await self.translator.init()
 
         for module in self.allmodules.modules:
-            module.config_complete(reload_dynamic_translate=True)
+            try:
+                module.config_complete(reload_dynamic_translate=True)
+            except Exception as e:
+                logger.debug("Can't complete dynamic translations reload of %s due to %s", module, e)
 
         await call.answer(self.strings("language_saved"))
         await call.edit(text=self.text(), reply_markup=self.mark())
