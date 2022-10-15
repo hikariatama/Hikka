@@ -101,6 +101,160 @@ class HelpMod(loader.Module):
         ),
     }
 
+    strings_de = {
+        "bad_module": "<b>🚫 <b>Modul</b> <code>{}</code> <b>nicht gefunden</b>",
+        "single_mod_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{}</b>:"
+        ),
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "undoc_cmd": "🦥 Keine Dokumentation",
+        "all_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} Module verfügbar,"
+            " {} versteckt:</b>"
+        ),
+        "mod_tmpl": "\n{} <code>{}</code>",
+        "first_cmd_tmpl": ": ( {}",
+        "cmd_tmpl": " | {}",
+        "no_mod": "🚫 <b>Gib das Modul an, das du verstecken willst</b>",
+        "hidden_shown": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} Module versteckt,"
+            " {} Module angezeigt:</b>\n{}\n{}"
+        ),
+        "ihandler": "\n🎹 <code>{}</code> {}",
+        "undoc_ihandler": "🦥 Keine Dokumentation",
+        "support": (
+            "{} <b>Link zum </b><a href='https://t.me/hikka_talks'>Supportchat</a>"
+        ),
+        "_cls_doc": "Zeigt Hilfe zu Modulen an",
+        "partial_load": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Der Userbot ist noch"
+            " nicht vollständig geladen, daher werden nicht alle Module angezeigt</b>"
+        ),
+        "not_exact": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Es wurde kein exakter"
+            " Treffer gefunden, daher wird das nächstbeste Ergebnis angezeigt</b>"
+        ),
+        "request_join": "Du hast den Link zum Supportchat angefordert",
+        "core_notice": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Dies ist ein"
+            " eingebauter Modul. Du kannst ihn nicht entladen oder ersetzen</b>"
+        ),
+    }
+
+    strings_tr = {
+        "bad_module": "<b>🚫 <b>Modül</b> <code>{}</code> <b>bulunamadı</b>",
+        "single_mod_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{}</b>:"
+        ),
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "undoc_cmd": "🦥 Dokümantasyon yok",
+        "all_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} modül mevcut,"
+            " {} gizli:</b>"
+        ),
+        "mod_tmpl": "\n{} <code>{}</code>",
+        "first_cmd_tmpl": ": ( {}",
+        "cmd_tmpl": " | {}",
+        "no_mod": "🚫 <b>Gizlemek istediğin modülü belirt</b>",
+        "hidden_shown": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} modül gizlendi,"
+            " {} modül gösterildi:</b>\n{}\n{}"
+        ),
+        "ihandler": "\n🎹 <code>{}</code> {}",
+        "undoc_ihandler": "🦥 Dokümantasyon yok",
+        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>Destek sohbeti</a>",
+        "_cls_doc": "Modül yardımını gösterir",
+        "partial_load": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Kullanıcı botu"
+            " henüz tam olarak yüklenmediğinden, tüm modüller görüntülenmez</b>"
+        ),
+        "not_exact": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Herhangi bir"
+            " eşleşme bulunamadığından, en uygun sonuç görüntülenir</b>"
+        ),
+        "request_join": "Destek sohbeti bağlantısını istediniz",
+        "core_notice": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Bu bir"
+            " dahili modül. Sen onu kaldıramaz veya değiştiremezsin</b>"
+        ),
+    }
+
+    strings_hi = {
+        "bad_module": "<b>🚫 <b>मॉड्यूल</b> <code>{}</code> <b>नहीं मिला</b>",
+        "single_mod_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{}</b>:"
+        ),
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "undoc_cmd": "🦥 दस्तावेज़ीकरण नहीं",
+        "all_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} मॉड्यूल उपलब्ध हैं,"
+            " {} छिपा हुआ:</b>"
+        ),
+        "mod_tmpl": "\n{} <code>{}</code>",
+        "first_cmd_tmpl": ": ( {}",
+        "cmd_tmpl": " | {}",
+        "no_mod": "🚫 <b>छिपाने के लिए मॉड्यूल दर्ज करें</b>",
+        "hidden_shown": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} मॉड्यूल छिपा हुआ,"
+            " {} मॉड्यूल दिखाया गया:</b>\n{}\n{}"
+        ),
+        "ihandler": "\n🎹 <code>{}</code> {}",
+        "undoc_ihandler": "🦥 दस्तावेज़ीकरण नहीं",
+        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>सपोर्ट चैट</a>",
+        "_cls_doc": "मॉड्यूल सहायता दिखाता है",
+        "partial_load": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>उपयोगकर्ता बॉट अभी भी"
+            " पूरी तरह से लोड नहीं हुई है, इसलिए सभी मॉड्यूल दिखाई नहीं देते हैं</b>"
+        ),
+        "not_exact": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>कोई मैच नहीं मिला,"
+            " इसलिए सबसे अनुकूल परिणाम दिखाया गया है</b>"
+        ),
+        "request_join": "आपने सपोर्ट चैट लिंक का अनुरोध किया है",
+        "core_notice": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>यह एक अंतर्निहित"
+            " मॉड्यूल है, आप इसे नहीं अटक सकते या बदल सकते हैं</b>"
+        ),
+    }
+
+    strings_uz = {
+        "bad_module": "<b>🚫 <b>Modul</b> <code>{}</code> <b>topilmadi</b>",
+        "single_mod_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{}</b>:"
+        ),
+        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "undoc_cmd": "🦥 Hujjatlanmagan",
+        "all_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} taqdim etilgan"
+            " modullar, {} yashirin:</b>"
+        ),
+        "mod_tmpl": "\n{} <code>{}</code>",
+        "first_cmd_tmpl": ": ( {}",
+        "cmd_tmpl": " | {}",
+        "no_mod": "🚫 <b>Yashirish uchun modul kiriting</b>",
+        "hidden_shown": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} yashirin,"
+            " {} modullar ko'rsatilgan:</b>\n{}\n{}"
+        ),
+        "ihandler": "\n🎹 <code>{}</code> {}",
+        "undoc_ihandler": "🦥 Hujjatlanmagan",
+        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>Yordam chat</a>",
+        "_cls_doc": "Modul yordamini ko'rsatadi",
+        "partial_load": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Foydalanuvchi boti"
+            " hali to'liq yuklanmaganligi sababli, barcha modullar ko'rsatilmaydi</b>"
+        ),
+        "not_exact": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Hech qanday moslik"
+            " topilmadi, shuning uchun eng mos natija ko'rsatildi</b>"
+        ),
+        "request_join": "Siz yordam chat havolasini so'radingiz",
+        "core_notice": (
+            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Bu bir qo'shimcha"
+            " modul, uni o'chirib yoki o'zgartirib bo'lmaysiz</b>"
+        ),
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -252,7 +406,8 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            f"{reply}\n\n{'' if exact else self.strings('not_exact')}"
+            reply
+            + (f"\n\n{self.strings('not_exact')}" if not exact else "")
             + (
                 f"\n\n{self.strings('core_notice')}"
                 if module.__origin__.startswith("<core")

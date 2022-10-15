@@ -147,6 +147,258 @@ class TestMod(loader.Module):
         "_cls_doc": "Операции, связанные с самотестированием",
     }
 
+    strings_de = {
+        "set_loglevel": (
+            "🚫 <b>Geben Sie die Protokollebene als Zahl oder Zeichenfolge an</b>"
+        ),
+        "no_logs": "ℹ️ <b>Du hast keine Logs der Stufe {}.</b>",
+        "logs_filename": "hikka-logs.txt",
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka-Level-Protokolle"
+            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
+            " <b>Hikka-Version: {}.{}.{}</b>{}\n<Emoji"
+            "document_id=6321050180095313397>⏱</emoji> <b>Verfügbarkeit:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "bad_module": "🚫 <b>Modul nicht gefunden</b>",
+        "debugging_enabled": (
+            (
+                "🧑‍💻 <b>Entwicklermodus für Modul aktiviert"
+                " </b><code>{0}</code>\n<i>Gehe zum Verzeichnis `debug_modules`"
+            ),
+            (
+                "Ändern Sie die `{0}.py`-Datei und sehen Sie sich die Änderungen in"
+                " Echtzeit an</i>"
+            ),
+        ),
+        "debugging_disabled": "✅ <b>Entwicklermodus deaktiviert</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>Falsche Zeit"
+            "einfrieren</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot ist"
+            " eingefroren</b> <code>{}</code> <b>Sekunden</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Reaktionsfähigkeit"
+            " Telegramm:</b> <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>Seit dem letzten Mal weg"
+            " neu laden: {}</b>"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji>"
+            " <i>ReaktionsfähigkeitTelegram ist stärker abhängig von der Auslastung der"
+            " Telegram-Server undAndere externe Faktoren und steht in keinem"
+            " Zusammenhang mit den Servereinstellungen welcher Userbot installiert"
+            " ist</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Protokollebene </b><code>{}</code><b> kann privat enthalten"
+            "Informationen, seien Sie vorsichtig</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Protokollebene </b><code>{0}</code><b> kann privat"
+            " enthaltenInformationen, seien Sie vorsichtig</b>\n<b>Schreiben Sie"
+            " </b><code>.logs {0} force_insecure</code><b> um Protokolle zu"
+            " ignorierenWarnung</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Wähle eine Protokollebene</b>",
+        "_cmd_doc_dump": "Nachrichteninformationen anzeigen",
+        "_cmd_doc_logs": (
+            "<Ebene> - Sendet eine Protokolldatei. Ebenen unterhalb von WARNUNG können"
+            " enthaltenpersönliche Informationen."
+        ),
+        "_cmd_doc_suspend": "<Zeit> - Bot für eine Weile einfrieren",
+        "_cmd_doc_ping": "Überprüft die Antwortgeschwindigkeit des Userbots",
+        "_cls_doc": "Selbsttestbezogene Operationen",
+    }
+
+    strings_uz = {
+        "set_loglevel": "🚫 <b>Log darajasini raqam yoki satr sifatida ko'rsating</b>",
+        "no_logs": "ℹ️ <b>Siz {} darajadagi hech qanday loglaringiz yo'q.</b>",
+        "logs_filename": "hikka-logs.txt",
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka Loglari"
+            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
+            " <b>Hikka-versiyasi: {}.{}.{}</b>{}\n<Emoji"
+            "document_id=6321050180095313397>⏱</emoji> <b>Mavjudligi:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "bad_module": "🚫 <b>Modul topilmadi</b>",
+        "debugging_enabled": (
+            (
+                "🧑‍💻 <b>Modul uchun ishlab chiqarish rejimi yoqildi"
+                " </b><code>{0}</code>\n<i>`debug_modules` papkasiga o'ting"
+            ),
+            "`{0}.py` faylini o'zgartiring va o'zgarishlarni reallaqam ko'ring</i>",
+        ),
+        "debugging_disabled": "✅ <b>Ishtirok rejimi o'chirildi</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>Noto'g'ri vaqt"
+            "qo'ymoq</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot chiqarildi</b>"
+            " <code>{}</code> <b>Soniyalar</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegram"
+            "tezligi:</b> <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>So'nggi marta yuklab"
+            "qo'yishdan keyin:</b> {}"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram"
+            " tezligiTelegram serverlarining ishga tushishi va boshqa tashqi"
+            " faktorlariga bog'liq va Userbot o'rnatilgan serverlarining sozlamalari"
+            " bilan bog'liq emas</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Log darajasi </b><code>{}</code><b> shaxsiy ma'lumotlarga ega"
+            " bo'lishi mumkinO'zingizni xavfsizligi uchun</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Log darajasi </b><code>{0}</code><b> shaxsiy ma'lumotlarga ega"
+            " bo'lishi mumkinO'zingizni xavfsizligi uchun</b>\n<b>Yozing"
+            " </b><code>.logs {0} force_insecure</code><b> loglarniOgohlantirish</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Log darajasini tanlang</b>",
+        "_cmd_doc_dump": "Xabar haqida ma'lumotlarni ko'rsatish",
+        "_cmd_doc_logs": (
+            "<Ebene> - Log faylini yuboradi. O'rin darajalari xavfsizlikma'lumotlar."
+        ),
+        "_cmd_doc_suspend": "<Vaqt> - Botni bir necha vaqtga o'chirish",
+        "_cmd_doc_ping": "Userbotning javob berish tezligini tekshirish",
+        "_cls_doc": "O'z testi bilan bog'liq operatsiyalar",
+    }
+
+    strings_tr = {
+        "set_loglevel": (
+            "🚫 <b>Lütfen günlük seviyesini sayı veya dize olarak belirtin</b>"
+        ),
+        "no_logs": "ℹ️ <b>Hiçbir {} seviyesindeki günlük bulunmuyor.</b>",
+        "logs_filename": "hikka-logs.txt",
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka Günlükleri"
+            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
+            " <b>Hikka versiyası: {}.{}.{}</b>{}\n<Emoji"
+            "document_id=6321050180095313397>⏱</emoji> <b>Süre:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "bad_module": "🚫 <b>Modül bulunamadı</b>",
+        "debugging_enabled": (
+            (
+                "🧑‍💻 <b>Geliştirme modu modül için etkinleştirildi"
+                " </b><code>{0}</code>\n<i>`debug_modules` klasörüne gidin"
+            ),
+            (
+                "`{0}.py` dosyasını düzenleyin ve değişiklikleri gerçekleştirmek için"
+                " kaydedin</i>"
+            ),
+        ),
+        "debugging_disabled": "✅ <b>Geliştirme modu devre dışı bırakıldı</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>Geçersiz zaman"
+            "girdiniz</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot donduruldu</b>"
+            " <code>{}</code> <b>saniye</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegramhızı:</b>"
+            " <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>Son güncellemeden"
+            " sonra:</b> {}"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram hızı"
+            "Telegram sunucularının başlatılması ve diğer dış faktörler ile alakalıdır"
+            "ve Userbot kurulumunuzun sunucu ayarlarıyla alakalı değildir</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Günlük seviyesi </b><code>{}</code><b> gizli bilgilere sahip"
+            " olabilirKendi güvenliğiniz için</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Günlük seviyesi </b><code>{0}</code><b> gizli bilgilere sahip"
+            " olabilirKendi güvenliğiniz için</b>\n<b>Yazın </b><code>.logs {0}"
+            " force_insecure</code><b> günlükleriuyarı</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Lütfen günlük seviyesini seçin</b>",
+        "_cmd_doc_dump": "Mesaj hakkında bilgi göster",
+        "_cmd_doc_logs": (
+            "<Ebene> - Günlük dosyasını gönderir. Seviyeler gizlibilgiler."
+        ),
+        "_cmd_doc_suspend": "<Zaman> - Botu bir süreliğine dondurun",
+        "_cmd_doc_ping": "Userbotun yanıt verme hızını kontrol edin",
+        "_cls_doc": "İlgili testlerle ilgili işlemler",
+    }
+
+    strings_hi = {
+        "set_loglevel": (
+            "🚫 <b>कृपया लॉग स्तर को संख्या या स्ट्रिंग के रूप में निर्दिष्ट करें</b>"
+        ),
+        "no_logs": "ℹ️ <b>कोई {} स्तर के लॉग नहीं मिला।</b>",
+        "logs_filename": "hikka-logs.txt",
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka लॉग</b>"
+            " </code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
+            " <b>Hikka संस्करण: {}.{}.{}</b>{}\n<Emoji"
+            "document_id=6321050180095313397>⏱</emoji> <b>वेळ:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "bad_module": "🚫 <b>मॉड्यूल नहीं मिला</b>",
+        "debugging_enabled": (
+            (
+                "🧑‍💻 <b>मॉड्यूल के लिए डिबगिंग सक्षम कर दिया गया है"
+                " </b><code>{0}</code>\n<i>`debug_modules` फ़ोल्डर में जाएँ"
+            ),
+            "`{0}.py` फ़ाइल को संपादित करें और परिवर्तनों को सहेजें</i>",
+        ),
+        "debugging_disabled": "✅ <b>डिबगिंग डिसेबल कर दिया गया है</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>अमान्य समय"
+            "दर्ज किया गया।</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>बॉट निलंबित कर दिया"
+            " गया है</b> <code>{}</code> <b>सेकंड</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>टेलीग्राम"
+            "गति:</b> <code>{}</code> <b>मिलीसेकंड</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>अंतिम अपडेट से बाद:</b> {}"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>टेलीग्राम गति"
+            "टेलीग्राम सर्वर को शुरू करने और अन्य बाहरी वजहों से जुड़ा है"
+            "और आपके उपयोगकर्ता बॉट स्थापना के सर्वर सेटिंग्स से संबंधित नहीं है</i>"
+        ),
+        "confidential": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>वेळ:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>लॉग स्तर </b><code>{0}</code><b> में गोपनीय जानकारी हो सकती है"
+            "अपनी सुरक्षा के लिए</b>\n<b>लिखें </b><code>.logs {0}"
+            "force_insecure</code><b> लॉग"
+            "चेतावनी</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>कृपया लॉग लेवल चुनें</b>",
+        "_cmd_doc_dump": "संदेश के बारे में जानकारी दिखाएं",
+        "_cmd_doc_logs": "<Ebene> - लॉग फ़ाइल भेजता है। स्तर छिपे हुए हैंसूचनाएं।",
+        "_cmd_doc_suspend": "<समय> - बॉट को थोड़ी देर के लिए फ़्रीज़ करें",
+        "_cmd_doc_ping": "यूजरबॉट रिस्पॉन्सिबिलिटी चेक करें",
+        "_cls_doc": "संबंधित परीक्षण संसाधित किए जा रहे हैं",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -183,7 +435,13 @@ class TestMod(loader.Module):
             "CRITICAL": 50,
         }[self.config["tglog_level"]]
 
-    @loader.command(ru_doc="Ответь на сообщение, чтобы показать его дамп")
+    @loader.command(
+        ru_doc="Ответь на сообщение, чтобы показать его дамп",
+        de_doc="Antworten Sie auf eine Nachricht, um ihren Dump anzuzeigen",
+        tr_doc="Dökümünü göstermek için bir iletiyi yanıtlayın",
+        hi_doc="किसी संदेश का उत्तर उसके डंप को दिखाने के लिए दें",
+        uz_doc="Xabarning axlatini ko'rsatish uchun unga javob bering",
+    )
     async def dump(self, message: Message):
         """Use in reply to get a dump of a message"""
         if not message.is_reply:
@@ -236,7 +494,23 @@ class TestMod(loader.Module):
         ru_doc=(
             "[модуль] - Для разработчиков: открыть модуль в режиме дебага и применять"
             " изменения из него в режиме реального времени"
-        )
+        ),
+        de_doc=(
+            "[Modul] - Für Entwickler: Öffnet ein Modul im Debug-Modus und"
+            " wendet Änderungen aus ihm in Echtzeit an"
+        ),
+        uz_doc=(
+            "[modul] - Dasturchaklar uchun: modulni debug rejimida ochib, va uni"
+            " real vaqtda ishga tushirish"
+        ),
+        tr_doc=(
+            "[modul] - Geliştiriciler için: Bir modülü debug modunda açar ve"
+            " değişiklikleri gerçek zamanlı uygular"
+        ),
+        hi_doc=(
+            "[मॉड्यूल] - डेवलपर्स के लिए: एक मॉड्यूल को डिबग मोड में खोलें और"
+            " वास्तविक समय में इसके परिवर्तनों को लागू करें"
+        ),
     )
     async def debugmod(self, message: Message):
         """[module] - For developers: Open module for debugging
@@ -291,7 +565,13 @@ class TestMod(loader.Module):
             self.strings("debugging_enabled").format(instance.__class__.__name__),
         )
 
-    @loader.command(ru_doc="<уровень> - Показать логи")
+    @loader.command(
+        ru_doc="<уровень> - Показать логи",
+        de_doc="<Level> - Zeige Logs",
+        uz_doc="<daraja> - Loglarni ko'rsatish",
+        tr_doc="<seviye> - Günlükleri göster",
+        hi_doc="<स्तर> - लॉग दिखाएं",
+    )
     async def logs(
         self,
         message: typing.Union[Message, InlineCall],
@@ -493,7 +773,13 @@ class TestMod(loader.Module):
             )
 
     @loader.owner
-    @loader.command(ru_doc="<время> - Заморозить бота на N секунд")
+    @loader.command(
+        ru_doc="<время> - Заморозить бота на N секунд",
+        de_doc="<Zeit> - Stoppe den Bot für N Sekunden",
+        tr_doc="<süre> - Botu N saniye boyunca durdur",
+        uz_doc="<vaqt> - Botni N soniya davomida to'xtatish",
+        hi_doc="<समय> - बॉट को N सेकंड तक ठहराएं",
+    )
     async def suspend(self, message: Message):
         """<time> - Suspends the bot for N seconds"""
         try:
@@ -506,7 +792,13 @@ class TestMod(loader.Module):
         except ValueError:
             await utils.answer(message, self.strings("suspend_invalid_time"))
 
-    @loader.command(ru_doc="Проверить скорость отклика юзербота")
+    @loader.command(
+        ru_doc="Проверить скорость отклика юзербота",
+        de_doc="Überprüfe die Antwortgeschwindigkeit des Userbots",
+        tr_doc="Kullanıcı botunun yanıt hızını kontrol edin",
+        uz_doc="Foydalanuvchi botining javob tezligini tekshiring",
+        hi_doc="उपयोगकर्ता बॉट की प्रतिक्रिया गति की जांच करें",
+    )
     async def ping(self, message: Message):
         """Test your userbot ping"""
         start = time.perf_counter_ns()

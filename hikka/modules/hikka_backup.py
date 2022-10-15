@@ -63,6 +63,82 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
+    strings_de = {
+        "period": (
+            "⌚️ <b>Unit «ALPHA»</b> erstellt regelmäßige Backups. Diese Einstellungen"
+            " können später geändert werden.\n\nBitte wählen Sie die Periodizität"
+            " des Backups"
+        ),
+        "saved": (
+            "✅ Periodizität gespeichert! Sie können es mit .set_backup_period ändern"
+        ),
+        "never": (
+            "✅ Ich werde keine automatischen Backups erstellen. Sie können es mit"
+            " .set_backup_period ändern"
+        ),
+        "invalid_args": (
+            "🚫 <b>Geben Sie die korrekte Periodizität in Stunden an, oder `0` zum"
+            " Deaktivieren</b>"
+        ),
+    }
+
+    strings_tr = {
+        "period": (
+            "⌚️ <b>Unit «ALPHA»</b> otomatik olarak yedekler oluşturur. Bu ayarları"
+            " daha sonra değiştirebilirsiniz.\n\nLütfen otomatik yedekleme"
+            " periyodunu seçin"
+        ),
+        "saved": (
+            "✅ Yedekleme periyodu kaydedildi! .set_backup_period ile"
+            " değiştirebilirsiniz"
+        ),
+        "never": (
+            "✅ Otomatik yedekleme yapmayacağım. .set_backup_period ile"
+            " değiştirebilirsiniz"
+        ),
+        "invalid_args": (
+            "🚫 <b>Geçerli bir yedekleme periyodu saat cinsinden belirtin, veya `0` ile"
+            " devre dışı bırakın</b>"
+        ),
+    }
+
+    strings_hi = {
+        "period": (
+            "⌚️ <b>यूनिट «ALPHA»</b> स्वचालित रूप से बैकअप बनाता है। आप इस विशेषता को"
+            " बाद में बदल सकते हैं।\n\nकृपया बैकअप की अनुमति देने के लिए एक अनुमति दें"
+        ),
+        "saved": (
+            "✅ बैकअप अनुमति सहेजी गई! आप इसे .set_backup_period के साथ बदल सकते हैं"
+        ),
+        "never": (
+            "✅ मैं स्वचालित रूप से बैकअप नहीं बनाऊंगा। आप इसे .set_backup_period के साथ"
+            " बदल सकते हैं"
+        ),
+        "invalid_args": (
+            "🚫 <b>सही बैकअप अनुमति देने के लिए एक घंटे में दर दर्ज करें, या इसे अक्षम"
+            " करने के लिए `0` दर्ज करें</b>"
+        ),
+    }
+
+    strings_uz = {
+        "period": (
+            "⌚️ <b>Unit «ALPHA»</b> avtomatik ravishda e'lon qiladi. Ushbu sozlamalarni"
+            " keyinroq o'zgartirishingiz mumkin.\n\nIltimos, avtomatik e'lon qilish"
+            " davom ettirish tartibini tanlang"
+        ),
+        "saved": (
+            "✅ E'lon davom ettirish tartibi saqlandi! Uni .set_backup_period orqali"
+            " o'zgartirishingiz mumkin"
+        ),
+        "hech qachon": (
+            "✅ Avtomatik zahira nusxasini yaratmayman. Uni .set_backup_period bilan"
+            " o'zgartirishingiz mumkin"
+        ),
+        "invalid_args": (
+            '🚫 <b>Yaroqli zaxira muddatini soat yoki "0" bilan belgilang o\'chirish</b>'
+        ),
+    }
+
     async def client_ready(self):
         if not self.get("period"):
             await self.inline.bot.send_photo(
@@ -118,7 +194,13 @@ class HikkaBackupMod(loader.Module):
         await call.answer(self.strings("saved"), show_alert=True)
         await call.delete()
 
-    @loader.command(ru_doc="<время в часах> - Установить частоту бэкапов")
+    @loader.command(
+        ru_doc="<время в часах> - Установить частоту бэкапов",
+        de_doc="<Stunden> - Setze die Backup-Frequenz",
+        tr_doc="<saat cinsinden zaman> - Yedekleme periyodunu ayarla",
+        hi_doc="<घंटों में समय> - बैकअप अनुमति सेट करें",
+        uz_doc="<soatda vaqt> - E'lon tartibini belgilash",
+    )
     async def set_backup_period(self, message: Message):
         """<time in hours> - Change backup frequency"""
         args = utils.get_args_raw(message)

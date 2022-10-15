@@ -8,13 +8,13 @@
 
 import re
 import string
-from hikka.inline.types import BotInlineMessage
 
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.tl.functions.contacts import UnblockRequest
 from telethon.tl.types import Message
 
 from .. import loader, utils
+from ..inline.types import BotInlineMessage
 
 
 @loader.tds
@@ -66,6 +66,95 @@ class InlineStuffMod(loader.Module):
         ),
     }
 
+    strings_de = {
+        "bot_username_invalid": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Der angegebene"
+            " Benutzername ist ungültig. Er muss mit </b><code>bot</code><b> enden und"
+            " mindestens 4 Zeichen lang sein</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Dieser Benutzername"
+            " ist bereits vergeben</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Erfolgreich"
+            " gespeichert. Starte den Userbot neu, um die Änderungen zu übernehmen</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Hallo! Das ist Hikka — mächtiger modulare Telegram Userbot. Du kannst"
+            " ihn auf deinen Account installieren!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Support Chat</a></b>'
+        ),
+    }
+
+    strings_tr = {
+        "bot_username_invalid": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Belirtilen bot"
+            " kullanıcı adı geçersiz. </b><code>bot</code><b> ile bitmelidir ve en az"
+            " 4 karakter içermelidir</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Bu kullanıcı adı"
+            " zaten alınmış</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Yapılandırma başarıyla"
+            " kaydedildi. Değişiklikleri uygulamak için botu yeniden başlatın</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Merhaba! Bu Hikka — güçlü modüler Telegram kullanıcısı. Hesabınıza"
+            " kurabilirsiniz!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Destek sohbeti</a></b>'
+        ),
+    }
+
+    strings_hi = {
+        "bot_username_invalid": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>बॉट उपयोगकर्ता"
+            " नाम अवैध है। यह </b><code>bot</code><b> से समाप्त होना चाहिए और न्यूनतम"
+            " 4 वर्णों का होना चाहिए</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>यह उपयोगकर्ता नाम पहले"
+            " से ही ले लिया गया है</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>कॉन्फ़िगरेशन"
+            " सफलतापूर्वक सहेजा गया। इसे लागू करने के लिए बॉट को रीस्टार्ट करें</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>नमस्ते! यह Hikka है — एक मजबूत और मॉड्यूलर टेलीग्राम यूजरबॉट। आप इसे"
+            " अपने अकाउंट पर इंस्टॉल कर सकते हैं!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">सपोर्ट चैट</a></b>'
+        ),
+    }
+
+    strings_uz = {
+        "bot_username_invalid": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Bot foydalanuvchi"
+            " nomi noto'g'ri. U </b><code>bot</code><b> bilan tugashi kerak va kamida 4"
+            " belgidan iborat bo'lishi kerak</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Ushbu foydalanuvchi"
+            " nomi allaqachon band</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Konfiguratsiya"
+            " muvaffaqiyatli saqlandi. Ushbu o'zgarishlarni qo'llash uchun botni qayta"
+            " ishga tushiring</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Salom! Bu Hikka — kuchli modulyor Telegram foydalanuvchisi. Siz uni"
+            " o'zingizga o'rnatishingiz mumkin!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Yordam chati</a></b>'
+        ),
+    }
+
     async def watcher(self, message: Message):
         if (
             getattr(message, "out", False)
@@ -89,7 +178,7 @@ class InlineStuffMod(loader.Module):
 
         await message.delete()
 
-        m = await message.respond("🌘 <b>Opening gallery...</b>")
+        m = await message.respond("🌘")
 
         await self.inline.gallery(
             message=m,
@@ -131,7 +220,13 @@ class InlineStuffMod(loader.Module):
 
                     return True
 
-    @loader.command(ru_doc="<юзернейм> - Изменить юзернейм инлайн бота")
+    @loader.command(
+        ru_doc="<юзернейм> - Изменить юзернейм инлайн бота",
+        de_doc="<username> - Ändere den Inline-Bot-Nutzernamen",
+        tr_doc="<kullanıcı adı> - İçe aktarma botunun kullanıcı adını değiştirin",
+        hi_doc="<उपयोगकर्ता नाम> - इनलाइन बॉट का उपयोगकर्ता नाम बदलें",
+        uz_doc="<foydalanuvchi nomi> - Bot foydalanuvchi nomini o'zgartiring",
+    )
     async def ch_hikka_bot(self, message: Message):
         """<username> - Change your Hikka inline bot username"""
         args = utils.get_args_raw(message).strip("@")
@@ -169,7 +264,7 @@ class InlineStuffMod(loader.Module):
             caption=self.strings("this_is_hikka"),
         )
 
-    async def client_ready(self, client, db):
+    async def client_ready(self):
         if self.get("migrated"):
             return
 

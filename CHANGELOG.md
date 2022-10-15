@@ -1,5 +1,10 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.5.3
+
+- Add Uzbek, Turkish, German and Hindi translation packs
+- Fix module and command docs not being translated on-the-flight
+
 ## 🌑 Hikka 1.5.2
 
 - Change the behavior of `@loader.raw_handler` decorator to accept starred arguments instead of list-like value

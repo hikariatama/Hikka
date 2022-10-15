@@ -261,7 +261,9 @@ class Gallery(InlineUnit):
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + " <b>Opening gallery...</b>"
+                    + self._client.loader._lookup("translations").strings(
+                        "opening_gallery"
+                    )
                 )
             except Exception:
                 status_message = None
@@ -284,7 +286,9 @@ class Gallery(InlineUnit):
                 else None,
             )
         except ChatSendInlineForbiddenError:
-            await answer("🚫 <b>You can't send inline units in this chat</b>")
+            await answer(
+                self._client.loader._lookup("translations").strings("inline403")
+            )
         except Exception:
             logger.exception("Error sending inline gallery")
 
@@ -294,7 +298,9 @@ class Gallery(InlineUnit):
                 logger.exception("Can't send gallery")
 
                 if not self._db.get(main.__name__, "inlinelogs", True):
-                    msg = "<b>🚫 Gallery invoke failed! More info in logs</b>"
+                    msg = self._client.loader._lookup("translations").strings(
+                        "invoke_failed"
+                    )
                 else:
                     exc = traceback.format_exc()
                     # Remove `Traceback (most recent call last):`

@@ -26,6 +26,10 @@ class UpdateNotifierMod(loader.Module):
             " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 And {} more...</b></i>",
+        "_cfg_doc_disable_notifications": "Disable update notifications",
+        "latest_disabled": "Notifications about the latest update have been suppressed",
+        "update": "🔄 Update",
+        "ignore": "🚫 Ignore",
     }
 
     strings_ru = {
@@ -34,6 +38,60 @@ class UpdateNotifierMod(loader.Module):
             " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 И еще {}...</b></i>",
+        "_cfg_doc_disable_notifications": "Отключить уведомления об обновлениях",
+        "latest_disabled": "Уведомления о последнем обновлении были отключены",
+        "update": "🔄 Обновить",
+        "ignore": "🚫 Игнорировать",
+    }
+
+    strings_de = {
+        "update_required": (
+            "🌘 <b>Hikka Update verfügbar!</b>\n\nNeue Hikka Version veröffentlicht.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 Und {} mehr...</b></i>",
+        "_cfg_doc_disable_notifications": "Deaktiviere Update Benachrichtigungen",
+        "latest_disabled": (
+            "Benachrichtigungen über das letzte Update wurden unterdrückt"
+        ),
+        "update": "🔄 Update",
+        "ignore": "🚫 Ignorieren",
+    }
+
+    strings_hi = {
+        "update_required": (
+            "🌘 <b>हिक्का अपडेट उपलब्ध है!</b>\n\nनया हिक्का संस्करण जारी किया गया"
+            " है।\n🔮 <b>हिक्का <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 और {} अधिक...</b></i>",
+        "_cfg_doc_disable_notifications": "अपडेट सूचनाएं अक्षम करें",
+        "latest_disabled": "नवीनतम अपडेट के बारे में सूचनाएं अक्षम कर दी गई हैं",
+        "update": "🔄 अपडेट करें",
+        "ignore": "🚫 अनदेखा करें",
+    }
+
+    strings_uz = {
+        "update_required": (
+            "🌘 <b>Hikka yangilash mavjud!</b>\n\nYangi Hikka versiyasi chiqdi.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 Va {} boshqa...</b></i>",
+        "_cfg_doc_disable_notifications": "Yangilash xabarlarini o'chirish",
+        "latest_disabled": "Yangi yangilash haqida xabarlar o'chirildi",
+        "update": "🔄 Yangilash",
+        "ignore": "🚫 E'tiborsiz qoldirish",
+    }
+
+    strings_tr = {
+        "update_required": (
+            "🌘 <b>Hikka güncellemesi mevcut!</b>\n\nYeni bir Hikka sürümü"
+            " yayınlandı.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 Ve {} daha fazlası...</b></i>",
+        "_cfg_doc_disable_notifications": "Güncelleme bildirimlerini devre dışı bırak",
+        "latest_disabled": "Son güncelleme hakkında bildirimler engellendi",
+        "update": "🔄 Güncelle",
+        "ignore": "🚫 Yoksay",
     }
 
     _notified = None
@@ -42,7 +100,7 @@ class UpdateNotifierMod(loader.Module):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "disable_notifications",
-                doc=lambda: "Disable update notifications",
+                doc=lambda: self.strings("_cfg_doc_disable_notifications"),
                 validator=loader.validators.Boolean(),
             )
         )
@@ -86,10 +144,10 @@ class UpdateNotifierMod(loader.Module):
         except Exception as e:
             raise loader.LoadError("Can't load due to repo init error") from e
 
-        self._markup = self.inline.generate_markup(
+        self._markup = lambda: self.inline.generate_markup(
             [
-                {"text": "🔄 Update", "data": "hikka_update"},
-                {"text": "🚫 Ignore", "data": "hikka_upd_ignore"},
+                {"text": self.strings("update"), "data": "hikka_update"},
+                {"text": self.strings("ignore"), "data": "hikka_upd_ignore"},
             ]
         )
 
@@ -123,7 +181,7 @@ class UpdateNotifierMod(loader.Module):
                     self.get_changelog(),
                 ),
                 disable_web_page_preview=True,
-                reply_markup=self._markup,
+                reply_markup=self._markup(),
             )
 
             self._notified = self._pending
@@ -149,7 +207,7 @@ class UpdateNotifierMod(loader.Module):
 
         if call.data == "hikka_upd_ignore":
             self.set("ignore_permanent", self.get_latest())
-            await call.answer("Notifications about the latest have been suppressed")
+            await call.answer(self.strings("latest_disabled"))
             return
 
         await self._delete_all_upd_messages()

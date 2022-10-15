@@ -370,7 +370,12 @@ def translatable_docstring(cls):
                 func_.__func__.__doc__ = self.strings[f"_ihandle_doc_{inline_handler_}"]
 
         self.__doc__ = self.strings["_cls_doc"]
-        return self.config_complete._old_(self, *args, **kwargs)
+
+        return (
+            self.config_complete._old_(self, *args, **kwargs)
+            if not kwargs.pop("reload_dynamic_translate", None)
+            else True
+        )
 
     config_complete._old_ = cls.config_complete
     cls.config_complete = config_complete
