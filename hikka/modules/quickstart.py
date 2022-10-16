@@ -224,6 +224,106 @@ class QuickstartMod(loader.Module):
         "language": "🇮🇳 हिंदी",
     }
 
+    strings_jp = {
+        "help": """
+📼 <b>モジュールを検索してインストールするには @hikkamods_bot から検索してください。検索ワードを1つ入力してください。</b>
+
+📣 <b>コミュニティで作成されたチャンネルを見るには、こちらをクリックしてください: <a href="https://t.me/hikka_ub/126">表示</a></b>
+
+💁‍♀️ <b>すぐに始めるには:</b>
+
+1️⃣ <b>モジュールのリストを表示するには </b><code>.help</code> <b>を入力します</b>
+2️⃣ <b>モジュールについての情報を取得するには </b><code>.help &lt;モジュール名/コマンド&gt;</code> <b>を入力します</b>
+3️⃣ <b>リンクからモジュールをインストールするには </b><code>.dlmod &lt;リンク&gt;</code> <b>を入力します</b>
+4️⃣ <b>モジュールをファイルからロードするには </b><code>.loadmod</code> <b>ファイルの返信を入力します</b>
+5️⃣ <b>モジュールを削除するには </b><code>.unloadmod &lt;モジュール名&gt;</code> <b>を入力します</b>
+
+💡 <b>モジュールをサポートするには、Hikka Friendly-Telegram と GeekTG モジュールも含まれています。</b>
+""",
+        "okteto": (
+            "☁️ <b>あなたのユーザーボットは、Okteto にインストールされています</b>. あなたは"
+            " @WebpageBot からメッセージを受け取ると、あなたのユーザーボットが <b>ブロックされます</b>. 次の月に、"
+            " https://railway.app にアクセスして、再度開始してください.</b>"
+        ),
+        "language_saved": "🇯🇵 言語が保存されました!",
+        "language": "🇯🇵 日本語",
+    }
+
+    strings_kr = {
+        "help": """
+📼 <b>모듈을 검색하고 설치하려면 @hikkamods_bot 에서 검색하십시오. 검색어를 입력하십시오.</b>
+
+📣 <b>커뮤니티에서 생성된 채널을 보려면 여기를 클릭하십시오: <a href="https://t.me/hikka_ub/126">보기</a></b>
+
+💁‍♀️ <b>즉시 시작하려면:</b>
+
+1️⃣ <b>모듈 목록을 표시하려면 </b><code>.help</code> <b>를 입력하십시오</b>
+2️⃣ <b>모듈에 대한 정보를 가져 오려면 </b><code>.help &lt;모듈 이름/명령&gt;</code> <b>를 입력하십시오</b>
+3️⃣ <b>링크에서 모듈을 설치하려면 </b><code>.dlmod &lt;링크&gt;</code> <b>를 입력하십시오</b>
+4️⃣ <b>모듈을 파일에서로드하려면 </b><code>.loadmod</code> <b>파일에 응답을 입력하십시오</b>
+5️⃣ <b>모듈을 제거하려면 </b><code>.unloadmod &lt;모듈 이름&gt;</code> <b>를 입력하십시오</b>
+
+💡 <b>모듈을 지원하려면 Hikka Friendly-Telegram 및 GeekTG 모듈도 포함됩니다.</b>
+""",
+        "okteto": (
+            "☁️ <b>사용자 봇은 Okteto에 설치되었습니다</b>.  메시지를받으면"
+            " @WebpageBot 당신의 사용자 봇은 <b>차단됩니다</b>. 다음 달에,"
+            " https://railway.app 에 액세스하고 다시 시작하십시오.</b>"
+        ),
+        "language_saved": "🇰🇷 언어가 저장되었습니다!",
+        "language": "🇰🇷 한국어",
+    }
+
+    strings_ar = {
+        "help": """
+📼 <b>للبحث عن وتثبيت الوحدات، يرجى الذهاب إلى @hikkamods_bot وإدخال الكلمات المفتاحية.</b>
+
+📣 <b>لمشاهدة قنوات المجتمع التي تم إنشاؤها، انقر هنا: <a href="https://t.me/hikka_ub/126">عرض</a></b>
+
+💁‍♀️ <b>للبدء فورًا:</b>
+
+1️⃣ <b>لعرض قائمة الوحدات، اكتب </b><code>.help</code> <b>وأدخل</b>
+2️⃣ <b>للحصول على معلومات عن الوحدة، اكتب </b><code>.help &lt;اسم الوحدة/الأمر&gt;</code> <b>وأدخل</b>
+3️⃣ <b>لتثبيت الوحدة من الرابط، اكتب </b><code>.dlmod &lt;الرابط&gt;</code> <b>وأدخل</b>
+4️⃣ <b>لتحميل الوحدة من الملف، اكتب </b><code>.loadmod</code> <b>وأرسل الملف المراد تحميله</b>
+5️⃣ <b>لإزالة الوحدة، اكتب </b><code>.unloadmod &lt;اسم الوحدة&gt;</code> <b>وأدخل</b>
+
+💡 <b>لدعم الوحدات، يتضمن Hikka Friendly-Telegram و GeekTG أيضًا.</b>
+""",
+        "okteto": (
+            "☁️ <b>البوت المستخدم تم تثبيته على Okteto</b>. عند استلامك"
+            " @WebpageBot سيتم حظر البوت المستخدم <b>من البوتات</b>. في الشهر المقبل،"
+            " انتقل إلى https://railway.app وابدأ من جديد.</b>"
+        ),
+        "language_saved": "🇸🇦 تم حفظ اللغة!",
+        "language": "🇸🇦 العربية",
+    }
+
+    strings_es = {
+        "help": """
+📼 <b>Para buscar e instalar módulos, vaya a @hikkamods_bot y escriba las palabras clave.</b>
+
+📣 <b>Para ver los canales de la comunidad creados, haga clic aquí: <a href="https://t.me/hikka_ub/126">Ver</a></b>
+
+💁‍♀️ <b>Para comenzar de inmediato:</b>
+
+1️⃣ <b>Para ver la lista de módulos, escriba </b><code>.help</code> <b>y presione</b>
+2️⃣ <b>Para obtener información sobre el módulo, escriba </b><code>.help &lt;nombre del módulo/comando&gt;</code> <b>y presione</b>
+3️⃣ <b>Para instalar el módulo desde el enlace, escriba </b><code>.dlmod &lt;enlace&gt;</code> <b>y presione</b>
+4️⃣ <b>Para cargar el módulo desde el archivo, escriba </b><code>.loadmod</code> <b>y responda al archivo que desea cargar</b>
+5️⃣ <b>Para eliminar el módulo, escriba </b><code>.unloadmod &lt;nombre del módulo&gt;</code> <b>y presione</b>
+
+💡 <b>Para admitir módulos, también incluye Hikka Friendly-Telegram y GeekTG.</b>
+""",
+        "okteto": (
+            "☁️ <b>El bot de usuario se ha instalado en Okteto</b>. Cuando lo reciba"
+            " @WebpageBot su bot de usuario será <b>bloqueado por bots</b>. El mes que"
+            " viene, vaya a https://railway.app y comience de nuevo.</b>"
+        ),
+        "language_saved": "🇪🇸 ¡El idioma se ha guardado!",
+        "language": "🇪🇸 Español",
+    }
+
     async def client_ready(self):
         if self.get("disable_quickstart"):
             raise loader.SelfUnload
@@ -241,7 +341,7 @@ class QuickstartMod(loader.Module):
                     "callback": self._change_lang,
                     "args": (lang,),
                 }
-                for lang in ["ru", "en", "uz", "tr", "hi", "de"]
+                for lang in ["ru", "en", "uz", "tr", "hi", "de", "jp", "kr", "ar", "es"]
             ],
             2,
         )

@@ -2,8 +2,9 @@
 
 ## 🌑 Hikka 1.5.3
 
-- Add Uzbek, Turkish, German and Hindi translation packs
+- Add Uzbek, Turkish, German, Hindi, Japanese, Korean, Spanish and Arabic translation packs
 - Fix module and command docs not being translated on-the-flight
+- Fix `RegExp` validator
 
 ## 🌑 Hikka 1.5.2
 

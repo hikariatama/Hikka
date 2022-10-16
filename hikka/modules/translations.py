@@ -186,8 +186,11 @@ class Translations(loader.Module):
         "opening_form": " <b>Form açılıyor...</b>",
         "opening_gallery": " <b>Galeri açılıyor...</b>",
         "opening_list": " <b>Liste açılıyor...</b>",
-        "inline403": "🚫 <b>Bu sohbette inline öğeleri gönderemezsiniz</b>",
-        "invoke_failed": "<b>🚫 Modül çağrısı başarısız! Ayrıntılar günlüklerde</b>",
+        "inline403": "🚫 <b>Bu sohbete satır içi birimler gönderemezsin</b>",
+        "invoke_failed": (
+            "<b>🚫 Modül çağrısı başarısız! Kayıtlardan daha fazla bilgiye"
+            " erişebilirsin</b>"
+        ),
         "show_inline_cmds": "📄 Tüm kullanılabilir inline komutlarını göster",
         "no_inline_cmds": "Kullanılabilir inline komutunuz yok",
         "no_inline_cmds_msg": (
@@ -299,12 +302,189 @@ class Translations(loader.Module):
         "button404": "यह बटन अब उपलब्ध नहीं है!",
     }
 
+    strings_jp = {
+        "lang_saved": "{} <b>言語が保存されました！</b>",
+        "pack_saved": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>翻訳パック が保存されました！</b>"
+        ),
+        "incorrect_language": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>不正確な言語 が指定されました</b>"
+        ),
+        "lang_removed": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>翻訳がデフォルトに"
+            " リセットされました</b>"
+        ),
+        "check_pack": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>URLの翻訳パックが 不正確です</b>"
+        ),
+        "check_url": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>不正確なURLを指定しました</b>"
+        ),
+        "too_long": (
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>コマンドの出力が"
+            " 長すぎるため、ファイルとして送信されました.</b>"
+        ),
+        "opening_form": " <b>フォームを開いています...</b>",
+        "opening_gallery": " <b>ギャラリーを開いています...</b>",
+        "opening_list": " <b>リストを開いています...</b>",
+        "inline403": "🚫 <b>あなたはこのグループでインラインアイテムを送信することはできません</b>",
+        "invoke_failed": "<b>🚫 モジュールの呼び出しが失敗しました！ 詳細はログに記録されています</b>",
+        "show_inline_cmds": "📄 すべての利用可能なインラインコマンドを表示",
+        "no_inline_cmds": "利用可能なインラインコマンドはありません",
+        "no_inline_cmds_msg": "<b>😔 利用可能なインラインコマンドまたはインラインコマンドへのアクセス権がありません</b>",
+        "inline_cmds": "ℹ️ 利用可能なコマンドが {} あります",
+        "inline_cmds_msg": "<b>ℹ️ 利用可能なインラインコマンド:</b>\n\n{}",
+        "run_command": "🏌️ コマンドを実行",
+        "command_msg": "<b>🌘 コマンド「{}」</b>\n\n<i>{}</i>",
+        "command": "🌘 コマンド「{}」",
+        "button403": "あなたはこのボタンを押すことはできません！",
+        "button404": "このボタンはもう利用できません！",
+    }
+
+    strings_kr = {
+        "lang_saved": "{} <b>언어가 저장되었습니다!</b>",
+        "pack_saved": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>번역 팩이 저장되었습니다!</b>"
+        ),
+        "incorrect_language": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>잘못된 언어가 지정되었습니다</b>"
+        ),
+        "lang_removed": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>번역이 기본값으로 재설정되었습니다</b>"
+        ),
+        "check_pack": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>URL의 번역 팩이 잘못되었습니다</b>"
+        ),
+        "check_url": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>잘못된 URL을 지정하셨습니다</b>"
+        ),
+        "too_long": (
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>명령의 출력이"
+            " 너무 깁니다. 파일로 전송되었습니다.</b>"
+        ),
+        "opening_form": " <b>폼을 열고 있습니다...</b>",
+        "opening_gallery": " <b>갤러리를 열고 있습니다...</b>",
+        "opening_list": " <b>리스트를 열고 있습니다...</b>",
+        "inline403": "🚫 <b>이 그룹에서 인라인 아이템을 보내는 것은 허용되지 않습니다</b>",
+        "invoke_failed": "<b>🚫 모듈 호출이 실패했습니다! 자세한 내용은 로그에 기록되어 있습니다</b>",
+        "show_inline_cmds": "📄 모든 사용 가능한 인라인 명령을 표시",
+        "no_inline_cmds": "사용 가능한 인라인 명령이 없습니다",
+        "no_inline_cmds_msg": "<b>😔 사용 가능한 인라인 명령이 없거나 인라인 명령에 대한 액세스 권한이 없습니다</b>",
+        "inline_cmds": "ℹ️ 사용 가능한 명령이 {} 개 있습니다",
+        "inline_cmds_msg": "<b>ℹ️ 사용 가능한 인라인 명령:</b>\n\n{}",
+        "run_command": "🏌️ 명령을 실행",
+        "command_msg": "<b>🌘 명령 '{}' </b>\n\n<i>{}</i>",
+        "command": "🌘 명령 '{}'",
+        "button403": "이 버튼을 누를 수 없습니다!",
+        "button404": "이 버튼은 더 이상 사용할 수 없습니다!",
+    }
+
+    strings_ar = {
+        "lang_saved": "{} <b>تم حفظ اللغة!</b>",
+        "pack_saved": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>تم حفظ حزمة"
+            " الترجمة!</b>"
+        ),
+        "incorrect_language": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>تم تحديد لغة"
+            " غير صحيحة</b>"
+        ),
+        "lang_removed": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>تم إعادة تعيين"
+            " الترجمة إلى الافتراضي</b>"
+        ),
+        "check_pack": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>تم تحديد حزمة"
+            " الترجمة غير صحيحة</b>"
+        ),
+        "check_url": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>تم تحديد URL"
+            " غير صحيح</b>"
+        ),
+        "too_long": (
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>تم تجاوز الناتج"
+            " للأمر. تم إرساله كملف.</b>"
+        ),
+        "opening_form": " <b>يتم فتح النموذج...</b>",
+        "opening_gallery": " <b>يتم فتح الصالة...</b>",
+        "opening_list": " <b>يتم فتح القائمة...</b>",
+        "inline403": "🚫 <b>لا يسمح بإرسال عناصر الواجهة السطحية في هذه المجموعة</b>",
+        "invoke_failed": "<b>🚫 فشل استدعاء الوحدة! انظر السجل للحصول على تفاصيل</b>",
+        "show_inline_cmds": "📄 عرض جميع الأوامر المتاحة",
+        "no_inline_cmds": "لا توجد أوامر متاحة",
+        "no_inline_cmds_msg": (
+            "<b>😔 لا توجد أوامر متاحة أو ليس لديك إذن للوصول إلى الأوامر</b>"
+        ),
+        "inline_cmds": "ℹ️ {} أوامر متاحة",
+        "inline_cmds_msg": "<b>ℹ️ أوامر متاحة:</b>\n\n{}",
+        "run_command": "🏌️ تشغيل الأمر",
+        "command_msg": "<b>🌘 الأمر '{}' </b>\n\n<i>{}</i>",
+        "command": "🌘 الأمر '{}'",
+        "button403": "لا يمكنك الضغط على هذا الزر!",
+        "button404": "لا يمكنك الضغط على هذا الزر بعد الآن!",
+    }
+
+    strings_es = {
+        "lang_saved": "{} <b>¡Idioma guardado!</b>",
+        "pack_saved": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>¡Paquete de"
+            " traducción guardado!</b>"
+        ),
+        "incorrect_language": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Idioma"
+            " incorrecto seleccionado</b>"
+        ),
+        "lang_removed": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Restablecer la"
+            " traducción a los valores predeterminados</b>"
+        ),
+        "check_pack": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Paquete de"
+            " traducción seleccionado incorrecto</b>"
+        ),
+        "check_url": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>URL incorrecta"
+            " seleccionada</b>"
+        ),
+        "too_long": (
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>El resultado del"
+            " comando excede el límite. Enviado como archivo.</b>"
+        ),
+        "opening_form": " <b>Abriendo formulario...</b>",
+        "opening_gallery": " <b>Abriendo galería...</b>",
+        "opening_list": " <b>Abriendo lista...</b>",
+        "inline403": (
+            "🚫 <b>No se permiten elementos de interfaz de usuario en este grupo</b>"
+        ),
+        "invoke_failed": (
+            "<b>🚫 ¡Error al invocar la unidad! Consulte el registro"
+            " para obtener más detalles</b>"
+        ),
+        "show_inline_cmds": "📄 Mostrar todos los comandos disponibles",
+        "no_inline_cmds": "No hay comandos disponibles",
+        "no_inline_cmds_msg": (
+            "<b>😔 No hay comandos disponibles o no tienes permiso para acceder a"
+            " los comandos</b>"
+        ),
+        "inline_cmds": "ℹ️ {} comandos disponibles",
+        "inline_cmds_msg": "<b>ℹ️ Comandos disponibles:</b>\n\n{}",
+        "run_command": "🏌️ Ejecutar comando",
+        "command_msg": "<b>🌘 Comando '{}'</b>\n\n<i>{}</i>",
+        "command": "🌘 Comando '{}'",
+        "button403": "¡No puedes presionar este botón!",
+        "button404": "¡No puedes presionar este botón ahora!",
+    }
+
     @loader.command(
         ru_doc="[языки] - Изменить стандартный язык",
         de_doc="[Sprachen] - Ändere die Standard-Sprache",
-        tr_doc="[Diller] - Varsayılan dil değiştir",
+        tr_doc="[Diller] - Varsayılan dili değiştir",
         uz_doc="[til] - Standart tili o'zgartirish",
         hi_doc="[भाषाएं] - डिफ़ॉल्ट भाषा बदलें",
+        jp_doc="[言語] - デフォルトの言語を変更します",
+        kr_doc="[언어] - 기본 언어를 변경합니다",
+        ar_doc="[اللغات] - تغيير اللغة الافتراضية",
+        es_doc="[Idiomas] - Cambiar el idioma predeterminado",
     )
     async def setlang(self, message: Message):
         """[languages in the order of priority] - Change default language"""
@@ -355,6 +535,10 @@ class Translations(loader.Module):
             " Tashqi tarjima paketini o'zgartirish"
         ),
         hi_doc="[अनुवाद पैक का लिंक | खाली छोड़ दें] - बाहरी अनुवाद पैक बदलें",
+        jp_doc="[パッケージへのリンク | 空白で削除] - 外部翻訳パッケージを変更します",
+        kr_doc="[패키지 링크 | 비워두면 삭제] - 외부 번역 패키지를 변경합니다",
+        ar_doc="[رابط الحزمة | اتركه فارغا لحذفه] - تغيير حزمة الترجمة الخارجية",
+        es_doc="[Enlace al paquete | vacío para eliminar] - Cambiar el paquete de",
     )
     async def dllangpackcmd(self, message: Message):
         """[link to a langpack | empty to remove] - Change Hikka translate pack (external)

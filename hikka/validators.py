@@ -42,6 +42,10 @@ class Validator:
                     "tr": "dökümantasyon",
                     "hi": "दस्तावेज़",
                     "uz": "hujjat",
+                    "jp": "ドキュメント",
+                    "kr": "문서",
+                    "ar": "وثيقة",
+                    "es": "documentación",
                 }
                 Use instrumental case with lowercase
     :param _internal_id: Do not pass anything here, or things will break
@@ -78,6 +82,10 @@ class Boolean(Validator):
                 "tr": "mantıksal değer",
                 "hi": "अवैध मान",
                 "uz": "mantiqiy qiymat",
+                "jp": "論理値",
+                "kr": "논리적인 값",
+                "ar": "قيمة منطقية",
+                "es": "valor lógico",
             },
             _internal_id="Boolean",
         )
@@ -113,6 +121,10 @@ class Integer(Validator):
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
         _sign_hi = "सकारात्मक " if minimum is not None and minimum == 0 else ""
         _sign_uz = "musbat " if minimum is not None and minimum == 0 else ""
+        _sign_jp = "正の " if minimum is not None and minimum == 0 else ""
+        _sign_kr = "양수 " if minimum is not None and minimum == 0 else ""
+        _sign_ar = "موجب " if minimum is not None and minimum == 0 else ""
+        _sign_es = "positivo " if minimum is not None and minimum == 0 else ""
 
         _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
         _sign_ru = (
@@ -122,6 +134,10 @@ class Integer(Validator):
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
         _sign_hi = "नकारात्मक " if maximum is not None and maximum == 0 else _sign_hi
         _sign_uz = "manfiy " if maximum is not None and maximum == 0 else _sign_uz
+        _sign_jp = "負の " if maximum is not None and maximum == 0 else _sign_jp
+        _sign_kr = "음수 " if maximum is not None and maximum == 0 else _sign_kr
+        _sign_ar = "سالب " if maximum is not None and maximum == 0 else _sign_ar
+        _sign_es = "negativo " if maximum is not None and maximum == 0 else _sign_es
 
         _digits_en = f" with exactly {digits} digits" if digits is not None else ""
         _digits_ru = f", в котором ровно {digits} цифр " if digits is not None else ""
@@ -129,6 +145,10 @@ class Integer(Validator):
         _digits_tr = f" tam olarak {digits} basamaklı" if digits is not None else ""
         _digits_hi = f" जिसमें ठीक {digits} अंक हो" if digits is not None else ""
         _digits_uz = f" to'g'ri {digits} raqamlar bilan" if digits is not None else ""
+        _digits_jp = f" {digits} 桁の正確な" if digits is not None else ""
+        _digits_kr = f" 정확히 {digits} 자리의" if digits is not None else ""
+        _digits_ar = f" بالضبط {digits} أرقام" if digits is not None else ""
+        _digits_es = f" con exactamente {digits} dígitos" if digits is not None else ""
 
         if minimum is not None and minimum != 0:
             doc = (
@@ -139,6 +159,10 @@ class Integer(Validator):
                     "tr": f"{_sign_tr}tam sayı {minimum} den büyük{_digits_tr}",
                     "hi": f"{_sign_hi}एक पूर्णांक जो {minimum} से अधिक है{_digits_hi}",
                     "uz": f"{_sign_uz}butun son {minimum} dan katta{_digits_uz}",
+                    "jp": f"{_sign_jp}整数は{minimum}より大きい{_digits_jp}",
+                    "kr": f"{_sign_kr}정수는 {minimum}보다 크다{_digits_kr}",
+                    "ar": f"{_sign_ar}عدد صحيح أكبر من {minimum}{_digits_ar}",
+                    "es": f"{_sign_es}número entero mayor que {minimum}{_digits_es}",
                 }
                 if maximum is None and maximum != 0
                 else {
@@ -161,6 +185,12 @@ class Integer(Validator):
                     "uz": (
                         f"{_sign_uz}butun son {minimum} dan {maximum} gacha{_digits_uz}"
                     ),
+                    "jp": f"{_sign_jp}整数は{minimum}から{maximum}まで{_digits_jp}",
+                    "kr": f"{_sign_kr}정수는 {minimum}에서 {maximum}까지{_digits_kr}",
+                    "ar": f"{_sign_ar}عدد صحيح من {minimum} إلى {maximum}{_digits_ar}",
+                    "es": (
+                        f"{_sign_es}número entero de {minimum} a {maximum}{_digits_es}"
+                    ),
                 }
             )
 
@@ -172,6 +202,10 @@ class Integer(Validator):
                 "tr": f"{_sign_tr}tam sayı{_digits_tr}",
                 "hi": f"{_sign_hi}पूर्णांक{_digits_hi}",
                 "uz": f"{_sign_uz}butun son{_digits_uz}",
+                "jp": f"{_sign_jp}整数{_digits_jp}",
+                "kr": f"{_sign_kr}정수{_digits_kr}",
+                "ar": f"{_sign_ar}عدد صحيح{_digits_ar}",
+                "es": f"{_sign_es}número entero{_digits_es}",
             }
         else:
             doc = {
@@ -181,6 +215,10 @@ class Integer(Validator):
                 "tr": f"{_sign_tr}tam sayı {maximum} den küçük{_digits_tr}",
                 "hi": f"{_sign_hi}एक पूर्णांक जो {maximum} से कम है{_digits_hi}",
                 "uz": f"{_sign_uz}butun son {maximum} dan kichik{_digits_uz}",
+                "jp": f"{_sign_jp}整数は{maximum}より小さい{_digits_jp}",
+                "kr": f"{_sign_kr}정수는 {maximum}보다 작다{_digits_kr}",
+                "ar": f"{_sign_ar}عدد صحيح أصغر من {maximum}{_digits_ar}",
+                "es": f"{_sign_es}número entero menor que {maximum}{_digits_es}",
             }
         super().__init__(
             functools.partial(
@@ -244,6 +282,10 @@ class Choice(Validator):
                 "tr": f"şunlardan biri: {possible}",
                 "hi": f"इनमें से एक: {possible}",
                 "uz": f"quyidagilardan biri: {possible}",
+                "jp": f"次のいずれか: {possible}",
+                "kr": f"다음 중 하나: {possible}",
+                "ar": f"واحد من الأمور التالية: {possible}",
+                "es": f"uno de los siguientes: {possible}",
             },
             _internal_id="Choice",
         )
@@ -297,6 +339,10 @@ class MultiChoice(Validator):
                     "qiymatlar ro'yxati, har biri quyidagilardan biri bo'lishi kerak:"
                     f" {possible}"
                 ),
+                "jp": f"値のリスト、各値は次のいずれかである必要があります: {possible}",
+                "kr": f"값 목록, 각 값은 다음 중 하나여야합니다: {possible}",
+                "ar": f"قائمة القيم ، حيث يجب أن يكون كل واحد من: {possible}",
+                "es": f"lista de valores, donde cada uno debe ser uno de: {possible}",
             },
             _internal_id="MultiChoice",
         )
@@ -352,6 +398,10 @@ class Series(Validator):
         _each_tr = f" (her biri {validator.doc['tr']})" if validator is not None else ""
         _each_hi = f" (हर एक {validator.doc['hi']})" if validator is not None else ""
         _each_uz = f" (har biri {validator.doc['uz']})" if validator is not None else ""
+        _each_jp = f" (各 {validator.doc['jp']})" if validator is not None else ""
+        _each_kr = f" (각 {validator.doc['kr']})" if validator is not None else ""
+        _each_ar = f" (كل واحد {validator.doc['ar']})" if validator is not None else ""
+        _each_es = f" (cada uno {validator.doc['es']})" if validator is not None else ""
 
         if fixed_len is not None:
             _len_en = f" (exactly {fixed_len} pcs.)"
@@ -360,6 +410,10 @@ class Series(Validator):
             _len_tr = f" (tam olarak {fixed_len} adet)"
             _len_hi = f" (ठीक {fixed_len} टुकड़े)"
             _len_uz = f" (to'g'ri {fixed_len} ta)"
+            _len_jp = f" (ちょうど{fixed_len}個)"
+            _len_kr = f" (정확히 {fixed_len} 개)"
+            _len_ar = f" (بالضبط {fixed_len} قطعة)"
+            _len_es = f" (exactamente {fixed_len} piezas)"
         elif min_len is None:
             if max_len is None:
                 _len_en = ""
@@ -368,6 +422,10 @@ class Series(Validator):
                 _len_tr = ""
                 _len_hi = ""
                 _len_uz = ""
+                _len_jp = ""
+                _len_kr = ""
+                _len_ar = ""
+                _len_es = ""
             else:
                 _len_en = f" (up to {max_len} pcs.)"
                 _len_ru = f" (до {max_len} шт.)"
@@ -375,6 +433,10 @@ class Series(Validator):
                 _len_tr = f" (en fazla {max_len} adet)"
                 _len_hi = f" (अधिकतम {max_len} टुकड़े)"
                 _len_uz = f" (eng ko'p {max_len} ta)"
+                _len_jp = f" (最大{max_len}個)"
+                _len_kr = f" (최대 {max_len} 개)"
+                _len_ar = f" (حتى {max_len} قطعة)"
+                _len_es = f" (hasta {max_len} piezas)"
         elif max_len is not None:
             _len_en = f" (from {min_len} to {max_len} pcs.)"
             _len_ru = f" (от {min_len} до {max_len} шт.)"
@@ -382,6 +444,10 @@ class Series(Validator):
             _len_tr = f" ({min_len} ile {max_len} arasında {max_len} adet)"
             _len_hi = f" ({min_len} से {max_len} तक {max_len} टुकड़े)"
             _len_uz = f" ({min_len} dan {max_len} gacha {max_len} ta)"
+            _len_jp = f" ({min_len} から {max_len} まで {max_len} 個)"
+            _len_kr = f" ({min_len}에서 {max_len}까지 {max_len} 개)"
+            _len_ar = f" ({min_len} إلى {max_len} {max_len} قطعة)"
+            _len_es = f" (desde {min_len} hasta {max_len} piezas)"
         else:
             _len_en = f" (at least {min_len} pcs.)"
             _len_ru = f" (как минимум {min_len} шт.)"
@@ -389,6 +455,10 @@ class Series(Validator):
             _len_tr = f" (en az {min_len} adet)"
             _len_hi = f" (कम से कम {min_len} टुकड़े)"
             _len_uz = f" (kamida {min_len} ta)"
+            _len_jp = f" (少なくとも{min_len}個)"
+            _len_kr = f" (최소 {min_len} 개)"
+            _len_ar = f" (على الأقل {min_len} قطعة)"
+            _len_es = f" (al menos {min_len} piezas)"
 
         doc = {
             "en": f"series of values{_len_en}{_each_en}, separated with «,»",
@@ -397,6 +467,10 @@ class Series(Validator):
             "tr": f"değerlerin listesi{_len_tr}{_each_tr}, «,» ile ayrılmış",
             "hi": f"वैल्यू की सूची{_len_hi}{_each_hi}, «,» के साथ अलग की गई",
             "uz": f"qiymatlar ro'yxati{_len_uz}{_each_uz}, «,» bilan ajratilgan",
+            "jp": f"値のリスト{_len_jp}{_each_jp}、 「,」 で区切られています",
+            "kr": f"값 목록{_len_kr}{_each_kr} 「,」로 구분됨",
+            "ar": f"قائمة القيم{_len_ar}{_each_ar} مفصولة بـ «,»",
+            "es": f"lista de valores{_len_es}{_each_es}, separados con «,»",
         }
 
         super().__init__(
@@ -472,6 +546,10 @@ class Link(Validator):
                 "tr": "bağlantı",
                 "hi": "लिंक",
                 "uz": "havola",
+                "jp": "リンク",
+                "kr": "링크",
+                "ar": "رابط",
+                "es": "enlace",
             },
             _internal_id="Link",
         )
@@ -509,6 +587,10 @@ class String(Validator):
                 "tr": f"{length} karakter uzunluğunda dize",
                 "hi": f"{length} अक्षर की लंबाई की तारीख",
                 "uz": f"{length} ta belgi uzunlig'ida satr",
+                "jp": f"{length} 文字の長さの文字列",
+                "kr": f"{length} 글자 길이의 문자열",
+                "ar": f"سلسلة طول {length}",
+                "es": f"cadena de longitud {length}",
             }
         else:
             if min_len is None:
@@ -520,6 +602,10 @@ class String(Validator):
                         "tr": "dize",
                         "hi": "तारीख",
                         "uz": "satr",
+                        "jp": "文字列",
+                        "kr": "문자열",
+                        "ar": "سلسلة",
+                        "es": "cadena",
                     }
                 else:
                     doc = {
@@ -529,6 +615,10 @@ class String(Validator):
                         "tr": f"{max_len} karakter uzunluğunda dize",
                         "hi": f"{max_len} अक्षर की लंबाई की तारीख",
                         "uz": f"{max_len} ta belgi uzunlig'ida satr",
+                        "jp": f"{max_len} 文字の長さの文字列",
+                        "kr": f"{max_len} 글자 길이의 문자열",
+                        "ar": f"سلسلة طول {max_len}",
+                        "es": f"cadena de longitud {max_len}",
                     }
             elif max_len is not None:
                 doc = {
@@ -538,6 +628,10 @@ class String(Validator):
                     "tr": f"{min_len}-{max_len} karakter uzunluğunda dize",
                     "hi": f"{min_len}-{max_len} अक्षर की लंबाई की तारीख",
                     "uz": f"{min_len}-{max_len} ta belgi uzunlig'ida satr",
+                    "jp": f"{min_len}-{max_len} 文字の長さの文字列",
+                    "kr": f"{min_len}-{max_len} 글자 길이의 문자열",
+                    "ar": f"سلسلة طول {min_len}-{max_len}",
+                    "es": f"cadena de longitud {min_len}-{max_len}",
                 }
             else:
                 doc = {
@@ -547,6 +641,10 @@ class String(Validator):
                     "tr": f"{min_len} karakter uzunluğunda dize",
                     "hi": f"{min_len} अक्षर की लंबाई की तारीख",
                     "uz": f"{min_len} ta belgi uzunlig'ida satr",
+                    "jp": f"{min_len} 文字の長さの文字列",
+                    "kr": f"{min_len} 글자 길이의 문자열",
+                    "ar": f"سلسلة طول {min_len}",
+                    "es": f"cadena de longitud {min_len}",
                 }
 
         super().__init__(
@@ -626,17 +724,14 @@ class RegExp(Validator):
                 "tr": f"«{regex}» kalıbına uygun dize",
                 "uz": f"«{regex}» shabloniga mos matn",
                 "hi": f"«{regex}» पैटर्न के साथ स्ट्रिंग",
+                "jp": f"「{regex}」のパターンに一致する文字列",
+                "kr": f"「{regex}」 패턴과 일치하는 문자열",
+                "ar": f"سلسلة تطابق النمط «{regex}»",
+                "es": f"cadena que coincide con el patrón «{regex}»",
             }
         else:
             if isinstance(description, str):
-                doc = {
-                    "en": description,
-                    "ru": description,
-                    "de": description,
-                    "tr": description,
-                    "uz": description,
-                    "hi": description,
-                }
+                doc = {"en": description}
             else:
                 doc = description
 
@@ -678,6 +773,10 @@ class Float(Validator):
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
         _sign_uz = "musbat " if minimum is not None and minimum == 0 else ""
         _sign_hi = "सकारात्मक " if minimum is not None and minimum == 0 else ""
+        _sign_jp = "正の " if minimum is not None and minimum == 0 else ""
+        _sign_kr = "양수 " if minimum is not None and minimum == 0 else ""
+        _sign_ar = "موجب " if minimum is not None and minimum == 0 else ""
+        _sign_es = "positivo " if minimum is not None and minimum == 0 else ""
 
         _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
         _sign_ru = (
@@ -687,6 +786,10 @@ class Float(Validator):
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
         _sign_uz = "manfiy " if maximum is not None and maximum == 0 else _sign_uz
         _sign_hi = "नकारात्मक " if maximum is not None and maximum == 0 else _sign_hi
+        _sign_jp = "負の " if maximum is not None and maximum == 0 else _sign_jp
+        _sign_kr = "음수 " if maximum is not None and maximum == 0 else _sign_kr
+        _sign_ar = "سالب " if maximum is not None and maximum == 0 else _sign_ar
+        _sign_es = "negativo " if maximum is not None and maximum == 0 else _sign_es
 
         if minimum is not None and minimum != 0:
             doc = (
@@ -697,6 +800,10 @@ class Float(Validator):
                     "tr": f"{_sign_tr}ondalık sayı {minimum} dan büyük",
                     "uz": f"{_sign_uz}butun son {minimum} dan katta",
                     "hi": f"{_sign_hi}दशमलव संख्या {minimum} से अधिक",
+                    "jp": f"{_sign_jp}浮動小数点数 {minimum} より大きい",
+                    "kr": f"{_sign_kr}부동 소수점 숫자 {minimum} 보다 큰",
+                    "ar": f"{_sign_ar}عدد عشري {minimum} أكبر من",
+                    "es": f"{_sign_es}número decimal mayor que {minimum}",
                 }
                 if maximum is None and maximum != 0
                 else {
@@ -709,6 +816,10 @@ class Float(Validator):
                     "tr": f"{_sign_tr}ondalık sayı {minimum} ile {maximum} arasında",
                     "uz": f"{_sign_uz}butun son {minimum} dan {maximum} gacha",
                     "hi": f"{_sign_hi}दशमलव संख्या {minimum} से {maximum} तक",
+                    "jp": f"{_sign_jp}浮動小数点数 {minimum} から {maximum} まで",
+                    "kr": f"{_sign_kr}부동 소수점 숫자 {minimum} 에서 {maximum} 까지",
+                    "ar": f"{_sign_ar}عدد عشري من {minimum} إلى {maximum}",
+                    "es": f"{_sign_es}número decimal de {minimum} a {maximum}",
                 }
             )
 
@@ -720,6 +831,10 @@ class Float(Validator):
                 "tr": f"{_sign_tr}ondalık sayı",
                 "uz": f"{_sign_uz}butun son",
                 "hi": f"{_sign_hi}दशमलव संख्या",
+                "jp": f"{_sign_jp}浮動小数点数",
+                "kr": f"{_sign_kr}부동 소수점 숫자",
+                "ar": f"{_sign_ar}عدد عشري",
+                "es": f"{_sign_es}número decimal",
             }
         else:
             doc = {
@@ -729,6 +844,10 @@ class Float(Validator):
                 "tr": f"{_sign_tr}ondalık sayı {maximum} dan küçük",
                 "uz": f"{_sign_uz}butun son {maximum} dan kichik",
                 "hi": f"{_sign_hi}दशमलव संख्या {maximum} से छोटा",
+                "jp": f"{_sign_jp}浮動小数点数 {maximum} より小さい",
+                "kr": f"{_sign_kr}부동 소수점 숫자 {maximum} 보다 작은",
+                "ar": f"{_sign_ar}عدد عشري {maximum} أصغر من",
+                "es": f"{_sign_es}número decimal menor que {maximum}",
             }
 
         super().__init__(
@@ -798,6 +917,10 @@ class Union(Validator):
             "tr": "aşağıdakilerden biri:\n",
             "uz": "quyidagi biri:\n",
             "hi": "निम्नलिखित में से एक:\n",
+            "jp": "次のいずれか:\n",
+            "kr": "다음 중 하나:\n",
+            "ar": "واحد من الآتي:\n",
+            "es": "uno de los siguientes:\n",
         }
 
         def case(x: str) -> str:
@@ -844,6 +967,10 @@ class NoneType(Validator):
                 "tr": "boş değer",
                 "uz": "bo'sh qiymat",
                 "hi": "खाली मान",
+                "jp": "空の値",
+                "kr": "빈 값",
+                "ar": "قيمة فارغة",
+                "es": "valor vacío",
             },
             _internal_id="NoneType",
         )
@@ -899,6 +1026,10 @@ class Emoji(Validator):
                 "tr": f"tam {length} emoji",
                 "uz": f"to'g'ri {length} emoji",
                 "hi": f"ठीक {length} इमोजी",
+                "jp": f"ちょうど {length} の絵文字",
+                "kr": f"정확히 {length} 개의 이모티콘",
+                "ar": f"تماما {length} الرموز التعبيرية",
+                "es": f"exactamente {length} emojis",
             }
         elif min_len is not None and max_len is not None:
             doc = {
@@ -908,6 +1039,10 @@ class Emoji(Validator):
                 "tr": f"{min_len} ile {max_len} arasında emoji",
                 "uz": f"{min_len} dan {max_len} gacha emoji",
                 "hi": f"{min_len} से {max_len} तक इमोजी",
+                "jp": f"{min_len} から {max_len} の絵文字",
+                "kr": f"{min_len} 에서 {max_len} 개의 이모티콘",
+                "ar": f"من {min_len} إلى {max_len} الرموز التعبيرية",
+                "es": f"entre {min_len} y {max_len} emojis",
             }
         elif min_len is not None:
             doc = {
@@ -917,6 +1052,10 @@ class Emoji(Validator):
                 "tr": f"en az {min_len} emoji",
                 "uz": f"kamida {min_len} emoji",
                 "hi": f"कम से कम {min_len} इमोजी",
+                "jp": f"少なくとも {min_len} の絵文字",
+                "kr": f"최소 {min_len} 개의 이모티콘",
+                "ar": f"على الأقل {min_len} الرموز التعبيرية",
+                "es": f"al menos {min_len} emojis",
             }
         elif max_len is not None:
             doc = {
@@ -926,6 +1065,10 @@ class Emoji(Validator):
                 "tr": f"en fazla {max_len} emoji",
                 "uz": f"{max_len} dan ko'proq emoji",
                 "hi": f"{max_len} से अधिक इमोजी",
+                "jp": f"{max_len} 以下の絵文字",
+                "kr": f"{max_len} 개 이하의 이모티콘",
+                "ar": f"لا أكثر من {max_len} الرموز التعبيرية",
+                "es": f"no más de {max_len} emojis",
             }
         else:
             doc = {
@@ -935,6 +1078,10 @@ class Emoji(Validator):
                 "tr": "emoji",
                 "uz": "emoji",
                 "hi": "इमोजी",
+                "jp": "絵文字",
+                "kr": "이모티콘",
+                "ar": "الرموز التعبيرية",
+                "es": "emojis",
             }
 
         super().__init__(
@@ -1002,5 +1149,9 @@ class EntityLike(RegExp):
                 "tr": "bir varlığa bağlantı, kullanıcı adı veya Telegram kimliği",
                 "uz": "entityga havola, foydalanuvchi nomi yoki Telegram ID",
                 "hi": "एक एंटिटी के लिए लिंक, उपयोगकर्ता नाम या टेलीग्राम आईडी",
+                "jp": "エンティティへのリンク、ユーザー名またはTelegram ID",
+                "kr": "엔티티에 대한 링크, 사용자 이름 또는 Telegram ID",
+                "ar": "رابط إلى الكيان، اسم المستخدم أو معرف Telegram",
+                "es": "enlace a la entidad, nombre de usuario o ID de Telegram",
             },
         )

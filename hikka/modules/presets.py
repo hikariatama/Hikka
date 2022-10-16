@@ -347,6 +347,106 @@ class Presets(loader.Module):
         ),
     }
 
+    strings_jp = {
+        "_fun_title": "🪩 楽しいモジュール",
+        "_fun_desc": "楽しいモジュール — アニメーション、スパム、ゲームなど。",
+        "_chat_title": "👥 チャット管理モジュール",
+        "_chat_desc": "チャット管理モジュールのためのヘルプもあります — フィルター、記録、言語の検出など。",
+        "_service_title": "⚙️ 便利なモジュール",
+        "_service_desc": "便利なモジュール — アカウント管理、リンク短縮、検索エンジン、など。",
+        "_downloaders_title": "📥 ダウンローダー",
+        "_downloaders_desc": "ヘルプもあります — YouTube、TikTok、Instagram、Spotify、VK Musicなど。",
+        "welcome": (
+            "👋 <b>こんにちは！チャンネルでたくさんのモジュールを見て驚いていますか？"
+            "いくつかの事前定義されたコレクションもあります。このメニューをもう一度"
+            "開くには、/presetsコマンドを送信してください</b>"
+        ),
+        "preset": "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>コレクションに含まれるモジュール:</b>\n\n{}",
+        "back": "🔙 戻る",
+        "install": "📦 インストール",
+        "installing": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>コレクション"
+            " </b><code>{}</code><b> インストール中...</b>"
+        ),
+        "installing_module": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>コレクション"
+            " </b><code>{}</code><b> ({}/{} モジュール) インストール中...</b>\n\n<emoji"
+            " document_id=5188377234380954537>🌘</emoji> <i>モジュール {}"
+            " インストール中...</i>"
+        ),
+    }
+
+    strings_kr = {
+        "_fun_title": "🪩 재미있는 모듈",
+        "_fun_desc": "재미있는 모듈 — 애니메이션, 스팸, 게임 등.",
+        "_chat_title": "👥 채팅 관리 모듈",
+        "_chat_desc": "채팅 관리 모듈에 대한 도움말도 있습니다 — 필터, 기록, 언어 감지 등.",
+        "_service_title": "⚙️ 유용한 모듈",
+        "_service_desc": "유용한 모듈 — 계정 관리, 링크 축소, 검색 엔진 등.",
+        "_downloaders_title": "📥 다운로더",
+        "_downloaders_desc": (
+            "도움말도 있습니다 — YouTube, TikTok, Instagram, Spotify, VK Music 등."
+        ),
+        "welcome": (
+            "👋 <b>안녕하세요! 채널에서 많은 모듈을 보고 놀랐습니까?"
+            "몇 가지 사전 정의 된 컬렉션이 있습니다. 이 메뉴를 다시 열려면"
+            "/presets 명령을 보내십시오</b>"
+        ),
+        "preset": "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>컬렉션에 포함 된 모듈:</b>\n\n{}",
+        "back": "🔙 뒤로",
+        "install": "📦 설치",
+        "installing": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>컬렉션"
+            " </b><code>{}</code><b> 설치 중...</b>"
+        ),
+        "installing_module": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>컬렉션"
+            " </b><code>{}</code><b> ({}/{} 모듈) 설치 중...</b>\n\n<emoji"
+            " document_id=5188377234380954537>🌘</emoji> <i>모듈 {}"
+            " 설치 중...</i>"
+        ),
+    }
+
+    strings_es = {
+        "_fun_title": "🪩 Módulos divertidos",
+        "_fun_desc": "Módulos divertidos — animaciones, spam, juegos, etc.",
+        "_chat_title": "👥 Módulos de administración de chat",
+        "_chat_desc": (
+            "También hay ayuda para módulos de administración de chat — filtros, "
+            "registros, detección de idiomas, etc."
+        ),
+        "_service_title": "⚙️ Módulos útiles",
+        "_service_desc": (
+            "Módulos útiles — administración de cuentas, acortamiento de enlaces, "
+            "motores de búsqueda, etc."
+        ),
+        "_downloaders_title": "📥 Descargadores",
+        "_downloaders_desc": (
+            "También hay ayuda — YouTube, TikTok, Instagram, Spotify, etc."
+        ),
+        "welcome": (
+            "👋 <b>¡Hola! ¿Te sorprendió ver muchos módulos en el canal?"
+            "También hay algunas colecciones predefinidas. Para volver a abrir este"
+            "menú, envíe el comando /presets</b>"
+        ),
+        "preset": (
+            "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>Módulos incluidos en la"
+            " colección:</b>\n\n{}"
+        ),
+        "back": "🔙 Atrás",
+        "install": "📦 Instalar",
+        "installing": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Instalando la"
+            " colección </b><code>{}</code><b>...</b>"
+        ),
+        "installing_module": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Instalando la"
+            " colección </b><code>{}</code><b> ({}/{} módulos)...</b>\n\n<emoji"
+            " document_id=5188377234380954537>🌘</emoji> <i>Instalando el módulo"
+            " {}...</i>"
+        ),
+    }
+
     async def client_ready(self):
         self._markup = utils.chunks(
             [

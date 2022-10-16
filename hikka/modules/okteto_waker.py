@@ -33,6 +33,10 @@ class OktetoMod(loader.Module):
     strings_de = {"_cls_doc": "Hilft Hikka, auf Okteto wach zu bleiben"}
     strings_uz = {"_cls_doc": "Okteto-da Hikka-ni yashaydigan yordam beradi"}
     strings_hi = {"_cls_doc": "Okteto पर Hikka को जागा रखने में मदद करता है"}
+    strings_jp = {"_cls_doc": "OktetoでHikkaを起こすのを助けます"}
+    strings_kr = {"_cls_doc": "Okteto에서 Hikka를 깨우는 데 도움이됩니다"}
+    strings_ar = {"_cls_doc": "يساعد هيكا على البقاء مستيقظًا على Okteto"}
+    strings_es = {"_cls_doc": "Ayuda a Hikka a quedarse despierto en Okteto"}
 
     _env_wait_interval = 10
     _overall_polling_interval = 30 * 60

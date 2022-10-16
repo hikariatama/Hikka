@@ -529,6 +529,267 @@ class CoreMod(loader.Module):
         ),
     }
 
+    strings_jp = {
+        "too_many_args": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>引数が多すぎます</b>"
+        ),
+        "blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>チャット {} は"
+            " ユーザーボットのブラックリストに追加されました</b>"
+        ),
+        "unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>チャット {} は"
+            " ユーザーボットのブラックリストから削除されました</b>"
+        ),
+        "user_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>ユーザー {} は"
+            " ユーザーボットによってブラックリストに追加されました</b>"
+        ),
+        "user_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>ユーザー {} は"
+            " ユーザーボットによってブラックリストから削除されました</b>"
+        ),
+        "what_prefix": "❓ <b>どのプレフィックスを設定する必要がありますか？</b>",
+        "prefix_incorrect": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>プレフィックスは"
+            "1文字だけでなければなりません</b>"
+        ),
+        "prefix_set": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>プレフィックスが"
+            "更新されました。新しいプレフィックスは</b> <code>{newprefix}setprefix"
+            " {oldprefix}</code> <b>を使用してリセットできます</b>"
+        ),
+        "alias_created": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>エイリアス</b>"
+            " <code>{}</code> <b>が作成されました</b>"
+        ),
+        "alias_exists": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>エイリアス</b>"
+            " <code>{}</code> <b>は既に存在します</b>"
+        ),
+        "aliases": "<b>🔗 エイリアス:</b>\n",
+        "no_command": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>コマンド</b>"
+            " <code>{}</code> <b>は存在しません</b>"
+        ),
+        "alias_args": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>コマンドとそのエイリアスが必要です</b>"
+        ),
+        "delalias_args": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>エイリアス名が必要です</b>"
+        ),
+        "alias_removed": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>エイリアス</b>"
+            " <code>{}</code> <b>が削除されました</b>"
+        ),
+        "no_alias": (
+            "<emoji document_id=5436162517686557387>🚫</emoji><b> エイリアス</b>"
+            " <code>{}</code> <b>は存在しません</b>"
+        ),
+        "db_cleared": (
+            "<emoji document_id=5368324170671202286>👍</emoji><b> データベースがクリアされました</b>"
+        ),
+        "hikka": (
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>バージョン:"
+            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
+            " <b>ビルド: </b><i>{}</i>\n\n<emoji"
+            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
+            " <b>開発者: t.me/hikariatama</b>"
+        ),
+        "_cls_doc": "ユーザーボットの基本設定を管理します",
+        "confirm_cleardb": "⚠️ <b>データベースをリセットしますか？</b>",
+        "cleardb_confirm": "🗑 データベースをクリア",
+        "cancel": "🚫 キャンセル",
+        "who_to_blacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>誰をブロックしますか？</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>誰をブロック解除しますか？</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>あなたは"
+            "使用しているバージョン </b><code>{}</code><b>!</b>"
+        ),
+    }
+
+    strings_kr = {
+        "chat_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>채팅 {} 은"
+            " 사용자 봇에 의해 블랙리스트에 추가되었습니다</b>"
+        ),
+        "chat_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>채팅 {} 은"
+            " 사용자 봇에 의해 블랙리스트에서 제거되었습니다</b>"
+        ),
+        "user_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>사용자 {} 은"
+            " 사용자 봇에 의해 블랙리스트에 추가되었습니다</b>"
+        ),
+        "user_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>사용자 {} 은"
+            " 사용자 봇에 의해 블랙리스트에서 제거되었습니다</b>"
+        ),
+        "what_prefix": "❓ <b>어떤 접두사를 설정해야 합니까?</b>",
+        "prefix_incorrect": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>접두사는1개의 문자만 가능합니다</b>"
+        ),
+        "prefix_set": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>접두사가"
+            "업데이트되었습니다. 새로운 접두사는</b> <code>{newprefix}setprefix"
+            " {oldprefix}</code> <b>를 사용하여 초기화할 수 있습니다</b>"
+        ),
+        "alias_created": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>별칭</b>"
+            " <code>{}</code> <b>이(가) 생성되었습니다</b>"
+        ),
+        "alias_deleted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>별칭</b>"
+            " <code>{}</code> <b>이(가) 삭제되었습니다</b>"
+        ),
+        "no_alias": (
+            "<emoji document_id=5436162517686557387>🚫</emoji><b> 별칭</b>"
+            " <code>{}</code> <b>이(가) 존재하지 않습니다</b>"
+        ),
+        "db_cleared": (
+            "<emoji document_id=5368324170671202286>👍</emoji><b> 데이터베이스가 초기화되었습니다</b>"
+        ),
+        "hikka": (
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>버전:"
+            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
+            " <b>빌드: </b><i>{}</i>\n\n<emoji"
+            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
+            " <b>개발자: t.me/hikariatama</b>"
+        ),
+        "_cls_doc": "사용자 봇의 기본 설정을 관리합니다",
+        "confirm_cleardb": "⚠️ <b>데이터베이스를 초기화 하시겠습니까?</b>",
+        "cleardb_confirm": "🗑 데이터베이스 초기화",
+        "cancel": "🚫 취소",
+        "who_to_blacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>누구를 블랙리스트에 추가할까요?</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>누구를 블락 해제 할까요?</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>사용하는 버전이"
+            " 있습니다</b><code>{}</code><b>!</b>"
+        ),
+    }
+
+    strings_ar = {
+        "chat_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>تمت إضافة الدردشة"
+            " {} إلى قائمة الحظر</b>"
+        ),
+        "chat_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>تمت إزالة الدردشة"
+            " {} من قائمة الحظر</b>"
+        ),
+        "user_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>تمت إضافة المستخدم"
+            " {} إلى قائمة الحظر</b>"
+        ),
+        "user_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>تمت إزالة المستخدم"
+            " {} من قائمة الحظر</b>"
+        ),
+        "what_prefix": "❓ <b>ما هو البادئة التي تريد تعيينها؟</b>",
+        "prefix_incorrect": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>يجب أن يكون البادئة"
+            " محرف واحد فقط</b>"
+        ),
+        "prefix_set": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>تم تعيين البادئة."
+            " البادئة الجديدة هي</b> <code>{newprefix}setprefix {oldprefix}</code>"
+            " <b>لإعادة تعيينها</b>"
+        ),
+        "alias_created": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>الاسم المستعار</b>"
+            " <code>{}</code> <b>تم إنشاؤه</b>"
+        ),
+        "alias_deleted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>الاسم المستعار</b>"
+            " <code>{}</code> <b>تم حذفه</b>"
+        ),
+        "no_alias": (
+            "<emoji document_id=5436162517686557387>🚫</emoji><b> الاسم المستعار</b>"
+            " <code>{}</code> <b>غير موجود</b>"
+        ),
+        "db_cleared": (
+            "<emoji document_id=5368324170671202286>👍</emoji><b>تم مسح قاعدة"
+            " البيانات</b>"
+        ),
+        "hikka": (
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>الإصدار:"
+            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
+            " <b>البناء: </b><i>{}</i>\n\n<emoji"
+            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
+            " <b>المطور: t.me/hikariatama</b>"
+        ),
+        "_cls_doc": "الإعدادات الأساسية لمستخدم البوت",
+        "confirm_cleardb": "⚠️ <b>هل تريد مسح قاعدة البيانات؟</b>",
+        "cleardb_confirm": "🗑 مسح قاعدة البيانات",
+    }
+
+    strings_es = {
+        "chat_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>El chat {} ha sido"
+            " añadido a la lista negra</b>"
+        ),
+        "chat_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>El chat {} ha sido"
+            " removido de la lista negra</b>"
+        ),
+        "user_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>El usuario {} ha sido"
+            " añadido a la lista negra</b>"
+        ),
+        "user_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>El usuario {} ha sido"
+            " removido de la lista negra</b>"
+        ),
+        "what_prefix": "❓ <b>¿Cuál es el prefijo que quieres establecer?</b>",
+        "prefix_incorrect": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>El prefijo debe ser"
+            " un solo carácter</b>"
+        ),
+        "prefix_set": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>El prefijo ha sido"
+            " establecido. El nuevo prefijo es</b> <code>{newprefix}setprefix"
+            " {oldprefix}</code> <b>para restablecerlo</b>"
+        ),
+        "alias_created": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>El alias</b>"
+            " <code>{}</code> <b>ha sido creado</b>"
+        ),
+        "alias_deleted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>El alias</b>"
+            " <code>{}</code> <b>ha sido eliminado</b>"
+        ),
+        "no_alias": (
+            "<emoji document_id=5436162517686557387>🚫</emoji><b> Alias</b>"
+            " <code>{}</code> <b>no existe</b>"
+        ),
+        "db_cleared": (
+            "<emoji document_id=5368324170671202286>👍</emoji><b>Base de datos"
+            " borrada</b>"
+        ),
+        "hikka": (
+            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Versión:"
+            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
+            " <b>Build: </b><i>{}</i>\n\n<emoji"
+            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
+            " <b>Desarrollador: t.me/hikariatama</b>"
+        ),
+        "_cls_doc": "Los ajustes básicos del usuario del bot",
+        "confirm_cleardb": "⚠️ <b>¿Quieres borrar la base de datos?</b>",
+        "cleardb_confirm": "🗑 Borrar base de datos",
+    }
+
     async def blacklistcommon(self, message: Message):
         args = utils.get_args(message)
 
@@ -560,6 +821,10 @@ class CoreMod(loader.Module):
         tr_doc="Hikka sürümünü gösterir",
         uz_doc="Hikka versiyasini ko'rsatish",
         hi_doc="Hikka का संस्करण दिखाएं",
+        jp_doc="Hikkaのバージョンを表示します",
+        kr_doc="Hikka 버전을 표시합니다",
+        ar_doc="إظهار إصدار Hikka",
+        es_doc="Mostrar la versión de Hikka",
     )
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
@@ -596,6 +861,10 @@ class CoreMod(loader.Module):
         tr_doc="[sohbet] [modül] - Botu herhangi bir yerde devre dışı bırakın",
         uz_doc="[chat] [modul] - Botni hozircha o'chirish",
         hi_doc="[चैट] [मॉड्यूल] - कहीं भी बॉट निष्क्रिय करें",
+        jp_doc="[チャット] [モジュール] - ボットをどこかで無効にします",
+        kr_doc="[채팅] [모듈] - 어디에서든 봇 비활성화",
+        ar_doc="[دردشة] [وحدة] - تعطيل البوت في أي مكان",
+        es_doc="[chat] [módulo] - Desactivar el bot en cualquier lugar",
     )
     async def blacklist(self, message: Message):
         """[chat_id] [module] - Blacklist the bot from operating somewhere"""
@@ -615,6 +884,10 @@ class CoreMod(loader.Module):
         tr_doc="[sohbet] - Botu herhangi bir yerde etkinleştirin",
         uz_doc="[chat] - Botni hozircha yoqish",
         hi_doc="[चैट] - कहीं भी बॉट सक्रिय करें",
+        jp_doc="[チャット] - ボットをどこかで有効にします",
+        kr_doc="[채팅] - 어디에서든 봇을 활성화합니다",
+        ar_doc="[دردشة] - تمكين البوت في أي مكان",
+        es_doc="[chat] - Activar el bot en cualquier lugar",
     )
     async def unblacklist(self, message: Message):
         """<chat_id> - Unblacklist the bot from operating somewhere"""
@@ -645,6 +918,10 @@ class CoreMod(loader.Module):
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
         hi_doc="[उपयोगकर्ता] - उपयोगकर्ता को कमांड चलाने से रोकें",
+        jp_doc="[ユーザー] - ユーザーにコマンドを実行することを禁止します",
+        kr_doc="[사용자] - 사용자에게 명령을 실행하도록 금지",
+        ar_doc="[المستخدم] - منع المستخدم من تنفيذ الأوامر",
+        es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
     )
     async def blacklistuser(self, message: Message):
         """[user_id] - Prevent this user from running any commands"""
@@ -668,6 +945,10 @@ class CoreMod(loader.Module):
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
         hi_doc="[उपयोगकर्ता] - उपयोगकर्ता को कमांड चलाने से रोकें",
+        jp_doc="[ユーザー] - ユーザーにコマンドを実行することを禁止します",
+        kr_doc="[사용자] - 사용자에게 명령을 실행하도록 금지",
+        ar_doc="[المستخدم] - منع المستخدم من تنفيذ الأوامر",
+        es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
     )
     async def unblacklistuser(self, message: Message):
         """[user_id] - Allow this user to run permitted commands"""
@@ -695,6 +976,10 @@ class CoreMod(loader.Module):
         tr_doc="<önek> - Komut öneki ayarla",
         uz_doc="<avvalgi> - Buyruqlar uchun avvalgi belgilash",
         hi_doc="<उपसर्ग> - कमांड उपसर्ग सेट करें",
+        jp_doc="<プレフィックス> - コマンドのプレフィックスを設定します",
+        kr_doc="<접두사> - 명령 접두사 설정",
+        ar_doc="<بادئة> - تعيين بادئة الأوامر",
+        es_doc="<prefijo> - Establecer el prefijo de comandos",
     )
     async def setprefix(self, message: Message):
         """<prefix> - Sets command prefix"""
@@ -725,6 +1010,10 @@ class CoreMod(loader.Module):
         tr_doc="Takma adları göster",
         uz_doc="Aliaslarni ko'rsatish",
         hi_doc="उपनामों की सूची दिखाएं",
+        jp_doc="エイリアスを表示します",
+        kr_doc="별칭 목록 표시",
+        ar_doc="إظهار قائمة الأسماء المستعارة",
+        es_doc="Mostrar lista de alias",
     )
     async def aliases(self, message: Message):
         """Print all your aliases"""
@@ -744,6 +1033,10 @@ class CoreMod(loader.Module):
         tr_doc="Bir komut için takma ad ayarla",
         uz_doc="Buyrug' uchun alias belgilash",
         hi_doc="एक कमांड के लिए उपनाम सेट करें",
+        jp_doc="コマンドのエイリアスを設定します",
+        kr_doc="명령에 대한 별칭 설정",
+        ar_doc="تعيين اسم مستعار للأمر",
+        es_doc="Establecer alias para el comando",
     )
     async def addalias(self, message: Message):
         """Set an alias for a command"""
@@ -779,6 +1072,10 @@ class CoreMod(loader.Module):
         tr_doc="Bir komut için takma ad kaldır",
         uz_doc="Buyrug' uchun aliasni o'chirish",
         hi_doc="एक कमांड के लिए उपनाम हटाएं",
+        jp_doc="コマンドのエイリアスを削除します",
+        kr_doc="명령에 대한 별칭 제거",
+        ar_doc="إزالة اسم مستعار للأمر",
+        es_doc="Eliminar alias para el comando",
     )
     async def delalias(self, message: Message):
         """Remove an alias for a command"""
@@ -813,6 +1110,10 @@ class CoreMod(loader.Module):
         tr_doc="Veritabanını temizle",
         uz_doc="Ma'lumotlar bazasini tozalash",
         hi_doc="डेटाबेस साफ़ करें",
+        jp_doc="データベースをクリアします",
+        kr_doc="데이터베이스 지우기",
+        ar_doc="مسح قاعدة البيانات",
+        es_doc="Limpiar la base de datos",
     )
     async def cleardb(self, message: Message):
         """Clear the entire database, effectively performing a factory reset"""

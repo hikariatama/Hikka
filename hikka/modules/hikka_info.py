@@ -229,13 +229,13 @@ class HikkaInfoMod(loader.Module):
 
     strings_tr = {
         "owner": "Sahip",
-        "version": "Versiyon",
+        "version": "Sürüm",
         "build": "Derleme",
         "prefix": "Önek",
-        "uptime": "Çalışma Süresi",
+        "uptime": "Aktif Süre",
         "branch": "Dal",
         "send_info": "Bot hakkında bilgi",
-        "description": "ℹ Kişisel bilgi değil",
+        "description": "ℹ️ Kişisel bilgileri tehlikeye atmaz",
         "_ihandle_doc_info": "Bot hakkında bilgi",
         "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> Güncel</b>",
         "update_required": (
@@ -243,11 +243,11 @@ class HikkaInfoMod(loader.Module):
             " gerekli </b><code>.update</code>"
         ),
         "_cfg_cst_msg": (
-            "Kişisel mesaj için mesaj. {me}, {version}, {build}, {prefix},"
+            "Kişisel mesaj için bilgi. {me}, {version}, {build}, {prefix},"
             " {platform}, {upd}, {uptime}, {branch} anahtar kelimeleri kullanılabilir"
         ),
-        "_cfg_cst_btn": "Kişisel tuş için tuş. Tuşu kaldırmak için boş bırakın",
-        "_cfg_banner": "URL için resim",
+        "_cfg_cst_btn": "Kişisel tuş için bilgi. Tuşu kaldırmak için boş bırakın",
+        "_cfg_banner": "Resim için URL",
         "setinfo_no_args": (
             "<emoji document_id=5370881342659631698>😢</emoji> <b>Bilgiyi değiştirmek"
             " için herhangi bir metin girin</b>"
@@ -257,11 +257,168 @@ class HikkaInfoMod(loader.Module):
             " değiştirildi</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nÇoklu"
-            " özellikli Telegram kullanıcı botu, örneğin Çevrimiçi galeri, formlar,"
-            " listeler ve animasyonlu emoji desteği. Kullanıcı botu - Telegram"
-            " hesabınızda çalışan bir yazılımdır. Bir sohbete bir komut yazarsanız,"
-            " hemen görebilirsiniz. <a"
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\Çok fazla"
+            " özellik barındıran Telegram kullanıcı botu, örneğin Çevrimiçi galeri,"
+            " formlar, listeler ve animasyonlu emoji desteği gibi. Kullanıcı botu -"
+            " Telegram hesabınızda çalışan bir yazılımdır. Bir sohbete bir komut"
+            " yazarsanız, hemen orada çalışacaktır. Örnekleri görmek için <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub\'ı ziyaret'
+            " edebilirsin</a>"
+        ),
+    }
+
+    strings_jp = {
+        "owner": "オーナー",
+        "version": "バージョン",
+        "build": "ビルド",
+        "prefix": "プレフィックス",
+        "uptime": "稼働時間",
+        "branch": "ブランチ",
+        "send_info": "ボットについての情報",
+        "description": "ℹ️ 個人情報を危険に晒しません",
+        "_ihandle_doc_info": "ボットについての情報",
+        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> 最新</b>",
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji><b> 更新が必要です"
+            " </b><code>.update</code>"
+        ),
+        "_cfg_cst_msg": (
+            "個人メッセージのための情報。 {me}, {version}, {build}, {prefix},"
+            " {platform}, {upd}, {uptime}, {branch} キーワードを使用できます"
+        ),
+        "_cfg_cst_btn": "個人ボタンのための情報。ボタンを削除するには空白にします",
+        "_cfg_banner": "画像のためのURL",
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>情報を変更するには"
+            " 何かテキストを入力します</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>情報が変更されました</b>"
+        ),
+        "desc": (
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\n多機能な"
+            " ユーザーボットです。例えばオンラインギャラリー、フォーム、リスト、"
+            " アニメーション付きの絵文字など。ユーザーボットは、Telegramアカウント内で"
+            " 動作するアプリケーションです。チャットにコマンドを入力すると、すぐに"
+            " そのコマンドが実行されます。例を見るには、<a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a>を参照してください'
+        ),
+    }
+
+    strings_kr = {
+        "owner": "소유자",
+        "version": "버전",
+        "build": "빌드",
+        "prefix": "접두사",
+        "uptime": "가동 시간",
+        "branch": "브랜치",
+        "send_info": "봇에 대한 정보",
+        "description": "ℹ️ 개인 정보를 위험에 노출하지 않습니다",
+        "_ihandle_doc_info": "봇에 대한 정보",
+        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> 최신</b>",
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji><b> 업데이트가 필요합니다"
+            " </b><code>.update</code>"
+        ),
+        "_cfg_cst_msg": (
+            "개인 메시지를 위한 정보. {me}, {version}, {build}, {prefix},"
+            " {platform}, {upd}, {uptime}, {branch} 키워드를 사용할 수 있습니다"
+        ),
+        "_cfg_cst_btn": "개인 버튼을 위한 정보. 버튼을 제거하려면 비워 둡니다",
+        "_cfg_banner": "이미지를 위한 URL",
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>정보를 변경하려면"
+            " 어떤 텍스트를 입력하십시오</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>정보가 변경되었습니다</b>"
+        ),
+        "desc": (
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\n다양한 기능을"
+            " 제공하는 사용자 봇입니다. 예를 들어 온라인 갤러리, 양식, 목록, 애니메이션"
+            " Emoji 등. 사용자 봇은 Telegram 계정 내에서 작동하는 애플리케이션입니다."
+            " 채팅에 명령을 입력하면 즉시 해당 명령이 실행됩니다. 예를 보려면 <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a>를 참조하십시오'
+        ),
+    }
+
+    strings_ar = {
+        "owner": "المالك",
+        "version": "الإصدار",
+        "build": "بناء",
+        "prefix": "بادئة",
+        "uptime": "وقت التشغيل",
+        "branch": "فرع",
+        "send_info": "إرسال معلومات البوت",
+        "description": "ℹ️ لا تعرض البيانات الشخصية للخطر",
+        "_ihandle_doc_info": "معلومات البوت",
+        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> محدث</b>",
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji><b> يتطلب التحديث"
+            " </b><code>.update</code>"
+        ),
+        "_cfg_cst_msg": (
+            "معلومات الرسالة الشخصية. يمكنك استخدام الكلمات الرئيسية {me}, {version},"
+            " {build}, {prefix}, {platform}, {upd}, {uptime}, {branch}"
+        ),
+        "_cfg_cst_btn": "معلومات الزر الشخصية. إزالة الزر يرجى تركه فارغًا",
+        "_cfg_banner": "URL للصورة",
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>لتغيير المعلومات،"
+            " يرجى إدخال بعض النص</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>تم تغيير المعلومات"
+            " بنجاح</b>"
+        ),
+        "desc": (
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nبوت"
+            " مستخدم يوفر ميزات متعددة. على سبيل المثال: معرض عبر الإنترنت، نموذج،"
+            " قائمة، Emoji الرسوم المتحركة وغيرها. بوت المستخدم هو تطبيق يعمل داخل حساب"
+            " Telegram. يتم تنفيذ أوامر الدردشة على الفور. لمزيد من المعلومات، يرجى"
+            ' زيارة <a href="https://github.com/hikariatama/Hikka">GitHub</a>'
+        ),
+    }
+
+    strings_es = {
+        "owner": "Propietario",
+        "version": "Versión",
+        "build": "Construir",
+        "prefix": "Prefijo",
+        "uptime": "Tiempo de actividad",
+        "branch": "Rama",
+        "send_info": "Enviar información del bot",
+        "description": "ℹ️ No exponga su información personal",
+        "_ihandle_doc_info": "Información del bot",
+        "up-to-date": (
+            "<emoji document_id=5370699111492229743>😌</emoji><b> Actualizado</b>"
+        ),
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji><b> Actualización"
+            " necesaria </b><code>.update</code>"
+        ),
+        "_cfg_cst_msg": (
+            "Información del mensaje personalizado. Puede usar las palabras clave {me},"
+            " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}, {branch}"
+        ),
+        "_cfg_cst_btn": (
+            "Información del botón personalizado. Eliminar el botón deje en blanco"
+        ),
+        "_cfg_banner": "URL de la imagen",
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>Para cambiar la"
+            " información, ingrese algún texto</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Información cambiada"
+            " con éxito</b>"
+        ),
+        "desc": (
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nEl bot de"
+            " usuario proporciona varias funciones. Por ejemplo: Galería en línea,"
+            " formulario, lista, Emoji animado y más. El bot de usuario es una"
+            " aplicación que funciona dentro de una cuenta de Telegram. Las órdenes de"
+            " chat se ejecutan de inmediato. Para obtener más información, consulte <a"
             ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
         ),
     }
@@ -429,6 +586,10 @@ class HikkaInfoMod(loader.Module):
         tr_doc="Bot hakkında bilgi gönderir",
         hi_doc="बॉट के बारे में जानकारी भेजें",
         uz_doc="Bot haqida ma'lumot yuborish",
+        jp_doc="ボットについての情報を送信します",
+        kr_doc="봇에 대한 정보를 보냅니다",
+        ar_doc="إرسال معلومات حول البوت",
+        es_doc="Enviar información sobre el bot",
     )
     async def hikkainfocmd(self, message: Message):
         """Send info aka 'What is Hikka?'"""
@@ -440,6 +601,10 @@ class HikkaInfoMod(loader.Module):
         tr_doc="<metin> - .info'da metni değiştir",
         uz_doc="<matn> - .info'dagi matnni o'zgartirish",
         hi_doc="<पाठ> - .info में पाठ बदलें",
+        jp_doc="<テキスト> - .infoのテキストを変更します",
+        kr_doc="<텍스트> - .info의 텍스트를 변경합니다",
+        ar_doc="<نص> - تغيير النص في .info",
+        es_doc="<texto> - Cambiar el texto en .info",
     )
     async def setinfo(self, message: Message):
         """<text> - Change text in .info"""

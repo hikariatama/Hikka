@@ -186,8 +186,8 @@ class TestMod(loader.Module):
             " eingefroren</b> <code>{}</code> <b>Sekunden</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Reaktionsfähigkeit"
-            " Telegramm:</b> <code>{}</code> <b>ms</b>\n<emoji"
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Reaktionszeit des"
+            " Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
             " document_id=5377371691078916778>😎</emoji> <b>Zeit seit dem letzten"
             " Neustart: {}</b>"
         ),
@@ -251,10 +251,10 @@ class TestMod(loader.Module):
             " <code>{}</code> <b>Soniyalar</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegram"
-            "tezligi:</b> <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>So'nggi marta yuklab"
-            "qo'yishdan keyin:</b> {}"
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegram tezligi:</b>"
+            " <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>Soʻngi marotaba qayta ishga"
+            " tushirilgan vaqti:</b> {}"
         ),
         "ping_hint": (
             "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram"
@@ -279,7 +279,7 @@ class TestMod(loader.Module):
         "_cmd_doc_suspend": "<Vaqt> - Botni bir necha vaqtga o'chirish",
         "_cmd_doc_ping": "Userbotning javob berish tezligini tekshirish",
         "_cls_doc": "O'z testi bilan bog'liq operatsiyalar",
-        "send_anyway": "📤 Yuboring",
+        "send_anyway": "📤 Baribir yuborish",
         "cancel": "🚫 Bekor qilish",
     }
 
@@ -411,6 +411,182 @@ class TestMod(loader.Module):
         "cancel": "🚫 रद्द करें",
     }
 
+    strings_jp = {
+        "debugging_enabled": "✅ <b>デバッグが有効になりました</b>",
+        "debugging_disabled": "✅ <b>デバッグが無効になりました</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>無効な時間入力されました。</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>ボットが"
+            "一時停止されました</b> <code>{}</code> <b>秒</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>テレグラム"
+            "速度:</b> <code>{}</code> <b>ミリ秒</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>最後の更新からの経過時間:</b> {}"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>テレグラム速度"
+            "テレグラムサーバーを起動し、他の外部要因により"
+            "あなたのユーザーボットのセットアップとは関係がありません</i>"
+        ),
+        "confidential": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>時間:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>ログレベル </b><code>{0}</code><b>には機密情報が含まれている可能性があります"
+            "セキュリティ上の理由で</b>\n<b>書き込み</b><code>.logs {0}"
+            "force_insecure</code><b>ログ"
+            "警告</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>ログレベルを選択してください</b>",
+        "_cmd_doc_dump": "メッセージに関する情報を表示します",
+        "_cmd_doc_logs": "<レベル> - ログファイルを送信します。隠されたレベルは通知されません。",
+        "_cmd_doc_suspend": "<時間> - ボットを一時停止します",
+        "_cmd_doc_ping": "ユーザーボットのレスポンス能力をチェックします",
+        "_cls_doc": "関連するテストが実行されています",
+        "send_anyway": "📤 それでも送信する",
+        "cancel": "🚫 キャンセル",
+    }
+
+    strings_kr = {
+        "debugging_enabled": "✅ <b>디버깅이 활성화되었습니다</b>",
+        "debugging_disabled": "✅ <b>디버깅이 비활성화되었습니다</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>잘못된 시간입력되었습니다</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>봇이"
+            "일시 중지되었습니다</b> <code>{}</code> <b>초</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>텔레그램"
+            "속도:</b> <code>{}</code> <b>밀리 초</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>마지막 업데이트 이후 경과 시간:</b> {}"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>텔레그램 속도"
+            "텔레그램 서버를 시작하고 다른 외부 요인에 의해"
+            "당신의 사용자 봇의 설정과는 관련이 없습니다</i>"
+        ),
+        "confidential": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>시간:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>로그 레벨 </b><code>{0}</code><b>에는 기밀 정보가 포함될 수 있으므로"
+            "보안상의 이유로</b>\n<b>작성</b><code>.logs {0}"
+            "force_insecure</code><b>로그"
+            "경고</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>로그 레벨을 선택하세요</b>",
+        "_cmd_doc_dump": "메시지에 대한 정보를 표시합니다",
+        "_cmd_doc_logs": "<레벨> - 로그 파일을 보냅니다. 숨겨진 레벨은 알림되지 않습니다.",
+        "_cmd_doc_suspend": "<시간> - 봇을 일시 중지합니다",
+        "_cmd_doc_ping": "사용자 봇의 응답 능력을 확인합니다",
+        "_cls_doc": "관련된 테스트가 실행 중입니다",
+        "send_anyway": "📤 그래도 보내기",
+        "cancel": "🚫 취소",
+    }
+
+    strings_ar = {
+        "debugging_enabled": "✅ <b>تم تمكين التصحيح</b>",
+        "debugging_disabled": "✅ <b>تم تعطيل التصحيح</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>أدخلالوقت الصحيح</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>تم إيقاف"
+            "البوت</b> <code>{}</code> <b>ثوانٍ</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>سرعةتيليجرام:</b>"
+            " <code>{}</code> <b>مللي ثانية</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>مدة الوقت منذ آخر"
+            " تحديث:</b> {}"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>سرعة"
+            "تيليجرام ليست عبارة عن الوقت الذي يستغرقه البوت للرد على الرسائل"
+            "لكنها هي الوقت الذي يستغرقه البوت للرد على الرسائل الخاصة بك من"
+            "بدء تشغيل البوت وليس بسبب أي عوامل خارجية أخرى"
+            "مثل إعدادات البوت الخاص بك</i>"
+        ),
+        "confidential": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>الوقت:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>يحتوي مستوى السجلات </b><code>{0}</code><b>على معلومات"
+            "سرية ولذلك</b>\n<b>اكتب</b><code>.logs {0}"
+            "force_insecure</code><b>لإرسال السجلات"
+            "معلومات سرية</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>اختر مستوى السجلات</b>",
+        "_cmd_doc_dump": "عرض معلومات الرسالة",
+        "_cmd_doc_logs": (
+            "<مستوى> - إرسال ملفات السجلات. المستويات المخفية لا يتم إخطارك عنها."
+        ),
+        "_cmd_doc_suspend": "<وقت> - إيقاف البوت مؤقتًا",
+        "_cmd_doc_ping": "تحقق من سرعة البوت",
+        "_cls_doc": "تم تشغيل اختبارات ذات صلة",
+        "send_anyway": "📤 إرسالها على أية حال",
+        "cancel": "🚫 إلغاء",
+    }
+
+    strings_es = {
+        "debugging_enabled": "✅ <b>Depuración habilitada</b>",
+        "debugging_disabled": "✅ <b>Depuración deshabilitada</b>",
+        "suspend_invalid_time": (
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>Ingrese"
+            "el tiempo correcto</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot"
+            "suspendido</b> <code>{}</code> <b>segundos</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Velocidad"
+            "de Telegram:</b> <code>{}</code> <b>milisegundos</b>\n<emoji"
+            " document_id=5377371691078916778>😎</emoji> <b>Desde el último"
+            "actualización:</b> {}"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>La velocidad"
+            "de Telegram no es el tiempo que toma en responder el bot a los mensajes"
+            "pero es el tiempo que toma en responder a tus mensajes desde que"
+            "el bot se inició y no por cualquier otra razón externa"
+            "como la configuración de tu bot</i>"
+        ),
+        "confidential": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Tiempo:"
+            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
+            "InlineLogs</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>El nivel de registro </b><code>{0}</code><b>contiene"
+            "información confidencial y por lo tanto</b>\n<b>escribe</b><code>.logs {0}"
+            "force_insecure</code><b>para enviar los registros"
+            "información confidencial</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Elige el nivel de registro</b>",
+        "_cmd_doc_dump": "Mostrar información del mensaje",
+        "_cmd_doc_logs": (
+            "<nivel> - Envía archivos de registro. Los niveles ocultos no se"
+            " notificarán."
+        ),
+        "_cmd_doc_suspend": "<tiempo> - Suspende el bot temporalmente",
+        "_cmd_doc_ping": "Verifique la velocidad del bot",
+        "_cls_doc": "Se ejecutaron pruebas relacionadas",
+        "send_anyway": "📤 Enviar de todos modos",
+        "cancel": "🚫 Cancelar",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -453,6 +629,10 @@ class TestMod(loader.Module):
         tr_doc="Dökümünü göstermek için bir iletiyi yanıtlayın",
         hi_doc="किसी संदेश का उत्तर उसके डंप को दिखाने के लिए दें",
         uz_doc="Xabarning axlatini ko'rsatish uchun unga javob bering",
+        jp_doc="メッセージに返信してそのダンプを表示します",
+        kr_doc="메시지에 답장하여 그 덤프를 표시합니다",
+        ar_doc="أرسل رسالة لعرض نسخة منها",
+        es_doc="Responde a un mensaje para mostrar su volcado",
     )
     async def dump(self, message: Message):
         """Use in reply to get a dump of a message"""
@@ -523,6 +703,16 @@ class TestMod(loader.Module):
             "[मॉड्यूल] - डेवलपर्स के लिए: एक मॉड्यूल को डिबग मोड में खोलें और"
             " वास्तविक समय में इसके परिवर्तनों को लागू करें"
         ),
+        jp_doc="[モジュール] - 開発者向け：モジュールをデバッグモードで開き、変更をリアルタイムで適用します",
+        kr_doc="[모듈] - 개발자용: 모듈을 디버그 모드로 열고 실시간으로 변경을 적용합니다",
+        ar_doc=(
+            "[وحدة] - للمطورين: فتح وحدة في وضع تصحيح الأخطاء وتطبيق"
+            " التغييرات منه في الوقت الحقيقي"
+        ),
+        es_doc=(
+            "[módulo] - Para desarrolladores: abre un módulo en modo de depuración y"
+            " aplica los cambios de él en tiempo real"
+        ),
     )
     async def debugmod(self, message: Message):
         """[module] - For developers: Open module for debugging
@@ -583,6 +773,10 @@ class TestMod(loader.Module):
         uz_doc="<daraja> - Loglarni ko'rsatish",
         tr_doc="<seviye> - Günlükleri göster",
         hi_doc="<स्तर> - लॉग दिखाएं",
+        jp_doc="<レベル> - ログを表示します",
+        kr_doc="<레벨> - 로그 표시",
+        ar_doc="<مستوى> - إظهار السجلات",
+        es_doc="<nivel> - Mostrar registros",
     )
     async def logs(
         self,
@@ -791,6 +985,10 @@ class TestMod(loader.Module):
         tr_doc="<süre> - Botu N saniye boyunca durdur",
         uz_doc="<vaqt> - Botni N soniya davomida to'xtatish",
         hi_doc="<समय> - बॉट को N सेकंड तक ठहराएं",
+        jp_doc="<時間> - ボットをN秒間停止します",
+        kr_doc="<시간> - 봇을 N 초 동안 정지",
+        ar_doc="<الوقت> - تجميد البوت لمدة N ثانية",
+        es_doc="<tiempo> - Congela el bot durante N segundos",
     )
     async def suspend(self, message: Message):
         """<time> - Suspends the bot for N seconds"""
@@ -810,6 +1008,10 @@ class TestMod(loader.Module):
         tr_doc="Kullanıcı botunun yanıt hızını kontrol edin",
         uz_doc="Foydalanuvchi botining javob tezligini tekshiring",
         hi_doc="उपयोगकर्ता बॉट की प्रतिक्रिया गति की जांच करें",
+        jp_doc="ユーザーボットの応答速度を確認します",
+        kr_doc="사용자 봇의 응답 속도를 확인하십시오",
+        ar_doc="تحقق من سرعة استجابة بوت المستخدم",
+        es_doc="Comprueba la velocidad de respuesta del bot de usuario",
     )
     async def ping(self, message: Message):
         """Test your userbot ping"""

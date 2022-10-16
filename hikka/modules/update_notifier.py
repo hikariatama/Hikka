@@ -94,6 +94,54 @@ class UpdateNotifierMod(loader.Module):
         "ignore": "🚫 Yoksay",
     }
 
+    strings_jp = {
+        "update_required": (
+            "🌘 <b>Hikkaの更新があります！</b>\n新しいHikkaバージョンがリリースされました。\n🔮 <b>Hikka <s>{}</s> ->"
+            " {}</b>\n{}"
+        ),
+        "more": "\n<i><b>🎥 そして{}も...</b></i>",
+        "_cfg_doc_disable_notifications": "更新通知を無効にする",
+        "latest_disabled": "最新の更新に関する通知が抑制されました",
+        "update": "🔄 更新",
+        "ignore": "🚫 無視する",
+    }
+
+    strings_kr = {
+        "update_required": (
+            "🌘 <b>Hikka 업데이트가 있습니다!</b>\n새로운 Hikka 버전이 출시되었습니다.\n🔮 <b>Hikka <s>{}</s>"
+            " -> {}</b>\n{}"
+        ),
+        "more": "\n<i><b>🎥 그리고 {} 더...</b></i>",
+        "_cfg_doc_disable_notifications": "업데이트 알림 비활성화",
+        "latest_disabled": "최신 업데이트에 대한 알림이 비활성화되었습니다",
+        "update": "🔄 업데이트",
+        "ignore": "🚫 무시",
+    }
+
+    strings_ar = {
+        "update_required": (
+            "🌘 <b>يوجد تحديث لـ Hikka!</b>\n\nتم إصدار إصدار جديد من Hikka.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 و {} أكثر...</b></i>",
+        "_cfg_doc_disable_notifications": "تعطيل إشعارات التحديث",
+        "latest_disabled": "تم تعطيل إشعارات آخر تحديث",
+        "update": "🔄 تحديث",
+        "ignore": "🚫 تجاهل",
+    }
+
+    strings_es = {
+        "update_required": (
+            "🌘 <b>¡Actualización de Hikka disponible!</b>\n\nSe ha publicado una nueva"
+            " versión de Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 Y {} más...</b></i>",
+        "_cfg_doc_disable_notifications": "Desactivar notificaciones de actualización",
+        "latest_disabled": "Notificaciones de última actualización desactivadas",
+        "update": "🔄 Actualizar",
+        "ignore": "🚫 Ignorar",
+    }
+
     _notified = None
 
     def __init__(self):
