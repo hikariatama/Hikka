@@ -312,7 +312,7 @@ class InlineStuffMod(loader.Module):
         tr_doc="<kullanıcı adı> - İçe aktarma botunun kullanıcı adını değiştirin",
         hi_doc="<उपयोगकर्ता नाम> - इनलाइन बॉट का उपयोगकर्ता नाम बदलें",
         uz_doc="<foydalanuvchi nomi> - Bot foydalanuvchi nomini o'zgartiring",
-        jp_doc="<ユーザー名> - インラインボットのユーザー名を変更します",
+        ja_doc="<ユーザー名> - インラインボットのユーザー名を変更します",
         kr_doc="<사용자 이름> - 인라인 봇의 사용자 이름을 변경합니다",
         ar_doc="<اسم المستخدم> - تغيير اسم المستخدم للبوت الداخلي",
         es_doc="<nombre de usuario> - Cambia el nombre de usuario del bot de inline",

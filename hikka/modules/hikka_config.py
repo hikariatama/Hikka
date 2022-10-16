@@ -1518,7 +1518,7 @@ class HikkaConfigMod(loader.Module):
         tr_doc="Modülleri yapılandır",
         hi_doc="मॉड्यूल कॉन्फ़िगर करें",
         uz_doc="Modullarni sozlash",
-        jp_doc="モジュールを設定します",
+        ja_doc="モジュールを設定します",
         kr_doc="모듈 설정",
         ar_doc="تكوين الوحدات",
         es_doc="Configurar módulos",
@@ -1550,7 +1550,7 @@ class HikkaConfigMod(loader.Module):
         tr_doc="<modül> <ayar> <değer> - Modül için yapılandırma değerini ayarla",
         hi_doc="<मॉड्यूल> <सेटिंग> <मान> - मॉड्यूल के लिए कॉन्फ़िगरेशन मान सेट करें",
         uz_doc="<modul> <sozlash> <qiymat> - modul uchun sozlash qiymatini o'rnatish",
-        jp_doc="<モジュール> <設定> <値> - モジュールの設定値を設定します",
+        ja_doc="<モジュール> <設定> <値> - モジュールの設定値を設定します",
         kr_doc="<모듈> <설정> <값> - 모듈의 구성 값을 설정합니다",
         ar_doc="<وحدة> <إعداد> <قيمة> - تعيين قيمة التكوين للوحدة",
         es_doc=(

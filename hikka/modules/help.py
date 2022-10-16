@@ -456,7 +456,7 @@ class HelpMod(loader.Module):
             "<मॉड्यूल या मॉड्यूल्स> - मॉड्यूल(-स) को छिपाएँ\n*मॉड्यूल को अलग करने के"
             " लिए रिक्त स्थान बनाएँ"
         ),
-        jp_doc="<モジュールまたはモジュール> - ヘルプからモジュールを隠します\n*モジュールをスペースで区切ってください",
+        ja_doc="<モジュールまたはモジュール> - ヘルプからモジュールを隠します\n*モジュールをスペースで区切ってください",
         kr_doc="<모듈 또는 모듈> - 도움말에서 모듈을 숨깁니다\n*모듈을 공백으로 구분하십시오",
         ar_doc="<الوحدة أو الوحدات> - إخفاء وحدة(-ات) من المساعدة\n*فصل الوحدات بفراغ",
         es_doc=(
@@ -597,7 +597,7 @@ class HelpMod(loader.Module):
         tr_doc="[modül] [-f] - Yardımı göster",
         uz_doc="[modul] [-f] - Yordamni ko'rsatish",
         hi_doc="[मॉड्यूल] [-f] - मदद दिखाएं",
-        jp_doc="[モジュール] [-f] - ヘルプを表示します",
+        ja_doc="[モジュール] [-f] - ヘルプを表示します",
         kr_doc="[모듈] [-f] - 도움말 표시",
         ar_doc="[الوحدة] [-f] - إظهار المساعدة",
         es_doc="[módulo] [-f] - Mostrar ayuda",
@@ -771,7 +771,7 @@ class HelpMod(loader.Module):
         tr_doc="Hikka yardım sohbetinin bağlantısını göster",
         uz_doc="Hikka yordam sohbatining havolasini ko'rsatish",
         hi_doc="हिक्का सहायता चैट का लिंक दिखाएं",
-        jp_doc="ヒッカのヘルプチャットへのリンクを表示します",
+        ja_doc="ヒッカのヘルプチャットへのリンクを表示します",
         kr_doc="히카 도움말 채팅 링크를 표시합니다",
         ar_doc="إظهار رابط دردشة مساعدة هيكا",
         es_doc="Mostrar enlace al chat de ayuda de Hikka",

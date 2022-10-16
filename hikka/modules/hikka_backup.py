@@ -259,7 +259,7 @@ class HikkaBackupMod(loader.Module):
         tr_doc="<saat cinsinden zaman> - Yedekleme periyodunu ayarla",
         hi_doc="<घंटों में समय> - बैकअप अनुमति सेट करें",
         uz_doc="<soatda vaqt> - E'lon tartibini belgilash",
-        jp_doc="<時間> - バックアップ頻度を設定します",
+        ja_doc="<時間> - バックアップ頻度を設定します",
         kr_doc="<시간> - 백업 빈도 설정",
         ar_doc="<ساعات> - ضبط فترة النسخ الاحتياطي",
         es_doc="<horas> - Establecer la frecuencia de copia de seguridad",

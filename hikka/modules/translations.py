@@ -481,7 +481,7 @@ class Translations(loader.Module):
         tr_doc="[Diller] - Varsayılan dili değiştir",
         uz_doc="[til] - Standart tili o'zgartirish",
         hi_doc="[भाषाएं] - डिफ़ॉल्ट भाषा बदलें",
-        jp_doc="[言語] - デフォルトの言語を変更します",
+        ja_doc="[言語] - デフォルトの言語を変更します",
         kr_doc="[언어] - 기본 언어를 변경합니다",
         ar_doc="[اللغات] - تغيير اللغة الافتراضية",
         es_doc="[Idiomas] - Cambiar el idioma predeterminado",
@@ -535,7 +535,7 @@ class Translations(loader.Module):
             " Tashqi tarjima paketini o'zgartirish"
         ),
         hi_doc="[अनुवाद पैक का लिंक | खाली छोड़ दें] - बाहरी अनुवाद पैक बदलें",
-        jp_doc="[パッケージへのリンク | 空白で削除] - 外部翻訳パッケージを変更します",
+        ja_doc="[パッケージへのリンク | 空白で削除] - 外部翻訳パッケージを変更します",
         kr_doc="[패키지 링크 | 비워두면 삭제] - 외부 번역 패키지를 변경합니다",
         ar_doc="[رابط الحزمة | اتركه فارغا لحذفه] - تغيير حزمة الترجمة الخارجية",
         es_doc="[Enlace al paquete | vacío para eliminar] - Cambiar el paquete de",

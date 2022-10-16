@@ -629,7 +629,7 @@ class TestMod(loader.Module):
         tr_doc="Dökümünü göstermek için bir iletiyi yanıtlayın",
         hi_doc="किसी संदेश का उत्तर उसके डंप को दिखाने के लिए दें",
         uz_doc="Xabarning axlatini ko'rsatish uchun unga javob bering",
-        jp_doc="メッセージに返信してそのダンプを表示します",
+        ja_doc="メッセージに返信してそのダンプを表示します",
         kr_doc="메시지에 답장하여 그 덤프를 표시합니다",
         ar_doc="أرسل رسالة لعرض نسخة منها",
         es_doc="Responde a un mensaje para mostrar su volcado",
@@ -703,7 +703,7 @@ class TestMod(loader.Module):
             "[मॉड्यूल] - डेवलपर्स के लिए: एक मॉड्यूल को डिबग मोड में खोलें और"
             " वास्तविक समय में इसके परिवर्तनों को लागू करें"
         ),
-        jp_doc="[モジュール] - 開発者向け：モジュールをデバッグモードで開き、変更をリアルタイムで適用します",
+        ja_doc="[モジュール] - 開発者向け：モジュールをデバッグモードで開き、変更をリアルタイムで適用します",
         kr_doc="[모듈] - 개발자용: 모듈을 디버그 모드로 열고 실시간으로 변경을 적용합니다",
         ar_doc=(
             "[وحدة] - للمطورين: فتح وحدة في وضع تصحيح الأخطاء وتطبيق"
@@ -773,7 +773,7 @@ class TestMod(loader.Module):
         uz_doc="<daraja> - Loglarni ko'rsatish",
         tr_doc="<seviye> - Günlükleri göster",
         hi_doc="<स्तर> - लॉग दिखाएं",
-        jp_doc="<レベル> - ログを表示します",
+        ja_doc="<レベル> - ログを表示します",
         kr_doc="<레벨> - 로그 표시",
         ar_doc="<مستوى> - إظهار السجلات",
         es_doc="<nivel> - Mostrar registros",
@@ -985,7 +985,7 @@ class TestMod(loader.Module):
         tr_doc="<süre> - Botu N saniye boyunca durdur",
         uz_doc="<vaqt> - Botni N soniya davomida to'xtatish",
         hi_doc="<समय> - बॉट को N सेकंड तक ठहराएं",
-        jp_doc="<時間> - ボットをN秒間停止します",
+        ja_doc="<時間> - ボットをN秒間停止します",
         kr_doc="<시간> - 봇을 N 초 동안 정지",
         ar_doc="<الوقت> - تجميد البوت لمدة N ثانية",
         es_doc="<tiempo> - Congela el bot durante N segundos",
@@ -1008,7 +1008,7 @@ class TestMod(loader.Module):
         tr_doc="Kullanıcı botunun yanıt hızını kontrol edin",
         uz_doc="Foydalanuvchi botining javob tezligini tekshiring",
         hi_doc="उपयोगकर्ता बॉट की प्रतिक्रिया गति की जांच करें",
-        jp_doc="ユーザーボットの応答速度を確認します",
+        ja_doc="ユーザーボットの応答速度を確認します",
         kr_doc="사용자 봇의 응답 속도를 확인하십시오",
         ar_doc="تحقق من سرعة استجابة بوت المستخدم",
         es_doc="Comprueba la velocidad de respuesta del bot de usuario",
