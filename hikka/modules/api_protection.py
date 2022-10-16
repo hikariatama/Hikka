@@ -348,7 +348,7 @@ class APIRatelimiterMod(loader.Module):
         "btn_yes": "✅ Ha",
     }
 
-    strings_jp = {
+    strings_ja = {
         "warning": (
             "<emoji document_id=6319093650693293883>☣️</emoji>"
             " <b>警告！</b>\n\nこのアカウントの設定では、以下の制限が設定されています。\n\n"

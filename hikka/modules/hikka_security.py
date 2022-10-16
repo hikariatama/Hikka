@@ -139,7 +139,7 @@ class HikkaSecurityMod(loader.Module):
         "seconds": "सेकंड",
     }
 
-    service_strings_jp = {
+    service_strings_ja = {
         "for": "のために",
         "forever": "永遠に",
         "command": "コマンド",
@@ -803,7 +803,7 @@ class HikkaSecurityMod(loader.Module):
         **service_strings_uz,
     }
 
-    strings_jp = {
+    strings_ja = {
         "global": (
             "🔐 <b>このグループでは、グローバルなセキュリティ設定を変更できます。このグループで許可されない場合、他のグループでも許可されません！</b>"
         ),
@@ -876,7 +876,7 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>安全規則"
             " for <a href='{}'>{}</a> は削除されました</b>"
         ),
-        **service_strings_jp,
+        **service_strings_ja,
     }
 
     strings_kr = {

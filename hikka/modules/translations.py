@@ -302,7 +302,7 @@ class Translations(loader.Module):
         "button404": "यह बटन अब उपलब्ध नहीं है!",
     }
 
-    strings_jp = {
+    strings_ja = {
         "lang_saved": "{} <b>言語が保存されました！</b>",
         "pack_saved": (
             "<emoji document_id=5368324170671202286>👍</emoji> <b>翻訳パック が保存されました！</b>"
@@ -506,14 +506,14 @@ class Translations(loader.Module):
                     e,
                 )
 
-        fixmap = {"en": "gb", "hi": "in"}
+        lang2country = {"en": "gb", "hi": "in", "ja": "jp"}
 
         await utils.answer(
             message,
             self.strings("lang_saved").format(
                 "".join(
                     [
-                        utils.get_lang_flag(fixmap.get(lang, lang))
+                        utils.get_lang_flag(lang2country.get(lang, lang))
                         for lang in args.lower().split(" ")
                     ]
                 )

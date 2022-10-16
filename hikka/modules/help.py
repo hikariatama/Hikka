@@ -255,7 +255,7 @@ class HelpMod(loader.Module):
         ),
     }
 
-    strings_jp = {
+    strings_ja = {
         "bad_module": "<b>🚫 <b>モジュール</b> <code>{}</code> <b>見つかりませんでした</b>",
         "single_mod_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{}</b>:"

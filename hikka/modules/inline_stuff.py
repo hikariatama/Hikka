@@ -155,7 +155,7 @@ class InlineStuffMod(loader.Module):
         ),
     }
 
-    strings_jp = {
+    strings_ja = {
         "bot_username_invalid": (
             "<emoji document_id=5415905755406539934>🚫</emoji> <b>ボットのユーザー名が"
             "無効です。それは</b><code>bot</code><b>で終わり、少なくとも4文字でなければなりません</b>"

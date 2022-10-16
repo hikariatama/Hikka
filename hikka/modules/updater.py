@@ -381,7 +381,7 @@ class UpdaterMod(loader.Module):
         ),
     }
 
-    strings_jp = {
+    strings_ja = {
         "restarting": (
             "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} 再起動中...</b>"
         ),

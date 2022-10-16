@@ -224,7 +224,7 @@ class QuickstartMod(loader.Module):
         "language": "🇮🇳 हिंदी",
     }
 
-    strings_jp = {
+    strings_ja = {
         "help": """
 📼 <b>モジュールを検索してインストールするには @hikkamods_bot から検索してください。検索ワードを1つ入力してください。</b>
 
@@ -341,7 +341,7 @@ class QuickstartMod(loader.Module):
                     "callback": self._change_lang,
                     "args": (lang,),
                 }
-                for lang in ["ru", "en", "uz", "tr", "hi", "de", "jp", "kr", "ar", "es"]
+                for lang in ["ru", "en", "uz", "tr", "hi", "de", "ja", "kr", "ar", "es"]
             ],
             2,
         )

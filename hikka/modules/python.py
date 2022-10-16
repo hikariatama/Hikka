@@ -116,7 +116,7 @@ class PythonMod(loader.Module):
         "_cls_doc": "Python kodini ishga tushiradi",
     }
 
-    strings_jp = {
+    strings_ja = {
         "eval": (
             "<emoji document_id=5431376038628171216>🎬</emoji><b>"
             " コード:</b>\n<code>{}</code>\n<emoji"

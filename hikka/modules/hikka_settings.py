@@ -840,7 +840,7 @@ class HikkaSettingsMod(loader.Module):
         "enable_stats": "🚫 बेनामी आँकड़े अक्षम किए गए",
     }
 
-    strings_jp = {
+    strings_ja = {
         "watchers": (
             "<emoji document_id=5424885441100782420>👀</emoji> <b>視聴者:</b>\n\n<b>{}</b>"
         ),

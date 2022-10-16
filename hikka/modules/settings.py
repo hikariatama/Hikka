@@ -529,7 +529,7 @@ class CoreMod(loader.Module):
         ),
     }
 
-    strings_jp = {
+    strings_ja = {
         "too_many_args": (
             "<emoji document_id=5436162517686557387>🚫</emoji> <b>引数が多すぎます</b>"
         ),

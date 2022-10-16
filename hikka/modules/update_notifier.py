@@ -94,7 +94,7 @@ class UpdateNotifierMod(loader.Module):
         "ignore": "🚫 Yoksay",
     }
 
-    strings_jp = {
+    strings_ja = {
         "update_required": (
             "🌘 <b>Hikkaの更新があります！</b>\n新しいHikkaバージョンがリリースされました。\n🔮 <b>Hikka <s>{}</s> ->"
             " {}</b>\n{}"

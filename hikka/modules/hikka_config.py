@@ -382,7 +382,7 @@ class HikkaConfigMod(loader.Module):
         "back_btn": "👈 Geri",
     }
 
-    strings_jp = {
+    strings_ja = {
         "configuring_option": (
             "🎚 <b>モジュール </b><code>{}</code><b> オプション </b><code>{}</code>"
             "<b> を設定しています</b>\n<i>ℹ️ {}</i>\n\n<b>デフォルト: {}</b>\n\n<b>"

@@ -139,7 +139,7 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
-    strings_jp = {
+    strings_ja = {
         "period": (
             "⌚️ <b>Unit «ALPHA»</b> は自動的にバックアップを作成します。これらの設定は"
             " 後で変更できます。\n\nバックアップの頻度を選択してください"

@@ -1046,7 +1046,7 @@ class LoaderMod(loader.Module):
         ),
     }
 
-    strings_jp = {
+    strings_ja = {
         "repo_config_doc": "モジュール リポジトリへの URL",
         "avail_header": (
             "<emoji document_id=6321352876505434037>🎢</emoji><b>リポジトリからのモジュール</b>"

@@ -411,7 +411,7 @@ class TestMod(loader.Module):
         "cancel": "🚫 रद्द करें",
     }
 
-    strings_jp = {
+    strings_ja = {
         "debugging_enabled": "✅ <b>デバッグが有効になりました</b>",
         "debugging_disabled": "✅ <b>デバッグが無効になりました</b>",
         "suspend_invalid_time": (

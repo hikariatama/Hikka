@@ -267,7 +267,7 @@ class HikkaInfoMod(loader.Module):
         ),
     }
 
-    strings_jp = {
+    strings_ja = {
         "owner": "オーナー",
         "version": "バージョン",
         "build": "ビルド",
