@@ -926,7 +926,7 @@ class Union(Validator):
 
         for validator in validators:
             for key in doc:
-                doc[key] += f"- {case(validator.doc.get(key, validators.doc['en']))}\n"
+                doc[key] += f"- {case(validator.doc.get(key, validator.doc['en']))}\n"
 
         for key in doc:
             doc[key] = doc[key].strip()
