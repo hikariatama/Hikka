@@ -257,7 +257,7 @@ class HikkaInfoMod(loader.Module):
             " değiştirildi</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\Çok fazla"
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\\Çok fazla"
             " özellik barındıran Telegram kullanıcı botu, örneğin Çevrimiçi galeri,"
             " formlar, listeler ve animasyonlu emoji desteği gibi. Kullanıcı botu -"
             " Telegram hesabınızda çalışan bir yazılımdır. Bir sohbete bir komut"

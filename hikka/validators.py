@@ -384,7 +384,8 @@ class Series(Validator):
         max_len: typing.Optional[int] = None,
         fixed_len: typing.Optional[int] = None,
     ):
-        trans = lambda lang: validator.doc.get(lang, validator.doc["en"])
+        def trans(lang: str) -> str:
+            return validator.doc.get(lang, validator.doc["en"])
 
         _each_en = f" (each must be {trans('en')})" if validator is not None else ""
         _each_ru = (
@@ -928,8 +929,8 @@ class Union(Validator):
             for key in doc:
                 doc[key] += f"- {case(validator.doc.get(key, validator.doc['en']))}\n"
 
-        for key in doc:
-            doc[key] = doc[key].strip()
+        for key, value in doc.items():
+            doc[key] = value.strip()
 
         super().__init__(
             functools.partial(self._validate, validators=validators),

@@ -354,7 +354,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "no_cmd": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Geben Sie einen Befehl"
-            " anwas NoNick aktivieren/\deaktivieren sollte</b>"
+            " anwas NoNick aktivieren/\\deaktivieren sollte</b>"
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick-Status für"
@@ -489,7 +489,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "no_cmd": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Bir komut belirtin"
-            "hangisi NoNick'i etkinleştirmeli/\devre dışı bırakmalıdır</b>"
+            "hangisi NoNick'i etkinleştirmeli/\\devre dışı bırakmalıdır</b>"
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick durumu için"
@@ -739,7 +739,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "no_cmd": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>इसके लिए एक आदेश"
-            " निर्दिष्ट करेंजो NoNick को सक्षम/\अक्षम करना चाहिए</b>"
+            " निर्दिष्ट करेंजो NoNick को सक्षम/\\अक्षम करना चाहिए</b>"
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>के लिए कोई निक स्थिति"
@@ -864,7 +864,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "no_cmd": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>コマンド"
-            " NoNick を有効/\無効にするユーザーを指定</b>"
+            " NoNick を有効/\\無効にするユーザーを指定</b>"
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> のニックネームはありません <b>"
@@ -976,7 +976,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "no_cmd": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>명령어"
-            " 누가 NoNick을 활성화/\비활성화할지 지정</b>"
+            " 누가 NoNick을 활성화/\\비활성화할지 지정</b>"
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>에 대한 닉네임 위치가 없습니다."
@@ -1094,7 +1094,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "no_cmd": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b> أمر خاص بها"
-            "تحديد من يجب عليه تمكين / \ تعطيل NoNick </b>"
+            "تحديد من يجب عليه تمكين / \\ تعطيل NoNick </b>"
         ),
         "cmd_nn": (
             "لا ي, جد م, ضع لقب لـ <emoji document_id=5469791106591890404>🪄</emoji> <b>"
