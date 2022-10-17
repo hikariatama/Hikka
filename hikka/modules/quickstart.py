@@ -134,15 +134,21 @@ class QuickstartMod(loader.Module):
 
     strings_uz = {
         "base": """🌘🇺🇿 <b>Salom.</b> <b>Hikka</b> Sizning yuzer botingiz sozlandi.
+
 ❓ <b>Yordam kerakmi?</b> Siz bizning qollab quvvatlash guruhimizga qo'shilishingiz mumkin. guruhimzda  <b>barcha savollaringizga javob olasiz</b>.
+
 📼 <b>Modullar @hikkamods_bot ushbu botimiz orqali siz har qanday yuzerbotga tegishli bo'lgan modullarni o'rnatishingiz mumkun botga kalit so'zni yuboring va  ⛩ O'rnatish tugmasini bosing</b>
+
 📣 <b>Homiylar tomonidan yaratilgan modullar kanalini ko'rish: <a href="https://t.me/hikka_ub/126">kanalni ko'rish</a></b>
+
 💁‍♀️ <b>Tez ishga tushurish:</b>
+
 1️⃣ <b>Modullar royhatini ko'rish uchun </b><code>.help buyrug'ini</code> <b>yozing</b>
 2️⃣ <b>Modul haqida ma'lumot olish uchun </b><code>.help &lt;Modul nomi/buyruq&gt;</code> <b>yozing</b>
 3️⃣ <b>Modulni havola orqali o'rnatish uchun </b><code>.dlmod &lt;Link&gt;</code> <b>yozing</b>
 4️⃣ <b>Modulni fayl orqali yuklash uchun </b><code>.loadmod</code> <b>faylga javoban yozing</b>
 5️⃣ <b>Modulni olib tashlash uchun </b><code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>
+
 💡 <b>Hikka Friendly-Telegram ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>
 """,
         "okteto": (
@@ -163,15 +169,21 @@ class QuickstartMod(loader.Module):
 
     strings_tr = {
         "base": """🌘🇹🇷 <b>Merhaba.</b> <b>Hikka</b> kullanıcı botunuz kuruldu.
+
 ❓ <b>Yardıma mı ihtiyacınız var?</b> Yardım grubumuza katılabilirsin. Herkese <b>yardım ediyoruz</b>.
+
 📼 <b>Modülleri @hikkamods_bot ile arayabilir ve kurabilirsiniz. Sadece anahtar kelimeleri girin ve istediğiniz modülün ⛩ Kur butonuna basın</b>
+
 📣 <b>Topluluk tarafından oluşturulan modül kanalları görüntüleyin: <a href="https://t.me/hikka_ub/126">göster</a></b>
+
 💁‍♀️ <b>Hızlı başlangıç:</b>
+
 1️⃣ <b>Modüller listesini görmek için </b><code>.help</code> <b>yazın</b>
 2️⃣ <b>Modül hakkında bilgi almak için </b><code>.help &lt;Modul adı/Komut&gt;</code> <b>yazın</b>
 3️⃣ <b>Bir bağlantıdan modül yüklemek için </b><code>.dlmod &lt;Link&gt;</code> <b>yazın</b>
 4️⃣ <b>Bir modülü bir dosyadan yüklemek için </b><code>.loadmod</code> <b>bir dosyanın yanıtını yazın</b>
 5️⃣ <b>Bir modülü kaldırmak için </b><code>.unloadmod &lt;Modul adı&gt;</code> <b>yazın</b>
+
 💡 <b>Hikka Friendly-Telegram ve GeekTG modüllerini de dahil olmak üzere kendi modüllerini destekler.</b>
 """,
         "okteto": (
@@ -209,10 +221,14 @@ class QuickstartMod(loader.Module):
 💡 <b>अपने मॉड्यूल को समर्थित करने के लिए, Hikka Friendly-Telegram और GeekTG मॉड्यूल भी शामिल हैं.</b>
 """,
         "okteto": (
-            "☁️ <b>आपका उपयोगकर्ता बॉट Okteto पर स्थापित किया गया है</b>. आपको"
-            " @WebpageBot से संदेश प्राप्त होते ही आपका उपयोगकर्ता बॉट <b>अवरोधित कर"
-            " दिया जाएगा</b>. अगले महीने, https://railway.app पर जाएं और इसे फिर से"
-            " शुरू करें.</b>"
+            "☁️ <b>आपका उपयोगकर्ता बॉट Okteto पर बनाया गया था</b>। @WebpageBot से संदेश"
+            "आप करेंगे। उन्हें ब्लॉक न करें।"
+        ),
+        "railway": (
+            "🚂 <b>आपका उपयोगकर्ता बॉट रेलवे में स्थापित किया गया था</b>। यह मंच"
+            " <b>मासिक है केवल 500 घंटे निःशुल्क प्रदान करता है</b>। एक बार जब आप सीमा"
+            " पार कर लेते हैं, आपका उपयोगकर्ता बॉट <b>रोका गया</b> है। अगले महीने,"
+            " https://railway.appआपको अपने बॉट को से पुनः आरंभ करने की आवश्यकता है.</b>"
         ),
         "language_saved": "🇮🇳 भाषा सहेजा गया!",
         "language": "🇮🇳 हिंदी",
@@ -236,9 +252,14 @@ class QuickstartMod(loader.Module):
 💡 <b>モジュールをサポートするには、Hikka Friendly-Telegram と GeekTG モジュールも含まれています。</b>
 """,
         "okteto": (
-            "☁️ <b>あなたのユーザーボットは、Okteto にインストールされています</b>. あなたは"
-            " @WebpageBot からメッセージを受け取ると、あなたのユーザーボットが <b>ブロックされます</b>. 次の月に、"
-            " https://railway.app にアクセスして、再度開始してください.</b>"
+            "☁️ <b>あなたのユーザーボットは Okteto で作成されました</b>。 @WebpageBot にメッセージを送信します。"
+            "ブロックしないでください。"
+        ),
+        "railway": (
+            "🚂 <b>あなたのユーザーボットはレールウェイで作成されました</b>。 このプラットフォームは"
+            " <b>月間で無料で500時間のみ提供されます</b>。 一度上限に達すると、"
+            "あなたのユーザーボットは <b>ブロックされます</b>。 次の月に、"
+            " https://railway.app あなたのボットを再開する必要があります。</b>"
         ),
         "language_saved": "🇯🇵 言語が保存されました!",
         "language": "🇯🇵 日本語",
@@ -262,9 +283,13 @@ class QuickstartMod(loader.Module):
 💡 <b>모듈을 지원하려면 Hikka Friendly-Telegram 및 GeekTG 모듈도 포함됩니다.</b>
 """,
         "okteto": (
-            "☁️ <b>사용자 봇은 Okteto에 설치되었습니다</b>.  메시지를받으면"
-            " @WebpageBot 당신의 사용자 봇은 <b>차단됩니다</b>. 다음 달에,"
-            " https://railway.app 에 액세스하고 다시 시작하십시오.</b>"
+            "☁️ <b>사용자 봇은 Okteto에서 만들어졌습니다</b> @WebpageBot 에 메시지를 보내십시오.차단하지 마십시오."
+        ),
+        "railway": (
+            "🚂 <b>사용자 봇은 레일웨이에서 만들어졌습니다</b> 이 플랫폼은"
+            " <b>월간으로 무료로 500 시간만 제공됩니다</b> 한 번 제한에 도달하면,"
+            "사용자 봇은 <b>차단됩니다</b> 다음 달에,"
+            " https://railway.app 사용자 봇을 다시 시작해야합니다.</b>"
         ),
         "language_saved": "🇰🇷 언어가 저장되었습니다!",
         "language": "🇰🇷 한국어",
@@ -288,9 +313,14 @@ class QuickstartMod(loader.Module):
 💡 <b>لدعم الوحدات، يتضمن Hikka Friendly-Telegram و GeekTG أيضًا.</b>
 """,
         "okteto": (
-            "☁️ <b>البوت المستخدم تم تثبيته على Okteto</b>. عند استلامك"
-            " @WebpageBot سيتم حظر البوت المستخدم <b>من البوتات</b>. في الشهر المقبل،"
-            " انتقل إلى https://railway.app وابدأ من جديد.</b>"
+            "☁️ <b>تم إنشاء بوت المستخدم على Okteto</b> ارسل رسالة إلى @WebpageBot ولا"
+            " تحظره."
+        ),
+        "railway": (
+            "🚂 <b>تم إنشاء بوت المستخدم على Railway</b> هذه المنصة تقدم"
+            " <b>500 ساعة مجانية شهريًا</b> بمجرد الوصول إلى الحد الأقصى،"
+            "سيتم حظر بوت المستخدم <b>حتى الشهر القادم</b> يرجى إعادة تشغيل"
+            " <b>بوت المستخدم في https://railway.app</b>"
         ),
         "language_saved": "🇸🇦 تم حفظ اللغة!",
         "language": "🇸🇦 العربية",
@@ -314,9 +344,14 @@ class QuickstartMod(loader.Module):
 💡 <b>Para admitir módulos, también incluye Hikka Friendly-Telegram y GeekTG.</b>
 """,
         "okteto": (
-            "☁️ <b>El bot de usuario se ha instalado en Okteto</b>. Cuando lo reciba"
-            " @WebpageBot su bot de usuario será <b>bloqueado por bots</b>. El mes que"
-            " viene, vaya a https://railway.app y comience de nuevo.</b>"
+            "☁️ <b>Se ha creado el bot de usuario en Okteto</b> envíe un mensaje a"
+            " @WebpageBot y no lo bloquee."
+        ),
+        "railway": (
+            "🚂 <b>Se ha creado el bot de usuario en Railway</b> esta plataforma ofrece"
+            " <b>500 horas gratis al mes</b> una vez que llegue al límite, el <b>bot de"
+            " usuario será bloqueado hasta el próximo mes</b> por favor, reinicie <b>el"
+            " bot de usuario en https://railway.app</b>"
         ),
         "language_saved": "🇪🇸 ¡El idioma se ha guardado!",
         "language": "🇪🇸 Español",
