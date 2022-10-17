@@ -591,60 +591,61 @@ class String(Validator):
                 "ar": f"سلسلة طول {length}",
                 "es": f"cadena de longitud {length}",
             }
+        elif min_len is None:
+            doc = (
+                {
+                    "en": "string",
+                    "ru": "строкой",
+                    "de": "Zeichenkette",
+                    "tr": "dize",
+                    "hi": "तारीख",
+                    "uz": "satr",
+                    "ja": "文字列",
+                    "kr": "문자열",
+                    "ar": "سلسلة",
+                    "es": "cadena",
+                }
+                if max_len is None
+                else {
+                    "en": f"string of length up to {max_len}",
+                    "ru": f"строкой не более чем из {max_len} символа(-ов)",
+                    "de": f"Zeichenkette mit Länge bis zu {max_len}",
+                    "tr": f"{max_len} karakter uzunluğunda dize",
+                    "hi": f"{max_len} अक्षर की लंबाई की तारीख",
+                    "uz": f"{max_len} ta belgi uzunlig'ida satr",
+                    "ja": f"{max_len} 文字の長さの文字列",
+                    "kr": f"{max_len} 글자 길이의 문자열",
+                    "ar": f"سلسلة طول {max_len}",
+                    "es": f"cadena de longitud {max_len}",
+                }
+            )
+
+        elif max_len is not None:
+            doc = {
+                "en": f"string of length from {min_len} to {max_len}",
+                "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
+                "de": f"Zeichenkette mit Länge von {min_len} bis {max_len}",
+                "tr": f"{min_len}-{max_len} karakter uzunluğunda dize",
+                "hi": f"{min_len}-{max_len} अक्षर की लंबाई की तारीख",
+                "uz": f"{min_len}-{max_len} ta belgi uzunlig'ida satr",
+                "ja": f"{min_len}-{max_len} 文字の長さの文字列",
+                "kr": f"{min_len}-{max_len} 글자 길이의 문자열",
+                "ar": f"سلسلة طول {min_len}-{max_len}",
+                "es": f"cadena de longitud {min_len}-{max_len}",
+            }
         else:
-            if min_len is None:
-                if max_len is None:
-                    doc = {
-                        "en": "string",
-                        "ru": "строкой",
-                        "de": "Zeichenkette",
-                        "tr": "dize",
-                        "hi": "तारीख",
-                        "uz": "satr",
-                        "ja": "文字列",
-                        "kr": "문자열",
-                        "ar": "سلسلة",
-                        "es": "cadena",
-                    }
-                else:
-                    doc = {
-                        "en": f"string of length up to {max_len}",
-                        "ru": f"строкой не более чем из {max_len} символа(-ов)",
-                        "de": f"Zeichenkette mit Länge bis zu {max_len}",
-                        "tr": f"{max_len} karakter uzunluğunda dize",
-                        "hi": f"{max_len} अक्षर की लंबाई की तारीख",
-                        "uz": f"{max_len} ta belgi uzunlig'ida satr",
-                        "ja": f"{max_len} 文字の長さの文字列",
-                        "kr": f"{max_len} 글자 길이의 문자열",
-                        "ar": f"سلسلة طول {max_len}",
-                        "es": f"cadena de longitud {max_len}",
-                    }
-            elif max_len is not None:
-                doc = {
-                    "en": f"string of length from {min_len} to {max_len}",
-                    "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
-                    "de": f"Zeichenkette mit Länge von {min_len} bis {max_len}",
-                    "tr": f"{min_len}-{max_len} karakter uzunluğunda dize",
-                    "hi": f"{min_len}-{max_len} अक्षर की लंबाई की तारीख",
-                    "uz": f"{min_len}-{max_len} ta belgi uzunlig'ida satr",
-                    "ja": f"{min_len}-{max_len} 文字の長さの文字列",
-                    "kr": f"{min_len}-{max_len} 글자 길이의 문자열",
-                    "ar": f"سلسلة طول {min_len}-{max_len}",
-                    "es": f"cadena de longitud {min_len}-{max_len}",
-                }
-            else:
-                doc = {
-                    "en": f"string of length at least {min_len}",
-                    "ru": f"строкой не менее чем из {min_len} символа(-ов)",
-                    "de": f"Zeichenkette mit Länge mindestens {min_len}",
-                    "tr": f"{min_len} karakter uzunluğunda dize",
-                    "hi": f"{min_len} अक्षर की लंबाई की तारीख",
-                    "uz": f"{min_len} ta belgi uzunlig'ida satr",
-                    "ja": f"{min_len} 文字の長さの文字列",
-                    "kr": f"{min_len} 글자 길이의 문자열",
-                    "ar": f"سلسلة طول {min_len}",
-                    "es": f"cadena de longitud {min_len}",
-                }
+            doc = {
+                "en": f"string of length at least {min_len}",
+                "ru": f"строкой не менее чем из {min_len} символа(-ов)",
+                "de": f"Zeichenkette mit Länge mindestens {min_len}",
+                "tr": f"{min_len} karakter uzunluğunda dize",
+                "hi": f"{min_len} अक्षर की लंबाई की तारीख",
+                "uz": f"{min_len} ta belgi uzunlig'ida satr",
+                "ja": f"{min_len} 文字の長さの文字列",
+                "kr": f"{min_len} 글자 길이의 문자열",
+                "ar": f"سلسلة طول {min_len}",
+                "es": f"cadena de longitud {min_len}",
+            }
 
         super().__init__(
             functools.partial(
@@ -729,11 +730,7 @@ class RegExp(Validator):
                 "es": f"cadena que coincide con el patrón «{regex}»",
             }
         else:
-            if isinstance(description, str):
-                doc = {"en": description}
-            else:
-                doc = description
-
+            doc = {"en": description} if isinstance(description, str) else description
         super().__init__(
             functools.partial(self._validate, regex=regex, flags=flags),
             doc,
