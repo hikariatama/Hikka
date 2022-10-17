@@ -507,7 +507,7 @@ class HikkaInfoMod(loader.Module):
                 *map(
                     lambda x: utils.remove_html(x) if inline else x,
                     (
-                        utils.get_platform_emoji(self._client)
+                        utils.get_platform_emoji()
                         if self._client.hikka_me.premium and not inline
                         else "🌘 Hikka",
                         "<emoji document_id=5373141891321699086>😎</emoji>",
