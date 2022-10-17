@@ -506,7 +506,7 @@ class Translations(loader.Module):
                     e,
                 )
 
-        lang2country = {"en": "gb", "hi": "in", "ja": "jp"}
+        lang2country = {"en": "gb", "hi": "in", "ja": "jp", "ar": "sa"}
 
         await utils.answer(
             message,

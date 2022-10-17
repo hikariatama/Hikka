@@ -11,6 +11,7 @@ import inspect
 import logging
 
 from telethon.tl.types import Message
+from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import loader, utils
 
@@ -784,10 +785,10 @@ class HelpMod(loader.Module):
         await utils.answer(
             message,
             self.strings("support").format(
-                '<emoji document_id="5192765204898783881">🌘</emoji><emoji'
-                ' document_id="5195311729663286630">🌘</emoji><emoji'
-                ' document_id="5195045669324201904">🌘</emoji>'
-                if self._client.hikka_me.premium
-                else "🌘",
+                (
+                    utils.get_platform_emoji(self._client)
+                    if self._client.hikka_me.premium and CUSTOM_EMOJIS
+                    else "🌘"
+                )
             ),
         )

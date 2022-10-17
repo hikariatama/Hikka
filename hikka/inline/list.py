@@ -187,7 +187,7 @@ class List(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji()
+                        utils.get_platform_emoji(self._client)
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )

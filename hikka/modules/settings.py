@@ -832,7 +832,7 @@ class CoreMod(loader.Module):
             message,
             self.strings("hikka").format(
                 (
-                    utils.get_platform_emoji()
+                    utils.get_platform_emoji(self._client)
                     + (
                         "<emoji document_id=5192756799647785066>✌️</emoji><emoji"
                         " document_id=5193117564015747203>✌️</emoji><emoji"
