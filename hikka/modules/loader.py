@@ -566,51 +566,52 @@ class LoaderMod(loader.Module):
             "<emoji document_id=6323332130579416910>✅</emoji><b> Ön ayar yüklendi</b>"
         ),
         "no_module": (
-            "<emoji document_id=53752013968596607943>🚫</emoji><b> Modül mevcut değil"
-            " depoda.</b>"
+            "<emoji document_id=53752013968596607943>🚫</emoji><b> Modül depoda mevcut"
+            " değil.</b>"
         ),
         "no_file": (
             "<emoji document_id=53752013968596607943>🚫</emoji><b> Dosya bulunamadı</b>"
         ),
         "provide_module": "<b>⚠️ Yüklenecek bir modül sağlayın</b>",
         "bad_unicode": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> Geçersiz Unicode"
-            " modülde biçimlendirme</b>"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Modülde geçersiz"
+            " Unicode biçimlendirmesi</b>"
         ),
         "load_failed": (
             "<emoji document_id=53752013968596607943>🚫</emoji><b> Yükleme başarısız"
-            " oldu. Bkz. ayrıntılar için günlükler</b>"
+            " oldu. Ayrıntılar için kayıtlara bakınız</b>"
         ),
         "loaded": (
-            "<emoji document_id=5188377234380954537>🌘</emoji><b> Modülü"
-            " </b><code>{}</code>{}<b> yüklendi {}</b>{}{}{}{}{}{}"
+            "<emoji document_id=5188377234380954537>🌘</emoji><b>"
+            " </b> <code>{}</code>{}<b> isimli modül yüklendi {}</b>{}{}{}{}{}{}"
         ),
-        "no_class": "<b>Hangi sınıfın kaldırılması gerekiyor?</b>",
+        "no_class": "<b>Hangi modülün kaldırılması gerekiyor?</b>",
         "unloaded": (
-            "<emoji document_id=546965497330847699>💣</emoji><b> Modül {}"
-            " boşaltıldı.</b>"
+            "<emoji document_id=546965497330847699>💣</emoji><b>  {}"
+            " isimli modül kaldırıldı.</b>"
         ),
         "not_unloaded": (
-            "<emoji document_id=53752013968596607943>🚫</emoji><b> Modül yok"
-            " boşaltıldı.</b>"
+            "<emoji document_id=53752013968596607943>🚫</emoji><b> Modül "
+            " kaldırılamadı.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> Gereksinimler"
-            " yükleme başarısız oldu</b>"
+            "<emoji document_id=5375201396859607943>🚫</emoji><b> Gereksinimlerin"
+            " yüklemesi başarısız oldu</b>"
         ),
         "requirements_failed_termux": (
-            "<emoji document_id=5386399931378440814>🕶</emoji> <b>Gereksinimler"
-            " kurulum başarısız oldu</b>\n<b>En yaygın neden Termux'un çalışmamasıdır"
-            " birçok kütüphaneyi destekler. Hata olarak bildirme, bu çözülemez.</b>"
+            "<emoji document_id=5386399931378440814>🕶</emoji> <b>Gereksinimlerin"
+            " kurulumu başarısız oldu</b>\n<b>Bu hatanın en yaygın nedeni Termux'un"
+            " birçok kütüphaneyi desteklememesidir. Lütfen bu hatayı bildirme,"
+            " çözülmesi imkansız.</b>"
         ),
         "requirements_installing": (
-            "<emoji document_id=5445284980978621387>🚀</emoji><b> Yükleniyor"
-            " gereksinimler:\n\n{}</b>"
+            "<emoji document_id=5445284980978621387>🚀</emoji><b> Gereksinimler"
+            " yükleniyor:\n\n{}</b>"
         ),
         "requirements_restart": (
             "<emoji document_id=5445284980978621387>🚀</emoji><b> Gereksinimler"
-            " yüklendi, ancak </b><code>{}</code><b> için yeniden başlatma gerekiyor"
-            "uygula</b>"
+            " yüklendi, ancak </b><code>{}</code><b> uygulanabilmesi için yeniden"
+            " başlatma gerekiyor</b>"
         ),
         "all_modules_deleted": (
             "<emoji document_id=6323332130579416910>✅</emoji><b> Tüm modüller"
@@ -621,18 +622,19 @@ class LoaderMod(loader.Module):
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Doküman yok",
         "inline_init_failed": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül gerektirir"
-            " Hikka satır içi özelliği ve InlineManager'ın başlatılması"
-            " başarısız</b>\n<i>Lütfen eski botlarınızdan birini @BotFather'dan"
-            " kaldırın ve bu modülü yüklemek için userbot'u yeniden başlatın</i>"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül Hikka satır"
+            " içi özelliği gerektiriyor fakat InlineManager'ın yüklenirken hata"
+            " verdi</b>\n<i>Lütfen eski botlarınızdan birini @BotFather'dan kaldırın ve"
+            " bu modülü yüklemek için kullanıcı botunu yeniden başlatın</i>"
         ),
         "version_incompatible": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül gerektirir"
-            " Hikka {}+\nLütfen, </b><code>.update</code> ile güncelleyin"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül Hikka {}"
+            " sürümünü gerektirmektedir.+\nLütfen, </b><code>.update</code> kodu ile"
+            " Hikka'yı güncelleyin"
         ),
         "ffmpeg_required": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül gerektirir"
-            "Yüklü olmayan FFMPEG</b>"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül yüklü"
+            " olmayan.FFMPEG kütüphanesini gerektirmektedir</b>"
         ),
         "developer": (
             "\n\n<emoji document_id=5431376038628171216>👨‍💻</emoji> <b>Geliştirici:"
@@ -643,13 +645,13 @@ class LoaderMod(loader.Module):
             " </b>\n{}"
         ),
         "module_fs": (
-            "💿 <b>Bu modülü dosya sistemine kaydetmek ister misiniz?"
-            " yeniden başlattıktan sonra kaldırıldı mı?</b>"
+            "💿 <b>Bu modülü dosya sistemine kaydetmek (FS) ister misiniz?"
+            " kaydederseniz yeniden başlattığınızda kaldırılmayacaktır.</b>"
         ),
         "save": "💿 Kaydet",
         "no_save": "🚫 Kaydetme",
-        "save_for_all": "💽 Her zaman fs'ye kaydet",
-        "never_save": "🚫 Asla fs'ye kaydetme",
+        "save_for_all": "💽 Her zaman FS'ye kaydet",
+        "never_save": "🚫 Asla FS'ye kaydetme",
         "will_save_fs": (
             "💽 Artık .loadmod ile yüklenen tüm modüller dosya sistemine kaydedilecek"
         ),
@@ -660,8 +662,8 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>Modülleri indirmek için `blob` bağlantılarını kullanmayın. Geçiş"
-            " yapmayı düşünün 'ham' yerine</b>"
+            "\n🚸 <b>Modülleri indirmek için `blob` bağlantılarını kullanmayın."
+            " Onun yerine 'raw' kullanabilirsiniz</b>"
         ),
         "suggest_subscribe": (
             "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>Bu modül {}"
@@ -678,36 +680,36 @@ class LoaderMod(loader.Module):
         "clearmodules": "🗑 Modülleri temizle",
         "cancel": "🚫 İptal",
         "overwrite_module": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül çekirdeği"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül, çekirdeği"
             " geçersiz kılmaya çalıştı (</b><code>{}</code><b>)</b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> Hata olarak"
-            " bildirmeyin.Çekirdek modüllerin bazılarıyla değiştirilmesini önlemek için"
-            " bir güvenlik önlemi önemsiz</i>"
+            " document_id=5472146462362048818>💡</emoji><i> Lütfen bunu hata olarak"
+            " bildirmeyin. Bu, çekirdek modüllerin değiştirilmesini önlemek için"
+            " bir güvenlik önlemidir</i>"
         ),
         "overwrite_command": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modülçekirdek"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Bu modül, çekirdek"
             " komutu geçersiz kılmaya çalıştı (</b><code>{}{}</code><b>)</b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> Hata olarak"
-            " bildirmeyin.Çekirdek modüllerin komutlarının değiştirilmesini önlemek"
-            " için bir güvenlik önlemidir biraz önemsiz</i>"
+            " document_id=5472146462362048818>💡</emoji><i> Lütfen bunu hata olarak"
+            " bildirmeyin. Bu, Çekirdek modüllerin komutlarının değiştirilmesini"
+            " önlemek için bir güvenlik önlemidir.</i>"
         ),
         "unload_core": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Yükleyemezsiniz"
-            " çekirdek modül </b><code>{}</code><b></b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> Hata olarak"
-            " bildirmeyin.Çekirdek modüllerin bazılarıyla değiştirilmesini önlemek için"
-            " bir güvenlik önlemi önemsiz</i>"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Çekirdek modülleri"
+            " kaldıramazsınız </b><code>{}</code><b></b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> lütfen bunu hata olarak"
+            " bildirmeyin. Bu, Çekirdek modüllerin  değiştirilmesini önlemek için"
+            " bir güvenlik önlemidir.</i>"
         ),
         "cannot_unload_lib": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Yükleyemezsiniz"
-            "kütüphane</b>"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Kütüphaneyi"
+            " kaldıramazsınız</b>"
         ),
         "wait_channel_approve": (
             "<emoji document_id=5469741319330996757>💫</emoji> <b>Modül"
             " </b><code>{}</code><b> kanalına katılmak için izin istiyor <a"
             ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
-            ' document_id="5467666648263564704">❓</emoji> Sebep: {}</b>\n\n<i>Bekliyor'
-            ' <a href="https://t.me/{}">onay</a>...</i> için'
+            ' document_id="5467666648263564704">❓</emoji> Sebep: {}</b>\n\n<i>Onay'
+            ' <a href="https://t.me/{}">bekliyor</a>...</i>'
         ),
     }
 

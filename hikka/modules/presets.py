@@ -222,28 +222,26 @@ class Presets(loader.Module):
 
     strings_tr = {
         "_fun_title": "🪩 Eğlence Modülleri",
-        "_fun_desc": (
-            "Eğlence modülleri — Animasyonlar, spam, oyunlar, ve daha fazlası."
-        ),
+        "_fun_desc": "Eğlence modülleri — Animasyonlar, spam, oyunlar, vb.",
         "_chat_title": "👥 Sohbet Yönetimi",
         "_chat_desc": (
             "Sohbetinizi yönetmenize yardımcı olacak bir modül koleksiyonu —"
-            " filtreler, notlar, ses tanıma, ve daha fazlası."
+            " filtreler, notlar, ses tanıma, vb."
         ),
         "_service_title": "⚙️ Faydalı Modüller",
         "_service_desc": (
-            "Gerçekten faydalı modüller — hesap yönetimi, kısaltma servisi,"
-            " arama motoru, ve daha fazlası."
+            "Gerçekten faydalı modüller — hesap yönetimi, URL kısaltma servisi,"
+            " arama motoru, vb."
         ),
         "_downloaders_title": "📥 İndirme Modülleri",
         "_downloaders_desc": (
             "İnternetten dosyaları indirmenize yardımcı olacak bir modül koleksiyonu —"
-            " YouTube, TikTok, Instagram, Spotify, VK Müzik, ve daha fazlası."
+            " YouTube, TikTok, Instagram, Spotify, VK Müzik, vb."
         ),
         "welcome": (
-            "👋 <b>Merhaba! Kanallardaki sonsuz modül listesinden sıkıldın mı? Birkaç"
-            " hazır koleksiyon sunabilirim. Bu menüyü tekrar çağırmak istersen,"
-            " /presets komutunu gönder</b>"
+            "👋 <b>Merhaba! Kanallardaki sonsuz modül listesinden sıkıldın mı? Sana"
+            " birkaç hazır koleksiyon sunabilirim. Bu menüyü tekrar görüntülemek"
+            " istersen, /presets komutunu kullanabilirsin</b>"
         ),
         "preset": (
             "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>Bu koleksiyonda bulunan"
@@ -264,7 +262,7 @@ class Presets(loader.Module):
             "<emoji document_id=5436040291507247633>🎉</emoji> <b>Koleksiyon"
             " </b><code>{}</code><b> kuruldu!</b>"
         ),
-        "already_installed": "✅ [Kurulu]",
+        "already_installed": "✅ [Zaten Kurulu]",
     }
 
     strings_hi = {

@@ -44,7 +44,7 @@ class HelpMod(loader.Module):
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
         "support": (
-            "{} <b>Link to </b><a href='https://t.me/hikka_talks'>support chat</a>"
+            "{} <b>Link to </b><a href='https://t.me/hikka_talks'>support chat</a></b>"
         ),
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>Userbot is not"
@@ -83,7 +83,7 @@ class HelpMod(loader.Module):
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
         "support": (
-            "{} <b>Ссылка на </b><a href='https://t.me/hikka_talks'>чат помощи</a>"
+            "{} <b>Ссылка на </b><a href='https://t.me/hikka_talks'>чат помощи</a></b>"
         ),
         "_cls_doc": "Показывает помощь по модулям",
         "partial_load": (
@@ -123,7 +123,7 @@ class HelpMod(loader.Module):
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Keine Dokumentation",
         "support": (
-            "{} <b>Link zum </b><a href='https://t.me/hikka_talks'>Supportchat</a>"
+            "{} <b>Link zum </b><a href='https://t.me/hikka_talks'>Supportchat</a></b>"
         ),
         "_cls_doc": "Zeigt Hilfe zu Modulen an",
         "partial_load": (
@@ -162,7 +162,7 @@ class HelpMod(loader.Module):
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Dokümantasyon yok",
-        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>Destek sohbeti</a>",
+        "support": "{} <b><a href='https://t.me/hikka_talks'>Destek sohbeti</a></b>",
         "_cls_doc": "Modül yardımını gösterir",
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>Kullanıcı botu"
@@ -200,7 +200,7 @@ class HelpMod(loader.Module):
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 दस्तावेज़ीकरण नहीं",
-        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>सपोर्ट चैट</a>",
+        "support": "{} <b><a href='https://t.me/hikka_talks'>सपोर्ट चैट</a></b>",
         "_cls_doc": "मॉड्यूल सहायता दिखाता है",
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>उपयोगकर्ता बॉट अभी भी"
@@ -238,7 +238,7 @@ class HelpMod(loader.Module):
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Hujjatlanmagan",
-        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>Yordam chat</a>",
+        "support": "{} <b><a href='https://t.me/hikka_talks'>Yordam chat</a></b>",
         "_cls_doc": "Modul yordamini ko'rsatadi",
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>Foydalanuvchi boti"
@@ -276,7 +276,7 @@ class HelpMod(loader.Module):
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 ドキュメント化されていません",
-        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>サポートチャット</a>",
+        "support": "{} <b><a href='https://t.me/hikka_talks'>サポートチャット</a></b>",
         "_cls_doc": "モジュールのヘルプを表示します",
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>ユーザーボットはまだ完全に"
@@ -313,7 +313,7 @@ class HelpMod(loader.Module):
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 문서화되지 않음",
-        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>지원 채팅</a>",
+        "support": "{} <b><a href='https://t.me/hikka_talks'>지원 채팅</a></b>",
         "_cls_doc": "모듈 도움말을 표시합니다",
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>사용자 봇이 아직 완전히"
@@ -351,7 +351,7 @@ class HelpMod(loader.Module):
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 لم يتم توثيقه",
-        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>دردشة الدعم</a>",
+        "support": "{} <b><a href='https://t.me/hikka_talks'>دردشة الدعم</a></b>",
         "_cls_doc": "عرض مساعدة الموديول",
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>لم يتم تحميل البوت"
@@ -389,7 +389,7 @@ class HelpMod(loader.Module):
         ),
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Sin documentar",
-        "support": "{} <b> </b><a href='https://t.me/hikka_talks'>Chat de soporte</a>",
+        "support": "{} <b><a href='https://t.me/hikka_talks'>Chat de soporte</a></b>",
         "_cls_doc": "Muestra la ayuda del módulo",
         "partial_load": (
             "<emoji document_id=5472105307985419058>☝️</emoji> <b>El bot no se ha"

@@ -61,6 +61,7 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇬🇧 Language saved!",
         "language": "🇬🇧 English",
+        "btn_support": "🥷 Support chat",
     }
 
     strings_ru = {
@@ -94,6 +95,7 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇷🇺 Язык сохранен!",
         "language": "🇷🇺 Русский",
+        "btn_support": "🥷 Чат поддержки",
     }
 
     strings_de = {
@@ -127,72 +129,64 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇩🇪 Sprache gespeichert!",
         "language": "🇩🇪 Deutsch",
+        "btn_support": "🥷 Support-Chat",
     }
 
     strings_uz = {
-        "base": """🌘🇺🇿 <b>Salom.</b> Sizning <b>Hikka</b> userbotingiz o'rnatildi.
-
-❓ <b>Yordam kerakmi?</b> Bizning qo'llab-quvvatlash chatingizga qo'shiling. Bizga <b>hamma</b> yordam bering.
-
-📼 <b>Siz @hikkamods_bot orqali modullarni qidirib va o'rnatishingiz mumkin. Faqat qidiruv so'zini kiriting va kerakli modulni ⛩ Install tugmasini bosing</b>
-
-📣 <b>Bizning modullar kanallari bilan tanishing. Bizning jamoa tomonidan yaratilgan kanallarni ko'rish uchun <a href="https://t.me/hikka_ub/126">bosing</a></b>
-
-💁‍♀️ <b>Tezkor boshlash:</b>
-
-1️⃣ <b>Modullar ro'yxatini ko'rish uchun </b><code>.help</code> <b>yozing</b>
-2️⃣ <b>Modul haqida ma'lumot olish uchun </b><code>.help &lt;Modul nomi/Buyruq&gt;</code> <b>yozing</b>
-3️⃣ <b>Modulni yuklash uchun </b><code>.dlmod &lt;Link&gt;</code> <b>modulni linkidan yuklash uchun yozing</b>
-4️⃣ <b>Modulni yuklash uchun </b><code>.loadmod</code> <b>modulni fayldan yuklash uchun faylni javob qilib yozing</b>
-5️⃣ <b>Modulni o'chirish uchun </b><code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>
-
-💡 <b>Hikka Friendly-Telegram va GeekTG modullarini hamda o'z modullarini qo'llab-quvvatlaydi.</b>
+        "base": """🌘🇺🇿 <b>Salom.</b> <b>Hikka</b> Sizning yuzer botingiz sozlandi.
+❓ <b>Yordam kerakmi?</b> Siz bizning qollab quvvatlash guruhimizga qo'shilishingiz mumkin. guruhimzda  <b>barcha savollaringizga javob olasiz</b>.
+📼 <b>Modullar @hikkamods_bot ushbu botimiz orqali siz har qanday yuzerbotga tegishli bo'lgan modullarni o'rnatishingiz mumkun botga kalit so'zni yuboring va  ⛩ O'rnatish tugmasini bosing</b>
+📣 <b>Homiylar tomonidan yaratilgan modullar kanalini ko'rish: <a href="https://t.me/hikka_ub/126">kanalni ko'rish</a></b>
+💁‍♀️ <b>Tez ishga tushurish:</b>
+1️⃣ <b>Modullar royhatini ko'rish uchun </b><code>.help buyrug'ini</code> <b>yozing</b>
+2️⃣ <b>Modul haqida ma'lumot olish uchun </b><code>.help &lt;Modul nomi/buyruq&gt;</code> <b>yozing</b>
+3️⃣ <b>Modulni havola orqali o'rnatish uchun </b><code>.dlmod &lt;Link&gt;</code> <b>yozing</b>
+4️⃣ <b>Modulni fayl orqali yuklash uchun </b><code>.loadmod</code> <b>faylga javoban yozing</b>
+5️⃣ <b>Modulni olib tashlash uchun </b><code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>
+💡 <b>Hikka Friendly-Telegram ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>
 """,
         "okteto": (
-            "☁️ <b>Sizning userbotingiz Okteto platformasida o'rnatilgan</b>."
-            " Sizdan @WebpageBotga xabarlar keladi. Uni bloklashmaslik."
+            "☁️ <b>Sizning yuzerbotingiz oktetoda o'rnatilgan</b>. @WebpageBot'dan"
+            " xabarlar qabul qilasiz uni bloklamang."
         ),
         "railway": (
-            "🚂 <b>Sizning userbotingiz Railway platformasida o'rnatilgan</b>."
-            " Sizga bu platformada <b>500 ta bepul soat</b> beriladi. Agar limit o'tgan"
-            " bo'lsa, <b>userbotingiz bloklanadi</b>. Keyingi oyda"
-            " https://railway.app ga o'tib, uni qayta ishga tushiring.</b>"
+            "🚂 <b>Sizning yuzerbotingiz Railwayda o'rnatilgan</b>. Bu platforma,"
+            " <b>oyiga atigi 500 soat bepul jihati</b> Railway bergan muddat tugagandan"
+            " so'ng sizning bo'tingiz  <b>to'xtatiladi</b>. Keyingi oy,"
+            " https://railway.app havolasi orqali yuzerbotingizni qayta ishga tushira"
+            " olasiz.</b>"
         ),
         "language_saved": "🇺🇿 Til saqlandi!",
         "language": "🇺🇿 O'zbekcha",
+        "btn_support": "🥷 Qo'llab-quvvatlash guruhi",
     }
 
     strings_tr = {
         "base": """🌘🇹🇷 <b>Merhaba.</b> <b>Hikka</b> kullanıcı botunuz kuruldu.
-
-❓ <b>Yardıma mı ihtiyacınız var?</b> Yardım grubumuza katılın. Bizimle <b>her şeyi</b> paylaşın.
-
-📼 <b>Modülleri @hikkamods_bot ile arayabilir ve kurabilirsiniz. Sadece bir arama kelimesi girin ve istediğiniz modüle ⛩ Install tuşuna basın</b>
-
-📣 <b>Topluluk tarafından oluşturulan kanalları görün: <a href="https://t.me/hikka_ub/126">göster</a></b>
-
+❓ <b>Yardıma mı ihtiyacınız var?</b> Yardım grubumuza katılabilirsin. Herkese <b>yardım ediyoruz</b>.
+📼 <b>Modülleri @hikkamods_bot ile arayabilir ve kurabilirsiniz. Sadece anahtar kelimeleri girin ve istediğiniz modülün ⛩ Kur butonuna basın</b>
+📣 <b>Topluluk tarafından oluşturulan modül kanalları görüntüleyin: <a href="https://t.me/hikka_ub/126">göster</a></b>
 💁‍♀️ <b>Hızlı başlangıç:</b>
-
 1️⃣ <b>Modüller listesini görmek için </b><code>.help</code> <b>yazın</b>
 2️⃣ <b>Modül hakkında bilgi almak için </b><code>.help &lt;Modul adı/Komut&gt;</code> <b>yazın</b>
 3️⃣ <b>Bir bağlantıdan modül yüklemek için </b><code>.dlmod &lt;Link&gt;</code> <b>yazın</b>
 4️⃣ <b>Bir modülü bir dosyadan yüklemek için </b><code>.loadmod</code> <b>bir dosyanın yanıtını yazın</b>
 5️⃣ <b>Bir modülü kaldırmak için </b><code>.unloadmod &lt;Modul adı&gt;</code> <b>yazın</b>
-
 💡 <b>Hikka Friendly-Telegram ve GeekTG modüllerini de dahil olmak üzere kendi modüllerini destekler.</b>
 """,
         "okteto": (
             "☁️ <b>Kullanıcı botunuz Okteto'da kuruldu</b>. @WebpageBot'dan mesajlar"
-            " alırsınız. Onları engellemeyin."
+            " alacaksınız. Onları engellemeyin."
         ),
         "railway": (
-            "🚂 <b>Kullanıcı botunuz Railway'de kuruldu</b>. Sizden <b>500 saat ücretsiz"
-            " saat</b> alırsınız. Sınır aşıldığında, kullanıcı botunuz"
-            " <b>engellenir</b>. Gelecek ay, https://railway.app'a gidin ve onu yeniden"
-            " başlatın.</b>"
+            "🚂 <b>Kullanıcı botunuz Railway'de kuruldu</b>. Bu platform, <b>aylık"
+            " sadece 500 saati ücretsiz olarak</b> sağlamaktadır. Sınırı aştığınızda,"
+            " kullanıcı botunuz <b>durdurulur</b>. Gelecek ay, https://railway.app"
+            " adresinden botunuzu yeniden başlatmanız gerekmektedir.</b>"
         ),
         "language_saved": "🇹🇷 Dil kaydedildi!",
         "language": "🇹🇷 Türkçe",
+        "btn_support": "🥷 Destek grubu",
     }
 
     strings_hi = {
@@ -222,10 +216,11 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇮🇳 भाषा सहेजा गया!",
         "language": "🇮🇳 हिंदी",
+        "btn_support": "🥷 समर्थन समूह",
     }
 
     strings_ja = {
-        "help": """
+        "base": """
 📼 <b>モジュールを検索してインストールするには @hikkamods_bot から検索してください。検索ワードを1つ入力してください。</b>
 
 📣 <b>コミュニティで作成されたチャンネルを見るには、こちらをクリックしてください: <a href="https://t.me/hikka_ub/126">表示</a></b>
@@ -247,10 +242,11 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇯🇵 言語が保存されました!",
         "language": "🇯🇵 日本語",
+        "btn_support": "🥷 サポートグループ",
     }
 
     strings_kr = {
-        "help": """
+        "base": """
 📼 <b>모듈을 검색하고 설치하려면 @hikkamods_bot 에서 검색하십시오. 검색어를 입력하십시오.</b>
 
 📣 <b>커뮤니티에서 생성된 채널을 보려면 여기를 클릭하십시오: <a href="https://t.me/hikka_ub/126">보기</a></b>
@@ -272,10 +268,11 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇰🇷 언어가 저장되었습니다!",
         "language": "🇰🇷 한국어",
+        "btn_support": "🥷 지원 그룹",
     }
 
     strings_ar = {
-        "help": """
+        "base": """
 📼 <b>للبحث عن وتثبيت الوحدات، يرجى الذهاب إلى @hikkamods_bot وإدخال الكلمات المفتاحية.</b>
 
 📣 <b>لمشاهدة قنوات المجتمع التي تم إنشاؤها، انقر هنا: <a href="https://t.me/hikka_ub/126">عرض</a></b>
@@ -297,10 +294,11 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇸🇦 تم حفظ اللغة!",
         "language": "🇸🇦 العربية",
+        "btn_support": "🥷 مجموعة الدعم",
     }
 
     strings_es = {
-        "help": """
+        "base": """
 📼 <b>Para buscar e instalar módulos, vaya a @hikkamods_bot y escriba las palabras clave.</b>
 
 📣 <b>Para ver los canales de la comunidad creados, haga clic aquí: <a href="https://t.me/hikka_ub/126">Ver</a></b>
@@ -322,28 +320,60 @@ class QuickstartMod(loader.Module):
         ),
         "language_saved": "🇪🇸 ¡El idioma se ha guardado!",
         "language": "🇪🇸 Español",
+        "btn_support": "🥷 Grupo de soporte",
     }
 
     async def client_ready(self):
         if self.get("disable_quickstart"):
             raise loader.SelfUnload
 
-        self.mark = lambda: [
-            [{"text": "🥷 Support chat", "url": "https://t.me/hikka_talks"}],
-        ] + utils.chunks(
-            [
-                {
-                    "text": (
-                        getattr(self, f"strings_{lang}")
-                        if lang != "en"
-                        else self.strings._base_strings
-                    )["language"],
-                    "callback": self._change_lang,
-                    "args": (lang,),
-                }
-                for lang in ["ru", "en", "uz", "tr", "hi", "de", "ja", "kr", "ar", "es"]
-            ],
-            2,
+        self.mark = (
+            lambda: [
+                [
+                    {
+                        "text": self.strings("btn_support"),
+                        "url": "https://t.me/hikka_talks",
+                    }
+                ],
+            ]
+            + [
+                [
+                    {
+                        "text": "👩‍⚖️ Privacy Policy",
+                        "url": "https://docs.google.com/document/d/15m6-pb1Eya8Zn4y0_7JEdvMLAo_v050rFMaWrjDjvMs/edit?usp=sharing",
+                    },
+                    {
+                        "text": "📜 EULA",
+                        "url": "https://docs.google.com/document/d/1sZBk24SWLBLoGxcsZHW8yP7yLncToPGUP1FJ4dS6z5I/edit?usp=sharing",
+                    },
+                ]
+            ]
+            + utils.chunks(
+                [
+                    {
+                        "text": (
+                            getattr(self, f"strings_{lang}")
+                            if lang != "en"
+                            else self.strings._base_strings
+                        )["language"],
+                        "callback": self._change_lang,
+                        "args": (lang,),
+                    }
+                    for lang in [
+                        "ru",
+                        "en",
+                        "uz",
+                        "tr",
+                        "hi",
+                        "de",
+                        "ja",
+                        "kr",
+                        "ar",
+                        "es",
+                    ]
+                ],
+                2,
+            )
         )
 
         self.text = (

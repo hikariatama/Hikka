@@ -83,7 +83,7 @@ class PythonMod(loader.Module):
             " Kod:</b>\n<code>{}</code>\n\n<emoji"
             " document_id=6323575131239089635>🚫</emoji><b> Hata:</b>\n{}"
         ),
-        "_cls_doc": "Python kodu çalıştırır",
+        "_cls_doc": "Python kodunu çalıştırır",
     }
 
     strings_hi = {
