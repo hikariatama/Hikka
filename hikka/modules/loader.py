@@ -2410,7 +2410,7 @@ class LoaderMod(loader.Module):
                     )
                 return
             except loader.SelfUnload as e:
-                logging.debug(f"Unloading {instance}, because it raised `SelfUnload`")
+                logger.debug("Unloading %s, because it raised `SelfUnload`", instance)
                 with contextlib.suppress(Exception):
                     await self.allmodules.unload_module(instance.__class__.__name__)
 
@@ -2425,7 +2425,7 @@ class LoaderMod(loader.Module):
                     )
                 return
             except loader.SelfSuspend as e:
-                logging.debug(f"Suspending {instance}, because it raised `SelfSuspend`")
+                logger.debug("Suspending %s, because it raised `SelfSuspend`", instance)
                 if message:
                     await utils.answer(
                         message,

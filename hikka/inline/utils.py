@@ -73,8 +73,10 @@ class Utils(InlineUnit):
             for button in row:
                 if not isinstance(button, dict):
                     logger.error(
-                        f"Button {button} is not a `dict`, but `{type(button)}` in"
-                        f" {map_}"
+                        "Button %s is not a `dict`, but `%s` in %s",
+                        button,
+                        type(button),
+                        map_,
                     )
                     return None
 
@@ -88,7 +90,7 @@ class Utils(InlineUnit):
                     if button.get("action") == "answer":
                         if not button.get("message"):
                             logger.error(
-                                f"Button {button} has no `message` to answer with"
+                                "Button %s has no `message` to answer with", button
                             )
                             return None
 
@@ -196,7 +198,8 @@ class Utils(InlineUnit):
                         logger.warning(
                             "Button have not been added to "
                             "form, because it is not structured "
-                            f"properly. {button}"
+                            "properly. %s",
+                            button,
                         )
                 except KeyError:
                     logger.exception(
@@ -235,7 +238,7 @@ class Utils(InlineUnit):
             if not caller:
                 return None
 
-            logger.debug(f"Found caller: {caller}")
+            logger.debug("Found caller: %s", caller)
 
             return lambda: self._client.dispatcher.security.get_flags(
                 getattr(caller, "__self__", caller),
@@ -459,7 +462,7 @@ class Utils(InlineUnit):
 
                 return False
             except RetryAfter as e:
-                logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
+                logger.info("Sleeping %ss on aiogram FloodWait...", e.timeout)
                 await asyncio.sleep(e.timeout)
                 return await self._edit_unit(**utils.get_kwargs())
             except MessageIdInvalid:
@@ -509,7 +512,7 @@ class Utils(InlineUnit):
                 ),
             )
         except RetryAfter as e:
-            logger.info(f"Sleeping {e.timeout}s on aiogram FloodWait...")
+            logger.info("Sleeping %ss on aiogram FloodWait...", e.timeout)
             await asyncio.sleep(e.timeout)
             return await self._edit_unit(**utils.get_kwargs())
         except MessageIdInvalid:
@@ -698,8 +701,8 @@ class Utils(InlineUnit):
 
         if not isinstance(buttons, (list, dict)):
             logger.error(
-                "Reply markup ommited because passed type is not valid"
-                f" ({type(buttons)})"
+                "Reply markup ommited because passed type is not valid (%s)",
+                type(buttons),
             )
             return None
 

@@ -664,7 +664,7 @@ class TestMod(loader.Module):
                     continue
 
                 self._memory[cls_] = last_modified
-                logger.debug(f"Reloading debug module {cls_}")
+                logger.debug("Reloading debug module %s", cls_)
                 with open(module.path, "r") as f:
                     try:
                         await next(

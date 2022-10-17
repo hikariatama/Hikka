@@ -548,7 +548,7 @@ class Gallery(InlineUnit):
                 - self._units[unit_id]["current_index"]
                 < self._units[unit_id].get("preload", 0) // 2
             ):
-                logger.debug(f"Started preload for gallery {unit_id}")
+                logger.debug("Started preload for gallery %s", unit_id)
                 asyncio.ensure_future(self._load_gallery_photos(unit_id))
 
         try:
@@ -579,9 +579,9 @@ class Gallery(InlineUnit):
             return self._units[unit_id]["photos"][self._units[unit_id]["current_index"]]
         except IndexError:
             logger.error(
-                "Got IndexError in `_get_next_photo`. "
-                f"{self._units[unit_id]['current_index']=} / "
-                f"{len(self._units[unit_id]['photos'])=}"
+                "Got IndexError in `_get_next_photo`. %s / %s",
+                self._units[unit_id]["current_index"],
+                len(self._units[unit_id]["photos"]),
             )
             return self._units[unit_id]["photos"][0]
 
