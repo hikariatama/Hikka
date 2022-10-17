@@ -56,14 +56,154 @@ class PythonMod(loader.Module):
         "_cls_doc": "Выполняет Python код",
     }
 
+    strings_de = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Code:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " Resultat:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Code:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> Fehler:</b>\n{}"
+        ),
+        "_cls_doc": "Führt Python Code aus",
+    }
+
+    strings_tr = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Kod:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " Sonuç:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Kod:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> Hata:</b>\n{}"
+        ),
+        "_cls_doc": "Python kodunu çalıştırır",
+    }
+
+    strings_hi = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " कोड:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " परिणाम:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " कोड:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> त्रुटि:</b>\n{}"
+        ),
+        "_cls_doc": "Python कोड चलाता है",
+    }
+
+    strings_uz = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Kod:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " Natija:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Kod:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> Xato:</b>\n{}"
+        ),
+        "_cls_doc": "Python kodini ishga tushiradi",
+    }
+
+    strings_ja = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " コード:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " 結果:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " コード:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> エラー:</b>\n{}"
+        ),
+        "_cls_doc": "Pythonコードを実行します",
+    }
+
+    strings_kr = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " 코드:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " 결과:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " 코드:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> 오류:</b>\n{}"
+        ),
+        "_cls_doc": "Python 코드를 실행합니다",
+    }
+
+    strings_ar = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " الكود:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " النتيجة:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " الكود:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> خطأ:</b>\n{}"
+        ),
+        "_cls_doc": "ينفذ الكود بيثون",
+    }
+
+    strings_es = {
+        "eval": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Código:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5472164874886846699>✨</emoji><b>"
+            " Resultado:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            " Código:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=6323575131239089635>🚫</emoji><b> Error:</b>\n{}"
+        ),
+        "_cls_doc": "Ejecuta código Python",
+    }
+
     @loader.owner
-    @loader.command(ru_doc="Алиас для команды .e")
+    @loader.command(
+        ru_doc="Алиас для команды .e",
+        de_doc="Alias für den Befehl .e",
+        tr_doc="Komut .e için takma ad",
+        hi_doc="कमांड .e के लिए उपनाम",
+        uz_doc="Buyruq .e uchun alohida nom",
+        ja_doc="コマンド.eのエイリアス",
+        kr_doc="명령 .e의 별칭",
+        ar_doc="الأمر .e للأمر",
+        es_doc="Alias para el comando .e",
+    )
     async def eval(self, message: Message):
         """Alias for .e command"""
         await self.e(message)
 
     @loader.owner
-    @loader.command(ru_doc="Выполняет Python код")
+    @loader.command(
+        ru_doc="Выполняет Python код",
+        de_doc="Führt Python Code aus",
+        tr_doc="Python kodu çalıştırır",
+        hi_doc="Python कोड चलाता है",
+        uz_doc="Python kodini ishga tushiradi",
+        ja_doc="Pythonコードを実行します",
+        kr_doc="Python 코드를 실행합니다",
+        ar_doc="ينفذ الكود بيثون",
+        es_doc="Ejecuta código Python",
+    )
     async def e(self, message: Message):
         """Evaluates python code"""
         ret = self.strings("eval")

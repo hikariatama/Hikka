@@ -262,7 +262,11 @@ class Events(InlineUnit):
                         + unit.get("always_allow", [])
                         + button.get("always_allow", [])
                     ):
-                        await call.answer("You are not allowed to press this button!")
+                        await call.answer(
+                            self._client.loader._lookup("translations").strings(
+                                "button403"
+                            )
+                        )
                         return
 
                     try:
@@ -312,7 +316,9 @@ class Events(InlineUnit):
                 and call.from_user.id
                 not in self._custom_map[call.data].get("always_allow", [])
             ):
-                await call.answer("You are not allowed to press this button!")
+                await call.answer(
+                    self._client.loader._lookup("translations").strings("button403")
+                )
                 return
 
             await self._custom_map[call.data]["handler"](
@@ -400,11 +406,21 @@ class Events(InlineUnit):
                 (
                     InlineQueryResultArticle(
                         id=utils.rand(20),
-                        title=f"🌘 Command «{name}»",
+                        title=(
+                            self._client.loader._lookup("translations")
+                            .strings("command")
+                            .format(name)
+                        ),
                         description=doc,
                         input_message_content=InputTextMessageContent(
-                            "<b>🌘 Command"
-                            f" «{utils.escape_html(name)}»</b>\n\n<i>{utils.escape_html(doc)}</i>",
+                            (
+                                self._client.loader._lookup("translations")
+                                .strings("command_msg")
+                                .format(
+                                    utils.escape_html(name),
+                                    utils.escape_html(doc),
+                                )
+                            ),
                             "HTML",
                             disable_web_page_preview=True,
                         ),
@@ -413,7 +429,11 @@ class Events(InlineUnit):
                         thumb_height=128,
                         reply_markup=self.generate_markup(
                             {
-                                "text": "🏌️ Run command",
+                                "text": (
+                                    self._client.loader._lookup("translations").strings(
+                                        "run_command"
+                                    )
+                                ),
                                 "switch_inline_query_current_chat": f"{name} ",
                             }
                         ),
@@ -430,11 +450,16 @@ class Events(InlineUnit):
                 [
                     InlineQueryResultArticle(
                         id=utils.rand(20),
-                        title="Show available inline commands",
-                        description="You have no available commands",
+                        title=self._client.loader._lookup("translations").strings(
+                            "show_inline_cmds"
+                        ),
+                        description=self._client.loader._lookup("translations").strings(
+                            "no_inline_cmds"
+                        ),
                         input_message_content=InputTextMessageContent(
-                            "<b>😔 There are no available inline commands or you lack"
-                            " access to them</b>",
+                            self._client.loader._lookup("translations").strings(
+                                "no_inline_cmds_msg"
+                            ),
                             "HTML",
                             disable_web_page_preview=True,
                         ),
@@ -453,11 +478,19 @@ class Events(InlineUnit):
             [
                 InlineQueryResultArticle(
                     id=utils.rand(20),
-                    title="📄 Show all available inline commands",
-                    description=f"ℹ️ You have {len(_help)} available command(-s)",
+                    title=self._client.loader._lookup("translations").strings(
+                        "show_inline_cmds"
+                    ),
+                    description=(
+                        self._client.loader._lookup("translations")
+                        .strings("inline_cmds")
+                        .format(len(_help))
+                    ),
                     input_message_content=InputTextMessageContent(
-                        "<b>ℹ️ Available inline commands:</b>\n\n{}".format(
-                            "\n".join(i[1] for i in _help)
+                        (
+                            self._client.loader._lookup("translations")
+                            .strings("inline_cmds_msg")
+                            .format("\n".join(i[1] for i in _help))
                         ),
                         "HTML",
                         disable_web_page_preview=True,

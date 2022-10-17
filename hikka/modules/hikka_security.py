@@ -71,6 +71,142 @@ class HikkaSecurityMod(loader.Module):
         "seconds": "секунд(-ы)",
     }
 
+    service_strings_de = {
+        "for": "für",
+        "forever": "für immer",
+        "command": "Befehl",
+        "module": "Modul",
+        "chat": "Chat",
+        "user": "Benutzer",
+        "day": "Tag",
+        "days": "Tage",
+        "hour": "Stunde",
+        "hours": "Stunden",
+        "minute": "Minute",
+        "minutes": "Minuten",
+        "second": "Sekunde",
+        "seconds": "Sekunden",
+    }
+
+    service_strings_uz = {
+        "for": "uchun",
+        "forever": "doimiy",
+        "command": "buyruq",
+        "module": "modul",
+        "chat": "guruh",
+        "user": "foydalanuvchi",
+        "day": "kun",
+        "days": "kun",
+        "hour": "soat",
+        "hours": "soat",
+        "minute": "daqiqa",
+        "minutes": "daqiqa",
+        "second": "soniya",
+        "seconds": "soniya",
+    }
+
+    service_strings_tr = {
+        "for": "için",
+        "forever": "sürekli",
+        "command": "komut",
+        "module": "modül",
+        "chat": "sohbet",
+        "user": "kullanıcı",
+        "day": "gün",
+        "days": "gün",
+        "hour": "saat",
+        "hours": "saat",
+        "minute": "dakika",
+        "minutes": "dakika",
+        "second": "saniye",
+        "seconds": "saniye",
+    }
+
+    service_strings_hi = {
+        "for": "के लिए",
+        "forever": "हमेशा",
+        "command": "कमांड",
+        "module": "मॉड्यूल",
+        "chat": "चैट",
+        "user": "उपयोगकर्ता",
+        "day": "दिन",
+        "days": "दिन",
+        "hour": "घंटा",
+        "hours": "घंटे",
+        "minute": "मिनट",
+        "minutes": "मिनट",
+        "second": "सेकंड",
+        "seconds": "सेकंड",
+    }
+
+    service_strings_ja = {
+        "for": "のために",
+        "forever": "永遠に",
+        "command": "コマンド",
+        "module": "モジュール",
+        "chat": "チャット",
+        "user": "ユーザー",
+        "day": "日",
+        "days": "日",
+        "hour": "時間",
+        "hours": "時間",
+        "minute": "分",
+        "minutes": "分",
+        "second": "秒",
+        "seconds": "秒",
+    }
+
+    service_strings_kr = {
+        "for": "에 대한",
+        "forever": "영원히",
+        "command": "명령",
+        "module": "모듈",
+        "chat": "채팅",
+        "user": "사용자",
+        "day": "일",
+        "days": "일",
+        "hour": "시간",
+        "hours": "시간",
+        "minute": "분",
+        "minutes": "분",
+        "second": "초",
+        "seconds": "초",
+    }
+
+    service_strings_ar = {
+        "for": "ل",
+        "forever": "للأبد",
+        "command": "أمر",
+        "module": "وحدة",
+        "chat": "دردشة",
+        "user": "مستخدم",
+        "day": "يوم",
+        "days": "أيام",
+        "hour": "ساعة",
+        "hours": "ساعات",
+        "minute": "دقيقة",
+        "minutes": "دقائق",
+        "second": "ثانية",
+        "seconds": "ثواني",
+    }
+
+    service_strings_es = {
+        "for": "para",
+        "forever": "para siempre",
+        "command": "comando",
+        "module": "módulo",
+        "chat": "chat",
+        "user": "usuario",
+        "day": "día",
+        "days": "días",
+        "hour": "hora",
+        "hours": "horas",
+        "minute": "minuto",
+        "minutes": "minutos",
+        "second": "segundo",
+        "seconds": "segundos",
+    }
+
     strings = {
         "name": "HikkaSecurity",
         "no_command": "🚫 <b>Command </b><code>{}</code><b> not found!</b>",
@@ -358,6 +494,611 @@ class HikkaSecurityMod(loader.Module):
         **service_strings_ru,
     }
 
+    strings_de = {
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> wurde der Gruppe </b><code>owner</code>'
+            "<b> hinzugefügt</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> wurde der Gruppe </b><code>sudo</code>'
+            "<b> hinzugefügt</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> wurde der Gruppe </b><code>support</code>'
+            "<b> hinzugefügt</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> wurde aus der Gruppe </b><code>owner</code>'
+            "<b> entfernt</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> wurde aus der Gruppe </b><code>sudo</code>'
+            "<b> entfernt</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> wurde aus der Gruppe'
+            " </b><code>support</code><b> entfernt</b>"
+        ),
+        "_cls_doc": "Verwalten Sie die Sicherheitseinstellungen",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Erstes Argument"
+            " (</b><code>user</code><b> or </b><code>chat</code><b>)"
+            " fehlt</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Benutzer nicht"
+            " gefunden</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Chat nicht"
+            " gefunden</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Keine Regel"
+            " angegeben (Modul oder Kommando)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Keine Regel"
+            " angegeben (Modul oder Kommando)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Bitte bestätigen Sie, dass Sie {} <a href='{}'>{}</a>"
+            " die Berechtigung erteilen möchten </b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": (
+            "🔐 <b>Es war nicht möglich, die Sicherheitsregeln eindeutig zu erkennen."
+            " Wählen Sie das aus, was Sie wollten:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>Sie haben {} <a href='{}'>{}</a> die Berechtigung"
+            " erteilt </b><code>{}</code><b> {}</b>"
+        ),
+        "rules": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Regeln für die"
+            " Sicherheit:</b>\n\n{}"
+        ),
+        "no_rules": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Keine Regeln für die"
+            " Sicherheit</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Dieser Benutzer ist"
+            " der Besitzer, seine Rechte können nicht mit Sicherheitszielen"
+            " verwaltet werden</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Die Sicherheitsregeln"
+            " für <a href='{}'>{}</a> wurden entfernt</b>"
+        ),
+        **service_strings_de,
+    }
+
+    strings_hi = {
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> ग्रुप में </b><code>owner</code>'
+            "<b> जोड़ा गया</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> ग्रुप में </b><code>sudo</code>'
+            "<b> जोड़ा गया</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> ग्रुप में </b><code>support</code>'
+            "<b> जोड़ा गया</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> ग्रुप से </b><code>owner</code>'
+            "<b> हटा दिया गया</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> ग्रुप से </b><code>sudo</code>'
+            "<b> हटा दिया गया</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> ग्रुप से </b><code>support</code>'
+            "<b> हटा दिया गया</b>"
+        ),
+        "_cls_doc": "सुरक्षा सेटिंग्स का प्रबंधन करें",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>पहला तर्क"
+            " (</b><code>user</code><b> or </b><code>chat</code><b>) नहीं मिला</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>उपयोगकर्ता नहीं"
+            " मिला</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>चैट नहीं मिला</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>कोई नियम नहीं दिया गया"
+            " (मॉड्यूल या कमांड)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>कोई नियम नहीं दिया गया"
+            " (मॉड्यूल या कमांड)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>कृपया पुष्टि करें कि आप {} <a href='{}'>{}</a> को अनुमति देना चाहते"
+            " हैं </b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": "🔐 <b>सुरक्षा नियमों को अभिन्नता से प्रबंधित करें</b>\n\n{}",
+        "no_rules": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>कोई सुरक्षा नियम"
+            " नहीं</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>यह उपयोगकर्ता मालिक"
+            " है, उसके अधिकार सुरक्षा लक्ष्यों के साथ प्रबंधित नहीं किए जा सकते</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>सुरक्षा नियम"
+            " के लिए <a href='{}'>{}</a> को हटा दिया गया है</b>"
+        ),
+        **service_strings_hi,
+    }
+
+    strings_tr = {
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> adlı kullanıcı </b><code>sahip</code>'
+            "<b> grubuna eklendi</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> adlı kullanıcı </b><code>yönetici</code>'
+            "<b> grubuna eklendi</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> adlı kullanıcı </b><code>destek</code>'
+            "<b> grubuna eklendi</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> adlı kullanıcı </b><code>sahip</code>'
+            "<b> grubundan çıkartıldı</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> adlı kullanıcı </b><code>yönetici</code>'
+            "<b> grubundan çıkartıldı</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> adlı kullanıcı </b><code>destek</code>'
+            "<b> grubundan çıkartıldı</b>"
+        ),
+        "_cls_doc": "Güvenlik ayarlarını yönet",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>İlk argüman"
+            " (</b><code>user</code><b> veya </b><code>chat</code><b>) bulunamadı</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Kullanıcı"
+            " bulunamadı</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Sohbet bulunamadı</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Hiçbir kural"
+            " belirtilmedi (modül veya komut)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Hiçbir kural"
+            " belirtilmedi (modül veya komut)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Lütfen {} <a href='{}'>{}</a> için izin vermek istediğinize emin olun"
+            " </b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": "🔐 <b>Güvenlik kurallarını yönetin</b>\n\n{}",
+        "no_rules": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Hiçbir güvenlik kuralı"
+            " yok</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Bu kullanıcı sahiptir,"
+            " izinleri güvenlik hedefleriyle yönetilemez</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b><a href='{}'>{}</a>"
+            " için güvenlik kuralları kaldırıldı</b>"
+        ),
+        **service_strings_tr,
+    }
+
+    strings_uz = {
+        "global": (
+            "🔐 <b>Bu erda siz global chegaralash maskasini ta'hrirlashingiz mumkin."
+            " Agar bu erda ruxsat berilmasa, qolgan joylarda ham ruxsat berilmaydi!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>Iltimos, ta\'sdiqlang, siz <a href="tg://user?id={}">{}</a>'
+            " </b><code>{}</code><b> ega gruppasiga qushmoqchimisiz? Bu harakat shaxsiy"
+            " ma'lumotni oshkor va foydalanuvchiga userbot ishlatishiga toʻliq yoki"
+            " qisman ruxsat berishi mumkin</b>"
+        ),
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
+            "<b> qo'shildi</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> qo'shildi</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
+            "<b> qo'shildi</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
+            "<b> o'chirildi</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> o'chirildi</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
+            "<b> o'chirildi</b>"
+        ),
+        "_cls_doc": "Xavfsizlik sozlamalarini boshqarish",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Ilk argument"
+            " (</b><code>user</code><b> yoki </b><code>chat</code><b>) topilmadi</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Foydalanuvchi"
+            " topilmadi</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Guruh topilmadi</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Hech qanday qoida"
+            " belgilanmadi (modul yoki buyruq)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Hech qanday qoida"
+            " belgilanmadi (modul yoki buyruq)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Iltimos {} <a href='{}'>{}</a> uchun ruxsat berishni"
+            " istaysizmi</b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": "🔐 <b>Xavfsizlik qoidalarni boshqarish</b>\n\n{}",
+        "no_rules": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Hech qanday xavfsizlik"
+            " qoidasi yo'q</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>Ushbu foydalanuvchi"
+            " egasi, ruxsatlar xavfsizlik maqsadlari bilan boshqarilishi mumkin"
+            " emas</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b><a href='{}'>{}</a>"
+            " uchun xavfsizlik qoidalari o'chirildi</b>"
+        ),
+        **service_strings_uz,
+    }
+
+    strings_ja = {
+        "global": (
+            "🔐 <b>このグループでは、グローバルなセキュリティ設定を変更できます。このグループで許可されない場合、他のグループでも許可されません！</b>"
+        ),
+        "warning": (
+            '⚠️ <b>本当に、<a href="tg://user?id={}">{}</a> '
+            " </b><code>{}</code><b>グループに追加しますか？ この操作は、個人情報を"
+            "漏洩させ、ユーザーボットを完全または部分的に許可する可能性があります</b>"
+        ),
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
+            "<b> 追加されました</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> 追加されました</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
+            "<b> 追加されました</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
+            "<b> 削除されました</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> 削除されました</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
+            "<b> 削除されました</b>"
+        ),
+        "_cls_doc": "セキュリティ設定を管理する",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>最初の引数"
+            " (</b><code>user</code><b> または </b><code>chat</code><b>) が見つかりません</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>ユーザーが見つかりません</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>グループが見つかりません</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>どのルールも指定されていません"
+            " (モジュールまたはコマンド)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>どのルールも指定されていません"
+            " (モジュールまたはコマンド)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>本当に {} <a href='{}'>{}</a>  </b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": "🔐 <b>セキュリティルールを管理する</b>\n\n{}",
+        "no_rules": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>セキュリティルールがありません</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>このユーザーは"
+            "所有者であり、セキュリティ目的で管理できません</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>安全規則"
+            " for <a href='{}'>{}</a> は削除されました</b>"
+        ),
+        **service_strings_ja,
+    }
+
+    strings_kr = {
+        "global": (
+            "🔐 <b>이 그룹에서는 전역 보안 설정을 변경할 수 있습니다."
+            "이 그룹에서 허용되지 않은 경우 다른 그룹에서도 허용되지 않습니다!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>정말로 <a href="tg://user?id={}">{}</a> '
+            " </b><code>{}</code><b> 그룹에 추가 하시겠습니까? 이 작업은 개인 정보를"
+            "유출시키고 사용자 봇을 완전히 또는 부분적으로 허용할 수 있습니다</b>"
+        ),
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
+            "<b> 추가되었습니다</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> 추가되었습니다</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
+            "<b> 추가되었습니다</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
+            "<b> 제거되었습니다</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> 제거되었습니다</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
+            "<b> 제거되었습니다</b>"
+        ),
+        "_cls_doc": "보안 설정을 관리합니다",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>첫 번째 인수"
+            " (</b><code>user</code><b> 또는 </b><code>chat</code><b>)를 찾을 수 없습니다</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>사용자를 찾을 수 없습니다</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>그룹을 찾을 수 없습니다</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>어떤 규칙도 지정되지 않았습니다 (모듈"
+            " 또는 명령)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>어떤 규칙도 지정되지 않았습니다 (모듈"
+            " 또는 명령)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>정말로 {} <a href='{}'>{}</a>  </b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": "🔐 <b>보안 규칙을 관리합니다</b>\n\n{}",
+        "no_rules": "<emoji document_id=6053166094816905153>🚫</emoji> <b>보안 규칙 없음</b>",
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>이 사용자는"
+            "소유자이며 보안 목적으로 관리할 수 없습니다.</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>안전 규칙"
+            "for <a href='{}'>{}</a>이(가) 삭제되었습니다</b>"
+        ),
+        **service_strings_kr,
+    }
+
+    strings_ar = {
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>مالك</code>'
+            "<b> تمت إضافته</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>سودو</code>'
+            "<b> تمت إضافته</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>مساعد</code>'
+            "<b> تمت إضافته</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>مالك</code>'
+            "<b> تمت إزالته</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>سودو</code>'
+            "<b> تمت إزالته</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>مساعد</code>'
+            "<b> تمت إزالته</b>"
+        ),
+        "_cls_doc": "إدارة إعدادات الأمان",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>لم يتم"
+            " العثور على الوسيط الأول (</b><code>user</code><b> أو </b>"
+            "<code>chat</code><b>)</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>لم يتم"
+            " العثور على المستخدم</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>لم يتم"
+            " العثور على الدردشة</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>لم يتم"
+            " تحديد أي قاعدة (الوحدة أو الأمر)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>لم يتم"
+            " تحديد أي قاعدة (الوحدة أو الأمر)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>هل أنت متأكد من أنك تريد {} <a href='{}'>{}</a>  </b>"
+            "<code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": "🔐 <b>إدارة قواعد الأمان</b>\n\n{}",
+        "no_rules": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>لا توجد قواعد أمان</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>لا يمكن"
+            " إدارة هذا المستخدم لأنه مالك.</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>تم"
+            " إزالة قواعد الأمان لـ <a href='{}'>{}</a></b>"
+        ),
+        **service_strings_ar,
+    }
+
+    strings_es = {
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>propietario</code>'
+            "<b> añadido</b>"
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> añadido</b>"
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>soporte</code>'
+            "<b> añadido</b>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>propietario</code>'
+            "<b> eliminado</b>"
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
+            "<b> eliminado</b>"
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> </b><code>soporte</code>'
+            "<b> eliminado</b>"
+        ),
+        "_cls_doc": "Administra los ajustes de seguridad",
+        "what": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No se"
+            " encontró el primer medio (</b><code>usuario</code><b> o </b>"
+            "<code>chat</code><b>)</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No se"
+            " encontró el usuario</b>"
+        ),
+        "no_chat": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No se"
+            " encontró el chat</b>"
+        ),
+        "what_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No se"
+            " especificó ninguna regla (módulo o comando)</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No se"
+            " especificó ninguna regla (módulo o comando)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>¿Estás seguro de que quieres {} <a href='{}'>{}</a>  </b>"
+            "<code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": "🔐 <b>Administración de reglas de seguridad</b>\n\n{}",
+        "no_rules": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No hay"
+            " reglas de seguridad</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=6053166094816905153>🚫</emoji> <b>No se"
+            " puede administrar este usuario porque es el propietario.</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Reglas"
+            " de seguridad eliminadas para <a href='{}'>{}</a></b>"
+        ),
+        **service_strings_es,
+    }
+
     async def inline__switch_perm(
         self,
         call: InlineCall,
@@ -546,7 +1287,17 @@ class HikkaSecurityMod(loader.Module):
         return self._perms_map(config, is_inline)
 
     @loader.owner
-    @loader.command(ru_doc="[команда] - Настроить разрешения для команды")
+    @loader.command(
+        ru_doc="[команда] - Настроить разрешения для команды",
+        de_doc="[command] - Einstellungen für Befehle ändern",
+        hi_doc="[command] - कमांड के लिए अनुमतियाँ सेट करें",
+        tr_doc="[command] - Komut için izinleri ayarla",
+        uz_doc="[command] - Buyruq uchun ruxsatlarini sozlash",
+        ja_doc="[command] - コマンドの権限を設定します",
+        kr_doc="[command] - 명령어 권한 설정",
+        ar_doc="[command] - تعيين الأذونات للأوامر",
+        es_doc="[command] - Configurar permisos para comandos",
+    )
     async def security(self, message: Message):
         """[command] - Configure command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
@@ -573,7 +1324,17 @@ class HikkaSecurityMod(loader.Module):
         )
 
     @loader.owner
-    @loader.command(ru_doc="[команда] - Настроить разрешения для инлайн команды")
+    @loader.command(
+        ru_doc="[команда] - Настроить разрешения для инлайн команды",
+        de_doc="[command] - Einstellungen für Inline-Befehle ändern",
+        hi_doc="[command] - इनलाइन कमांड के लिए अनुमतियाँ सेट करें",
+        tr_doc="[command] - Inline komut için izinleri ayarla",
+        uz_doc="[command] - Inline buyruq uchun ruxsatlarini sozlash",
+        ja_doc="[command] - インラインコマンドの権限を設定します",
+        kr_doc="[command] - 인라인 명령어 권한 설정",
+        ar_doc="[command] - تعيين الأذونات للأوامر الخطية",
+        es_doc="[command] - Configurar permisos para comandos inline",
+    )
     async def inlinesec(self, message: Message):
         """[command] - Configure inline command's security settings"""
         args = utils.get_args_raw(message).lower().strip()
@@ -754,47 +1515,137 @@ class HikkaSecurityMod(loader.Module):
         else:
             await utils.answer(message, self.strings(f"no_{group}"))
 
-    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `sudo`")
+    @loader.command(
+        ru_doc="<пользователь> - Добавить пользователя в группу `sudo`",
+        de_doc="<Benutzer> - Füge Benutzer zur `sudo`-Gruppe hinzu",
+        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `sudo` समूह में जोड़ें",
+        tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubuna ekle",
+        uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhiga qo'shish",
+        ja_doc="<ユーザー> - ユーザーを `sudo` グループに追加",
+        kr_doc="<사용자> - 사용자를 `sudo` 그룹에 추가",
+        ar_doc="<مستخدم> - إضافة مستخدم إلى مجموعة `sudo`",
+        es_doc="<usuario> - Agregar usuario al grupo `sudo`",
+    )
     async def sudoadd(self, message: Message):
         """<user> - Add user to `sudo`"""
         await self._add_to_group(message, "sudo")
 
-    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `owner`")
+    @loader.command(
+        ru_doc="<пользователь> - Добавить пользователя в группу `owner`",
+        de_doc="<Benutzer> - Füge Benutzer zur `owner`-Gruppe hinzu",
+        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `owner` समूह में जोड़ें",
+        tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubuna ekle",
+        uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhiga qo'shish",
+        ja_doc="<ユーザー> - ユーザーを `owner` グループに追加",
+        kr_doc="<사용자> - 사용자를 `owner` 그룹에 추가",
+        ar_doc="<مستخدم> - إضافة مستخدم إلى مجموعة `owner`",
+        es_doc="<usuario> - Agregar usuario al grupo `owner`",
+    )
     async def owneradd(self, message: Message):
         """<user> - Add user to `owner`"""
         await self._add_to_group(message, "owner")
 
-    @loader.command(ru_doc="<пользователь> - Добавить пользователя в группу `support`")
+    @loader.command(
+        ru_doc="<пользователь> - Добавить пользователя в группу `support`",
+        de_doc="<Benutzer> - Füge Benutzer zur `support`-Gruppe hinzu",
+        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `support` समूह में जोड़ें",
+        tr_doc="<kullanıcı> - Kullanıcıyı `support` grubuna ekle",
+        uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhiga qo'shish",
+        ja_doc="<ユーザー> - ユーザーを `support` グループに追加",
+        kr_doc="<사용자> - 사용자를 `support` 그룹에 추가",
+        ar_doc="<مستخدم> - إضافة مستخدم إلى مجموعة `support`",
+        es_doc="<usuario> - Agregar usuario al grupo `support`",
+    )
     async def supportadd(self, message: Message):
         """<user> - Add user to `support`"""
         await self._add_to_group(message, "support")
 
-    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `sudo`")
+    @loader.command(
+        ru_doc="<пользователь> - Удалить пользователя из группы `sudo`",
+        de_doc="<Benutzer> - Entferne Benutzer aus der `sudo`-Gruppe",
+        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `sudo` समूह से हटा दें",
+        tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubundan kaldır",
+        uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhidan olib tashlash",
+        ja_doc="<ユーザー> - ユーザーを `sudo` グループから削除",
+        kr_doc="<사용자> - 사용자를 `sudo` 그룹에서 제거",
+        ar_doc="<مستخدم> - إزالة مستخدم من مجموعة `sudo`",
+        es_doc="<usuario> - Eliminar usuario del grupo `sudo`",
+    )
     async def sudorm(self, message: Message):
         """<user> - Remove user from `sudo`"""
         await self._remove_from_group(message, "sudo")
 
-    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `owner`")
+    @loader.command(
+        ru_doc="<пользователь> - Удалить пользователя из группы `owner`",
+        de_doc="<Benutzer> - Entferne Benutzer aus der `owner`-Gruppe",
+        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `owner` समूह से हटा दें",
+        tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubundan kaldır",
+        uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhidan olib tashlash",
+        ja_doc="<ユーザー> - ユーザーを `owner` グループから削除",
+        kr_doc="<사용자> - 사용자를 `owner` 그룹에서 제거",
+        ar_doc="<مستخدم> - إزالة مستخدم من مجموعة `owner`",
+        es_doc="<usuario> - Eliminar usuario del grupo `owner`",
+    )
     async def ownerrm(self, message: Message):
         """<user> - Remove user from `owner`"""
         await self._remove_from_group(message, "owner")
 
-    @loader.command(ru_doc="<пользователь> - Удалить пользователя из группы `support`")
+    @loader.command(
+        ru_doc="<пользователь> - Удалить пользователя из группы `support`",
+        de_doc="<Benutzer> - Entferne Benutzer aus der `support`-Gruppe",
+        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `support` समूह से हटा दें",
+        tr_doc="<kullanıcı> - Kullanıcıyı `support` grubundan kaldır",
+        uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhidan olib tashlash",
+        ja_doc="<ユーザー> - ユーザーを `support` グループから削除",
+        kr_doc="<사용자> - 사용자를 `support` 그룹에서 제거",
+        ar_doc="<مستخدم> - إزالة مستخدم من مجموعة `support`",
+        es_doc="<usuario> - Eliminar usuario del grupo `support`",
+    )
     async def supportrm(self, message: Message):
         """<user> - Remove user from `support`"""
         await self._remove_from_group(message, "support")
 
-    @loader.command(ru_doc="Показать список пользователей в группе `sudo`")
+    @loader.command(
+        ru_doc="Показать список пользователей в группе `sudo`",
+        de_doc="Zeige Liste der Benutzer in der `sudo`-Gruppe",
+        hi_doc="उपयोगकर्ताओं की सूची दिखाएं `sudo` समूह में",
+        tr_doc="`sudo` grubundaki kullanıcıların listesini göster",
+        uz_doc="`sudo` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
+        ja_doc="`sudo` グループのユーザー一覧を表示",
+        kr_doc="`sudo` 그룹의 사용자 목록 표시",
+        ar_doc="عرض قائمة المستخدمين في مجموعة `sudo`",
+        es_doc="Mostrar lista de usuarios en el grupo `sudo`",
+    )
     async def sudolist(self, message: Message):
         """List users in `sudo`"""
         await self._list_group(message, "sudo")
 
-    @loader.command(ru_doc="Показать список пользователей в группе `owner`")
+    @loader.command(
+        ru_doc="Показать список пользователей в группе `owner`",
+        de_doc="Zeige Liste der Benutzer in der `owner`-Gruppe",
+        hi_doc="उपयोगकर्ताओं की सूची दिखाएं `owner` समूह में",
+        tr_doc="`owner` grubundaki kullanıcıların listesini göster",
+        uz_doc="`owner` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
+        ja_doc="`owner` グループのユーザー一覧を表示",
+        kr_doc="`owner` 그룹의 사용자 목록 표시",
+        ar_doc="عرض قائمة المستخدمين في مجموعة `owner`",
+        es_doc="Mostrar lista de usuarios en el grupo `owner`",
+    )
     async def ownerlist(self, message: Message):
         """List users in `owner`"""
         await self._list_group(message, "owner")
 
-    @loader.command(ru_doc="Показать список пользователей в группе `support`")
+    @loader.command(
+        ru_doc="Показать список пользователей в группе `support`",
+        de_doc="Zeige Liste der Benutzer in der `support`-Gruppe",
+        hi_doc="उपयोगकर्ताओं की सूची दिखाएं `support` समूह में",
+        tr_doc="`support` grubundaki kullanıcıların listesini göster",
+        uz_doc="`support` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
+        ja_doc="`support` グループのユーザー一覧を表示",
+        kr_doc="`support` 그룹의 사용자 목록 표시",
+        ar_doc="عرض قائمة المستخدمين في مجموعة `support`",
+        es_doc="Mostrar lista de usuarios en el grupo `support`",
+    )
     async def supportlist(self, message: Message):
         """List users in `support`"""
         await self._list_group(message, "support")
@@ -1063,7 +1914,15 @@ class HikkaSecurityMod(loader.Module):
         await self._confirm(message, "user", target, possible_rules[0], duration)
 
     @loader.command(
-        ru_doc='<"user"/"chat"> - Удалить правило таргетированной безопасности'
+        ru_doc='<"user"/"chat"> - Удалить правило таргетированной безопасности',
+        de_doc='<"user"/"chat"> - Entferne eine Regel für die gezielte Sicherheit',
+        tr_doc='<"user"/"chat"> - Hedefli güvenlik için bir kural kaldırın',
+        hi_doc='<"user"/"chat"> - लक्षित सुरक्षा के लिए एक नियम निकालें',
+        uz_doc='<"user"/"chat"> - Maqsadli xavfsizlik uchun bir qoidani olib tashlang',
+        ja_doc='<"user"/"chat"> - 対象セキュリティのルールを削除します',
+        kr_doc='<"user"/"chat"> - 대상 보안 규칙을 제거합니다',
+        ar_doc='<"user"/"chat"> - إزالة قاعدة أمنية مستهدفة',
+        es_doc='<"user"/"chat"> - Eliminar una regla de seguridad dirigida',
     )
     async def tsecrm(self, message: Message):
         """<"user"/"chat"> - Remove targeted security rule"""
@@ -1126,7 +1985,36 @@ class HikkaSecurityMod(loader.Module):
         ru_doc=(
             '<"user"/"chat"> [цель - пользователь или чат] [правило - команда или'
             " модуль] [время] - Настроить таргетированную безопасность"
-        )
+        ),
+        de_doc=(
+            '<"user"/"chat"> [Ziel - Benutzer oder Chat] [Regel - Befehl oder'
+            " Modul] [Zeit] - Targeted-Sicherheit einstellen"
+        ),
+        tr_doc=(
+            '<"user"/"chat"> [hedef - kullanıcı veya sohbet] [kural - komut veya'
+            " modül] [zaman] - Hedefli güvenliği ayarla"
+        ),
+        hi_doc=(
+            '<"user"/"chat"> [लक्ष्य - उपयोगकर्ता या चैट] [नियम - कमांड या'
+            " मॉड्यूल] [समय] - लक्षित सुरक्षा सेट करें"
+        ),
+        uz_doc=(
+            '<"user"/"chat"> [maqsad - foydalanuvchi yoki chat] [qoida - buyruq yoki'
+            " modul] [vaqt] - Maqsadli xavfsizlikni sozlash"
+        ),
+        ja_doc=(
+            '<"user"/"chat"> [ターゲット - ユーザーまたはチャット] [ルール - コマンドまたは'
+            " モジュール] [時間] - ターゲットセキュリティを設定します"
+        ),
+        kr_doc='<"user"/"chat"> [대상 - 사용자 또는 채팅] [규칙 - 명령 또는 모듈] [시간] - 타겟 보안 설정',
+        ar_doc=(
+            '<"user"/"chat"> [الهدف - المستخدم أو الدردشة] [القاعدة - الأمر أو'
+            " وحدة] [الوقت] - تعيين الأمن المستهدف"
+        ),
+        es_doc=(
+            '<"user"/"chat"> [objetivo - usuario o chat] [regla - comando o'
+            " módulo] [tiempo] - Establecer seguridad dirigida"
+        ),
     )
     async def tsec(self, message: Message):
         """<"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule

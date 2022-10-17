@@ -257,11 +257,13 @@ class Gallery(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji()
+                        utils.get_platform_emoji(self._client)
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + " <b>Opening gallery...</b>"
+                    + self._client.loader._lookup("translations").strings(
+                        "opening_gallery"
+                    )
                 )
             except Exception:
                 status_message = None
@@ -284,7 +286,9 @@ class Gallery(InlineUnit):
                 else None,
             )
         except ChatSendInlineForbiddenError:
-            await answer("🚫 <b>You can't send inline units in this chat</b>")
+            await answer(
+                self._client.loader._lookup("translations").strings("inline403")
+            )
         except Exception:
             logger.exception("Error sending inline gallery")
 
@@ -294,7 +298,9 @@ class Gallery(InlineUnit):
                 logger.exception("Can't send gallery")
 
                 if not self._db.get(main.__name__, "inlinelogs", True):
-                    msg = "<b>🚫 Gallery invoke failed! More info in logs</b>"
+                    msg = self._client.loader._lookup("translations").strings(
+                        "invoke_failed"
+                    )
                 else:
                     exc = traceback.format_exc()
                     # Remove `Traceback (most recent call last):`
@@ -542,7 +548,7 @@ class Gallery(InlineUnit):
                 - self._units[unit_id]["current_index"]
                 < self._units[unit_id].get("preload", 0) // 2
             ):
-                logger.debug(f"Started preload for gallery {unit_id}")
+                logger.debug("Started preload for gallery %s", unit_id)
                 asyncio.ensure_future(self._load_gallery_photos(unit_id))
 
         try:
@@ -573,9 +579,9 @@ class Gallery(InlineUnit):
             return self._units[unit_id]["photos"][self._units[unit_id]["current_index"]]
         except IndexError:
             logger.error(
-                "Got IndexError in `_get_next_photo`. "
-                f"{self._units[unit_id]['current_index']=} / "
-                f"{len(self._units[unit_id]['photos'])=}"
+                "Got IndexError in `_get_next_photo`. %s / %s",
+                self._units[unit_id]["current_index"],
+                len(self._units[unit_id]["photos"]),
             )
             return self._units[unit_id]["photos"][0]
 

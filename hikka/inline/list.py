@@ -187,11 +187,13 @@ class List(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji()
+                        utils.get_platform_emoji(self._client)
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + " <b>Opening list...</b>"
+                    + self._client.loader._lookup("translations").strings(
+                        "opening_list"
+                    )
                 )
             except Exception:
                 status_message = None
@@ -214,12 +216,16 @@ class List(InlineUnit):
                 else None,
             )
         except ChatSendInlineForbiddenError:
-            await answer("🚫 <b>You can't send inline units in this chat</b>")
+            await answer(
+                self._client.loader._lookup("translations").strings("inline403")
+            )
         except Exception:
             logger.exception("Can't send list")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = "<b>🚫 List invoke failed! More info in logs</b>"
+                msg = self._client.loader._lookup("translations").strings(
+                    "invoke_failed"
+                )
             else:
                 exc = traceback.format_exc()
                 # Remove `Traceback (most recent call last):`

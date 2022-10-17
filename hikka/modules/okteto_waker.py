@@ -26,9 +26,18 @@ logger = logging.getLogger(__name__)
 
 @loader.tds
 class OktetoMod(loader.Module):
-    """Stuff related to Hikka Okteto cloud installation"""
+    """Helps Hikka to stay awake on Okteto"""
 
     strings = {"name": "Okteto"}
+    strings_ru = {"_cls_doc": "Помогает Hikka оставаться активной на Okteto"}
+    strings_de = {"_cls_doc": "Hilft Hikka, auf Okteto wach zu bleiben"}
+    strings_uz = {"_cls_doc": "Okteto-da Hikka-ni yashaydigan yordam beradi"}
+    strings_hi = {"_cls_doc": "Okteto पर Hikka को जागा रखने में मदद करता है"}
+    strings_tr = {"_cls_doc": "Hikka'nın Okteto'da aktif kalmasını sağlar"}
+    strings_ja = {"_cls_doc": "OktetoでHikkaを起こすのを助けます"}
+    strings_kr = {"_cls_doc": "Okteto에서 Hikka를 깨우는 데 도움이됩니다"}
+    strings_ar = {"_cls_doc": "يساعد هيكا على البقاء مستيقظًا على Okteto"}
+    strings_es = {"_cls_doc": "Ayuda a Hikka a quedarse despierto en Okteto"}
 
     _env_wait_interval = 10
     _overall_polling_interval = 30 * 60
@@ -121,8 +130,10 @@ class OktetoMod(loader.Module):
         if (
             not getattr(message, "raw_text", False)
             or not main.get_config_key("okteto_uri")
-            or main.get_config_key("okteto_uri") not in message.raw_text
-            and "Link previews was updated successfully" not in message.raw_text
+            or (
+                main.get_config_key("okteto_uri") not in message.raw_text
+                and "Link previews was updated successfully" not in message.raw_text
+            )
             or utils.get_chat_id(message) != 169642392
         ):
             return

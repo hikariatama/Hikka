@@ -148,6 +148,426 @@ class UpdaterMod(loader.Module):
         ),
     }
 
+    strings_de = {
+        "source": (
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Der Quellcode kann"
+            " hier</b> <a href='{}'>gelesen</a> <b>werden</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Dein {}"
+            " wird neugestartet...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Updates"
+            " werden heruntergeladen...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Updates"
+            " werden installiert...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Neustart erfolgreich!"
+            " {}</b>\n<i>Aber Module werden noch geladen...</i>\n<i>Neustart dauerte {}"
+            " Sekunden</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=6323332130579416910>👍</emoji> <b>Dein Userbot ist"
+            " vollständig geladen! {}</b>\n<i>Vollständiger Neustart dauerte {}"
+            " Sekunden</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Sicherer Bootvorgang abgeschlossen! {}</b>\n<i>Neustart dauerte"
+            " {} Sekunden</i>"
+        ),
+        "origin_cfg_doc": "Link, von dem Updates heruntergeladen werden",
+        "btn_restart": "🔄 Neustart",
+        "btn_update": "🧭 Update",
+        "restart_confirm": "❓ <b>Bist du sicher, dass du neustarten willst?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>Bist du sicher, dass du in den sicheren Modus neustarten willst?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>Bist du sicher, dass"
+            " du updaten willst??\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": (
+            "🚸 <b>Du hast die neueste Version. Willst du trotzdem updaten?</b>"
+        ),
+        "cancel": "🚫 Abbrechen",
+        "_cls_doc": "Aktualisiert den Userbot",
+        "lavhost_restart": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Dein {}"
+            " wird neugestartet...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Dein {}"
+            " wird aktualisiert...</b>"
+        ),
+    }
+
+    strings_hi = {
+        "source": (
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>सोर्स कोड यहाँ पढ़ा"
+            " जा सकता है</b> <a href='{}'>पढ़ें</a> <b>है</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>आपका {}"
+            " फिर से शुरू किया जा रहा है...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>अपडेट"
+            " डाउनलोड हो रहे हैं...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>अपडेट"
+            " इंस्टॉल हो रहे हैं...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>पुनः आरंभ"
+            " सफल! {}</b>\n<i>लेकिन मॉड्यूल भी लोड हो रहे हैं...</i>\n<i>पुनः आरंभ"
+            " {} सेकंड ले गया</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=6323332130579416910>👍</emoji> <b>आपका यूजरबॉट पूरी तरह"
+            " से लोड हो गया है! {}</b>\n<i>पूरा पुनः आरंभ {} सेकंड ले गया</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>सुरक्षित बूट प्रक्रिया पूरी हो गई! {}</b>\n<i>पुनः आरंभ {}"
+            " सेकंड ले गया</i>"
+        ),
+        "origin_cfg_doc": "से अपडेट डाउनलोड किया जाएगा",
+        "btn_restart": "🔄 पुनः आरंभ",
+        "btn_update": "🧭 अपडेट",
+        "restart_confirm": "❓ <b>क्या आप वाकई पुनः आरंभ करना चाहते हैं?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>क्या आप वाकई सुरक्षित मोड में पुनः आरंभ करना चाहते हैं?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>क्या आप वाकई अपडेट करना चाहते हैं??\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": (
+            "🚸 <b>आपका नवीनतम संस्करण है। क्या आप भी अपडेट करना चाहते हैं?</b>"
+        ),
+        "cancel": "🚫 रद्द करें",
+        "_cls_doc": "उपयोगकर्ता बॉट को अपडेट करता है",
+        "lavhost_restart": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>आपका {}"
+            " पुनः आरंभ हो रहा है...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>आपका {}"
+            " अपडेट हो रहा है...</b>"
+        ),
+    }
+
+    strings_tr = {
+        "source": (
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Manba kodini shu <a"
+            " href='{}'>yerdan</a> oʻqing</b>"
+        ),
+        "restarting": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{}"
+            " yeniden başlatılıyor...</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{}"
+            " yeniden başlatılıyor...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Güncelleme"
+            " indiriliyor...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Güncelleme"
+            " yükleniyor...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Yeniden başlatma"
+            " başarılı! {}</b>\n<i>Modüller yükleniyor...</i>\n<i>Yeniden başlatma {}"
+            " saniye sürdü</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=6323332130579416910>👍</emoji> <b>Botunuz tamamen"
+            " yüklendi! {}</b>\n<i>Toplam yeniden başlatma {} saniye sürdü</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Güvenli mod başarıyla tamamlandı! {}</b>\n<i>Yeniden başlatma {}"
+            " saniye sürdü</i>"
+        ),
+        "origin_cfg_doc": "dan güncelleme indirilecek",
+        "btn_restart": "🔄 Yeniden başlat",
+        "btn_update": "🧭 Güncelle",
+        "restart_confirm": "❓ <b>Gerçekten yeniden başlatmak istiyor musunuz?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>Gerçekten güvenli modda yeniden başlatmak istiyor musunuz?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>Gerçekten güncellemek istiyor musunuz??\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>Zaten son sürümünüz. Güncelleme yapmak ister misiniz?</b>",
+        "cancel": "🚫 İptal",
+        "_cls_doc": "Kullanıcı botunu günceller",
+        "lavhost_restart": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{}"
+            " yeniden başlatılıyor...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{}"
+            " güncelleniyor...</b>"
+        ),
+    }
+
+    strings_uz = {
+        "restarting": (
+            "<emoji document_id=5469986291380657759>🕗</emoji> <b>{}"
+            " qayta ishga tushirilmoqda...</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=5469986291380657759>🕗</emoji> <b>{}"
+            " qayta ishga tushirilmoqda...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=5469986291380657759>🕗</emoji> <b>Yangilanish"
+            " yuklanmoqda...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=5469986291380657759>🕗</emoji> <b>Yangilanish"
+            " o'rnatilmoqda...</b>"
+        ),
+        "success": (
+            "<emoji document_id=5469986291380657759>⏱</emoji> <b>Qayta ishga tushirish"
+            " muvaffaqiyatli yakunlandi! {}</b>\n<i>Modullar"
+            " yuklanmoqda...</i>\n<i>Qayta ishga tushirish {} soniya davom etdi</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=5469986291380657759>👍</emoji> <b>Sizning botingiz"
+            " to'liq yuklandi! {}</b>\n<i>Jami qayta ishga tushirish {} soniya davom"
+            " etdi</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Xavfsiz rejim muvaffaqiyatli yakunlandi! {}</b>\n<i>Qayta ishga"
+            " tushirish {} soniya davom etdi</i>"
+        ),
+        "origin_cfg_doc": "dan yangilanish yuklanadi",
+        "btn_restart": "🔄 Qayta ishga tushirish",
+        "btn_update": "🧭 Yangilash",
+        "restart_confirm": "❓ <b>Haqiqatan ham qayta ishga tushirmoqchimisiz?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>Haqiqatan ham xavfsiz rejimda qayta ishga tushirmoqchimisiz?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>Haqiqatan ham yangilamoqchimisiz??\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": (
+            "🚸 <b>Siz allaqachon eng so'nggi versiyasiz. Yangilamoqchimisiz?</b>"
+        ),
+        "cancel": "🚫 Bekor qilish",
+        "_cls_doc": "Foydalanuvchi botini yangilaydi",
+        "lavhost_restart": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
+            " qayta ishga tushirilmoqda...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
+            " yangilanmoqda...</b>"
+        ),
+    }
+
+    strings_ja = {
+        "restarting": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} 再起動中...</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} 再起動中...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>アップデートをダウンロード中...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>アップデートをインストール中...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6318970114548958978>⏱</emoji> <b>再起動が完了しました!"
+            " {}</b>\n<i>モジュールをダウンロード中...</i>\n<i>再起動 {} 秒かかりました</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=6318970114548958978>👍</emoji> <b>あなたのボットは完全に"
+            "ダウンロードされました! {}</b>\n<i>再起動 {} 秒かかりました</i>"
+        ),
+        "secure_boot_complete": "🔒 <b>セキュアモードが完了しました! {}</b>\n<i>再起動 {} 秒かかりました</i>",
+        "origin_cfg_doc": "からアップデートをダウンロード",
+        "btn_restart": "🔄 再起動",
+        "btn_update": "🧭 アップデート",
+        "restart_confirm": "❓ <b>本当に再起動しますか？</b>",
+        "secure_boot_confirm": "❓ <b>本当にセキュアモードで再起動しますか？</b>",
+        "update_confirm": (
+            "❓ <b>本当にアップデートしますか？\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>すでに最新バージョンです。アップデートしますか？</b>",
+        "cancel": "🚫 キャンセル",
+        "_cls_doc": "ユーザーがボットをアップデートします",
+        "lavhost_restart": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{} 再起動中...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{} アップデート中...</b>"
+        ),
+    }
+
+    strings_kr = {
+        "restarting": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} 재시작 중...</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} 재시작 중...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>업데이트 다운로드 중...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>업데이트 설치 중...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6318970114548958978>⏱</emoji> <b>재시작이 완료되었습니다!"
+            " {}</b>\n<i>모듈을다운로드 중...</i>\n<i>재시작 {} 초 걸렸습니다</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=6318970114548958978>👍</emoji> <b>당신의 봇은 완전히"
+            "다운로드 되었습니다! {}</b>\n<i>재시작 {} 초 걸렸습니다</i>"
+        ),
+        "secure_boot_complete": "🔒 <b>보안 모드가 완료되었습니다! {}</b>\n<i>재시작 {} 초 걸렸습니다</i>",
+        "origin_cfg_doc": "에서 업데이트 다운로드",
+        "btn_restart": "🔄 재시작",
+        "btn_update": "🧭 업데이트",
+        "restart_confirm": "❓ <b>재시작 하시겠습니까?</b>",
+        "secure_boot_confirm": "❓ <b>보안 모드로 재시작 하시겠습니까?</b>",
+        "update_confirm": (
+            "❓ <b>업데이트 하시겠습니까?\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>이미 최신 버전입니다. 업데이트 하시겠습니까?</b>",
+        "cancel": "🚫 취소",
+        "_cls_doc": "사용자가 봇 업데이트",
+        "lavhost_restart": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{} 재시작 중...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{} 업데이트 중...</b>"
+        ),
+    }
+
+    strings_ar = {
+        "restarting": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{}"
+            " إعادة التشغيل...</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{}"
+            " إعادة التشغيل...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>تحميل التحديث...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>تثبيت التحديث...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6318970114548958978>⏱</emoji> <b>تم إعادة التشغيل"
+            " بنجاح! {}</b>\n<i>جاري تنزيلالوحدات...</i>\n<i>أستغرق إعادة التشغيل {}"
+            " ثانية</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=6318970114548958978>👍</emoji> <b>تم تحميل البوت بنجاح!"
+            " {}</b>\n<i>أستغرق إعادة التشغيل {} ثانية</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>تم إكمال وضع الإقلاع الآمن! {}</b>\n<i>أستغرق إعادة التشغيل {}"
+            " ثانية</i>"
+        ),
+        "origin_cfg_doc": "تحميل التحديث من",
+        "btn_restart": "🔄 إعادة التشغيل",
+        "btn_update": "🧭 تحديث",
+        "restart_confirm": "❓ <b>هل تريد إعادة التشغيل؟</b>",
+        "secure_boot_confirm": "❓ <b>هل تريد إعادة التشغيل في وضع الإقلاع الآمن؟</b>",
+        "update_confirm": (
+            "❓ <b>هل تريد تحديث؟\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>هذا هو آخر إصدار. هل تريد تحديث؟</b>",
+        "cancel": "🚫 إلغاء",
+        "_cls_doc": "المستخدم يعيد تشغيل البوت",
+        "lavhost_restart": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{}"
+            " إعادة التشغيل...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{} تحديث...</b>"
+        ),
+    }
+
+    strings_es = {
+        "restarting": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} Reiniciando...</b>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} Reiniciando...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Descargando la"
+            " actualización...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Instalando la"
+            " actualización...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6318970114548958978>⏱</emoji> <b>Reiniciado con éxito!"
+            " {}</b>\n<i>Descargandomódulos...</i>\n<i>Reiniciado en {} segundos</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=6318970114548958978>👍</emoji> <b>¡Bot actualizado con"
+            " éxito! {}</b>\n<i>Reiniciado en {} segundos</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>¡Modo de arranque seguro activado! {}</b>\n<i>Reiniciado en {}"
+            " segundos</i>"
+        ),
+        "origin_cfg_doc": "Descargar actualización desde",
+        "btn_restart": "🔄 Reiniciar",
+        "btn_update": "🧭 Actualizar",
+        "restart_confirm": "❓ <b>¿Quieres reiniciar?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>¿Quieres reiniciar en modo de arranque seguro?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>¿Quieres actualizar?\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>Esta es la última versión. ¿Quieres actualizar?</b>",
+        "cancel": "🚫 Cancelar",
+        "_cls_doc": "El usuario reinicia el bot",
+        "lavhost_restart": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{} Reiniciando...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{}"
+            " Actualizando...</b>"
+        ),
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -159,7 +579,17 @@ class UpdaterMod(loader.Module):
         )
 
     @loader.owner
-    @loader.command(ru_doc="Перезагружает юзербот")
+    @loader.command(
+        ru_doc="Перезагружает юзербот",
+        de_doc="Startet den Userbot neu",
+        tr_doc="Kullanıcı botunu yeniden başlatır",
+        uz_doc="Foydalanuvchi botini qayta ishga tushiradi",
+        hi_doc="उपयोगकर्ता बॉट को रीस्टार्ट करता है",
+        ja_doc="ユーザーボットを再起動します",
+        kr_doc="사용자 봇을 다시 시작합니다",
+        ar_doc="يعيد تشغيل البوت",
+        es_doc="Reinicia el bot",
+    )
     async def restart(self, message: Message):
         """Restarts the userbot"""
         secure_boot = "--secure-boot" in utils.get_args_raw(message)
@@ -220,7 +650,7 @@ class UpdaterMod(loader.Module):
         msg_obj = await utils.answer(
             msg_obj,
             self.strings("restarting_caption").format(
-                utils.get_platform_emoji()
+                utils.get_platform_emoji(self._client)
                 if self._client.hikka_me.premium
                 and CUSTOM_EMOJIS
                 and isinstance(msg_obj, Message)
@@ -310,7 +740,17 @@ class UpdaterMod(loader.Module):
             logger.exception("Req install failed")
 
     @loader.owner
-    @loader.command(ru_doc="Скачивает обновления юзербота")
+    @loader.command(
+        ru_doc="Скачивает обновления юзербота",
+        de_doc="Lädt Updates für den Userbot herunter",
+        tr_doc="Userbot güncellemelerini indirir",
+        uz_doc="Userbot yangilanishlarini yuklaydi",
+        hi_doc="यूजरबॉट के अपडेट डाउनलोड करता है",
+        ja_doc="ユーザーボットのアップデートをダウンロードします",
+        kr_doc="유저봇 업데이트를 다운로드합니다",
+        ar_doc="يقوم بتحميل تحديثات البوت",
+        es_doc="Descarga las actualizaciones del bot",
+    )
     async def update(self, message: Message):
         """Downloads userbot updates"""
         try:
@@ -389,7 +829,17 @@ class UpdaterMod(loader.Module):
             return
 
     @loader.unrestricted
-    @loader.command(ru_doc="Показать ссылку на исходный код проекта")
+    @loader.command(
+        ru_doc="Показать ссылку на исходный код проекта",
+        de_doc="Zeigt den Link zum Quellcode des Projekts an",
+        tr_doc="Proje kaynak kodu bağlantısını gösterir",
+        uz_doc="Loyihaning manba kodiga havola ko'rsatadi",
+        hi_doc="प्रोजेक्ट कोड का लिंक दिखाएं",
+        ja_doc="プロジェクトのソースコードへのリンクを表示します",
+        kr_doc="프로젝트 소스 코드 링크를 표시합니다",
+        ar_doc="يعرض رابط مصدر البوت",
+        es_doc="Muestra el enlace al código fuente del proyecto",
+    )
     async def source(self, message: Message):
         """Links the source code of this project"""
         await utils.answer(

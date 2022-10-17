@@ -271,11 +271,13 @@ class Form(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji()
+                        utils.get_platform_emoji(self._client)
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + " <b>Opening form...</b>"
+                    + self._client.loader._lookup("translations").strings(
+                        "opening_form"
+                    ),
                 )
             except Exception:
                 status_message = None
@@ -345,12 +347,16 @@ class Form(InlineUnit):
                 else None,
             )
         except ChatSendInlineForbiddenError:
-            await answer("🚫 <b>You can't send inline units in this chat</b>")
+            await answer(
+                self._client.loader._lookup("translations").strings("inline403")
+            )
         except Exception:
             logger.exception("Can't send form")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = "<b>🚫 Form invoke failed! More info in logs</b>"
+                msg = self._client.loader._lookup("translations").strings(
+                    "invoke_failed"
+                )
             else:
                 exc = traceback.format_exc()
                 # Remove `Traceback (most recent call last):`
@@ -409,8 +415,9 @@ class Form(InlineUnit):
                                 id=utils.rand(20),
                                 title=button["input"],
                                 description=(
-                                    "⚠️ Do not remove ID!"
-                                    f" {random.choice(VERIFICATION_EMOJIES)}"
+                                    self._client.loader._lookup("translations")
+                                    .strings("keep_id")
+                                    .format(random.choice(VERIFICATION_EMOJIES))
                                 ),
                                 input_message_content=InputTextMessageContent(
                                     "🔄 <b>Transferring value to userbot...</b>\n"

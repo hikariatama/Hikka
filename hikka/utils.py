@@ -485,9 +485,8 @@ async def answer(
                 result = await message.client.send_file(
                     message.peer_id,
                     file,
-                    caption=(
-                        "<b>📤 Command output seems to be too long, so it's sent in"
-                        " file.</b>"
+                    caption=message.client.loader._lookup("translations").strings(
+                        "too_long"
                     ),
                 )
 
@@ -876,16 +875,27 @@ def get_named_platform() -> str:
     return f"✌️ lavHost {os.environ['LAVHOST']}" if "LAVHOST" in os.environ else "📻 VDS"
 
 
-def get_platform_emoji() -> str:
+def get_platform_emoji(client: typing.Optional[CustomTelegramClient] = None) -> str:
     """
     Returns custom emoji for current platform
+    :client: It is recommended to pass the client in here in order
+        to provide correct emojis for rtl languages. Make sure, that other strings
+        you use, are adapted to rtl languages as well. Otherwise, the string
+        will be broken.
     :return: Emoji entity in string
     """
     BASE = (
-        "<emoji document_id={}>🌘</emoji><emoji"
-        " document_id=5195311729663286630>🌘</emoji><emoji"
-        " document_id=5195045669324201904>🌘</emoji>"
+        "<emoji document_id={}>🌘</emoji>",
+        "<emoji document_id=5195311729663286630>🌘</emoji>",
+        "<emoji document_id=5195045669324201904>🌘</emoji>",
     )
+
+    if client and (
+        client.loader._db.get("hikka.translations", "lang", False) or ""
+    ).startswith("ar"):
+        BASE = tuple(reversed(BASE))
+
+    BASE = "".join(BASE)
 
     if "GOORM" in os.environ:
         return BASE.format(5298947740032573902)

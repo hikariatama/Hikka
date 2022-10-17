@@ -73,7 +73,7 @@ class HikkaSettingsMod(loader.Module):
         "invoke": (
             "<emoji document_id=5215519585150706301>👍</emoji> <b>Invoked internal debug"
             " method </b><code>{}</code>\n\n<emoji"
-            " document_id=5784891605601225888>🔵</emoji> <b>Result: \n{}</b>"
+            " document_id=5784891605601225888>🔵</emoji> <b>Result:\n{}</b>"
         ),
         "invoking": (
             "<emoji document_id=5213452215527677338>⏳</emoji> <b>Invoking internal"
@@ -327,6 +327,1006 @@ class HikkaSettingsMod(loader.Module):
         "enable_stats": "🚫 Анонимная стата запрещена",
     }
 
+    strings_de = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji>"
+            " <b>Beobachter:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Beobachter {} nicht"
+            "gefunden</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Watcher {} ist jetzt"
+            " <u>aus</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Watcher {} ist jetzt"
+            " <u>aktiviert</u></b>"
+        ),
+        "arg": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Bitte geben Sie einen"
+            " Namen einHausmeister</b>"
+        ),
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick-Status für"
+            " dieser Benutzer: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Geben Sie einen Befehl"
+            " anwas NoNick aktivieren/\\deaktivieren sollte</b>"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick-Status für"
+            " </b><code>{}</code><b>: {}</b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Befehl nicht"
+            " gefunden</b>"
+        ),
+        "inline_settings": (
+            "⚙️ <b>Hier können Sie Ihre Hikka-Einstellungen verwalten</b>"
+        ),
+        "confirm_update": (
+            "🧭 <b>Bestätige das Update. Der Userbot wird neu gestartet</b>"
+        ),
+        "confirm_restart": "🔄 <b>Neustart bestätigen</b>",
+        "suggest_fs": "✅ Speichermodule vorschlagen",
+        "do_not_suggest_fs": "🚫 Speichermodule vorschlagen",
+        "use_fs": "✅ Module immer speichern",
+        "do_not_use_fs": "🚫 Module immer speichern",
+        "btn_restart": "🔄 Neustart",
+        "btn_update": "🧭 Aktualisieren",
+        "close_menu": "😌 Menü schließen",
+        "custom_emojis": "✅ Benutzerdefinierte Emojis",
+        "no_custom_emojis": "🚫 Benutzerdefinierte Emojis",
+        "suggest_subscribe": "✅ Kanalabonnement vorschlagen",
+        "do_not_suggest_subscribe": "🚫 Kanalabonnement vorschlagen",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Dieser Befehl benötigt"
+            "im Chat ausführen</b>"
+        ),
+        "_cls_doc": "Erweiterte Hikka-Einstellungen",
+        "nonick_warning": (
+            "Achtung! Sie haben NoNick mit dem Standard-Präfix eingefügt!Sie sind"
+            " möglicherweise in Hikka-Chats stummgeschaltet. Ändern Sie das Präfix oder"
+            " schalten Sie das globale NoNick aus!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Auf Nachricht"
+            " antwortenBenutzer soll NoNick aktivieren</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>Diese Aktion wird Hikka vollständig von diesem Konto entfernen! Er"
+            " kann nichtAbbrechen</b>\n\n<i>- Alle Hikka-bezogenen Chats werden"
+            " gelöscht\n- SitzungHikka wird zurückgesetzt\n- Hikkas Inline-Bot wird"
+            " gelöscht</i>"
+        ),
+        "deauth_confirm_step2": (
+            "⚠️ <b>Sind Sie sicher, dass Sie Hikka deinstallieren möchten?</b>"
+        ),
+        "deauth_yes": "Ich bin sicher",
+        "deauth_no_1": "Ich bin mir nicht sicher",
+        "deauth_no_2": "Nicht sicher",
+        "deauth_no_3": "Nein",
+        "deauth_cancel": "🚫 Abbrechen",
+        "deauth_confirm_btn": "😢 Löschen",
+        "uninstall": "😢 <b>Hikka wird deinstalliert...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka wurde entfernt. Die Weboberfläche ist noch aktiv, andere können"
+            " hinzugefügt werdenKonten!</b>"
+        ),
+        "logs_cleared": "🗑 <b>Protokolle gelöscht</b>",
+        "cmd_nn_liste": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick aktiviert für"
+            " diese Befehle:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick aktiviert für"
+            " diese Benutzer:</b>\n\n{}"
+        ),
+        "chat_nn_liste": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick aktiviert für"
+            " diese Chats:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>Nichtszeigen...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>Dieser Befehl ermöglicht den Zugriff auf die Hikka-Weboberfläche."
+            " Seine Ausführung inÖffentliche Chats sind ein Sicherheitsrisiko. Am"
+            " besten durchführen es in <a href='tg://openmessage?user_id={}'>Empfohlene"
+            " Nachrichten</a>.Führen Sie </b><code>{}proxypass force_insecure</code><b>"
+            " zum Deaktivieren ausDies ist eine Warnung</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>Dieser Befehl ermöglicht den Zugriff auf die Hikka-Weboberfläche."
+            " Seine Ausführung inÖffentliche Chats sind ein Sicherheitsrisiko. Am"
+            " besten durchführen sie in <a"
+            " href='tg://openmessage?user_id={}'>Empfohlene Nachrichten</a>.</b>"
+        ),
+        "opening_tunnel": "🔁 <b>Öffne einen Tunnel zur Hikka-Weboberfläche...</b>",
+        "tunnel_opened": (
+            "🎉 <b>Der Tunnel ist offen. Dieser Link ist nicht länger als eine Stunde"
+            " aktiv</b>"
+        ),
+        "web_btn": "🌍 Webinterface",
+        "btn_yes": "🚸 Trotzdem geöffnet",
+        "btn_no": "🔻Schließen",
+        "lavhost_web": (
+            "✌️ <b>Dieser Link führt Sie zur Hikka-Weboberfläche auf"
+            " lavHost</b>\n\n<i>💡 Sie müssen sich mit Ihren Zugangsdaten anmelden,"
+            "beim Setzen von lavHost angegeben</i>"
+        ),
+        "disable_stats": "✅ Anonyme Statistiken sind erlaubt",
+        "enable_stats": "🚫 Anonyme Statistiken deaktiviert",
+    }
+
+    strings_tr = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji>"
+            " <b>İzleyiciler:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>İzleyici {} değil"
+            " bulundu</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>İzleyici {} şimdi"
+            " <u>kapalı</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>İzleyici {} şimdi"
+            " <u>etkin</u></b>"
+        ),
+        "arg": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Lütfen bir ad girin"
+            "bekçi</b>"
+        ),
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick durumu için"
+            " bu kullanıcı: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Bir komut belirtin"
+            "hangisi NoNick'i etkinleştirmeli/\\devre dışı bırakmalıdır</b>"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick durumu için"
+            " </b><code>{}</code><b>: {}</b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Komut bulunamadı</b>"
+        ),
+        "inline_settings": "⚙️ <b>Buradan Hikka ayarlarınızı yönetebilirsiniz</b>",
+        "confirm_update": (
+            "🧭 <b>Güncellemeyi onaylayın. Kullanıcı robotu yeniden başlatılacak</b>"
+        ),
+        "confirm_restart": "🔄 <b>Yeniden başlatmayı onayla</b>",
+        "suggest_fs": "✅ Kaydetme modülleri öner",
+        "do_not_suggest_fs": "🚫 Modüllerin kaydedilmesini öner",
+        "use_fs": "✅ Modülleri her zaman kaydet",
+        "do_not_use_fs": "🚫 Modülleri her zaman kaydet",
+        "btn_restart": "🔄 Yeniden Başlat",
+        "btn_update": "🧭 Güncelle",
+        "close_menu": "😌 Menüyü kapat",
+        "custom_emojis": "✅ Özel emojiler",
+        "no_custom_emojis": "🚫 Özel Emojiler",
+        "suggest_subscribe": "✅ Kanal aboneliği öner",
+        "do_not_suggest_subscribe": "🚫 Kanal aboneliği öner",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Bu komut gerekiyor"
+            " sohbette yürüt</b>"
+        ),
+        "_cls_doc": "Gelişmiş Hikka Ayarları",
+        "nonick_warning": (
+            "Dikkat! NoNick'i standart önekle eklediniz!"
+            "Hikka sohbetlerinde sesiniz kapatılmış olabilir. Ön eki değiştirin veya "
+            "küresel NoNick'i kapatın!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Mesajı yanıtla"
+            "NoNick'i etkinleştirmek için kullanıcı</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>Bu işlem Hikka'yı bu hesaptan tamamen kaldıracak! Yapamaz"
+            "iptal</b>\n\n<i>- Hikka ile ilgili tüm sohbetler silinecek\n- Oturum"
+            " Hikka sıfırlanacak\n- Hikka'nın satır içi botu silinecek</i>"
+        ),
+        "deauth_confirm_step2": (
+            "⚠️ <b>Hikka'yı kaldırmak istediğinizden emin misiniz?</b>"
+        ),
+        "deauth_yes": "Eminim",
+        "deauth_no_1": "Emin değilim",
+        "deauth_no_2": "Emin değilim",
+        "deauth_no_3": "Hayır",
+        "deauth_cancel": "🚫 İptal",
+        "deauth_confirm_btn": "😢 Sil",
+        "uninstall": "😢 <b>Hikka'yı Kaldırılıyor...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka kaldırıldı. Web arayüzü hala aktif, başkaları eklenebilir"
+            "hesaplar!</b>"
+        ),
+        "logs_cleared": "🗑 <b>Günlükler temizlendi</b>",
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick için"
+            " etkinleştirildi bu komutlar:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick için"
+            " etkinleştirildi bu kullanıcılar:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick için"
+            " etkinleştirildi bu sohbetler:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>Hiçbir şey"
+            "göster...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>Bu komut, Hikka web arayüzüne erişim sağlar. YürütülmesiGenel"
+            " sohbetler bir güvenlik riskidir. Tercihen gerçekleştirin <a"
+            " href='tg://openmessage?user_id={}'>Öne Çıkan Mesajlar</a> içinde.Devre"
+            " dışı bırakmak için </b><code>{}proxypass force_insecure</code><b>"
+            " çalıştırınbu bir uyarıdır</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>Bu komut, Hikka web arayüzüne erişim sağlar. Yürütülmesi"
+            "Genel sohbetler bir güvenlik riskidir. Tercihen gerçekleştirin"
+            " onu <a href='tg://openmessage?user_id={}'>Öne Çıkan Mesajlar</a>'da.</b>"
+        ),
+    }
+
+    strings_uz = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji>"
+            " <b>Kuzatuvchilar:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Kuzuvchi {} emas"
+            " topildi</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Kuzatuvchi {} hozir"
+            " <u>o'chirilgan</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Kuzatuvchi {} hozir"
+            " <u>yoqilgan</u></b>"
+        ),
+        "args": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Iltimos, nom kiriting"
+            "qorovul</b>"
+        ),
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick holati uchun"
+            " bu foydalanuvchi: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Buyruqni belgilang"
+            "bu NoNick</b>ni yoqish/o'chirish kerak"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick holati uchun"
+            " </b><code>{}</code><b>: {}</b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Buyruq topilmadi</b>"
+        ),
+        "inline_settings": (
+            "⚙️ <b>Bu yerda siz Hikka sozlamalaringizni boshqarishingiz mumkin</b>"
+        ),
+        "confirm_update": (
+            "🧭 <b>Yangilanishni tasdiqlang. Userbot qayta ishga tushiriladi</b>"
+        ),
+        "confirm_restart": "🔄 <b>Qayta ishga tushirishni tasdiqlang</b>",
+        "suggest_fs": "✅ Modullarni saqlashni taklif qilish",
+        "do_not_suggest_fs": "🚫 Modullarni saqlashni taklif qilish",
+        "use_fs": "✅ Modullarni doimo saqlash",
+        "do_not_use_fs": "🚫 Har doim modullarni saqlang",
+        "btn_restart": "🔄 Qayta ishga tushirish",
+        "btn_update": "🧭 Yangilash",
+        "close_menu": "😌 Menyuni yopish",
+        "custom_emojis": "✅ Maxsus emojilar",
+        "no_custom_emojis": "🚫 Maxsus kulgichlar",
+        "suggest_subscribe": "✅ Kanalga obuna bo'lishni taklif qilish",
+        "do_not_suggest_subscribe": "🚫 Kanalga obuna bo'lishni taklif qilish",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Bu buyruq kerak"
+            " chatda bajarish</b>"
+        ),
+        "_cls_doc": "Kengaytirilgan Hikka sozlamalari",
+        "nonick_warning": (
+            "Diqqat! NoNickni standart prefiks bilan kiritdingiz!Hikka chatlarida"
+            " ovozingiz o'chirilgan bo'lishi mumkin. Prefiksni o'zgartiring yoki global"
+            " NoNickni o'chiring!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Xatga javob berish"
+            "foydalanuvchi NoNick</b>ni yoqish uchun"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>Bu amal Hikkani ushbu hisobdan butunlay olib tashlaydi! U qila"
+            " olmaydiBekor qilish</b>\n\n<i>- Hikka bilan bog'liq barcha chatlar"
+            " o'chiriladi\n- Sessiya Hikka qayta tiklanadi\n- Hikkaning ichki boti"
+            " o'chiriladi</i>"
+        ),
+        "deauth_confirm_step2": (
+            "⚠️ <b>Haqiqatan ham Hikkani oʻchirib tashlamoqchimisiz?</b>"
+        ),
+        "deauth_yes": "Ishonchim komil",
+        "deauth_no_1": "Imonim yo'q",
+        "deauth_no_2": "Ishonasiz",
+        "deauth_no_3": "Yo'q",
+        "deauth_cancel": "🚫 Bekor qilish",
+        "deauth_confirm_btn": "😢 O'chirish",
+        "uninstall": "😢 <b>Hikka o'chirilmoqda...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka oʻchirildi. Veb-interfeys hali ham faol, boshqalarni qoʻshish"
+            " mumkinhisoblar!</b>"
+        ),
+        "logs_cleared": "🗑 <b>Jurnallar tozalandi</b>",
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick yoqilgan"
+            " bu buyruqlar:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick yoqilgan"
+            " bu foydalanuvchilar:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick yoqilgan"
+            " bu chatlar:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>Hech narsa"
+            "ko'rsatish...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>Ushbu buyruq Hikka veb-interfeysiga kirish imkonini beradi. Uning"
+            " bajarilishiOmmaviy chatlar xavfsizlikka xavf tug'diradi. Afzal bajaring"
+            " Bu <a href='tg://openmessage?user_id={}'>Taniqli xabarlar</a>da.O'chirish"
+            " uchun </b><code>{}proxypass force_insecure</code><b>ni ishga tushiring bu"
+            " ogohlantirish</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>Ushbu buyruq Hikka veb-interfeysiga kirish imkonini beradi. Uning"
+            " bajarilishiOmmaviy chatlar xavfsizlikka xavf tug'diradi. Afzal bajaring u"
+            " <a href='tg://openmessage?user_id={}'>Mazkur xabarlarda</a>.</b>"
+        ),
+        "opening_tunnel": "🔁 <b>Hikka veb-interfeysiga tunnel ochilmoqda...</b>",
+        "tunnel_opened": (
+            "🎉 <b>Tunnel ochiq. Bu havola bir soatdan ko'p bo'lmagan vaqt davomida faol"
+            " bo'ladi</b>"
+        ),
+        "web_btn": "🌍 Veb interfeysi",
+        "btn_yes": "🚸 Baribir ochiq",
+        "btn_no": "🔻 Yopish",
+        "lavhost_web": (
+            "✌️ <b>Ushbu havola sizni Hikka veb-interfeysiga olib boradi"
+            " lavHost</b>\n\n<i>💡 Hisob ma'lumotlaringizdan foydalanib tizimga"
+            " kirishingiz kerak,lavHost</i>ni sozlashda ko'rsatilgan"
+        ),
+        "disable_stats": "✅ Anonim statistika ruxsat berildi",
+        "enable_stats": "🚫 Anonim statistika o'chirilgan",
+    }
+
+    strings_hi = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji>"
+            " <b>देखने वाले:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>देखने वाला {} नहीं"
+            "मिला</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>वॉचर {} अब है"
+            " <u>बंद</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>वॉचर {} अब है"
+            " <u>सक्षम</u></b>"
+        ),
+        "args": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>कृपया एक नाम दर्ज करें"
+            "कार्यवाहक</b>"
+        ),
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>के लिए कोई निक स्थिति"
+            " नहीं हैयह उपयोगकर्ता: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>इसके लिए एक आदेश"
+            " निर्दिष्ट करेंजो NoNick को सक्षम/\\अक्षम करना चाहिए</b>"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>के लिए कोई निक स्थिति"
+            " नहीं है </b><code>{}</code><b>: {}</b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>कमांड नहीं मिला</b>"
+        ),
+        "inline_settings": "⚙️ <b>यहां आप अपनी हिक्का सेटिंग प्रबंधित कर सकते हैं</b>",
+        "confirm_update": "🧭 <b>अपडेट की पुष्टि करें। यूजरबॉट फिर से चालू हो जाएगा</b>",
+        "confirm_restart": "🔄 <b>पुनरारंभ की पुष्टि करें</b>",
+        "suggest_fs": "✅ मॉड्यूल को बचाने का सुझाव दें",
+        "do_not_suggest_fs": "🚫 मॉड्यूल को बचाने का सुझाव दें",
+        "use_fs": "✅ हमेशा मॉड्यूल सेव करें",
+        "do_not_use_fs": "🚫 हमेशा मॉड्यूल सेव करें",
+        "btn_restart": "🔄 पुनरारंभ करें",
+        "btn_update": "🧭 अपडेट",
+        "close_menu": "😌 मेन्यू बंद करें",
+        "custom_emojis": "✅ कस्टम इमोजी",
+        "no_custom_emojis": "🚫 कस्टम इमोजी",
+        "suggest_subscribe": "✅ चैनल की सदस्यता का सुझाव दें",
+        "do_not_suggest_subscribe": "🚫 चैनल की सदस्यता का सुझाव दें",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>इस कमांड की जरूरत है"
+            "चैट में निष्पादित करें</b>"
+        ),
+        "_cls_doc": "उन्नत हिक्का सेटिंग्स",
+        "nonick_warning": (
+            "ध्यान दें! आपने मानक उपसर्ग के साथ NoNick को शामिल किया है!"
+            "आपको हिक्का चैट में म्यूट किया जा सकता है। उपसर्ग बदलें या "
+            "वैश्विक NoNick को बंद करें!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>संदेश का जवाब दें"
+            "उपयोगकर्ता NoNick को सक्षम करेगा</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>यह क्रिया हिक्का को इस खाते से पूरी तरह से हटा देगी! वह नहीं कर सकता"
+            "रद्द करें</b>\n\n<i>- हिक्का से संबंधित सभी चैट हटा दी जाएंगी\n- सत्र"
+            " हिक्का रीसेट हो जाएगा\n- हिक्का का इनलाइन बॉट हटा दिया जाएगा</i>"
+        ),
+        "deauth_confirm_step2": (
+            "⚠️ <b>क्या आप वाकई हिक्का को अनइंस्टॉल करना चाहते हैं?</b>"
+        ),
+        "deauth_yes": "मुझे यकीन है",
+        "deauth_no_1": "मुझे यकीन नहीं है",
+        "deauth_no_2": "पक्का नहीं",
+        "deauth_no_3": "नहीं",
+        "deauth_cancel": "🚫 रद्द करें",
+        "deauth_confirm_btn": "😢 Delete",
+        "uninstall": "😢 <b>हिक्का अनइंस्टॉल कर रहा है...</b>",
+        "uninstalled": (
+            "😢 <b>हिक्का को हटा दिया गया है। वेब इंटरफेस अभी भी सक्रिय है, अन्य को"
+            " जोड़ा जा सकता हैखाते!</b>"
+        ),
+        "logs_cleared": "🗑 <b>लॉग्स साफ़ किए गए</b>",
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> इसके लिए NoNick सक्षम"
+            " ये आदेश:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> इसके लिए NoNick सक्षम"
+            " ये उपयोगकर्ता:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> इसके लिए NoNick सक्षम"
+            " ये चैट:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>कुछ भी नहीं"
+            "दिखाएँ...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>यह कमांड हिक्का वेब इंटरफेस तक पहुंच प्रदान करता है। इसका निष्पादन"
+            "सार्वजनिक चैट एक सुरक्षा जोखिम है। अधिमानतः प्रदर्शन करें"
+            " यह <a href='tg://openmessage?user_id={}'>चुनिंदा संदेशों</a> में है।"
+            "अक्षम करने के लिए </b><code>{}proxypass force_insecure</code><b> चलाएँ"
+            "यह एक चेतावनी है</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>यह कमांड हिक्का वेब इंटरफेस तक पहुंच प्रदान करता है। इसका निष्पादन"
+            "सार्वजनिक चैट एक सुरक्षा जोखिम है। अधिमानतः प्रदर्शन करें"
+            " उसे <a href='tg://openmessage?user_id={}'>चुनिंदा संदेशों</a> में।</b>"
+        ),
+        "opening_tunnel": "🔁 <b>हिक्का वेब इंटरफ़ेस के लिए एक सुरंग खोलना...</b>",
+        "tunnel_opened": (
+            "🎉 <b>सुरंग खुला है। यह लिंक एक घंटे से अधिक समय तक सक्रिय नहीं रहेगा</b>"
+        ),
+        "web_btn": "🌍 वेब इंटरफ़ेस",
+        "btn_yes": "🚸 वैसे भी खोलें",
+        "btn_no": "🔻 बंद करें",
+        "lavhost_web": (
+            "✌️ <b>यह लिंक आपको हिक्का वेब इंटरफेस पर ले जाएगा lvHost</b>\n\n<i>💡 आपको"
+            " अपने क्रेडेंशियल्स का उपयोग करके लॉग इन करना होगा,lavHost सेट करते समय"
+            " निर्दिष्ट किया गया</i>"
+        ),
+        "disable_stats": "✅ बेनामी आँकड़ों की अनुमति है",
+        "enable_stats": "🚫 बेनामी आँकड़े अक्षम किए गए",
+    }
+
+    strings_ja = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>視聴者:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>非閲覧者{}見つかりました</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>ウォッチャー {} は現在"
+            "<u>オフ</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>ウォッチャー {} は現在"
+            "<u>有効</u></b>"
+        ),
+        "args": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>名前を入力してください世話人</b>"
+        ),
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> のニックネームはありません <b>"
+            "このユーザーではありません: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>コマンド"
+            " NoNick を有効/\\無効にするユーザーを指定</b>"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> のニックネームはありません <b>"
+            " </b><code>{}</code><b>: {}</b> ではありません"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>コマンドが見つかりません</b>"
+        ),
+        "inline_settings": "⚙️ <b>ここで Hikka の設定を管理できます</b>",
+        "confirm_update": "🧭 <b>更新を確認します。ユーザーボットが再起動します</b>",
+        "confirm_restart": "🔄 <b>再起動を確認</b>",
+        "suggest_fs": " モジュールの保存を提案する",
+        "do_not_suggest_fs": "🚫 保存モジュールの提案",
+        "use_fs": "✅ 常にモジュールを保存",
+        "do_not_use_fs": "🚫 常にモジュールを保存",
+        "btn_restart": "再起動",
+        "btn_update": "🧭更新",
+        "close_menu": "メニューを閉じる",
+        "custom_emojis": "✅ カスタム絵文字",
+        "no_custom_emojis": "🚫カスタム絵文字",
+        "suggest_subscribe": " チャンネル登録を提案する",
+        "do_not_suggest_subscribe": " チャンネル登録を提案する",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>このコマンドが必要ですチャットで実行</b>"
+        ),
+        "_cls_doc": "ヒッカの詳細設定",
+        "nonick_warning": (
+            "注意! 標準のプレフィックスに NoNick が含まれています!"
+            "Hikka Chat でミュートすることができます。プレフィックスを変更するか, "
+            "グローバル NoNick をオフにします!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>メッセージに返信"
+            "ユーザーは NoNick を有効にします</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>このアクションにより, このアカウントから Hikka が完全に削除されます! 彼は削除できません"
+            "キャンセル</b>\n\n<i>- Hikka に関連するすべてのチャットが削除されます\n- セッション"
+            "ヒッカはリセットされます\n- ヒッカのインライン ボットは削除されます</i>"
+        ),
+        "deauth_confirm_step2": "⚠️ <b>Hikka をアンインストールしてもよろしいですか?</b>",
+        "deauth_yes": "確かに",
+        "deauth_no_1": "わからない",
+        "deauth_no_2": "わかりません",
+        "deauth_no_3": "いいえ",
+        "deauth_cancel": "🚫キャンセル",
+        "deauth_confirm_btn": "😢削除",
+        "uninstall": "😢 <b>Hikka をアンインストールしています...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka' は廃止されました。Web インターフェースはまだアクティブです。その他アカウントを追加できます!</b>"
+        ),
+        "logs_cleared": "🗑 <b>ログを消去</b>",
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>これには NoNick が有効になっています"
+            " これらのコマンド:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>これには NoNick が有効になっています"
+            "このユーザー:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>これには NoNick が有効になっています"
+            "このチャット:</b>\n\n{}"
+        ),
+        "nothing": "<emoji document_id=5427052514094619126>🤷️</emoji> <b>なし表示...</b>",
+        "privacy_leak": (
+            "⚠️ <b>このコマンドは, Hikka Web インターフェイスへのアクセスを提供します。その実行"
+            "公開チャットはセキュリティ上のリスクです。できれば実行してください"
+            "<a href='tg://openmessage?user_id={}'>選択したメッセージ</a>にあります。"
+            "</b><code>{}proxypass force_insecure</code><b> を実行して無効にします"
+            "これは警告です</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>このコマンドは, Hikka Web インターフェイスへのアクセスを提供します。その実行"
+            "公開チャットはセキュリティ上のリスクです。できれば実行してください"
+            " <a href='tg://openmessage?user_id={}'>メッセージを選択</a>インチ</b>"
+        ),
+        "opening_tunnel": "🔁 <b>Hekka ウェブ インターフェースへのトンネルを開いています...</b>",
+        "tunnel_opened": "🎉 <b>トンネルが開いています。このリンクは 1 時間以上アクティブになりません</b",
+        "web_btn": "🌍ウェブインターフェース",
+        "btn_yes": "とにかく開く",
+        "btn_no": "閉じる",
+        "lavhost_web": (
+            "✌️ <b>このリンクをクリックすると, Hikka Web インターフェイス lvHost に移動します</b>\n\n<i>💡"
+            "lavHost をセットアップするときは, 資格情報を使用してログインする必要があります"
+            "指定</i>"
+        ),
+        "disable_stats": "✅ 匿名統計を許可",
+        "enable_stats": "🚫 匿名統計は無効",
+    }
+
+    strings_kr = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>시청자:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": "<emoji document_id=5447207618793708263>🚫</emoji> <b>뷰어 아님{}찾았다</b>",
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>감시자 {}이(가) 현재 있습니다"
+            " <u>꺼짐</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>감시자 {}이(가) 현재 있습니다"
+            " <u>활성화</u></b>"
+        ),
+        "args": "<emoji document_id=5447207618793708263>🚫</emoji> <b>이름을 입력하세요.관리인</b>",
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>에 대한 닉네임 위치가 없습니다."
+            " 이 사용자가 아닙니다: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>명령어"
+            " 누가 NoNick을 활성화/\\비활성화할지 지정</b>"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>에 대한 닉네임 위치가 없습니다."
+            " </b><code>{}</code><b>가 아닙니다: {}</b>"
+        ),
+        "cmd404": "<emoji document_id=5469791106591890404>🪄</emoji> <b>명령을 찾을 수 없음</b>",
+        "inline_settings": "⚙️ <b>여기에서 Hikka 설정을 관리할 수 있습니다.</b>",
+        "confirm_update": "🧭 <b>업데이트를 확인하십시오. Userbot이 다시 시작됩니다</b>",
+        "confirm_restart": "🔄 <b>다시 시작 확인</b>",
+        "suggest_fs": " 저장 모듈 제안",
+        "do_not_suggest_fs": "🚫 모듈 저장 제안",
+        "use_fs": "✅ 항상 모듈 저장",
+        "do_not_use_fs": "🚫 항상 모듈 저장",
+        "btn_restart": " 다시 시작",
+        "btn_update": "🧭 업데이트",
+        "close_menu": " 메뉴 닫기",
+        "custom_emojis": "✅ 사용자 정의 그림 이모티콘",
+        "no_custom_emojis": "🚫 맞춤 이모티콘",
+        "suggest_subscribe": " 채널 구독 제안",
+        "do_not_suggest_subscribe": " 채널 구독 제안",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>이 명령이 필요합니다."
+            "채팅에서 실행</b>"
+        ),
+        "_cls_doc": "고급 Hikka 설정",
+        "nonick_warning": (
+            "주의! 표준 접두사에 NoNick을 포함했습니다!Hikka 채팅에서 음소거할 수 있습니다. 접두사를 변경하거나 글로벌 노닉 꺼!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>메시지에 답장"
+            "사용자가 NoNick을 활성화합니다</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>이 작업은 이 계정에서 Hikka를 완전히 제거합니다! 그는 할 수 없습니다."
+            "취소</b>\n\n<i>- Hikka와 관련된 모든 채팅이 삭제됩니다\n- 세션"
+            " Hikka가 재설정됩니다\n- Hikka의 인라인 봇이 제거됩니다</i>"
+        ),
+        "deauth_confirm_step2": "⚠️ <b>Hikka를 제거하시겠습니까?</b>",
+        "deauth_yes": "확실합니다",
+        "deauth_no_1": "잘 모르겠습니다",
+        "deauth_no_2": "확실하지 않음",
+        "deauth_no_3": "아니요",
+        "deauth_cancel": "🚫 취소",
+        "deauth_confirm_btn": "😢 삭제",
+        "uninstalling": "😢 <b>Hikka 제거 중...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka'는 더 이상 사용되지 않습니다. 웹 인터페이스는 여전히 활성화되어 있습니다. 계정을 추가할 수 있습니다!</b>"
+        ),
+        "logs_cleared": "🗑 <b>로그 삭제</b>",
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick이 활성화되었습니다."
+            " 다음 명령:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick이 활성화되었습니다."
+            " 이 사용자:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick이 활성화되었습니다."
+            " 이 채팅:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷️</emoji> <b>아무것도 없음보여줘...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>이 명령은 Hikka 웹 인터페이스에 대한 액세스를 제공합니다. 실행"
+            "공개채팅은 보안상 위험합니다. 가급적이면 수행하세요."
+            "<a href='tg://openmessage?user_id={}'>메시지 선택</a>에 있습니다."
+            "</b><code>{}proxypass force_insecure</code><b>를 실행하여 비활성화"
+            "경고입니다</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>이 명령은 Hikka 웹 인터페이스에 대한 액세스를 제공합니다. 실행"
+            "공개채팅은 보안상 위험합니다. 가급적이면 수행하세요."
+            " <a href='tg://openmessage?user_id={}'>메시지 선택</a> 안에.</b>"
+        ),
+        "opening_tunnel": "🔁 <b>Hekka 웹 인터페이스에 터널을 여는 중...</b>",
+        "tunnel_opened": "🎉 <b>터널이 열려 있습니다. 이 링크는 1시간 이상 활성화되지 않습니다</b>",
+        "web_btn": "🌍 웹 인터페이스",
+        "btn_yes": " 어쨌든 열기",
+        "btn_no": " 닫기",
+        "lavhost_web": (
+            "✌️ <b>이 링크는 Hikka 웹 인터페이스 lvHost</b>로 이동합니다.\n\n<i>💡"
+            "lavHost를 설정할 때 자격 증명을 사용하여 로그인해야 합니다"
+            "지정됨</i>"
+        ),
+        "disable_stats": "✅ 익명 통계 허용됨",
+        "enable_stats": "🚫 익명 통계 비활성화됨",
+    }
+
+    strings_ar = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420> 👀 </emoji>"
+            "<b> المشاهد, ن: </b>\n\n<b> {} </b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b> ليس عارض {}"
+            "تم العث, ر عليه </b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420> 👀 </emoji> <b> المشاهد {} الآن"
+            "<u> إيقاف </u> </b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420> 👀 </emoji> <b> المشاهد {} الآن"
+            "<u> ممكّن </u> </b>"
+        ),
+        "أرغس": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b> الرجاء إدخال اسم"
+            "مشرف </b>"
+        ),
+        "user_nn": (
+            "لا ي, جد م, ضع لقب لـ <emoji document_id=5469791106591890404>🪄</emoji> <b>"
+            "ليس هذا المستخدم: {} </b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> أمر خاص بها"
+            "تحديد من يجب عليه تمكين / \\ تعطيل NoNick </b>"
+        ),
+        "cmd_nn": (
+            "لا ي, جد م, ضع لقب لـ <emoji document_id=5469791106591890404>🪄</emoji> <b>"
+            "ليس </b> <code> {} </code> <b>: {} </b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> الأمر غير م, ج, د"
+            " </b>"
+        ),
+        "inline_settings": "⚙️ <b> هنا يمكنك إدارة إعدادات Hikka </b>",
+        "Confirm_update": "🧭 <b> أكد التحديث. سيعيد Userbot إعادة التشغيل </b>",
+        "irm_restart ": " 🔄 <b> تأكيد إعادة التشغيل </b> ",
+        "Suggest_fs": "اقتراح , حدة حفظ",
+        "do_not_suggest_fs": "🚫 اقتراح , حدة حفظ",
+        "use_fs": "✅ احفظ ال, حدات دائمًا",
+        "do_not_use_fs": "🚫 احفظ ال, حدات دائمًا",
+        "btn_restart": "إعادة التشغيل",
+        "btn_update": "🧭 تحديث",
+        "close_menu": "إغلاق القائمة",
+        "custom_emojis": "✅ Custom Emoji",
+        "no_custom_emojis": "🚫 Custom Emoji",
+        "suggest_subscribe": "اقتراح اشتراك قناة",
+        "do_not_suggest_subscribe": "اقتراح اشتراك قناة",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b> هذا الأمر مطل, ب"
+            "تنفيذ في الدردشة </b>"
+        ),
+        "_cls_doc": "إعدادات Hikka المتقدمة",
+        "nonick_warning": (
+            "تنبيه! لقد قمت بتضمين NoNick مع البادئة القياسية!"
+            "يمكن كتم ص, تك في Hikka Chat. قم بتغيير البادئة أ, "
+            "إيقاف تشغيل NoNick العالمية!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b> الرد على الرسالة"
+            "سيق, م المستخدم بتمكين NoNick </b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b> سيؤدي هذا الإجراء إلى إزالة Hikka تمامًا من هذا الحساب! لا يمكنه"
+            " ذلكإلغاء </b>\n\n<i> - سيتم حذف كافة الدردشات المتعلقة بهيكا\n-"
+            " الجلسةستتم إعادة تعيين Hikka\n- ستتم إزالة برنامج Hikka المضمن </i>"
+        ),
+        "deauth_confirm_step2": "⚠️ <b> هل أنت متأكد من أنك تريد إزالة Hikka؟ </b>",
+        "deauth_yes": "أنا متأكد",
+        "deauth_no_1": "لست متأكدًا",
+        "deauth_no_2": "لست متأكدًا",
+        "deauth_no_3": "لا",
+        "deauth_cancel": "🚫 إلغاء",
+        "deauth_confirm_btn": "😢 حذف",
+        "uninstalling": "😢 <b> إزالة Hikka ... </b>",
+        "uninstalled": (
+            "<b>تم إهمال  Hikka. , اجهة ال, يب لا تزال نشطة ,  , البعض الآخر"
+            "يمكن أن تضاف حسابات! </b>"
+        ),
+        "logs_cleared": "🗑 <b> تم مسح السجلات </b>",
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> تم تمكين NoNick لهذا"
+            "هذه الأ, امر: </b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> تم تمكين NoNick لهذا"
+            "هذا المستخدم: </b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b> تم تمكين NoNick لهذا"
+            "هذه الدردشة: </b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126> 🤷️ </emoji> <b> لا شيءعرض ... </b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b> ي, فر هذا الأمر ال, ص, ل إلى , اجهة , يب Hikka. تنفيذه"
+            "الدردشة العامة تشكل مخاطرة أمنية. , يفضل أن تؤدي"
+            "إنه م, ج, د في <a href='tg://openmessage؟user_id={}'> حدد الرسائل </a>."
+            "تشغيل </b> <code> {proxypass force_insecure </code> <b> للتعطيل"
+            "هذا تحذير </b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b> ي, فر هذا الأمر ال, ص, ل إلى , اجهة , يب Hikka. تنفيذه"
+            "الدردشة العامة تشكل مخاطرة أمنية. , يفضل أن تؤدي"
+            "<a href='tg://openmessage؟user_id={}'> حدد الرسائل</a> في. </b> "
+        ),
+        "open_tunnel": "🔁 <b> فتح نفق ل, اجهة , يب Hekka ... </b>",
+        "tunnel_opened": (
+            "🎉 <b> النفق مفت, ح. لن يك, ن هذا الرابط نشطًا لأكثر من ساعة </b>"
+        ),
+        "web_btn": "🌍 , اجهة ال, يب",
+        "btn_yes": "فتح على أي حال",
+        "btn_no": "إغلاق",
+        "lavhost_web": (
+            "✌️ <b> سينقلك هذا الارتباط إلى , اجهة , يب Hikka lvHost </b>\n\n<i> 💡"
+            "يجب تسجيل الدخ, ل باستخدام بيانات الاعتماد الخاصة بك عند إعداد lavHost"
+            "محدد </ i>"
+        ),
+        "disable_stats": "✅ يسمح بإحصاءات مجه, لة",
+        "enable_stats": "🚫 تم تعطيل الإحصائيات المجه, لة",
+    }
+
+    strings_es = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji>"
+            " <b>Espectadores:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>No visor {}"
+            "Encontrado</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>observador {} ya está"
+            " <u>apagado</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>observador {} ya está"
+            " <u>habilitado</u></b>"
+        ),
+        "args": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Por favor ingrese un"
+            " nombrecuidador</b>"
+        ),
+        "user_nn": (
+            "No hay posición de nick para <emoji"
+            " document_id=5469791106591890404>🪄</emoji> <b> no es este usuario: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Un comando para ello"
+            " Especificar quién debe activar/desactivar NoNick</b>"
+        ),
+        "cmd_nn": (
+            "No hay posición de nick para <emoji"
+            " document_id=5469791106591890404>🪄</emoji> <b> no es"
+            " </b><código>{}</código><b>: {}</b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Comando no"
+            " encontrado</b>"
+        ),
+        "inline_settings": (
+            "⚙️ <b>Aquí puedes administrar la configuración de Hikka</b>"
+        ),
+        "confirm_update": "🧭 <b>Confirmar actualización. Userbot se reiniciará</b>",
+        "confirm_restart": "🔄 <b>Confirmar reinicio</b>",
+        "suggest_fs": " Sugerir guardar módulo",
+        "do_not_suggest_fs": "🚫 Sugerir guardar módulo",
+        "use_fs": "✅ Guardar siempre los módulos",
+        "do_not_use_fs": "🚫 Guardar siempre los módulos",
+        "btn_restart": "reiniciar",
+        "btn_update": "🧭 actualizar",
+        "close_menu": " Cerrar Menú",
+        "custom_emojis": "✅ Emoji personalizado",
+        "no_custom_emojis": "🚫Emoji personalizado",
+        "suggest_subscribe": "Sugerir suscripción al canal",
+        "do_not_suggest_subscribe": " Sugerir suscripción al canal",
+        "private_not_allowed": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Este comando es"
+            " necesarioEjecutar en el chat</b>"
+        ),
+        "_cls_doc": "Configuración avanzada de Hikka",
+        "nonick_warning": (
+            "¡Atención! ¡Has incluido NoNick con el prefijo estándar!"
+            "Puedes silenciarte en Hikka Chat. Cambia el prefijo o "
+            "¡Apaga el NoNick global!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5447207618793708263>🚫</emoji> <b>responder al mensaje"
+            "El usuario habilitará NoNick</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>¡Esta acción eliminará completamente a Hikka de esta cuenta! Él no"
+            " puedeCancelar</b>\n\n<i>- Se eliminarán todos los chats relacionados con"
+            " Hikka\n- Sesión Hikka se reiniciará\n- El bot en línea de Hikka se"
+            " eliminará</i>"
+        ),
+        "deauth_confirm_step2": (
+            "⚠️ <b>¿Está seguro de que desea desinstalar Hikka?</b>"
+        ),
+        "deauth_yes": "Estoy seguro",
+        "deauth_no_1": "No estoy seguro",
+        "deauth_no_2": "No estoy seguro",
+        "deauth_no_3": "No",
+        "deauth_cancel": "🚫 Cancelar",
+        "deauth_confirm_btn": "😢 Eliminar",
+        "uninstall": "😢 <b>Desinstalando Hikka...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka' ha quedado obsoleto. La interfaz web todavía está activa,"
+            " otros¡Se pueden agregar cuentas!</b>"
+        ),
+        "logs_cleared": "🗑 <b>Registros borrados</b>",
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick habilitado para"
+            " esto Estos comandos:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick habilitado para"
+            " estoEste usuario:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick habilitado para"
+            " esto Este chat:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷️</emoji> <b>nadaMostrar...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>Este comando proporciona acceso a la interfaz web de Hikka. Su"
+            " ejecuciónEl chat público es un riesgo de seguridad. Preferiblemente"
+            " realizarEstá en <a href='tg://openmessage?user_id={}'>mensajes"
+            " seleccionados</a>Ejecute </b><code>{}proxypass force_insecure</code><b>"
+            " para desactivarEsto es una advertencia</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>Este comando proporciona acceso a la interfaz web de Hikka. Su"
+            " ejecuciónEl chat público es un riesgo de seguridad. Preferiblemente"
+            " realizar <a href='tg://openmessage?user_id={}'>seleccionar mensajes</a>"
+            " pulg.</b>"
+        ),
+        "opening_tunnel": "🔁 <b>Abriendo un túnel a la interfaz web de Hekka...</b>",
+        "túnel_abierto": (
+            "🎉 <b>el túnel está abierto. Este enlace no estará activo durante más de"
+            " una hora</b>"
+        ),
+        "web_btn": "🌍 Interfaz web",
+        "btn_yes": " Abrir de todos modos",
+        "btn_no": "Cerrar",
+        "lavhost_web": (
+            "✌️ <b>Este enlace lo llevará a la interfaz web de Hikka lvHost</b>\n\n<i>💡"
+            "debe iniciar sesión con sus credenciales al configurar lavHost"
+            "Especificado</i>"
+        ),
+        "disable_stats": "✅ Estadísticas anónimas permitidas",
+        "enable_stats": "🚫 Estadísticas anónimas deshabilitadas",
+    }
+
     def get_watchers(self) -> tuple:
         return [
             str(watcher.__self__.__class__.strings["name"])
@@ -438,7 +1438,17 @@ class HikkaSettingsMod(loader.Module):
         )
 
     @loader.owner
-    @loader.command(ru_doc="Удалить Hikka")
+    @loader.command(
+        ru_doc="Удалить Hikka",
+        de_doc="Hikka deinstallieren",
+        tr_doc="Hikka'yı kaldır",
+        uz_doc="Hikka'ni o'chirish",
+        hi_doc="हिक्का को अनइंस्टॉल करें",
+        ja_doc="Hikkaをアンインストールします",
+        kr_doc="Hikka를 제거합니다",
+        ar_doc="إلغاء تثبيت هيكا",
+        es_doc="Desinstalar Hikka",
+    )
     async def uninstall_hikka(self, message: Message):
         """Uninstall Hikka"""
         await self.inline.form(
@@ -453,7 +1463,17 @@ class HikkaSettingsMod(loader.Module):
             ],
         )
 
-    @loader.command(ru_doc="Очистить логи")
+    @loader.command(
+        ru_doc="Очистить логи",
+        de_doc="Logs löschen",
+        tr_doc="Günlükleri temizle",
+        uz_doc="Jurnalni tozalash",
+        hi_doc="लॉग खाली करें",
+        ja_doc="ログをクリアする",
+        kr_doc="로그 지우기",
+        ar_doc="مسح السجلات",
+        es_doc="Limpiar registros",
+    )
     async def clearlogs(self, message: Message):
         """Clear logs"""
         for handler in logging.getLogger().handlers:
@@ -463,7 +1483,17 @@ class HikkaSettingsMod(loader.Module):
 
         await utils.answer(message, self.strings("logs_cleared"))
 
-    @loader.command(ru_doc="Показать активные смотрители")
+    @loader.command(
+        ru_doc="Показать активные смотрители",
+        de_doc="Aktive Beobachter anzeigen",
+        tr_doc="Etkin gözlemcileri göster",
+        uz_doc="Faol ko'rib chiqqanlarni ko'rsatish",
+        hi_doc="सक्रिय दर्शक दिखाएं",
+        ja_doc="アクティブな観察者を表示する",
+        kr_doc="활성 관찰자 표시",
+        ar_doc="عرض المراقبين النشطين",
+        es_doc="Mostrar observadores activos",
+    )
     async def watchers(self, message: Message):
         """List current watchers"""
         watchers, disabled_watchers = self.get_watchers()
@@ -477,7 +1507,17 @@ class HikkaSettingsMod(loader.Module):
             message, self.strings("watchers").format("\n".join(watchers))
         )
 
-    @loader.command(ru_doc="<module> - Включить/выключить смотрителя в текущем чате")
+    @loader.command(
+        ru_doc="<module> - Включить/выключить смотрителя в текущем чате",
+        de_doc="<module> - Aktiviere/Deaktiviere Beobachter in diesem Chat",
+        tr_doc="<module> - Bu sohbetteki gözlemciyi etkinleştirin/devre dışı bırakın",
+        uz_doc="<module> - Joriy suhbatda ko'rib chiqqanlarni yoqish/yopish",
+        hi_doc="<module> - इस चैट में दर्शक को सक्षम / अक्षम करें",
+        ja_doc="<module> - このチャットで観察者を有効/無効にする",
+        kr_doc="<module> -이 채팅에서 관찰자를 활성화 / 비활성화",
+        ar_doc="<module> - تمكين / تعطيل المراقب في الدردشة الحالية",
+        es_doc="<module> - Habilitar / deshabilitar observador en este chat",
+    )
     async def watcherbl(self, message: Message):
         """<module> - Toggle watcher in current chat"""
         args = utils.get_args_raw(message)
@@ -535,7 +1575,71 @@ class HikkaSettingsMod(loader.Module):
             "[-p - только в лс]\n"
             "[-o - только исходящие]\n"
             "[-i - только входящие]"
-        )
+        ),
+        de_doc=(
+            "<module> - Verwalte globale Beobachterregeln\n"
+            "Argumente:\n"
+            "[-c - Nur in Chats]\n"
+            "[-p - Nur in privaten Chats]\n"
+            "[-o - Nur ausgehende Nachrichten]\n"
+            "[-i - Nur eingehende Nachrichten]"
+        ),
+        tr_doc=(
+            "<module> - Genel gözlemci kurallarını yönetin\n"
+            "Argümanlar:\n"
+            "[-c - Yalnızca sohbetlerde]\n"
+            "[-p - Yalnızca özel sohbetlerde]\n"
+            "[-o - Yalnızca giden mesajlar]\n"
+            "[-i - Yalnızca gelen mesajlar]"
+        ),
+        uz_doc=(
+            "<module> - Umumiy ko'rib chiqqan qoidalarni boshqarish\n"
+            "Argumentlar:\n"
+            "[-c - Faqat suhbatlarda]\n"
+            "[-p - Faqat shaxsiy suhbatlarda]\n"
+            "[-o - Faqat chiqarilgan xabarlar]\n"
+            "[-i - Faqat kelgan xabarlar]"
+        ),
+        hi_doc=(
+            "<module> - सार्वजनिक निरीक्षक नियमों का प्रबंधन करें\n"
+            "आर्ग्यूमेंट्स:\n"
+            "[-c - केवल चैट्स में]\n"
+            "[-p - केवल निजी चैट में]\n"
+            "[-o - केवल आउटगोइंग संदेश]\n"
+            "[-i - केवल इनकमिंग संदेश]"
+        ),
+        ja_doc=(
+            "<module> - グローバル観察者ルールを管理します\n"
+            "引数:\n"
+            "[-c - チャットのみ]\n"
+            "[-p - プライベートチャットのみ]\n"
+            "[-o - 送信メッセージのみ]\n"
+            "[-i - 受信メッセージのみ]"
+        ),
+        kr_doc=(
+            "<module> - 전역 관찰자 규칙을 관리합니다\n"
+            "인수:\n"
+            "[-c - 채팅 만]\n"
+            "[-p - 개인 채팅 만]\n"
+            "[-o - 보낸 메시지 만]\n"
+            "[-i - 수신 메시지 만]"
+        ),
+        ar_doc=(
+            "<module> - إدارة قواعد المراقب العامة\n"
+            "الوسائط:\n"
+            "[-c - فقط الدردشات]\n"
+            "[-p - فقط الدردشات الخاصة]\n"
+            "[-o - فقط الرسائل الصادرة]\n"
+            "[-i - الرسائل الواردة فقط]"
+        ),
+        es_doc=(
+            "<module> - Administre las reglas del observador global\n"
+            "Argumentos:\n"
+            "[-c - Solo en chats]\n"
+            "[-p - Solo en chats privados]\n"
+            "[-o - Solo mensajes salientes]\n"
+            "[-i - Solo mensajes entrantes]"
+        ),
     )
     async def watchercmd(self, message: Message):
         """<module> - Toggle global watcher rules
@@ -603,7 +1707,17 @@ class HikkaSettingsMod(loader.Module):
         self._db.set(main.__name__, "disabled_watchers", disabled_watchers)
         await utils.answer(message, self.strings("disabled").format(args))
 
-    @loader.command(ru_doc="Включить NoNick для определенного пользователя")
+    @loader.command(
+        ru_doc="Включить NoNick для определенного пользователя",
+        de_doc="Aktiviere NoNick für einen bestimmten Benutzer",
+        tr_doc="Belirli bir kullanıcı için NoNick'i etkinleştirin",
+        uz_doc="Belgilangan foydalanuvchi uchun NoNickni yoqish",
+        hi_doc="किसी विशिष्ट उपयोगकर्ता के लिए NoNick को सक्षम करें",
+        ja_doc="特定のユーザーのNoNickを有効にします",
+        kr_doc="특정 사용자의 NoNick를 활성화합니다",
+        ar_doc="تمكين NoNick لمستخدم معين",
+        es_doc="Habilitar NoNick para un usuario específico",
+    )
     async def nonickuser(self, message: Message):
         """Allow no nickname for certain user"""
         reply = await message.get_reply_message()
@@ -626,7 +1740,17 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickusers", nn)
 
-    @loader.command(ru_doc="Включить NoNick для определенного чата")
+    @loader.command(
+        ru_doc="Включить NoNick для определенного чата",
+        de_doc="Aktiviere NoNick für einen bestimmten Chat",
+        tr_doc="Belirli bir sohbet için NoNick'i etkinleştirin",
+        uz_doc="Belgilangan suhbat uchun NoNickni yoqish",
+        hi_doc="किसी विशिष्ट चैट के लिए NoNick को सक्षम करें",
+        ja_doc="特定のチャットのNoNickを有効にします",
+        kr_doc="특정 채팅의 NoNick를 활성화합니다",
+        ar_doc="تمكين NoNick لدردشة معينة",
+        es_doc="Habilitar NoNick para un chat específico",
+    )
     async def nonickchat(self, message: Message):
         """Allow no nickname in certain chat"""
         if message.is_private:
@@ -658,7 +1782,17 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickchats", nn)
 
-    @loader.command(ru_doc="Включить NoNick для определенной команды")
+    @loader.command(
+        ru_doc="Включить NoNick для определенной команды",
+        de_doc="Aktiviere NoNick für einen bestimmten Befehl",
+        tr_doc="Belirli bir komut için NoNick'i etkinleştirin",
+        uz_doc="Belgilangan buyruq uchun NoNickni yoqish",
+        hi_doc="किसी विशिष्ट आदेश के लिए NoNick को सक्षम करें",
+        ja_doc="特定のコマンドのNoNickを有効にします",
+        kr_doc="특정 명령의 NoNick를 활성화합니다",
+        ar_doc="تمكين NoNick لأمر معين",
+        es_doc="Habilitar NoNick para un comando específico",
+    )
     async def nonickcmdcmd(self, message: Message):
         """Allow certain command to be executed without nickname"""
         args = utils.get_args_raw(message)
@@ -693,7 +1827,17 @@ class HikkaSettingsMod(loader.Module):
 
         self._db.set(main.__name__, "nonickcmds", nn)
 
-    @loader.command(ru_doc="Показать список активных NoNick команд")
+    @loader.command(
+        ru_doc="Показать список активных NoNick команд",
+        de_doc="Zeige eine Liste der aktiven NoNick Befehle",
+        tr_doc="Etkin NoNick komutlarının listesini göster",
+        uz_doc="Yoqilgan NoNick buyruqlar ro'yxatini ko'rsatish",
+        hi_doc="सक्रिय NoNick कमांडों की सूची दिखाएं",
+        ja_doc="アクティブなNoNickコマンドのリストを表示します",
+        kr_doc="활성 NoNick 명령 목록 표시",
+        ar_doc="عرض قائمة أوامر NoNick النشطة",
+        es_doc="Mostrar una lista de comandos NoNick activos",
+    )
     async def nonickcmds(self, message: Message):
         """Returns the list of NoNick commands"""
         if not self._db.get(main.__name__, "nonickcmds", []):
@@ -712,7 +1856,17 @@ class HikkaSettingsMod(loader.Module):
             ),
         )
 
-    @loader.command(ru_doc="Показать список активных NoNick пользователей")
+    @loader.command(
+        ru_doc="Показать список активных NoNick пользователей",
+        de_doc="Zeige eine Liste der aktiven NoNick Benutzer",
+        tr_doc="Etkin NoNick kullanıcılarının listesini göster",
+        uz_doc="Yoqilgan NoNick foydalanuvchilar ro'yxatini ko'rsatish",
+        hi_doc="सक्रिय NoNick उपयोगकर्ताओं की सूची दिखाएं",
+        ja_doc="アクティブなNoNickユーザーのリストを表示します",
+        kr_doc="활성 NoNick 사용자 목록 표시",
+        ar_doc="عرض قائمة مستخدمي NoNick النشطة",
+        es_doc="Mostrar una lista de usuarios NoNick activos",
+    )
     async def nonickusers(self, message: Message):
         """Returns the list of NoNick users"""
         users = []
@@ -750,7 +1904,17 @@ class HikkaSettingsMod(loader.Module):
             self.strings("user_nn_list").format("\n".join(users)),
         )
 
-    @loader.command(ru_doc="Показать список активных NoNick чатов")
+    @loader.command(
+        ru_doc="Показать список активных NoNick чатов",
+        de_doc="Zeige eine Liste der aktiven NoNick Chats",
+        tr_doc="Etkin NoNick sohbetlerinin listesini göster",
+        uz_doc="Yoqilgan NoNick suhbatlar ro'yxatini ko'rsatish",
+        hi_doc="सक्रिय NoNick चैटों की सूची दिखाएं",
+        ja_doc="アクティブなNoNickチャットのリストを表示します",
+        kr_doc="활성 NoNick 채팅 목록 표시",
+        ar_doc="عرض قائمة الدردشات NoNick النشطة",
+        es_doc="Mostrar una lista de chats NoNick activos",
+    )
     async def nonickchats(self, message: Message):
         """Returns the list of NoNick chats"""
         chats = []
@@ -1025,7 +2189,17 @@ class HikkaSettingsMod(loader.Module):
         ]
 
     @loader.owner
-    @loader.command(ru_doc="Показать настройки")
+    @loader.command(
+        ru_doc="Показать настройки",
+        de_doc="Zeige die Einstellungen",
+        tr_doc="Ayarları göster",
+        uz_doc="Sozlamalarni ko'rsatish",
+        hi_doc="सेटिंग्स दिखाएं",
+        ja_doc="設定を表示",
+        kr_doc="설정 표시",
+        ar_doc="إظهار الإعدادات",
+        es_doc="Mostrar configuración",
+    )
     async def settings(self, message: Message):
         """Show settings menu"""
         await self.inline.form(
@@ -1035,7 +2209,17 @@ class HikkaSettingsMod(loader.Module):
         )
 
     @loader.owner
-    @loader.command(ru_doc="Открыть тоннель к веб-интерфейсу Hikka")
+    @loader.command(
+        ru_doc="Открыть тоннель к веб-интерфейсу Hikka",
+        de_doc="Öffne einen Tunnel zum Hikka Webinterface",
+        tr_doc="Hikka Web Arayüzüne bir tünel aç",
+        uz_doc="Hikka veb-interfeysi uchun tunel ochish",
+        hi_doc="Hikka वेब इंटरफ़ेस के लिए ट्यूनल खोलें",
+        ja_doc="Hikka Webインターフェイスにトンネルを開く",
+        kr_doc="Hikka 웹 인터페이스에 터널 열기",
+        ar_doc="افتح نفقًا إلى واجهة Hikka الويب",
+        es_doc="Abrir un túnel al interfaz web de Hikka",
+    )
     async def weburl(self, message: Message, force: bool = False):
         """Opens web tunnel to your Hikka web interface"""
         if "LAVHOST" in os.environ:
