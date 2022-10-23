@@ -18,7 +18,7 @@ from ._internal import restart
 if (
     getpass.getuser() == "root"
     and "--root" not in " ".join(sys.argv)
-    and all(trigger not in os.environ for trigger in {"OKTETO", "DOCKER", "GOORM"})
+    and all(trigger not in os.environ for trigger in {"DOCKER", "GOORM"})
 ):
     print("🚫" * 15)
     print("You attempted to run Hikka on behalf of root user")

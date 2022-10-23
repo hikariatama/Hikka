@@ -866,9 +866,6 @@ def get_named_platform() -> str:
     if "com.termux" in os.environ.get("PREFIX", ""):
         return "🕶 Termux"
 
-    if "OKTETO" in os.environ:
-        return "☁️ Okteto"
-
     if "CODESPACES" in os.environ:
         return "🐈‍⬛ Codespaces"
 
@@ -899,9 +896,6 @@ def get_platform_emoji(client: typing.Optional[CustomTelegramClient] = None) -> 
 
     if "GOORM" in os.environ:
         return BASE.format(5298947740032573902)
-
-    if "OKTETO" in os.environ:
-        return BASE.format(5192767786174128165)
 
     if "CODESPACES" in os.environ:
         return BASE.format(5194976881127989720)

@@ -325,9 +325,9 @@ ru_keys = 'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё
 en_keys = "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?"
 
 BASE_DIR = (
-    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
-    else "/data"
+    "/data"
+    if "DOCKER" in os.environ
+    else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
 )
 
 LOADED_MODULES_DIR = os.path.join(BASE_DIR, "loaded_modules")

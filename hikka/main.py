@@ -69,9 +69,9 @@ else:
     web_available = True
 
 BASE_DIR = (
-    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
-    else "/data"
+    "/data"
+    if "DOCKER" in os.environ
+    else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
 )
 
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
@@ -141,7 +141,7 @@ def gen_port() -> int:
     exposed by default
     :returns: Integer value of generated port
     """
-    if any(trigger in os.environ for trigger in {"OKTETO", "DOCKER"}):
+    if "DOCKER" in os.environ:
         return 8080
 
     # But for own server we generate new free port, and assign to it

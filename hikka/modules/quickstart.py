@@ -49,10 +49,6 @@ class QuickstartMod(loader.Module):
 5️⃣ <b>Type </b><code>.unloadmod &lt;ModuleName&gt;</code> <b>to unload module ModuleName</b>
 
 💡 <b>Hikka supports modules from Friendly-Telegram, DragonUserbot and GeekTG, as well as its own ones.</b>""",
-        "okteto": (
-            "☁️ <b>Your userbot is installed on Okteto</b>. You will get notifications"
-            " from @WebpageBot. Do not block him."
-        ),
         "railway": (
             "🚂 <b>Your userbot is installed on Railway</b>. This platform has only"
             " <b>500 free hours per month</b>. Once this limit is reached, your"
@@ -83,10 +79,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>Hikka поддерживает модули из Friendly-Telegram, DragonUserbot и GeekTG, а также свои собственные.</b>
 """,
-        "okteto": (
-            "☁️ <b>Твой юзербот установлен на Okteto</b>. Ты будешь получать"
-            " уведомления от @WebpageBot. Не блокируй его."
-        ),
         "railway": (
             "🚂 <b>Твой юзербот установлен на Railway</b>. На этой платформе ты"
             " получаешь только <b>500 бесплатных часов в месяц</b>. Когда лимит будет"
@@ -117,10 +109,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>Hikka unterstützt Module von Friendly-Telegram, DragonUserbot und GeekTG sowie eigene Module.</b>
 """,
-        "okteto": (
-            "☁️ <b>Dein Userbot ist auf Okteto installiert</b>. Du wirst"
-            " Benachrichtigungen von @WebpageBot erhalten. Blockiere ihn nicht."
-        ),
         "railway": (
             "🚂 <b>Dein Userbot ist auf Railway installiert</b>. Du erhältst nur <b>500"
             " kostenlose Stunden pro Monat</b> auf dieser Plattform. Wenn das Limit"
@@ -151,10 +139,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>Hikka, Friendly-Telegram, DragonUserbot ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>
 """,
-        "okteto": (
-            "☁️ <b>Sizning yuzerbotingiz oktetoda o'rnatilgan</b>. @WebpageBot'dan"
-            " xabarlar qabul qilasiz uni bloklamang."
-        ),
         "railway": (
             "🚂 <b>Sizning yuzerbotingiz Railwayda o'rnatilgan</b>. Bu platforma,"
             " <b>oyiga atigi 500 soat bepul jihati</b> Railway bergan muddat tugagandan"
@@ -186,10 +170,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>Hikka, Friendly-Telegram, DragonUserbot ve GeekTG modüllerini de dahil olmak üzere kendi modüllerini destekler.</b>
 """,
-        "okteto": (
-            "☁️ <b>Kullanıcı botunuz Okteto'da kuruldu</b>. @WebpageBot'dan mesajlar"
-            " alacaksınız. Onları engellemeyin."
-        ),
         "railway": (
             "🚂 <b>Kullanıcı botunuz Railway'de kuruldu</b>. Bu platform, <b>aylık"
             " sadece 500 saati ücretsiz olarak</b> sağlamaktadır. Sınırı aştığınızda,"
@@ -220,10 +200,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>अपने मॉड्यूल को समर्थित करने के लिए, Hikka, Friendly-Telegram, DragonUserbot और GeekTG मॉड्यूल भी शामिल हैं.</b>
 """,
-        "okteto": (
-            "☁️ <b>आपका उपयोगकर्ता बॉट Okteto पर बनाया गया था</b>। @WebpageBot से संदेश"
-            "आप करेंगे। उन्हें ब्लॉक न करें।"
-        ),
         "railway": (
             "🚂 <b>आपका उपयोगकर्ता बॉट रेलवे में स्थापित किया गया था</b>। यह मंच"
             " <b>मासिक है केवल 500 घंटे निःशुल्क प्रदान करता है</b>। एक बार जब आप सीमा"
@@ -251,10 +227,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>モジュールをサポートするには、Hikka, Friendly-Telegram, DragonUserbot と GeekTG モジュールも含まれています。</b>
 """,
-        "okteto": (
-            "☁️ <b>あなたのユーザーボットは Okteto で作成されました</b>。 @WebpageBot にメッセージを送信します。"
-            "ブロックしないでください。"
-        ),
         "railway": (
             "🚂 <b>あなたのユーザーボットはレールウェイで作成されました</b>。 このプラットフォームは"
             " <b>月間で無料で500時間のみ提供されます</b>。 一度上限に達すると、"
@@ -282,9 +254,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>모듈을 지원하려면 Hikka, Friendly-Telegram, DragonUserbot 및 GeekTG 모듈도 포함됩니다.</b>
 """,
-        "okteto": (
-            "☁️ <b>사용자 봇은 Okteto에서 만들어졌습니다</b> @WebpageBot 에 메시지를 보내십시오.차단하지 마십시오."
-        ),
         "railway": (
             "🚂 <b>사용자 봇은 레일웨이에서 만들어졌습니다</b> 이 플랫폼은"
             " <b>월간으로 무료로 500 시간만 제공됩니다</b> 한 번 제한에 도달하면,"
@@ -312,10 +281,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>لدعم الوحدات، يتضمن Hikka, Friendly-Telegram, DragonUserbot و GeekTG أيضًا.</b>
 """,
-        "okteto": (
-            "☁️ <b>تم إنشاء بوت المستخدم على Okteto</b> ارسل رسالة إلى @WebpageBot ولا"
-            " تحظره."
-        ),
         "railway": (
             "🚂 <b>تم إنشاء بوت المستخدم على Railway</b> هذه المنصة تقدم"
             " <b>500 ساعة مجانية شهريًا</b> بمجرد الوصول إلى الحد الأقصى،"
@@ -343,10 +308,6 @@ class QuickstartMod(loader.Module):
 
 💡 <b>Para admitir módulos, también incluye Hikka, Friendly-Telegram, DragonUserbot y GeekTG.</b>
 """,
-        "okteto": (
-            "☁️ <b>Se ha creado el bot de usuario en Okteto</b> envíe un mensaje a"
-            " @WebpageBot y no lo bloquee."
-        ),
         "railway": (
             "🚂 <b>Se ha creado el bot de usuario en Railway</b> esta plataforma ofrece"
             " <b>500 horas gratis al mes</b> una vez que llegue al límite, el <b>bot de"
@@ -411,10 +372,8 @@ class QuickstartMod(loader.Module):
             )
         )
 
-        self.text = (
-            lambda: self.strings("base")
-            + (self.strings("okteto") if "OKTETO" in os.environ else "")
-            + (self.strings("railway") if "RAILWAY" in os.environ else "")
+        self.text = lambda: self.strings("base") + (
+            self.strings("railway") if "RAILWAY" in os.environ else ""
         )
 
         await self.inline.bot.send_animation(self._client.tg_id, animation=choice(imgs))

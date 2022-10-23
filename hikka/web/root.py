@@ -35,9 +35,9 @@ from .._internal import restart
 from ..version import __version__
 
 DATA_DIR = (
-    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
-    else "/data"
+    "/data"
+    if "DOCKER" in os.environ
+    else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
 )
 
 
@@ -57,7 +57,6 @@ class Web:
         self.app.router.add_post("/sendTgCode", self.send_tg_code)
         self.app.router.add_post("/check_session", self.check_session)
         self.app.router.add_post("/web_auth", self.web_auth)
-        self.app.router.add_post("/okteto", self.okteto)
         self.app.router.add_post("/tgCode", self.tg_code)
         self.app.router.add_post("/finishLogin", self.finish_login)
         self.app.router.add_post("/custom_bot", self.custom_bot)
@@ -69,7 +68,6 @@ class Web:
         return {
             "skip_creds": self.api_token is not None,
             "tg_done": bool(self.client_data),
-            "okteto": "OKTETO" in os.environ,
             "lavhost": "LAVHOST" in os.environ,
         }
 
@@ -226,14 +224,6 @@ class Web:
             )
 
         return web.Response(body="ok")
-
-    async def okteto(self, request: web.Request) -> web.Response:
-        if main.get_config_key("okteto_uri"):
-            return web.Response(status=418)
-
-        text = await request.text()
-        main.save_config_key("okteto_uri", text)
-        return web.Response(body="URI_SAVED")
 
     async def tg_code(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
