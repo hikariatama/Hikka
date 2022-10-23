@@ -66,13 +66,9 @@ else:
         pass
     else:
         try:
-            # This is used as verification markers to ensure that supported
-            # version is installed
-            from telethon.tl.types import MessageEntityCustomEmoji  # skipcq
-            from telethon.extensions.html import CUSTOM_EMOJIS  # skipcq
             import telethon
 
-            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 10):
+            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 11):
                 raise ImportError
         except ImportError:
             print("🔄 Reinstalling Hikka-TL...")
@@ -110,6 +106,11 @@ else:
         from . import log
 
         log.init()
+
+        import pyrogram
+
+        if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 59):
+            raise ImportError
 
         from . import main
     except ModuleNotFoundError as e:
