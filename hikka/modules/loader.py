@@ -94,10 +94,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> loaded {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>What class needs to be unloaded?</b>",
-        "unloaded": (
-            "<emoji document_id=5469654973308476699>💣</emoji><b> Module {}"
-            " unloaded.</b>"
-        ),
+        "unloaded": "{} <b>Module {} unloaded.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Module not"
             " unloaded.</b>"
@@ -257,10 +254,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> загружен {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>А что выгружать то?</b>",
-        "unloaded": (
-            "<emoji document_id=5469654973308476699>💣</emoji><b> Модуль {}"
-            " выгружен.</b>"
-        ),
+        "unloaded": "{} <b>Модуль {} выгружен.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Модуль не"
             " выгружен.</b>"
@@ -433,9 +427,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> geladen {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>Was soll dann hochgeladen werden?</b>",
-        "unloaded": (
-            "<emoji document_id=5469654973308476699>💣</emoji><b> {} Modul entladen.</b>"
-        ),
+        "unloaded": "{} <b>{} Modul entladen.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Modul nicht"
             " entladen.</b>"
@@ -614,10 +606,7 @@ class LoaderMod(loader.Module):
             " </b> <code>{}</code>{}<b> isimli modül yüklendi {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>Hangi modülün kaldırılması gerekiyor?</b>",
-        "unloaded": (
-            "<emoji document_id=546965497330847699>💣</emoji><b>  {}"
-            " isimli modül kaldırıldı.</b>"
-        ),
+        "unloaded": "{} <b>{} isimli modül kaldırıldı.</b>",
         "not_unloaded": (
             "<emoji document_id=53752013968596607943>🚫</emoji><b> Modül "
             " kaldırılamadı.</b>"
@@ -779,10 +768,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> लोड किया गया {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>किस वर्ग को अनलोड करने की आवश्यकता है?</b>",
-        "unloaded": (
-            "<emoji document_id=5469654973308476699>💣</emoji><b> मॉड्यूल {}"
-            "अनलोड किया गया।</b>"
-        ),
+        "unloaded": "{} <b>मॉड्यूल {}अनलोड किया गया।</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> मॉड्यूल नहीं"
             "अनलोड किया गया।</b>"
@@ -945,10 +931,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> yuklangan {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>Unda nima yuklash kerak?</b>",
-        "unloaded": (
-            "<emoji document_id=5469654973308476699>💣</emoji><b> {} moduli"
-            " tushirildi.</b>"
-        ),
+        "unloaded": "{} <b>{} moduli tushirildi.</b>",
         "not_loaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Modul emas"
             " tushirildi.</b>"
@@ -1120,9 +1103,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> 読み込み済み {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>どのクラスをアンロードする必要がありますか?</b>",
-        "unloaded": (
-            "<emoji document_id=5469654973308476699>💣</emoji><b> モジュール {}アンロード。</b>"
-        ),
+        "unloaded": "{} <b>モジュール {}アンロード。</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> モジュールではないアンロード。</b>"
         ),
@@ -1266,9 +1247,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> 로드된 {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>언로드해야 하는 클래스는 무엇입니까?</b>",
-        "unloaded": (
-            "<emoji document_id=5469654973308476699>💣</emoji><b> 모듈 {} 언로드.</b>"
-        ),
+        "unloaded": "{} <b>모듈 {} 언로드.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> 모듈 아님 언로드.</b>"
         ),
@@ -1418,7 +1397,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> في {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>ما الصنف الذي تريد إلغاء تحميله؟</b>",
-        "unloaded": "{}<b> تم إلغاء تحميل الوحدة {}.</b>",
+        "unloaded": "{} <b>تم إلغاء تحميل الوحدة {}.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> لم يتم إلغاء تحميل"
             " الوحدة.</b>"
@@ -1580,7 +1559,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>{}<b> cargado en {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>¿Qué clase desea deshabilitar?</b>",
-        "unloaded": "{}<b> Módulo {} descargado.</b>",
+        "unloaded": "{} <b>Módulo {} descargado.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> El módulo no se"
             " descargó.</b>"

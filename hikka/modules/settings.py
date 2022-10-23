@@ -701,7 +701,7 @@ class CoreMod(loader.Module):
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>사용하는 버전이"
-            " 있습니다</b><code>{}</code><b>!</b>"
+            " 있습니다 </b><code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon과 Hikka 접두사는 달라야"
@@ -774,7 +774,7 @@ class CoreMod(loader.Module):
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>أنت تستخدم الفرع"
-            " غير المستقر</b><code>{}</code><b>!</b>"
+            " غير المستقر </b><code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>يجب أن تكون بادئات"
@@ -847,7 +847,7 @@ class CoreMod(loader.Module):
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Estás usando la"
-            " rama inestable</b><code>{}</code><b>!</b>"
+            " rama inestable </b><code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>¡Dragon y Hikka deben"

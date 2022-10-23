@@ -208,9 +208,7 @@ class Web:
             proxy=self.proxy,
             connection_retries=None,
             device_model=f"Hikka on {utils.get_named_platform().split(maxsplit=1)[1]}",
-            app_version=(
-                f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}"
-            ),
+            app_version=f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}",
         )
 
         self._pending_client = client
