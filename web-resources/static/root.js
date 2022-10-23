@@ -155,6 +155,7 @@ function tg_code() {
                 }
             } else {
                 $(".auth-code-form").fadeOut();
+                $("#block_phone").fadeOut();
                 switch_block("custom_bot");
             }
         })

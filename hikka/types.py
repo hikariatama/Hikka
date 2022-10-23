@@ -111,6 +111,41 @@ class Module:
         )
 
 
+class DragonModule:
+    """Imported Dragon module"""
+
+    def __init__(self):
+        self.name = "Unknown"
+        self.url = None
+        self.commands = {}
+        self.watchers = {}
+        self.hikka_watchers = {}
+        self.inline_handlers = {}
+        self.hikka_inline_handlers = {}
+        self.callback_handlers = {}
+        self.hikka_callback_handlers = {}
+
+    @property
+    def hikka_commands(self):
+        return self.commands
+
+    @property
+    def __origin__(self):
+        return f"<dragon {self.name}>"
+
+    def config_complete(self):
+        pass
+
+    async def client_ready(self):
+        pass
+
+    async def on_unload(self):
+        pass
+
+    async def on_dlmod(self):
+        pass
+
+
 class Library:
     """All external libraries must have a class-inheritant from this class"""
 

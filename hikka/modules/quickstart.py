@@ -48,7 +48,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>Type </b><code>.loadmod</code> <b>with reply to file to install module from it</b>
 5️⃣ <b>Type </b><code>.unloadmod &lt;ModuleName&gt;</code> <b>to unload module ModuleName</b>
 
-💡 <b>Hikka supports modules from Friendly-Telegram and GeekTG, as well as its own ones.</b>""",
+💡 <b>Hikka supports modules from Friendly-Telegram, DragonUserbot and GeekTG, as well as its own ones.</b>""",
         "okteto": (
             "☁️ <b>Your userbot is installed on Okteto</b>. You will get notifications"
             " from @WebpageBot. Do not block him."
@@ -81,7 +81,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>Напиши </b><code>.loadmod</code> <b>ответом на файл, чтобы загрузить модуль из него</b>
 5️⃣ <b>Напиши </b><code>.unloadmod &lt;Название модуля&gt;</code> <b>чтобы выгрузить модуль</b>
 
-💡 <b>Hikka поддерживает модули из Friendly-Telegram и GeekTG, а также свои собственные.</b>
+💡 <b>Hikka поддерживает модули из Friendly-Telegram, DragonUserbot и GeekTG, а также свои собственные.</b>
 """,
         "okteto": (
             "☁️ <b>Твой юзербот установлен на Okteto</b>. Ты будешь получать"
@@ -115,7 +115,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>Schreibe </b><code>.loadmod</code> <b>als Antwort auf eine Datei, um ein Modul aus der Datei zu laden</b>
 5️⃣ <b>Schreibe </b><code>.unloadmod &lt;Modulname&gt;</code> <b>um ein Modul zu entladen</b>
 
-💡 <b>Hikka unterstützt Module von Friendly-Telegram und GeekTG sowie eigene Module.</b>
+💡 <b>Hikka unterstützt Module von Friendly-Telegram, DragonUserbot und GeekTG sowie eigene Module.</b>
 """,
         "okteto": (
             "☁️ <b>Dein Userbot ist auf Okteto installiert</b>. Du wirst"
@@ -149,7 +149,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>Modulni fayl orqali yuklash uchun </b><code>.loadmod</code> <b>faylga javoban yozing</b>
 5️⃣ <b>Modulni olib tashlash uchun </b><code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>
 
-💡 <b>Hikka Friendly-Telegram ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>
+💡 <b>Hikka, Friendly-Telegram, DragonUserbot ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>
 """,
         "okteto": (
             "☁️ <b>Sizning yuzerbotingiz oktetoda o'rnatilgan</b>. @WebpageBot'dan"
@@ -184,7 +184,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>Bir modülü bir dosyadan yüklemek için </b><code>.loadmod</code> <b>bir dosyanın yanıtını yazın</b>
 5️⃣ <b>Bir modülü kaldırmak için </b><code>.unloadmod &lt;Modul adı&gt;</code> <b>yazın</b>
 
-💡 <b>Hikka Friendly-Telegram ve GeekTG modüllerini de dahil olmak üzere kendi modüllerini destekler.</b>
+💡 <b>Hikka, Friendly-Telegram, DragonUserbot ve GeekTG modüllerini de dahil olmak üzere kendi modüllerini destekler.</b>
 """,
         "okteto": (
             "☁️ <b>Kullanıcı botunuz Okteto'da kuruldu</b>. @WebpageBot'dan mesajlar"
@@ -218,7 +218,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>एक मॉड्यूल को फाइल से लोड करने के लिए </b><code>.loadmod</code> <b>एक फ़ाइल का उत्तर दर्ज करें</b>
 5️⃣ <b>एक मॉड्यूल को हटाने के लिए </b><code>.unloadmod &lt;मॉड्यूल नाम&gt;</code> <b>टाइप करें</b>
 
-💡 <b>अपने मॉड्यूल को समर्थित करने के लिए, Hikka Friendly-Telegram और GeekTG मॉड्यूल भी शामिल हैं.</b>
+💡 <b>अपने मॉड्यूल को समर्थित करने के लिए, Hikka, Friendly-Telegram, DragonUserbot और GeekTG मॉड्यूल भी शामिल हैं.</b>
 """,
         "okteto": (
             "☁️ <b>आपका उपयोगकर्ता बॉट Okteto पर बनाया गया था</b>। @WebpageBot से संदेश"
@@ -249,7 +249,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>モジュールをファイルからロードするには </b><code>.loadmod</code> <b>ファイルの返信を入力します</b>
 5️⃣ <b>モジュールを削除するには </b><code>.unloadmod &lt;モジュール名&gt;</code> <b>を入力します</b>
 
-💡 <b>モジュールをサポートするには、Hikka Friendly-Telegram と GeekTG モジュールも含まれています。</b>
+💡 <b>モジュールをサポートするには、Hikka, Friendly-Telegram, DragonUserbot と GeekTG モジュールも含まれています。</b>
 """,
         "okteto": (
             "☁️ <b>あなたのユーザーボットは Okteto で作成されました</b>。 @WebpageBot にメッセージを送信します。"
@@ -280,7 +280,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>모듈을 파일에서로드하려면 </b><code>.loadmod</code> <b>파일에 응답을 입력하십시오</b>
 5️⃣ <b>모듈을 제거하려면 </b><code>.unloadmod &lt;모듈 이름&gt;</code> <b>를 입력하십시오</b>
 
-💡 <b>모듈을 지원하려면 Hikka Friendly-Telegram 및 GeekTG 모듈도 포함됩니다.</b>
+💡 <b>모듈을 지원하려면 Hikka, Friendly-Telegram, DragonUserbot 및 GeekTG 모듈도 포함됩니다.</b>
 """,
         "okteto": (
             "☁️ <b>사용자 봇은 Okteto에서 만들어졌습니다</b> @WebpageBot 에 메시지를 보내십시오.차단하지 마십시오."
@@ -310,7 +310,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>لتحميل الوحدة من الملف، اكتب </b><code>.loadmod</code> <b>وأرسل الملف المراد تحميله</b>
 5️⃣ <b>لإزالة الوحدة، اكتب </b><code>.unloadmod &lt;اسم الوحدة&gt;</code> <b>وأدخل</b>
 
-💡 <b>لدعم الوحدات، يتضمن Hikka Friendly-Telegram و GeekTG أيضًا.</b>
+💡 <b>لدعم الوحدات، يتضمن Hikka, Friendly-Telegram, DragonUserbot و GeekTG أيضًا.</b>
 """,
         "okteto": (
             "☁️ <b>تم إنشاء بوت المستخدم على Okteto</b> ارسل رسالة إلى @WebpageBot ولا"
@@ -341,7 +341,7 @@ class QuickstartMod(loader.Module):
 4️⃣ <b>Para cargar el módulo desde el archivo, escriba </b><code>.loadmod</code> <b>y responda al archivo que desea cargar</b>
 5️⃣ <b>Para eliminar el módulo, escriba </b><code>.unloadmod &lt;nombre del módulo&gt;</code> <b>y presione</b>
 
-💡 <b>Para admitir módulos, también incluye Hikka Friendly-Telegram y GeekTG.</b>
+💡 <b>Para admitir módulos, también incluye Hikka, Friendly-Telegram, DragonUserbot y GeekTG.</b>
 """,
         "okteto": (
             "☁️ <b>Se ha creado el bot de usuario en Okteto</b> envíe un mensaje a"

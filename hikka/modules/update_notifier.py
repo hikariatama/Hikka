@@ -244,7 +244,7 @@ class UpdateNotifierMod(loader.Module):
             with contextlib.suppress(Exception):
                 await client.loader.inline.bot.delete_message(
                     client.tg_id,
-                    client.loader._db.get("UpdateNotifierMod", "upd_msg"),
+                    client.loader.db.get("UpdateNotifierMod", "upd_msg"),
                 )
 
     @loader.callback_handler()

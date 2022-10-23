@@ -9,11 +9,13 @@
 import os
 
 import telethon
+import pyrogram
 from telethon.tl.types import Message
 from telethon.extensions.html import CUSTOM_EMOJIS
 
 from .. import loader, main, utils, version
 from ..inline.types import InlineCall
+from ..compat.dragon import DRAGON_EMOJI
 
 
 @loader.tds
@@ -47,7 +49,7 @@ class CoreMod(loader.Module):
             " symbol in length</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Command prefix"
+            "{} <b>Command prefix"
             " updated. Type</b> <code>{newprefix}setprefix {oldprefix}</code> <b>to"
             " change it back</b>"
         ),
@@ -80,10 +82,10 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b> Database cleared</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Version:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji> <b>Build:"
-            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
-            " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
             " t.me/hikariatama</b>"
         ),
@@ -100,6 +102,10 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>You are using an"
             " unstable branch </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Your Dragon and Hikka"
+            " prefixes must be different!</b>"
         ),
     }
 
@@ -130,7 +136,7 @@ class CoreMod(loader.Module):
             " состоять только из одного символа</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Префикс обновлен."
+            "{} <b>Префикс обновлен."
             " Чтобы вернуть его, используй</b> <code>{newprefix}setprefix"
             " {oldprefix}</code>"
         ),
@@ -163,10 +169,10 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b> База очищена</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Версия:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji> <b>Сборка:"
-            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
-            " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
             " t.me/hikariatama</b>"
         ),
@@ -185,6 +191,10 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Ты используешь"
             " нестабильную ветку </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Префиксы Dragon и"
+            " Hikka должны отличаться!</b>"
         ),
     }
 
@@ -214,7 +224,7 @@ class CoreMod(loader.Module):
             "bestehen nur aus einem Zeichen</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Präfix aktualisiert."
+            "{} <b>Präfix aktualisiert."
             " Um es zurückzugeben, verwenden Sie</b> <code>{newprefix}setprefix"
             "{oldprefix}</code>"
         ),
@@ -247,12 +257,12 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b>Basis gelöscht</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Version:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji> <b>Build:"
-            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
-            " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
-            "document_id=5454182070156794055>⌨️</emoji> <b>Entwickler:"
-            "t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram:"
+            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
+            " <b>Entwickler:t.me/hikariatama</b>"
         ),
         "_cls_doc": "Verwaltung der Grundeinstellungen des Userbots",
         "confirm_cleardb": (
@@ -270,6 +280,10 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Sie verwenden"
             "instabiler Zweig </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Präfixe"
+            "Dragon und Hikka müssen sich unterscheiden!</b>"
         ),
     }
 
@@ -300,7 +314,7 @@ class CoreMod(loader.Module):
             "sadece bir karakterden oluşur</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Önek güncellendi."
+            "{} <b>Önek güncellendi."
             " Geri vermek için,</b> <code>{newprefix}setprefix'i kullanın"
             "{oldprefix}</code>"
         ),
@@ -332,12 +346,12 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b> Taban temizlendi</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Sürüm:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji> <b>Yapı:"
-            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
-            " <b>Hikka-TL: </b><i>{}</i>\n\n<emoji"
-            "document_id=5454182070156794055>⌨️</emoji> <b>Geliştirici:"
-            "t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram:"
+            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
+            " <b>Geliştirici:t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot temel ayar yönetimi",
         "confirm_cleardb": (
@@ -356,6 +370,9 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Kullanıyorsunuz"
             "kararsız dal </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Önekler çakışıyor!</b>"
         ),
     }
 
@@ -385,7 +402,7 @@ class CoreMod(loader.Module):
             " चाहिएकेवल एक वर्ण से मिलकर बनता है</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>उपसर्ग अपडेट किया"
+            "{} <b>उपसर्ग अपडेट किया"
             " गया। इसे वापस करने के लिए, उपयोग करें</b>"
             " <code>{newprefix}setprefix{oldprefix}</code>"
         ),
@@ -418,12 +435,12 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b> आधार साफ़ हो गया</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>वर्शन:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji> <b>बिल्ड:"
-            " </b><i>{}</i>\n\n<emoji document_id=5233346091725888979>⚙️</emoji>"
-            " <b>हिक्का-टीएल: </b><i>{}</i>\n\n<emoji"
-            "document_id=5454182070156794055>⌨️</emoji> <b>डेवलपर:"
-            "t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>हिक्का-टीएल:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram:"
+            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
+            " <b>डेवलपर:t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot मूलभूत सेटिंग प्रबंधन",
         "confirm_cleardb": "⚠️ <b>क्या आप वाकई डेटाबेस को रीसेट करना चाहते हैं?</b>",
@@ -440,6 +457,10 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>आप उपयोग कर रहे"
             " हैंअस्थिर शाखा </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>ड्रैगन और हिक्का"
+            " उपसर्ग अलग-अलग होने चाहिए!</b>"
         ),
     }
 
@@ -470,7 +491,7 @@ class CoreMod(loader.Module):
             "faqat bitta belgidan iborat</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Prefiks yangilandi."
+            "{} <b>Prefiks yangilandi."
             " Uni qaytarish uchun</b> <code>{newprefix}setprefix dan foydalaning."
             "{oldprefix}</code>"
         ),
@@ -502,12 +523,12 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b> Baza tozalandi</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Versiya:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
-            " <b>Yaratish: </b><i>{}</i>\n\n<emoji"
-            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>Ishlab chiquvchi: t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Ishlab chiquvchi:"
+            " t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot asosiy sozlamalarini boshqarish",
         "confirm_cleardb": (
@@ -526,6 +547,10 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Siz"
             " foydalanayotgan versiya </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon va Hikka"
+            " prefikslari boshqacha bo'lishi kerak!</b>"
         ),
     }
 
@@ -555,7 +580,7 @@ class CoreMod(loader.Module):
             "1文字だけでなければなりません</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>プレフィックスが"
+            "{} <b>プレフィックスが"
             "更新されました。新しいプレフィックスは</b> <code>{newprefix}setprefix"
             " {oldprefix}</code> <b>を使用してリセットできます</b>"
         ),
@@ -590,12 +615,11 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b> データベースがクリアされました</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>バージョン:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
-            " <b>ビルド: </b><i>{}</i>\n\n<emoji"
-            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>開発者: t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>開発者: t.me/hikariatama</b>"
         ),
         "_cls_doc": "ユーザーボットの基本設定を管理します",
         "confirm_cleardb": "⚠️ <b>データベースをリセットしますか？</b>",
@@ -610,6 +634,10 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>あなたは"
             "使用しているバージョン </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji>"
+            " <b>ドラゴンとヒッカのプレフィックスは異なる必要があります!</b>"
         ),
     }
 
@@ -635,7 +663,7 @@ class CoreMod(loader.Module):
             "<emoji document_id=5436162517686557387>🚫</emoji> <b>접두사는1개의 문자만 가능합니다</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>접두사가"
+            "{} <b>접두사가"
             "업데이트되었습니다. 새로운 접두사는</b> <code>{newprefix}setprefix"
             " {oldprefix}</code> <b>를 사용하여 초기화할 수 있습니다</b>"
         ),
@@ -655,12 +683,11 @@ class CoreMod(loader.Module):
             "<emoji document_id=5368324170671202286>👍</emoji><b> 데이터베이스가 초기화되었습니다</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>버전:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
-            " <b>빌드: </b><i>{}</i>\n\n<emoji"
-            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>개발자: t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>개발자: t.me/hikariatama</b>"
         ),
         "_cls_doc": "사용자 봇의 기본 설정을 관리합니다",
         "confirm_cleardb": "⚠️ <b>데이터베이스를 초기화 하시겠습니까?</b>",
@@ -675,6 +702,10 @@ class CoreMod(loader.Module):
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>사용하는 버전이"
             " 있습니다</b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon과 Hikka 접두사는 달라야"
+            " 합니다!</b>"
         ),
     }
 
@@ -701,7 +732,7 @@ class CoreMod(loader.Module):
             " محرف واحد فقط</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>تم تعيين البادئة."
+            "{} <b>تم تعيين البادئة."
             " البادئة الجديدة هي</b> <code>{newprefix}setprefix {oldprefix}</code>"
             " <b>لإعادة تعيينها</b>"
         ),
@@ -722,16 +753,33 @@ class CoreMod(loader.Module):
             " البيانات</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>الإصدار:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
-            " <b>البناء: </b><i>{}</i>\n\n<emoji"
-            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>المطور: t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>المطور:"
+            " t.me/hikariatama</b>"
         ),
         "_cls_doc": "الإعدادات الأساسية لمستخدم البوت",
         "confirm_cleardb": "⚠️ <b>هل تريد مسح قاعدة البيانات؟</b>",
         "cleardb_confirm": "🗑 مسح قاعدة البيانات",
+        "cancel": "🚫 إلغاء",
+        "who_to_blacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>من تريد إضافته إلى"
+            " قائمة الحظر؟</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>من تريد إزالته من"
+            " قائمة الحظر؟</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>أنت تستخدم الفرع"
+            " غير المستقر</b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>يجب أن تكون بادئات"
+            " Dragon و Hikka مختلفة!с</b>"
+        ),
     }
 
     strings_es = {
@@ -757,7 +805,7 @@ class CoreMod(loader.Module):
             " un solo carácter</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>El prefijo ha sido"
+            "{} <b>El prefijo ha sido"
             " establecido. El nuevo prefijo es</b> <code>{newprefix}setprefix"
             " {oldprefix}</code> <b>para restablecerlo</b>"
         ),
@@ -778,16 +826,33 @@ class CoreMod(loader.Module):
             " borrada</b>"
         ),
         "hikka": (
-            "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Versión:"
-            " {}.{}.{}</b>\n<emoji document_id=6318902906900711458>🧱</emoji>"
-            " <b>Build: </b><i>{}</i>\n\n<emoji"
-            " document_id=5233346091725888979>⚙️</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>Desarrollador: t.me/hikariatama</b>"
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Desarrollador:"
+            " t.me/hikariatama</b>"
         ),
         "_cls_doc": "Los ajustes básicos del usuario del bot",
         "confirm_cleardb": "⚠️ <b>¿Quieres borrar la base de datos?</b>",
         "cleardb_confirm": "🗑 Borrar base de datos",
+        "cancel": "🚫 Cancelar",
+        "who_to_blacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>¿Quién quieres"
+            " añadir a la lista negra?</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>¿Quién quieres"
+            " eliminar de la lista negra?</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Estás usando la"
+            " rama inestable</b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>¡Dragon y Hikka deben"
+            " tener prefijos diferentes!</b>"
+        ),
     }
 
     async def blacklistcommon(self, message: Message):
@@ -832,21 +897,24 @@ class CoreMod(loader.Module):
             message,
             self.strings("hikka").format(
                 (
-                    utils.get_platform_emoji(self._client)
-                    + (
-                        "<emoji document_id=5192756799647785066>✌️</emoji><emoji"
-                        " document_id=5193117564015747203>✌️</emoji><emoji"
-                        " document_id=5195050806105087456>✌️</emoji><emoji"
-                        " document_id=5195457642587233944>✌️</emoji>"
-                        if "LAVHOST" in os.environ
-                        else ""
+                    (
+                        utils.get_platform_emoji(self._client)
+                        + (
+                            "<emoji document_id=5192756799647785066>✌️</emoji><emoji"
+                            " document_id=5193117564015747203>✌️</emoji><emoji"
+                            " document_id=5195050806105087456>✌️</emoji><emoji"
+                            " document_id=5195457642587233944>✌️</emoji>"
+                            if "LAVHOST" in os.environ
+                            else ""
+                        )
                     )
-                )
-                if self._client.hikka_me.premium and CUSTOM_EMOJIS
-                else "🌘 <b>Hikka userbot</b>",
+                    if self._client.hikka_me.premium and CUSTOM_EMOJIS
+                    else "🌘 <b>Hikka userbot</b>"
+                ),
                 *version.__version__,
                 utils.get_commit_url(),
                 f"{telethon.__version__} #{telethon.tl.alltlobjects.LAYER}",
+                f"{pyrogram.__version__} #{pyrogram.raw.all.layer}",
             )
             + (
                 ""
@@ -971,34 +1039,62 @@ class CoreMod(loader.Module):
 
     @loader.owner
     @loader.command(
-        ru_doc="<префикс> - Установить префикс команд",
-        de_doc="<Präfix> - Setze das Befehlspräfix",
-        tr_doc="<önek> - Komut öneki ayarla",
-        uz_doc="<avvalgi> - Buyruqlar uchun avvalgi belgilash",
-        hi_doc="<उपसर्ग> - कमांड उपसर्ग सेट करें",
-        ja_doc="<プレフィックス> - コマンドのプレフィックスを設定します",
-        kr_doc="<접두사> - 명령 접두사 설정",
-        ar_doc="<بادئة> - تعيين بادئة الأوامر",
-        es_doc="<prefijo> - Establecer el prefijo de comandos",
+        ru_doc="[dragon] <префикс> - Установить префикс команд",
+        de_doc="[dragon] <Präfix> - Setze das Befehlspräfix",
+        tr_doc="[dragon] <önek> - Komut öneki ayarla",
+        uz_doc="[dragon] <avvalgi> - Buyruqlar uchun avvalgi belgilash",
+        hi_doc="[dragon] <उपसर्ग> - कमांड उपसर्ग सेट करें",
+        ja_doc="[dragon] <プレフィックス> - コマンドのプレフィックスを設定します",
+        kr_doc="[dragon] <접두사> - 명령 접두사 설정",
+        ar_doc="[dragon] <بادئة> - تعيين بادئة الأوامر",
+        es_doc="[dragon] <prefijo> - Establecer el prefijo de comandos",
     )
     async def setprefix(self, message: Message):
-        """<prefix> - Sets command prefix"""
+        """[dragon] <prefix> - Sets command prefix"""
         args = utils.get_args_raw(message)
 
         if not args:
             await utils.answer(message, self.strings("what_prefix"))
             return
 
+        if len(args.split()) == 2 and args.split()[0] == "dragon":
+            args = args.split()[1]
+            is_dragon = True
+        else:
+            is_dragon = False
+
         if len(args) != 1:
             await utils.answer(message, self.strings("prefix_incorrect"))
             return
 
-        oldprefix = self.get_prefix()
-        self._db.set(main.__name__, "command_prefix", args)
+        if (
+            not is_dragon
+            and args[0] == self._db.get("dragon.prefix", "command_prefix", ",")
+            or is_dragon
+            and args[0] == self._db.get(main.__name__, "command_prefix", ".")
+        ):
+            await utils.answer(message, self.strings("prefix_collision"))
+            return
+
+        oldprefix = (
+            f"dragon {self.get_prefix('dragon')}" if is_dragon else self.get_prefix()
+        )
+        self._db.set(
+            "dragon.prefix" if is_dragon else main.__name__,
+            "command_prefix",
+            args,
+        )
         await utils.answer(
             message,
             self.strings("prefix_set").format(
-                newprefix=utils.escape_html(args[0]),
+                (
+                    DRAGON_EMOJI
+                    if is_dragon
+                    else "<emoji document_id=5368324170671202286>👍</emoji>"
+                ),
+                newprefix=utils.escape_html(
+                    self.get_prefix() if is_dragon else args[0]
+                ),
                 oldprefix=utils.escape_html(oldprefix),
             ),
         )

@@ -33,11 +33,27 @@ from telethon.tl.types import Message, Channel
 from telethon.tl.functions.channels import JoinChannelRequest
 
 from .. import loader, main, utils
-from ..compat import geek
+from ..compat import geek, dragon
 from ..inline.types import InlineCall
-from ..types import CoreOverwriteError, CoreUnloadError
+from ..types import CoreOverwriteError, CoreUnloadError, DragonModule
 
 logger = logging.getLogger(__name__)
+
+
+class FakeLock:
+    async def __aenter__(self, *args):
+        pass
+
+    async def __aexit__(self, *args):
+        pass
+
+
+class FakeNotifier:
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *args):
+        pass
 
 
 @loader.tds
@@ -55,7 +71,7 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Preset not found</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Preset loaded</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Preset loaded</b>"
         ),
         "no_module": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Module not available"
@@ -105,10 +121,10 @@ class LoaderMod(loader.Module):
             " apply</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> All modules"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> All modules"
             " deleted</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 No docs",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 No docs",
@@ -153,8 +169,8 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>Do not use `blob` links to download modules. Consider switching to"
-            " `raw` instead</b>"
+            "\n\n🚸 <b>Do not use `blob` links to download modules. Consider switching"
+            " to `raw` instead</b>"
         ),
         "suggest_subscribe": (
             "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>This module is"
@@ -200,6 +216,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> Reason: {}</b>\n\n<i>Waiting'
             ' for <a href="https://t.me/{}">approval</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>Installing module"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_ru = {
@@ -214,7 +234,7 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Пресет не найден</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Пресет загружен</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Пресет загружен</b>"
         ),
         "no_module": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> Модуль недоступен в"
@@ -264,9 +284,9 @@ class LoaderMod(loader.Module):
             " установлены, но нужна перезагрузка для применения </b><code>{}</code>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Модули удалены</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Модули удалены</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Нет описания",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Нет описания",
@@ -316,8 +336,8 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>Не используй `blob` ссылки для загрузки модулей. Лучше загружать из"
-            " `raw`</b>"
+            "\n\n🚸 <b>Не используй `blob` ссылки для загрузки модулей. Лучше загружать"
+            " из `raw`</b>"
         ),
         "raw_link": (
             "\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Ссылка:"
@@ -369,6 +389,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> Причина:'
             ' {}</b>\n\n<i>Ожидание <a href="https://t.me/{}">подтверждения</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>Устанавливаю модуль"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_de = {
@@ -384,7 +408,7 @@ class LoaderMod(loader.Module):
             " gefunden</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Voreinstellung"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Voreinstellung"
             " geladen</b>"
         ),
         "no_module": (
@@ -436,9 +460,9 @@ class LoaderMod(loader.Module):
             " anzuwenden"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b>Module entfernt</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b>Module entfernt</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Keine Beschreibung",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Keine Beschreibung",
@@ -495,7 +519,7 @@ class LoaderMod(loader.Module):
             "</b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>Verwenden Sie keine `Blob`-Links, um Module zu laden. Laden Sie"
+            "\n\n🚸 <b>Verwenden Sie keine `Blob`-Links, um Module zu laden. Laden Sie"
             " besser von`roh`</b>"
         ),
         "raw_link": (
@@ -550,6 +574,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> Grund:'
             ' {}</b>\n\n<i>Warten auf <a href="https://t.me/{}">Bestätigung</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>Modul installieren"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_tr = {
@@ -563,7 +591,7 @@ class LoaderMod(loader.Module):
             " bulunamadı</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Ön ayar yüklendi</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Ön ayar yüklendi</b>"
         ),
         "no_module": (
             "<emoji document_id=53752013968596607943>🚫</emoji><b> Modül depoda mevcut"
@@ -614,10 +642,10 @@ class LoaderMod(loader.Module):
             " başlatma gerekiyor</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Tüm modüller"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Tüm modüller"
             " silindi</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Doküman yok",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Doküman yok",
@@ -662,7 +690,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>Modülleri indirmek için `blob` bağlantılarını kullanmayın."
+            "\n\n🚸 <b>Modülleri indirmek için `blob` bağlantılarını kullanmayın."
             " Onun yerine 'raw' kullanabilirsiniz</b>"
         ),
         "suggest_subscribe": (
@@ -711,6 +739,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> Sebep: {}</b>\n\n<i>Onay'
             ' <a href="https://t.me/{}">bekliyor</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>Modül yükleme"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_hi = {
@@ -723,7 +755,7 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5375201396859607943>🚫</emoji><b> प्रीसेट नहीं मिला</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> प्रीसेट लोड किया"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> प्रीसेट लोड किया"
             " गया</b>"
         ),
         "no_module": (
@@ -775,10 +807,10 @@ class LoaderMod(loader.Module):
             " करें</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> सभी मॉड्यूल"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> सभी मॉड्यूल"
             "हटाया गया</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 नो डॉक्स",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 नो डॉक्स",
@@ -821,7 +853,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>मॉड्यूल डाउनलोड करने के लिए `ब्लॉब` लिंक का उपयोग न करें। स्विच"
+            "\n\n🚸 <b>मॉड्यूल डाउनलोड करने के लिए `ब्लॉब` लिंक का उपयोग न करें। स्विच"
             " करने पर विचार करें इसके बजाय 'कच्चा'</b>"
         ),
         "suggest_subcribe": (
@@ -870,6 +902,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> कारण: {}</b>\n\n<i>प्रतीक्षा'
             ' के लिए <a href="https://t.me/{}">स्वीकृति</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>मॉड्यूल स्थापित करना"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_uz = {
@@ -885,7 +921,7 @@ class LoaderMod(loader.Module):
             " topilmadi</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Oldindan"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Oldindan"
             " o'rnatilgan</b>"
         ),
         "no_module": (
@@ -936,10 +972,10 @@ class LoaderMod(loader.Module):
             " lekin qo'llash uchun qayta ishga tushirish kerak </b><code>{}</code>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Modullar olib"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Modullar olib"
             " tashlandi</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Tavsif yo'q",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Tavsif yo'q",
@@ -991,7 +1027,7 @@ class LoaderMod(loader.Module):
             "</b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>Modullarni yuklash uchun `blob` havolalaridan foydalanmang. Bu"
+            "\n\n🚸 <b>Modullarni yuklash uchun `blob` havolalaridan foydalanmang. Bu"
             " yerdan yuklagan ma`qul.`xom`</b>"
         ),
         "raw_link": (
@@ -1046,6 +1082,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> Sabab:'
             ' {}</b>\n\n<i><a href="https://t.me/{}">tasdiqlash</a> kutilmoqda...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>Modulni o'rnatish"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_ja = {
@@ -1058,7 +1098,7 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5375201396859607943>🚫</emoji><b>プリセットが見つかりません</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b>プリセットが読み込まれました</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b>プリセットが読み込まれました</b>"
         ),
         "no_module": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> モジュールは利用できませんレポ内。</b>"
@@ -1103,9 +1143,9 @@ class LoaderMod(loader.Module):
             "適用</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> すべてのモジュール削除</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> すべてのモジュール削除</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 ドキュメントがありません",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 ドキュメントなし",
@@ -1143,7 +1183,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>`blob` リンクを使用してモジュールをダウンロードしないでください。切り替えを検討してください `raw` 代わりに</b>"
+            "\n\n🚸 <b>`blob` リンクを使用してモジュールをダウンロードしないでください。切り替えを検討してください `raw` 代わりに</b>"
         ),
         "suggest_subscribe": (
             "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>このモジュールは"
@@ -1188,6 +1228,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> 理由: {}</b>\n\n<i>待機中'
             ' <a href="https://t.me/{}">承認</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>モジュールのインストール"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_kr = {
@@ -1200,7 +1244,7 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5375201396859607943>🚫</emoji><b> 사전 설정을 찾을 수 없음</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> 사전 설정 로드됨</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> 사전 설정 로드됨</b>"
         ),
         "no_module": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> 모듈을 사용할 수 없음"
@@ -1245,9 +1289,9 @@ class LoaderMod(loader.Module):
             "신청</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> 모든 모듈 삭제됨</b>"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> 모든 모듈 삭제됨</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 문서 없음",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 문서 없음",
@@ -1287,7 +1331,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>`blob` 링크를 사용하여 모듈을 다운로드하지 마십시오. 다음으로 전환하는 것이 좋습니다. `raw` 대신</b>"
+            "\n\n🚸 <b>`blob` 링크를 사용하여 모듈을 다운로드하지 마십시오. 다음으로 전환하는 것이 좋습니다. `raw` 대신</b>"
         ),
         "suggest_subscribe": (
             "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>이 모듈은"
@@ -1332,6 +1376,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> 이유: {}</b>\n\n<i>대기 중'
             ' <a href="https://t.me/{}">승인</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>모듈 설치"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_ar = {
@@ -1345,7 +1393,7 @@ class LoaderMod(loader.Module):
             " الاعداد المسبق</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> تم تحميل الاعداد"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> تم تحميل الاعداد"
             " المسبق</b>"
         ),
         "no_module": (
@@ -1366,14 +1414,11 @@ class LoaderMod(loader.Module):
             " السجل لمزيد من التفاصيل.</b>"
         ),
         "loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> تم تحميل الوحدة"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> تم تحميل الوحدة"
             " </b><code>{}</code>{}<b> في {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>ما الصنف الذي تريد إلغاء تحميله؟</b>",
-        "unloaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> تم إلغاء تحميل"
-            " الوحدة {}.</b>"
-        ),
+        "unloaded": "{}<b> تم إلغاء تحميل الوحدة {}.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> لم يتم إلغاء تحميل"
             " الوحدة.</b>"
@@ -1397,10 +1442,10 @@ class LoaderMod(loader.Module):
             " العملية.</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> تم حذف"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> تم حذف"
             " كافة الوحدات</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 لا يوجد وثائق",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 لا يوجد وثائق",
@@ -1445,7 +1490,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>لا تستخدم روابط `blob` لتحميل الوحدات. استخدم بدلاً من ذلك روابط"
+            "\n\n🚸 <b>لا تستخدم روابط `blob` لتحميل الوحدات. استخدم بدلاً من ذلك روابط"
             " `raw`</b>"
         ),
         "suggest_subscribe": (
@@ -1490,6 +1535,10 @@ class LoaderMod(loader.Module):
             ' document_id="5467666648263564704">❓</emoji> السبب: {}</b>\n\n<i>انتظر'
             ' <a href="https://t.me/{}">الموافقة</a>...</i>'
         ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>وحدة التثبيت"
+            " </b><code>{}</code><b>...</b>"
+        ),
     }
 
     strings_es = {
@@ -1506,7 +1555,7 @@ class LoaderMod(loader.Module):
             " configuraciones preestablecidas</b>"
         ),
         "preset_loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Configuración"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Configuración"
             " preestablecida cargada</b>"
         ),
         "no_module": (
@@ -1527,14 +1576,11 @@ class LoaderMod(loader.Module):
             " el registro para obtener más detalles.</b>"
         ),
         "loaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> El módulo"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> El módulo"
             " </b><code>{}</code>{}<b> cargado en {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>¿Qué clase desea deshabilitar?</b>",
-        "unloaded": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Módulo {}"
-            " descargado.</b>"
-        ),
+        "unloaded": "{}<b> Módulo {} descargado.</b>",
         "not_unloaded": (
             "<emoji document_id=5375201396859607943>🚫</emoji><b> El módulo no se"
             " descargó.</b>"
@@ -1559,10 +1605,10 @@ class LoaderMod(loader.Module):
             " completar la operación.</b>"
         ),
         "all_modules_deleted": (
-            "<emoji document_id=6323332130579416910>✅</emoji><b> Todos los"
+            "<emoji document_id=5784993237412351403>✅</emoji><b> Todos los"
             " módulos eliminados</b>"
         ),
-        "single_cmd": "\n▫️ <code>{}{}</code> {}",
+        "single_cmd": "\n{} <code>{}{}</code> {}",
         "undoc_cmd": "🦥 Sin documentación",
         "ihandler": "\n🎹 <code>{}</code> {}",
         "undoc_ihandler": "🦥 Sin documentación",
@@ -1608,7 +1654,7 @@ class LoaderMod(loader.Module):
             " </b><code>{}</code>"
         ),
         "blob_link": (
-            "\n🚸 <b>No uses enlaces `blob` para descargar módulos. Usa `raw` en"
+            "\n\n🚸 <b>No uses enlaces `blob` para descargar módulos. Usa `raw` en"
             " cambio</b>"
         ),
         "suggest_subscribe": (
@@ -1658,6 +1704,10 @@ class LoaderMod(loader.Module):
             ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
             ' document_id="5467666648263564704">❓</emoji> Motivo: {}</b>\n\n<i>Espera'
             ' <a href="https://t.me/{}">aprobación</a>...</i>'
+        ),
+        "installing": (
+            "<emoji document_id=5215493819641895305>🕔</emoji> <b>Módulo de instalación"
+            " </b><code>{}</code><b>...</b>"
         ),
     }
 
@@ -1763,9 +1813,16 @@ class LoaderMod(loader.Module):
         self.set(
             "loaded_modules",
             {
-                module.__class__.__name__: module.__origin__
-                for module in self.allmodules.modules
-                if module.__origin__.startswith("http")
+                **{
+                    module.__class__.__name__: module.__origin__
+                    for module in self.allmodules.modules
+                    if module.__origin__.startswith("http")
+                },
+                **{
+                    module.name: module.url
+                    for module in self.allmodules.dragon_modules
+                    if module.url
+                },
             },
         )
 
@@ -1954,6 +2011,11 @@ class LoaderMod(loader.Module):
                         await utils.answer(message, self.strings("no_module"))
 
                     return False
+
+            if message:
+                message = await utils.answer(
+                    message, self.strings("installing").format(module_name)
+                )
 
             r = await utils.run_sync(requests.get, url)
 
@@ -2204,9 +2266,13 @@ class LoaderMod(loader.Module):
 
             uid = name.replace("%", "%%").replace(".", "%d")
 
-        module_name = f"hikka.modules.{uid}"
+        is_dragon = "@Client.on_message" in doc
 
-        doc = geek.compat(doc)
+        if is_dragon:
+            module_name = f"dragon.modules.{uid}"
+        else:
+            module_name = f"hikka.modules.{uid}"
+            doc = geek.compat(doc)
 
         async def core_overwrite(e: CoreOverwriteError):
             nonlocal message
@@ -2226,402 +2292,454 @@ class LoaderMod(loader.Module):
                 ),
             )
 
-        try:
-            try:
-                spec = ModuleSpec(
-                    module_name,
-                    loader.StringLoader(
-                        doc, f"<string {uid}>" if origin == "<string>" else origin
-                    ),
-                    origin=f"<string {uid}>" if origin == "<string>" else origin,
-                )
-                instance = await self.allmodules.register_module(
-                    spec,
-                    module_name,
-                    origin,
-                    save_fs=save_fs,
-                )
-            except ImportError as e:
-                logger.info(
-                    "Module loading failed, attemping dependency installation (%s)",
-                    e.name,
-                )
-                # Let's try to reinstall dependencies
+        async with (dragon.import_lock if is_dragon else lambda _: FakeLock())(
+            self._client
+        ):
+            with (
+                self._client.dragon_compat.misc.modules_help.get_notifier
+                if is_dragon
+                else FakeNotifier
+            )() as notifier:
                 try:
-                    requirements = list(
-                        filter(
-                            lambda x: not x.startswith(("-", "_", ".")),
-                            map(
-                                str.strip,
-                                loader.VALID_PIP_PACKAGES.search(doc)[1].split(),
+                    try:
+                        spec = ModuleSpec(
+                            module_name,
+                            loader.StringLoader(
+                                doc,
+                                f"<string {uid}>" if origin == "<string>" else origin,
                             ),
+                            origin=f"<string {uid}>"
+                            if origin == "<string>"
+                            else origin,
                         )
-                    )
-                except TypeError:
-                    logger.warning(
-                        "No valid pip packages specified in code, attemping"
-                        " installation from error"
-                    )
-                    requirements = [e.name]
-
-                logger.debug("Installing requirements: %s", requirements)
-
-                if not requirements:
-                    raise Exception("Nothing to install") from e
-
-                if did_requirements:
-                    if message is not None:
-                        await utils.answer(
-                            message,
-                            self.strings("requirements_restart").format(e.name),
+                        instance = await self.allmodules.register_module(
+                            spec,
+                            module_name,
+                            origin,
+                            save_fs=save_fs,
+                            is_dragon=is_dragon,
                         )
 
-                    return
-
-                if message is not None:
-                    await utils.answer(
-                        message,
-                        self.strings("requirements_installing").format(
-                            "\n".join(f"▫️ {req}" for req in requirements)
-                        ),
-                    )
-
-                pip = await asyncio.create_subprocess_exec(
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--upgrade",
-                    "-q",
-                    "--disable-pip-version-check",
-                    "--no-warn-script-location",
-                    *["--user"] if loader.USER_INSTALL else [],
-                    *requirements,
-                )
-
-                rc = await pip.wait()
-
-                if rc != 0:
-                    if message is not None:
-                        if "com.termux" in os.environ.get("PREFIX", ""):
-                            await utils.answer(
-                                message,
-                                self.strings("requirements_failed_termux"),
-                            )
-                        else:
-                            await utils.answer(
-                                message,
-                                self.strings("requirements_failed"),
-                            )
-
-                    return
-
-                importlib.invalidate_caches()
-
-                kwargs = utils.get_kwargs()
-                kwargs["did_requirements"] = True
-
-                return await self.load_module(**kwargs)  # Try again
-            except CoreOverwriteError as e:
-                await core_overwrite(e)
-                return
-            except loader.LoadError as e:
-                with contextlib.suppress(Exception):
-                    await self.allmodules.unload_module(instance.__class__.__name__)
-
-                with contextlib.suppress(Exception):
-                    self.allmodules.modules.remove(instance)
-
-                if message:
-                    await utils.answer(
-                        message,
-                        "<emoji document_id=5454225457916420314>😖</emoji>"
-                        f" <b>{utils.escape_html(str(e))}</b>",
-                    )
-                return
-        except BaseException as e:
-            logger.exception("Loading external module failed due to %s", e)
-
-            if message is not None:
-                await utils.answer(message, self.strings("load_failed"))
-
-            return
-
-        instance.inline = self.inline
-
-        if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
-            version = (
-                "<b><i>"
-                f" (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
-            )
-        else:
-            version = ""
-
-        try:
-            try:
-                self.allmodules.send_config_one(instance)
-
-                async def inner_proxy():
-                    nonlocal instance, message
-                    while True:
-                        if hasattr(instance, "hikka_wait_channel_approve"):
-                            if message:
-                                (
-                                    module,
-                                    channel,
-                                    reason,
-                                ) = instance.hikka_wait_channel_approve
-                                message = await utils.answer(
-                                    message,
-                                    self.strings("wait_channel_approve").format(
-                                        module,
-                                        channel.username,
-                                        utils.escape_html(channel.title),
-                                        utils.escape_html(reason),
-                                        self.inline.bot_username,
+                        if is_dragon:
+                            dragon_module, instance = instance
+                            instance.url = url
+                    except ImportError as e:
+                        logger.info(
+                            "Module loading failed, attemping dependency installation"
+                            " (%s)",
+                            e.name,
+                        )
+                        # Let's try to reinstall dependencies
+                        try:
+                            requirements = list(
+                                filter(
+                                    lambda x: not x.startswith(("-", "_", ".")),
+                                    map(
+                                        str.strip,
+                                        loader.VALID_PIP_PACKAGES.search(doc)[
+                                            1
+                                        ].split(),
                                     ),
                                 )
-                                return
+                            )
+                        except TypeError:
+                            logger.warning(
+                                "No valid pip packages specified in code, attemping"
+                                " installation from error"
+                            )
+                            requirements = [e.name]
 
-                        await asyncio.sleep(0.1)
+                        logger.debug("Installing requirements: %s", requirements)
 
-                task = asyncio.ensure_future(inner_proxy())
-                await self.allmodules.send_ready_one(
-                    instance,
-                    no_self_unload=True,
-                    from_dlmod=bool(message),
+                        if not requirements:
+                            raise Exception("Nothing to install") from e
+
+                        if did_requirements:
+                            if message is not None:
+                                await utils.answer(
+                                    message,
+                                    self.strings("requirements_restart").format(e.name),
+                                )
+
+                            return
+
+                        if message is not None:
+                            await utils.answer(
+                                message,
+                                self.strings("requirements_installing").format(
+                                    "\n".join(f"▫️ {req}" for req in requirements)
+                                ),
+                            )
+
+                        pip = await asyncio.create_subprocess_exec(
+                            sys.executable,
+                            "-m",
+                            "pip",
+                            "install",
+                            "--upgrade",
+                            "-q",
+                            "--disable-pip-version-check",
+                            "--no-warn-script-location",
+                            *["--user"] if loader.USER_INSTALL else [],
+                            *requirements,
+                        )
+
+                        rc = await pip.wait()
+
+                        if rc != 0:
+                            if message is not None:
+                                if "com.termux" in os.environ.get("PREFIX", ""):
+                                    await utils.answer(
+                                        message,
+                                        self.strings("requirements_failed_termux"),
+                                    )
+                                else:
+                                    await utils.answer(
+                                        message,
+                                        self.strings("requirements_failed"),
+                                    )
+
+                            return
+
+                        importlib.invalidate_caches()
+
+                        kwargs = utils.get_kwargs()
+                        kwargs["did_requirements"] = True
+
+                        return await self.load_module(**kwargs)  # Try again
+                    except CoreOverwriteError as e:
+                        await core_overwrite(e)
+                        return
+                    except loader.LoadError as e:
+                        with contextlib.suppress(Exception):
+                            await self.allmodules.unload_module(
+                                instance.__class__.__name__
+                            )
+
+                        with contextlib.suppress(Exception):
+                            self.allmodules.modules.remove(instance)
+
+                        if message:
+                            await utils.answer(
+                                message,
+                                "<emoji document_id=5454225457916420314>😖</emoji>"
+                                f" <b>{utils.escape_html(str(e))}</b>",
+                            )
+                        return
+                except BaseException as e:
+                    logger.exception("Loading external module failed due to %s", e)
+
+                    if message is not None:
+                        await utils.answer(message, self.strings("load_failed"))
+
+                    return
+
+                instance.inline = self.inline
+
+                if hasattr(instance, "__version__") and isinstance(
+                    instance.__version__, tuple
+                ):
+                    version = (
+                        "<b><i>"
+                        f" (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
+                    )
+                else:
+                    version = ""
+
+                try:
+                    try:
+                        self.allmodules.send_config_one(instance)
+
+                        async def inner_proxy():
+                            nonlocal instance, message
+                            while True:
+                                if hasattr(instance, "hikka_wait_channel_approve"):
+                                    if message:
+                                        (
+                                            module,
+                                            channel,
+                                            reason,
+                                        ) = instance.hikka_wait_channel_approve
+                                        message = await utils.answer(
+                                            message,
+                                            self.strings("wait_channel_approve").format(
+                                                module,
+                                                channel.username,
+                                                utils.escape_html(channel.title),
+                                                utils.escape_html(reason),
+                                                self.inline.bot_username,
+                                            ),
+                                        )
+                                        return
+
+                                await asyncio.sleep(0.1)
+
+                        task = asyncio.ensure_future(inner_proxy())
+                        await self.allmodules.send_ready_one(
+                            instance,
+                            no_self_unload=True,
+                            from_dlmod=bool(message),
+                        )
+                        task.cancel()
+                    except CoreOverwriteError as e:
+                        await core_overwrite(e)
+                        return
+                    except loader.LoadError as e:
+                        with contextlib.suppress(Exception):
+                            await self.allmodules.unload_module(
+                                instance.__class__.__name__
+                            )
+
+                        with contextlib.suppress(Exception):
+                            self.allmodules.modules.remove(instance)
+
+                        if message:
+                            await utils.answer(
+                                message,
+                                "<emoji document_id=5454225457916420314>😖</emoji>"
+                                f" <b>{utils.escape_html(str(e))}</b>",
+                            )
+                        return
+                    except loader.SelfUnload as e:
+                        logger.debug(
+                            "Unloading %s, because it raised `SelfUnload`", instance
+                        )
+                        with contextlib.suppress(Exception):
+                            await self.allmodules.unload_module(
+                                instance.__class__.__name__
+                            )
+
+                        with contextlib.suppress(Exception):
+                            self.allmodules.modules.remove(instance)
+
+                        if message:
+                            await utils.answer(
+                                message,
+                                "<emoji document_id=5454225457916420314>😖</emoji>"
+                                f" <b>{utils.escape_html(str(e))}</b>",
+                            )
+                        return
+                    except loader.SelfSuspend as e:
+                        logger.debug(
+                            "Suspending %s, because it raised `SelfSuspend`", instance
+                        )
+                        if message:
+                            await utils.answer(
+                                message,
+                                "🥶 <b>Module suspended itself\nReason:"
+                                f" {utils.escape_html(str(e))}</b>",
+                            )
+                        return
+                except Exception as e:
+                    logger.exception("Module threw because of %s", e)
+
+                    if message is not None:
+                        await utils.answer(message, self.strings("load_failed"))
+
+                    return
+
+                instance.hikka_meta_pic = next(
+                    (
+                        line.replace(" ", "").split("#metapic:", maxsplit=1)[1]
+                        for line in doc.splitlines()
+                        if line.replace(" ", "").startswith("#metapic:")
+                    ),
+                    None,
                 )
-                task.cancel()
-            except CoreOverwriteError as e:
-                await core_overwrite(e)
-                return
-            except loader.LoadError as e:
-                with contextlib.suppress(Exception):
-                    await self.allmodules.unload_module(instance.__class__.__name__)
 
                 with contextlib.suppress(Exception):
-                    self.allmodules.modules.remove(instance)
+                    if (
+                        not any(
+                            line.replace(" ", "") == "#scope:no_stats"
+                            for line in doc.splitlines()
+                        )
+                        and self._db.get(main.__name__, "stats", True)
+                        and url is not None
+                        and utils.check_url(url)
+                    ):
+                        await self._send_stats(url)
 
-                if message:
-                    await utils.answer(
-                        message,
-                        "<emoji document_id=5454225457916420314>😖</emoji>"
-                        f" <b>{utils.escape_html(str(e))}</b>",
+                if is_dragon:
+                    instance.name = (
+                        "Dragon" + notifier.modname[0].upper() + notifier.modname[1:]
                     )
-                return
-            except loader.SelfUnload as e:
-                logger.debug("Unloading %s, because it raised `SelfUnload`", instance)
-                with contextlib.suppress(Exception):
-                    await self.allmodules.unload_module(instance.__class__.__name__)
+                    instance.commands = notifier.commands
+                    self.allmodules.register_dragon(dragon_module, instance)
+                else:
+                    for alias, cmd in (
+                        self.lookup("settings").get("aliases", {}).items()
+                    ):
+                        if cmd in instance.commands:
+                            self.allmodules.add_alias(alias, cmd)
 
-                with contextlib.suppress(Exception):
-                    self.allmodules.modules.remove(instance)
+            try:
+                modname = instance.strings("name")
+            except (KeyError, AttributeError):
+                modname = getattr(instance, "name", "ERROR")
 
-                if message:
-                    await utils.answer(
-                        message,
-                        "<emoji document_id=5454225457916420314>😖</emoji>"
-                        f" <b>{utils.escape_html(str(e))}</b>",
-                    )
-                return
-            except loader.SelfSuspend as e:
-                logger.debug("Suspending %s, because it raised `SelfSuspend`", instance)
-                if message:
-                    await utils.answer(
-                        message,
-                        "🥶 <b>Module suspended itself\nReason:"
-                        f" {utils.escape_html(str(e))}</b>",
-                    )
-                return
-        except Exception as e:
-            logger.exception("Module threw because of %s", e)
+            try:
+                if developer in self._client._hikka_entity_cache and getattr(
+                    await self._client.get_entity(developer), "left", True
+                ):
+                    developer_entity = await self._client.force_get_entity(developer)
+                else:
+                    developer_entity = await self._client.get_entity(developer)
+            except Exception:
+                developer_entity = None
 
-            if message is not None:
-                await utils.answer(message, self.strings("load_failed"))
+            if not isinstance(developer_entity, Channel):
+                developer_entity = None
 
-            return
-
-        instance.hikka_meta_pic = next(
-            (
-                line.replace(" ", "").split("#metapic:", maxsplit=1)[1]
-                for line in doc.splitlines()
-                if line.replace(" ", "").startswith("#metapic:")
-            ),
-            None,
-        )
-
-        with contextlib.suppress(Exception):
             if (
-                not any(
-                    line.replace(" ", "") == "#scope:no_stats"
-                    for line in doc.splitlines()
+                developer_entity is not None
+                and f"{developer_entity.id}/{modname}" not in self.get("reacted", [])
+            ):
+                self._react_queue += [(developer_entity, modname)]
+
+            if message is None:
+                return
+
+            modhelp = ""
+
+            if instance.__doc__:
+                modhelp += (
+                    "<i>\n<emoji document_id=5787544344906959608>ℹ️</emoji>"
+                    f" {utils.escape_html(inspect.getdoc(instance))}</i>\n"
                 )
-                and self._db.get(main.__name__, "stats", True)
-                and url is not None
-                and utils.check_url(url)
-            ):
-                await self._send_stats(url)
 
-        for alias, cmd in self.lookup("settings").get("aliases", {}).items():
-            if cmd in instance.commands:
-                self.allmodules.add_alias(alias, cmd)
+            subscribe = ""
+            subscribe_markup = None
 
-        try:
-            modname = instance.strings("name")
-        except KeyError:
-            modname = getattr(instance, "name", "ERROR")
+            depends_from = []
+            for key in dir(instance):
+                value = getattr(instance, key)
+                if isinstance(value, loader.Library):
+                    depends_from.append(
+                        "▫️ <code>{}</code><b> {} </b><code>{}</code>".format(
+                            value.__class__.__name__,
+                            self.strings("by"),
+                            (
+                                value.developer
+                                if isinstance(getattr(value, "developer", None), str)
+                                else "Unknown"
+                            ),
+                        )
+                    )
 
-        try:
-            if developer in self._client._hikka_entity_cache and getattr(
-                await self._client.get_entity(developer), "left", True
-            ):
-                developer_entity = await self._client.force_get_entity(developer)
+            depends_from = (
+                self.strings("depends_from").format("\n".join(depends_from))
+                if depends_from
+                else ""
+            )
+
+            def loaded_msg(use_subscribe: bool = True):
+                nonlocal modname, version, modhelp, developer, origin, subscribe, blob_link, depends_from
+                return self.strings("loaded").format(
+                    modname.strip(),
+                    version,
+                    utils.ascii_face(),
+                    modhelp,
+                    developer if not subscribe or not use_subscribe else "",
+                    depends_from,
+                    (
+                        self.strings("modlink").format(origin)
+                        if origin != "<string>" and self.config["share_link"]
+                        else ""
+                    ),
+                    blob_link,
+                    subscribe if use_subscribe else "",
+                )
+
+            if developer:
+                if developer.startswith("@") and developer not in self.get(
+                    "do_not_subscribe", []
+                ):
+                    if (
+                        developer_entity
+                        and getattr(developer_entity, "left", True)
+                        and self._db.get(main.__name__, "suggest_subscribe", True)
+                    ):
+                        subscribe = self.strings("suggest_subscribe").format(
+                            f"@{utils.escape_html(developer_entity.username)}"
+                        )
+                        subscribe_markup = [
+                            {
+                                "text": self.strings("subscribe"),
+                                "callback": self._inline__subscribe,
+                                "args": (
+                                    developer_entity.id,
+                                    functools.partial(loaded_msg, use_subscribe=False),
+                                    True,
+                                ),
+                            },
+                            {
+                                "text": self.strings("no_subscribe"),
+                                "callback": self._inline__subscribe,
+                                "args": (
+                                    developer,
+                                    functools.partial(loaded_msg, use_subscribe=False),
+                                    False,
+                                ),
+                            },
+                        ]
+
+                developer = self.strings("developer").format(
+                    utils.escape_html(developer)
+                    if isinstance(developer_entity, Channel)
+                    else f"<code>{utils.escape_html(developer)}</code>"
+                )
             else:
-                developer_entity = await self._client.get_entity(developer)
-        except Exception:
-            developer_entity = None
+                developer = ""
 
-        if not isinstance(developer_entity, Channel):
-            developer_entity = None
-
-        if (
-            developer_entity is not None
-            and f"{developer_entity.id}/{modname}" not in self.get("reacted", [])
-        ):
-            self._react_queue += [(developer_entity, modname)]
-
-        if message is None:
-            return
-
-        modhelp = ""
-
-        if instance.__doc__:
-            modhelp += f"<i>\nℹ️ {utils.escape_html(inspect.getdoc(instance))}</i>\n"
-
-        subscribe = ""
-        subscribe_markup = None
-
-        depends_from = []
-        for key in dir(instance):
-            value = getattr(instance, key)
-            if isinstance(value, loader.Library):
-                depends_from.append(
-                    "▫️ <code>{}</code><b> {} </b><code>{}</code>".format(
-                        value.__class__.__name__,
-                        self.strings("by"),
-                        (
-                            value.developer
-                            if isinstance(getattr(value, "developer", None), str)
-                            else "Unknown"
-                        ),
-                    )
-                )
-
-        depends_from = (
-            self.strings("depends_from").format("\n".join(depends_from))
-            if depends_from
-            else ""
-        )
-
-        def loaded_msg(use_subscribe: bool = True):
-            nonlocal modname, version, modhelp, developer, origin, subscribe, blob_link, depends_from
-            return self.strings("loaded").format(
-                modname.strip(),
-                version,
-                utils.ascii_face(),
-                modhelp,
-                developer if not subscribe or not use_subscribe else "",
-                depends_from,
-                (
-                    self.strings("modlink").format(origin)
-                    if origin != "<string>" and self.config["share_link"]
-                    else ""
-                ),
-                blob_link,
-                subscribe if use_subscribe else "",
-            )
-
-        if developer:
-            if developer.startswith("@") and developer not in self.get(
-                "do_not_subscribe", []
+            if any(
+                line.replace(" ", "") == "#scope:disable_onload_docs"
+                for line in doc.splitlines()
             ):
-                if (
-                    developer_entity
-                    and getattr(developer_entity, "left", True)
-                    and self._db.get(main.__name__, "suggest_subscribe", True)
-                ):
-                    subscribe = self.strings("suggest_subscribe").format(
-                        f"@{utils.escape_html(developer_entity.username)}"
-                    )
-                    subscribe_markup = [
-                        {
-                            "text": self.strings("subscribe"),
-                            "callback": self._inline__subscribe,
-                            "args": (
-                                developer_entity.id,
-                                functools.partial(loaded_msg, use_subscribe=False),
-                                True,
-                            ),
-                        },
-                        {
-                            "text": self.strings("no_subscribe"),
-                            "callback": self._inline__subscribe,
-                            "args": (
-                                developer,
-                                functools.partial(loaded_msg, use_subscribe=False),
-                                False,
-                            ),
-                        },
-                    ]
+                await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
+                return
 
-            developer = self.strings("developer").format(
-                utils.escape_html(developer)
-                if isinstance(developer_entity, Channel)
-                else f"<code>{utils.escape_html(developer)}</code>"
-            )
-        else:
-            developer = ""
-
-        if any(
-            line.replace(" ", "") == "#scope:disable_onload_docs"
-            for line in doc.splitlines()
-        ):
-            await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
-            return
-
-        for _name, fun in sorted(
-            instance.commands.items(),
-            key=lambda x: x[0],
-        ):
-            modhelp += self.strings("single_cmd").format(
-                self.get_prefix(),
-                _name,
-                (
-                    utils.escape_html(inspect.getdoc(fun))
-                    if fun.__doc__
-                    else self.strings("undoc_cmd")
-                ),
-            )
-
-        if self.inline.init_complete:
-            if hasattr(instance, "inline_handlers"):
-                for _name, fun in sorted(
-                    instance.inline_handlers.items(),
-                    key=lambda x: x[0],
-                ):
-                    modhelp += self.strings("ihandler").format(
-                        f"@{self.inline.bot_username} {_name}",
-                        (
+            for _name, fun in sorted(
+                instance.commands.items(),
+                key=lambda x: x[0],
+            ):
+                modhelp += self.strings("single_cmd").format(
+                    (
+                        dragon.DRAGON_EMOJI
+                        if is_dragon
+                        else "<emoji document_id=4972307488532595458>▫️</emoji>"
+                    ),
+                    self.get_prefix("dragon" if is_dragon else None),
+                    _name,
+                    (
+                        utils.escape_html(fun)
+                        if is_dragon
+                        else (
                             utils.escape_html(inspect.getdoc(fun))
                             if fun.__doc__
-                            else self.strings("undoc_ihandler")
-                        ),
-                    )
+                            else self.strings("undoc_cmd")
+                        )
+                    ),
+                )
 
-        try:
-            await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
-        except telethon.errors.rpcerrorlist.MediaCaptionTooLongError:
-            await message.reply(loaded_msg(False))
+            if self.inline.init_complete and not is_dragon:
+                if hasattr(instance, "inline_handlers"):
+                    for _name, fun in sorted(
+                        instance.inline_handlers.items(),
+                        key=lambda x: x[0],
+                    ):
+                        modhelp += self.strings("ihandler").format(
+                            f"@{self.inline.bot_username} {_name}",
+                            (
+                                utils.escape_html(inspect.getdoc(fun))
+                                if fun.__doc__
+                                else self.strings("undoc_ihandler")
+                            ),
+                        )
+
+            try:
+                await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
+            except telethon.errors.rpcerrorlist.MediaCaptionTooLongError:
+                await message.reply(loaded_msg(False))
 
     async def _inline__subscribe(
         self,
@@ -2660,19 +2778,28 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("no_class"))
             return
 
-        instance = self.lookup(args)
+        instance = self.lookup(args, include_dragon=True)
 
         if issubclass(instance.__class__, loader.Library):
             await utils.answer(message, self.strings("cannot_unload_lib"))
             return
 
-        try:
-            worked = await self.allmodules.unload_module(args)
-        except CoreUnloadError as e:
-            await utils.answer(message, self.strings("unload_core").format(e.module))
-            return
+        is_dragon = isinstance(instance, DragonModule)
 
-        if not self.allmodules.secure_boot:
+        if is_dragon:
+            worked = [instance.name]
+            if not self.allmodules.unload_dragon(instance):
+                worked = []
+        else:
+            try:
+                worked = await self.allmodules.unload_module(args)
+            except CoreUnloadError as e:
+                await utils.answer(
+                    message, self.strings("unload_core").format(e.module)
+                )
+                return
+
+        if not self.allmodules.secure_boot and not is_dragon:
             self.set(
                 "loaded_modules",
                 {
@@ -2684,9 +2811,12 @@ class LoaderMod(loader.Module):
 
         msg = (
             self.strings("unloaded").format(
+                dragon.DRAGON_EMOJI
+                if is_dragon
+                else "<emoji document_id=5784993237412351403>✅</emoji>",
                 ", ".join(
                     [(mod[:-3] if mod.endswith("Mod") else mod) for mod in worked]
-                )
+                ),
             )
             if worked
             else self.strings("not_unloaded")

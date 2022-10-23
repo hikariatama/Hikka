@@ -1,5 +1,21 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.6.0
+
+- Bring support for Dragon Userbot modules
+- Make `db` attribute of `Modules` public
+- Mess up with some translations
+- Fix `.helphide` command
+- Fix visual bug with phone input field in web
+- Drop Okteto support
+- New type `DragonModule`
+- New argument of `get_prefix` - `userbot`. Pass in `"dragon"` to get its prefix
+- New attribute of `Modules` - `dragon_modules`
+- New attribute of `CustomTelegramClient` - `pyro_proxy`. Use pyrogram methods natively
+- New appearence of `help` command
+- New module loading animation
+- New README.md with installation steps and new web recording
+
 ## 🌑 Hikka 1.5.3
 
 - Add Uzbek, Turkish, German, Hindi, Japanese, Korean, Spanish and Arabic translation packs

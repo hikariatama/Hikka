@@ -57,6 +57,8 @@ from .dispatcher import CommandDispatcher
 from .translations import Translator
 from .version import __version__
 from .tl_cache import CustomTelegramClient
+from .compat import dragon
+from .compat.pyroproxy import PyroProxyClient
 
 try:
     from .web import core
@@ -451,7 +453,10 @@ class Hikka:
                     connection=self.conn,
                     proxy=self.proxy,
                     connection_retries=None,
-                    device_model="Hikka",
+                    device_model=f"Hikka on {utils.get_named_platform().split(maxsplit=1)[1]}",
+                    app_version=(
+                        f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}"
+                    ),
                 )
 
                 client.start(phone)
@@ -641,6 +646,12 @@ class Hikka:
         await translator.init()
         modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
+
+        client.pyro_proxy = PyroProxyClient(client)
+        await client.pyro_proxy.start()
+        await client.pyro_proxy.dispatcher.start()
+
+        dragon.apply_compat(client)
 
         if self.web:
             await self.web.add_loader(client, modules, db)

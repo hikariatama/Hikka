@@ -32,6 +32,7 @@ from telethon.tl.functions.contacts import UnblockRequest
 from .. import utils, main, database
 from ..tl_cache import CustomTelegramClient
 from .._internal import restart
+from ..version import __version__
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
@@ -206,7 +207,10 @@ class Web:
             connection=self.connection,
             proxy=self.proxy,
             connection_retries=None,
-            device_model="Hikka",
+            device_model=f"Hikka on {utils.get_named_platform().split(maxsplit=1)[1]}",
+            app_version=(
+                f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}"
+            ),
         )
 
         self._pending_client = client

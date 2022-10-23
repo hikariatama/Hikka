@@ -19,7 +19,13 @@ from telethon.network import MTProtoSender
 from telethon.tl.tlobject import TLRequest
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.types import ChannelFull, UserFull
+from telethon.tl.types import (
+    ChannelFull,
+    UserFull,
+    Updates,
+    UpdatesCombined,
+    UpdateShort,
+)
 
 from .types import (
     CacheRecord,
@@ -55,6 +61,7 @@ class CustomTelegramClient(TelegramClient):
         self._hikka_fullchannel_cache = {}
         self._hikka_fulluser_cache = {}
         self.__forbidden_constructors = []
+        self.raw_updates_processor = None  # Will be monkeypatched by pyro proxy
 
     async def force_get_entity(self, *args, **kwargs):
         """Forcefully makes a request to Telegram to get the entity."""
@@ -447,3 +454,12 @@ class CustomTelegramClient(TelegramClient):
         :param constructors: Constructor ids to forbid
         """
         self.__forbidden_constructors = list(set(constructors))
+
+    def _handle_update(
+        self: "CustomTelegramClient",
+        update: typing.Union[Updates, UpdatesCombined, UpdateShort],
+    ):
+        if self.raw_updates_processor is not None:
+            self.raw_updates_processor(update)
+
+        super()._handle_update(update)

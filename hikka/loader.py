@@ -24,13 +24,12 @@ import importlib.util
 import importlib.machinery
 from functools import partial, wraps
 
-from telethon.utils import is_list_like
 from telethon.tl.tlobject import TLObject
 from telethon.tl.types import Message, InputPeerNotifySettings, Channel
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.hints import EntityLike
 
-from types import FunctionType
+from types import FunctionType, ModuleType
 import typing
 
 from . import security, utils, validators, version
@@ -51,6 +50,7 @@ from .types import (
     get_commands,
     get_inline_handlers,
     JSONSerializable,
+    DragonModule,
 )
 from .inline.core import InlineManager
 from .inline.types import InlineCall
@@ -542,6 +542,7 @@ class Modules:
         self.callback_handlers = {}
         self.aliases = {}
         self.modules = []  # skipcq: PTC-W0052
+        self.dragon_modules = []
         self.libraries = []
         self.watchers = []
         self._log_handlers = []
@@ -550,6 +551,7 @@ class Modules:
         self.allclients = allclients
         self.client = client
         self._db = db
+        self.db = db
         self._translator = translator
         self.secure_boot = False
         asyncio.ensure_future(self._junk_collector())
@@ -666,13 +668,54 @@ class Modules:
 
         return loaded
 
+    def register_dragon(self, module: ModuleType, instance: DragonModule):
+        for mod in self.dragon_modules.copy():
+            if mod.name == instance.name:
+                logger.debug("Removing dragon module %s for reload", mod.name)
+                self.unload_dragon(mod)
+
+        instance.handlers = []
+        for name, obj in vars(module).items():
+            for handler, group in getattr(obj, "handlers", []):
+                try:
+                    handler = self.client.pyro_proxy.add_handler(handler, group)
+                    instance.handlers.append(handler)
+                except Exception as e:
+                    logging.exception(
+                        "Can't add handler %s due to %s: %s",
+                        name,
+                        type(e).__name__,
+                        e,
+                    )
+
+        self.dragon_modules += [instance]
+
+    def unload_dragon(self, instance: DragonModule) -> bool:
+        for handler in instance.handlers:
+            try:
+                self.client.pyro_proxy.remove_handler(*handler)
+            except Exception as e:
+                logging.exception(
+                    "Can't remove handler %s due to %s: %s",
+                    handler,
+                    type(e).__name__,
+                    e,
+                )
+
+        if instance in self.dragon_modules:
+            self.dragon_modules.remove(instance)
+            return True
+
+        return False
+
     async def register_module(
         self,
         spec: importlib.machinery.ModuleSpec,
         module_name: str,
         origin: str = "<core>",
         save_fs: bool = False,
-    ) -> Module:
+        is_dragon: bool = False,
+    ) -> typing.Union[Module, typing.Tuple[ModuleType, DragonModule]]:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
@@ -680,6 +723,10 @@ class Modules:
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
+
+        if is_dragon:
+            return module, DragonModule()
+
         ret = None
 
         ret = next(
@@ -849,18 +896,37 @@ class Modules:
         for _watcher in instance.hikka_watchers.values():
             self.watchers += [_watcher]
 
-    def _lookup(self, modname: str):
-        return next(
-            (lib for lib in self.libraries if lib.name.lower() == modname.lower()),
-            False,
-        ) or next(
-            (
-                mod
-                for mod in self.modules
-                if mod.__class__.__name__.lower() == modname.lower()
-                or mod.name.lower() == modname.lower()
-            ),
-            False,
+    def _lookup(
+        self,
+        modname: str,
+        include_dragon: bool = False,
+    ) -> typing.Union[bool, Module, DragonModule, Library]:
+        return (
+            next(
+                (lib for lib in self.libraries if lib.name.lower() == modname.lower()),
+                False,
+            )
+            or next(
+                (
+                    mod
+                    for mod in self.modules
+                    if mod.__class__.__name__.lower() == modname.lower()
+                    or mod.name.lower() == modname.lower()
+                ),
+                False,
+            )
+            or (
+                next(
+                    (
+                        mod
+                        for mod in self.dragon_modules
+                        if mod.name.lower() == modname.lower()
+                    ),
+                    False,
+                )
+                if include_dragon
+                else False
+            )
         )
 
     @property
@@ -1003,8 +1069,16 @@ class Modules:
 
         return event.status
 
-    def get_prefix(self) -> str:
-        return self._db.get("hikka.main", "command_prefix", ".")
+    def get_prefix(self, userbot: typing.Optional[str] = None) -> str:
+        """Get prefix for specific userbot. Pass `None` to get Hikka prefix"""
+        if userbot == "dragon":
+            key = "dragon.prefix"
+            default = ","
+        else:
+            key = "hikka.main"
+            default = "."
+
+        return self._db.get(key, "command_prefix", default)
 
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""

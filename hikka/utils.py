@@ -891,7 +891,7 @@ def get_platform_emoji(client: typing.Optional[CustomTelegramClient] = None) -> 
     )
 
     if client and (
-        client.loader._db.get("hikka.translations", "lang", False) or ""
+        client.loader.db.get("hikka.translations", "lang", False) or ""
     ).startswith("ar"):
         BASE = tuple(reversed(BASE))
 

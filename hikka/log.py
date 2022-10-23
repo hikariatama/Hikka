@@ -394,4 +394,5 @@ def init():
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
     logging.getLogger("aiogram").setLevel(logging.WARNING)
+    logging.getLogger("pyrogram").setLevel(logging.WARNING)
     logging.captureWarnings(True)

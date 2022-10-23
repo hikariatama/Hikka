@@ -942,7 +942,7 @@ class HikkaSettingsMod(loader.Module):
             "公開チャットはセキュリティ上のリスクです。できれば実行してください"
             " <a href='tg://openmessage?user_id={}'>メッセージを選択</a>インチ</b>"
         ),
-        "opening_tunnel": "🔁 <b>Hekka ウェブ インターフェースへのトンネルを開いています...</b>",
+        "opening_tunnel": "🔁 <b>Hikka ウェブ インターフェースへのトンネルを開いています...</b>",
         "tunnel_opened": "🎉 <b>トンネルが開いています。このリンクは 1 時間以上アクティブになりません</b",
         "web_btn": "🌍ウェブインターフェース",
         "btn_yes": "とにかく開く",
@@ -1053,7 +1053,7 @@ class HikkaSettingsMod(loader.Module):
             "공개채팅은 보안상 위험합니다. 가급적이면 수행하세요."
             " <a href='tg://openmessage?user_id={}'>메시지 선택</a> 안에.</b>"
         ),
-        "opening_tunnel": "🔁 <b>Hekka 웹 인터페이스에 터널을 여는 중...</b>",
+        "opening_tunnel": "🔁 <b>Hikka 웹 인터페이스에 터널을 여는 중...</b>",
         "tunnel_opened": "🎉 <b>터널이 열려 있습니다. 이 링크는 1시간 이상 활성화되지 않습니다</b>",
         "web_btn": "🌍 웹 인터페이스",
         "btn_yes": " 어쨌든 열기",
@@ -1177,7 +1177,7 @@ class HikkaSettingsMod(loader.Module):
             "الدردشة العامة تشكل مخاطرة أمنية. , يفضل أن تؤدي"
             "<a href='tg://openmessage؟user_id={}'> حدد الرسائل</a> في. </b> "
         ),
-        "open_tunnel": "🔁 <b> فتح نفق ل, اجهة , يب Hekka ... </b>",
+        "open_tunnel": "🔁 <b> فتح نفق ل, اجهة , يب Hikka ... </b>",
         "tunnel_opened": (
             "🎉 <b> النفق مفت, ح. لن يك, ن هذا الرابط نشطًا لأكثر من ساعة </b>"
         ),
@@ -1310,7 +1310,7 @@ class HikkaSettingsMod(loader.Module):
             " realizar <a href='tg://openmessage?user_id={}'>seleccionar mensajes</a>"
             " pulg.</b>"
         ),
-        "opening_tunnel": "🔁 <b>Abriendo un túnel a la interfaz web de Hekka...</b>",
+        "opening_tunnel": "🔁 <b>Abriendo un túnel a la interfaz web de Hikka...</b>",
         "túnel_abierto": (
             "🎉 <b>el túnel está abierto. Este enlace no estará activo durante más de"
             " una hora</b>"
