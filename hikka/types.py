@@ -112,7 +112,20 @@ class Module:
 
 
 class DragonModule:
-    """Imported Dragon module"""
+    """Module is running in compatibility mode with Dragon, so it might be unstable"""
+
+    # fmt: off
+    strings_ru = {"_cls_doc": "Модуль запущен в режиме совместимости с Dragon, поэтому он может быть нестабильным"}
+    strings_de = {"_cls_doc": "Das Modul wird im Dragon-Kompatibilitätsmodus ausgeführt, daher kann es instabil sein"}
+    strings_tr = {"_cls_doc": "Modül Dragon uyumluluğu modunda çalıştığı için istikrarsız olabilir"}
+    strings_uz = {"_cls_doc": "Modul Dragon muvofiqligi rejimida ishlamoqda, shuning uchun u beqaror bo'lishi mumkin"}
+    strings_kr = {"_cls_doc": "모듈이 드래곤 호환 모드로 실행되므로 불안정할 수 있습니다"}
+    strings_hi = {"_cls_doc": "ड्रैगन संगतता मोड में चल रहा मॉड्यूल, इसलिए यह अस्थिर हो सकता है"}
+    strings_ja = {"_cls_doc": "モジュールがドラゴン互換モードで実行されているため、不安定になる可能性があります"}
+    strings_ar = {"_cls_doc": "يعمل الوحدة في وضع التوافق مع Dragon ، لذلك قد يكون غير مستقرًا"}
+    strings_es = {"_cls_doc": "El módulo se está ejecutando en modo de compatibilidad con Dragon, por lo que puede ser inestable"}
+    strings_tt = {"_clc_doc": "Модуль Dragon белән ярашучанлык режимда эшли башлады, шуңа күрә ул тотрыксыз була ала"}
+    # fmt: on
 
     def __init__(self):
         self.name = "Unknown"

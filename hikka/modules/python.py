@@ -86,21 +86,6 @@ class PythonMod(loader.Module):
         "_cls_doc": "Python kodunu çalıştırır",
     }
 
-    strings_hi = {
-        "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " कोड:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
-            " परिणाम:</b>\n<code>{}</code>"
-        ),
-        "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " कोड:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> त्रुटि:</b>\n{}"
-        ),
-        "_cls_doc": "Python कोड चलाता है",
-    }
-
     strings_uz = {
         "eval": (
             "<emoji document_id=5431376038628171216>🎬</emoji><b>"
@@ -181,7 +166,6 @@ class PythonMod(loader.Module):
         ru_doc="Алиас для команды .e",
         de_doc="Alias für den Befehl .e",
         tr_doc="Komut .e için takma ad",
-        hi_doc="कमांड .e के लिए उपनाम",
         uz_doc="Buyruq .e uchun alohida nom",
         ja_doc="コマンド.eのエイリアス",
         kr_doc="명령 .e의 별칭",
@@ -197,7 +181,6 @@ class PythonMod(loader.Module):
         ru_doc="Выполняет Python код",
         de_doc="Führt Python Code aus",
         tr_doc="Python kodu çalıştırır",
-        hi_doc="Python कोड चलाता है",
         uz_doc="Python kodini ishga tushiradi",
         ja_doc="Pythonコードを実行します",
         kr_doc="Python 코드를 실행합니다",

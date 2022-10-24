@@ -256,52 +256,6 @@ class Translations(loader.Module):
         "keep_id": "⚠️ ID-ni o'chirmang! {}",
     }
 
-    strings_hi = {
-        "lang_saved": "{} <b>भाषा सहेजा गया!</b>",
-        "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>अनुवाद पैक"
-            " सहेजा गया!</b>"
-        ),
-        "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>गलत भाषा"
-            " निर्दिष्ट किया गया</b>"
-        ),
-        "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>अनुवाद डिफ़ॉल्ट"
-            " पर रीसेट किए गए</b>"
-        ),
-        "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>यूआरएल में गलत"
-            " अनुवाद पैक निर्दिष्ट किया गया</b>"
-        ),
-        "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>आपने गलत यूआरएल"
-            " निर्दिष्ट किया है</b>"
-        ),
-        "too_long": (
-            "<emoji document_id=5433653135799228968>📁</emoji> <b>कमांड आउटपुट बहुत लंबा"
-            " लगता है, इसलिए फ़ाइल में भेजा जाता है.</b>"
-        ),
-        "opening_form": " <b>फॉर्म खोल रहा है...</b>",
-        "opening_gallery": " <b>गैलरी खोल रहा है...</b>",
-        "opening_list": " <b>सूची खोल रहा है...</b>",
-        "inline403": "🚫 <b>आप इस ग्रुप में इनलाइन आइटम नहीं भेज सकते हैं</b>",
-        "invoke_failed": "<b>🚫 मॉड्यूल इन्वोक विफल! विस्तृत जानकारी लॉग में है</b>",
-        "show_inline_cmds": "📄 सभी उपलब्ध इनलाइन कमांड दिखाएं",
-        "no_inline_cmds": "आपके पास कोई उपलब्ध इनलाइन कमांड नहीं हैं",
-        "no_inline_cmds_msg": (
-            "<b>😔 आपके पास कोई उपलब्ध इनलाइन कमांड या इनलाइन कमांड के लिए अनुमति नहीं"
-            " हैं</b>"
-        ),
-        "inline_cmds": "ℹ️ आपके पास {} उपलब्ध कमांड हैं",
-        "inline_cmds_msg": "<b>ℹ️ उपलब्ध इनलाइन कमांड:</b>\n\n{}",
-        "run_command": "🏌️ कमांड चलाएं",
-        "command_msg": "<b>🌘 कमांड «{}»</b>\n\n<i>{}</i>",
-        "command": "🌘 कमांड «{}»",
-        "button403": "आप इस बटन को दबा नहीं सकते!",
-        "button404": "यह बटन अब उपलब्ध नहीं है!",
-    }
-
     strings_ja = {
         "lang_saved": "{} <b>言語が保存されました！</b>",
         "pack_saved": (
@@ -480,7 +434,6 @@ class Translations(loader.Module):
         de_doc="[Sprachen] - Ändere die Standard-Sprache",
         tr_doc="[Diller] - Varsayılan dili değiştir",
         uz_doc="[til] - Standart tili o'zgartirish",
-        hi_doc="[भाषाएं] - डिफ़ॉल्ट भाषा बदलें",
         ja_doc="[言語] - デフォルトの言語を変更します",
         kr_doc="[언어] - 기본 언어를 변경합니다",
         ar_doc="[اللغات] - تغيير اللغة الافتراضية",
@@ -494,27 +447,33 @@ class Translations(loader.Module):
             return
 
         self._db.set(translations.__name__, "lang", args.lower())
-        await self.translator.init()
+        await self.allmodules.reload_translations()
 
-        for module in self.allmodules.modules:
-            try:
-                module.config_complete(reload_dynamic_translate=True)
-            except Exception as e:
-                logger.debug(
-                    "Can't complete dynamic translations reload of %s due to %s",
-                    module,
-                    e,
-                )
+        emoji_flags = {
+            "🇬🇧": "<emoji document_id=6323589145717376403>🇬🇧</emoji>",
+            "🇯🇵": " <emoji document_id=6323356796576597627>🇯🇵</emoji>",
+            "🇺🇿": " <emoji document_id=6323430017179059570>🇺🇿</emoji>",
+            "🇷🇺": " <emoji document_id=6323139226418284334>🇷🇺</emoji>",
+            "🇸🇦": " <emoji document_id=6323493926292424101>🇸🇦</emoji>",
+            "🇩🇪": " <emoji document_id=6320817337033295141>🇩🇪</emoji>",
+            "🇪🇸": " <emoji document_id=6323315062379382237>🇪🇸</emoji>",
+            "🇹🇷": " <emoji document_id=6321003171678259486>🇹🇷</emoji>",
+            "🇰🇷": " <emoji document_id=6323152716910561397>🇰🇷</emoji>",
+            "🥟": "<emoji document_id=5382337996123020810>🥟</emoji>",
+        }
 
-        lang2country = {"en": "gb", "hi": "in", "ja": "jp", "ar": "sa"}
+        lang2country = {"en": "🇬🇧", "ja": "🇯🇵", "ar": "🇸🇦", "tt": "🥟"}
 
         await utils.answer(
             message,
             self.strings("lang_saved").format(
                 "".join(
                     [
-                        utils.get_lang_flag(lang2country.get(lang, lang))
-                        for lang in args.lower().split(" ")
+                        emoji_flags.get(flag, flag)
+                        for flag in [
+                            lang2country.get(lang) or utils.get_lang_flag(lang)
+                            for lang in args.lower().split(" ")
+                        ]
                     ]
                 )
             ),
@@ -534,7 +493,6 @@ class Translations(loader.Module):
             "[tarjima paketi havolasini | bo'sh qoldirish standart holatga qaytaradi] -"
             " Tashqi tarjima paketini o'zgartirish"
         ),
-        hi_doc="[अनुवाद पैक का लिंक | खाली छोड़ दें] - बाहरी अनुवाद पैक बदलें",
         ja_doc="[パッケージへのリンク | 空白で削除] - 外部翻訳パッケージを変更します",
         kr_doc="[패키지 링크 | 비워두면 삭제] - 외부 번역 패키지를 변경합니다",
         ar_doc="[رابط الحزمة | اتركه فارغا لحذفه] - تغيير حزمة الترجمة الخارجية",
@@ -556,19 +514,11 @@ class Translations(loader.Module):
             return
 
         self._db.set(translations.__name__, "pack", args)
-        success = await self.translator.init()
-
-        for module in self.allmodules.modules:
-            try:
-                module.config_complete(reload_dynamic_translate=True)
-            except Exception as e:
-                logger.debug(
-                    "Can't complete dynamic translations reload of %s due to %s",
-                    module,
-                    e,
-                )
-
         await utils.answer(
             message,
-            self.strings("pack_saved" if success else "check_pack"),
+            self.strings(
+                "pack_saved"
+                if await self.allmodules.reload_translations()
+                else "check_pack"
+            ),
         )

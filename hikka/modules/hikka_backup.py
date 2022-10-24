@@ -102,24 +102,6 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
-    strings_hi = {
-        "period": (
-            "⌚️ <b>यूनिट «ALPHA»</b> स्वचालित रूप से बैकअप बनाता है। आप इस विशेषता को"
-            " बाद में बदल सकते हैं।\n\nकृपया बैकअप की अनुमति देने के लिए एक अनुमति दें"
-        ),
-        "saved": (
-            "✅ बैकअप अनुमति सहेजी गई! आप इसे .set_backup_period के साथ बदल सकते हैं"
-        ),
-        "never": (
-            "✅ मैं स्वचालित रूप से बैकअप नहीं बनाऊंगा। आप इसे .set_backup_period के साथ"
-            " बदल सकते हैं"
-        ),
-        "invalid_args": (
-            "🚫 <b>सही बैकअप अनुमति देने के लिए एक घंटे में दर दर्ज करें, या इसे अक्षम"
-            " करने के लिए `0` दर्ज करें</b>"
-        ),
-    }
-
     strings_uz = {
         "period": (
             "⌚️ <b>Unit «ALPHA»</b> avtomatik ravishda e'lon qiladi. Ushbu sozlamalarni"
@@ -257,7 +239,6 @@ class HikkaBackupMod(loader.Module):
         ru_doc="<время в часах> - Установить частоту бэкапов",
         de_doc="<Stunden> - Setze die Backup-Frequenz",
         tr_doc="<saat cinsinden zaman> - Yedekleme periyodunu ayarla",
-        hi_doc="<घंटों में समय> - बैकअप अनुमति सेट करें",
         uz_doc="<soatda vaqt> - E'lon tartibini belgilash",
         ja_doc="<時間> - バックアップ頻度を設定します",
         kr_doc="<시간> - 백업 빈도 설정",
@@ -284,6 +265,9 @@ class HikkaBackupMod(loader.Module):
     @loader.loop(interval=1)
     async def handler(self):
         try:
+            if self.get("period") == "disabled":
+                raise loader.StopLoop
+
             if not self.get("period"):
                 await asyncio.sleep(3)
                 return
@@ -292,9 +276,6 @@ class HikkaBackupMod(loader.Module):
                 self.set("last_backup", round(time.time()))
                 await asyncio.sleep(self.get("period"))
                 return
-
-            if self.get("period") == "disabled":
-                raise loader.StopLoop
 
             await asyncio.sleep(
                 self.get("last_backup") + self.get("period") - time.time()

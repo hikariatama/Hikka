@@ -376,94 +376,6 @@ class CoreMod(loader.Module):
         ),
     }
 
-    strings_hi = {
-        "too_many_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>बहुत अधिकतर्क</b>"
-        ),
-        "blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>चैट {} इसमें जोड़ा"
-            " गयायूजरबॉट ब्लैकलिस्ट</b>"
-        ),
-        "unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>चैट {} से हटा दिया"
-            " गयायूजरबॉट ब्लैकलिस्ट</b>"
-        ),
-        "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>उपयोगकर्ता {}"
-            "userbot द्वारा काली सूची में डाला गया</b>"
-        ),
-        "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>उपयोगकर्ता {}"
-            "userbot ब्लैकलिस्ट से हटाया गया</b>"
-        ),
-        "what_prefix": "❓ <b>मुझे कौन सा उपसर्ग सेट करना चाहिए?</b>",
-        "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>उपसर्ग अवश्य होना"
-            " चाहिएकेवल एक वर्ण से मिलकर बनता है</b>"
-        ),
-        "prefix_set": (
-            "{} <b>उपसर्ग अपडेट किया"
-            " गया। इसे वापस करने के लिए, उपयोग करें</b>"
-            " <code>{newprefix}setprefix{oldprefix}</code>"
-        ),
-        "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>उपनाम बनाया गया।"
-            "</b> <code>{}</code> के माध्यम से इसका उपयोग करें"
-        ),
-        "aliases": "<b>🔗 उपनाम:</b>\n",
-        "no_command": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>कमांड</b>"
-            " <code>{}</code> <b>मौजूद नहीं है</b>"
-        ),
-        "alias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>आवश्यक दर्ज करें"
-            "इसके लिए आदेश और उपनाम</b>"
-        ),
-        "delalias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>नाम की आवश्यकता है"
-            "उपनाम</b>"
-        ),
-        "alias_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>उपनाम</b>"
-            " <code>{}</code> <b>हटाया</b>।"
-        ),
-        "no_alias": (
-            "<emoji document_id=5436162517686557387>🚫</emoji><b> उपनाम</b>"
-            " <code>{}</code> <b>मौजूद नहीं है</b>"
-        ),
-        "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b> आधार साफ़ हो गया</b>"
-        ),
-        "hikka": (
-            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
-            " document_id=5377437404078546699>💜</emoji> <b>हिक्का-टीएल:"
-            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
-            " <b>Pyrogram:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>डेवलपर:t.me/hikariatama</b>"
-        ),
-        "_cls_doc": "Userbot मूलभूत सेटिंग प्रबंधन",
-        "confirm_cleardb": "⚠️ <b>क्या आप वाकई डेटाबेस को रीसेट करना चाहते हैं?</b>",
-        "cleardb_confirm": "🗑 आधार साफ़ करें",
-        "cancel": "🚫 रद्द करें",
-        "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>किसे ब्लॉक करना है"
-            "तो?</b>"
-        ),
-        "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>किसको अनब्लॉक करना है"
-            "तो?</b>"
-        ),
-        "unstable": (
-            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>आप उपयोग कर रहे"
-            " हैंअस्थिर शाखा </b><code>{}</code><b>!</b>"
-        ),
-        "prefix_collision": (
-            "<emoji document_id=5469654973308476699>💣</emoji> <b>ड्रैगन और हिक्का"
-            " उपसर्ग अलग-अलग होने चाहिए!</b>"
-        ),
-    }
-
     strings_uz = {
         "too_many_args": (
             "<emoji document_id=5436162517686557387>🚫</emoji> <b>Juda ko'p"
@@ -855,6 +767,75 @@ class CoreMod(loader.Module):
         ),
     }
 
+    strings_tt = {
+        "chat_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Чат {} чыгарылды</b>"
+        ),
+        "chat_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Чат {} торгызылды</b>"
+        ),
+        "user_blacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Кулланучы {}"
+            " чыгарылды</b>"
+        ),
+        "user_unblacklisted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Кулланучы {}"
+            " торгызылды</b>"
+        ),
+        "what_prefix": "❓ <b>Кулланучының префиксын кертегез</b>",
+        "prefix_incorrect": (
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Префикс бер тарактер"
+            " булырга тиеш</b>"
+        ),
+        "prefix_set": (
+            "{} <b>Префикс көйләнде</b> <code>{newprefix}setprefix"
+            " {oldprefix}</code> <b>кире кайтару өчен</b>"
+        ),
+        "alias_created": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Алиас</b>"
+            " <code>{}</code> <b>төзелде</b>"
+        ),
+        "alias_deleted": (
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Алиас</b>"
+            " <code>{}</code> <b>бетерелде</b>"
+        ),
+        "no_alias": (
+            "<emoji document_id=5436162517686557387>🚫</emoji><b> Алиас</b>"
+            " <code>{}</code> <b>монда юк</b>"
+        ),
+        "db_cleared": (
+            "<emoji document_id=5368324170671202286>👍</emoji><b>База бетерелде</b>"
+        ),
+        "hikka": (
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n<emoji document_id=5377399247589088543>🔥</emoji>"
+            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Разработчик:"
+            " t.me/hikariatama</b>"
+        ),
+        "_cls_doc": "Кулланучының бот булдырыулары",
+        "confirm_cleardb": "⚠️ <b>Базаны бетерү өченме?</b>",
+        "cleardb_confirm": "🗑 Базаны бетерү",
+        "cancel": "🚫 Башкару",
+        "who_to_blacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кулланучыны чыгарып"
+            " җибәрү өчен кертегез</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кулланучыны торгызып"
+            " җибәрү өчен кертегез</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Сез җылмаган"
+            " версияны кулланыгыз</b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon жана Hikka"
+            " префикслары алыштырылмаган булырга тиеш!</b>"
+        ),
+    }
+
     async def blacklistcommon(self, message: Message):
         args = utils.get_args(message)
 
@@ -885,11 +866,11 @@ class CoreMod(loader.Module):
         de_doc="Zeige die Hikka-Version an",
         tr_doc="Hikka sürümünü gösterir",
         uz_doc="Hikka versiyasini ko'rsatish",
-        hi_doc="Hikka का संस्करण दिखाएं",
         ja_doc="Hikkaのバージョンを表示します",
         kr_doc="Hikka 버전을 표시합니다",
         ar_doc="إظهار إصدار Hikka",
         es_doc="Mostrar la versión de Hikka",
+        tt_doc="Hikka версиясын күрсәтү",
     )
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
@@ -928,11 +909,11 @@ class CoreMod(loader.Module):
         de_doc="[chat] [Modul] - Deaktiviere den Bot irgendwo",
         tr_doc="[sohbet] [modül] - Botu herhangi bir yerde devre dışı bırakın",
         uz_doc="[chat] [modul] - Botni hozircha o'chirish",
-        hi_doc="[चैट] [मॉड्यूल] - कहीं भी बॉट निष्क्रिय करें",
         ja_doc="[チャット] [モジュール] - ボットをどこかで無効にします",
         kr_doc="[채팅] [모듈] - 어디에서든 봇 비활성화",
         ar_doc="[دردشة] [وحدة] - تعطيل البوت في أي مكان",
         es_doc="[chat] [módulo] - Desactivar el bot en cualquier lugar",
+        tt_doc="[чат] [модуль] - Ботны җир үзгәртү",
     )
     async def blacklist(self, message: Message):
         """[chat_id] [module] - Blacklist the bot from operating somewhere"""
@@ -951,11 +932,11 @@ class CoreMod(loader.Module):
         de_doc="[chat] - Aktiviere den Bot irgendwo",
         tr_doc="[sohbet] - Botu herhangi bir yerde etkinleştirin",
         uz_doc="[chat] - Botni hozircha yoqish",
-        hi_doc="[चैट] - कहीं भी बॉट सक्रिय करें",
         ja_doc="[チャット] - ボットをどこかで有効にします",
         kr_doc="[채팅] - 어디에서든 봇을 활성화합니다",
         ar_doc="[دردشة] - تمكين البوت في أي مكان",
         es_doc="[chat] - Activar el bot en cualquier lugar",
+        tt_doc="[чат] - Ботны җир үзгәртү",
     )
     async def unblacklist(self, message: Message):
         """<chat_id> - Unblacklist the bot from operating somewhere"""
@@ -985,11 +966,11 @@ class CoreMod(loader.Module):
         de_doc="[Benutzer] - Verbiete dem Benutzer, Befehle auszuführen",
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
-        hi_doc="[उपयोगकर्ता] - उपयोगकर्ता को कमांड चलाने से रोकें",
         ja_doc="[ユーザー] - ユーザーにコマンドを実行することを禁止します",
         kr_doc="[사용자] - 사용자에게 명령을 실행하도록 금지",
         ar_doc="[المستخدم] - منع المستخدم من تنفيذ الأوامر",
         es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
+        tt_doc="[катнашучы] - Катнашучыны буйруҗларны ишләтүне тыйышларга",
     )
     async def blacklistuser(self, message: Message):
         """[user_id] - Prevent this user from running any commands"""
@@ -1012,11 +993,11 @@ class CoreMod(loader.Module):
         de_doc="[Benutzer] - Erlaube dem Benutzer, Befehle auszuführen",
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
-        hi_doc="[उपयोगकर्ता] - उपयोगकर्ता को कमांड चलाने से रोकें",
         ja_doc="[ユーザー] - ユーザーにコマンドを実行することを禁止します",
         kr_doc="[사용자] - 사용자에게 명령을 실행하도록 금지",
         ar_doc="[المستخدم] - منع المستخدم من تنفيذ الأوامر",
         es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
+        tt_doc="[катнашучы] - Катнашучыны буйруҗларны ишләтүне тыйышларга",
     )
     async def unblacklistuser(self, message: Message):
         """[user_id] - Allow this user to run permitted commands"""
@@ -1043,11 +1024,11 @@ class CoreMod(loader.Module):
         de_doc="[dragon] <Präfix> - Setze das Befehlspräfix",
         tr_doc="[dragon] <önek> - Komut öneki ayarla",
         uz_doc="[dragon] <avvalgi> - Buyruqlar uchun avvalgi belgilash",
-        hi_doc="[dragon] <उपसर्ग> - कमांड उपसर्ग सेट करें",
         ja_doc="[dragon] <プレフィックス> - コマンドのプレフィックスを設定します",
         kr_doc="[dragon] <접두사> - 명령 접두사 설정",
         ar_doc="[dragon] <بادئة> - تعيين بادئة الأوامر",
         es_doc="[dragon] <prefijo> - Establecer el prefijo de comandos",
+        tt_doc="[dragon] <префикс> - Командалар урынларын күрсәтү",
     )
     async def setprefix(self, message: Message):
         """[dragon] <prefix> - Sets command prefix"""
@@ -1105,11 +1086,11 @@ class CoreMod(loader.Module):
         de_doc="Zeige Aliase",
         tr_doc="Takma adları göster",
         uz_doc="Aliaslarni ko'rsatish",
-        hi_doc="उपनामों की सूची दिखाएं",
         ja_doc="エイリアスを表示します",
         kr_doc="별칭 목록 표시",
         ar_doc="إظهار قائمة الأسماء المستعارة",
         es_doc="Mostrar lista de alias",
+        tt_doc="Ярҙам исемлеген күрһәтергә",
     )
     async def aliases(self, message: Message):
         """Print all your aliases"""
@@ -1128,11 +1109,11 @@ class CoreMod(loader.Module):
         de_doc="Setze einen Alias für einen Befehl",
         tr_doc="Bir komut için takma ad ayarla",
         uz_doc="Buyrug' uchun alias belgilash",
-        hi_doc="एक कमांड के लिए उपनाम सेट करें",
         ja_doc="コマンドのエイリアスを設定します",
         kr_doc="명령에 대한 별칭 설정",
         ar_doc="تعيين اسم مستعار للأمر",
         es_doc="Establecer alias para el comando",
+        tt_doc="Команда өсөн ярҙам исемен күрһәтергә",
     )
     async def addalias(self, message: Message):
         """Set an alias for a command"""
@@ -1167,11 +1148,11 @@ class CoreMod(loader.Module):
         de_doc="Entferne einen Alias für einen Befehl",
         tr_doc="Bir komut için takma ad kaldır",
         uz_doc="Buyrug' uchun aliasni o'chirish",
-        hi_doc="एक कमांड के लिए उपनाम हटाएं",
         ja_doc="コマンドのエイリアスを削除します",
         kr_doc="명령에 대한 별칭 제거",
         ar_doc="إزالة اسم مستعار للأمر",
         es_doc="Eliminar alias para el comando",
+        tt_doc="Команда өсөн ярҙам исемен бетерергә",
     )
     async def delalias(self, message: Message):
         """Remove an alias for a command"""
@@ -1205,11 +1186,11 @@ class CoreMod(loader.Module):
         de_doc="Datenbank leeren",
         tr_doc="Veritabanını temizle",
         uz_doc="Ma'lumotlar bazasini tozalash",
-        hi_doc="डेटाबेस साफ़ करें",
         ja_doc="データベースをクリアします",
         kr_doc="데이터베이스 지우기",
         ar_doc="مسح قاعدة البيانات",
         es_doc="Limpiar la base de datos",
+        tt_doc="Мәгълүмат базасын таҙартырга",
     )
     async def cleardb(self, message: Message):
         """Clear the entire database, effectively performing a factory reset"""

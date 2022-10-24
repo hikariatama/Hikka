@@ -122,23 +122,6 @@ class HikkaSecurityMod(loader.Module):
         "seconds": "saniye",
     }
 
-    service_strings_hi = {
-        "for": "के लिए",
-        "forever": "हमेशा",
-        "command": "कमांड",
-        "module": "मॉड्यूल",
-        "chat": "चैट",
-        "user": "उपयोगकर्ता",
-        "day": "दिन",
-        "days": "दिन",
-        "hour": "घंटा",
-        "hours": "घंटे",
-        "minute": "मिनट",
-        "minutes": "मिनट",
-        "second": "सेकंड",
-        "seconds": "सेकंड",
-    }
-
     service_strings_ja = {
         "for": "のために",
         "forever": "永遠に",
@@ -577,77 +560,6 @@ class HikkaSecurityMod(loader.Module):
             " für <a href='{}'>{}</a> wurden entfernt</b>"
         ),
         **service_strings_de,
-    }
-
-    strings_hi = {
-        "owner_added": (
-            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ग्रुप में </b><code>owner</code>'
-            "<b> जोड़ा गया</b>"
-        ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ग्रुप में </b><code>sudo</code>'
-            "<b> जोड़ा गया</b>"
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ग्रुप में </b><code>support</code>'
-            "<b> जोड़ा गया</b>"
-        ),
-        "owner_removed": (
-            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ग्रुप से </b><code>owner</code>'
-            "<b> हटा दिया गया</b>"
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ग्रुप से </b><code>sudo</code>'
-            "<b> हटा दिया गया</b>"
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ग्रुप से </b><code>support</code>'
-            "<b> हटा दिया गया</b>"
-        ),
-        "_cls_doc": "सुरक्षा सेटिंग्स का प्रबंधन करें",
-        "what": (
-            "<emoji document_id=6053166094816905153>🚫</emoji> <b>पहला तर्क"
-            " (</b><code>user</code><b> or </b><code>chat</code><b>) नहीं मिला</b>"
-        ),
-        "no_user": (
-            "<emoji document_id=6053166094816905153>🚫</emoji> <b>उपयोगकर्ता नहीं"
-            " मिला</b>"
-        ),
-        "no_chat": (
-            "<emoji document_id=6053166094816905153>🚫</emoji> <b>चैट नहीं मिला</b>"
-        ),
-        "what_rule": (
-            "<emoji document_id=6053166094816905153>🚫</emoji> <b>कोई नियम नहीं दिया गया"
-            " (मॉड्यूल या कमांड)</b>"
-        ),
-        "no_rule": (
-            "<emoji document_id=6053166094816905153>🚫</emoji> <b>कोई नियम नहीं दिया गया"
-            " (मॉड्यूल या कमांड)</b>"
-        ),
-        "confirm_rule": (
-            "🔐 <b>कृपया पुष्टि करें कि आप {} <a href='{}'>{}</a> को अनुमति देना चाहते"
-            " हैं </b><code>{}</code><b> {}</b>"
-        ),
-        "multiple_rules": "🔐 <b>सुरक्षा नियमों को अभिन्नता से प्रबंधित करें</b>\n\n{}",
-        "no_rules": (
-            "<emoji document_id=6053166094816905153>🚫</emoji> <b>कोई सुरक्षा नियम"
-            " नहीं</b>"
-        ),
-        "owner_target": (
-            "<emoji document_id=6053166094816905153>🚫</emoji> <b>यह उपयोगकर्ता मालिक"
-            " है, उसके अधिकार सुरक्षा लक्ष्यों के साथ प्रबंधित नहीं किए जा सकते</b>"
-        ),
-        "rules_removed": (
-            "<emoji document_id=5472308992514464048>🔐</emoji> <b>सुरक्षा नियम"
-            " के लिए <a href='{}'>{}</a> को हटा दिया गया है</b>"
-        ),
-        **service_strings_hi,
     }
 
     strings_tr = {
@@ -1290,7 +1202,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="[команда] - Настроить разрешения для команды",
         de_doc="[command] - Einstellungen für Befehle ändern",
-        hi_doc="[command] - कमांड के लिए अनुमतियाँ सेट करें",
         tr_doc="[command] - Komut için izinleri ayarla",
         uz_doc="[command] - Buyruq uchun ruxsatlarini sozlash",
         ja_doc="[command] - コマンドの権限を設定します",
@@ -1327,7 +1238,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="[команда] - Настроить разрешения для инлайн команды",
         de_doc="[command] - Einstellungen für Inline-Befehle ändern",
-        hi_doc="[command] - इनलाइन कमांड के लिए अनुमतियाँ सेट करें",
         tr_doc="[command] - Inline komut için izinleri ayarla",
         uz_doc="[command] - Inline buyruq uchun ruxsatlarini sozlash",
         ja_doc="[command] - インラインコマンドの権限を設定します",
@@ -1518,7 +1428,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `sudo`",
         de_doc="<Benutzer> - Füge Benutzer zur `sudo`-Gruppe hinzu",
-        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `sudo` समूह में जोड़ें",
         tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhiga qo'shish",
         ja_doc="<ユーザー> - ユーザーを `sudo` グループに追加",
@@ -1533,7 +1442,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `owner`",
         de_doc="<Benutzer> - Füge Benutzer zur `owner`-Gruppe hinzu",
-        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `owner` समूह में जोड़ें",
         tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhiga qo'shish",
         ja_doc="<ユーザー> - ユーザーを `owner` グループに追加",
@@ -1548,7 +1456,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `support`",
         de_doc="<Benutzer> - Füge Benutzer zur `support`-Gruppe hinzu",
-        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `support` समूह में जोड़ें",
         tr_doc="<kullanıcı> - Kullanıcıyı `support` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhiga qo'shish",
         ja_doc="<ユーザー> - ユーザーを `support` グループに追加",
@@ -1563,7 +1470,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `sudo`",
         de_doc="<Benutzer> - Entferne Benutzer aus der `sudo`-Gruppe",
-        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `sudo` समूह से हटा दें",
         tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhidan olib tashlash",
         ja_doc="<ユーザー> - ユーザーを `sudo` グループから削除",
@@ -1578,7 +1484,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `owner`",
         de_doc="<Benutzer> - Entferne Benutzer aus der `owner`-Gruppe",
-        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `owner` समूह से हटा दें",
         tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhidan olib tashlash",
         ja_doc="<ユーザー> - ユーザーを `owner` グループから削除",
@@ -1593,7 +1498,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `support`",
         de_doc="<Benutzer> - Entferne Benutzer aus der `support`-Gruppe",
-        hi_doc="<उपयोगकर्ता> - उपयोगकर्ता को `support` समूह से हटा दें",
         tr_doc="<kullanıcı> - Kullanıcıyı `support` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhidan olib tashlash",
         ja_doc="<ユーザー> - ユーザーを `support` グループから削除",
@@ -1608,7 +1512,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="Показать список пользователей в группе `sudo`",
         de_doc="Zeige Liste der Benutzer in der `sudo`-Gruppe",
-        hi_doc="उपयोगकर्ताओं की सूची दिखाएं `sudo` समूह में",
         tr_doc="`sudo` grubundaki kullanıcıların listesini göster",
         uz_doc="`sudo` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
         ja_doc="`sudo` グループのユーザー一覧を表示",
@@ -1623,7 +1526,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="Показать список пользователей в группе `owner`",
         de_doc="Zeige Liste der Benutzer in der `owner`-Gruppe",
-        hi_doc="उपयोगकर्ताओं की सूची दिखाएं `owner` समूह में",
         tr_doc="`owner` grubundaki kullanıcıların listesini göster",
         uz_doc="`owner` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
         ja_doc="`owner` グループのユーザー一覧を表示",
@@ -1638,7 +1540,6 @@ class HikkaSecurityMod(loader.Module):
     @loader.command(
         ru_doc="Показать список пользователей в группе `support`",
         de_doc="Zeige Liste der Benutzer in der `support`-Gruppe",
-        hi_doc="उपयोगकर्ताओं की सूची दिखाएं `support` समूह में",
         tr_doc="`support` grubundaki kullanıcıların listesini göster",
         uz_doc="`support` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
         ja_doc="`support` グループのユーザー一覧を表示",
@@ -1917,7 +1818,6 @@ class HikkaSecurityMod(loader.Module):
         ru_doc='<"user"/"chat"> - Удалить правило таргетированной безопасности',
         de_doc='<"user"/"chat"> - Entferne eine Regel für die gezielte Sicherheit',
         tr_doc='<"user"/"chat"> - Hedefli güvenlik için bir kural kaldırın',
-        hi_doc='<"user"/"chat"> - लक्षित सुरक्षा के लिए एक नियम निकालें',
         uz_doc='<"user"/"chat"> - Maqsadli xavfsizlik uchun bir qoidani olib tashlang',
         ja_doc='<"user"/"chat"> - 対象セキュリティのルールを削除します',
         kr_doc='<"user"/"chat"> - 대상 보안 규칙을 제거합니다',
@@ -1993,10 +1893,6 @@ class HikkaSecurityMod(loader.Module):
         tr_doc=(
             '<"user"/"chat"> [hedef - kullanıcı veya sohbet] [kural - komut veya'
             " modül] [zaman] - Hedefli güvenliği ayarla"
-        ),
-        hi_doc=(
-            '<"user"/"chat"> [लक्ष्य - उपयोगकर्ता या चैट] [नियम - कमांड या'
-            " मॉड्यूल] [समय] - लक्षित सुरक्षा सेट करें"
         ),
         uz_doc=(
             '<"user"/"chat"> [maqsad - foydalanuvchi yoki chat] [qoida - buyruq yoki'
