@@ -10,12 +10,12 @@ import difflib
 import inspect
 import logging
 
-from telethon.tl.types import Message
 from telethon.extensions.html import CUSTOM_EMOJIS
+from telethon.tl.types import Message
 
 from .. import loader, utils
-from ..types import DragonModule
 from ..compat.dragon import DRAGON_EMOJI
+from ..types import DragonModule
 
 logger = logging.getLogger(__name__)
 
@@ -220,119 +220,6 @@ class HelpMod(loader.Module):
         ),
     }
 
-    strings_ja = {
-        "bad_module": "<b>🚫 <b>モジュール</b> <code>{}</code> <b>見つかりませんでした</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 ドキュメント化されていません",
-        "all_header": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} モジュールの総数,"
-            " 隠された {}:</b>"
-        ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
-        "no_mod": "🚫 <b>隠すモジュールを入力してください</b>",
-        "hidden_shown": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} 隠された,"
-            " {} モジュールが表示されました:</b>\n{}\n{}"
-        ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 ドキュメント化されていません",
-        "support": "{} <b><a href='https://t.me/hikka_talks'>サポートチャット</a></b>",
-        "_cls_doc": "モジュールのヘルプを表示します",
-        "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>ユーザーボットはまだ完全に"
-            "読み込まれていないため、すべてのモジュールが表示されません</b>"
-        ),
-        "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>一致するものが見つかりませんでした。"
-            "したがって、最も一致する結果が表示されました</b>"
-        ),
-        "request_join": "サポートチャットへのリンクをリクエストしました",
-        "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>これは追加モジュールであり、"
-            "削除または変更できません</b>"
-        ),
-    }
-
-    strings_kr = {
-        "bad_module": "<b>🚫 <b>모듈</b> <code>{}</code> <b>찾을 수 없습니다</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 문서화되지 않음",
-        "all_header": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} 총 모듈, 숨겨진 {}:</b>"
-        ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
-        "no_mod": "🚫 <b>숨기려는 모듈을 입력하십시오</b>",
-        "hidden_shown": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} 숨겨진,"
-            " {} 모듈이 표시되었습니다:</b>\n{}\n{}"
-        ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 문서화되지 않음",
-        "support": "{} <b><a href='https://t.me/hikka_talks'>지원 채팅</a></b>",
-        "_cls_doc": "모듈 도움말을 표시합니다",
-        "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>사용자 봇이 아직 완전히"
-            "로드되지 않았으므로 모든 모듈이 표시되지 않습니다</b>"
-        ),
-        "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>일치하는 것이 없으므로"
-            "가장 일치하는 결과가 표시됩니다</b>"
-        ),
-        "request_join": "지원 채팅 링크를 요청했습니다",
-        "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>이것은 추가 모듈이므로"
-            "삭제 또는 변경할 수 없습니다</b>"
-        ),
-    }
-
-    strings_ar = {
-        "bad_module": "<b>🚫 <b>الموديول</b> <code>{}</code> <b>غير موجود</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 لم يتم توثيقه",
-        "all_header": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} موديولات,"
-            " {} مخفية:</b>"
-        ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
-        "no_mod": "🚫 <b>من فضلك قم بإدخال الموديول المراد إخفائه</b>",
-        "hidden_shown": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} مخفية,"
-            " {} الموديولات المعروضة:</b>\n{}\n{}"
-        ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 لم يتم توثيقه",
-        "support": "{} <b><a href='https://t.me/hikka_talks'>دردشة الدعم</a></b>",
-        "_cls_doc": "عرض مساعدة الموديول",
-        "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>لم يتم تحميل البوت"
-            " بعد بالكامل, لذلك لا يمكن عرض جميع الموديولات</b>"
-        ),
-        "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>لم يتم العثور على"
-            " نتائج مطابقة, لذلك يتم عرض النتائج الأكثر تطابقا</b>"
-        ),
-        "request_join": "تم طلب رابط دردشة الدعم",
-        "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>هذا موديول إضافي لذلك"
-            " لا يمكنكحذفه أو تعديله</b>"
-        ),
-    }
-
     strings_es = {
         "bad_module": "<b>🚫 <b>El módulo</b> <code>{}</code> <b>no existe</b>",
         "single_mod_header": "{} <b>{}</b>:",
@@ -457,16 +344,9 @@ class HelpMod(loader.Module):
             "<modul yoki modullar> - Modul(-lar) yordamidan yashirish\n*Modullarni"
             " bo'sh joy bilan ajratish"
         ),
-        ja_doc="<モジュールまたはモジュール> - ヘルプからモジュールを隠します\n*モジュールをスペースで区切ってください",
-        kr_doc="<모듈 또는 모듈> - 도움말에서 모듈을 숨깁니다\n*모듈을 공백으로 구분하십시오",
-        ar_doc="<الوحدة أو الوحدات> - إخفاء وحدة(-ات) من المساعدة\n*فصل الوحدات بفراغ",
         es_doc=(
             "<módulo o módulos> - Oculta el módulo (-s) de la ayuda\n*Separa los"
             " módulos con espacios"
-        ),
-        tt_doc=(
-            "<модуль яки модуллар> - Йардәмдә модуль(-лар) яшерергә\n*Модулларны"
-            " буш күрсәткә айланыгыз"
         ),
     )
     async def helphide(self, message: Message):
@@ -624,11 +504,7 @@ class HelpMod(loader.Module):
         de_doc="[Modul] [-f] - Hilfe anzeigen",
         tr_doc="[modül] [-f] - Yardımı göster",
         uz_doc="[modul] [-f] - Yordamni ko'rsatish",
-        ja_doc="[モジュール] [-f] - ヘルプを表示します",
-        kr_doc="[모듈] [-f] - 도움말 표시",
-        ar_doc="[الوحدة] [-f] - إظهار المساعدة",
         es_doc="[módulo] [-f] - Mostrar ayuda",
-        tt_doc="[модуль] [-f] - Йардәмне күрсәтү",
     )
     async def help(self, message: Message):
         """[module] [-f] - Show help"""
@@ -808,11 +684,7 @@ class HelpMod(loader.Module):
         de_doc="Zeige den Link zum Hikka-Hilfe-Chat",
         tr_doc="Hikka yardım sohbetinin bağlantısını göster",
         uz_doc="Hikka yordam sohbatining havolasini ko'rsatish",
-        ja_doc="ヒッカのヘルプチャットへのリンクを表示します",
-        kr_doc="히카 도움말 채팅 링크를 표시합니다",
-        ar_doc="إظهار رابط دردشة مساعدة هيكا",
         es_doc="Mostrar enlace al chat de ayuda de Hikka",
-        tt_doc="Hikka ярдәм чатынга сылтаманы күрсәтергә",
     )
     async def support(self, message):
         """Get link of Hikka support chat"""

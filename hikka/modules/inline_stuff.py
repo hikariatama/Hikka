@@ -133,70 +133,6 @@ class InlineStuffMod(loader.Module):
         ),
     }
 
-    strings_ja = {
-        "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>ボットのユーザー名が"
-            "無効です。それは</b><code>bot</code><b>で終わり、少なくとも4文字でなければなりません</b>"
-        ),
-        "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>このユーザー名はすでに"
-            "使用されています</b>"
-        ),
-        "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>設定が正常に保存されました。"
-            "変更を適用するには、ボットを再起動してください</b>"
-        ),
-        "this_is_hikka": (
-            "🌘 <b>こんにちは！これはHikkaです — 力強いモジュール式のTelegramユーザーボットです。"
-            "あなたはそれをあなたのアカウントにインストールすることができます！</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
-            ' href="https://t.me/hikka_talks">サポートチャット</a></b>'
-        ),
-    }
-
-    strings_kr = {
-        "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>봇 사용자 이름이"
-            " 잘못되었습니다. 그것은 </b><code>bot</code><b>으로 끝나야하며 최소 4자여야합니다</b>"
-        ),
-        "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>이 사용자 이름은"
-            " 이미 사용 중입니다</b>"
-        ),
-        "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>설정이 성공적으로"
-            " 저장되었습니다. 이러한 변경 사항을 적용하려면 봇을 다시 시작하십시오</b>"
-        ),
-        "this_is_hikka": (
-            "🌘 <b>안녕하세요! 이것은 Hikka입니다 — 강력하고 모듈식인 Telegram 사용자 봇입니다."
-            "당신은 그것을 당신의 계정에 설치할 수 있습니다!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
-            ' href="https://t.me/hikka_talks">지원 채팅</a></b>'
-        ),
-    }
-
-    strings_ar = {
-        "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>اسم مستخدم البوت"
-            " غير صالح. يجب أن ينتهي بـ </b><code>bot</code><b> وأن يكون"
-            " أكثر من 4 أحرف</b>"
-        ),
-        "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>اسم المستخدم مأخوذ"
-            " بالفعل</b>"
-        ),
-        "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>تم حفظ الإعدادات"
-            " بنجاح. يرجى إعادة تشغيل البوت لتطبيق التغييرات</b>"
-        ),
-        "this_is_hikka": (
-            "🌘 <b>مرحبًا! هذا هو Hikka - مستخدم بوت تيليغرام قوي وموديولي. يمكنك تثبيته"
-            " على حسابك!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
-            ' href="https://t.me/hikka_talks">دردشة الدعم</a></b>'
-        ),
-    }
-
     strings_es = {
         "bot_username_invalid": (
             "<emoji document_id=5415905755406539934>🚫</emoji> <b>El nombre de usuario"
@@ -289,9 +225,6 @@ class InlineStuffMod(loader.Module):
         de_doc="<username> - Ändere den Inline-Bot-Nutzernamen",
         tr_doc="<kullanıcı adı> - İçe aktarma botunun kullanıcı adını değiştirin",
         uz_doc="<foydalanuvchi nomi> - Bot foydalanuvchi nomini o'zgartiring",
-        ja_doc="<ユーザー名> - インラインボットのユーザー名を変更します",
-        kr_doc="<사용자 이름> - 인라인 봇의 사용자 이름을 변경합니다",
-        ar_doc="<اسم المستخدم> - تغيير اسم المستخدم للبوت الداخلي",
         es_doc="<nombre de usuario> - Cambia el nombre de usuario del bot de inline",
     )
     async def ch_hikka_bot(self, message: Message):

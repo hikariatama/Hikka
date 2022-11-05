@@ -10,30 +10,30 @@ import contextlib
 import copy
 import logging
 import os
-import time
-from asyncio import Event
-import typing
 import random
-from urllib.parse import urlparse
-import grapheme
+import time
 import traceback
+import typing
+from asyncio import Event
+from urllib.parse import urlparse
 
+import grapheme
 from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
-    InlineQueryResultPhoto,
-    InputTextMessageContent,
+    InlineQueryResultAudio,
     InlineQueryResultDocument,
     InlineQueryResultGif,
-    InlineQueryResultVideo,
     InlineQueryResultLocation,
-    InlineQueryResultAudio,
+    InlineQueryResultPhoto,
+    InlineQueryResultVideo,
+    InputTextMessageContent,
 )
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
+from telethon.tl.types import Message
 
-from .. import utils, main
+from .. import main, utils
 from ..types import HikkaReplyMarkup
 from .types import InlineMessage, InlineUnit
 

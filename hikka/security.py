@@ -29,9 +29,9 @@ import time
 import typing
 
 from telethon.hints import EntityLike
-from telethon.utils import get_display_name
 from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
+from telethon.utils import get_display_name
 
 from . import main, utils
 from .database import Database

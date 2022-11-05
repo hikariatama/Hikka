@@ -33,8 +33,8 @@ import re
 import traceback
 import typing
 
-from telethon.tl.types import Message
 from telethon import events
+from telethon.tl.types import Message
 
 from . import main, security, utils
 from .database import Database

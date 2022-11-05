@@ -1,6 +1,6 @@
-import sys
 import atexit
 import os
+import sys
 
 
 def restart():

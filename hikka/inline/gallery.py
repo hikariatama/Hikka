@@ -11,9 +11,11 @@ import contextlib
 import copy
 import functools
 import logging
+import os
 import time
 import traceback
 import typing
+from urllib.parse import urlparse
 
 from aiogram.types import (
     CallbackQuery,
@@ -25,17 +27,13 @@ from aiogram.types import (
     InputMediaPhoto,
 )
 from aiogram.utils.exceptions import BadRequest, RetryAfter
-
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
+from telethon.tl.types import Message
 
-from urllib.parse import urlparse
-import os
-
-from .. import utils, main
+from .. import main, utils
 from ..types import HikkaReplyMarkup
-from .types import InlineUnit, InlineMessage
+from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
 

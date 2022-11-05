@@ -1,8 +1,9 @@
 """Represents current userbot version"""
 __version__ = (1, 6, 0)
 
-import git
 import os
+
+import git
 
 try:
     branch = git.Repo(

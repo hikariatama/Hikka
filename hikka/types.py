@@ -13,28 +13,25 @@ import contextlib
 import copy
 import inspect
 import logging
-from dataclasses import dataclass, field
 import time
 import typing
+from dataclasses import dataclass, field
 from importlib.abc import SourceLoader
 
-from telethon.tl.types import Message, ChannelFull, UserFull
 from telethon.hints import EntityLike
+from telethon.tl.types import ChannelFull, Message, UserFull
 
-from .inline.types import (  # skipcq: PY-W2000
-    InlineMessage,
-    BotInlineMessage,
-    InlineCall,
-    BotInlineCall,
-    InlineUnit,
-    BotMessage,
-    InlineQuery,
-)
 from . import validators  # skipcq: PY-W2000
-from .pointers import (  # skipcq: PY-W2000
-    PointerList,
-    PointerDict,
+from .inline.types import (
+    BotInlineCall,
+    BotInlineMessage,  # skipcq: PY-W2000
+    BotMessage,
+    InlineCall,
+    InlineMessage,
+    InlineQuery,
+    InlineUnit,
 )
+from .pointers import PointerDict, PointerList  # skipcq: PY-W2000
 
 logger = logging.getLogger(__name__)
 

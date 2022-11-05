@@ -6,12 +6,12 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import asyncio
+import collections
 import json
 import logging
 import os
 import time
-import asyncio
-import collections
 
 try:
     import redis
@@ -22,16 +22,13 @@ except ImportError as e:
 
 import typing
 
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
+from telethon.tl.types import Message
 
-from . import utils, main
-from .pointers import (
-    PointerList,
-    PointerDict,
-)
-from .types import JSONSerializable
+from . import main, utils
+from .pointers import PointerDict, PointerList
 from .tl_cache import CustomTelegramClient
+from .types import JSONSerializable
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))

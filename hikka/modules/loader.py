@@ -8,6 +8,7 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import ast
 import asyncio
 import contextlib
 import copy
@@ -17,23 +18,22 @@ import inspect
 import logging
 import os
 import re
-import ast
 import sys
 import time
+import typing
 import uuid
 from collections import ChainMap
 from importlib.machinery import ModuleSpec
-import typing
-
 from urllib.parse import urlparse
 
 import requests
 import telethon
-from telethon.tl.types import Message, Channel
 from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.types import Channel, Message
 
 from .. import loader, main, utils
-from ..compat import geek, dragon
+from ..compat import dragon, geek
+from ..compat.pyroproxy import PyroProxyClient
 from ..inline.types import InlineCall
 from ..types import CoreOverwriteError, CoreUnloadError, DragonModule
 
@@ -911,455 +911,6 @@ class LoaderMod(loader.Module):
         ),
     }
 
-    strings_ja = {
-        "repo_config_doc": "モジュール リポジトリへの URL",
-        "avail_header": (
-            "<emoji document_id=6321352876505434037>🎢</emoji><b>リポジトリからのモジュール</b>"
-        ),
-        "select_preset": "<b>⚠️プリセットを選択してください</b>",
-        "no_preset": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b>プリセットが見つかりません</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji><b>プリセットが読み込まれました</b>"
-        ),
-        "no_module": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> モジュールは利用できませんレポ内。</b>"
-        ),
-        "no_file": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b>ファイルが見つかりません</b>"
-        ),
-        "provide_module": "<b>⚠️ ロードするモジュールを提供</b>",
-        "bad_unicode": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b>無効な Unicode"
-            "モジュール内のフォーマット</b>"
-        ),
-        "load_failed": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b>読み込みに失敗しました。参照してください"
-            "詳細はログ</b>"
-        ),
-        "loaded": (
-            "<emoji document_id=5188377234380954537>🌘</emoji><b>モジュール"
-            " </b><code>{}</code>{}<b> 読み込み済み {}</b>{}{}{}{}{}{}"
-        ),
-        "no_class": "<b>どのクラスをアンロードする必要がありますか?</b>",
-        "unloaded": "{} <b>モジュール {}アンロード。</b>",
-        "not_unloaded": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> モジュールではないアンロード。</b>"
-        ),
-        "requirements_failed": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b>要件インストールに失敗しました</b>"
-        ),
-        "requirements_failed_termux": (
-            "<emoji document_id=5386399931378440814>🕶</emoji> <b>要件"
-            " インストールに失敗しました</b>\n<b>最も一般的な理由は,Termux がインストールされていないことです"
-            " 多くのライブラリをサポートしています。バグとして報告しないでください。これは解決できません。</b>"
-        ),
-        "requirements_installing": (
-            "<emoji document_id=5445284980978621387>🚀</emoji><b>インストール中 要件:\n\n{}</b>"
-        ),
-        "requirements_restart": (
-            "<emoji document_id=5445284980978621387>🚀</emoji><b>要件"
-            " インストールされていますが,</b><code>{}</code><b> を実行するには再起動が必要です"
-            "適用</b>"
-        ),
-        "all_modules_deleted": (
-            "<emoji document_id=5784993237412351403>✅</emoji><b> すべてのモジュール削除</b>"
-        ),
-        "single_cmd": "\n{} <code>{}{}</code> {}",
-        "undoc_cmd": "🦥 ドキュメントがありません",
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 ドキュメントなし",
-        "inline_init_failed": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>このモジュールには以下が必要です"
-            "Hikka インライン機能と InlineManager の初期化"
-            " に失敗しました</b>\n<i>@BotFather から古いボットの 1 つを削除して"
-            " userbot を再起動してこのモジュールを読み込みます</i>"
-        ),
-        "version_incompatible": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>このモジュールには以下が必要です"
-            " Hikka {}+\n</b><code>.update</code> で更新してください"
-        ),
-        "ffmpeg_required": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>このモジュールには以下が必要です"
-            "インストールされていないFFMPEG</b"
-        ),
-        "developer": (
-            "\n\n<emoji document_id=5431376038628171216>👨‍💻</emoji> <b>開発者:</b>{}"
-        ),
-        "depends_from": (
-            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>依存関係:</b>\n{}"
-        ),
-        "by": "によって",
-        "module_fs": "💿 <b>このモジュールをファイルシステムに保存しますか?再起動後にアンロード?</b>",
-        "save": "💿保存",
-        "no_save": "🚫 保存しない",
-        "save_for_all": "💽 常に fs に保存",
-        "never_save": "🚫 fs に保存しない",
-        "will_save_fs": "💽 これで,.loadmod でロードされたすべてのモジュールがファイルシステムに保存されます",
-        "add_repo_config_doc": "読み込み元の追加リポジトリ",
-        "share_link_doc": ".dlmod の結果メッセージでモジュール リンクを共有",
-        "modlink": (
-            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>リンク:"
-            " </b><code>{}</code>"
-        ),
-        "blob_link": (
-            "\n\n🚸 <b>`blob` リンクを使用してモジュールをダウンロードしないでください。切り替えを検討してください `raw` 代わりに</b>"
-        ),
-        "suggest_subscribe": (
-            "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>このモジュールは"
-            "作成者は {} です。このチャンネルに参加して開発者をサポートしますか?</b>"
-        ),
-        "subscribe": "💬 購読",
-        "no_subscribe": "🚫 登録しない",
-        "subscribed": "💬 購読済み",
-        "not_subscribed": "🚫 このチャンネルに登録することはもう提案しません",
-        "confirm_clearmodules": "⚠️ <b>本当にすべてのモジュールをクリアしますか?</b>",
-        "clearmodules": "🗑 モジュールをクリア",
-        "cancel": "🚫 キャンセル",
-        "overwrite_module": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>このモジュール"
-            " コアのオーバーライドを試みました (</b><code>{}</code><b>)</b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> バグとして報告しないでください。"
-            "コアモジュールを一部差し替えられないようにするためのセキュリティ対策です"
-            "がらくた</i>"
-        ),
-        "overwrite_command": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>このモジュール"
-            " コア コマンドをオーバーライドしようとしました"
-            " (</b><code>{}{}</code><b>)</b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> バグとして報告しないでください。"
-            "コアモジュールのコマンドを置き換えることを防ぐためのセキュリティ対策です"
-            "がらくた</i>"
-        ),
-        "unload_core": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>アンロードできません"
-            " コア モジュール </b><code>{}</code><b></b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> バグとして報告しないでください。"
-            "コアモジュールを一部差し替えられないようにするためのセキュリティ対策です"
-            "がらくた</i>"
-        ),
-        "cannot_unload_lib": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>アンロードできません図書館</b>"
-        ),
-        "wait_channel_approve": (
-            "<emoji document_id=5469741319330996757>💫</emoji> <b>モジュール"
-            " </b><code>{}</code><b> はチャンネル <a に参加する許可をリクエストします"
-            ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
-            ' document_id="5467666648263564704">❓</emoji> 理由: {}</b>\n\n<i>待機中'
-            ' <a href="https://t.me/{}">承認</a>...</i>'
-        ),
-        "installing": (
-            "<emoji document_id=5215493819641895305>🕔</emoji> <b>モジュールのインストール"
-            " </b><code>{}</code><b>...</b>"
-        ),
-    }
-
-    strings_kr = {
-        "repo_config_doc": "모듈 저장소에 대한 URL",
-        "avail_header": (
-            "<emoji document_id=6321352876505434037>🎢</emoji><b> 저장소의 모듈</b>"
-        ),
-        "select_preset": "<b>⚠️ 사전 설정을 선택하세요</b>",
-        "no_preset": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> 사전 설정을 찾을 수 없음</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji><b> 사전 설정 로드됨</b>"
-        ),
-        "no_module": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> 모듈을 사용할 수 없음"
-            " 저장소에 있습니다.</b>"
-        ),
-        "no_file": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> 파일을 찾을 수 없음</b>"
-        ),
-        "provide_module": "<b>⚠️ 로드할 모듈 제공</b>",
-        "bad_unicode": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> 잘못된 유니코드 모듈의 서식</b>"
-        ),
-        "load_failed": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> 로드에 실패했습니다. 참조하세요."
-            " 세부정보를 위한 로그</b>"
-        ),
-        "loaded": (
-            "<emoji document_id=5188377234380954537>🌘</emoji><b> 모듈"
-            " </b><code>{}</code>{}<b> 로드된 {}</b>{}{}{}{}{}{}"
-        ),
-        "no_class": "<b>언로드해야 하는 클래스는 무엇입니까?</b>",
-        "unloaded": "{} <b>모듈 {} 언로드.</b>",
-        "not_unloaded": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> 모듈 아님 언로드.</b>"
-        ),
-        "requirements_failed": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> 요구 사항 설치 실패</b>"
-        ),
-        "requirements_failed_termux": (
-            "<emoji document_id=5386399931378440814>🕶</emoji> <b>요구 사항"
-            " 설치 실패</b>\n<b>가장 일반적인 이유는 Termux가 설치되지 않기 때문입니다."
-            " 많은 라이브러리를 지원합니다. 버그로 보고하지 마세요. 해결할 수 없습니다.</b>"
-        ),
-        "requirements_installing": (
-            "<emoji document_id=5445284980978621387>🚀</emoji><b> 설치 중 요구 사항:\n\n{}</b>"
-        ),
-        "requirements_restart": (
-            "<emoji document_id=5445284980978621387>🚀</emoji><b> 요구 사항"
-            " 설치되었지만 </b><code>{}</code><b>를(를) 수행하려면 다시 시작해야 합니다."
-            "신청</b>"
-        ),
-        "all_modules_deleted": (
-            "<emoji document_id=5784993237412351403>✅</emoji><b> 모든 모듈 삭제됨</b>"
-        ),
-        "single_cmd": "\n{} <code>{}{}</code> {}",
-        "undoc_cmd": "🦥 문서 없음",
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 문서 없음",
-        "inline_init_failed": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>이 모듈이 필요합니다"
-            " Hikka 인라인 기능 및 InlineManager 초기화"
-            " 실패</b>\n<i>@BotFather에서 이전 봇 중 하나를 제거하고"
-            " 이 모듈을 로드하려면 userbot을 다시 시작하세요.</i>"
-        ),
-        "version_incompatible": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>이 모듈이 필요합니다"
-            " Hikka {}+\n제발, </b><code>.update</code>로 업데이트하세요."
-        ),
-        "ffmpeg_required": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>이 모듈이 필요합니다"
-            " FFMPEG, 설치되지 않음</b>"
-        ),
-        "developer": (
-            "\n\n<emoji document_id=5431376038628171216>👨‍💻</emoji> <b>개발자: </b>{}"
-        ),
-        "depends_from": (
-            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>종속성: </b>\n{}"
-        ),
-        "by": "에 의해",
-        "module_fs": (
-            "💿 <b>이 모듈을 파일 시스템에 저장하시겠습니까? 그러면 가져오지 않습니다. 다시 시작한 후 언로드되었습니까?</b>"
-        ),
-        "save": "💿 저장",
-        "no_save": "🚫 저장하지 않음",
-        "save_for_all": "💽 항상 fs에 저장",
-        "never_save": "🚫 fs에 저장하지 않음",
-        "will_save_fs": "💽 이제 .loadmod로 로드된 모든 모듈이 파일 시스템에 저장됩니다.",
-        "add_repo_config_doc": "로드할 추가 저장소",
-        "share_link_doc": ".dlmod의 결과 메시지에서 모듈 링크 공유",
-        "modlink": (
-            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>링크:"
-            " </b><code>{}</code>"
-        ),
-        "blob_link": (
-            "\n\n🚸 <b>`blob` 링크를 사용하여 모듈을 다운로드하지 마십시오. 다음으로 전환하는 것이 좋습니다. `raw` 대신</b>"
-        ),
-        "suggest_subscribe": (
-            "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>이 모듈은"
-            " 제작: {}. 이 채널에 가입하여 개발자를 지원하시겠습니까?</b>"
-        ),
-        "subscribe": "💬 구독",
-        "no_subscribe": "🚫 구독하지 마세요",
-        "subscribed": "💬 구독",
-        "not_subscribed": "🚫 더 이상 이 채널 구독을 제안하지 않습니다.",
-        "confirm_clearmodules": "⚠️ <b>모든 모듈을 지우시겠습니까?</b>",
-        "clearmodules": "🗑 모듈 지우기",
-        "cancel": "🚫 취소",
-        "overwrite_module": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>이 모듈"
-            " 핵심 코드(</b><code>{}</code><b>)</b>를 재정의하려고 시도했습니다.\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> 버그로 신고하지 마세요."
-            "핵심 모듈을 일부로 교체하는 것을 방지하기 위한 보안 조치"
-            " 쓰레기</i>"
-        ),
-        "overwrite_command": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>이 모듈"
-            "핵심 명령을 무시하려고 시도했습니다"
-            " (</b><code>{}{}</code><b>)</b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> 버그로 신고하지 마세요."
-            "코어 모듈의 명령어를"
-            " 쓰레기</i> "
-        ),
-        "unload_core": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>언로드할 수 없습니다."
-            " 핵심 모듈 </b><code>{}</code><b></b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> 버그로 신고하지 마세요."
-            "핵심 모듈을 일부로 교체하는 것을 방지하기 위한 보안 조치"
-            " 쓰레기</i>"
-        ),
-        "cannot_unload_lib": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>언로드할 수 없습니다. 라이브러리</b>"
-        ),
-        "wait_channel_approve": (
-            "<emoji document_id=5469741319330996757>💫</emoji> <b>모듈"
-            " </b><code>{}</code><b> 채널 가입 권한을 요청합니다 <a"
-            ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
-            ' document_id="5467666648263564704">❓</emoji> 이유: {}</b>\n\n<i>대기 중'
-            ' <a href="https://t.me/{}">승인</a>...</i>'
-        ),
-        "installing": (
-            "<emoji document_id=5215493819641895305>🕔</emoji> <b>모듈 설치"
-            " </b><code>{}</code><b>...</b>"
-        ),
-    }
-
-    strings_ar = {
-        "repo_config_doc": "رابط مستودع الوحدات",
-        "avail_header": (
-            "<emoji document_id=6321352876505434037>🎢</emoji><b> وحدات المستودع</b>"
-        ),
-        "select_preset": "<b>⚠️ يرجى اختيار الاعداد المسبق</b>",
-        "no_preset": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> لم يتم العثور على"
-            " الاعداد المسبق</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji><b> تم تحميل الاعداد"
-            " المسبق</b>"
-        ),
-        "no_module": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> لا يمكن العثور على"
-            " الوحدة في المستودع.</b>"
-        ),
-        "no_file": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> لم يتم العثور على"
-            " الملف</b>"
-        ),
-        "provide_module": "<b>⚠️ يرجى تقديم الوحدة لتحميلها</b>",
-        "bad_unicode": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> تنسيق وحدة"
-            " unicode غير صالح</b>"
-        ),
-        "load_failed": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> فشل التحميل. راجع"
-            " السجل لمزيد من التفاصيل.</b>"
-        ),
-        "loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji><b> تم تحميل الوحدة"
-            " </b><code>{}</code>{}<b> في {}</b>{}{}{}{}{}{}"
-        ),
-        "no_class": "<b>ما الصنف الذي تريد إلغاء تحميله؟</b>",
-        "unloaded": "{} <b>تم إلغاء تحميل الوحدة {}.</b>",
-        "not_unloaded": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> لم يتم إلغاء تحميل"
-            " الوحدة.</b>"
-        ),
-        "requirements_failed": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> فشل تثبيت"
-            " الاحتياجات</b>"
-        ),
-        "requirements_failed_termux": (
-            "<emoji document_id=5375201396859607943>🚫</emoji><b> فشل تثبيت"
-            " الاحتياجات</b>\n<b>أكثر سبباً شائعاً هو عدم تثبيت Termux، وهو الذي يدعم"
-            " مكتبات كثيرة. لا تقم بالإبلاغ عنها كخلل، لا يمكن حلها.</b>"
-        ),
-        "requirements_installing": (
-            "<emoji document_id=5445284980978621387>🚀</emoji><b> تثبيت"
-            " المتطلبات:\n\n{}</b>"
-        ),
-        "requirements_restart": (
-            "<emoji document_id=5445284980978621387>🚀</emoji><b> تم"
-            " تثبيت المتطلبات لكن يجب إعادة تشغيل </b><code>{}</code><b> لإكمال"
-            " العملية.</b>"
-        ),
-        "all_modules_deleted": (
-            "<emoji document_id=5784993237412351403>✅</emoji><b> تم حذف"
-            " كافة الوحدات</b>"
-        ),
-        "single_cmd": "\n{} <code>{}{}</code> {}",
-        "undoc_cmd": "🦥 لا يوجد وثائق",
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 لا يوجد وثائق",
-        "inline_init_failed": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>هذه الوحدة"
-            " تتطلب وجود Hikka inline وفشلت"
-            " تهيئة InlineManager</b>\n<i>قم بإزالة أحد البوتات السابقة من"
-            " @BotFather وأعد تشغيل البوت لتحميل هذه الوحدة.</i>"
-        ),
-        "version_incompatible": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>هذا الوحدة تتطلب"
-            " Hikka {}+\nالرجاء, </b><code>.update</code> لتحديث."
-        ),
-        "ffmpeg_required": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>هذا الوحدة تتطلب"
-            " FFMPEG, غير مثبت</b>"
-        ),
-        "developer": (
-            "\n\n<emoji document_id=5431376038628171216>👨‍💻</emoji> <b>المطور: </b>{}"
-        ),
-        "depends_from": (
-            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>تعتمد على:"
-            " </b>\n{}"
-        ),
-        "by": "بواسطة",
-        "module_fs": (
-            "💿 <b>هل تريد حفظ هذا الوحدة على نظام الملفات؟ سيتم إزالتها عند إعادة"
-            " تشغيل وإلغاء تحميلها.</b>"
-        ),
-        "save": "💿 حفظ",
-        "no_save": "🚫 لا تحفظ",
-        "save_for_all": "💽 حفظ كل الوحدات على نظام الملفات",
-        "never_save": "🚫 لا تحفظ كل الوحدات على نظام الملفات",
-        "will_save_fs": (
-            "💽 الآن سيتم حفظ كل الوحدات التي تم تحميلها بواسطة .loadmod على"
-            " نظام الملفات."
-        ),
-        "add_repo_config_doc": "مستودع إضافي للتحميل منه",
-        "share_link_doc": "مشاركة رابط التحميل من .dlmod",
-        "modlink": (
-            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>الرابط:"
-            " </b><code>{}</code>"
-        ),
-        "blob_link": (
-            "\n\n🚸 <b>لا تستخدم روابط `blob` لتحميل الوحدات. استخدم بدلاً من ذلك روابط"
-            " `raw`</b>"
-        ),
-        "suggest_subscribe": (
-            "\n\n<emoji document_id=5456129670321806826>⭐️</emoji><b>هذه الوحدة"
-            " تم إنشاؤها من قبل: {}. هل ترغب في الاشتراك في هذه القناة لدعم المطور؟</b>"
-        ),
-        "subscribe": "💬 الاشتراك",
-        "no_subscribe": "🚫 لا تريد الاشتراك",
-        "subscribed": "💬 الاشتراك",
-        "not_subscribed": "🚫 لم يتم تقديم اقتراحات الاشتراك في هذه القناة بعد.",
-        "confirm_clearmodules": "⚠️ <b>هل تريد حقًا مسح جميع الوحدات؟</b>",
-        "clearmodules": "🗑 مسح الوحدات",
-        "cancel": "🚫 إلغاء",
-        "overwrite_module": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>حاولت إعادة"
-            " تعريف الكود الأساسي للوحدة (</b><code>{}</code><b>)</b>.\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> لا تقم بالإبلاغ عن هذه"
-            " كأنها خطأ. هذه هي ميزة أمنية لمنع تعديل الوحدات الأساسية"
-            " القمامة</i>"
-        ),
-        "overwrite_command": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>لقد حاولت استبدال هذا"
-            " الأمر الأساسي (</b><code>{}{}</code><b>)</b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> لا تقدم هذه الخطأ كخطأ.الأمر"
-            " الأساسي للوحدة سلة</i> "
-        ),
-        "unload_core": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>لا يمكن إزالتها."
-            " الوحدة الأساسية </b><code>{}</code><b></b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> لا تقدم هذه الخطأ كخطأ."
-            "الوحدة الأساسية للوحدة"
-            " سلة</i> "
-        ),
-        "cannot_unload_lib": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>لا يمكن إزالتها."
-            " مكتبة</b>"
-        ),
-        "wait_channel_approve": (
-            "<emoji document_id=5469741319330996757>💫</emoji> <b>الوحدة"
-            " </b><code>{}</code><b> يطلب إذن الانضمام إلى القناة <a"
-            ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
-            ' document_id="5467666648263564704">❓</emoji> السبب: {}</b>\n\n<i>انتظر'
-            ' <a href="https://t.me/{}">الموافقة</a>...</i>'
-        ),
-        "installing": (
-            "<emoji document_id=5215493819641895305>🕔</emoji> <b>وحدة التثبيت"
-            " </b><code>{}</code><b>...</b>"
-        ),
-    }
-
     strings_es = {
         "repo_config_doc": "Enlace al repositorio de módulos",
         "avail_header": (
@@ -1651,9 +1202,6 @@ class LoaderMod(loader.Module):
         de_doc="Lade ein Modul aus dem offiziellen Repository",
         tr_doc="Resmi depodan bir modül yükler",
         uz_doc="Ofitsial repodan modulni yuklash",
-        ja_doc="公式リポジトリからモジュールをロードします",
-        kr_doc="공식 저장소에서 모듈을 로드합니다",
-        ar_doc="تحميل وحدة من المستودع الرسمي",
         es_doc="Cargar un módulo desde el repositorio oficial",
     )
     async def dlmod(self, message: Message):
@@ -1699,9 +1247,6 @@ class LoaderMod(loader.Module):
         de_doc="Installiere ein Modul-Preset",
         tr_doc="Modül önbelleğini yükle",
         uz_doc="Modul presetini o'rnatish",
-        ja_doc="モジュールプリセットをインストールします",
-        kr_doc="모듈 프리셋을 설치합니다",
-        ar_doc="تثبيت مجموعة وحدات",
         es_doc="Instalar un conjunto de módulos",
     )
     async def dlpreset(self, message: Message):
@@ -1881,9 +1426,6 @@ class LoaderMod(loader.Module):
         de_doc="Lade Modul aus Datei",
         tr_doc="Dosyadan modül yükle",
         uz_doc="Fayldan modulni yuklash",
-        ja_doc="ファイルからモジュールをロードします",
-        kr_doc="파일에서 모듈을 로드합니다",
-        ar_doc="تحميل وحدة من الملف",
         es_doc="Cargar módulo desde archivo",
     )
     async def loadmod(self, message: Message):
@@ -2086,6 +1628,11 @@ class LoaderMod(loader.Module):
 
         if is_dragon:
             module_name = f"dragon.modules.{uid}"
+            if not self._client.pyro_proxy:
+                self._client.pyro_proxy = PyroProxyClient(self._client)
+                await self._client.pyro_proxy.start()
+                await self._client.pyro_proxy.dispatcher.start()
+                dragon.apply_compat(self._client)
         else:
             module_name = f"hikka.modules.{uid}"
             doc = geek.compat(doc)
@@ -2580,9 +2127,6 @@ class LoaderMod(loader.Module):
         de_doc="Entlädt ein Modul",
         tr_doc="Bir modülü kaldırır",
         uz_doc="Modulni o'chirish",
-        ja_doc="モジュールをアンロードします",
-        kr_doc="모듈을 언로드합니다",
-        ar_doc="تحميل الوحدة",
         es_doc="Descargar el módulo",
     )
     async def unloadmod(self, message: Message):
@@ -2602,9 +2146,7 @@ class LoaderMod(loader.Module):
         is_dragon = isinstance(instance, DragonModule)
 
         if is_dragon:
-            worked = [instance.name]
-            if not self.allmodules.unload_dragon(instance):
-                worked = []
+            worked = [instance.name] if not self.allmodules.unload_dragon(instance) else []
         else:
             try:
                 worked = await self.allmodules.unload_module(args)
@@ -2614,7 +2156,7 @@ class LoaderMod(loader.Module):
                 )
                 return
 
-        if not self.allmodules.secure_boot and not is_dragon:
+        if not self.allmodules.secure_boot:
             self.set(
                 "loaded_modules",
                 {
@@ -2645,9 +2187,6 @@ class LoaderMod(loader.Module):
         de_doc="Entfernt alle Module",
         tr_doc="Tüm modülleri kaldırır",
         uz_doc="Barcha modullarni o'chirish",
-        ja_doc="すべてのモジュールを削除します",
-        kr_doc="모든 모듈을 제거합니다",
-        ar_doc="حذف كل الوحدات",
         es_doc="Eliminar todos los módulos",
     )
     async def clearmodules(self, message: Message):

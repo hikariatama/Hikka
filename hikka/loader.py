@@ -10,55 +10,52 @@
 
 import asyncio
 import contextlib
+import copy
+import gc as _gc
+import importlib
+import importlib.machinery
+import importlib.util
 import inspect
 import logging
 import os
 import re
 import sys
-from uuid import uuid4
-import requests
-import copy
-
-import importlib
-import importlib.util
-import importlib.machinery
-from functools import partial, wraps
-
-from telethon.tl.tlobject import TLObject
-from telethon.tl.types import Message, InputPeerNotifySettings, Channel
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
-from telethon.hints import EntityLike
-
-from types import FunctionType, ModuleType
+import types as _types
 import typing
+from functools import partial, wraps
+from types import FunctionType, ModuleType
+from uuid import uuid4
+
+import requests
+from telethon.hints import EntityLike
+from telethon.tl.functions.account import UpdateNotifySettingsRequest
+from telethon.tl.tlobject import TLObject
+from telethon.tl.types import Channel, InputPeerNotifySettings, Message
 
 from . import security, utils, validators, version
-from .types import (
-    ConfigValue,  # skipcq
-    LoadError,
-    Module,
-    Library,
-    ModuleConfig,  # skipcq
-    LibraryConfig,
-    SelfUnload,
-    SelfSuspend,
-    StopLoop,
-    InlineMessage,
-    CoreOverwriteError,
-    CoreUnloadError,
-    StringLoader,
-    get_commands,
-    get_inline_handlers,
-    JSONSerializable,
-    DragonModule,
-)
+from .database import Database
 from .inline.core import InlineManager
 from .inline.types import InlineCall
 from .translations import Strings, Translator
-from .database import Database
-
-import gc as _gc
-import types as _types
+from .types import ConfigValue  # skipcq
+from .types import ModuleConfig  # skipcq
+from .types import (
+    CoreOverwriteError,
+    CoreUnloadError,
+    DragonModule,
+    InlineMessage,
+    JSONSerializable,
+    Library,
+    LibraryConfig,
+    LoadError,
+    Module,
+    SelfSuspend,
+    SelfUnload,
+    StopLoop,
+    StringLoader,
+    get_commands,
+    get_inline_handlers,
+)
 
 logger = logging.getLogger(__name__)
 

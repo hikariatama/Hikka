@@ -25,23 +25,23 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import atexit
 import contextlib
 import inspect
 import logging
 import os
 import re
 import subprocess
-import atexit
 import typing
 
 import aiohttp_jinja2
 import jinja2
 from aiohttp import web
 
-from . import root
-from ..tl_cache import CustomTelegramClient
 from ..database import Database
 from ..loader import Modules
+from ..tl_cache import CustomTelegramClient
+from . import root
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +130,7 @@ class Web(root.Web):
         if self._stream_processed.is_set():
             return
 
-        regex = r"[a-zA-Z0-9]\.lhrtunnel\.link tunneled.*(https:\/\/.*\.link)"
+        regex = r"tunneled.*?(https:\/\/.*?\..*?\.[a-z]+)"
 
         if re.search(regex, stdout_line):
             logger.debug("Proxy pass tunneled: %s", stdout_line)

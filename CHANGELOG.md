@@ -7,6 +7,7 @@
 - Mess up with some translations
 - Fix `.helphide` command
 - Fix visual bug with phone input field in web
+- Fix proxy-passing in web
 - Drop Okteto support
 - Show Hikka platform and version in Telegram sessions list
 - New type `DragonModule`
@@ -19,7 +20,7 @@
 
 ## 🌑 Hikka 1.5.3
 
-- Add Uzbek, Turkish, German, Japanese, Korean, Spanish and Arabic translation packs
+- Add Uzbek, Turkish, German and Spanish translation packs
 - Fix module and command docs not being translated on-the-flight
 - Fix `RegExp` validator
 

@@ -27,6 +27,7 @@
 import asyncio
 import contextlib
 import functools
+import inspect
 import io
 import json
 import logging
@@ -36,31 +37,33 @@ import re
 import shlex
 import string
 import time
-import inspect
-from datetime import timedelta
 import typing
+from datetime import timedelta
 from urllib.parse import urlparse
 
 import git
 import grapheme
 import requests
 import telethon
+from aiogram.types import Message as AiogramMessage
 from telethon import hints
 from telethon.tl.custom.message import Message
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.tl.functions.channels import (
     CreateChannelRequest,
-    EditPhotoRequest,
     EditAdminRequest,
+    EditPhotoRequest,
     InviteToChannelRequest,
 )
 from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
-    UpdateDialogFilterRequest,
     SetHistoryTTLRequest,
+    UpdateDialogFilterRequest,
 )
 from telethon.tl.types import (
     Channel,
+    Chat,
+    ChatAdminRights,
     InputPeerNotifySettings,
     MessageEntityBankCard,
     MessageEntityBlockquote,
@@ -85,18 +88,13 @@ from telethon.tl.types import (
     PeerChannel,
     PeerChat,
     PeerUser,
-    User,
-    Chat,
     UpdateNewChannelMessage,
-    ChatAdminRights,
+    User,
 )
 
-from aiogram.types import Message as AiogramMessage
-
 from .inline.types import InlineCall, InlineMessage
-from .types import Module, ListLike
 from .tl_cache import CustomTelegramClient
-
+from .types import ListLike, Module
 
 FormattingEntity = typing.Union[
     MessageEntityUnknown,

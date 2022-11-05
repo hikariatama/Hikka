@@ -11,7 +11,6 @@ import typing
 
 from .types import InlineUnit
 
-
 logger = logging.getLogger(__name__)
 
 

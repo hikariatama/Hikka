@@ -6,9 +6,9 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
+import logging
 import os
 from random import choice
-import logging
 
 from .. import loader, translations, utils
 from ..inline.types import BotInlineCall
@@ -181,87 +181,6 @@ class QuickstartMod(loader.Module):
         "btn_support": "🥷 Destek grubu",
     }
 
-    strings_ja = {
-        "base": """
-📼 <b>モジュールを検索してインストールするには @hikkamods_bot から検索してください。検索ワードを1つ入力してください。</b>
-
-📣 <b>コミュニティで作成されたチャンネルを見るには、こちらをクリックしてください: <a href="https://t.me/hikka_ub/126">表示</a></b>
-
-💁‍♀️ <b>すぐに始めるには:</b>
-
-1️⃣ <b>モジュールのリストを表示するには </b><code>.help</code> <b>を入力します</b>
-2️⃣ <b>モジュールについての情報を取得するには </b><code>.help &lt;モジュール名/コマンド&gt;</code> <b>を入力します</b>
-3️⃣ <b>リンクからモジュールをインストールするには </b><code>.dlmod &lt;リンク&gt;</code> <b>を入力します</b>
-4️⃣ <b>モジュールをファイルからロードするには </b><code>.loadmod</code> <b>ファイルの返信を入力します</b>
-5️⃣ <b>モジュールを削除するには </b><code>.unloadmod &lt;モジュール名&gt;</code> <b>を入力します</b>
-
-💡 <b>モジュールをサポートするには、Hikka, Friendly-Telegram, DragonUserbot と GeekTG モジュールも含まれています。</b>
-""",
-        "railway": (
-            "🚂 <b>あなたのユーザーボットはレールウェイで作成されました</b>。 このプラットフォームは"
-            " <b>月間で無料で500時間のみ提供されます</b>。 一度上限に達すると、"
-            "あなたのユーザーボットは <b>ブロックされます</b>。 次の月に、"
-            " https://railway.app あなたのボットを再開する必要があります。</b>"
-        ),
-        "language_saved": "🇯🇵 言語が保存されました!",
-        "language": "🇯🇵 日本語",
-        "btn_support": "🥷 サポートグループ",
-    }
-
-    strings_kr = {
-        "base": """
-📼 <b>모듈을 검색하고 설치하려면 @hikkamods_bot 에서 검색하십시오. 검색어를 입력하십시오.</b>
-
-📣 <b>커뮤니티에서 생성된 채널을 보려면 여기를 클릭하십시오: <a href="https://t.me/hikka_ub/126">보기</a></b>
-
-💁‍♀️ <b>즉시 시작하려면:</b>
-
-1️⃣ <b>모듈 목록을 표시하려면 </b><code>.help</code> <b>를 입력하십시오</b>
-2️⃣ <b>모듈에 대한 정보를 가져 오려면 </b><code>.help &lt;모듈 이름/명령&gt;</code> <b>를 입력하십시오</b>
-3️⃣ <b>링크에서 모듈을 설치하려면 </b><code>.dlmod &lt;링크&gt;</code> <b>를 입력하십시오</b>
-4️⃣ <b>모듈을 파일에서로드하려면 </b><code>.loadmod</code> <b>파일에 응답을 입력하십시오</b>
-5️⃣ <b>모듈을 제거하려면 </b><code>.unloadmod &lt;모듈 이름&gt;</code> <b>를 입력하십시오</b>
-
-💡 <b>모듈을 지원하려면 Hikka, Friendly-Telegram, DragonUserbot 및 GeekTG 모듈도 포함됩니다.</b>
-""",
-        "railway": (
-            "🚂 <b>사용자 봇은 레일웨이에서 만들어졌습니다</b> 이 플랫폼은"
-            " <b>월간으로 무료로 500 시간만 제공됩니다</b> 한 번 제한에 도달하면,"
-            "사용자 봇은 <b>차단됩니다</b> 다음 달에,"
-            " https://railway.app 사용자 봇을 다시 시작해야합니다.</b>"
-        ),
-        "language_saved": "🇰🇷 언어가 저장되었습니다!",
-        "language": "🇰🇷 한국어",
-        "btn_support": "🥷 지원 그룹",
-    }
-
-    strings_ar = {
-        "base": """
-📼 <b>للبحث عن وتثبيت الوحدات، يرجى الذهاب إلى @hikkamods_bot وإدخال الكلمات المفتاحية.</b>
-
-📣 <b>لمشاهدة قنوات المجتمع التي تم إنشاؤها، انقر هنا: <a href="https://t.me/hikka_ub/126">عرض</a></b>
-
-💁‍♀️ <b>للبدء فورًا:</b>
-
-1️⃣ <b>لعرض قائمة الوحدات، اكتب </b><code>.help</code> <b>وأدخل</b>
-2️⃣ <b>للحصول على معلومات عن الوحدة، اكتب </b><code>.help &lt;اسم الوحدة/الأمر&gt;</code> <b>وأدخل</b>
-3️⃣ <b>لتثبيت الوحدة من الرابط، اكتب </b><code>.dlmod &lt;الرابط&gt;</code> <b>وأدخل</b>
-4️⃣ <b>لتحميل الوحدة من الملف، اكتب </b><code>.loadmod</code> <b>وأرسل الملف المراد تحميله</b>
-5️⃣ <b>لإزالة الوحدة، اكتب </b><code>.unloadmod &lt;اسم الوحدة&gt;</code> <b>وأدخل</b>
-
-💡 <b>لدعم الوحدات، يتضمن Hikka, Friendly-Telegram, DragonUserbot و GeekTG أيضًا.</b>
-""",
-        "railway": (
-            "🚂 <b>تم إنشاء بوت المستخدم على Railway</b> هذه المنصة تقدم"
-            " <b>500 ساعة مجانية شهريًا</b> بمجرد الوصول إلى الحد الأقصى،"
-            "سيتم حظر بوت المستخدم <b>حتى الشهر القادم</b> يرجى إعادة تشغيل"
-            " <b>بوت المستخدم في https://railway.app</b>"
-        ),
-        "language_saved": "🇸🇦 تم حفظ اللغة!",
-        "language": "🇸🇦 العربية",
-        "btn_support": "🥷 مجموعة الدعم",
-    }
-
     strings_es = {
         "base": """
 📼 <b>Para buscar e instalar módulos, vaya a @hikkamods_bot y escriba las palabras clave.</b>
@@ -355,9 +274,6 @@ class QuickstartMod(loader.Module):
                         "uz",
                         "tr",
                         "de",
-                        "ja",
-                        "kr",
-                        "ar",
                         "es",
                         "tt",
                     ]

@@ -8,10 +8,10 @@
 
 import contextlib
 import itertools
-import sys
-from types import ModuleType
 import os
+import sys
 import typing
+from types import ModuleType
 
 import telethon
 from meval import meval
@@ -101,51 +101,6 @@ class PythonMod(loader.Module):
         "_cls_doc": "Python kodini ishga tushiradi",
     }
 
-    strings_ja = {
-        "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " コード:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
-            " 結果:</b>\n<code>{}</code>"
-        ),
-        "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " コード:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> エラー:</b>\n{}"
-        ),
-        "_cls_doc": "Pythonコードを実行します",
-    }
-
-    strings_kr = {
-        "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " 코드:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
-            " 결과:</b>\n<code>{}</code>"
-        ),
-        "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " 코드:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> 오류:</b>\n{}"
-        ),
-        "_cls_doc": "Python 코드를 실행합니다",
-    }
-
-    strings_ar = {
-        "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " الكود:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
-            " النتيجة:</b>\n<code>{}</code>"
-        ),
-        "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
-            " الكود:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> خطأ:</b>\n{}"
-        ),
-        "_cls_doc": "ينفذ الكود بيثون",
-    }
-
     strings_es = {
         "eval": (
             "<emoji document_id=5431376038628171216>🎬</emoji><b>"
@@ -167,9 +122,6 @@ class PythonMod(loader.Module):
         de_doc="Alias für den Befehl .e",
         tr_doc="Komut .e için takma ad",
         uz_doc="Buyruq .e uchun alohida nom",
-        ja_doc="コマンド.eのエイリアス",
-        kr_doc="명령 .e의 별칭",
-        ar_doc="الأمر .e للأمر",
         es_doc="Alias para el comando .e",
     )
     async def eval(self, message: Message):
@@ -182,9 +134,6 @@ class PythonMod(loader.Module):
         de_doc="Führt Python Code aus",
         tr_doc="Python kodu çalıştırır",
         uz_doc="Python kodini ishga tushiradi",
-        ja_doc="Pythonコードを実行します",
-        kr_doc="Python 코드를 실행합니다",
-        ar_doc="ينفذ الكود بيثون",
         es_doc="Ejecuta código Python",
     )
     async def e(self, message: Message):

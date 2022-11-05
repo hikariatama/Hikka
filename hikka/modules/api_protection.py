@@ -12,9 +12,9 @@ import json
 import logging
 import time
 
-from telethon.tl.types import Message
 from telethon.tl import functions
 from telethon.tl.tlobject import TLRequest
+from telethon.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
@@ -304,112 +304,6 @@ class APIRatelimiterMod(loader.Module):
         "_cfg_forbidden_methods": "Barcha tashqi modullarda taqiqlangan usullar",
         "btn_no": "🚫 Yo'q",
         "btn_yes": "✅ Ha",
-    }
-
-    strings_ja = {
-        "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
-            " <b>警告！</b>\n\nこのアカウントの設定では、以下の制限が設定されています。\n\n"
-            "Telegram APIのフラッドを防ぐために、この<b>すべてのユーザーボット</b>は"
-            " {}秒間ブロックされます。詳細については、下記のファイルをご覧ください。\n\n"
-            "サポートについては、<code>{prefix}support</code>グループをご利用ください！\n\n"
-            "アカウントが実行する必要のあるアクションを許可する場合は、"
-            "<code>{prefix}suspend_api_protect</code>を使用してブロックを解除するだけです。"
-        ),
-        "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>無効な引数</b>"
-        ),
-        "suspended_for": (
-            "<emoji document_id=5458450833857322148>👌</emoji>"
-            " <b>APIフラッド保護が{}秒間無効になりました</b>"
-        ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>このアクションは、"
-            "Telegram APIをフラッドさせることができます。</b> <i>あなたが何をしているかを"
-            "確認するために、簡単なテストを実行するには、次のように入力してください。</i>"
-        ),
-        "on": "<emoji document_id=5458450833857322148>👌</emoji> <b>保護が有効になりました</b>",
-        "off": "<emoji document_id=5458450833857322148>👌</emoji> <b>保護が無効になりました</b>",
-        "u_sure": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>本当によろしいですか？</b>"
-        ),
-        "_cfg_time_sample": "秒あたりの許可されたリクエスト数の制限",
-        "_cfg_threshold": "制限を超えた場合の値",
-        "_cfg_local_floodwait": "ユーザーがこの秒数以内にボットをブロックする場合",
-        "_cfg_forbidden_methods": "すべての外部モジュールで禁止されているメソッド",
-        "btn_no": "🚫 いいえ",
-        "btn_yes": "✅ はい",
-    }
-
-    strings_kr = {
-        "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
-            " <b>경고！</b>\n\n이 계정의 설정에 따르면, 다음 제한이 설정됩니다.\n\n"
-            "이 <b>모든 사용자 봇</b>은 Telegram API의 플러드를 방지하기 위해"
-            " {}초 동안 차단됩니다. 자세한 내용은 아래 파일을 참조하십시오.\n\n"
-            "지원에 대해서는 <code>{prefix}support</code> 그룹을 사용하십시오!\n\n"
-            "계정이 실행해야하는 작업을 허용하려면, <code>{prefix}suspend_api_protect</code>를"
-            "사용하여 차단을 해제하십시오."
-        ),
-        "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>잘못된인수</b>"
-        ),
-        "suspended_for": (
-            "<emoji document_id=5458450833857322148>👌</emoji>"
-            " <b>API 플러드 보호가 {}초간 비활성화되었습니다</b>"
-        ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>이 작업은"
-            "Telegram API를 플러드시킬 수 있습니다.</b> <i>당신이 무엇을 하는지 확인하기 위해,"
-            "간단한 테스트를 실행하려면 다음과 같이 입력하십시오.</i>"
-        ),
-        "on": "<emoji document_id=5458450833857322148>👌</emoji> <b>보호가 활성화되었습니다</b>",
-        "off": "<emoji document_id=5458450833857322148>👌</emoji> <b>보호가 비활성화되었습니다</b>",
-        "u_sure": "<emoji document_id=6319093650693293883>☣️</emoji> <b>확실합니까?</b>",
-        "_cfg_time_sample": "허용되는 요청 수의 제한 초",
-        "_cfg_threshold": "제한을 초과한 경우의 값",
-        "_cfg_local_floodwait": "사용자가 이 초 이내에 봇을 차단하는 경우",
-        "_cfg_forbidden_methods": "모든 외부 모듈에서 금지된 메서드",
-        "btn_no": "🚫 아니요",
-        "btn_yes": "✅ 예",
-    }
-
-    strings_ar = {
-        "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>تحذير!</b>\n\nحسب"
-            " إعدادات هذا الحساب، فإن الحدود التالية ستتم تطبيقها.\n\nسيتم حظر <b>جميع"
-            " بوتات المستخدمين</b> لمدة {} ثانية لمنع تجاوز الحد الأقصى لمتطلبات"
-            " Telegram API. لمزيد من المعلومات، راجع الملف التالي.\n\nللمساعدة، استخدم"
-            " مجموعة <code>{prefix}support</code>!\n\nللسماح للحساب بالعمل، استخدم"
-            " <code>{prefix}suspend_api_protect</code> لإلغاء الحظر."
-        ),
-        "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>معلمات غير صالحة</b>"
-        ),
-        "suspended_for": (
-            "<emoji document_id=5458450833857322148>👌</emoji>"
-            " <b>تم تعطيل حماية API لمدة {} ثانية</b>"
-        ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>هذا الأمر قد يؤدي"
-            " إلىتجاوز حدود Telegram API.</b> <i>للتحقق من ما تفعله، يمكنك تشغيل اختبار"
-            " بسيطبالإضافة إلى الأمر التالي.</i>"
-        ),
-        "on": (
-            "<emoji document_id=5458450833857322148>👌</emoji> <b>تم تفعيل الحماية</b>"
-        ),
-        "off": (
-            "<emoji document_id=5458450833857322148>👌</emoji> <b>تم تعطيل الحماية</b>"
-        ),
-        "u_sure": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>هل أنت متأكد؟</b>"
-        ),
-        "_cfg_time_sample": "المدة بالثواني التي يتم فيها تجاوزها حد المتطلبات",
-        "_cfg_threshold": "قيمة تجاوزها الحد",
-        "_cfg_local_floodwait": "المدة بالثواني التي يتم فيها حظر المستخدم للبوت",
-        "_cfg_forbidden_methods": "الأوامر الممنوعة من قبل كل الإضافات الخارجية",
-        "btn_no": "🚫 لا",
-        "btn_yes": "✅ نعم",
     }
 
     strings_es = {

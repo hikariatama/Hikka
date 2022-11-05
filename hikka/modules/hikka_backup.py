@@ -121,45 +121,6 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
-    strings_ja = {
-        "period": (
-            "⌚️ <b>Unit «ALPHA»</b> は自動的にバックアップを作成します。これらの設定は"
-            " 後で変更できます。\n\nバックアップの頻度を選択してください"
-        ),
-        "saved": "✅ バックアップ頻度が保存されました！ .set_backup_period を使用して 後で変更できます",
-        "never": "✅ 自動的にバックアップを作成しないでください。 .set_backup_period を使用して 後で変更できます",
-        "invalid_args": "🚫 <b>正しいバックアップ頻度を時間単位で指定するか、`0` を指定して無効にします</b>",
-    }
-
-    strings_kr = {
-        "period": (
-            "⌚️ <b>Unit «ALPHA»</b>은 자동으로 백업을 생성합니다. 이러한 설정은"
-            " 나중에 변경할 수 있습니다.\n\n백업 주기를 선택하십시오"
-        ),
-        "saved": "✅ 백업 주기가 저장되었습니다! 나중에 .set_backup_period를 사용하여 변경할 수 있습니다",
-        "never": "✅ 자동으로 백업을 만들지 마십시오. 나중에 .set_backup_period를 사용하여 변경할 수 있습니다",
-        "invalid_args": "🚫 <b>올바른 백업 주기를 시간 단위로 지정하거나 `0`으로 지정하여 비활성화하십시오</b>",
-    }
-
-    strings_ar = {
-        "period": (
-            "⌚️ يقوم <b>Unit «ALPHA»</b> بإنشاء نسخة احتياطية تلقائية. يمكنك تغيير هذه"
-            " الإعدادات في وقت لاحق.\n\nالرجاء اختيار فترة النسخ الاحتياطي"
-        ),
-        "saved": (
-            "✅ تم حفظ فترة النسخ الاحتياطي! يمكنك تغييرها باستخدام .set_backup_period"
-            " في وقت لاحق"
-        ),
-        "never": (
-            "✅ لا تقم بإنشاء نسخة احتياطية تلقائية. يمكنك تغييرها باستخدام"
-            " .set_backup_period في وقت لاحق"
-        ),
-        "invalid_args": (
-            "🚫 <b>الرجاء إدخال فترة النسخ الاحتياطي الصحيحة بالساعات، أو"
-            " `0` لتعطيلها</b>"
-        ),
-    }
-
     strings_es = {
         "period": (
             "⌚️ <b>Unit «ALPHA»</b> crea automáticamente copias de seguridad. Puede"
@@ -240,9 +201,6 @@ class HikkaBackupMod(loader.Module):
         de_doc="<Stunden> - Setze die Backup-Frequenz",
         tr_doc="<saat cinsinden zaman> - Yedekleme periyodunu ayarla",
         uz_doc="<soatda vaqt> - E'lon tartibini belgilash",
-        ja_doc="<時間> - バックアップ頻度を設定します",
-        kr_doc="<시간> - 백업 빈도 설정",
-        ar_doc="<ساعات> - ضبط فترة النسخ الاحتياطي",
         es_doc="<horas> - Establecer la frecuencia de copia de seguridad",
     )
     async def set_backup_period(self, message: Message):

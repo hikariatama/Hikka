@@ -37,8 +37,9 @@ import random
 import socket
 import sqlite3
 import sys
-from math import ceil
 import typing
+from math import ceil
+
 import telethon
 from telethon import events
 from telethon.errors.rpcerrorlist import (
@@ -50,15 +51,13 @@ from telethon.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import SQLiteSession, MemorySession
+from telethon.sessions import MemorySession, SQLiteSession
 
 from . import database, loader, utils, version
 from .dispatcher import CommandDispatcher
+from .tl_cache import CustomTelegramClient
 from .translations import Translator
 from .version import __version__
-from .tl_cache import CustomTelegramClient
-from .compat import dragon
-from .compat.pyroproxy import PyroProxyClient
 
 try:
     from .web import core
@@ -649,11 +648,7 @@ class Hikka:
         modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
 
-        client.pyro_proxy = PyroProxyClient(client)
-        await client.pyro_proxy.start()
-        await client.pyro_proxy.dispatcher.start()
-
-        dragon.apply_compat(client)
+        client.pyro_proxy = None  # Will be set later if needed
 
         if self.web:
             await self.web.add_loader(client, modules, db)

@@ -25,7 +25,7 @@ from aiogram.types import (
 from aiogram.types import Message as AiogramMessage
 
 from .. import utils
-from .types import InlineCall, InlineQuery, InlineUnit, BotInlineCall
+from .types import BotInlineCall, InlineCall, InlineQuery, InlineUnit
 
 logger = logging.getLogger(__name__)
 

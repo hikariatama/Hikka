@@ -7,40 +7,38 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
-import logging
 import contextlib
+import functools
 import io
+import logging
 import os
-from copy import deepcopy
 import re
 import typing
+from copy import deepcopy
 from urllib.parse import urlparse
-import functools
 
 from aiogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    InputFile,
     InputMediaAnimation,
-    InputMediaDocument,
     InputMediaAudio,
+    InputMediaDocument,
     InputMediaPhoto,
     InputMediaVideo,
-    InputFile,
 )
-
 from aiogram.utils.exceptions import (
+    BadRequest,
     MessageIdInvalid,
     MessageNotModified,
     RetryAfter,
-    BadRequest,
 )
+from telethon.utils import resolve_inline_message_id
 
 from .. import utils
 from ..types import HikkaReplyMarkup
-from .types import InlineUnit, InlineCall
-
-from telethon.utils import resolve_inline_message_id
+from .types import InlineCall, InlineUnit
 
 logger = logging.getLogger(__name__)
 

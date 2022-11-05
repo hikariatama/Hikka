@@ -8,30 +8,30 @@
 
 import copy
 import inspect
-import time
 import logging
+import time
 import typing
 
 from telethon import TelegramClient
 from telethon.hints import EntityLike
-from telethon.utils import is_list_like
 from telethon.network import MTProtoSender
-from telethon.tl.tlobject import TLRequest
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.tlobject import TLRequest
 from telethon.tl.types import (
     ChannelFull,
-    UserFull,
     Updates,
     UpdatesCombined,
     UpdateShort,
+    UserFull,
 )
+from telethon.utils import is_list_like
 
 from .types import (
     CacheRecord,
-    CacheRecordPerms,
     CacheRecordFullChannel,
     CacheRecordFullUser,
+    CacheRecordPerms,
     Module,
 )
 

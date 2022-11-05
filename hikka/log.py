@@ -11,19 +11,20 @@
 import asyncio
 import contextlib
 import inspect
+import io
 import json
 import logging
-import io
 import os
 import re
-import telethon
 import traceback
 import typing
 from logging.handlers import RotatingFileHandler
 
+import telethon
+
 from . import utils
-from .types import Module, BotInlineCall
 from .tl_cache import CustomTelegramClient
+from .types import BotInlineCall, Module
 
 
 class HikkaException:

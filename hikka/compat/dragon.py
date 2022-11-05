@@ -1,30 +1,26 @@
+import asyncio
+import builtins
+import importlib
+import inspect
 import io
 import logging
-import inspect
-import builtins
-import asyncio
-from sys import version_info
-import typing
-import git
 import os
-import asyncio
-import os
-import sys
-from io import BytesIO
-
-from PIL import Image
-import importlib
 import subprocess
-
-from pyrogram import Client, errors, types
+import sys
 import traceback
+import typing
+from io import BytesIO
+from sys import version_info
 
+import git
+from PIL import Image
+from pyrogram import Client, errors, types
 
-from ..tl_cache import CustomTelegramClient
-from ..database import Database
-from .._internal import restart
-from ..types import JSONSerializable
 from .. import version
+from .._internal import restart
+from ..database import Database
+from ..tl_cache import CustomTelegramClient
+from ..types import JSONSerializable
 
 DRAGON_EMOJI = "<emoji document_id=5375360100196163660>🐲</emoji>"
 

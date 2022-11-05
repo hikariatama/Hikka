@@ -23,12 +23,11 @@ from aiogram.types import (
     InputTextMessageContent,
 )
 from aiogram.utils.exceptions import RetryAfter
-
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
+from telethon.tl.types import Message
 
-from .. import utils, main
+from .. import main, utils
 from ..types import HikkaReplyMarkup
 from .types import InlineMessage, InlineUnit
 
