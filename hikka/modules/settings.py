@@ -25,27 +25,30 @@ class CoreMod(loader.Module):
     strings = {
         "name": "Settings",
         "too_many_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Too many args</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Too many args</b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Chat {} blacklisted"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} blacklisted"
             " from userbot</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Chat {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {}"
             " unblacklisted from userbot</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>User {} blacklisted"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>User {} blacklisted"
             " from userbot</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>User {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>User {}"
             " unblacklisted from userbot</b>"
         ),
-        "what_prefix": "❓ <b>What should the prefix be set to?</b>",
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>What should the prefix"
+            " be set to?</b>"
+        ),
         "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Prefix must be one"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Prefix must be one"
             " symbol in length</b>"
         ),
         "prefix_set": (
@@ -54,32 +57,32 @@ class CoreMod(loader.Module):
             " change it back</b>"
         ),
         "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Alias created."
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Alias created."
             " Access it with</b> <code>{}</code>"
         ),
         "aliases": "<b>🔗 Aliases:</b>\n",
         "no_command": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Command</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Command</b>"
             " <code>{}</code> <b>does not exist</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>You must provide a"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You must provide a"
             " command and the alias for it</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>You must provide the"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You must provide the"
             " alias name</b>"
         ),
         "alias_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Alias</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Alias</b>"
             " <code>{}</code> <b>removed</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Alias</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Alias</b>"
             " <code>{}</code> <b>does not exist</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b> Database cleared</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji><b> Database cleared</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
@@ -111,28 +114,31 @@ class CoreMod(loader.Module):
 
     strings_ru = {
         "too_many_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Слишком много"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Слишком много"
             " аргументов</b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Чат {} добавлен в"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Чат {} добавлен в"
             " черный список юзербота</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Чат {} удален из"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Чат {} удален из"
             " черного списка юзербота</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Пользователь {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Пользователь {}"
             " добавлен в черный список юзербота</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Пользователь {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Пользователь {}"
             " удален из черного списка юзербота</b>"
         ),
-        "what_prefix": "❓ <b>А какой префикс ставить то?</b>",
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>А какой префикс"
+            " ставить то?</b>"
+        ),
         "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Префикс должен"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Префикс должен"
             " состоять только из одного символа</b>"
         ),
         "prefix_set": (
@@ -141,32 +147,32 @@ class CoreMod(loader.Module):
             " {oldprefix}</code>"
         ),
         "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Алиас создан."
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Алиас создан."
             " Используй его через</b> <code>{}</code>"
         ),
         "aliases": "<b>🔗 Алиасы:</b>\n",
         "no_command": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Команда</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда</b>"
             " <code>{}</code> <b>не существует</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Требуется ввести"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Требуется ввести"
             " команду и алиас для нее</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Требуется имя"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Требуется имя"
             " алиаса</b>"
         ),
         "alias_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Алиас</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Алиас</b>"
             " <code>{}</code> <b>удален</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5436162517686557387>🚫</emoji><b> Алиас</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji><b> Алиас</b>"
             " <code>{}</code> <b>не существует</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b> База очищена</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji><b> База очищена</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
@@ -200,27 +206,30 @@ class CoreMod(loader.Module):
 
     strings_de = {
         "too_many_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Zu vieleArgumente</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Zu vieleArgumente</b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Chat {} hinzugefügt"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} hinzugefügt"
             " zuUserbot-Blacklist</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Chat {} entfernt aus"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} entfernt aus"
             "Blacklist für Userbots</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Benutzer {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Benutzer {}"
             "Von Userbot auf die schwarze Liste gesetzt</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Benutzer {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Benutzer {}"
             " von Userbot-Blacklist entfernt</b>"
         ),
-        "what_prefix": "❓ <b>Welches Präfix soll ich setzen?</b>",
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Welches Präfix soll"
+            " ich setzen?</b>"
+        ),
         "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Präfix muss"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Präfix muss"
             "bestehen nur aus einem Zeichen</b>"
         ),
         "prefix_set": (
@@ -229,32 +238,32 @@ class CoreMod(loader.Module):
             "{oldprefix}</code>"
         ),
         "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Alias ​​erstellt."
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Alias ​​erstellt."
             " Verwenden Sie es über</b> <code>{}</code>"
         ),
         "aliases": "<b>🔗 Aliasse:</b>\n",
         "no_command": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Befehl</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Befehl</b>"
             " <code>{}</code> <b>existiert nicht</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Eingabe erforderlich"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Eingabe erforderlich"
             "Befehl und Alias ​​dafür</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Name erforderlich"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Name erforderlich"
             "alias</b>"
         ),
         "alias_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Alias</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Alias</b>"
             " <code>{}</code> <b>gelöscht</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5436162517686557387>🚫</emoji><b>Alias</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji><b>Alias</b>"
             " <code>{}</code> <b>existiert nicht</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b>Basis gelöscht</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji><b>Basis gelöscht</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
@@ -289,28 +298,31 @@ class CoreMod(loader.Module):
 
     strings_tr = {
         "too_many_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Çok fazla"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Çok fazla"
             " argümanlar</b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Sohbet {} eklendi"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Sohbet {} eklendi"
             "userbot kara listesi</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Sohbet {} şuradan"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Sohbet {} şuradan"
             " kaldırıldıUserbot Kara Listesi</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Kullanıcı {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Kullanıcı {}"
             " userbot tarafından kara listeye alındı</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Kullanıcı {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Kullanıcı {}"
             " userbot kara listesinden kaldırıldı</b>"
         ),
-        "what_prefix": "❓ <b>Hangi öneki ayarlamalıyım?</b>",
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Hangi öneki"
+            " ayarlamalıyım?</b>"
+        ),
         "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Önek olmalıdır"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Önek olmalıdır"
             "sadece bir karakterden oluşur</b>"
         ),
         "prefix_set": (
@@ -319,31 +331,31 @@ class CoreMod(loader.Module):
             "{oldprefix}</code>"
         ),
         "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Takma ad"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Takma ad"
             " oluşturuldu.</b> <code>{}</code> yoluyla kullanın"
         ),
         "aliases": "<b>🔗 Takma adlar:</b>\n",
         "no_command": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Komut</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Komut</b>"
             " <code>{}</code> <b>yok</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Gerekli girin"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Gerekli girin"
             "komut ve bunun için takma ad</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Ad gereklitakma ad</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ad gereklitakma ad</b>"
         ),
         "alias_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Takma ad</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Takma ad</b>"
             " <code>{}</code> <b>silindi</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5436162517686557387>🚫</emoji><b> Takma Ad</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji><b> Takma Ad</b>"
             " <code>{}</code> <b>yok</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b> Taban temizlendi</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji><b> Taban temizlendi</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
@@ -378,28 +390,31 @@ class CoreMod(loader.Module):
 
     strings_uz = {
         "too_many_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Juda ko'p"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Juda ko'p"
             " argumentlar</b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Chat {} qo'shildi"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} qo'shildi"
             " userbot qora ro' yxati</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Chat {} o'chirildi"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} o'chirildi"
             "Userbot qora ro'yxati</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Foydalanuvchi {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Foydalanuvchi {}"
             " userbot tomonidan qora ro'yxatga kiritilgan</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Foydalanuvchi {}"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Foydalanuvchi {}"
             " userbot qora ro'yxatidan olib tashlandi</b>"
         ),
-        "what_prefix": "❓ <b>Qaysi prefiksni o'rnatishim kerak?</b>",
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Qaysi prefiksni"
+            " o'rnatishim kerak?</b>"
+        ),
         "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Prefiks kerak"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Prefiks kerak"
             "faqat bitta belgidan iborat</b>"
         ),
         "prefix_set": (
@@ -408,31 +423,31 @@ class CoreMod(loader.Module):
             "{oldprefix}</code>"
         ),
         "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Taxallus yaratildi."
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Taxallus yaratildi."
             "</b> <code>{}</code> orqali foydalaning"
         ),
         "aliases": "<b>🔗 Taxalluslar:</b>\n",
         "no_command": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Buyruq</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Buyruq</b>"
             " <code>{}</code> <b>mavjud</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Kirish kerak"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kirish kerak"
             "buyruq va uning taxallusi</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Ism keraktaxallus</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ism keraktaxallus</b>"
         ),
         "alias_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Taxallus</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Taxallus</b>"
             " <code>{}</code> <b>o'chirildi</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5436162517686557387>🚫</emoji><b> Taxallus</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji><b> Taxallus</b>"
             " <code>{}</code> <b>mavjud</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b> Baza tozalandi</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji><b> Baza tozalandi</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
@@ -468,24 +483,27 @@ class CoreMod(loader.Module):
 
     strings_es = {
         "chat_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>El chat {} ha sido"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>El chat {} ha sido"
             " añadido a la lista negra</b>"
         ),
         "chat_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>El chat {} ha sido"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>El chat {} ha sido"
             " removido de la lista negra</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>El usuario {} ha sido"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>El usuario {} ha sido"
             " añadido a la lista negra</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>El usuario {} ha sido"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>El usuario {} ha sido"
             " removido de la lista negra</b>"
         ),
-        "what_prefix": "❓ <b>¿Cuál es el prefijo que quieres establecer?</b>",
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>¿Cuál es el prefijo"
+            " que quieres establecer?</b>"
+        ),
         "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>El prefijo debe ser"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El prefijo debe ser"
             " un solo carácter</b>"
         ),
         "prefix_set": (
@@ -494,19 +512,19 @@ class CoreMod(loader.Module):
             " {oldprefix}</code> <b>para restablecerlo</b>"
         ),
         "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>El alias</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>El alias</b>"
             " <code>{}</code> <b>ha sido creado</b>"
         ),
         "alias_deleted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>El alias</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>El alias</b>"
             " <code>{}</code> <b>ha sido eliminado</b>"
         ),
         "no_alias": (
-            "<emoji document_id=5436162517686557387>🚫</emoji><b> Alias</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji><b> Alias</b>"
             " <code>{}</code> <b>no existe</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b>Base de datos"
+            "<emoji document_id=5197474765387864959>👍</emoji><b>Base de datos"
             " borrada</b>"
         ),
         "hikka": (
@@ -755,7 +773,7 @@ class CoreMod(loader.Module):
                 (
                     DRAGON_EMOJI
                     if is_dragon
-                    else "<emoji document_id=5368324170671202286>👍</emoji>"
+                    else "<emoji document_id=5197474765387864959>👍</emoji>"
                 ),
                 newprefix=utils.escape_html(
                     self.get_prefix() if is_dragon else args[0]

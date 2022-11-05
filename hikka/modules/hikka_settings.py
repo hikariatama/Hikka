@@ -59,15 +59,15 @@ class HikkaSettingsMod(loader.Module):
             " <b>Watchers:</b>\n\n<b>{}</b>"
         ),
         "no_args": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>No arguments"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No arguments"
             " specified</b>"
         ),
         "invoke404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Internal debug method"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Internal debug method"
             " </b><code>{}</code><b> not found, ergo can't be invoked</b>"
         ),
         "module404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Module</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module</b>"
             " <code>{}</code> <b>not found</b>"
         ),
         "invoke": (
@@ -80,7 +80,7 @@ class HikkaSettingsMod(loader.Module):
             " debug method </b><code>{}</code><b> of </b><code>{}</code><b>...</b>"
         ),
         "mod404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Watcher {} not"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Watcher {} not"
             " found</b>"
         ),
         "disabled": (
@@ -92,7 +92,7 @@ class HikkaSettingsMod(loader.Module):
             " <u>enabled</u></b>"
         ),
         "args": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You need to specify"
             " watcher name</b>"
         ),
         "user_nn": (
@@ -128,7 +128,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Suggest subscribe to channel",
         "do_not_suggest_subscribe": "🚫 Suggest subscribe to channel",
         "private_not_allowed": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>This command must be"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>This command must be"
             " executed in chat</b>"
         ),
         "nonick_warning": (
@@ -137,7 +137,7 @@ class HikkaSettingsMod(loader.Module):
             "disable NoNick!"
         ),
         "reply_required": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Reply to a message"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Reply to a message"
             " of user, which needs to be added to NoNick</b>"
         ),
         "deauth_confirm": (
@@ -207,7 +207,7 @@ class HikkaSettingsMod(loader.Module):
             " <b>Смотрители:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Смотритель {} не"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Смотритель {} не"
             " найден</b>"
         ),
         "disabled": (
@@ -219,7 +219,7 @@ class HikkaSettingsMod(loader.Module):
             " <u>включен</u></b>"
         ),
         "args": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Укажи имя"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Укажи имя"
             " смотрителя</b>"
         ),
         "user_nn": (
@@ -252,7 +252,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Предлагать подписку на канал",
         "do_not_suggest_subscribe": "🚫 Предлагать подписку на канал",
         "private_not_allowed": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Эту команду нужно"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Эту команду нужно"
             " выполнять в чате</b>"
         ),
         "_cls_doc": "Дополнительные настройки Hikka",
@@ -262,7 +262,7 @@ class HikkaSettingsMod(loader.Module):
             "отключи глобальный NoNick!"
         ),
         "reply_required": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Ответь на сообщение"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ответь на сообщение"
             " пользователя, для которого нужно включить NoNick</b>"
         ),
         "deauth_confirm": (
@@ -333,7 +333,7 @@ class HikkaSettingsMod(loader.Module):
             " <b>Beobachter:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Beobachter {} nicht"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Beobachter {} nicht"
             "gefunden</b>"
         ),
         "disabled": (
@@ -345,7 +345,7 @@ class HikkaSettingsMod(loader.Module):
             " <u>aktiviert</u></b>"
         ),
         "arg": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Bitte geben Sie einen"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bitte geben Sie einen"
             " Namen einHausmeister</b>"
         ),
         "user_nn": (
@@ -383,7 +383,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Kanalabonnement vorschlagen",
         "do_not_suggest_subscribe": "🚫 Kanalabonnement vorschlagen",
         "private_not_allowed": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Dieser Befehl benötigt"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Dieser Befehl benötigt"
             "im Chat ausführen</b>"
         ),
         "_cls_doc": "Erweiterte Hikka-Einstellungen",
@@ -393,7 +393,7 @@ class HikkaSettingsMod(loader.Module):
             " schalten Sie das globale NoNick aus!"
         ),
         "reply_required": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Auf Nachricht"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Auf Nachricht"
             " antwortenBenutzer soll NoNick aktivieren</b>"
         ),
         "deauth_confirm": (
@@ -468,7 +468,7 @@ class HikkaSettingsMod(loader.Module):
             " <b>İzleyiciler:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>İzleyici {} değil"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>İzleyici {} değil"
             " bulundu</b>"
         ),
         "disabled": (
@@ -480,7 +480,7 @@ class HikkaSettingsMod(loader.Module):
             " <u>etkin</u></b>"
         ),
         "arg": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Lütfen bir ad girin"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lütfen bir ad girin"
             "bekçi</b>"
         ),
         "user_nn": (
@@ -515,7 +515,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Kanal aboneliği öner",
         "do_not_suggest_subscribe": "🚫 Kanal aboneliği öner",
         "private_not_allowed": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Bu komut gerekiyor"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu komut gerekiyor"
             " sohbette yürüt</b>"
         ),
         "_cls_doc": "Gelişmiş Hikka Ayarları",
@@ -525,7 +525,7 @@ class HikkaSettingsMod(loader.Module):
             "küresel NoNick'i kapatın!"
         ),
         "reply_required": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Mesajı yanıtla"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Mesajı yanıtla"
             "NoNick'i etkinleştirmek için kullanıcı</b>"
         ),
         "deauth_confirm": (
@@ -584,7 +584,7 @@ class HikkaSettingsMod(loader.Module):
             " <b>Kuzatuvchilar:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Kuzuvchi {} emas"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kuzuvchi {} emas"
             " topildi</b>"
         ),
         "disabled": (
@@ -596,7 +596,7 @@ class HikkaSettingsMod(loader.Module):
             " <u>yoqilgan</u></b>"
         ),
         "args": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Iltimos, nom kiriting"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Iltimos, nom kiriting"
             "qorovul</b>"
         ),
         "user_nn": (
@@ -633,7 +633,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "✅ Kanalga obuna bo'lishni taklif qilish",
         "do_not_suggest_subscribe": "🚫 Kanalga obuna bo'lishni taklif qilish",
         "private_not_allowed": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Bu buyruq kerak"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu buyruq kerak"
             " chatda bajarish</b>"
         ),
         "_cls_doc": "Kengaytirilgan Hikka sozlamalari",
@@ -643,7 +643,7 @@ class HikkaSettingsMod(loader.Module):
             " NoNickni o'chiring!"
         ),
         "reply_required": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Xatga javob berish"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Xatga javob berish"
             "foydalanuvchi NoNick</b>ni yoqish uchun"
         ),
         "deauth_confirm": (
@@ -718,7 +718,7 @@ class HikkaSettingsMod(loader.Module):
             " <b>Espectadores:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>No visor {}"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No visor {}"
             "Encontrado</b>"
         ),
         "disabled": (
@@ -730,7 +730,7 @@ class HikkaSettingsMod(loader.Module):
             " <u>habilitado</u></b>"
         ),
         "args": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Por favor ingrese un"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Por favor ingrese un"
             " nombrecuidador</b>"
         ),
         "user_nn": (
@@ -767,7 +767,7 @@ class HikkaSettingsMod(loader.Module):
         "suggest_subscribe": "Sugerir suscripción al canal",
         "do_not_suggest_subscribe": " Sugerir suscripción al canal",
         "private_not_allowed": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>Este comando es"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Este comando es"
             " necesarioEjecutar en el chat</b>"
         ),
         "_cls_doc": "Configuración avanzada de Hikka",
@@ -777,7 +777,7 @@ class HikkaSettingsMod(loader.Module):
             "¡Apaga el NoNick global!"
         ),
         "reply_required": (
-            "<emoji document_id=5447207618793708263>🚫</emoji> <b>responder al mensaje"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>responder al mensaje"
             "El usuario habilitará NoNick</b>"
         ),
         "deauth_confirm": (

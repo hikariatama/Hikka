@@ -26,275 +26,205 @@ class HelpMod(loader.Module):
 
     strings = {
         "name": "Help",
-        "bad_module": "<b>🚫 <b>Module</b> <code>{}</code> <b>not found</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 No docs",
+        "undoc": "🦥 No docs",
         "all_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} mods available,"
             " {} hidden:</b>"
         ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Specify module to hide</b>",
         "hidden_shown": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} modules hidden,"
             " {} modules shown:</b>\n{}\n{}"
         ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 No docs",
         "support": (
             "{} <b>Link to </b><a href='https://t.me/hikka_talks'>support chat</a></b>"
         ),
         "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Userbot is not"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Userbot is not"
             " fully loaded, so not all modules are shown</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>No exact match"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>No exact match"
             " occured, so the closest result is shown instead</b>"
         ),
         "request_join": "You requested link for Hikka support chat",
         "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>This is a core"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>This is a core"
             " module. You can't unload it nor replace</b>"
         ),
     }
 
     strings_ru = {
-        "bad_module": "<b>🚫 <b>Модуль</b> <code>{}</code> <b>не найден</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 Нет описания",
+        "undoc": "🦥 Нет описания",
         "all_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} модулей доступно,"
             " {} скрыто:</b>"
         ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Укажи модуль(-и), которые нужно скрыть</b>",
         "hidden_shown": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} модулей скрыто,"
             " {} модулей показано:</b>\n{}\n{}"
         ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 Нет описания",
         "support": (
             "{} <b>Ссылка на </b><a href='https://t.me/hikka_talks'>чат помощи</a></b>"
         ),
         "_cls_doc": "Показывает помощь по модулям",
         "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Юзербот еще не"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Юзербот еще не"
             " загрузился полностью, поэтому показаны не все модули</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Точного совпадения"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Точного совпадения"
             " не нашлось, поэтому было выбрано наиболее подходящее</b>"
         ),
         "request_join": "Вы запросили ссылку на чат помощи Hikka",
         "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Это встроенный"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Это встроенный"
             " модуль. Вы не можете его выгрузить или заменить</b>"
         ),
     }
 
     strings_de = {
-        "bad_module": "<b>🚫 <b>Modul</b> <code>{}</code> <b>nicht gefunden</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 Keine Dokumentation",
+        "undoc": "🦥 Keine Dokumentation",
         "all_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} Module verfügbar,"
             " {} versteckt:</b>"
         ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Gib das Modul an, das du verstecken willst</b>",
         "hidden_shown": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} Module versteckt,"
             " {} Module angezeigt:</b>\n{}\n{}"
         ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 Keine Dokumentation",
         "support": (
             "{} <b>Link zum </b><a href='https://t.me/hikka_talks'>Supportchat</a></b>"
         ),
         "_cls_doc": "Zeigt Hilfe zu Modulen an",
         "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Der Userbot ist noch"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Der Userbot ist noch"
             " nicht vollständig geladen, daher werden nicht alle Module angezeigt</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Es wurde kein exakter"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Es wurde kein exakter"
             " Treffer gefunden, daher wird das nächstbeste Ergebnis angezeigt</b>"
         ),
         "request_join": "Du hast den Link zum Supportchat angefordert",
         "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Dies ist ein"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Dies ist ein"
             " eingebauter Modul. Du kannst ihn nicht entladen oder ersetzen</b>"
         ),
     }
 
     strings_tr = {
-        "bad_module": "<b>🚫 <b>Modül</b> <code>{}</code> <b>bulunamadı</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 Dokümantasyon yok",
+        "undoc": "🦥 Dokümantasyon yok",
         "all_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} adet modül mevcut,"
             " {} gizli:</b>"
         ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Gizlemek istediğin modülü belirt</b>",
         "hidden_shown": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} adet modül"
             " gizlendi, {} adet modül gösterildi:</b>\n{}\n{}"
         ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 Dokümantasyon yok",
         "support": "{} <b><a href='https://t.me/hikka_talks'>Destek sohbeti</a></b>",
         "_cls_doc": "Modül yardımını gösterir",
         "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Kullanıcı botu"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Kullanıcı botu"
             " henüz tam olarak yüklenmediğinden, tüm modüller görüntülenmez</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Herhangi bir"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Herhangi bir"
             " eşleşme bulunamadığından, en uygun sonuç gösterildi</b>"
         ),
         "request_join": "Hikka Destek sohbetinin davet bağlantısını istediniz",
         "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Bu dahili"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Bu dahili"
             " b,r modül. Bu modülü kaldıramaz veya değiştiremezsin</b>"
         ),
     }
 
     strings_uz = {
-        "bad_module": "<b>🚫 <b>Modul</b> <code>{}</code> <b>topilmadi</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 Hujjatlanmagan",
+        "undoc": "🦥 Hujjatlanmagan",
         "all_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} Umumiy modullar,"
             " yashirin {}:</b>"
         ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Yashirish uchun modul kiriting</b>",
         "hidden_shown": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} yashirin,"
             " {} modullar ko'rsatilgan:</b>\n{}\n{}"
         ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 Hujjatlanmagan",
         "support": "{} <b><a href='https://t.me/hikka_talks'>Yordam chat</a></b>",
         "_cls_doc": "Modul yordamini ko'rsatadi",
         "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Foydalanuvchi boti"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Foydalanuvchi boti"
             " hali to'liq yuklanmaganligi sababli, barcha modullar ko'rsatilmaydi</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Hech qanday moslik"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Hech qanday moslik"
             " topilmadi, shuning uchun eng mos natija ko'rsatildi</b>"
         ),
         "request_join": "Siz yordam chat havolasini so'radingiz",
         "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Bu bir qo'shimcha"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Bu bir qo'shimcha"
             " modul, uni o'chirib yoki o'zgartirib bo'lmaysiz</b>"
         ),
     }
 
     strings_es = {
-        "bad_module": "<b>🚫 <b>El módulo</b> <code>{}</code> <b>no existe</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 Sin documentar",
+        "undoc": "🦥 Sin documentar",
         "all_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} módulos,"
             " {} ocultos:</b>"
         ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Por favor, introduce el módulo que deseas ocultar</b>",
         "hidden_shown": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} ocultos,"
             " {} módulos mostrados:</b>\n{}\n{}"
         ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 Sin documentar",
         "support": "{} <b><a href='https://t.me/hikka_talks'>Chat de soporte</a></b>",
         "_cls_doc": "Muestra la ayuda del módulo",
         "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>El bot no se ha"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>El bot no se ha"
             " cargado por completoaún, por lo que no se muestran todos los módulos</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>No se encontraron"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>No se encontraron"
             " resultados exactos, por lo que se muestran los resultados más"
             " relevantes</b>"
         ),
         "request_join": "Se ha solicitado el enlace al chat de soporte",
         "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Este es un módulo"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Este es un módulo"
             " adicional, por loque no se puede eliminar o modificar</b>"
         ),
     }
 
     strings_tt = {
-        "bad_module": "<b>🚫 <b>Модуль</b> <code>{}</code> <b>табылмаган</b>",
-        "single_mod_header": "{} <b>{}</b>:",
-        "single_cmd": (
-            "\n<emoji document_id=4972307488532595458>▫️</emoji> <code>{}{}</code> {}"
-        ),
-        "undoc_cmd": "🦥 Тасвирлау юк",
+        "undoc": "🦥 Тасвирлау юк",
         "all_header": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} модульләр бар,"
             " {} яшерелгән:</b>"
         ),
-        "mod_tmpl": "\n{} <code>{}</code>",
-        "first_cmd_tmpl": ": ( {}",
-        "cmd_tmpl": " | {}",
         "no_mod": "🚫 <b>Яшерергә кирәк булган модульне күрсәтегез (- һәм)</b>",
         "hidden_shown": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} модуль яшерелгән,"
             " {} модуль яшерелгән:</b>\n{}\n{}"
         ),
-        "ihandler": "\n🎹 <code>{}</code> {}",
-        "undoc_ihandler": "🦥 Тасвирлау юк",
         "support": (
             "{} <b>Сылтама </b><href='https://t.me/hikka_talks'>ярдәм чаты</a></b>"
         ),
         "_cls_doc": "Модульләр буенча ярдәм күрсәтә",
         "partial_load": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Юзербот әле тулысынча"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Юзербот әле тулысынча"
             " йөкләнмәгән, шуңа күрә барлык модульләр дә күрсәтелмәгән</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Төгәл матч табылмады,"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Төгәл матч табылмады,"
             " шуңа күрә иң яхшысы сайланды</b>"
         ),
         "request_join": "Сез Hikka ярдәм чатына сылтама сорадыгыз",
         "core_notice": (
-            "<emoji document_id=5472105307985419058>☝️</emoji> <b>Бу урнаштырылган"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Бу урнаштырылган"
             " модуль. Сез аны бушатырга яки алыштыра алмыйсыз</b>"
         ),
     }
@@ -440,10 +370,12 @@ class HelpMod(loader.Module):
             else utils.escape_html(name)
         )
 
-        reply = self.strings("single_mod_header").format(
-            DRAGON_EMOJI
-            if is_dragon
-            else "<emoji document_id=5188377234380954537>🌘</emoji>",
+        reply = "{} <b>{}</b>:".format(
+            (
+                DRAGON_EMOJI
+                if is_dragon
+                else "<emoji document_id=5188377234380954537>🌘</emoji>"
+            ),
             _name,
         )
         if module.__doc__:
@@ -465,26 +397,29 @@ class HelpMod(loader.Module):
 
         if hasattr(module, "inline_handlers") and not is_dragon:
             for name, fun in module.inline_handlers.items():
-                reply += self.strings("ihandler").format(
+                reply += "\n🎹 <code>{}</code> {}".format(
                     f"@{self.inline.bot_username} {name}",
                     (
                         utils.escape_html(inspect.getdoc(fun))
                         if fun.__doc__
-                        else self.strings("undoc_ihandler")
+                        else self.strings("undoc")
                     ),
                 )
 
         for name, fun in commands.items():
-            reply += self.strings("single_cmd").format(
-                self.get_prefix("dragon" if is_dragon else None),
-                name,
-                utils.escape_html(fun)
-                if is_dragon
-                else (
-                    utils.escape_html(inspect.getdoc(fun))
-                    if fun.__doc__
-                    else self.strings("undoc_cmd")
-                ),
+            reply += (
+                "\n<emoji document_id=4972307488532595458>▫️</emoji>"
+                " <code>{}{}</code> {}".format(
+                    self.get_prefix("dragon" if is_dragon else None),
+                    name,
+                    utils.escape_html(fun)
+                    if is_dragon
+                    else (
+                        utils.escape_html(inspect.getdoc(fun))
+                        if fun.__doc__
+                        else self.strings("undoc")
+                    ),
+                )
             )
 
         await utils.answer(
@@ -542,16 +477,16 @@ class HelpMod(loader.Module):
             if mod.name in self.get("hide", []) and not force:
                 continue
 
-            tmp = self.strings("mod_tmpl").format(DRAGON_EMOJI, mod.name)
+            tmp = "\n{} <code>{}</code>".format(DRAGON_EMOJI, mod.name)
             first = True
 
             for cmd in mod.commands:
                 cmd = cmd.split()[0]
                 if first:
-                    tmp += self.strings("first_cmd_tmpl").format(cmd)
+                    tmp += f": ( {cmd}"
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl").format(cmd)
+                    tmp += f" | {cmd}"
 
             dragon_ += [tmp + " )"]
 
@@ -601,11 +536,11 @@ class HelpMod(loader.Module):
                 and not getattr(mod, "callback_handlers", None)
             ):
                 no_commands_ += [
-                    self.strings("mod_tmpl").format(self.config["empty_emoji"], name)
+                    "\n{} <code>{}</code>".format(self.config["empty_emoji"], name)
                 ]
                 continue
 
-            tmp += self.strings("mod_tmpl").format(emoji, name)
+            tmp += "\n{} <code>{}</code>".format(emoji, name)
             first = True
 
             commands = [
@@ -616,10 +551,10 @@ class HelpMod(loader.Module):
 
             for cmd in commands:
                 if first:
-                    tmp += self.strings("first_cmd_tmpl").format(cmd)
+                    tmp += f": ( {cmd}"
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl").format(cmd)
+                    tmp += f" | {cmd}"
 
             icommands = [
                 name
@@ -633,10 +568,10 @@ class HelpMod(loader.Module):
 
             for cmd in icommands:
                 if first:
-                    tmp += self.strings("first_cmd_tmpl").format(f"🎹 {cmd}")
+                    tmp += f": ( 🎹 {cmd}"
                     first = False
                 else:
-                    tmp += self.strings("cmd_tmpl").format(f"🎹 {cmd}")
+                    tmp += f" | 🎹 {cmd}"
 
             if commands or icommands:
                 tmp += " )"

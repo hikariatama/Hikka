@@ -23,23 +23,23 @@ class Translations(loader.Module):
         "name": "Translations",
         "lang_saved": "{} <b>Language saved!</b>",
         "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Translate pack"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Translate pack"
             " saved!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Incorrect language"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Incorrect language"
             " specified</b>"
         ),
         "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Translations reset"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Translations reset"
             " to default ones</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Invalid pack format"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Invalid pack format"
             " in url</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You need to specify"
             " valid url containing a langpack</b>"
         ),
         "too_long": (
@@ -68,23 +68,23 @@ class Translations(loader.Module):
     strings_ru = {
         "lang_saved": "{} <b>Язык сохранён!</b>",
         "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Пакет переводов"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Пакет переводов"
             " сохранён!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Указан неверный"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Указан неверный"
             " язык</b>"
         ),
         "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Переводы сброшены"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Переводы сброшены"
             " на стандартные</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Неверный формат"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неверный формат"
             " пакета переводов в ссылке</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Вы должны указать"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Вы должны указать"
             " ссылку, содержащую пакет переводов</b>"
         ),
         "too_long": (
@@ -113,23 +113,23 @@ class Translations(loader.Module):
     strings_de = {
         "lang_saved": "{} <b>Sprache gespeichert!</b>",
         "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Übersetzungs"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Übersetzungs"
             " Paket gespeichert!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Falsche Sprache"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Falsche Sprache"
             " angegeben</b>"
         ),
         "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Übersetzungen"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Übersetzungen"
             " auf Standard zurückgesetzt</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Ungültiges"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ungültiges"
             " Übersetzungs Paket in der URL</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Sie müssen eine"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sie müssen eine"
             " gültige URL angeben, die ein Übersetzungs Paket enthält</b>"
         ),
         "too_long": (
@@ -162,23 +162,23 @@ class Translations(loader.Module):
     strings_tr = {
         "lang_saved": "{} <b>Dil kaydedildi!</b>",
         "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Çeviri paketi"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Çeviri paketi"
             " kaydedildi!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Yanlış dil"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Yanlış dil"
             " belirtildi</b>"
         ),
         "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Çeviriler varsayılan"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Çeviriler varsayılan"
             " hale getirildi</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>URL'deki çeviri"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>URL'deki çeviri"
             " paketi geçersiz</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Geçerli bir URL"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Geçerli bir URL"
             " belirtmelisiniz</b>"
         ),
         "too_long": (
@@ -210,23 +210,23 @@ class Translations(loader.Module):
     strings_uz = {
         "lang_saved": "{} <b>Til saqlandi!</b>",
         "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Tarjima paketi"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Tarjima paketi"
             " saqlandi!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Noto'g'ri til"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Noto'g'ri til"
             " belgilandi</b>"
         ),
         "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Tarjimalar"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Tarjimalar"
             " standart holatga qaytarildi</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>URL'dagi tarjima"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>URL'dagi tarjima"
             " paketi noto'g'ri</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Siz noto'g'ri URL"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Siz noto'g'ri URL"
             " belirtdingiz</b>"
         ),
         "too_long": (
@@ -261,23 +261,23 @@ class Translations(loader.Module):
     strings_es = {
         "lang_saved": "{} <b>¡Idioma guardado!</b>",
         "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>¡Paquete de"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>¡Paquete de"
             " traducción guardado!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Idioma"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Idioma"
             " incorrecto seleccionado</b>"
         ),
         "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Restablecer la"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Restablecer la"
             " traducción a los valores predeterminados</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Paquete de"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Paquete de"
             " traducción seleccionado incorrecto</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>URL incorrecta"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>URL incorrecta"
             " seleccionada</b>"
         ),
         "too_long": (
@@ -312,23 +312,23 @@ class Translations(loader.Module):
     strings_tt = {
         "lang_saved": "{} <b>Тел сакланган!</b>",
         "pack_saved": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Тәрҗемә пакеты"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Тәрҗемә пакеты"
             " сакланган!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Дөрес булмаган тел"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Дөрес булмаган тел"
             " күрсәтелгән</b>"
         ),
         "lang_removed": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Тәрҗемәләр стандартка"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Тәрҗемәләр стандартка"
             " ташланган</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Сылтамада тәрҗемә"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сылтамада тәрҗемә"
             " пакетларының дөрес булмаган форматы</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Сез тәрҗемә пакеты"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сез тәрҗемә пакеты"
             " булган сылтаманы кертергә тиеш/b>"
         ),
         "too_long": (

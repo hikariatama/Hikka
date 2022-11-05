@@ -70,7 +70,7 @@ class APIRatelimiterMod(loader.Module):
     strings = {
         "name": "APILimiter",
         "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
             " <b>WARNING!</b>\n\nYour account exceeded the limit of requests, specified"
             " in config. In order to prevent Telegram API Flood, userbot has been"
             " <b>fully frozen</b> for {} seconds. Further info is provided in attached"
@@ -81,17 +81,11 @@ class APIRatelimiterMod(loader.Module):
             " in seconds&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Invalid arguments</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Invalid arguments</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>API Flood Protection"
             " is disabled for {} seconds</b>"
-        ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>This action will"
-            " expose your account to flooding Telegram API.</b> <i>In order to confirm,"
-            " that you really know, what you are doing, complete this simple test -"
-            " find the emoji, differing from others</i>"
         ),
         "on": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection enabled</b>"
@@ -100,9 +94,7 @@ class APIRatelimiterMod(loader.Module):
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection"
             " disabled</b>"
         ),
-        "u_sure": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Are you sure?</b>"
-        ),
+        "u_sure": "⚠️ <b>Are you sure?</b>",
         "_cfg_time_sample": "Time sample through which the bot will count requests",
         "_cfg_threshold": "Threshold of requests to trigger protection",
         "_cfg_local_floodwait": (
@@ -117,7 +109,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_ru = {
         "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
             " <b>ВНИМАНИЕ!</b>\n\nАккаунт вышел за лимиты запросов, указанные в"
             " конфиге. С целью предотвращения флуда Telegram API, юзербот был"
             " <b>полностью заморожен</b> на {} секунд. Дополнительная информация"
@@ -129,24 +121,17 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;время в секундах&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Неверные"
-            " аргументы</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неверные аргументы</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита API отключена"
             " на {} секунд</b>"
         ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Это действие"
-            " открывает юзерботу возможность флудить Telegram API.</b> <i>Для того,"
-            " чтобы убедиться, что ты действительно уверен в том, что делаешь - реши"
-            " простенький тест - найди отличающийся эмодзи.</i>"
-        ),
         "on": "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита включена</b>",
         "off": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита отключена</b>"
         ),
-        "u_sure": "<emoji document_id=6319093650693293883>☣️</emoji> <b>Ты уверен?</b>",
+        "u_sure": "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Ты уверен?</b>",
         "_cfg_time_sample": (
             "Временной промежуток, по которому будет считаться количество запросов"
         ),
@@ -163,7 +148,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_de = {
         "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
             " <b>Achtung!</b>\n\nDas Konto hat die in der Konfiguration angegebenen"
             " Grenzwerte für Anfragen überschritten. Um Telegram API-Flooding zu"
             " verhindern, wurde der <b>ganze Userbot</b> für {} Sekunden"
@@ -176,19 +161,12 @@ class APIRatelimiterMod(loader.Module):
             " &lt;Zeit in Sekunden&gt; zu planen."
         ),
         "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Ungültige"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ungültige"
             " Argumente</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>API Flood"
             " Protection ist für {} Sekunden deaktiviert</b>"
-        ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Dieser"
-            " Vorgang wird deinen Account ermöglichen, die Telegram API zu"
-            " überfluten.</b> <i>Um sicherzustellen, dass du wirklich weißt, was"
-            " du tust, beende diesen einfachen Test - findest du das Emoji, das von"
-            " den anderen abweicht?</i>"
         ),
         "on": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Schutz aktiviert</b>"
@@ -196,9 +174,7 @@ class APIRatelimiterMod(loader.Module):
         "off": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Schutz deaktiviert</b>"
         ),
-        "u_sure": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Bist du sicher?</b>"
-        ),
+        "u_sure": "⚠️ <b>Bist du sicher?</b>",
         "_cfg_time_sample": "Zeitintervall, in dem die Anfragen gezählt werden",
         "_cfg_threshold": (
             "Schwellenwert für Anfragen, ab dem der Schutz aktiviert wird"
@@ -214,7 +190,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_tr = {
         "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
             " <b>Dikkat!</b>\n\nHesabın ayarlarda belirtilmiş istek sınırını aştı."
             " Telegram API Flood’unu önlemek için tüm <b>kullanıcı botu<b> {} saniye"
             " boyunca durduruldu. Daha fazla bilgi almak için ekteki dosyayı"
@@ -225,18 +201,12 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;saniye&gt; kodunu kullanın."
         ),
         "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Geçersiz"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Geçersiz"
             " argümanlar</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>API Flood koruması {}"
             " saniyeliğine durduruldu.</b>"
-        ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Bu eylem"
-            " Thesabınızın Telegram API Flood’u yapabilmesine izin verecektir.</b>"
-            " <i>Ne yaptığını bildiğinizi onaylamak için bu basit testi çözün."
-            " - Diğerlerinden farklı olan emojiyi seç</i>"
         ),
         "on": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Koruma"
@@ -246,9 +216,7 @@ class APIRatelimiterMod(loader.Module):
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Koruma"
             " de-aktifleştirildi</b>"
         ),
-        "u_sure": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Emin misin?</b>"
-        ),
+        "u_sure": "⚠️ <b>Emin misin?</b>",
         "_cfg_time_sample": "Saniyede sayılan isteklerin zaman aralığı",
         "_cfg_threshold": "Korumanın etkinleşeceği sınır değeri",
         "_cfg_local_floodwait": (
@@ -263,7 +231,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_uz = {
         "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
             " <b>Ogohlantirish!</b>\n\nBu hisob uchun konfiguratsiyada ko'rsatilgan"
             " chegaralar chegarani o'zgartirgan.\n\nTelegram API Flood"
             " to'xtatish uchun, bu <b>hammasi userbot</b> uchun {} sekundni"
@@ -274,27 +242,17 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;sekund&gt; dan foydalaning."
         ),
         "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Noto'g'ri"
-            " argument</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Noto'g'ri argument</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>API Flood"
             " himoya {} sekund uchun to'xtatildi</b>"
         ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Ushbu amal Telegram"
-            " API-ni flood qilishga ruxsat beradi.</b> <i>Siz qanday ish"
-            " bajarayotganingizni tekshirish uchun oson testni bajarishga harakat"
-            " qiling, emojilarni aniqlash uchun?</i>"
-        ),
         "on": "<emoji document_id=5458450833857322148>👌</emoji> <b>Himoya yoqildi</b>",
         "off": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Himoya o'chirildi</b>"
         ),
-        "u_sure": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Siz"
-            " ishonchingiz komilmi?</b>"
-        ),
+        "u_sure": "⚠️ <b>Siz ishonchingiz komilmi?</b>",
         "_cfg_time_sample": "Sekundda qabul qilinadigan so'rovlar soni chegarasi",
         "_cfg_threshold": "Himoya yoqish uchun qiymatni chegaralash",
         "_cfg_local_floodwait": (
@@ -308,7 +266,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_es = {
         "warning": (
-            "<emoji document_id=6319093650693293883>☣️</emoji>"
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
             " <b>¡Advertencia!</b>\n\nDe acuerdo con la configuración de esta cuenta,"
             " las siguientes limitaciones serán aplicadas.\n\nSe bloqueará <b>a todos"
             " los bots de los usuarios</b> por {} segundos para evitar el exceso de las"
@@ -318,18 +276,12 @@ class APIRatelimiterMod(loader.Module):
             " use <code>{prefix}suspend_api_protect</code> para desbloquear."
         ),
         "args_invalid": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Argumentos"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Argumentos"
             " inválidos</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji>"
             " <b>Se ha desactivado la protección de API por {} segundos</b>"
-        ),
-        "test": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>Este comando puede"
-            " llevar a exceder las limitaciones de Telegram API.</b> <i>Para comprobar"
-            " que estás haciendo, puedes ejecutar una prueba simple agregando el"
-            " siguiente comando.</i>"
         ),
         "on": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Protección"
@@ -339,9 +291,7 @@ class APIRatelimiterMod(loader.Module):
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Protección"
             " desactivada</b>"
         ),
-        "u_sure": (
-            "<emoji document_id=6319093650693293883>☣️</emoji> <b>¿Estás seguro?</b>"
-        ),
+        "u_sure": "⚠️ <b>¿Estás seguro?</b>",
         "_cfg_time_sample": (
             "El tiempo en segundos durante el cual se exceden las limitaciones"
         ),

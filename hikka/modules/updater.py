@@ -42,15 +42,15 @@ class UpdaterMod(loader.Module):
             " from</b> <a href='{}'>here</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Your {} is"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Your {} is"
             " restarting...</b>"
         ),
         "downloading": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Downloading"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Downloading"
             " updates...</b>"
         ),
         "installing": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Installing"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Installing"
             " updates...</b>"
         ),
         "success": (
@@ -81,7 +81,7 @@ class UpdaterMod(loader.Module):
             " updating...</b>"
         ),
         "full_success": (
-            "<emoji document_id=6323332130579416910>👍</emoji> <b>Userbot is fully"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Userbot is fully"
             " loaded! {}</b>\n<i>Full restart took {}s</i>"
         ),
         "secure_boot_complete": (
@@ -95,15 +95,15 @@ class UpdaterMod(loader.Module):
             " прочитать</b> <a href='{}'>здесь</a>"
         ),
         "restarting_caption": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Твоя {}"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Твоя {}"
             " перезагружается...</b>"
         ),
         "downloading": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Скачивание"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Скачивание"
             " обновлений...</b>"
         ),
         "installing": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Установка"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Установка"
             " обновлений...</b>"
         ),
         "success": (
@@ -112,7 +112,7 @@ class UpdaterMod(loader.Module):
             " заняла {} сек</i>"
         ),
         "full_success": (
-            "<emoji document_id=6323332130579416910>👍</emoji> <b>Юзербот полностью"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Юзербот полностью"
             " загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>"
         ),
         "secure_boot_complete": (
@@ -152,15 +152,15 @@ class UpdaterMod(loader.Module):
             " hier</b> <a href='{}'>gelesen</a> <b>werden</b>"
         ),
         "restarting_caption": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Dein {}"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Dein {}"
             " wird neugestartet...</b>"
         ),
         "downloading": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Updates"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Updates"
             " werden heruntergeladen...</b>"
         ),
         "installing": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Updates"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Updates"
             " werden installiert...</b>"
         ),
         "success": (
@@ -169,7 +169,7 @@ class UpdaterMod(loader.Module):
             " Sekunden</i>"
         ),
         "full_success": (
-            "<emoji document_id=6323332130579416910>👍</emoji> <b>Dein Userbot ist"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Dein Userbot ist"
             " vollständig geladen! {}</b>\n<i>Vollständiger Neustart dauerte {}"
             " Sekunden</i>"
         ),
@@ -211,19 +211,19 @@ class UpdaterMod(loader.Module):
             " href='{}'>yerdan</a> oʻqing</b>"
         ),
         "restarting": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{}"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>{}"
             " yeniden başlatılıyor...</b>"
         ),
         "restarting_caption": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{}"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>{}"
             " yeniden başlatılıyor...</b>"
         ),
         "downloading": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Güncelleme"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Güncelleme"
             " indiriliyor...</b>"
         ),
         "installing": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Güncelleme"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Güncelleme"
             " yükleniyor...</b>"
         ),
         "success": (
@@ -232,7 +232,7 @@ class UpdaterMod(loader.Module):
             " saniye sürdü</i>"
         ),
         "full_success": (
-            "<emoji document_id=6323332130579416910>👍</emoji> <b>Botunuz tamamen"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Botunuz tamamen"
             " yüklendi! {}</b>\n<i>Toplam yeniden başlatma {} saniye sürdü</i>"
         ),
         "secure_boot_complete": (
@@ -255,39 +255,39 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 İptal",
         "_cls_doc": "Kullanıcı botunu günceller",
         "lavhost_restart": (
-            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{}"
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
             " yeniden başlatılıyor...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{}"
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
             " güncelleniyor...</b>"
         ),
     }
 
     strings_uz = {
         "restarting": (
-            "<emoji document_id=5469986291380657759>🕗</emoji> <b>{}"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>{}"
             " qayta ishga tushirilmoqda...</b>"
         ),
         "restarting_caption": (
-            "<emoji document_id=5469986291380657759>🕗</emoji> <b>{}"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>{}"
             " qayta ishga tushirilmoqda...</b>"
         ),
         "downloading": (
-            "<emoji document_id=5469986291380657759>🕗</emoji> <b>Yangilanish"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Yangilanish"
             " yuklanmoqda...</b>"
         ),
         "installing": (
-            "<emoji document_id=5469986291380657759>🕗</emoji> <b>Yangilanish"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Yangilanish"
             " o'rnatilmoqda...</b>"
         ),
         "success": (
-            "<emoji document_id=5469986291380657759>⏱</emoji> <b>Qayta ishga tushirish"
+            "<emoji document_id=5328274090262275771>⏱</emoji> <b>Qayta ishga tushirish"
             " muvaffaqiyatli yakunlandi! {}</b>\n<i>Modullar"
             " yuklanmoqda...</i>\n<i>Qayta ishga tushirish {} soniya davom etdi</i>"
         ),
         "full_success": (
-            "<emoji document_id=5469986291380657759>👍</emoji> <b>Sizning botingiz"
+            "<emoji document_id=5328274090262275771>👍</emoji> <b>Sizning botingiz"
             " to'liq yuklandi! {}</b>\n<i>Jami qayta ishga tushirish {} soniya davom"
             " etdi</i>"
         ),
@@ -324,25 +324,25 @@ class UpdaterMod(loader.Module):
 
     strings_es = {
         "restarting": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} Reiniciando...</b>"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>{} Reiniciando...</b>"
         ),
         "restarting_caption": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>{} Reiniciando...</b>"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>{} Reiniciando...</b>"
         ),
         "downloading": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Descargando la"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Descargando la"
             " actualización...</b>"
         ),
         "installing": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Instalando la"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Instalando la"
             " actualización...</b>"
         ),
         "success": (
-            "<emoji document_id=6318970114548958978>⏱</emoji> <b>Reiniciado con éxito!"
+            "<emoji document_id=5328274090262275771>⏱</emoji> <b>Reiniciado con éxito!"
             " {}</b>\n<i>Descargandomódulos...</i>\n<i>Reiniciado en {} segundos</i>"
         ),
         "full_success": (
-            "<emoji document_id=6318970114548958978>👍</emoji> <b>¡Bot actualizado con"
+            "<emoji document_id=5328274090262275771>👍</emoji> <b>¡Bot actualizado con"
             " éxito! {}</b>\n<i>Reiniciado en {} segundos</i>"
         ),
         "secure_boot_complete": (
@@ -365,10 +365,10 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Cancelar",
         "_cls_doc": "El usuario reinicia el bot",
         "lavhost_restart": (
-            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{} Reiniciando...</b>"
+            "<emoji document_id=5328274090262275771>✌️</emoji> <b>{} Reiniciando...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id=6318970114548958978>✌️</emoji> <b>{}"
+            "<emoji document_id=5328274090262275771>✌️</emoji> <b>{}"
             " Actualizando...</b>"
         ),
     }
@@ -379,15 +379,15 @@ class UpdaterMod(loader.Module):
             " href='{}'>монда</a> укып була</b>"
         ),
         "restarting_caption": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Сезнең {} яңадан"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Сезнең {} яңадан"
             " башлана...</b>"
         ),
         "downloading": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Яңартуларны"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Яңартуларны"
             " йөкләү...</b>"
         ),
         "installing": (
-            "<emoji document_id=6318970114548958978>🕗</emoji> <b>Яңартулар"
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Яңартулар"
             " урнаштыру...</b>"
         ),
         "success": (
@@ -395,7 +395,7 @@ class UpdaterMod(loader.Module):
             "<i>Ләкин модульләр әле йөкләнә...</i>\n<i>Яңарту {} сек дәвам итте</i>"
         ),
         "full_success": (
-            "<emoji document_id=6323332130579416910>👍</emoji> <b>Юзербот тулысынча"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Юзербот тулысынча"
             " йөкләнгән! {}</b>\n<i>Тулы яңадан башлау {} сек дәвам итте</i>"
         ),
         "secure_boot_complete": (
@@ -416,11 +416,11 @@ class UpdaterMod(loader.Module):
         "cancel": "🚫 Бетерү",
         "_cls_doc": "Юзерботны яңарта",
         "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Сезнең {} яңадан"
+            "<emoji document_id=5328274090262275771>✌️</emoji> <b>Сезнең {} яңадан"
             " башлана...</b>"
         ),
         "lavhost_update": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Сезнең {}"
+            "<emoji document_id=5328274090262275771>✌️</emoji> <b>Сезнең {}"
             " яңартыла...</b>"
         ),
     }

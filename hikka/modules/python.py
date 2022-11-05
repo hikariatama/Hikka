@@ -29,89 +29,89 @@ class PythonMod(loader.Module):
     strings = {
         "name": "Python",
         "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
+            " document_id=5197688912457245639>✅</emoji><b>"
             " Result:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> Error:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji><b> Error:</b>\n{}"
         ),
     }
 
     strings_ru = {
         "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Код:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
+            " document_id=5197688912457245639>✅</emoji><b>"
             " Результат:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> Ошибка:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji><b> Ошибка:</b>\n{}"
         ),
         "_cls_doc": "Выполняет Python код",
     }
 
     strings_de = {
         "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
+            " document_id=5197688912457245639>✅</emoji><b>"
             " Resultat:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> Fehler:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji><b> Fehler:</b>\n{}"
         ),
         "_cls_doc": "Führt Python Code aus",
     }
 
     strings_tr = {
         "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
+            " document_id=5197688912457245639>✅</emoji><b>"
             " Sonuç:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> Hata:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji><b> Hata:</b>\n{}"
         ),
         "_cls_doc": "Python kodunu çalıştırır",
     }
 
     strings_uz = {
         "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
+            " document_id=5197688912457245639>✅</emoji><b>"
             " Natija:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> Xato:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji><b> Xato:</b>\n{}"
         ),
         "_cls_doc": "Python kodini ishga tushiradi",
     }
 
     strings_es = {
         "eval": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Código:</b>\n<code>{}</code>\n<emoji"
-            " document_id=5472164874886846699>✨</emoji><b>"
+            " document_id=5197688912457245639>✅</emoji><b>"
             " Resultado:</b>\n<code>{}</code>"
         ),
         "err": (
-            "<emoji document_id=5431376038628171216>🎬</emoji><b>"
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Código:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=6323575131239089635>🚫</emoji><b> Error:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji><b> Error:</b>\n{}"
         ),
         "_cls_doc": "Ejecuta código Python",
     }

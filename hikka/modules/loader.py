@@ -2146,7 +2146,9 @@ class LoaderMod(loader.Module):
         is_dragon = isinstance(instance, DragonModule)
 
         if is_dragon:
-            worked = [instance.name] if not self.allmodules.unload_dragon(instance) else []
+            worked = (
+                [instance.name] if not self.allmodules.unload_dragon(instance) else []
+            )
         else:
             try:
                 worked = await self.allmodules.unload_module(args)

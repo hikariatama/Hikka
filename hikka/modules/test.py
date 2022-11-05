@@ -39,18 +39,18 @@ class TestMod(loader.Module):
     strings = {
         "name": "Tester",
         "set_loglevel": "🚫 <b>Please specify verbosity as an integer or string</b>",
-        "no_logs": "ℹ️ <b>You don't have any logs at verbosity {}.</b>",
-        "logs_filename": "hikka-logs.txt",
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>You don't have any"
+            " logs at verbosity </b><code>{}</code><b>.</b>"
+        ),
         "logs_caption": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka logs with"
             " verbosity </b><code>{}</code>\n\n<emoji"
-            " document_id=5454390891466726015>👋</emoji> <b>Hikka version:"
-            " {}.{}.{}</b>{}\n<emoji document_id=6321050180095313397>⏱</emoji>"
-            " <b>Uptime: {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
-            " InlineLogs</b>"
+            " document_id=6318902906900711458>⚪️</emoji> <b>Version:"
+            " {}.{}.{}</b>{}"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5416024721705673488>💀</emoji> <b>Invalid time to"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Invalid time to"
             " suspend</b>"
         ),
         "suspended": (
@@ -58,9 +58,9 @@ class TestMod(loader.Module):
             " for</b> <code>{}</code> <b>seconds</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegram ping:</b>"
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegram ping:</b>"
             " <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Uptime: {}</b>"
+            " document_id=5445284980978621387>🚀</emoji> <b>Uptime: {}</b>"
         ),
         "ping_hint": (
             "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram ping mostly"
@@ -78,38 +78,48 @@ class TestMod(loader.Module):
             " ignore this warning</b>"
         ),
         "choose_loglevel": "💁‍♂️ <b>Choose log level</b>",
-        "bad_module": "🚫 <b>Module not found</b>",
-        "debugging_enabled": (
-            "🧑‍💻 <b>Debugging mode enabled for module </b><code>{0}</code>\n<i>Go to"
-            " directory named `debug_modules`, edit file named `{0}.py` and see changes"
-            " in real time</i>"
+        "bad_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module not found</b>"
         ),
-        "debugging_disabled": "✅ <b>Debugging disabled</b>",
+        "debugging_enabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Debugging mode enabled"
+            " for module </b><code>{0}</code>\n<i>Go to directory named"
+            " `debug_modules`, edit file named `{0}.py` and see changes in real"
+            " time</i>"
+        ),
+        "debugging_disabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Debugging disabled</b>"
+        ),
         "send_anyway": "📤 Send anyway",
         "cancel": "🚫 Cancel",
     }
 
     strings_ru = {
         "set_loglevel": "🚫 <b>Укажи уровень логов числом или строкой</b>",
-        "no_logs": "ℹ️ <b>У тебя нет логов уровня {}.</b>",
-        "logs_filename": "hikka-logs.txt",
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>У тебя нет логов"
+            " уровня </b><code>{}</code><b>.</b>"
+        ),
         "logs_caption": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>Логи Hikka уровня"
-            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
-            " <b>Версия Hikka: {}.{}.{}</b>{}\n<emoji"
-            " document_id=6321050180095313397>⏱</emoji> <b>Uptime:"
-            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{}"
-            " InlineLogs</b>"
+            " </b><code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Версия: {}.{}.{}</b>{}"
         ),
-        "bad_module": "🚫 <b>Модуль не найден</b>",
+        "bad_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль не найден</b>"
+        ),
         "debugging_enabled": (
-            "🧑‍💻 <b>Режим разработчика включен для модуля"
-            " </b><code>{0}</code>\n<i>Отправляйся в директорию `debug_modules`,"
-            " изменяй файл `{0}.py`, и смотри изменения в режиме реального времени</i>"
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Режим разработчика"
+            " включен для модуля </b><code>{0}</code>\n<i>Отправляйся в директорию"
+            " `debug_modules`, изменяй файл `{0}.py`, и смотри изменения в режиме"
+            " реального времени</i>"
         ),
-        "debugging_disabled": "✅ <b>Режим разработчика выключен</b>",
+        "debugging_disabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Режим разработчика"
+            " выключен</b>"
+        ),
         "suspend_invalid_time": (
-            "<emoji document_id=5416024721705673488>💀</emoji> <b>Неверное время"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неверное время"
             " заморозки</b>"
         ),
         "suspended": (
@@ -117,9 +127,9 @@ class TestMod(loader.Module):
             " <code>{}</code> <b>секунд</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Скорость отклика"
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Скорость отклика"
             " Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Прошло с последней"
+            " document_id=5445284980978621387>🚀</emoji> <b>Прошло с последней"
             " перезагрузки: {}</b>"
         ),
         "ping_hint": (
@@ -155,30 +165,21 @@ class TestMod(loader.Module):
         "set_loglevel": (
             "🚫 <b>Geben Sie die Protokollebene als Zahl oder Zeichenfolge an</b>"
         ),
-        "no_logs": "ℹ️ <b>Du hast kein Protokollnachrichten des {} Ebene.</b>",
-        "logs_filename": "hikka-logs.txt",
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Du hast kein"
+            " Protokollnachrichten des </b><code>{}</code><b> Ebene.</b>"
+        ),
         "logs_caption": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka-Level-Protokolle"
-            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
-            " <b>Hikka-Version: {}.{}.{}</b>{}\n<Emoji"
-            "document_id=6321050180095313397>⏱</emoji> <b>Verfügbarkeit:"
-            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
-            "InlineLogs</b>"
+            " </b><code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Version: {}.{}.{}</b>{}"
         ),
-        "bad_module": "🚫 <b>Modul nicht gefunden</b>",
-        "debugging_enabled": (
-            (
-                "🧑‍💻 <b>Entwicklermodus für Modul aktiviert"
-                " </b><code>{0}</code>\n<i>Gehe zum Verzeichnis `debug_modules`"
-            ),
-            (
-                "Ändern Sie die `{0}.py`-Datei und sehen Sie sich die Änderungen in"
-                " Echtzeit an</i>"
-            ),
+        "bad_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modul nicht"
+            " gefunden</b>"
         ),
-        "debugging_disabled": "✅ <b>Entwicklermodus deaktiviert</b>",
         "suspend_invalid_time": (
-            "<emoji document_id=5416024721705673488>💀</emoji> <b>Falsche Zeit"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Falsche Zeit"
             "einfrieren</b>"
         ),
         "suspended": (
@@ -186,9 +187,9 @@ class TestMod(loader.Module):
             " eingefroren</b> <code>{}</code> <b>Sekunden</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Reaktionszeit des"
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Reaktionszeit des"
             " Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Zeit seit dem letzten"
+            " document_id=5445284980978621387>🚀</emoji> <b>Zeit seit dem letzten"
             " Neustart: {}</b>"
         ),
         "ping_hint": (
@@ -223,27 +224,20 @@ class TestMod(loader.Module):
 
     strings_uz = {
         "set_loglevel": "🚫 <b>Log darajasini raqam yoki satr sifatida ko'rsating</b>",
-        "no_logs": "ℹ️ <b>Siz {} darajadagi hech qanday loglaringiz yo'q.</b>",
-        "logs_filename": "hikka-logs.txt",
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Siz"
+            " </b><code>{}</code><b> darajadagi hech qanday loglaringiz yo'q.</b>"
+        ),
         "logs_caption": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka Loglari"
-            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
-            " <b>Hikka-versiyasi: {}.{}.{}</b>{}\n<Emoji"
-            "document_id=6321050180095313397>⏱</emoji> <b>Mavjudligi:"
-            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
-            "InlineLogs</b>"
+            " </b><code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Versiyasi: {}.{}.{}</b>{}"
         ),
-        "bad_module": "🚫 <b>Modul topilmadi</b>",
-        "debugging_enabled": (
-            (
-                "🧑‍💻 <b>Modul uchun ishlab chiqarish rejimi yoqildi"
-                " </b><code>{0}</code>\n<i>`debug_modules` papkasiga o'ting"
-            ),
-            "`{0}.py` faylini o'zgartiring va o'zgarishlarni reallaqam ko'ring</i>",
+        "bad_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modul topilmadi</b>"
         ),
-        "debugging_disabled": "✅ <b>Ishtirok rejimi o'chirildi</b>",
         "suspend_invalid_time": (
-            "<emoji document_id=5416024721705673488>💀</emoji> <b>Noto'g'ri vaqt"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Noto'g'ri vaqt"
             "qo'ymoq</b>"
         ),
         "suspended": (
@@ -251,9 +245,9 @@ class TestMod(loader.Module):
             " <code>{}</code> <b>Soniyalar</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegram tezligi:</b>"
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegram tezligi:</b>"
             " <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Soʻngi marotaba qayta ishga"
+            " document_id=5445284980978621387>🚀</emoji> <b>Soʻngi marotaba qayta ishga"
             " tushirilgan vaqti:</b> {}"
         ),
         "ping_hint": (
@@ -287,30 +281,20 @@ class TestMod(loader.Module):
         "set_loglevel": (
             "🚫 <b>Lütfen günlük seviyesini sayı veya dize olarak belirtin</b>"
         ),
-        "no_logs": "ℹ️ <b>Hiçbir {} seviyesindeki günlük bulunmuyor.</b>",
-        "logs_filename": "hikka-logs.txt",
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Hiçbir"
+            " </b><code>{}</code><b> seviyesindeki günlük bulunmuyor.</b>"
+        ),
         "logs_caption": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka Günlükleri"
-            " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
-            " <b>Hikka versiyası: {}.{}.{}</b>{}\n<Emoji"
-            "document_id=6321050180095313397>⏱</emoji> <b>Süre:"
-            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
-            "InlineLogs</b>"
+            " </b><code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Versiyası: {}.{}.{}</b>{}"
         ),
-        "bad_module": "🚫 <b>Modül bulunamadı</b>",
-        "debugging_enabled": (
-            (
-                "🧑‍💻 <b>Geliştirme modu modül için etkinleştirildi"
-                " </b><code>{0}</code>\n<i>`debug_modules` klasörüne gidin"
-            ),
-            (
-                "`{0}.py` dosyasını düzenleyin ve değişiklikleri gerçekleştirmek için"
-                " kaydedin</i>"
-            ),
+        "bad_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modül bulunamadı</b>"
         ),
-        "debugging_disabled": "✅ <b>Geliştirme modu devre dışı bırakıldı</b>",
         "suspend_invalid_time": (
-            "<emoji document_id=5416024721705673488>💀</emoji> <b>Geçersiz zaman"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Geçersiz zaman"
             "girdiniz</b>"
         ),
         "suspended": (
@@ -318,9 +302,9 @@ class TestMod(loader.Module):
             " <code>{}</code> <b>saniye</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegramhızı:</b>"
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegramhızı:</b>"
             " <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Son güncellemeden"
+            " document_id=5445284980978621387>🚀</emoji> <b>Son güncellemeden"
             " sonra:</b> {}"
         ),
         "ping_hint": (
@@ -350,49 +334,61 @@ class TestMod(loader.Module):
     }
 
     strings_es = {
-        "debugging_enabled": "✅ <b>Depuración habilitada</b>",
-        "debugging_disabled": "✅ <b>Depuración deshabilitada</b>",
+        "set_loglevel": (
+            "🚫 <b>Por favor, indique el nivel de registro como número o cadena</b>"
+        ),
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>No hay registros"
+            " </b><code>{}</code><b> nivel.</b>"
+        ),
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Registros de"
+            " </b><code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Versión: {}.{}.{}</b>{}"
+        ),
+        "bad_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontró el"
+            " módulo</b>"
+        ),
         "suspend_invalid_time": (
-            "<emoji document_id=5416024721705673488>💀</emoji> <b>Ingrese"
-            "el tiempo correcto</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Has introducido un"
+            " tiempo no válido</b>"
         ),
         "suspended": (
-            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot"
-            "suspendido</b> <code>{}</code> <b>segundos</b>"
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot suspendido</b>"
+            " <code>{}</code> <b>segundos</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Velocidad"
-            "de Telegram:</b> <code>{}</code> <b>milisegundos</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Desde el último"
-            "actualización:</b> {}"
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegram:</b>"
+            " <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id=5445284980978621387>🚀</emoji> <b>Desde la última"
+            " actualización:</b> {}"
         ),
         "ping_hint": (
-            "<emoji document_id=5472146462362048818>💡</emoji> <i>La velocidad"
-            "de Telegram no es el tiempo que toma en responder el bot a los mensajes"
-            "pero es el tiempo que toma en responder a tus mensajes desde que"
-            "el bot se inició y no por cualquier otra razón externa"
-            "como la configuración de tu bot</i>"
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>La velocidad de"
+            " Telegramdepende de la inicialización de los servidores de Telegram y"
+            " otros factores externosy no de la configuración de su servidor de"
+            " Userbot</i>"
         ),
         "confidential": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Tiempo:"
-            " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
-            "InlineLogs</b>"
+            "⚠️ <b>Nivel de registro </b><code>{}</code><b> puede contener información"
+            " confidencial asegúrate de proteger tu privacidad</b>"
         ),
         "confidential_text": (
-            "⚠️ <b>El nivel de registro </b><code>{0}</code><b>contiene"
-            "información confidencial y por lo tanto</b>\n<b>escribe</b><code>.logs {0}"
-            "force_insecure</code><b>para enviar los registros"
-            "información confidencial</b>"
+            "⚠️ <b>Nivel de registro </b><code>{0}</code><b> puede contener información"
+            " confidencial asegúrate de proteger tu privacidad</b>\n<b>Escribe"
+            " </b><code>.logs {0} force_insecure</code><b> para enviar los"
+            " registros</b>"
         ),
-        "choose_loglevel": "💁‍♂️ <b>Elige el nivel de registro</b>",
-        "_cmd_doc_dump": "Mostrar información del mensaje",
+        "choose_loglevel": "💁‍♂️ <b>Por favor, elige el nivel de registro</b>",
+        "_cmd_doc_dump": "Muestra información sobre el mensaje",
         "_cmd_doc_logs": (
-            "<nivel> - Envía archivos de registro. Los niveles ocultos no se"
-            " notificarán."
+            "<Nivel> - Envía el archivo de registro. Los niveles confidenciales"
+            "pueden contener información confidencial"
         ),
-        "_cmd_doc_suspend": "<tiempo> - Suspende el bot temporalmente",
-        "_cmd_doc_ping": "Verifique la velocidad del bot",
-        "_cls_doc": "Se ejecutaron pruebas relacionadas",
+        "_cmd_doc_suspend": "<Tiempo> - Suspende el bot durante un tiempo",
+        "_cmd_doc_ping": "Comprueba la velocidad de respuesta de su Userbot",
+        "_cls_doc": "Procesos relacionados con los tests",
         "send_anyway": "📤 Enviar de todos modos",
         "cancel": "🚫 Cancelar",
     }
@@ -737,21 +733,18 @@ class TestMod(loader.Module):
             )
 
         logs = BytesIO(logs.encode("utf-16"))
-        logs.name = self.strings("logs_filename")
+        logs.name = "hikka-logs.txt"
 
         ghash = utils.get_git_hash()
 
         other = (
             *main.__version__,
-            " <i><a"
-            f' href="https://github.com/hikariatama/Hikka/commit/{ghash}">({ghash[:8]})</a></i>'
-            if ghash
-            else "",
-            utils.formatted_uptime(),
-            utils.get_named_platform(),
-            "✅" if self._db.get(main.__name__, "no_nickname", False) else "🚫",
-            "✅" if self._db.get(main.__name__, "grep", False) else "🚫",
-            "✅" if self._db.get(main.__name__, "inlinelogs", False) else "🚫",
+            (
+                " <i><a"
+                f' href="https://github.com/hikariatama/Hikka/commit/{ghash}">({ghash[:8]})</a></i>'
+                if ghash
+                else ""
+            ),
         )
 
         if getattr(message, "out", True):
