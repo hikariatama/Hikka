@@ -2291,10 +2291,6 @@ class HikkaSettingsMod(loader.Module):
             gif="https://t.me/hikari_assets/48",
         )
 
-    @loader.loop(interval=1, autostart=True)
-    async def loop(self):
-        return
-
     def _get_all_IDM(self, module: str):
         return {
             getattr(getattr(self.lookup(module), name), "name", name): getattr(
