@@ -914,11 +914,8 @@ class Modules:
         Request to join a channel.
         :param peer: The channel to join.
         :param reason: The reason for joining.
-        :param assure_joined: If set, module will not be loaded unless the required channel is joined.
-                              ⚠️ Works only in `client_ready`!
-                              ⚠️ If user declines to join channel, he will not be asked to
-                              join again, so unless he joins it manually, module will not be loaded
-                              ever.
+        :param assure_joined: does literally NOTHING
+
         :return: Status of the request.
         :rtype: bool
         :notice: This method will block module loading until the request is approved or declined.
@@ -933,10 +930,6 @@ class Modules:
 
         channel = await self.client.get_entity(peer)
         if channel.id in self._db.get("hikka.main", "declined_joins", []):
-            if assure_joined:
-                raise LoadError(
-                    f"You need to join @{channel.username} in order to use this module"
-                )
 
             return False
 
@@ -995,11 +988,6 @@ class Modules:
 
         with contextlib.suppress(AttributeError):
             delattr(_module, "hikka_wait_channel_approve")
-
-        if assure_joined and not event.status:
-            raise LoadError(
-                f"You need to join @{channel.username} in order to use this module"
-            )
 
         return event.status
 

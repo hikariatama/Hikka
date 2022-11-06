@@ -84,8 +84,6 @@ class Module:
         Called after the module is first time loaded with .dlmod or .loadmod
 
         Possible use-cases:
-        - Send reaction to author's channel message
-        - Join author's channel
         - Create asset folder
         - ...
 

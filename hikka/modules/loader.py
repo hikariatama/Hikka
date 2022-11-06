@@ -30,7 +30,6 @@ from urllib.parse import urlparse
 import requests
 import telethon
 from telethon.tl.types import Message, Channel
-from telethon.tl.functions.channels import JoinChannelRequest
 
 from .. import loader, main, utils
 from ..compat import geek
@@ -1697,26 +1696,6 @@ class LoaderMod(loader.Module):
 
         asyncio.ensure_future(self._update_modules())
         asyncio.ensure_future(self.get_repo_list("full"))
-        self._react_queue = []
-
-    @loader.loop(interval=120, autostart=True)
-    async def _react_processor(self):
-        if not self._react_queue:
-            return
-
-        developer_entity, modname = self._react_queue.pop(0)
-        try:
-            await (
-                await self._client.get_messages(
-                    developer_entity, limit=1, search=modname
-                )
-            )[0].react("❤️")
-            self.set(
-                "reacted",
-                self.get("reacted", []) + [f"{developer_entity.id}/{modname}"],
-            )
-        except Exception:
-            logger.debug("Unable to react to %s about %s", developer_entity.id, modname)
 
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
@@ -2484,12 +2463,6 @@ class LoaderMod(loader.Module):
         if not isinstance(developer_entity, Channel):
             developer_entity = None
 
-        if (
-            developer_entity is not None
-            and f"{developer_entity.id}/{modname}" not in self.get("reacted", [])
-        ):
-            self._react_queue += [(developer_entity, modname)]
-
         if message is None:
             return
 
@@ -2630,15 +2603,10 @@ class LoaderMod(loader.Module):
         msg: callable,
         subscribe: bool,
     ):
-        if not subscribe:
-            self.set("do_not_subscribe", self.get("do_not_subscribe", []) + [entity])
-            await utils.answer(call, msg())
-            await call.answer(self.strings("not_subscribed"))
-            return
-
-        await self._client(JoinChannelRequest(entity))
+        self.set("do_not_subscribe", self.get("do_not_subscribe", []) + [entity])
         await utils.answer(call, msg())
-        await call.answer(self.strings("subscribed"))
+        await call.answer(self.strings("not_subscribed"))
+        return
 
     @loader.owner
     @loader.command(

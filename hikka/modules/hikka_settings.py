@@ -18,7 +18,6 @@ from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
-from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.utils import get_display_name
 
 from .. import loader, main, utils
@@ -2294,21 +2293,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.loop(interval=1, autostart=True)
     async def loop(self):
-        obj = self.allmodules.get_approved_channel
-        if not obj:
-            return
-
-        channel, event = obj
-
-        try:
-            await self._client(JoinChannelRequest(channel))
-        except Exception:
-            logger.exception("Failed to join channel")
-            event.status = False
-            event.set()
-        else:
-            event.status = True
-            event.set()
+        return
 
     def _get_all_IDM(self, module: str):
         return {
