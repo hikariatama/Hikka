@@ -276,60 +276,60 @@ class CoreMod(loader.Module):
     strings_tr = {
         "too_many_args": (
             "<emoji document_id=5436162517686557387>🚫</emoji> <b>Çok fazla"
-            " argümanlar</b>"
+            " argüman var</b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Sohbet {} eklendi"
-            "userbot kara listesi</b>"
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>{} adlı sohbet, kullanıcı"
+            " botu kara listesine eklendi</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Sohbet {} şuradan"
-            " kaldırıldıUserbot Kara Listesi</b>"
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>{} adlı sohbet, kullanıcı"
+            " botu kara listesinden çıkartıldı</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Kullanıcı {}"
-            " userbot tarafından kara listeye alındı</b>"
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>{} adlı kişi, kullanıcı"
+            " botu kara listesine eklendi</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Kullanıcı {}"
-            " userbot kara listesinden kaldırıldı</b>"
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>{} adlı kişi, kullanıcı"
+            " botu kara listesine eklendi</b>"
         ),
         "what_prefix": "❓ <b>Hangi öneki ayarlamalıyım?</b>",
         "prefix_incorrect": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Önek olmalıdır"
-            "sadece bir karakterden oluşur</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Önek sadece"
+            " bir karakterden oluşabilir</b>"
         ),
         "prefix_set": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Önek güncellendi."
-            " Geri vermek için,</b> <code>{newprefix}setprefix'i kullanın"
-            "{oldprefix}</code>"
+            "<emoji document_id=5368324170671202286>👍</emoji> </b>Komut öneki güncellendi."
+            " Yeniden değiştirmek için için,</b><code>{newprefix}setprefix {oldprefix}</code> </b>komutunu kullanın</b>"
         ),
         "alias_created": (
-            "<emoji document_id=5368324170671202286>👍</emoji> <b>Takma ad"
-            " oluşturuldu.</b> <code>{}</code> yoluyla kullanın"
+            "<emoji document_id=5368324170671202286>👍</emoji> <b>Komut için takma ad"
+            " oluşturuldu.</b> <code>{}</code> </b>komutuyla kullanabilirsiniz</b>"
         ),
         "aliases": "<b>🔗 Takma adlar:</b>\n",
         "no_command": (
             "<emoji document_id=5436162517686557387>🚫</emoji> <b>Komut</b>"
-            " <code>{}</code> <b>yok</b>"
+            " <code>{}</code> <b>mevcut değil</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Gerekli girin"
-            "komut ve bunun için takma ad</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Bunun için bir komut ve takma"
+            " ad girmeniz gerekmektedir</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Ad gereklitakma ad</b>"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Bunun için bir takma "
+            " ad girmeniz gerekmektedir</b>"
         ),
         "alias_removed": (
             "<emoji document_id=5368324170671202286>👍</emoji> <b>Takma ad</b>"
-            " <code>{}</code> <b>silindi</b>."
+            " <code>{}</code> <b>kaldırıldı</b>."
         ),
         "no_alias": (
             "<emoji document_id=5436162517686557387>🚫</emoji><b> Takma Ad</b>"
-            " <code>{}</code> <b>yok</b>"
+            " <code>{}</code> <b>mevcut değil</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5368324170671202286>👍</emoji><b> Taban temizlendi</b>"
+            "<emoji document_id=5368324170671202286>👍</emoji><b> Veri Tabanı sıfırlandı</b>"
         ),
         "hikka": (
             "{}\n\n<emoji document_id=5406931726184225260>🧐</emoji> <b>Sürüm:"
@@ -343,7 +343,7 @@ class CoreMod(loader.Module):
         "confirm_cleardb": (
             "⚠️ <b>Veritabanını sıfırlamak istediğinizden emin misiniz?</b>"
         ),
-        "cleardb_confirm": "🗑 Tabanı temizle",
+        "cleardb_confirm": "🗑 Veri Tabanını sıfırla",
         "cancel": "🚫 İptal",
         "who_to_blacklist": (
             "<emoji document_id=5384612769716774600>❓</emoji> <b>Kimler engellenir"
@@ -351,11 +351,11 @@ class CoreMod(loader.Module):
         ),
         "who_to_unblacklist": (
             "<emoji document_id=5384612769716774600>❓</emoji> <b>Kimin engellemesi"
-            " kaldırılırsonra?</b>"
+            " kaldırılsın?</b>"
         ),
         "unstable": (
-            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Kullanıyorsunuz"
-            "kararsız dal </b><code>{}</code><b>!</b>"
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Hikka'nın kararsız bir sürümü olan"
+            " <code>{}</code> </b> sürümünü kullanıyorsunuz!</b>"
         ),
     }
 
