@@ -285,65 +285,61 @@ class TestMod(loader.Module):
 
     strings_tr = {
         "set_loglevel": (
-            "🚫 <b>Lütfen günlük seviyesini sayı veya dize olarak belirtin</b>"
+            "🚫 <b>Lütfen kayıt seviyesini sayı veya metin olarak belirtin</b>"
         ),
-        "no_logs": "ℹ️ <b>Hiçbir {} seviyesindeki günlük bulunmuyor.</b>",
+        "no_logs": "ℹ️ <b>{} seviyesinde hiçbir kayıt bulunmuyor.</b>",
         "logs_filename": "hikka-logs.txt",
         "logs_caption": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka Günlükleri"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka Kayıtları"
             " </b><code>{}</code>\n\n<emoji document_id=5454390891466726015>👋</emoji>"
             " <b>Hikka versiyası: {}.{}.{}</b>{}\n<Emoji"
-            "document_id=6321050180095313397>⏱</emoji> <b>Süre:"
+            "document_id=6321050180095313397>⏱</emoji> <b>Çalışma Süresi:"
             " {}</b>\n<b>{}</b>\n\n<b>{} NoNick</b>\n<b>{} Grep</b>\n<b>{ }"
-            "InlineLogs</b>"
+            "Satıriçi Kayıtları</b>"
         ),
         "bad_module": "🚫 <b>Modül bulunamadı</b>",
         "debugging_enabled": (
             (
-                "🧑‍💻 <b>Geliştirme modu modül için etkinleştirildi"
-                " </b><code>{0}</code>\n<i>`debug_modules` klasörüne gidin"
-            ),
-            (
-                "`{0}.py` dosyasını düzenleyin ve değişiklikleri gerçekleştirmek için"
-                " kaydedin</i>"
-            ),
+                "🧑‍💻 <b>Hata ayıklama modu </b><code>{0}</code> <b>modülü için etkinleştirildi"
+                " `debug_modules` isimli klasöre gidin, `{0}.py` isimli dosyanın adını değiştirin ve"
+                " gerçek zamanlı olarak değişiklikleri görüntüleyin."
         ),
-        "debugging_disabled": "✅ <b>Geliştirme modu devre dışı bırakıldı</b>",
+        "debugging_disabled": "✅ <b>Hata ayıklama modu devre dışı bırakıldı</b>",
         "suspend_invalid_time": (
-            "<emoji document_id=5416024721705673488>💀</emoji> <b>Geçersiz zaman"
-            "girdiniz</b>"
+            "<emoji document_id=5416024721705673488>💀</emoji> <b>Durdurma için geçersiz zaman"
+            " girdiniz</b>"
         ),
         "suspended": (
-            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot donduruldu</b>"
-            " <code>{}</code> <b>saniye</b>"
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Kullanıcı botu</b>"
+            " <code>{}</code> <b>saniyeliğine durduruldu</b>"
         ),
         "results_ping": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegramhızı:</b>"
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Telegram ping:</b>"
             " <code>{}</code> <b>ms</b>\n<emoji"
-            " document_id=5377371691078916778>😎</emoji> <b>Son güncellemeden"
-            " sonra:</b> {}"
+            " document_id=5377371691078916778>😎</emoji> <b>Çalışma Süresi:</b> {}"
         ),
         "ping_hint": (
-            "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram hızı"
-            "Telegram sunucularının başlatılması ve diğer dış faktörler ile alakalıdır"
-            "ve Userbot kurulumunuzun sunucu ayarlarıyla alakalı değildir</i>"
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram pingi çoğunlukla"
+            " Telegram sunucularının gecikmesine ve diğer dış"
+            " etkenlere bağlıdır ve userbot'un kurulu"
+            " olduğu sunucunun parametreleriyle hiçbir ilgisi yoktur.</i>"
         ),
         "confidential": (
-            "⚠️ <b>Günlük seviyesi </b><code>{}</code><b> gizli bilgilere sahip"
-            " olabilirKendi güvenliğiniz için</b>"
+            "⚠️ <b>Kayıt seviyesi </b><code>{}</code><b> gizli bilgilere sahip"
+            " olabilir, kendi güvenliğiniz için dikkatli olun</b>"
         ),
         "confidential_text": (
-            "⚠️ <b>Günlük seviyesi </b><code>{0}</code><b> gizli bilgilere sahip"
-            " olabilirKendi güvenliğiniz için</b>\n<b>Yazın </b><code>.logs {0}"
-            " force_insecure</code><b> günlükleriuyarı</b>"
+            "⚠️ <b>Kayıt seviyesi </b><code>{0}</code><b> gizli bilgilere sahip"
+            " olabilir, dikkatli olun. \n<b>Bu mesajı görmezden gelmek için </b><code>.logs {0} force_insecure</code><b>"
+            " yazınız</b>"
         ),
-        "choose_loglevel": "💁‍♂️ <b>Lütfen günlük seviyesini seçin</b>",
+        "choose_loglevel": "💁‍♂️ <b>Lütfen Kayıt seviyesini seçin</b>",
         "_cmd_doc_dump": "Mesaj hakkında bilgi göster",
         "_cmd_doc_logs": (
-            "<Ebene> - Günlük dosyasını gönderir. Seviyeler gizlibilgiler."
+            "<Ebene> - Kayıt dosyasını gönderir. Seviyeler gizlibilgiler."
         ),
-        "_cmd_doc_suspend": "<Zaman> - Botu bir süreliğine dondurun",
-        "_cmd_doc_ping": "Userbotun yanıt verme hızını kontrol edin",
+        "_cmd_doc_suspend": "<Zaman> - Botu bir süreliğine durdurun",
+        "_cmd_doc_ping": "Kullanıcı botunun yanıt verme hızını kontrol edin",
         "_cls_doc": "İlgili testlerle ilgili işlemler",
         "send_anyway": "📤 Gönder",
         "cancel": "🚫 İptal",
