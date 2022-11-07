@@ -266,8 +266,8 @@ class UpdaterMod(loader.Module):
 
     strings_tr = {
         "source": (
-            "<emoji document_id=5456255401194429832>📖</emoji> <b>Manba kodini shu <a"
-            " href='{}'>yerdan</a> oʻqing</b>"
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Kaynak kodunu"
+            " </b> <a href='{}'>buradan oku</a>"
         ),
         "restarting": (
             "<emoji document_id=6318970114548958978>🕗</emoji> <b>{}"
@@ -283,7 +283,7 @@ class UpdaterMod(loader.Module):
         ),
         "installing": (
             "<emoji document_id=6318970114548958978>🕗</emoji> <b>Güncelleme"
-            " yükleniyor...</b>"
+            " kuruluyor...</b>"
         ),
         "success": (
             "<emoji document_id=6321050180095313397>⏱</emoji> <b>Yeniden başlatma"
@@ -291,14 +291,14 @@ class UpdaterMod(loader.Module):
             " saniye sürdü</i>"
         ),
         "full_success": (
-            "<emoji document_id=6323332130579416910>👍</emoji> <b>Botunuz tamamen"
+            "<emoji document_id=6323332130579416910>👍</emoji> <b>Kullanıcı botunuz tamamen"
             " yüklendi! {}</b>\n<i>Toplam yeniden başlatma {} saniye sürdü</i>"
         ),
         "secure_boot_complete": (
             "🔒 <b>Güvenli mod başarıyla tamamlandı! {}</b>\n<i>Yeniden başlatma {}"
             " saniye sürdü</i>"
         ),
-        "origin_cfg_doc": "dan güncelleme indirilecek",
+        "origin_cfg_doc": "Git kaynak URL, güncelleme indirilecek kaynak",
         "btn_restart": "🔄 Yeniden başlat",
         "btn_update": "🧭 Güncelle",
         "restart_confirm": "❓ <b>Gerçekten yeniden başlatmak istiyor musunuz?</b>",
@@ -306,7 +306,7 @@ class UpdaterMod(loader.Module):
             "❓ <b>Gerçekten güvenli modda yeniden başlatmak istiyor musunuz?</b>"
         ),
         "update_confirm": (
-            "❓ <b>Gerçekten güncellemek istiyor musunuz??\n\n<a"
+            "❓ <b>Gerçekten güncellemek istiyor musunuz?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
