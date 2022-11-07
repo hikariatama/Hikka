@@ -176,7 +176,7 @@ class Translations(loader.Module):
             " paketi geçersiz</b>"
         ),
         "check_url": (
-            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Geçerli bir URL"
+            "<emoji document_id=5436162517686557387>🚫</emoji> <b>Geçerli bir dil paketi içeren URL"
             " belirtmelisiniz</b>"
         ),
         "too_long": (
@@ -191,13 +191,13 @@ class Translations(loader.Module):
             "<b>🚫 Modül çağrısı başarısız! Kayıtlardan daha fazla bilgiye"
             " erişebilirsin</b>"
         ),
-        "show_inline_cmds": "📄 Tüm kullanılabilir inline komutlarını göster",
-        "no_inline_cmds": "Kullanılabilir inline komutunuz yok",
+        "show_inline_cmds": "📄 Tüm kullanılabilir satır içi komutlarını göster",
+        "no_inline_cmds": "Kullanılabilir satır içi komutunuz yok",
         "no_inline_cmds_msg": (
-            "<b>😔 Kullanılabilir inline komutunuz yok veya erişiminiz yok</b>"
+            "<b>😔 Kullanılabilir satır içi komutunuz yok veya erişiminiz yok</b>"
         ),
-        "inline_cmds": "ℹ️ {} kullanılabilir komutunuz var",
-        "inline_cmds_msg": "<b>ℹ️ Kullanılabilir inline komutlar:</b>\n\n{}",
+        "inline_cmds": "ℹ️ {} adet kullanılabilir komutunuz var",
+        "inline_cmds_msg": "<b>ℹ️ Kullanılabilir satır içi komutlar:</b>\n\n{}",
         "run_command": "🏌️ Komutu çalıştır",
         "command_msg": "<b>🌘 Komut «{}»</b>\n\n<i>{}</i>",
         "command": "🌘 Komut «{}»",
