@@ -51,7 +51,7 @@ else:
                 raise ImportError
         except ImportError:
             print("🔄 Reinstalling Hikka-TL...")
-            with contextlib.suppress(Exception):
+            if "LAVHOST" not in os.environ or ".local" in telethon.__file__:
                 subprocess.run(
                     [
                         sys.executable,
@@ -89,7 +89,7 @@ else:
                 raise ImportError
         except ImportError:
             print("🔄 Reinstalling Hikka-Pyro...")
-            with contextlib.suppress(Exception):
+            if "LAVHOST" not in os.environ or ".local" in pyrogram.__file__:
                 subprocess.run(
                     [
                         sys.executable,
