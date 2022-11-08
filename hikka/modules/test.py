@@ -92,6 +92,7 @@ class TestMod(loader.Module):
         ),
         "send_anyway": "📤 Send anyway",
         "cancel": "🚫 Cancel",
+        "logs_cleared": "🗑 <b>Logs cleared</b>",
     }
 
     strings_ru = {
@@ -159,6 +160,7 @@ class TestMod(loader.Module):
         "_cls_doc": "Операции, связанные с самотестированием",
         "send_anyway": "📤 Все равно отправить",
         "cancel": "🚫 Отмена",
+        "logs_cleared": "🗑 <b>Логи очищены</b>",
     }
 
     strings_de = {
@@ -220,6 +222,7 @@ class TestMod(loader.Module):
         "_cls_doc": "Selbsttestbezogene Operationen",
         "send_anyway": "📤 Trotzdem senden",
         "cancel": "🚫 Abbrechen",
+        "logs_cleared": "🗑 <b>Protokolle gelöscht</b>",
     }
 
     strings_uz = {
@@ -275,6 +278,7 @@ class TestMod(loader.Module):
         "_cls_doc": "O'z testi bilan bog'liq operatsiyalar",
         "send_anyway": "📤 Baribir yuborish",
         "cancel": "🚫 Bekor qilish",
+        "logs_cleared": "🗑 <b>Günlükler temizlendi</b>",
     }
 
     strings_tr = {
@@ -331,6 +335,7 @@ class TestMod(loader.Module):
         "_cls_doc": "İlgili testlerle ilgili işlemler",
         "send_anyway": "📤 Gönder",
         "cancel": "🚫 İptal",
+        "logs_cleared": "🗑 <b>Jurnallar tozalandi</b>",
     }
 
     strings_es = {
@@ -359,8 +364,8 @@ class TestMod(loader.Module):
             " <code>{}</code> <b>segundos</b>"
         ),
         "results_ping": (
-            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegram:</b>"
-            " <code>{}</code> <b>ms</b>\n<emoji"
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Retraso del"
+            " Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
             " document_id=5445284980978621387>🚀</emoji> <b>Desde la última"
             " actualización:</b> {}"
         ),
@@ -391,6 +396,7 @@ class TestMod(loader.Module):
         "_cls_doc": "Procesos relacionados con los tests",
         "send_anyway": "📤 Enviar de todos modos",
         "cancel": "🚫 Cancelar",
+        "logs_cleared": "🗑 <b>Registros borrados</b>",
     }
 
     def __init__(self):
@@ -447,6 +453,22 @@ class TestMod(loader.Module):
             + utils.escape_html((await message.get_reply_message()).stringify())
             + "</code>",
         )
+
+    @loader.command(
+        ru_doc="Очистить логи",
+        de_doc="Logs löschen",
+        tr_doc="Günlükleri temizle",
+        uz_doc="Jurnalni tozalash",
+        es_doc="Limpiar registros",
+    )
+    async def clearlogs(self, message: Message):
+        """Clear logs"""
+        for handler in logging.getLogger().handlers:
+            handler.buffer = []
+            handler.handledbuffer = []
+            handler.tg_buff = ""
+
+        await utils.answer(message, self.strings("logs_cleared"))
 
     @loader.loop(interval=1)
     async def watchdog(self):

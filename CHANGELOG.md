@@ -17,6 +17,8 @@
 - New appearence of `help` command
 - New module loading animation
 - New README.md with installation steps and new web recording
+- New `utils.atexit` method
+- New restart process, which correctly kills all child processes and threads
 
 ## 🌑 Hikka 1.5.3
 

@@ -7,10 +7,10 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
-import atexit
 import contextlib
 import logging
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -535,7 +535,6 @@ class UpdaterMod(loader.Module):
         with contextlib.suppress(Exception):
             await main.hikka.web.stop()
 
-        atexit.register(restart, *sys.argv[1:])
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
 
@@ -546,7 +545,9 @@ class UpdaterMod(loader.Module):
                 await client.disconnect()
 
         await message.client.disconnect()
-        sys.exit(0)
+
+        signal.signal(signal.SIGTERM, lambda *_: restart(*sys.argv[1:]))
+        os.kill(os.getpid(), signal.SIGTERM)
 
     async def download_common(self):
         try:

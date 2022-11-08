@@ -640,15 +640,11 @@ class Modules:
 
         for mod in modules:
             try:
-                mod_shortname = (
-                    os.path.basename(mod)
-                    .rsplit(".py", maxsplit=1)[0]
-                    .rsplit("_", maxsplit=1)[0]
-                )
+                mod_shortname = os.path.basename(mod).rsplit(".py", maxsplit=1)[0]
                 module_name = f"{__package__}.{MODULES_NAME}.{mod_shortname}"
                 user_friendly_origin = (
                     "<core {}>" if origin == "<core>" else "<file {}>"
-                ).format(mod_shortname)
+                ).format(module_name)
 
                 logger.debug("Loading %s from filesystem", module_name)
 
@@ -660,7 +656,7 @@ class Modules:
                     )
 
                 loaded += [await self.register_module(spec, module_name, origin)]
-            except BaseException as e:
+            except Exception as e:
                 logger.exception("Failed to load module %s due to %s:", mod, e)
 
         return loaded

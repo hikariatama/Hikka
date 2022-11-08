@@ -156,3 +156,5 @@ User docs will be available soon
 
 <b>👨‍👦 NoNick, NoNickUser, NoNickCmd, NoNickChat - use another account for userbot</b>
 <img src="https://user-images.githubusercontent.com/36935426/158637220-00495363-cf4a-4e6f-a4b2-51d693906ead.png">
+
+<i>⚠️ In order to provide some credit to module developers, when you load a module, Hikka will automatically (in background) put reactions to corresponding channel posts. This functionality can't be disabled and it doesn't affect usage of userbot. All timings are measured to be safe for your account and whenever the error occurs, it will be ignored.</i>

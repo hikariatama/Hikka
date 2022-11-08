@@ -105,6 +105,11 @@ class APIRatelimiterMod(loader.Module):
         ),
         "btn_no": "🚫 No",
         "btn_yes": "✅ Yes",
+        "web_pin": (
+            "🔓 <b>Click the button below to show Werkzeug debug PIN. Do not give it to"
+            " anyone.</b>"
+        ),
+        "web_pin_btn": "🐞 Show Werkzeug PIN",
     }
 
     strings_ru = {
@@ -144,6 +149,11 @@ class APIRatelimiterMod(loader.Module):
         ),
         "btn_no": "🚫 Нет",
         "btn_yes": "✅ Да",
+        "web_pin": (
+            "🔓 <b>Нажми на кнопку ниже, чтобы показать Werkzeug debug PIN. Не давай его"
+            " никому.</b>"
+        ),
+        "web_pin_btn": "🐞 Показать Werkzeug PIN",
     }
 
     strings_de = {
@@ -186,6 +196,11 @@ class APIRatelimiterMod(loader.Module):
         "_cfg_forbidden_methods": "Verbotene Methoden in allen externen Modulen",
         "btn_no": "🚫 Nein",
         "btn_yes": "✅ Ja",
+        "web_pin": (
+            "🔓 <b>Drücke auf die Schaltfläche unten, um den Werkzeug debug PIN"
+            " anzuzeigen. Gib ihn niemandem.</b>"
+        ),
+        "web_pin_btn": "🐞 Werkzeug PIN anzeigen",
     }
 
     strings_tr = {
@@ -227,6 +242,11 @@ class APIRatelimiterMod(loader.Module):
         ),
         "btn_no": "🚫 Hayır",
         "btn_yes": "✅ Evet",
+        "web_pin": (
+            "🔓 <b>Werkzeug hata ayıklama PIN'ini göstermek için aşağıdaki düğmeyi"
+            " tıklayın. Onu kimseye vermeyin.</b>"
+        ),
+        "web_pin_btn": "🐞 Werkzeug PIN'ini göster",
     }
 
     strings_uz = {
@@ -262,6 +282,11 @@ class APIRatelimiterMod(loader.Module):
         "_cfg_forbidden_methods": "Barcha tashqi modullarda taqiqlangan usullar",
         "btn_no": "🚫 Yo'q",
         "btn_yes": "✅ Ha",
+        "web_pin": (
+            "🔓 <b>Werkzeug Debug PIN kodini ko'rsatish uchun quyidagi tugmani bosing."
+            " Uni hech kimga bermang.</b>"
+        ),
+        "web_pin_btn": "🐞 Werkzeug PIN-ni ko'rsatish",
     }
 
     strings_es = {
@@ -304,6 +329,11 @@ class APIRatelimiterMod(loader.Module):
         ),
         "btn_no": "🚫 No",
         "btn_yes": "✅ Sí",
+        "web_pin": (
+            "🔓 <b>Haga clic en el botón de abajo para mostrar el PIN de depuración de"
+            " Werkzeug. No se lo des a nadie.</b>"
+        ),
+        "web_pin_btn": "🐞 Mostrar el PIN de Werkzeug",
     }
 
     _ratelimiter = []
@@ -424,6 +454,7 @@ class APIRatelimiterMod(loader.Module):
         de_doc="<Sekunden> - API-Schutz für N Sekunden einfrieren",
         tr_doc="<saniye> - API korumasını N saniye dondur",
         uz_doc="<soniya> - API himoyasini N soniya o'zgartirish",
+        es_doc="<segundos> - Congela la protección de la API durante N segundos",
     )
     async def suspend_api_protect(self, message: Message):
         """<time in seconds> - Suspend API Ratelimiter for n seconds"""
@@ -441,6 +472,7 @@ class APIRatelimiterMod(loader.Module):
         de_doc="API-Schutz einschalten / ausschalten",
         tr_doc="API korumasını aç / kapat",
         uz_doc="API himoyasini yoqish / o'chirish",
+        es_doc="Activar / desactivar la protección de API",
     )
     async def api_fw_protection(self, message: Message):
         """Toggle API Ratelimiter"""
@@ -451,6 +483,31 @@ class APIRatelimiterMod(loader.Module):
                 {"text": self.strings("btn_no"), "action": "close"},
                 {"text": self.strings("btn_yes"), "callback": self._finish},
             ],
+        )
+
+    @property
+    def _pin(self) -> str:
+        return logging.getLogger().handlers[0].web_debugger.pin
+
+    async def _show_pin(self, call: InlineCall):
+        await call.answer(f"Werkzeug PIN: {self._pin}", show_alert=True)
+
+    @loader.command(
+        ru_doc="Показать PIN Werkzeug",
+        de_doc="PIN-Werkzeug anzeigen",
+        tr_doc="PIN aracını göster",
+        uz_doc="PIN vositasi ko'rsatish",
+        es_doc="Mostrar herramienta PIN",
+    )
+    async def debugpin(self, message: Message):
+        """Show the Werkzeug PIN"""
+        await self.inline.form(
+            message=message,
+            text=self.strings("web_pin"),
+            reply_markup={
+                "text": self.strings("web_pin_btn"),
+                "callback": self._show_pin,
+            },
         )
 
     async def _finish(self, call: InlineCall):

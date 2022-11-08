@@ -9,14 +9,11 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
-import atexit
 import collections
 import functools
-import logging
 import os
 import re
 import string
-import sys
 import time
 
 import aiohttp_jinja2
@@ -304,13 +301,7 @@ class Web:
         self.clients_set.set()
 
         if not first_session:
-            atexit.register(functools.partial(restart, *sys.argv[1:]))
-            handler = logging.getLogger().handlers[0]
-            handler.setLevel(logging.CRITICAL)
-            for client in main.hikka.clients:
-                await client.disconnect()
-
-            sys.exit(0)
+            restart()
 
         return web.Response()
 

@@ -640,5 +640,5 @@ class CommandDispatcher:
         _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # skipcq
         try:
             await func(message)
-        except BaseException as e:
+        except Exception as e:
             await exception_handler(e, message, *args)

@@ -6,11 +6,9 @@
 # 🔒      Licensed under the GNU AGPLv3
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
-import atexit
 import logging
 import os
 import random
-import sys
 
 import telethon
 from telethon.tl.functions.channels import JoinChannelRequest
@@ -23,6 +21,7 @@ from telethon.utils import get_display_name
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
+from .._internal import restart
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +35,6 @@ ALL_INVOKES = [
     "inspect_cache",
     "inspect_modules",
 ]
-
-
-def restart(*argv):
-    os.execl(
-        sys.executable,
-        sys.executable,
-        "-m",
-        os.path.relpath(utils.get_base_dir()),
-        *argv,
-    )
 
 
 @loader.tds
@@ -159,7 +148,6 @@ class HikkaSettingsMod(loader.Module):
             "😢 <b>Hikka uninstalled. Web interface is still active, you can add another"
             " account</b>"
         ),
-        "logs_cleared": "🗑 <b>Logs cleared</b>",
         "cmd_nn_list": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick is enabled"
             " for these commands:</b>\n\n{}"
@@ -282,7 +270,6 @@ class HikkaSettingsMod(loader.Module):
             "😢 <b>Hikka удалена. Веб-интерфейс все еще активен, можно добавить другие"
             " аккаунты!</b>"
         ),
-        "logs_cleared": "🗑 <b>Логи очищены</b>",
         "cmd_nn_list": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick включен для"
             " этих команд:</b>\n\n{}"
@@ -416,7 +403,6 @@ class HikkaSettingsMod(loader.Module):
             "😢 <b>Hikka wurde entfernt. Die Weboberfläche ist noch aktiv, andere können"
             " hinzugefügt werdenKonten!</b>"
         ),
-        "logs_cleared": "🗑 <b>Protokolle gelöscht</b>",
         "cmd_nn_liste": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick aktiviert für"
             " diese Befehle:</b>\n\n{}"
@@ -547,7 +533,6 @@ class HikkaSettingsMod(loader.Module):
             "😢 <b>Hikka kaldırıldı. Web arayüzü hala aktif, başkaları eklenebilir"
             "hesaplar!</b>"
         ),
-        "logs_cleared": "🗑 <b>Günlükler temizlendi</b>",
         "cmd_nn_list": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick için"
             " etkinleştirildi bu komutlar:</b>\n\n{}"
@@ -666,7 +651,6 @@ class HikkaSettingsMod(loader.Module):
             "😢 <b>Hikka oʻchirildi. Veb-interfeys hali ham faol, boshqalarni qoʻshish"
             " mumkinhisoblar!</b>"
         ),
-        "logs_cleared": "🗑 <b>Jurnallar tozalandi</b>",
         "cmd_nn_list": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick yoqilgan"
             " bu buyruqlar:</b>\n\n{}"
@@ -759,16 +743,16 @@ class HikkaSettingsMod(loader.Module):
         "do_not_suggest_fs": "🚫 Sugerir guardar módulo",
         "use_fs": "✅ Guardar siempre los módulos",
         "do_not_use_fs": "🚫 Guardar siempre los módulos",
-        "btn_restart": "reiniciar",
-        "btn_update": "🧭 actualizar",
-        "close_menu": " Cerrar Menú",
+        "btn_restart": "🔄 Reiniciar",
+        "btn_update": "🧭 Actualizar",
+        "close_menu": "😌 Cerrar Menú",
         "custom_emojis": "✅ Emoji personalizado",
-        "no_custom_emojis": "🚫Emoji personalizado",
-        "suggest_subscribe": "Sugerir suscripción al canal",
-        "do_not_suggest_subscribe": " Sugerir suscripción al canal",
+        "no_custom_emojis": "🚫 Emoji personalizado",
+        "suggest_subscribe": "✅ Sugerir suscripción al canal",
+        "do_not_suggest_subscribe": "🚫 Sugerir suscripción al canal",
         "private_not_allowed": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Este comando es"
-            " necesarioEjecutar en el chat</b>"
+            " necesario ejecutar en el chat</b>"
         ),
         "_cls_doc": "Configuración avanzada de Hikka",
         "nonick_warning": (
@@ -800,7 +784,6 @@ class HikkaSettingsMod(loader.Module):
             "😢 <b>Hikka' ha quedado obsoleto. La interfaz web todavía está activa,"
             " otros¡Se pueden agregar cuentas!</b>"
         ),
-        "logs_cleared": "🗑 <b>Registros borrados</b>",
         "cmd_nn_list": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick habilitado para"
             " esto Estos comandos:</b>\n\n{}"
@@ -814,7 +797,7 @@ class HikkaSettingsMod(loader.Module):
             " esto Este chat:</b>\n\n{}"
         ),
         "nothing": (
-            "<emoji document_id=5427052514094619126>🤷️</emoji> <b>nadaMostrar...</b>"
+            "<emoji document_id=5427052514094619126>🤷️</emoji> <b>Nada mostrar...</b>"
         ),
         "privacy_leak": (
             "⚠️ <b>Este comando proporciona acceso a la interfaz web de Hikka. Su"
@@ -835,8 +818,8 @@ class HikkaSettingsMod(loader.Module):
             " una hora</b>"
         ),
         "web_btn": "🌍 Interfaz web",
-        "btn_yes": " Abrir de todos modos",
-        "btn_no": "Cerrar",
+        "btn_yes": "🚸 Abrir de todos modos",
+        "btn_no": "🔻 Cerrar",
         "lavhost_web": (
             "✌️ <b>Este enlace lo llevará a la interfaz web de Hikka lvHost</b>\n\n<i>💡"
             "debe iniciar sesión con sus credenciales al configurar lavHost"
@@ -915,12 +898,7 @@ class HikkaSettingsMod(loader.Module):
 
         await call.edit(self.strings("uninstalled"))
 
-        if "LAVHOST" in os.environ:
-            os.system("lavhost restart")
-            return
-
-        atexit.register(restart, *sys.argv[1:])
-        sys.exit(0)
+        restart()
 
     async def _uninstall_confirm_step_2(self, call: InlineCall):
         await call.edit(
@@ -977,22 +955,6 @@ class HikkaSettingsMod(loader.Module):
                 {"text": self.strings("deauth_cancel"), "action": "close"},
             ],
         )
-
-    @loader.command(
-        ru_doc="Очистить логи",
-        de_doc="Logs löschen",
-        tr_doc="Günlükleri temizle",
-        uz_doc="Jurnalni tozalash",
-        es_doc="Limpiar registros",
-    )
-    async def clearlogs(self, message: Message):
-        """Clear logs"""
-        for handler in logging.getLogger().handlers:
-            handler.buffer = []
-            handler.handledbuffer = []
-            handler.tg_buff = ""
-
-        await utils.answer(message, self.strings("logs_cleared"))
 
     @loader.command(
         ru_doc="Показать активные смотрители",

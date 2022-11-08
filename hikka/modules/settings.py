@@ -88,7 +88,7 @@ class CoreMod(loader.Module):
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
-            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
             " t.me/hikariatama</b>"
         ),
@@ -178,7 +178,7 @@ class CoreMod(loader.Module):
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
-            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
             " t.me/hikariatama</b>"
         ),
@@ -269,7 +269,7 @@ class CoreMod(loader.Module):
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
-            " <b>Pyrogram:"
+            " <b>Hikka-Pyro:"
             " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
             " <b>Entwickler:t.me/hikariatama</b>"
         ),
@@ -361,7 +361,7 @@ class CoreMod(loader.Module):
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
-            " <b>Pyrogram:"
+            " <b>Hikka-Pyro:"
             " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
             " <b>Geliştirici:t.me/hikariatama</b>"
         ),
@@ -453,7 +453,7 @@ class CoreMod(loader.Module):
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
-            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Ishlab chiquvchi:"
             " t.me/hikariatama</b>"
         ),
@@ -531,7 +531,7 @@ class CoreMod(loader.Module):
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
-            " <b>Pyrogram: </b><i>{}</i>\n\n<emoji"
+            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Desarrollador:"
             " t.me/hikariatama</b>"
         ),

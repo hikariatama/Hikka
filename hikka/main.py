@@ -132,7 +132,7 @@ def save_config_key(key: str, value: str) -> bool:
     return True
 
 
-def gen_port() -> int:
+def gen_port(cfg: str = "port", no8080: bool = False) -> int:
     """
     Generates random free port in case of VDS, and
     8080 in case of Okteto
@@ -140,12 +140,12 @@ def gen_port() -> int:
     exposed by default
     :returns: Integer value of generated port
     """
-    if "DOCKER" in os.environ:
+    if "DOCKER" in os.environ and not no8080:
         return 8080
 
     # But for own server we generate new free port, and assign to it
 
-    port = get_config_key("port")
+    port = get_config_key(cfg)
     if port:
         return port
 

@@ -46,7 +46,7 @@ class Events(InlineUnit):
 
             try:
                 await mod.aiogram_watcher(message)
-            except BaseException:
+            except Exception:
                 logger.exception("Error on running aiogram watcher!")
 
     async def _inline_handler(self, inline_query: AiogramInlineQuery):
@@ -72,7 +72,7 @@ class Events(InlineUnit):
 
             try:
                 result = await self._allmodules.inline_handlers[cmd](instance)
-            except BaseException:
+            except Exception:
                 logger.exception("Error on running inline watcher!")
                 return
 

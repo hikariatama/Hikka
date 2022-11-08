@@ -22,9 +22,9 @@ from telethon.hints import EntityLike
 from telethon.tl.types import ChannelFull, Message, UserFull
 
 from . import validators  # skipcq: PY-W2000
+from .inline.types import BotInlineMessage  # skipcq: PY-W2000
 from .inline.types import (
     BotInlineCall,
-    BotInlineMessage,  # skipcq: PY-W2000
     BotMessage,
     InlineCall,
     InlineMessage,
@@ -48,10 +48,13 @@ class StringLoader(SourceLoader):
         self.data = data.encode("utf-8") if isinstance(data, str) else data
         self.origin = origin
 
-    def get_code(self, fullname: str) -> str:
+    def get_source(self, _=None) -> str:
+        return self.data.decode("utf-8")
+
+    def get_code(self, fullname: str) -> bytes:
         return (
             compile(source, self.origin, "exec", dont_inherit=True)
-            if (source := self.get_source(fullname))
+            if (source := self.get_data(fullname))
             else None
         )
 

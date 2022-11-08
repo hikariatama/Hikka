@@ -1085,6 +1085,7 @@ class LoaderMod(loader.Module):
     _links_cache = {}
 
     def __init__(self):
+        self._pending_stats = []
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "MODULES_REPO",
@@ -1515,8 +1516,11 @@ class LoaderMod(loader.Module):
                 and not self._db.get(main.__name__, "disable_modules_fs", False),
             )
 
-    async def _send_stats(self, url: str, retry: bool = False):
-        """Send anonymous stats to Hikka"""
+    @loader.loop(interval=120, autostart=True)
+    async def _stats_sender(self):
+        if not self._pending_stats:
+            return
+
         try:
             if not self.get("token"):
                 self.set(
@@ -1531,18 +1535,22 @@ class LoaderMod(loader.Module):
             res = await utils.run_sync(
                 requests.post,
                 "https://heta.hikariatama.ru/stats",
-                data={"url": url},
+                data={"urls": ",".join(self._pending_stats[:50])},
                 headers={"X-Hikka-Token": self.get("token")},
             )
 
             if res.status_code == 403:
-                if retry:
-                    return
-
                 self.set("token", None)
-                return await self._send_stats(url, retry=True)
+
+            if res.status_code in range(200, 207):
+                if len(self._pending_stats) > 50:
+                    self._pending_stats = self._pending_stats[50:]
         except Exception:
             logger.debug("Failed to send stats", exc_info=True)
+
+    async def _send_stats(self, url: str, _=False):
+        """Send anonymous stats to Hikka"""
+        self._pending_stats += [url]
 
     async def load_module(
         self,
@@ -1667,13 +1675,8 @@ class LoaderMod(loader.Module):
                     try:
                         spec = ModuleSpec(
                             module_name,
-                            loader.StringLoader(
-                                doc,
-                                f"<string {uid}>" if origin == "<string>" else origin,
-                            ),
-                            origin=f"<string {uid}>"
-                            if origin == "<string>"
-                            else origin,
+                            loader.StringLoader(doc, f"<external {module_name}>"),
+                            origin=f"<external {module_name}>",
                         )
                         instance = await self.allmodules.register_module(
                             spec,
@@ -1789,7 +1792,7 @@ class LoaderMod(loader.Module):
                                 f" <b>{utils.escape_html(str(e))}</b>",
                             )
                         return
-                except BaseException as e:
+                except Exception as e:
                     logger.exception("Loading external module failed due to %s", e)
 
                     if message is not None:
@@ -2146,15 +2149,14 @@ class LoaderMod(loader.Module):
         is_dragon = isinstance(instance, DragonModule)
 
         if is_dragon:
-            worked = (
-                [instance.name] if not self.allmodules.unload_dragon(instance) else []
-            )
+            worked = [instance.name] if self.allmodules.unload_dragon(instance) else []
         else:
             try:
                 worked = await self.allmodules.unload_module(args)
             except CoreUnloadError as e:
                 await utils.answer(
-                    message, self.strings("unload_core").format(e.module)
+                    message,
+                    self.strings("unload_core").format(e.module),
                 )
                 return
 

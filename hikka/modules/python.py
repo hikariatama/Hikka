@@ -14,8 +14,10 @@ import typing
 from types import ModuleType
 
 import telethon
+import webdebug
 from meval import meval
 from telethon.errors.rpcerrorlist import MessageIdInvalidError
+from telethon.sessions import StringSession
 from telethon.tl.types import Message
 
 from .. import loader, main, utils
@@ -30,7 +32,7 @@ class PythonMod(loader.Module):
         "name": "Python",
         "eval": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
-            " Code:</b>\n<code>{}</code>\n<emoji"
+            " Code:</b>\n<code>{}</code>\n\n<emoji"
             " document_id=5197688912457245639>✅</emoji><b>"
             " Result:</b>\n<code>{}</code>"
         ),
@@ -44,7 +46,7 @@ class PythonMod(loader.Module):
     strings_ru = {
         "eval": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
-            " Код:</b>\n<code>{}</code>\n<emoji"
+            " Код:</b>\n<code>{}</code>\n\n<emoji"
             " document_id=5197688912457245639>✅</emoji><b>"
             " Результат:</b>\n<code>{}</code>"
         ),
@@ -59,7 +61,7 @@ class PythonMod(loader.Module):
     strings_de = {
         "eval": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
-            " Code:</b>\n<code>{}</code>\n<emoji"
+            " Code:</b>\n<code>{}</code>\n\n<emoji"
             " document_id=5197688912457245639>✅</emoji><b>"
             " Resultat:</b>\n<code>{}</code>"
         ),
@@ -74,7 +76,7 @@ class PythonMod(loader.Module):
     strings_tr = {
         "eval": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
-            " Kod:</b>\n<code>{}</code>\n<emoji"
+            " Kod:</b>\n<code>{}</code>\n\n<emoji"
             " document_id=5197688912457245639>✅</emoji><b>"
             " Sonuç:</b>\n<code>{}</code>"
         ),
@@ -89,7 +91,7 @@ class PythonMod(loader.Module):
     strings_uz = {
         "eval": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
-            " Kod:</b>\n<code>{}</code>\n<emoji"
+            " Kod:</b>\n<code>{}</code>\n\n<emoji"
             " document_id=5197688912457245639>✅</emoji><b>"
             " Natija:</b>\n<code>{}</code>"
         ),
@@ -104,7 +106,7 @@ class PythonMod(loader.Module):
     strings_es = {
         "eval": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
-            " Código:</b>\n<code>{}</code>\n<emoji"
+            " Código:</b>\n<code>{}</code>\n\n<emoji"
             " document_id=5197688912457245639>✅</emoji><b>"
             " Resultado:</b>\n<code>{}</code>"
         ),
@@ -148,19 +150,12 @@ class PythonMod(loader.Module):
         except Exception:
             item = HikkaException.from_exc_info(*sys.exc_info())
             exc = (
-                "\n<b>🪐 Full stack:</b>\n\n"
-                + "\n".join(item.full_stack.splitlines()[:-1])
+                "\n".join(item.full_stack.splitlines()[:-1])
                 + "\n\n"
                 + "🚫 "
                 + item.full_stack.splitlines()[-1]
             )
             exc = exc.replace(str(self._client.hikka_me.phone), "📵")
-
-            if os.environ.get("hikka_session"):
-                exc = exc.replace(
-                    os.environ.get("hikka_session"),
-                    "StringSession(**************************)",
-                )
 
             await utils.answer(
                 message,
@@ -183,19 +178,26 @@ class PythonMod(loader.Module):
             utils.escape_html(result),
         )
 
-        ret = ret.replace(str(self._client.hikka_me.phone), "📵")
+        ret = self._escape(ret)
+
+        with contextlib.suppress(MessageIdInvalidError):
+            await utils.answer(message, ret)
+
+    def _escape(self, ret: str) -> str:
+        ret = ret.replace(str(self._client.hikka_me.phone), "&lt;phone&gt;")
 
         if redis := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             ret = ret.replace(redis, "redis://**************************")
 
-        if os.environ.get("hikka_session"):
-            ret = ret.replace(
-                os.environ.get("hikka_session"),
-                "StringSession(**************************)",
-            )
+        if db := os.environ.get("DATABASE_URL") or main.get_config_key("db_uri"):
+            ret = ret.replace(db, "postgresql://**************************")
 
-        with contextlib.suppress(MessageIdInvalidError):
-            await utils.answer(message, ret)
+        ret = ret.replace(
+            StringSession.save(self._client.session),
+            "StringSession(**************************)",
+        )
+
+        return ret
 
     async def getattrs(self, message: Message) -> dict:
         reply = await message.get_reply_message()

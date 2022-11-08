@@ -31,28 +31,6 @@ if (
         sys.exit(1)
 
 
-def deps(error):
-    print(f"{str(error)}\n🔄 Attempting dependencies installation... Just wait ⏱")
-
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--upgrade",
-            "-q",
-            "--disable-pip-version-check",
-            "--no-warn-script-location",
-            "-r",
-            "requirements.txt",
-        ],
-        check=True,
-    )
-
-    restart()
-
-
 if sys.version_info < (3, 8, 0):
     print("🚫 Error: you must use at least Python version 3.8.0")
 elif __package__ != "hikka":  # In case they did python __main__.py
@@ -68,7 +46,7 @@ else:
         try:
             import telethon
 
-            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 11):
+            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 12):
                 raise ImportError
         except ImportError:
             print("🔄 Reinstalling Hikka-TL...")
@@ -102,21 +80,68 @@ else:
 
             restart()
 
+        try:
+            import pyrogram
+
+            if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 60):
+                raise ImportError
+        except ImportError:
+            print("🔄 Reinstalling Hikka-Pyro...")
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "uninstall",
+                    "-y",
+                    "pyrogram",
+                ],
+                check=False,
+            )
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--force-reinstall",
+                    "-q",
+                    "--disable-pip-version-check",
+                    "--no-warn-script-location",
+                    "hikka-pyro",
+                ],
+                check=True,
+            )
+
+            restart()
+
     try:
         from . import log
 
         log.init()
 
-        import pyrogram
-
-        if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 59):
-            raise ImportError
-
         from . import main
-    except ModuleNotFoundError as e:
-        deps(e)
-    except ImportError as e:
-        deps(e)
+    except (ModuleNotFoundError, ImportError) as e:
+        print(f"{str(e)}\n🔄 Attempting dependencies installation... Just wait ⏱")
+
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "-q",
+                "--disable-pip-version-check",
+                "--no-warn-script-location",
+                "-r",
+                "requirements.txt",
+            ],
+            check=True,
+        )
+
+        restart()
 
     if __name__ == "__main__":
         if "HIKKA_DO_NOT_RESTART" in os.environ:

@@ -1,6 +1,7 @@
-import atexit
 import os
 import sys
+import signal
+import logging
 
 
 def restart():
@@ -8,10 +9,17 @@ def restart():
         print("Got in a loop, exiting")
         sys.exit(0)
 
+    logging.getLogger().setLevel(logging.CRITICAL)
+
     print("🔄 Restarting...")
 
-    atexit.register(
-        lambda: os.execl(
+    if "LAVHOST" in os.environ:
+        os.system("lavhost restart")
+        return
+
+    signal.signal(
+        signal.SIGTERM,
+        lambda *_: os.execl(
             sys.executable,
             sys.executable,
             "-m",
@@ -23,9 +31,9 @@ def restart():
                 ),
             ),
             *(sys.argv[1:]),
-        )
+        ),
     )
 
     os.environ["HIKKA_DO_NOT_RESTART"] = "1"
 
-    sys.exit(0)
+    os.kill(os.getpid(), signal.SIGTERM)

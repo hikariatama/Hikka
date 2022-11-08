@@ -35,6 +35,7 @@ import os
 import random
 import re
 import shlex
+import signal
 import string
 import time
 import typing
@@ -1286,13 +1287,19 @@ async def get_message_link(
             f"tg://openmessage?user_id={get_chat_id(message)}&message_id={message.id}"
         )
 
-    if not chat:
+    if not chat and not (chat := message.chat):
         chat = await message.get_chat()
 
+    topic_affix = (
+        f"?topic={message.reply_to.reply_to_msg_id}"
+        if getattr(message.reply_to, "forum_topic", False)
+        else ""
+    )
+
     return (
-        f"https://t.me/{chat.username}/{message.id}"
+        f"https://t.me/{chat.username}/{message.id}{topic_affix}"
         if getattr(chat, "username", False)
-        else f"https://t.me/c/{chat.id}/{message.id}"
+        else f"https://t.me/c/{chat.id}/{message.id}{topic_affix}"
     )
 
 
@@ -1403,6 +1410,18 @@ def iter_attrs(obj: typing.Any, /) -> typing.Iterator[typing.Tuple[str, typing.A
     :return: Iterator of attributes and their values
     """
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
+
+
+def atexit(func: typing.Callable, *args, **kwargs) -> None:
+    """
+    Calls function on exit
+    :param func: Function to call
+    :param args: Arguments to pass to function
+    :param kwargs: Keyword arguments to pass to function
+    :return: None
+    """
+    for sig in [signal.SIGTERM, signal.SIGINT]:
+        signal.signal(sig, lambda *_: func(*args, **kwargs))
 
 
 init_ts = time.perf_counter()
