@@ -12,7 +12,6 @@ import getpass
 import os
 import subprocess
 import sys
-import contextlib
 
 from ._internal import restart
 
@@ -50,20 +49,7 @@ else:
             if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 12):
                 raise ImportError
         except ImportError:
-            print("🔄 Reinstalling Hikka-TL...")
-            if "LAVHOST" not in os.environ or ".local" in telethon.__file__:
-                subprocess.run(
-                    [
-                        sys.executable,
-                        "-m",
-                        "pip",
-                        "uninstall",
-                        "-y",
-                        "telethon",
-                        "telethon-mod",
-                    ],
-                    check=False,
-                )
+            print("🔄 Installing Hikka-TL...")
 
             subprocess.run(
                 [
@@ -88,19 +74,7 @@ else:
             if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 60):
                 raise ImportError
         except ImportError:
-            print("🔄 Reinstalling Hikka-Pyro...")
-            if "LAVHOST" not in os.environ or ".local" in pyrogram.__file__:
-                subprocess.run(
-                    [
-                        sys.executable,
-                        "-m",
-                        "pip",
-                        "uninstall",
-                        "-y",
-                        "pyrogram",
-                    ],
-                    check=False,
-                )
+            print("🔄 Installing Hikka-Pyro...")
 
             subprocess.run(
                 [
