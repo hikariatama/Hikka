@@ -12,6 +12,7 @@ import getpass
 import os
 import subprocess
 import sys
+import contextlib
 
 from ._internal import restart
 
@@ -50,18 +51,19 @@ else:
                 raise ImportError
         except ImportError:
             print("🔄 Reinstalling Hikka-TL...")
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "uninstall",
-                    "-y",
-                    "telethon",
-                    "telethon-mod",
-                ],
-                check=False,
-            )
+            with contextlib.suppress(Exception):
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "uninstall",
+                        "-y",
+                        "telethon",
+                        "telethon-mod",
+                    ],
+                    check=False,
+                )
 
             subprocess.run(
                 [
@@ -87,17 +89,18 @@ else:
                 raise ImportError
         except ImportError:
             print("🔄 Reinstalling Hikka-Pyro...")
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "uninstall",
-                    "-y",
-                    "pyrogram",
-                ],
-                check=False,
-            )
+            with contextlib.suppress(Exception):
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "uninstall",
+                        "-y",
+                        "pyrogram",
+                    ],
+                    check=False,
+                )
 
             subprocess.run(
                 [
