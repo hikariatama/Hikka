@@ -336,6 +336,45 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Mostrar el PIN de Werkzeug",
     }
 
+    strings_kk = {
+        "warning": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            " <b>Ескерту!</b>\n\nБұл есептің конфигурациясына сәйкес, келесі"
+            " шектелген шарттар қолданылады.\n\nTelegram API үлеслерінен қорғалмасы"
+            " үшін, <b>барлық пайдаланушылардың боттары</b> {} секунд құлыпталады."
+            " Көбірек ақпарат үшін келесі файлды қараңыз.\n\nАнықтама үшін"
+            " <code>{prefix}support</code> топын пайдаланыңыз!\n\nЕгер сізге"
+            " бұл есептің боттың көмекшісі болуы керек болса, құлыпталуын өшіру үшін"
+            " <code>{prefix}suspend_api_protect</code> &lt;секунд&gt; пайдаланыңыз."
+        ),
+        "args_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Жарамсыз"
+            " аргументтер</b>"
+        ),
+        "suspended_for": (
+            "<emoji document_id=5458450833857322148>👌</emoji>"
+            " <b>API үлеслерін қорғалуы {} секунд үшін өшірілді</b>"
+        ),
+        "on": "<emoji document_id=5458450833857322148>👌</emoji> <b>Қорғалу қосылды</b>",
+        "off": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Қорғалу өшірілді</b>"
+        ),
+        "u_sure": "⚠️ <b>Сіз әлімдісіз бе?</b>",
+        "_cfg_time_sample": "API үлеслерінен қорғалуы үшін көрсетілген уақыт (секунд)",
+        "_cfg_threshold": "API үлеслерінен қорғалуы үшін көрсетілген қаншалық",
+        "_cfg_local_floodwait": "Бот үшін пайдаланушыны құлыпталу уақыты (секунд)",
+        "_cfg_forbidden_methods": (
+            "Барлық сыртқы қосымшалардың қолданылуының тыйым салынған командалары"
+        ),
+        "btn_no": "🚫 Жоқ",
+        "btn_yes": "✅ Иә",
+        "web_pin": (
+            "🔓 <b>Werkzeug дебаг PIN кодын көрсету үшін төмендегі түймешікті"
+            " басыңыз. Оны кімсіне де бермеңіз.</b>"
+        ),
+        "web_pin_btn": "🐞 Werkzeug PIN кодын көрсету",
+    }
+
     _ratelimiter = []
     _suspend_until = 0
     _lock = False
@@ -455,6 +494,7 @@ class APIRatelimiterMod(loader.Module):
         tr_doc="<saniye> - API korumasını N saniye dondur",
         uz_doc="<soniya> - API himoyasini N soniya o'zgartirish",
         es_doc="<segundos> - Congela la protección de la API durante N segundos",
+        kk_doc="<секунд> - API қорғауын N секундтік уақытта құлыптау",
     )
     async def suspend_api_protect(self, message: Message):
         """<time in seconds> - Suspend API Ratelimiter for n seconds"""
@@ -473,6 +513,7 @@ class APIRatelimiterMod(loader.Module):
         tr_doc="API korumasını aç / kapat",
         uz_doc="API himoyasini yoqish / o'chirish",
         es_doc="Activar / desactivar la protección de API",
+        kk_doc="API қорғауын қосу / жою",
     )
     async def api_fw_protection(self, message: Message):
         """Toggle API Ratelimiter"""
@@ -498,6 +539,7 @@ class APIRatelimiterMod(loader.Module):
         tr_doc="PIN aracını göster",
         uz_doc="PIN vositasi ko'rsatish",
         es_doc="Mostrar herramienta PIN",
+        kk_doc="PIN құралын көрсету",
     )
     async def debugpin(self, message: Message):
         """Show the Werkzeug PIN"""

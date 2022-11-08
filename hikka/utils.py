@@ -35,6 +35,7 @@ import os
 import random
 import re
 import shlex
+import atexit as _atexit
 import signal
 import string
 import time
@@ -487,6 +488,7 @@ async def answer(
                     caption=message.client.loader._lookup("translations").strings(
                         "too_long"
                     ),
+                    reply_to=kwargs.get("reply_to") or get_topic(message),
                 )
 
                 if message.out:
@@ -524,7 +526,7 @@ async def answer(
         else:
             kwargs.setdefault(
                 "reply_to",
-                getattr(message, "reply_to_msg_id", None),
+                getattr(message, "reply_to_msg_id", get_topic(message)),
             )
             result = await message.client.send_file(message.peer_id, response, **kwargs)
             if message.out:
@@ -1412,16 +1414,38 @@ def iter_attrs(obj: typing.Any, /) -> typing.Iterator[typing.Tuple[str, typing.A
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
 
 
-def atexit(func: typing.Callable, *args, **kwargs) -> None:
+def atexit(
+    func: typing.Callable,
+    use_signal: typing.Optional[int] = None,
+    *args,
+    **kwargs,
+) -> None:
     """
     Calls function on exit
     :param func: Function to call
+    :param use_signal: If passed, `signal` will be used instead of `atexit`
     :param args: Arguments to pass to function
     :param kwargs: Keyword arguments to pass to function
     :return: None
     """
-    for sig in [signal.SIGTERM, signal.SIGINT]:
-        signal.signal(sig, lambda *_: func(*args, **kwargs))
+    if use_signal:
+        signal.signal(use_signal, lambda *_: func(*args, **kwargs))
+        return
+
+    _atexit.register(functools.partial(func, *args, **kwargs))
+
+
+def get_topic(message: Message) -> typing.Optional[int]:
+    """
+    Get topic id of message
+    :param message: Message to get topic of
+    :return: int or None if not present
+    """
+    return (
+        (message.reply_to.reply_to_top_id or message.reply_to.reply_to_msg_id)
+        if message.reply_to and message.reply_to.forum_topic
+        else None
+    )
 
 
 init_ts = time.perf_counter()

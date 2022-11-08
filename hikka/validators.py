@@ -43,6 +43,7 @@ class Validator:
                     "tr": "dökümantasyon",
                     "uz": "hujjat",
                     "es": "documentación",
+                    "kk": "құжат",
                 }
                 Use instrumental case with lowercase
     :param _internal_id: Do not pass anything here, or things will break
@@ -79,18 +80,19 @@ class Boolean(Validator):
                 "tr": "mantıksal değer",
                 "uz": "mantiqiy qiymat",
                 "es": "valor lógico",
+                "kk": "логикалық мән",
             },
             _internal_id="Boolean",
         )
 
     @staticmethod
     def _validate(value: ConfigAllowedTypes, /) -> bool:
-        true_cases = ["True", "true", "1", 1, True]
-        false_cases = ["False", "false", "0", 0, False]
-        if value not in true_cases + false_cases:
+        true = ["True", "true", "1", 1, True, "yes", "Yes", "on", "On", "y", "Y"]
+        false = ["False", "false", "0", 0, False, "no", "No", "off", "Off", "n", "N"]
+        if value not in true + false:
             raise ValidationError("Passed value must be a boolean")
 
-        return value in true_cases
+        return value in true
 
 
 class Integer(Validator):
@@ -114,6 +116,7 @@ class Integer(Validator):
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
         _sign_uz = "musbat " if minimum is not None and minimum == 0 else ""
         _sign_es = "positivo " if minimum is not None and minimum == 0 else ""
+        _sign_kk = "мәндік " if minimum is not None and minimum == 0 else ""
 
         _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
         _sign_ru = (
@@ -123,6 +126,7 @@ class Integer(Validator):
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
         _sign_uz = "manfiy " if maximum is not None and maximum == 0 else _sign_uz
         _sign_es = "negativo " if maximum is not None and maximum == 0 else _sign_es
+        _sign_kk = "мәнсіздік " if maximum is not None and maximum == 0 else _sign_kk
 
         _digits_en = f" with exactly {digits} digits" if digits is not None else ""
         _digits_ru = f", в котором ровно {digits} цифр " if digits is not None else ""
@@ -130,6 +134,7 @@ class Integer(Validator):
         _digits_tr = f" tam olarak {digits} basamaklı" if digits is not None else ""
         _digits_uz = f" to'g'ri {digits} raqamlar bilan" if digits is not None else ""
         _digits_es = f" con exactamente {digits} dígitos" if digits is not None else ""
+        _digits_kk = f" тең {digits} сандық" if digits is not None else ""
 
         if minimum is not None and minimum != 0:
             doc = (
@@ -140,6 +145,7 @@ class Integer(Validator):
                     "tr": f"{_sign_tr}tam sayı {minimum} den büyük{_digits_tr}",
                     "uz": f"{_sign_uz}butun son {minimum} dan katta{_digits_uz}",
                     "es": f"{_sign_es}número entero mayor que {minimum}{_digits_es}",
+                    "kk": f"{_sign_kk}толық сан {minimum} тан көп{_digits_kk}",
                 }
                 if maximum is None and maximum != 0
                 else {
@@ -161,6 +167,9 @@ class Integer(Validator):
                     "es": (
                         f"{_sign_es}número entero de {minimum} a {maximum}{_digits_es}"
                     ),
+                    "kk": (
+                        f"{_sign_kk}толық сан {minimum} ден {maximum} қарай{_digits_kk}"
+                    ),
                 }
             )
 
@@ -172,6 +181,7 @@ class Integer(Validator):
                 "tr": f"{_sign_tr}tam sayı{_digits_tr}",
                 "uz": f"{_sign_uz}butun son{_digits_uz}",
                 "es": f"{_sign_es}número entero{_digits_es}",
+                "kk": f"{_sign_kk}толық сан{_digits_kk}",
             }
         else:
             doc = {
@@ -181,6 +191,7 @@ class Integer(Validator):
                 "tr": f"{_sign_tr}tam sayı {maximum} den küçük{_digits_tr}",
                 "uz": f"{_sign_uz}butun son {maximum} dan kichik{_digits_uz}",
                 "es": f"{_sign_es}número entero menor que {maximum}{_digits_es}",
+                "kk": f"{_sign_kk}толық сан {maximum} тан кем{_digits_kk}",
             }
         super().__init__(
             functools.partial(
@@ -244,6 +255,7 @@ class Choice(Validator):
                 "tr": f"şunlardan biri: {possible}",
                 "uz": f"quyidagilardan biri: {possible}",
                 "es": f"uno de los siguientes: {possible}",
+                "kk": f"келесілердің бірі: {possible}",
             },
             _internal_id="Choice",
         )
@@ -297,6 +309,10 @@ class MultiChoice(Validator):
                     f" {possible}"
                 ),
                 "es": f"lista de valores, donde cada uno debe ser uno de: {possible}",
+                "kk": (
+                    "мәндер тізімі, әрбірінің келесілердің бірі болуы керек:"
+                    f" {possible}"
+                ),
             },
             _internal_id="MultiChoice",
         )
@@ -351,6 +367,7 @@ class Series(Validator):
         _each_tr = f" (her biri {trans('tr')})" if validator is not None else ""
         _each_uz = f" (har biri {trans('uz')})" if validator is not None else ""
         _each_es = f" (cada uno {trans('es')})" if validator is not None else ""
+        _each_kk = f" (әрбірі {validator.doc['kk']})" if validator is not None else ""
 
         if fixed_len is not None:
             _len_en = f" (exactly {fixed_len} pcs.)"
@@ -359,6 +376,7 @@ class Series(Validator):
             _len_tr = f" (tam olarak {fixed_len} adet)"
             _len_uz = f" (to'g'ri {fixed_len} ta)"
             _len_es = f" (exactamente {fixed_len} piezas)"
+            _len_kk = f" (тоғыз {fixed_len} құны)"
         elif min_len is None:
             if max_len is None:
                 _len_en = ""
@@ -367,6 +385,7 @@ class Series(Validator):
                 _len_tr = ""
                 _len_uz = ""
                 _len_es = ""
+                _len_kk = ""
             else:
                 _len_en = f" (up to {max_len} pcs.)"
                 _len_ru = f" (до {max_len} шт.)"
@@ -374,6 +393,7 @@ class Series(Validator):
                 _len_tr = f" (en fazla {max_len} adet)"
                 _len_uz = f" (eng ko'p {max_len} ta)"
                 _len_es = f" (hasta {max_len} piezas)"
+                _len_kk = f" (көптегенде {max_len} құны)"
         elif max_len is not None:
             _len_en = f" (from {min_len} to {max_len} pcs.)"
             _len_ru = f" (от {min_len} до {max_len} шт.)"
@@ -381,6 +401,7 @@ class Series(Validator):
             _len_tr = f" ({min_len} ile {max_len} arasında {max_len} adet)"
             _len_uz = f" ({min_len} dan {max_len} gacha {max_len} ta)"
             _len_es = f" (desde {min_len} hasta {max_len} piezas)"
+            _len_kk = f" ({min_len} ден {max_len} ге {max_len} құны)"
         else:
             _len_en = f" (at least {min_len} pcs.)"
             _len_ru = f" (как минимум {min_len} шт.)"
@@ -388,15 +409,7 @@ class Series(Validator):
             _len_tr = f" (en az {min_len} adet)"
             _len_uz = f" (kamida {min_len} ta)"
             _len_es = f" (al menos {min_len} piezas)"
-
-        doc = {
-            "en": f"series of values{_len_en}{_each_en}, separated with «,»",
-            "ru": f"списком значений{_len_ru}{_each_ru}, разделенных «,»",
-            "de": f"Liste von Werten{_len_de}{_each_de}, getrennt mit «,»",
-            "tr": f"değerlerin listesi{_len_tr}{_each_tr}, «,» ile ayrılmış",
-            "uz": f"qiymatlar ro'yxati{_len_uz}{_each_uz}, «,» bilan ajratilgan",
-            "es": f"lista de valores{_len_es}{_each_es}, separados con «,»",
-        }
+            _len_kk = f" (кем дегенде {min_len} құны)"
 
         super().__init__(
             functools.partial(
@@ -406,7 +419,15 @@ class Series(Validator):
                 max_len=max_len,
                 fixed_len=fixed_len,
             ),
-            doc,
+            {
+                "en": f"series of values{_len_en}{_each_en}, separated with «,»",
+                "ru": f"списком значений{_len_ru}{_each_ru}, разделенных «,»",
+                "de": f"Liste von Werten{_len_de}{_each_de}, getrennt mit «,»",
+                "tr": f"değerlerin listesi{_len_tr}{_each_tr}, «,» ile ayrılmış",
+                "uz": f"qiymatlar ro'yxati{_len_uz}{_each_uz}, «,» bilan ajratilgan",
+                "es": f"lista de valores{_len_es}{_each_es}, separados con «,»",
+                "kk": f"мәндер тізімі{_len_kk}{_each_kk}, «,» бойынша бөлінген",
+            },
             _internal_id="Series",
         )
 
@@ -471,6 +492,7 @@ class Link(Validator):
                 "tr": "bağlantı",
                 "uz": "havola",
                 "es": "enlace",
+                "kk": "сілтеме",
             },
             _internal_id="Link",
         )
@@ -508,6 +530,7 @@ class String(Validator):
                 "tr": f"{length} karakter uzunluğunda dize",
                 "uz": f"{length} ta belgi uzunlig'ida satr",
                 "es": f"cadena de longitud {length}",
+                "kk": f"{length} ұзындығында сөз",
             }
         else:
             if min_len is None:
@@ -519,6 +542,7 @@ class String(Validator):
                         "tr": "dize",
                         "uz": "satr",
                         "es": "cadena",
+                        "kk": "сөз",
                     }
                 else:
                     doc = {
@@ -528,6 +552,7 @@ class String(Validator):
                         "tr": f"{max_len} karakter uzunluğunda dize",
                         "uz": f"{max_len} ta belgi uzunlig'ida satr",
                         "es": f"cadena de longitud {max_len}",
+                        "kk": f"{max_len} ұзындығында сөз",
                     }
             elif max_len is not None:
                 doc = {
@@ -537,6 +562,7 @@ class String(Validator):
                     "tr": f"{min_len}-{max_len} karakter uzunluğunda dize",
                     "uz": f"{min_len}-{max_len} ta belgi uzunlig'ida satr",
                     "es": f"cadena de longitud {min_len}-{max_len}",
+                    "kk": f"{min_len}-{max_len} ұзындығында сөз",
                 }
             else:
                 doc = {
@@ -546,6 +572,7 @@ class String(Validator):
                     "tr": f"{min_len} karakter uzunluğunda dize",
                     "uz": f"{min_len} ta belgi uzunlig'ida satr",
                     "es": f"cadena de longitud {min_len}",
+                    "kk": f"{min_len} ұзындығында сөз",
                 }
 
         super().__init__(
@@ -625,6 +652,7 @@ class RegExp(Validator):
                 "tr": f"«{regex}» kalıbına uygun dize",
                 "uz": f"«{regex}» shabloniga mos matn",
                 "es": f"cadena que coincide con el patrón «{regex}»",
+                "kk": f"«{regex}» үлгісіне сәйкес сөз",
             }
         else:
             if isinstance(description, str):
@@ -670,6 +698,7 @@ class Float(Validator):
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
         _sign_uz = "musbat " if minimum is not None and minimum == 0 else ""
         _sign_es = "positivo " if minimum is not None and minimum == 0 else ""
+        _sign_kk = "мың " if minimum is not None and minimum == 0 else ""
 
         _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
         _sign_ru = (
@@ -679,6 +708,7 @@ class Float(Validator):
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
         _sign_uz = "manfiy " if maximum is not None and maximum == 0 else _sign_uz
         _sign_es = "negativo " if maximum is not None and maximum == 0 else _sign_es
+        _sign_kk = "мінус " if maximum is not None and maximum == 0 else _sign_kk
 
         if minimum is not None and minimum != 0:
             doc = (
@@ -689,6 +719,7 @@ class Float(Validator):
                     "tr": f"{_sign_tr}ondalık sayı {minimum} dan büyük",
                     "uz": f"{_sign_uz}butun son {minimum} dan katta",
                     "es": f"{_sign_es}número decimal mayor que {minimum}",
+                    "kk": f"{_sign_kk}сандық сан {minimum} тан аспау",
                 }
                 if maximum is None and maximum != 0
                 else {
@@ -701,6 +732,7 @@ class Float(Validator):
                     "tr": f"{_sign_tr}ondalık sayı {minimum} ile {maximum} arasında",
                     "uz": f"{_sign_uz}butun son {minimum} dan {maximum} gacha",
                     "es": f"{_sign_es}número decimal de {minimum} a {maximum}",
+                    "kk": f"{_sign_kk}сандық сан {minimum} ден {maximum} ге",
                 }
             )
 
@@ -712,6 +744,7 @@ class Float(Validator):
                 "tr": f"{_sign_tr}ondalık sayı",
                 "uz": f"{_sign_uz}butun son",
                 "es": f"{_sign_es}número decimal",
+                "kk": f"{_sign_kk}сандық сан",
             }
         else:
             doc = {
@@ -721,6 +754,7 @@ class Float(Validator):
                 "tr": f"{_sign_tr}ondalık sayı {maximum} dan küçük",
                 "uz": f"{_sign_uz}butun son {maximum} dan kichik",
                 "es": f"{_sign_es}número decimal menor que {maximum}",
+                "kk": f"{_sign_kk}сандық сан {maximum} тан кіші",
             }
 
         super().__init__(
@@ -790,6 +824,7 @@ class Union(Validator):
             "tr": "aşağıdakilerden biri:\n",
             "uz": "quyidagi biri:\n",
             "es": "uno de los siguientes:\n",
+            "kk": "келесілердің бірі:\n",
         }
 
         def case(x: str) -> str:
@@ -835,6 +870,7 @@ class NoneType(Validator):
                 "tr": "boş değer",
                 "uz": "bo'sh qiymat",
                 "es": "valor vacío",
+                "kk": "бос мән",
             },
             _internal_id="NoneType",
         )
@@ -890,6 +926,7 @@ class Emoji(Validator):
                 "tr": f"tam {length} emoji",
                 "uz": f"to'g'ri {length} emoji",
                 "es": f"exactamente {length} emojis",
+                "kk": f"тоғыз {length} емодзи",
             }
         elif min_len is not None and max_len is not None:
             doc = {
@@ -899,6 +936,7 @@ class Emoji(Validator):
                 "tr": f"{min_len} ile {max_len} arasında emoji",
                 "uz": f"{min_len} dan {max_len} gacha emoji",
                 "es": f"entre {min_len} y {max_len} emojis",
+                "kk": f"{min_len} ден {max_len} ге емодзи",
             }
         elif min_len is not None:
             doc = {
@@ -908,6 +946,7 @@ class Emoji(Validator):
                 "tr": f"en az {min_len} emoji",
                 "uz": f"kamida {min_len} emoji",
                 "es": f"al menos {min_len} emojis",
+                "kk": f"кем дегенде {min_len} емодзи",
             }
         elif max_len is not None:
             doc = {
@@ -917,6 +956,7 @@ class Emoji(Validator):
                 "tr": f"en fazla {max_len} emoji",
                 "uz": f"{max_len} dan ko'proq emoji",
                 "es": f"no más de {max_len} emojis",
+                "kk": f"{max_len} ден асты емодзи",
             }
         else:
             doc = {
@@ -926,6 +966,7 @@ class Emoji(Validator):
                 "tr": "emoji",
                 "uz": "emoji",
                 "es": "emojis",
+                "kk": "емодзи",
             }
 
         super().__init__(
@@ -993,5 +1034,6 @@ class EntityLike(RegExp):
                 "tr": "bir varlığa bağlantı, kullanıcı adı veya Telegram kimliği",
                 "uz": "entityga havola, foydalanuvchi nomi yoki Telegram ID",
                 "es": "enlace a la entidad, nombre de usuario o ID de Telegram",
+                "kk": "сынаққа сілтеме, пайдаланушы аты немесе Telegram ID",
             },
         )

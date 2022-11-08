@@ -270,6 +270,46 @@ class HikkaInfoMod(loader.Module):
         ),
     }
 
+    strings_kk = {
+        "owner": "Әкімші",
+        "version": "Нұсқасы",
+        "build": "Құрылған",
+        "prefix": "Бастауыш",
+        "uptime": "Қосылған кезең",
+        "branch": "Бөлімі",
+        "send_info": "Бот туралы ақпарат",
+        "description": "ℹ️ Жеке мәліметтеріңізді қорғау",
+        "_ihandle_doc_info": "Бот туралы ақпарат",
+        "up-to-date": (
+            "<emoji document_id=5370699111492229743>😌</emoji><b> Жаңартылған</b>"
+        ),
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji><b> Жаңарту"
+            " талап етіледі </b><code>.update</code>"
+        ),
+        "_cfg_cst_msg": (
+            "Жеке хабарлама үшін ақпарат. {me}, {version}, {build}, {prefix},"
+            " {platform}, {upd}, {uptime}, {branch} кілт сөздерді қолдана аласыз"
+        ),
+        "_cfg_cst_btn": "Жеке түйме үшін ақпарат. Түймесін жою үшін бос қалдырыңыз",
+        "_cfg_banner": "Сурет үшін URL",
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>Ақпаратты өзгерту үшін"
+            " ештеңе енгізбеңіз</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Ақпарат сәтті"
+            " өзгертілді</b>"
+        ),
+        "desc": (
+            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nПайдалы"
+            " бот қосымшалары бар. Мысалы: Онлайн галерея, форма, тізім, анимациялы"
+            " emoji және басқалар. Пайдалы бот - телеграм аккаунтында іске қосылған"
+            " бағдарлама. Сөйлесу бойынша әрекетті қылуға болады. Қосымша ақпарат үшін"
+            ' <a href="https://github.com/hikariatama/Hikka">GitHub</a>'
+        ),
+    }
+
     strings_tt = {
         "owner": "Идарәче",
         "version": "Версия",
@@ -444,6 +484,7 @@ class HikkaInfoMod(loader.Module):
         tr_doc="Bot hakkında bilgi gönderir",
         uz_doc="Bot haqida ma'lumot yuboradi",
         es_doc="Envía información sobre el bot",
+        kk_doc="Бот туралы ақпарат жібереді",
     )
     @loader.unrestricted
     async def infocmd(self, message: Message):
@@ -466,6 +507,7 @@ class HikkaInfoMod(loader.Module):
                     message.peer_id,
                     self.config["banner_url"],
                     caption=self._render_info(False),
+                    reply_to=utils.get_topic(message),
                 )
             except Exception:
                 await utils.answer(message, self._render_info(False))
@@ -480,6 +522,7 @@ class HikkaInfoMod(loader.Module):
         tr_doc="Bot hakkında bilgi gönderir",
         uz_doc="Bot haqida ma'lumot yuborish",
         es_doc="Enviar información sobre el bot",
+        kk_doc="Бот туралы ақпарат жіберу",
     )
     async def hikkainfocmd(self, message: Message):
         """Send info aka 'What is Hikka?'"""
@@ -491,6 +534,7 @@ class HikkaInfoMod(loader.Module):
         tr_doc="<metin> - .info'da metni değiştir",
         uz_doc="<matn> - .info'dagi matnni o'zgartirish",
         es_doc="<texto> - Cambiar el texto en .info",
+        kk_doc="<мәтін> - .info мәтінін өзгерту",
     )
     async def setinfo(self, message: Message):
         """<text> - Change text in .info"""

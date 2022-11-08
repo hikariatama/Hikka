@@ -13,7 +13,14 @@ from io import BytesIO
 from sys import version_info
 
 import git
-from PIL import Image
+
+try:
+    from PIL import Image
+except Exception:
+    PIP_AVAILABLE = False
+else:
+    PIP_AVAILABLE = True
+
 from pyrogram import Client, errors, types
 
 from .. import version
@@ -326,6 +333,9 @@ class DragonScripts:
         output: typing.Optional[io.BytesIO] = None,
         img_type: str = "PNG",
     ) -> io.BytesIO:
+        if not PIP_AVAILABLE:
+            raise RuntimeError("Install Pillow with: pip install Pillow -U")
+
         if output is None:
             output = BytesIO()
             output.name = f"sticker.{img_type.lower()}"

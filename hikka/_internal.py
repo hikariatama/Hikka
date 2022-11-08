@@ -1,7 +1,25 @@
+import atexit
+import functools
 import os
 import sys
-import signal
 import logging
+
+
+def get_startup_callback() -> callable:
+    return functools.partial(
+        os.execl,
+        sys.executable,
+        sys.executable,
+        "-m",
+        os.path.relpath(
+            os.path.abspath(
+                os.path.dirname(
+                    os.path.abspath(__file__),
+                ),
+            ),
+        ),
+        *(sys.argv[1:]),
+    )
 
 
 def restart():
@@ -17,23 +35,8 @@ def restart():
         os.system("lavhost restart")
         return
 
-    signal.signal(
-        signal.SIGTERM,
-        lambda *_: os.execl(
-            sys.executable,
-            sys.executable,
-            "-m",
-            os.path.relpath(
-                os.path.abspath(
-                    os.path.dirname(
-                        os.path.abspath(__file__),
-                    ),
-                ),
-            ),
-            *(sys.argv[1:]),
-        ),
-    )
+    atexit.register(get_startup_callback())
 
     os.environ["HIKKA_DO_NOT_RESTART"] = "1"
 
-    os.kill(os.getpid(), signal.SIGTERM)
+    sys.exit(0)

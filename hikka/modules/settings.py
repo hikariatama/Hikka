@@ -557,6 +557,100 @@ class CoreMod(loader.Module):
         ),
     }
 
+    strings_kk = {
+        "too_many_args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Тым көп"
+            " аргументтер</b>"
+        ),
+        "blacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Чат {} чаттар"
+            "дың көрсеткішінің күйіне қосылды</b>"
+        ),
+        "unblacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Чат {} чаттар"
+            "дың көрсеткішінің күйінен алынды</b>"
+        ),
+        "user_blacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Пайдаланушы {}"
+            " пайдаланушылардың көрсеткішінің күйіне қосылды</b>"
+        ),
+        "user_unblacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Пайдаланушы {}"
+            " пайдаланушылардың көрсеткішінің күйінен алынды</b>"
+        ),
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Бірақ"
+            " қандай әліпби беремін?</b>"
+        ),
+        "prefix_incorrect": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Әліпби тек"
+            " бір таңбадан тұруы керек</b>"
+        ),
+        "prefix_set": (
+            "{} <b>Әліпби жаңартылды."
+            " Қайтару үшін</b> <code>{newprefix}setprefix {oldprefix}</code>"
+            " <b>пайдаланыңыз</b>"
+        ),
+        "alias_created": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Алиас жасалды."
+            " Оны</b> <code>{}</code> <b>пайдаланыңыз</b>"
+        ),
+        "aliases": "<b>🔗 Алиастар:</b>\n",
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда</b>"
+            " <code>{}</code> <b>жоқ</b>"
+        ),
+        "alias_args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда мен"
+            " оның алиасын енгізуіңіз керек</b>"
+        ),
+        "delalias_args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Алиас атауы"
+            " енгізуіңіз керек</b>"
+        ),
+        "alias_removed": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Алиас</b>"
+            " <code>{}</code> <b>жойылды</b>."
+        ),
+        "no_alias": (
+            "<emoji document_id=5312526098750252863>🚫</emoji><b> Алиас</b>"
+            " <code>{}</code> <b>жоқ</b>"
+        ),
+        "db_cleared": (
+            "<emoji document_id=5197474765387864959>👍</emoji><b> База тазаланды</b>"
+        ),
+        "hikka": (
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            " </b><i>{}</i>\n{}"
+            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
+            " t.me/hikariatama</b>"
+        ),
+        "_cls_doc": "Жүйе бастапқы параметрлерін басқару",
+        "confirm_cleardb": (
+            "⚠️ <b>Сіз дейінгі база деректерін тазалауға сенімдісіз бе?</b>"
+        ),
+        "cleardb_confirm": "🗑 База деректерін тазалау",
+        "cancel": "🚫 Болдырмау",
+        "who_to_blacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кімді блога қою"
+            " керек?</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кімді блога қоюды"
+            " болдырмау керек?</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Сіз қолданбаған"
+            " белгісіз қосымша </b><code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon және"
+            " Hikka префикстері айырмасы керек!</b>"
+        ),
+    }
+
     async def blacklistcommon(self, message: Message):
         args = utils.get_args(message)
 
@@ -588,6 +682,7 @@ class CoreMod(loader.Module):
         tr_doc="Hikka sürümünü gösterir",
         uz_doc="Hikka versiyasini ko'rsatish",
         es_doc="Mostrar la versión de Hikka",
+        kk_doc="Hikka нұсқасын көрсету",
     )
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
@@ -632,6 +727,7 @@ class CoreMod(loader.Module):
         tr_doc="[sohbet] [modül] - Botu herhangi bir yerde devre dışı bırakın",
         uz_doc="[chat] [modul] - Botni hozircha o'chirish",
         es_doc="[chat] [módulo] - Desactivar el bot en cualquier lugar",
+        kk_doc="[сөйлесу] [модуль] - Ботты қайда болса болсын өшіру",
     )
     async def blacklist(self, message: Message):
         """[chat_id] [module] - Blacklist the bot from operating somewhere"""
@@ -651,6 +747,7 @@ class CoreMod(loader.Module):
         tr_doc="[sohbet] - Botu herhangi bir yerde etkinleştirin",
         uz_doc="[chat] - Botni hozircha yoqish",
         es_doc="[chat] - Activar el bot en cualquier lugar",
+        kk_doc="[сөйлесу] - Ботты қайда болса болсын қосу",
     )
     async def unblacklist(self, message: Message):
         """<chat_id> - Unblacklist the bot from operating somewhere"""
@@ -681,6 +778,7 @@ class CoreMod(loader.Module):
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
         es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
+        kk_doc="[пайдаланушы] - Пайдаланушыға командаларды орындауға рұқсат бермеу",
     )
     async def blacklistuser(self, message: Message):
         """[user_id] - Prevent this user from running any commands"""
@@ -704,6 +802,7 @@ class CoreMod(loader.Module):
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
         es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
+        kk_doc="[пайдаланушы] - Пайдаланушыға командаларды орындауға рұқсат бермеу",
     )
     async def unblacklistuser(self, message: Message):
         """[user_id] - Allow this user to run permitted commands"""
@@ -731,6 +830,7 @@ class CoreMod(loader.Module):
         tr_doc="[dragon] <önek> - Komut öneki ayarla",
         uz_doc="[dragon] <avvalgi> - Buyruqlar uchun avvalgi belgilash",
         es_doc="[dragon] <prefijo> - Establecer el prefijo de comandos",
+        kk_doc="[dragon] <бастауыш> - Командалардың бастауышын орнату",
     )
     async def setprefix(self, message: Message):
         """[dragon] <prefix> - Sets command prefix"""
@@ -789,6 +889,7 @@ class CoreMod(loader.Module):
         tr_doc="Takma adları göster",
         uz_doc="Aliaslarni ko'rsatish",
         es_doc="Mostrar lista de alias",
+        kk_doc="Айланыстарды көрсету",
     )
     async def aliases(self, message: Message):
         """Print all your aliases"""
@@ -808,6 +909,7 @@ class CoreMod(loader.Module):
         tr_doc="Bir komut için takma ad ayarla",
         uz_doc="Buyrug' uchun alias belgilash",
         es_doc="Establecer alias para el comando",
+        kk_doc="Команда үшін айланыс орнату",
     )
     async def addalias(self, message: Message):
         """Set an alias for a command"""
@@ -843,6 +945,7 @@ class CoreMod(loader.Module):
         tr_doc="Bir komut için takma ad kaldır",
         uz_doc="Buyrug' uchun aliasni o'chirish",
         es_doc="Eliminar alias para el comando",
+        kk_doc="Команда үшін айланысты жою",
     )
     async def delalias(self, message: Message):
         """Remove an alias for a command"""
@@ -877,6 +980,7 @@ class CoreMod(loader.Module):
         tr_doc="Veritabanını temizle",
         uz_doc="Ma'lumotlar bazasini tozalash",
         es_doc="Limpiar la base de datos",
+        kk_doc="Деректер базасын тазалау",
     )
     async def cleardb(self, message: Message):
         """Clear the entire database, effectively performing a factory reset"""

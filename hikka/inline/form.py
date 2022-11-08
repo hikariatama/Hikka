@@ -314,6 +314,7 @@ class Form(InlineUnit):
             "buttons": reply_markup,
             "chat": None,
             "message_id": None,
+            "top_msg_id": utils.get_topic(message),
             "uid": unit_id,
             "on_unload": on_unload,
             "future": Event(),

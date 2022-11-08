@@ -8,6 +8,7 @@
 - Fix `.helphide` command
 - Fix visual bug with phone input field in web
 - Fix proxy-passing in web
+- Patch `.info`, `utils.answer` etc to support forums (topics)
 - Drop Okteto support
 - Show Hikka platform and version in Telegram sessions list
 - New type `DragonModule`
@@ -18,9 +19,11 @@
 - New module loading animation
 - New README.md with installation steps and new web recording
 - New `utils.atexit` method
+- New `utils.get_topic` method
 - New restart process, which correctly kills all child processes and threads
 - New interactive web werkzeug debugger (view pin using `.debugpin` command)
 - Minor and major bugfixes, adapt to topics
+- Kazakh translation pack
 
 ## 🌑 Hikka 1.5.3
 

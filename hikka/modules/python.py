@@ -14,7 +14,6 @@ import typing
 from types import ModuleType
 
 import telethon
-import webdebug
 from meval import meval
 from telethon.errors.rpcerrorlist import MessageIdInvalidError
 from telethon.sessions import StringSession
@@ -118,6 +117,21 @@ class PythonMod(loader.Module):
         "_cls_doc": "Ejecuta código Python",
     }
 
+    strings_kk = {
+        "eval": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Код:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=5197688912457245639>✅</emoji><b>"
+            " Нәтиже:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Код:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=5312526098750252863>🚫</emoji><b> Қате:</b>\n{}"
+        ),
+        "_cls_doc": "Python кодын орындау",
+    }
+
     @loader.owner
     @loader.command(
         ru_doc="Алиас для команды .e",
@@ -125,6 +139,7 @@ class PythonMod(loader.Module):
         tr_doc="Komut .e için takma ad",
         uz_doc="Buyruq .e uchun alohida nom",
         es_doc="Alias para el comando .e",
+        kk_doc="Команданың .e үшін арнайы атауы",
     )
     async def eval(self, message: Message):
         """Alias for .e command"""
@@ -137,10 +152,10 @@ class PythonMod(loader.Module):
         tr_doc="Python kodu çalıştırır",
         uz_doc="Python kodini ishga tushiradi",
         es_doc="Ejecuta código Python",
+        kk_doc="Python кодын орындау",
     )
     async def e(self, message: Message):
         """Evaluates python code"""
-        ret = self.strings("eval")
         try:
             result = await meval(
                 utils.get_args_raw(message),
@@ -149,19 +164,21 @@ class PythonMod(loader.Module):
             )
         except Exception:
             item = HikkaException.from_exc_info(*sys.exc_info())
-            exc = (
-                "\n".join(item.full_stack.splitlines()[:-1])
-                + "\n\n"
-                + "🚫 "
-                + item.full_stack.splitlines()[-1]
-            )
-            exc = exc.replace(str(self._client.hikka_me.phone), "📵")
 
             await utils.answer(
                 message,
                 self.strings("err").format(
                     utils.escape_html(utils.get_args_raw(message)),
-                    exc,
+                    utils.escape_html(
+                        self.censor(
+                            (
+                                "\n".join(item.full_stack.splitlines()[:-1])
+                                + "\n\n"
+                                + "🚫 "
+                                + item.full_stack.splitlines()[-1]
+                            )
+                        )
+                    ),
                 ),
             )
 
@@ -171,26 +188,32 @@ class PythonMod(loader.Module):
             with contextlib.suppress(Exception):
                 result = str(result.stringify())
 
-        result = str(result)
-
-        ret = ret.format(
-            utils.escape_html(utils.get_args_raw(message)),
-            utils.escape_html(result),
-        )
-
-        ret = self._escape(ret)
-
         with contextlib.suppress(MessageIdInvalidError):
-            await utils.answer(message, ret)
+            await utils.answer(
+                message,
+                self.strings("eval").format(
+                    utils.escape_html(utils.get_args_raw(message)),
+                    utils.escape_html(self.censor(str(result))),
+                ),
+            )
 
-    def _escape(self, ret: str) -> str:
+    def censor(self, ret: str) -> str:
         ret = ret.replace(str(self._client.hikka_me.phone), "&lt;phone&gt;")
 
         if redis := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
-            ret = ret.replace(redis, "redis://**************************")
+            ret = ret.replace(redis, f'redis://{"*" * 26}')
 
         if db := os.environ.get("DATABASE_URL") or main.get_config_key("db_uri"):
-            ret = ret.replace(db, "postgresql://**************************")
+            ret = ret.replace(db, f'postgresql://{"*" * 26}')
+
+        if btoken := self._db.get("hikka.inline", "bot_token", False):
+            ret = ret.replace(
+                btoken,
+                f'{btoken.split(":")[0]}:{"*" * 26}',
+            )
+
+        if htoken := self.lookup("loader").get("token", False):
+            ret = ret.replace(htoken, f'eugeo_{"*" * 26}')
 
         ret = ret.replace(
             StringSession.save(self._client.session),

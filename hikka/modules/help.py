@@ -199,6 +199,34 @@ class HelpMod(loader.Module):
         ),
     }
 
+    strings_kk = {
+        "undoc": "🦥 Құжатталмаған",
+        "all_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} қосымша модуль,"
+            " {} жасырын:</b>"
+        ),
+        "no_mod": "🚫 <b>Жасыру үшін модуль енгізіңіз</b>",
+        "hidden_shown": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} жасырын,"
+            " {} модуль көрсетілді:</b>\n{}\n{}"
+        ),
+        "support": "{} <b><a href='https://t.me/hikka_talks'>Көмек сөйлесу</a></b>",
+        "_cls_doc": "Модуль көмектерін көрсетеді",
+        "partial_load": (
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Пайдаланушы боты"
+            " әлде бірінші бетіне жүктелгеннен кейін, барлық модулдер көрсетілмейді</b>"
+        ),
+        "not_exact": (
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Ешқандай"
+            " таптырылмаған нәтиже жоқ, сондықтан ең қанағаттары көрсетілді</b>"
+        ),
+        "request_join": "Сіз көмек сөйлесудің сілтемесін сұрағансыз",
+        "core_notice": (
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Бұл қосымша модуль,"
+            " оны жою немесе өзгерту мүмкін емес</b>"
+        ),
+    }
+
     strings_tt = {
         "undoc": "🦥 Тасвирлау юк",
         "all_header": (
@@ -277,6 +305,10 @@ class HelpMod(loader.Module):
         es_doc=(
             "<módulo o módulos> - Oculta el módulo (-s) de la ayuda\n*Separa los"
             " módulos con espacios"
+        ),
+        kk_doc=(
+            "<модуль немесе модульдер> - Анықтамадан модульді (-дерді)"
+            " жасыру\n*Модульдерді бос қойып айыр"
         ),
     )
     async def helphide(self, message: Message):
@@ -397,13 +429,16 @@ class HelpMod(loader.Module):
 
         if hasattr(module, "inline_handlers") and not is_dragon:
             for name, fun in module.inline_handlers.items():
-                reply += "\n🎹 <code>{}</code> {}".format(
-                    f"@{self.inline.bot_username} {name}",
-                    (
-                        utils.escape_html(inspect.getdoc(fun))
-                        if fun.__doc__
-                        else self.strings("undoc")
-                    ),
+                reply += (
+                    "\n<emoji document_id=5372981976804366741>🤖</emoji>"
+                    " <code>{}</code> {}".format(
+                        f"@{self.inline.bot_username} {name}",
+                        (
+                            utils.escape_html(inspect.getdoc(fun))
+                            if fun.__doc__
+                            else self.strings("undoc")
+                        ),
+                    )
                 )
 
         for name, fun in commands.items():
@@ -440,6 +475,7 @@ class HelpMod(loader.Module):
         tr_doc="[modül] [-f] - Yardımı göster",
         uz_doc="[modul] [-f] - Yordamni ko'rsatish",
         es_doc="[módulo] [-f] - Mostrar ayuda",
+        kk_doc="[модуль] [-f] - Анықтама көрсету",
     )
     async def help(self, message: Message):
         """[module] [-f] - Show help"""
@@ -568,10 +604,10 @@ class HelpMod(loader.Module):
 
             for cmd in icommands:
                 if first:
-                    tmp += f": ( 🎹 {cmd}"
+                    tmp += f": ( 🤖 {cmd}"
                     first = False
                 else:
-                    tmp += f" | 🎹 {cmd}"
+                    tmp += f" | 🤖 {cmd}"
 
             if commands or icommands:
                 tmp += " )"
@@ -620,6 +656,7 @@ class HelpMod(loader.Module):
         tr_doc="Hikka yardım sohbetinin bağlantısını göster",
         uz_doc="Hikka yordam sohbatining havolasini ko'rsatish",
         es_doc="Mostrar enlace al chat de ayuda de Hikka",
+        kk_doc="Hikka анықтама сөйлесушісінің сілтемесін көрсету",
     )
     async def support(self, message):
         """Get link of Hikka support chat"""

@@ -211,6 +211,7 @@ class Gallery(InlineUnit):
             "caption": caption,
             "chat": None,
             "message_id": None,
+            "top_msg_id": utils.get_topic(message),
             "uid": unit_id,
             "photo_url": (photo_url if isinstance(photo_url, str) else photo_url[0]),
             "next_handler": next_handler,

@@ -399,6 +399,72 @@ class TestMod(loader.Module):
         "logs_cleared": "🗑 <b>Registros borrados</b>",
     }
 
+    strings_kk = {
+        "set_loglevel": "🚫 <b>Лог түрін сан немесе жолмен енгізіңіз</b>",
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Сізде"
+            " </b><code>{}</code><b> деңгейіндегі лог жоқ.</b>"
+        ),
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka логтарының"
+            " деңгейі </b><code>{}</code>\n\n<emoji"
+            " document_id=6318902906900711458>⚪️</emoji> <b>Нұсқауы: {}.{}.{}</b>{}"
+        ),
+        "bad_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль табылмады</b>"
+        ),
+        "debugging_enabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Модуль"
+            " </b><code>{0}</code><b> үшін дебаг режимі қосылды</b>\n<i>`debug_modules`"
+            " директориясына өтуіңіз керек, файлды өзгертіңіз, әрбір өзгерісті алдын"
+            " ала қараңыз</i>"
+        ),
+        "debugging_disabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Дебаг режимі"
+            " өшірілді</b>"
+        ),
+        "suspend_invalid_time": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Жарамсыз уақыт</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Бот"
+            " </b><code>{}</code><b> секунд құлыпталды</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegram жауап беру"
+            " уақыты:</b> <code>{}</code> <b>мс</b>\n<emoji"
+            " document_id=5445284980978621387>🚀</emoji> <b>Соңғы рестарттан бұрын"
+            " уақыты: {}</b>"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram жауап"
+            " беру уақыты серверлердің жүйелігі мен басқа сыртқы әсерлерге қарсы"
+            " өзгереді және серверіңізге қанша жақсартылғанымен қатарын болмайды</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Лог түрі </b><code>{}</code><b> сіздің жеке мәліметіңізге қатысты"
+            " болуы мүмкін, сенімді болыңыз</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Лог түрі </b><code>{0}</code><b> сіздің жеке мәліметіңізге қатысты"
+            " болуы мүмкін, сенімді болыңыз</b>\n<b>Жолдан </b><code>.logs {0}"
+            " force_insecure</code><b>, келесі сияқтық бойынша логтарды жіберу"
+            " үшін сенімді болыңыз</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Лог түрін таңдаңыз</b>",
+        "_cmd_doc_dump": "Хабарлама туралы ақпаратты көрсету",
+        "_cmd_doc_logs": (
+            "<түр> - Лог файлын жіберу. WARNING түрінен кейінгі түрлер сіздің"
+            " жеке мәліметіңізге қатысты болуы мүмкін."
+        ),
+        "_cmd_doc_suspend": "<уақыт> - Ботты бірнеше уақыт қойып қалдыру",
+        "_cmd_doc_ping": "Юзерботтың жауап беру уақытын тексеру",
+        "_cls_doc": "Өздіктік сынауға қатысты әрекеттер",
+        "send_anyway": "📤 Жіберу",
+        "cancel": "🚫 Болдырмау",
+        "logs_cleared": "🗑 <b>Логтар тазартылды</b>",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -441,6 +507,7 @@ class TestMod(loader.Module):
         tr_doc="Dökümünü göstermek için bir iletiyi yanıtlayın",
         uz_doc="Xabarning axlatini ko'rsatish uchun unga javob bering",
         es_doc="Responde a un mensaje para mostrar su volcado",
+        kk_doc="Дампын көрсету үшін хабарламаға жауап беріңіз",
     )
     async def dump(self, message: Message):
         """Use in reply to get a dump of a message"""
@@ -460,6 +527,7 @@ class TestMod(loader.Module):
         tr_doc="Günlükleri temizle",
         uz_doc="Jurnalni tozalash",
         es_doc="Limpiar registros",
+        kk_doc="Логтарды тазалау",
     )
     async def clearlogs(self, message: Message):
         """Clear logs"""
@@ -527,6 +595,10 @@ class TestMod(loader.Module):
             "[módulo] - Para desarrolladores: abre un módulo en modo de depuración y"
             " aplica los cambios de él en tiempo real"
         ),
+        kk_doc=(
+            "[модуль] - Разработчиктер үшін: модульді дебаг режимінде ашып, және"
+            " өзгерістерді осында қолдану"
+        ),
     )
     async def debugmod(self, message: Message):
         """[module] - For developers: Open module for debugging
@@ -587,6 +659,7 @@ class TestMod(loader.Module):
         uz_doc="<daraja> - Loglarni ko'rsatish",
         tr_doc="<seviye> - Günlükleri göster",
         es_doc="<nivel> - Mostrar registros",
+        kk_doc="<деңгей> - Логтарды көрсету",
     )
     async def logs(
         self,
@@ -748,12 +821,6 @@ class TestMod(loader.Module):
                 "postgre://**************************",
             )
 
-        if os.environ.get("hikka_session"):
-            logs = logs.replace(
-                os.environ.get("hikka_session"),
-                "StringSession(**************************)",
-            )
-
         logs = BytesIO(logs.encode("utf-16"))
         logs.name = "hikka-logs.txt"
 
@@ -783,6 +850,7 @@ class TestMod(loader.Module):
                 message.form["chat"],
                 logs,
                 caption=self.strings("logs_caption").format(named_lvl, *other),
+                reply_to=message.form["top_msg_id"],
             )
 
     @loader.owner
@@ -792,6 +860,7 @@ class TestMod(loader.Module):
         tr_doc="<süre> - Botu N saniye boyunca durdur",
         uz_doc="<vaqt> - Botni N soniya davomida to'xtatish",
         es_doc="<tiempo> - Congela el bot durante N segundos",
+        kk_doc="<уақыт> - Ботты N секунд ұзақтығында тұзатып қой",
     )
     async def suspend(self, message: Message):
         """<time> - Suspends the bot for N seconds"""
@@ -811,6 +880,7 @@ class TestMod(loader.Module):
         tr_doc="Kullanıcı botunun yanıt hızını kontrol edin",
         uz_doc="Foydalanuvchi botining javob tezligini tekshiring",
         es_doc="Comprueba la velocidad de respuesta del bot de usuario",
+        kk_doc="Қолданушы ботының жауап шығу уақытын тексеру",
     )
     async def ping(self, message: Message):
         """Test your userbot ping"""

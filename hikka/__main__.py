@@ -71,7 +71,7 @@ else:
         try:
             import pyrogram
 
-            if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 60):
+            if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 61):
                 raise ImportError
         except ImportError:
             print("🔄 Installing Hikka-Pyro...")

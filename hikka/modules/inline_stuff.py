@@ -155,6 +155,28 @@ class InlineStuffMod(loader.Module):
         ),
     }
 
+    strings_kk = {
+        "name": "InlineStuff",
+        "bot_username_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Көрсетілген бот"
+            " аты жарамсыз. Оның соңында </b><code>bot</code><b> қосып, 4 символдан"
+            " кем болмауы керек</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бұл ат бос емес</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Баптаулар сақталды."
+            " Өзгертулерді қолдану үшін ботты қайта іске қосыңыз</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Сәлеметсіз бе! Бұл Hikka — жақсы модульді Telegram бот. Сіз"
+            " онды аккаунтыңызға орната аласыз!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Қолдау сөйлесу кезегі</a></b>'
+        ),
+    }
+
     async def watcher(self, message: Message):
         if (
             getattr(message, "out", False)
@@ -226,6 +248,7 @@ class InlineStuffMod(loader.Module):
         tr_doc="<kullanıcı adı> - İçe aktarma botunun kullanıcı adını değiştirin",
         uz_doc="<foydalanuvchi nomi> - Bot foydalanuvchi nomini o'zgartiring",
         es_doc="<nombre de usuario> - Cambia el nombre de usuario del bot de inline",
+        kk_doc="<пайдаланушы аты> - Инлайн боттың пайдаланушы атын өзгерту",
     )
     async def ch_hikka_bot(self, message: Message):
         """<username> - Change your Hikka inline bot username"""

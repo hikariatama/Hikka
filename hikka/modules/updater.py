@@ -27,6 +27,7 @@ from telethon.tl.types import DialogFilter, Message
 
 from .. import loader, main, utils, version
 from ..inline.types import InlineCall
+from .._internal import get_startup_callback
 
 logger = logging.getLogger(__name__)
 
@@ -373,6 +374,62 @@ class UpdaterMod(loader.Module):
         ),
     }
 
+    strings_kk = {
+        "source": (
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Бастапқы коды</b> <a"
+            ' href="{}">бұл жерде</a> қарауға болады'
+        ),
+        "restarting_caption": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Твой {}"
+            " перезагружается...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Жаңартуларды"
+            " жүктеу...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Жаңартуларды"
+            " орнату...</b>"
+        ),
+        "success": (
+            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Жаңарту сәтті"
+            " аяқталды! {}</b>\n<i>Бірақ модульдер әлі жүктелуде...</i>\n<i>Жаңарту"
+            " {} секундқа аяқталды</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Юзербот толық"
+            " жүктелді! {}</b>\n<i>Толық жаңарту {} секундқа аяқталды</i>"
+        ),
+        "secure_boot_complete": (
+            "🔒 <b>Безпеке режимі аяқталды! {}</b>\n<i>Жаңарту {} секундқа аяқталды</i>"
+        ),
+        "origin_cfg_doc": "Жаңартуларды жүктеу үшін сілтеме",
+        "btn_restart": "🔄 Жаңарту",
+        "btn_update": "🧭 Жаңарту",
+        "restart_confirm": "❓ <b>Сен жаңартуға сенімдісін бе?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>Сен бұл бетті безпеке режимінде жаңартуға сенімдісін бе?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>Сен жаңартуға сенімдісін бе??\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": (
+            "🚸 <b>Сіздің соңғы нұсқаныңыз бар. Сіз жаңартуға мүмкіндік береді ме?</b>"
+        ),
+        "cancel": "🚫 Бас тарту",
+        "_cls_doc": "Юзерботты жаңарту",
+        "lavhost_restart": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Сіздің {}"
+            " жаңартуға басталды...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Сіздің {}"
+            " жаңартуға басталды...</b>"
+        ),
+    }
+
     strings_tt = {
         "source": (
             "<emoji document_id=5456255401194429832>📖</emoji> <b>Чыганак кодын <a"
@@ -442,6 +499,7 @@ class UpdaterMod(loader.Module):
         tr_doc="Kullanıcı botunu yeniden başlatır",
         uz_doc="Foydalanuvchi botini qayta ishga tushiradi",
         es_doc="Reinicia el bot",
+        kk_doc="Жүктеген ботты қайта жүктейді",
     )
     async def restart(self, message: Message):
         """Restarts the userbot"""
@@ -546,7 +604,7 @@ class UpdaterMod(loader.Module):
 
         await message.client.disconnect()
 
-        signal.signal(signal.SIGTERM, lambda *_: restart(*sys.argv[1:]))
+        utils.atexit(get_startup_callback(), signal.SIGTERM)
         os.kill(os.getpid(), signal.SIGTERM)
 
     async def download_common(self):
@@ -600,6 +658,7 @@ class UpdaterMod(loader.Module):
         tr_doc="Userbot güncellemelerini indirir",
         uz_doc="Userbot yangilanishlarini yuklaydi",
         es_doc="Descarga las actualizaciones del bot",
+        kk_doc="Жүйе жаңартуларын жүктейді",
     )
     async def update(self, message: Message):
         """Downloads userbot updates"""
@@ -686,6 +745,7 @@ class UpdaterMod(loader.Module):
         tr_doc="Proje kaynak kodu bağlantısını gösterir",
         uz_doc="Loyihaning manba kodiga havola ko'rsatadi",
         es_doc="Muestra el enlace al código fuente del proyecto",
+        kk_doc="Жобаның қайнар кодына сілтеме көрсетеді",
     )
     async def source(self, message: Message):
         """Links the source code of this project"""
@@ -852,13 +912,3 @@ class UpdaterMod(loader.Module):
             inline_message_id=ms,
             text=self.inline.sanitise_text(msg),
         )
-
-
-def restart(*argv):
-    os.execl(
-        sys.executable,
-        sys.executable,
-        "-m",
-        os.path.relpath(utils.get_base_dir()),
-        *argv,
-    )

@@ -309,6 +309,56 @@ class Translations(loader.Module):
         "button404": "¡No puedes presionar este botón ahora!",
     }
 
+    strings_kk = {
+        "lang_saved": "{} <b>Тіл сақталды!</b>",
+        "pack_saved": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Аударма пакеті"
+            " сақталды!</b>"
+        ),
+        "incorrect_language": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Жарамсыз тіл"
+            " белгіленді</b>"
+        ),
+        "lang_removed": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Аударма пакеті"
+            " өшірілді</b>"
+        ),
+        "check_pack": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Аударма пакеті"
+            " сілтемесінің пішімі жарамсыз</b>"
+        ),
+        "check_url": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сіз аударма пакеті"
+            " бар сілтемені көрсетуіңіз керек</b>"
+        ),
+        "too_long": (
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>Команда жауап"
+            " өте ұзын, ол файлда жіберілді.</b>"
+        ),
+        "opening_form": " <b>Форманы ашу...</b>",
+        "opening_gallery": " <b>Галереяны ашу...</b>",
+        "opening_list": " <b>Тізімні ашу...</b>",
+        "inline403": (
+            "🚫 <b>Сіз бұл сөйлесуде кірістірілген элементтерді жібере алмайсыз</b>"
+        ),
+        "invoke_failed": (
+            "<b>🚫 Модульді іске қосу сәтсіз аяқталды! Толығырақ құжаттың журналында</b>"
+        ),
+        "show_inline_cmds": "📄 Барлық қол жетімді кірістірілген командаларды көрсету",
+        "no_inline_cmds": "Сіздің қол жетімді inline командаларыңыз жоқ",
+        "no_inline_cmds_msg": (
+            "<b>😔 Қол жетімді inline командалар жоқ немесе Сізге оларға қатынасуға"
+            " рұқсат жоқ</b>"
+        ),
+        "inline_cmds": "ℹ️ Сіздің {} қол жетімді команда(-лар)ыңыз бар",
+        "inline_cmds_msg": "<b>ℹ️ Қол жетімді inline командалар:</b>\n\n{}",
+        "run_command": "🏌️ Команданы іске қосу",
+        "command_msg": "<b>🌘 «{}» командасы</b>\n\n<i>{}</i>",
+        "command": "🌘 «{}» командасы",
+        "button403": "Сіз бұл түймешіге баса алмайсыз!",
+        "keep_id": "⚠️ ID тастамаңыз! {}",
+    }
+
     strings_tt = {
         "lang_saved": "{} <b>Тел сакланган!</b>",
         "pack_saved": (
@@ -360,6 +410,7 @@ class Translations(loader.Module):
         tr_doc="[Diller] - Varsayılan dili değiştir",
         uz_doc="[til] - Standart tili o'zgartirish",
         es_doc="[Idiomas] - Cambiar el idioma predeterminado",
+        kk_doc="[тілдер] - Бастапқы тілді өзгерту",
     )
     async def setlang(self, message: Message):
         """[languages in the order of priority] - Change default language"""
@@ -378,10 +429,11 @@ class Translations(loader.Module):
             "🇩🇪": " <emoji document_id=6320817337033295141>🇩🇪</emoji>",
             "🇪🇸": " <emoji document_id=6323315062379382237>🇪🇸</emoji>",
             "🇹🇷": " <emoji document_id=6321003171678259486>🇹🇷</emoji>",
+            "🇰🇿": " <emoji document_id=6323135275048371614>🇰🇿</emoji>",
             "🥟": "<emoji document_id=5382337996123020810>🥟</emoji>",
         }
 
-        lang2country = {"en": "🇬🇧", "tt": "🥟"}
+        lang2country = {"en": "🇬🇧", "tt": "🥟", "kk": "🇰🇿"}
 
         await utils.answer(
             message,
@@ -413,6 +465,10 @@ class Translations(loader.Module):
             " Tashqi tarjima paketini o'zgartirish"
         ),
         es_doc="[Enlace al paquete | vacío para eliminar] - Cambiar el paquete de",
+        kk_doc=(
+            "[тілдік пакеттің сілтемесі | бос қалдырып бастапқы қалдыру] - Сыртқы"
+            " тілдік пакетін өзгерту"
+        ),
     )
     async def dllangpackcmd(self, message: Message):
         """[link to a langpack | empty to remove] - Change Hikka translate pack (external)

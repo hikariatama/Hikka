@@ -145,6 +145,7 @@ class List(InlineUnit):
             "type": "list",
             "chat": None,
             "message_id": None,
+            "top_msg_id": utils.get_topic(message),
             "uid": unit_id,
             "current_index": 0,
             "strings": strings,

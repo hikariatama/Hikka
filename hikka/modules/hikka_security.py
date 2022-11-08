@@ -139,6 +139,23 @@ class HikkaSecurityMod(loader.Module):
         "seconds": "segundos",
     }
 
+    service_strings_kk = {
+        "for": "үшін",
+        "forever": "әрқашан",
+        "command": "команда",
+        "module": "модуль",
+        "chat": "сөйлесу",
+        "user": "пайдаланушы",
+        "day": "күн",
+        "days": "күн",
+        "hour": "сағат",
+        "hours": "сағат",
+        "minute": "мұнай",
+        "minutes": "мұнай",
+        "second": "секунд",
+        "seconds": "секунд",
+    }
+
     strings = {
         "name": "HikkaSecurity",
         "no_command": "🚫 <b>Command </b><code>{}</code><b> not found!</b>",
@@ -427,6 +444,79 @@ class HikkaSecurityMod(loader.Module):
     }
 
     strings_de = {
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Befehl"
+            " </b><code>{}</code><b> nicht gefunden!</b>"
+        ),
+        "permissions": (
+            "🔐 <b>Hier können Sie die Berechtigungen für den Befehl"
+            " </b><code>{}{}</code><b> konfigurieren</b>"
+        ),
+        "close_menu": "🙈 Schließen Sie dieses Menü",
+        "global": (
+            "🔐 <b>Hier können Sie die globale Ausschlussmaske einstellen. Wenn der"
+            " Schalter hier deaktiviert ist, ist er für alle Befehle deaktiviert</b>"
+        ),
+        "owner": "👑 Besitzer",
+        "sudo": "🧐 Sudo",
+        "support": "🤓 Support",
+        "group_owner": "🧛‍♂️ Gruppenbesitzer",
+        "group_admin_add_admins": "🧑‍⚖️ Admin (Mitglieder hinzufügen)",
+        "group_admin_change_info": "🧑‍⚖️ Admin (Info ändern)",
+        "group_admin_ban_users": "🧑‍⚖️ Admin (Bannen)",
+        "group_admin_delete_messages": "🧑‍⚖️ Admin (Nachrichten löschen)",
+        "group_admin_pin_messages": "🧑‍⚖️ Admin (Anheften)",
+        "group_admin_invite_users": "🧑‍⚖️ Admin (Einladen)",
+        "group_admin": "🧑‍⚖️ Admin (beliebig)",
+        "group_member": "👥 In der Gruppe",
+        "pm": "🤙 In Privatnachrichten",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji>"
+            " <b>Gruppenbesitzer</b><code>owner</code><b>:</b>\n\n{}"
+        ),
+        "sudo_list": (
+            "<emoji document_id=5418133868475587618>🧐</emoji>"
+            " <b>Gruppenbesitzer</b><code>sudo</code><b>:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id=5415729507128580146>🤓</emoji>"
+            " <b>Gruppenbesitzer</b><code>support</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Es gibt keine"
+            " Gruppenbesitzer</b><code>owner</code>"
+        ),
+        "no_sudo": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Es gibt keine"
+            " Gruppenbesitzer</b><code>sudo</code>"
+        ),
+        "no_support": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Es gibt keine"
+            " Gruppenbesitzer</b><code>support</code>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bitte gib an, wem du"
+            " Rechte geben willst</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Die angegebene Person"
+            " ist kein Benutzer</b>"
+        ),
+        "cancel": "🚫 Abbrechen",
+        "confirm": "👑 Bestätigen",
+        "self": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Du kannst deine"
+            " eigenen Rechte nicht verwalten!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>Bist du sicher, dass du <a href="tg://user?id={}">{}</a> in die'
+            " Gruppe </b><code>{}</code><b> hinzufügen willst?\nDieser Vorgang kann"
+            " einen Teil- oder vollen Zugriff auf den Userbot für diesen Benutzer"
+            " ermöglichen!</b>"
+        ),
+        "suggest_nonick": "🔰 <i>Möchtest du NoNick für diesen Benutzer aktivieren?</i>",
+        "user_nn": '🔰 <b>NoNick für <a href="tg://user?id={}">{}</a> aktiviert</b>',
+        "enable_nonick_btn": "🔰 Aktivieren",
         "owner_added": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> wurde der Gruppe </b><code>owner</code>'
@@ -463,10 +553,6 @@ class HikkaSecurityMod(loader.Module):
             " (</b><code>user</code><b> or </b><code>chat</code><b>)"
             " fehlt</b>"
         ),
-        "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Benutzer nicht"
-            " gefunden</b>"
-        ),
         "no_chat": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Chat nicht"
             " gefunden</b>"
@@ -481,7 +567,7 @@ class HikkaSecurityMod(loader.Module):
         ),
         "confirm_rule": (
             "🔐 <b>Bitte bestätigen Sie, dass Sie {} <a href='{}'>{}</a>"
-            " die Berechtigung erteilen möchten </b><code>{}</code><b> {}</b>"
+            " die Berechtigung erteilen möchten {} </b><code>{}</code><b> {}</b>"
         ),
         "multiple_rules": (
             "🔐 <b>Es war nicht möglich, die Sicherheitsregeln eindeutig zu erkennen."
@@ -512,6 +598,82 @@ class HikkaSecurityMod(loader.Module):
     }
 
     strings_tr = {
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Komut"
+            " </b><code>{}</code><b> bulunamadı!</b>"
+        ),
+        "permissions": (
+            "🔐 <b>Bu komut için</b><code>{}{}</code><b> izinlerini"
+            " yapılandırabilirsiniz</b>"
+        ),
+        "close_menu": "🙈 Bu menüyü kapat",
+        "global": (
+            "🔐 <b>Bu, tüm komutlar için devre dışı bırakılmışsa, genel yasaklama"
+            " maskesini ayarlamanıza olanak tanır</b>"
+        ),
+        "owner": "👑 Sahip",
+        "sudo": "🧐 Sudo",
+        "support": "🤓 Destek",
+        "group_owner": "🧛‍♂️ Grup Sahibi",
+        "group_admin_add_admins": "🧑‍⚖️ Yönetici (Üyeleri ekle)",
+        "group_admin_change_info": "🧑‍⚖️ Yönetici (Bilgi değiştir)",
+        "group_admin_ban_users": "🧑‍⚖️ Yönetici (Yasakla)",
+        "group_admin_delete_messages": "🧑‍⚖️ Yönetici (Mesajları sil)",
+        "group_admin_pin_messages": "🧑‍⚖️ Yönetici (Sabitler)",
+        "group_admin_invite_users": "🧑‍⚖️ Yönetici (Davet et)",
+        "group_admin": "🧑‍⚖️ Yönetici (herhangi)",
+        "group_member": "👥 Grup içinde",
+        "pm": "🤙 Özel mesajlarda",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji>"
+            " <b>Grup Sahibi</b><code>owner</code><b>:</b>\n\n{}"
+        ),
+        "sudo_list": (
+            "<emoji document_id=5418133868475587618>🧐</emoji>"
+            " <b>Grup Sahibi</b><code>sudo</code><b>:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id=5415729507128580146>🤓</emoji>"
+            " <b>Grup Sahibi</b><code>support</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Grup Sahibi"
+            " yok</b><code>owner</code>"
+        ),
+        "no_sudo": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Grup Sahibi"
+            " yok</b><code>sudo</code>"
+        ),
+        "no_support": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Grup Sahibi"
+            " yok</b><code>support</code>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lütfen hangi"
+            " kullanıcıya izin vereceğinizi belirtin</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Belirtilen kişi bir"
+            " kullanıcı değil</b>"
+        ),
+        "cancel": "🚫 İptal",
+        "confirm": "👑 Onayla",
+        "self": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kendi izinlerini"
+            " yönetemezsin!</b>"
+        ),
+        "warning": (
+            '⚠️ <b><a href="tg://user?id={}">{}</a> kullanıcısını</b><code>{}</code><b>'
+            " grubuna eklemek istediğinden emin misin?\nBu, kullanıcı için Userbot için"
+            " bir bölünmüş veya tam erişim sağlayabilir!</b>"
+        ),
+        "suggest_nonick": (
+            "🔰 <i>Bu kullanıcı için NoNick'i etkinleştirmek ister misin?</i>"
+        ),
+        "user_nn": (
+            '🔰 <b>NoNick <a href="tg://user?id={}">{}</a> için etkinleştirildi</b>'
+        ),
+        "enable_nonick_btn": "🔰 Etkinleştir",
         "owner_added": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> adlı kullanıcı </b><code>sahip</code>'
@@ -547,10 +709,6 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>İlk argüman"
             " (</b><code>user</code><b> veya </b><code>chat</code><b>) bulunamadı</b>"
         ),
-        "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kullanıcı"
-            " bulunamadı</b>"
-        ),
         "no_chat": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sohbet bulunamadı</b>"
         ),
@@ -564,177 +722,472 @@ class HikkaSecurityMod(loader.Module):
         ),
         "confirm_rule": (
             "🔐 <b>Lütfen {} <a href='{}'>{}</a> için izin vermek istediğinize emin olun"
-            " </b><code>{}</code><b> {}</b>"
+            " {} </b><code>{}</code><b> {}</b>"
         ),
-        "multiple_rules": "🔐 <b>Güvenlik kurallarını yönetin</b>\n\n{}",
+        "multiple_rules": (
+            "🔐 <b>Güvenlik kuralları tek bir şekilde tanımlanamadı."
+            " İstediğinizi seçin:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>{} <a href='{}'>{}</a> için izin verildi </b><code>{}</code><b>"
+            " {}</b>"
+        ),
+        "rules": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Güvenlik"
+            " kuralları:</b>\n\n{}"
+        ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hiçbir güvenlik kuralı"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Güvenlik kuralları"
             " yok</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu kullanıcı sahiptir,"
-            " izinleri güvenlik hedefleriyle yönetilemez</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu kullanıcı sahip,"
+            " güvenlik hedefleriyle yönetilemeyen hakları vardır</b>"
         ),
         "rules_removed": (
-            "<emoji document_id=5472308992514464048>🔐</emoji> <b><a href='{}'>{}</a>"
-            " için güvenlik kuralları kaldırıldı</b>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b><a"
+            ' href="{}">{}</a> için güvenlik kuralları kaldırıldı</b>'
         ),
         **service_strings_tr,
     }
 
     strings_uz = {
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bunday"
+            " buyruq </b><code>{}</code><b> topilmadi!</b>"
+        ),
+        "permissions": (
+            "🔐 <b>Bu yerda </b><code>{}{}</code><b> buyrug'i uchun ruxsatlar"
+            " o'zgartirilishi mumkin</b>"
+        ),
+        "close_menu": "🙈 Menuni yopish",
         "global": (
-            "🔐 <b>Bu erda siz global chegaralash maskasini ta'hrirlashingiz mumkin."
-            " Agar bu erda ruxsat berilmasa, qolgan joylarda ham ruxsat berilmaydi!</b>"
+            "🔐 <b>Bu yerda umumiy cheklash maskasini o'zgartirish mumkin. Agar"
+            " tugmani bu yerda o'chirilgan bo'lsa, unda bu barcha buyruqlar uchun"
+            " o'chirilgan bo'ladi</b>"
+        ),
+        "owner": "😎 Sahib",
+        "sudo": "🧐 Sudo",
+        "support": "🤓 Yordamchi",
+        "group_owner": "🧛‍♂️ Guruh egasi",
+        "group_admin_add_admins": "🧑‍⚖️ Admin (qo'shish)",
+        "group_admin_change_info": "🧑‍⚖️ Admin (info o'zgartirish)",
+        "group_admin_ban_users": "🧑‍⚖️ Admin (banning)",
+        "group_admin_delete_messages": "🧑‍⚖️ Admin (o'chirish)",
+        "group_admin_pin_messages": "🧑‍⚖️ Admin (qulflash)",
+        "group_admin_invite_users": "🧑‍⚖️ Admin (qo'shish)",
+        "group_admin": "🧑‍⚖️ Admin (har qanday)",
+        "group_member": "👥 Guruhda",
+        "pm": "🤙 Shaxsiy habarlar",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Guruh </b><code>sahibi"
+            "</code><b> foydalanuvchilari:</b>\n\n{}"
+        ),
+        "sudo_list": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Guruh </b><code>sudo"
+            "</code><b> foydalanuvchilari:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Guruh"
+            " </b><code>yordamchi</code><b> foydalanuvchilari:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Guruhda"
+            " </b><code>sahib</code><b> foydalanuvchilar yo'q</b>"
+        ),
+        "no_sudo": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Guruhda </b><code>sudo"
+            "</code><b> foydalanuvchilar yo'q</b>"
+        ),
+        "no_support": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Guruhda"
+            " </b><code>yordamchi</code><b> foydalanuvchilar yo'q</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Qaysi foydalanuvchiga"
+            " huquqlarni berishni xohlaysiz</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Tayinlangan maqsad -"
+            " foydalanuvchi emas</b>"
+        ),
+        "cancel": "🚫 Bekor qilish",
+        "confirm": "👑 Tasdiqlash",
+        "self": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>O'zingizning"
+            " huquqlaringizni boshqalariga bermang!</b>"
         ),
         "warning": (
-            '⚠️ <b>Iltimos, ta\'sdiqlang, siz <a href="tg://user?id={}">{}</a>'
-            " </b><code>{}</code><b> ega gruppasiga qushmoqchimisiz? Bu harakat shaxsiy"
-            " ma'lumotni oshkor va foydalanuvchiga userbot ishlatishiga toʻliq yoki"
-            " qisman ruxsat berishi mumkin</b>"
+            '⚠️ <b>Siz haqiqatdan ham <a href="tg://user?id={}">{}</a> ni guruhga'
+            " </b><code>{}</code><b> qo'shmoqchimisiz!\nBu harakat bu foydalanuvchiga"
+            " qismi yoki to'liq huquqlarni o'tkazishi mumkin!</b>"
         ),
+        "suggest_nonick": (
+            "🔰 <i>Siz buni foydalanuvchiga NoNickni yoqishni xohlaysizmi?</i>"
+        ),
+        "user_nn": '🔰 <b><a href="tg://user?id={}">{}</a> uchun NoNick yoqildi</b>',
+        "enable_nonick_btn": "🔰 Yoqish",
         "owner_added": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
-            "<b> qo'shildi</b>"
+            ' href="tg://user?id={}">{}</a> guruhga </b><code>owner</code>'
+            " <b>qo'shildi</b>"
         ),
         "sudo_added": (
             '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
-            "<b> qo'shildi</b>"
+            ' href="tg://user?id={}">{}</a> guruhga </b><code>sudo</code>'
+            " <b>qo'shildi</b>"
         ),
         "support_added": (
             '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
-            "<b> qo'shildi</b>"
+            ' href="tg://user?id={}">{}</a> guruhga </b><code>support</code>'
+            " <b>qo'shildi</b>"
         ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>owner</code>'
-            "<b> o'chirildi</b>"
+            ' href="tg://user?id={}">{}</a> guruhdan </b><code>owner</code>'
+            " <b>o'chirildi</b>"
         ),
         "sudo_removed": (
             '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
-            "<b> o'chirildi</b>"
+            ' href="tg://user?id={}">{}</a> guruhdan </b><code>sudo</code>'
+            " <b>o'chirildi</b>"
         ),
         "support_removed": (
             '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>support</code>'
-            "<b> o'chirildi</b>"
+            ' href="tg://user?id={}">{}</a> guruhdan </b><code>support</code>'
+            " <b>o'chirildi</b>"
         ),
         "_cls_doc": "Xavfsizlik sozlamalarini boshqarish",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ilk argument"
-            " (</b><code>user</code><b> yoki </b><code>chat</code><b>) topilmadi</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Siz boshqarish"
+            " uchun biror narsani ko'rsatmadingiz</b>"
         ),
-        "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Foydalanuvchi"
-            " topilmadi</b>"
-        ),
-        "no_chat": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Guruh topilmadi</b>"
-        ),
-        "what_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hech qanday qoida"
-            " belgilanmadi (modul yoki buyruq)</b>"
+        "no_target": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Siz boshqarish"
+            " uchun biror narsani ko'rsatmadingiz</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hech qanday qoida"
-            " belgilanmadi (modul yoki buyruq)</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Xavfsizlik"
+            " qoidasi (modul yoki buyruq) ko'rsatilmagan</b>"
         ),
         "confirm_rule": (
-            "🔐 <b>Iltimos {} <a href='{}'>{}</a> uchun ruxsat berishni"
-            " istaysizmi</b><code>{}</code><b> {}</b>"
+            "🔐 <b>Iltimos, tasdiqlang {} <a href='{}'>{}</a> uchun {}"
+            " </b><code>{}</code><b> {}</b> <b>huquqini berishni</b>"
         ),
-        "multiple_rules": "🔐 <b>Xavfsizlik qoidalarni boshqarish</b>\n\n{}",
+        "multiple_rules": (
+            "🔐 <b>Xavfsizlik qoidalarini aniq tartibda aniqlab bo'lmadi."
+            " Sizga kerakli qoidani tanlang:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>Siz {} <a href='{}'>{}</a> uchun {}"
+            " </b><code>{}</code><b> {}</b> <b>huquqini berdingiz</b>"
+        ),
+        "rules": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Targ'etlangan"
+            " xavfsizlik qoidalari:</b>\n\n{}"
+        ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hech qanday xavfsizlik"
-            " qoidasi yo'q</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Targ'etlangan"
+            " xavfsizlik qoidalari yo'q</b>"
         ),
         "owner_target": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ushbu foydalanuvchi"
-            " egasi, ruxsatlar xavfsizlik maqsadlari bilan boshqarilishi mumkin"
-            " emas</b>"
+            " guruhning egasi, u uchun targ'etlangan xavfsizlik qoidalari"
+            " boshqarilishi mumkin emas</b>"
         ),
         "rules_removed": (
-            "<emoji document_id=5472308992514464048>🔐</emoji> <b><a href='{}'>{}</a>"
-            " uchun xavfsizlik qoidalari o'chirildi</b>"
+            '<emoji document_id=5472308992514464048>🔐</emoji> <b><a href="{}">{}</a>'
+            " uchun targ'etlangan xavfsizlik qoidalari o'chirildi</b>"
         ),
         **service_strings_uz,
     }
 
     strings_es = {
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Comando"
+            " </b><code>{}</code><b> no encontrado!</b>"
+        ),
+        "permissions": (
+            "🔐 <b>Aquí puede configurar los permisos para el comando"
+            " </b><code>{}{}</code>"
+        ),
+        "close_menu": "🙈 Cerrar este menú",
+        "global": (
+            "🔐 <b>Aquí puede configurar la máscara de exclusión global. Si el"
+            " interruptor está apagado aquí, está apagado para todos los comandos</b>"
+        ),
+        "owner": "😎 Dueño",
+        "sudo": "🧐 Sudo",
+        "support": "🤓 Asistente",
+        "group_owner": "🧛‍♂️ Dueño del grupo",
+        "group_admin_add_admins": "🧑‍⚖️ Admin (agregar miembros)",
+        "group_admin_change_info": "🧑‍⚖️ Admin (cambiar información)",
+        "group_admin_ban_users": "🧑‍⚖️ Admin (banear)",
+        "group_admin_delete_messages": "🧑‍⚖️ Admin (eliminar mensajes)",
+        "group_admin_pin_messages": "🧑‍⚖️ Admin (anclar)",
+        "group_admin_invite_users": "🧑‍⚖️ Admin (invitar)",
+        "group_admin": "🧑‍⚖️ Admin (cualquiera)",
+        "group_member": "👥 En el grupo",
+        "pm": "🤙 En el pm",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Usuarios del grupo"
+            " </b><code>owner</code><b>:</b>\n\n{}"
+        ),
+        "sudo_list": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Usuarios del grupo"
+            " </b><code>sudo</code><b>:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Usuarios del grupo"
+            " </b><code>support</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>No hay usuarios en el"
+            " grupo </b><code>owner</code>"
+        ),
+        "no_sudo": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>No hay usuarios en el"
+            " grupo </b><code>sudo</code>"
+        ),
+        "no_support": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>No hay usuarios en el"
+            " grupo </b><code>support</code>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Indica a quien"
+            " otorgarle permisos</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La meta indicada no es"
+            " un usuario</b>"
+        ),
+        "cancel": "🚫 Cancelar",
+        "confirm": "👑 Confirmar",
+        "self": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No puedes administrar"
+            " tus propios permisos!</b>"
+        ),
+        "warning": (
+            "⚠️ <b>Estas seguro de que quieres agregar a <a"
+            ' href="tg://user?id={}">{}</a> al grupo </b><code>{}</code><b>!\nEste'
+            " proceso puede otorgar acceso parcial o total a este usuario al bot!</b>"
+        ),
+        "suggest_nonick": "🔰 <i>Quieres activar NoNick para este usuario?</i>",
+        "user_nn": '🔰 <b>NoNick para <a href="tg://user?id={}">{}</a> activado</b>',
+        "enable_nonick_btn": "🔰 Activar",
         "owner_added": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>propietario</code>'
-            "<b> añadido</b>"
+            ' href="tg://user?id={}">{}</a> añadido al grupo </b><code>owner</code>'
         ),
         "sudo_added": (
             '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
-            "<b> añadido</b>"
+            ' href="tg://user?id={}">{}</a> añadido al grupo </b><code>sudo</code>'
         ),
         "support_added": (
             '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>soporte</code>'
-            "<b> añadido</b>"
+            ' href="tg://user?id={}">{}</a> añadido al grupo </b><code>support</code>'
         ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>propietario</code>'
-            "<b> eliminado</b>"
+            ' href="tg://user?id={}">{}</a> eliminado del grupo </b><code>owner</code>'
         ),
         "sudo_removed": (
             '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>sudo</code>'
-            "<b> eliminado</b>"
+            ' href="tg://user?id={}">{}</a> eliminado del grupo </b><code>sudo</code>'
         ),
         "support_removed": (
             '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> </b><code>soporte</code>'
-            "<b> eliminado</b>"
+            ' href="tg://user?id={}">{}</a> eliminado del grupo'
+            " </b><code>support</code>"
         ),
-        "_cls_doc": "Administra los ajustes de seguridad",
+        "_cls_doc": "Administrar configuraciones de seguridad",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se"
-            " encontró el primer medio (</b><code>usuario</code><b> o </b>"
-            "<code>chat</code><b>)</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Necesitas especificar"
+            " el tipo de objetivo como primer argumento (</b><code>user</code><b> o"
+            " </b><code>chat</code><b>)</b>"
         ),
-        "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se"
-            " encontró el usuario</b>"
-        ),
-        "no_chat": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se"
-            " encontró el chat</b>"
-        ),
-        "what_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se"
-            " especificó ninguna regla (módulo o comando)</b>"
+        "no_target": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se ha especificado"
+            " el objetivo de la regla de seguridad</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se"
-            " especificó ninguna regla (módulo o comando)</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se ha especificado"
+            " la regla de seguridad (módulo o comando)</b>"
         ),
         "confirm_rule": (
-            "🔐 <b>¿Estás seguro de que quieres {} <a href='{}'>{}</a>  </b>"
+            "🔐 <b>Confirme que desea otorgar {} <a href='{}'>{}</a> el derecho a"
+            " usar {} </b><code>{}</code><b> {}</b>"
+        ),
+        "multiple_rules": (
+            "🔐 <b>No se pudo identificar con seguridad la regla. Seleccione la que"
+            " tenías en mente:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>Has otorgado {} <a href='{}'>{}</a> el derecho a usar {} </b>"
             "<code>{}</code><b> {}</b>"
         ),
-        "multiple_rules": "🔐 <b>Administración de reglas de seguridad</b>\n\n{}",
+        "rules": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Reglas de seguridad"
+            " dirigidas:</b>\n\n{}"
+        ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No hay"
-            " reglas de seguridad</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No hay reglas de"
+            " seguridad dirigidas</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se"
-            " puede administrar este usuario porque es el propietario.</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Este usuario es el"
+            " propietario, sus derechos no pueden ser manejados por reglas de"
+            " seguridad dirigidas</b>"
         ),
         "rules_removed": (
-            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Reglas"
-            " de seguridad eliminadas para <a href='{}'>{}</a></b>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Reglas de seguridad"
+            " dirigidas para <a href='{}'>{}</a> eliminadas</b>"
         ),
         **service_strings_es,
+    }
+
+    strings_kk = {
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда"
+            " </b><code>{}</code><b> табылмады!</b>"
+        ),
+        "permissions": (
+            "🔐 <b>Мұнда команда </b><code>{}{}</code><b> үшін рұқсаттарды баптау"
+            " жасай аласыз</b>"
+        ),
+        "close_menu": "🙈 Мәзірді жабу",
+        "global": (
+            "🔐 <b>Мұнда қосымша үйлесімдік масканы баптауға болады. Егер түймешік"
+            " бұл жерде өшірілген болса, барлық командалар үшін өшіріледі</b>"
+        ),
+        "owner": "😎 Есімші",
+        "sudo": "🧐 Судо",
+        "support": "🤓 Көмекші",
+        "group_owner": "🧛‍♂️ Топ есімшісі",
+        "group_admin_add_admins": "🧑‍⚖️ Админ (қатысушыларды қосу)",
+        "group_admin_change_info": "🧑‍⚖️ Админ (ақпаратты өзгерту)",
+        "group_admin_ban_users": "🧑‍⚖️ Админ (қатысушыларды бұғаттау)",
+        "group_admin_delete_messages": "🧑‍⚖️ Админ (хабарларды жою)",
+        "group_admin_pin_messages": "🧑‍⚖️ Админ (белгілеу)",
+        "group_admin_invite_users": "🧑‍⚖️ Админ (қатысушыларды шақыру)",
+        "group_admin": "🧑‍⚖️ Админ (барлығы)",
+        "group_member": "👥 Топта",
+        "pm": "🤙 ЛС",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Топ"
+            " </b><code>owner</code><b>дегендері:</b>\n\n{}"
+        ),
+        "sudo_list": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Топ"
+            " </b><code>sudo</code><b>дегендері:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Топ"
+            " </b><code>support</code><b>дегендері:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Топ"
+            " </b><code>owner</code><b>дегендері жоқ</b>"
+        ),
+        "no_sudo": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Топ"
+            " </b><code>sudo</code><b>дегендері жоқ</b>"
+        ),
+        "no_support": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Топ"
+            " </b><code>support</code><b>дегендері жоқ</b>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Құқықтарды беру үшін"
+            " қатысушыны көрсет</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Көрсетілген мақсат -"
+            " қатысушы емес</b>"
+        ),
+        "cancel": "🚫 Болдырмау",
+        "confirm": "👑 Растау",
+        "self": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Өзіңіздің құқықтарын"
+            " басқаруға болмайды!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>Сіз <a href="tg://user?id={}">{}</a>ді топ </b><code>{}</code><b>ға'
+            " қосу келісімін қалайсыз?\nБұл әрекетті қайтару мүмкін емес!</b>"
+        ),
+        "suggest_nonick": "🔰 <i>Бұл пайдаланушы үшін NoNick қосыңыз келеді ме?</i>",
+        "user_nn": '🔰 <b><a href="tg://user?id={}">{}</a> үшін NoNick қосылды</b>',
+        "enable_nonick_btn": "🔰 Қосу",
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> қосылды </b><code>owner</code> топқа'
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> қосылды </b><code>sudo</code> топқа'
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> қосылды </b><code>support</code> топқа'
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> алынды </b><code>owner</code> топтан'
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> алынды </b><code>sudo</code> топтан'
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> алынды </b><code>support</code> топтан'
+        ),
+        "_cls_doc": "Безпеке баптауларын басқару",
+        "what": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Басқауыңызға бұрын"
+            " баптау түрін (</b><code>user</code><b> немесе </b><code>chat</code><b>)"
+            " көрсетіңіз</b>"
+        ),
+        "no_target": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Безпекаға қатысу"
+            " үшін құжаттама берілмейді</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Безпекаға қатысу"
+            " үшін модуль немесе команда белгіленмейді</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Өзгерістерді растау үшін, келесі құжаттамаға қатысуыңызға"
+            " рұқсат беру үшін {} <a href='{}'>{}</a> {} </b><code>{}</code><b>"
+            " {}</b>"
+        ),
+        "multiple_rules": (
+            "🔐 <b>Безпекаға қатысу үшін құжаттамаға қатысуыңызға рұқсат беру"
+            " үшін бірнеше құжаттама белгіленген. Келесінен бірін таңдаңыз:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>Сіз {} <a href='{}'>{}</a> {} </b><code>{}</code><b> {}</b>"
+            " үшін құжаттамаға қатысуыңызға рұқсат бердіңіз"
+        ),
+        "rules": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Құжаттамаға"
+            " қатысу үшін белгіленген баптаулар:</b>\n\n{}"
+        ),
+        "no_rules": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Құжаттамаға"
+            " қатысу үшін белгіленген баптаулар жоқ</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бұл пайдаланушы"
+            " босқа құжаттамаларға қатысу үшін баптауларды белгілеуі мүмкін"
+            " емес</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Құжаттамаға"
+            " қатысу үшін <a href='{}'>{}</a> үшін белгіленген баптаулар"
+            " жойылды</b>"
+        ),
+        **service_strings_kk,
     }
 
     async def inline__switch_perm(
@@ -931,6 +1384,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="[command] - Komut için izinleri ayarla",
         uz_doc="[command] - Buyruq uchun ruxsatlarini sozlash",
         es_doc="[command] - Configurar permisos para comandos",
+        kk_doc="[command] - Команданың рұқсаттарын баптау",
     )
     async def security(self, message: Message):
         """[command] - Configure command's security settings"""
@@ -964,6 +1418,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="[command] - Inline komut için izinleri ayarla",
         uz_doc="[command] - Inline buyruq uchun ruxsatlarini sozlash",
         es_doc="[command] - Configurar permisos para comandos inline",
+        kk_doc="[command] - Инлайн команданың рұқсаттарын баптау",
     )
     async def inlinesec(self, message: Message):
         """[command] - Configure inline command's security settings"""
@@ -1151,6 +1606,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhiga qo'shish",
         es_doc="<usuario> - Agregar usuario al grupo `sudo`",
+        kk_doc="<пайдаланушы> - Пайдаланушыны `sudo` тобына қосу",
     )
     async def sudoadd(self, message: Message):
         """<user> - Add user to `sudo`"""
@@ -1162,6 +1618,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhiga qo'shish",
         es_doc="<usuario> - Agregar usuario al grupo `owner`",
+        kk_doc="<пайдаланушы> - Пайдаланушыны `owner` тобына қосу",
     )
     async def owneradd(self, message: Message):
         """<user> - Add user to `owner`"""
@@ -1173,6 +1630,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="<kullanıcı> - Kullanıcıyı `support` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhiga qo'shish",
         es_doc="<usuario> - Agregar usuario al grupo `support`",
+        kk_doc="<пайдаланушы> - Пайдаланушыны `support` тобына қосу",
     )
     async def supportadd(self, message: Message):
         """<user> - Add user to `support`"""
@@ -1184,6 +1642,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhidan olib tashlash",
         es_doc="<usuario> - Eliminar usuario del grupo `sudo`",
+        kk_doc="<пайдаланушы> - Пайдаланушыны `sudo` тобынан алып тастау",
     )
     async def sudorm(self, message: Message):
         """<user> - Remove user from `sudo`"""
@@ -1195,6 +1654,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhidan olib tashlash",
         es_doc="<usuario> - Eliminar usuario del grupo `owner`",
+        kk_doc="<пайдаланушы> - Пайдаланушыны `owner` тобынан алып тастау",
     )
     async def ownerrm(self, message: Message):
         """<user> - Remove user from `owner`"""
@@ -1206,6 +1666,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="<kullanıcı> - Kullanıcıyı `support` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhidan olib tashlash",
         es_doc="<usuario> - Eliminar usuario del grupo `support`",
+        kk_doc="<пайдаланушы> - Пайдаланушыны `support` тобынан алып тастау",
     )
     async def supportrm(self, message: Message):
         """<user> - Remove user from `support`"""
@@ -1217,6 +1678,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="`sudo` grubundaki kullanıcıların listesini göster",
         uz_doc="`sudo` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
         es_doc="Mostrar lista de usuarios en el grupo `sudo`",
+        kk_doc="`sudo` тобындағы пайдаланушылар тізімін көрсету",
     )
     async def sudolist(self, message: Message):
         """List users in `sudo`"""
@@ -1228,6 +1690,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="`owner` grubundaki kullanıcıların listesini göster",
         uz_doc="`owner` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
         es_doc="Mostrar lista de usuarios en el grupo `owner`",
+        kk_doc="`owner` тобындағы пайдаланушылар тізімін көрсету",
     )
     async def ownerlist(self, message: Message):
         """List users in `owner`"""
@@ -1239,6 +1702,7 @@ class HikkaSecurityMod(loader.Module):
         tr_doc="`support` grubundaki kullanıcıların listesini göster",
         uz_doc="`support` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
         es_doc="Mostrar lista de usuarios en el grupo `support`",
+        kk_doc="`support` тобындағы пайдаланушылар тізімін көрсету",
     )
     async def supportlist(self, message: Message):
         """List users in `support`"""
@@ -1513,6 +1977,9 @@ class HikkaSecurityMod(loader.Module):
         tr_doc='<"user"/"chat"> - Hedefli güvenlik için bir kural kaldırın',
         uz_doc='<"user"/"chat"> - Maqsadli xavfsizlik uchun bir qoidani olib tashlang',
         es_doc='<"user"/"chat"> - Eliminar una regla de seguridad dirigida',
+        kk_doc=(
+            '<"user"/"chat"> - Мақсадымдық қауіпсіздік үшін қоғамдық қауіпсіздікті жою'
+        ),
     )
     async def tsecrm(self, message: Message):
         """<"user"/"chat"> - Remove targeted security rule"""
@@ -1591,6 +2058,10 @@ class HikkaSecurityMod(loader.Module):
         es_doc=(
             '<"user"/"chat"> [objetivo - usuario o chat] [regla - comando o'
             " módulo] [tiempo] - Establecer seguridad dirigida"
+        ),
+        kk_doc=(
+            '<"user"/"chat"> [мынақ - пайдаланушы немесе топ] [қоғам - команда немесе'
+            " модуль] [уақыт] - Мақсадымдық қауіпсіздікті баптау"
         ),
     )
     async def tsec(self, message: Message):
