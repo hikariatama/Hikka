@@ -20,8 +20,8 @@ from telethon.tl.types import Message
 from telethon.utils import get_display_name
 
 from .. import loader, main, utils
-from ..inline.types import InlineCall
 from .._internal import restart
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

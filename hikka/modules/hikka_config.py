@@ -28,33 +28,35 @@ class HikkaConfigMod(loader.Module):
 
     strings = {
         "name": "HikkaConfig",
-        "choose_core": "🎚 <b>Choose a category</b>",
-        "configure": "🎚 <b>Choose a module to configure</b>",
-        "configure_lib": "🪴 <b>Choose a library to configure</b>",
+        "choose_core": "⚙️ <b>Choose a category</b>",
+        "configure": "⚙️ <b>Choose a module to configure</b>",
+        "configure_lib": "📦 <b>Choose a library to configure</b>",
         "configuring_mod": (
-            "🎚 <b>Choose config option for mod</b> <code>{}</code>\n\n<b>Current"
+            "⚙️ <b>Choose config option for mod</b> <code>{}</code>\n\n<b>Current"
             " options:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Choose config option for library</b> <code>{}</code>\n\n<b>Current"
+            "📦 <b>Choose config option for library</b> <code>{}</code>\n\n<b>Current"
             " options:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Configuring option </b><code>{}</code><b> of mod"
+            "⚙️ <b>Configuring option </b><code>{}</code><b> of mod"
             " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
             " {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Configuring option </b><code>{}</code><b> of library"
+            "📦 <b>Configuring option </b><code>{}</code><b> of library"
             " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
             " {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Option </b><code>{}</code><b> of module </b><code>{}</code><b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Option"
+            " </b><code>{}</code><b> of module </b><code>{}</code><b>"
             " saved!</b>\n<b>Current: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Option </b><code>{}</code><b> of library </b><code>{}</code><b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Option"
+            " </b><code>{}</code><b> of library </b><code>{}</code><b>"
             " saved!</b>\n<b>Current: {}</b>"
         ),
         "option_reset": (
@@ -85,37 +87,39 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Hide value",
         "builtin": "🛰 Built-in",
         "external": "🛸 External",
-        "libraries": "🪴 Libraries",
+        "libraries": "📦 Libraries",
     }
 
     strings_ru = {
-        "choose_core": "🎚 <b>Выбери категорию</b>",
-        "configure": "🎚 <b>Выбери модуль для настройки</b>",
-        "configure_lib": "🪴 <b>Выбери библиотеку для настройки</b>",
+        "choose_core": "⚙️ <b>Выбери категорию</b>",
+        "configure": "⚙️ <b>Выбери модуль для настройки</b>",
+        "configure_lib": "📦 <b>Выбери библиотеку для настройки</b>",
         "configuring_mod": (
-            "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>\n\n<b>Текущие"
+            "⚙️ <b>Выбери параметр для модуля</b> <code>{}</code>\n\n<b>Текущие"
             " настройки:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Выбери параметр для библиотеки</b> <code>{}</code>\n\n<b>Текущие"
+            "📦 <b>Выбери параметр для библиотеки</b> <code>{}</code>\n\n<b>Текущие"
             " настройки:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Управление параметром </b><code>{}</code><b> модуля"
+            "⚙️ <b>Управление параметром </b><code>{}</code><b> модуля"
             " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
             " {}</b>\n\n<b>Текущее: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Управление параметром </b><code>{}</code><b> библиотеки"
+            "📦 <b>Управление параметром </b><code>{}</code><b> библиотеки"
             " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
             " {}</b>\n\n<b>Текущее: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Параметр"
+            " </b><code>{}</code><b> модуля </b><code>{}</code><b>"
             " сохранен!</b>\n<b>Текущее: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Параметр </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Параметр"
+            " </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
             " сохранен!</b>\n<b>Текущее: {}</b>"
         ),
         "option_reset": (
@@ -149,38 +153,40 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Скрыть значение",
         "builtin": "🛰 Встроенные",
         "external": "🛸 Внешние",
-        "libraries": "🪴 Библиотеки",
+        "libraries": "📦 Библиотеки",
     }
 
     strings_de = {
-        "choose_core": "🎚 <b>Wähle eine Kategorie</b>",
-        "configure": "🎚 <b>Modul zum Konfigurieren auswählen</b>",
-        "configure_lib": "🪴 <b>Wählen Sie eine zu konfigurierende Bibliothek aus</b>",
+        "choose_core": "⚙️ <b>Wähle eine Kategorie</b>",
+        "configure": "⚙️ <b>Modul zum Konfigurieren auswählen</b>",
+        "configure_lib": "📦 <b>Wählen Sie eine zu konfigurierende Bibliothek aus</b>",
         "configuring_mod": (
-            "🎚 <b>Wählen Sie einen Parameter für das Modul aus</b>"
+            "⚙️ <b>Wählen Sie einen Parameter für das Modul aus</b>"
             " <code>{}</code>\n\n<b>Aktuell Einstellungen:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Wählen Sie eine Option für die Bibliothek aus</b>"
+            "📦 <b>Wählen Sie eine Option für die Bibliothek aus</b>"
             " <code>{}</code>\n\n<b>Aktuell Einstellungen:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
+            "⚙️ <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
             "<b> konfigurieren</b>\n<i>ℹ️ {}</i>\n\n<b>Standard: {}</b>\n\n<b>"
             "Aktuell: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Option </b><code>{}</code><b> der Bibliothek </b><code>{}</code>"
+            "📦 <b>Option </b><code>{}</code><b> der Bibliothek </b><code>{}</code>"
             "<b> konfigurieren</b>\n<i>ℹ️ {}</i>\n\n<b>Standard: {}</b>\n\n<b>"
             "Aktuell: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
-            "<b> gespeichert!</b>\n<b>Aktuell: {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Option"
+            " </b><code>{}</code><b> des Moduls </b><code>{}</code><b>"
+            " gespeichert!</b>\n<b>Aktuell: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Option </b><code>{}</code><b> der Bibliothek </b><code>{}</code>"
-            "<b> gespeichert!</b>\n<b>Aktuell: {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Option"
+            " </b><code>{}</code><b> der Bibliothek </b><code>{}</code><b>"
+            " gespeichert!</b>\n<b>Aktuell: {}</b>"
         ),
         "option_reset": (
             "♻️ <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
@@ -213,38 +219,39 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Wert verbergen",
         "builtin": "🛰 Ingebaut",
         "external": "🛸 Extern",
-        "libraries": "🪴 Bibliotheken",
+        "libraries": "📦 Bibliotheken",
     }
 
     strings_uz = {
-        "choose_core": "🎚 <b>Kurum tanlang</b>",
-        "configure": "🎚 <b>Sozlash uchun modulni tanlang</b>",
-        "configure_lib": "🪴 <b>Sozlash uchun kutubxonani tanlang</b>",
+        "choose_core": "⚙️ <b>Kurum tanlang</b>",
+        "configure": "⚙️ <b>Sozlash uchun modulni tanlang</b>",
+        "configure_lib": "📦 <b>Sozlash uchun kutubxonani tanlang</b>",
         "configuring_mod": (
-            "🎚 <b>Modul uchun parametrni tanlang</b> <code>{}</code>\n\n<b>Joriy"
+            "⚙️ <b>Modul uchun parametrni tanlang</b> <code>{}</code>\n\n<b>Joriy"
             " sozlamalar:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Kutubxona uchun variantni tanlang</b> <code>{}</code>\n\n<b>Hozirgi"
+            "📦 <b>Kutubxona uchun variantni tanlang</b> <code>{}</code>\n\n<b>Hozirgi"
             " sozlamalar:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Modul </b><code>{}</code><b> sozlamasi </b><code>{}</code><b>"
+            "⚙️ <b>Modul </b><code>{}</code><b> sozlamasi </b><code>{}</code><b>"
             " konfiguratsiya qilinmoqda</b>\n<i>ℹ️ {}</i>\n\n<b>Default:"
             " {}</b>\n\n<b>Hozirgi: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Modul </b><code>{}</code><b> kutubxonasi sozlamasi"
+            "📦 <b>Modul </b><code>{}</code><b> kutubxonasi sozlamasi"
             " </b><code>{}</code><b> konfiguratsiya qilinmoqda</b>\n<i>ℹ️"
             " {}</i>\n\n<b>Default: {}</b>\n\n<b>Hozirgi: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Modul </b><code>{}</code><b> sozlamasi saqlandi!</b>\n<b>Hozirgi:"
-            " {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Modul"
+            " </b><code>{}</code><b> sozlamasi saqlandi!</b>\n<b>Hozirgi: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Modul </b><code>{}</code><b> kutubxonasi sozlamasi"
-            " saqlandi!</b>\n<b>Hozirgi: {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Modul"
+            " </b><code>{}</code><b> kutubxonasi sozlamasi saqlandi!</b>\n<b>Hozirgi:"
+            " {}</b>"
         ),
         "option_reset": (
             "♻️ <b>Modul </b><code>{}</code><b> sozlamasi standart qiymatga"
@@ -271,29 +278,30 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Qiymatni yashirish",
         "builtin": "🛰 Ichki",
         "external": "🛸 Tashqi",
-        "libraries": "🪴 Kutubxona",
+        "libraries": "📦 Kutubxona",
         "close_btn": "🔻 Yopish",
         "back_btn": "👈 Orqaga",
     }
 
     strings_tr = {
         "configuring_option": (
-            "🎚 <b>Modül </b><code>{}</code><b> seçeneği </b><code>{}</code>"
+            "⚙️ <b>Modül </b><code>{}</code><b> seçeneği </b><code>{}</code>"
             "<b> yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"
             "Mevcut: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Modül </b><code>{}</code><b> kütüphanesi seçeneği </b><code>{}</code>"
+            "📦 <b>Modül </b><code>{}</code><b> kütüphanesi seçeneği </b><code>{}</code>"
             "<b> yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"
             "Mevcut: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Modül </b><code>{}</code><b> seçeneği kaydedildi!</b>\n<b>Mevcut:"
-            " {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Modül"
+            " </b><code>{}</code><b> seçeneği kaydedildi!</b>\n<b>Mevcut: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Modül </b><code>{}</code><b> kütüphanesi seçeneği"
-            " kaydedildi!</b>\n<b>Mevcut: {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Modül"
+            " </b><code>{}</code><b> kütüphanesi seçeneği kaydedildi!</b>\n<b>Mevcut:"
+            " {}</b>"
         ),
         "option_reset": (
             "♻️ <b>Modül </b><code>{}</code><b> seçeneği varsayılan değere"
@@ -318,27 +326,29 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Değeri gizle",
         "builtin": "🛰 Dahili",
         "external": "🛸 Harici",
-        "libraries": "🪴 Kütüphane",
+        "libraries": "📦 Kütüphane",
         "back_btn": "👈 Geri",
     }
 
     strings_es = {
         "configuring_option": (
-            "🎚 <b>Configurando la opción </b><code>{}</code><b> del módulo"
+            "⚙️ <b>Configurando la opción </b><code>{}</code><b> del módulo"
             " </b><code>{}</code><b> </b>\n<i>ℹ️ {}</i>\n\n<b>Por defecto:"
             " {}</b>\n\n<b>Actual: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Configurando la opción </b><code>{}</code><b> de la librería del"
+            "📦 <b>Configurando la opción </b><code>{}</code><b> de la librería del"
             " módulo </b><code>{}</code><b> </b>\n<i>ℹ️ {}</i>\n\n<b>Por defecto:"
             " {}</b>\n\n<b>Actual: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>¡Guardada la opción </b><code>{}</code><b> del módulo"
-            " </b><code>{}</code><b>!</b>\n<b>Actual: {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>¡Guardada la opción"
+            " </b><code>{}</code><b> del módulo </b><code>{}</code><b>!</b>\n<b>Actual:"
+            " {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>¡Guardada la opción </b><code>{}</code><b> de la librería del módulo"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>¡Guardada la opción"
+            " </b><code>{}</code><b> de la librería del módulo"
             " </b><code>{}</code><b>!</b>\n<b>Actual: {}</b>"
         ),
         "option_reset": (
@@ -365,29 +375,30 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Ocultar valores",
         "builtin": "🛰 Integrado",
         "external": "🛸 Externo",
-        "libraries": "🪴 Librerías",
+        "libraries": "📦 Librerías",
         "back_btn": "👈 Volver",
     }
 
     strings_kk = {
         "configuring_option": (
-            "🎚 <b>Модуль </b><code>{}</code><b> ішіндегі </b><code>{}</code><b>"
+            "⚙️ <b>Модуль </b><code>{}</code><b> ішіндегі </b><code>{}</code><b>"
             " параметрін баптау</b>\n<i>ℹ️ {}</i>\n\n<b>Әдепкі:"
             " {}</b>\n\n<b>Ағымдағы: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Модуль </b><code>{}</code><b> ішіндегі"
+            "📦 <b>Модуль </b><code>{}</code><b> ішіндегі"
             " кітапхананың</b><code>{}</code><b> параметрін баптау</b>\n<i>ℹ️"
             " {}</i>\n\n<b>Әдепкі: {}</b>\n\n<b>Ағымдағы: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Модуль </b><code>{}</code><b> ішіндегі </b><code>{}</code><b>"
-            " параметрі сақталды!</b>\n<b>Ағымдағы: {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Модуль"
+            " </b><code>{}</code><b> ішіндегі </b><code>{}</code><b> параметрі"
+            " сақталды!</b>\n<b>Ағымдағы: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Модуль </b><code>{}</code><b> ішіндегі"
-            " кітапхананың</b><code>{}</code><b> параметрі сақталды!</b>\n<b>Ағымдағы:"
-            " {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Модуль"
+            " </b><code>{}</code><b> ішіндегі кітапхананың</b><code>{}</code><b>"
+            " параметрі сақталды!</b>\n<b>Ағымдағы: {}</b>"
         ),
         "option_reset": (
             "♻️ <b>Модуль </b><code>{}</code><b> ішіндегі </b><code>{}</code><b>"
@@ -413,7 +424,7 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Мәндерді жасыру",
         "builtin": "🛰 Ішкі",
         "external": "🛸 Сыртқы",
-        "libraries": "🪴 Кітапханалар",
+        "libraries": "📦 Кітапханалар",
         "back_btn": "👈 Артқа",
     }
 
@@ -1381,7 +1392,7 @@ class HikkaConfigMod(loader.Module):
         """Configure modules"""
         args = utils.get_args_raw(message)
         if self.lookup(args) and hasattr(self.lookup(args), "config"):
-            form = await self.inline.form("🌘", message)
+            form = await self.inline.form("🌘", message, silent=True)
             mod = self.lookup(args)
             if isinstance(mod, loader.Library):
                 type_ = "library"

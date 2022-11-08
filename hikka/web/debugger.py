@@ -1,11 +1,11 @@
 import asyncio
-import random
-
-from werkzeug.debug import DebuggedApplication
-from werkzeug import Request, Response
-from werkzeug.serving import make_server, BaseWSGIServer
 import os
+import random
 from threading import Thread
+
+from werkzeug import Request, Response
+from werkzeug.debug import DebuggedApplication
+from werkzeug.serving import BaseWSGIServer, make_server
 
 from .. import main, utils
 from . import proxypass
@@ -29,7 +29,7 @@ class WebDebugger:
         self.port = main.gen_port("werkzeug_port", True)
         main.save_config_key("werkzeug_port", self.port)
         self._url = None
-        self._proxypasser = proxypass.ProxyPasser()
+        self._proxypasser = proxypass.ProxyPasser(self._url_changed)
         asyncio.ensure_future(self._getproxy())
         self._create_server()
         self._controller = ServerThread(self._server)
@@ -38,6 +38,9 @@ class WebDebugger:
 
     async def _getproxy(self):
         self._url = await self._proxypasser.get_url(self.port)
+
+    def _url_changed(self, url: str):
+        self._url = url
 
     def _create_server(self) -> BaseWSGIServer:
         os.environ["WERKZEUG_DEBUG_PIN"] = self.pin

@@ -26,8 +26,8 @@ from telethon.tl.functions.messages import (
 from telethon.tl.types import DialogFilter, Message
 
 from .. import loader, main, utils, version
-from ..inline.types import InlineCall
 from .._internal import get_startup_callback
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 

@@ -9,12 +9,13 @@ logger = logging.getLogger(__name__)
 
 
 class ProxyPasser:
-    def __init__(self):
+    def __init__(self, change_url_callback: callable = lambda _: None):
         self._tunnel_url = None
         self._sproc = None
         self._url_available = asyncio.Event()
         self._url_available.set()
         self._lock = asyncio.Lock()
+        self._change_url_callback = change_url_callback
 
     async def _sleep_for_task(self, callback: callable, data: bytes, delay: int):
         await asyncio.sleep(delay)
@@ -57,13 +58,14 @@ class ProxyPasser:
         if re.search(regex, stdout_line):
             logger.debug("Proxy pass tunneled: %s", stdout_line)
             self._tunnel_url = re.search(regex, stdout_line)[1]
+            self._change_url_callback(self._tunnel_url)
             self._url_available.set()
 
     async def get_url(self, port: int) -> typing.Optional[str]:
         async with self._lock:
             if self._tunnel_url:
                 try:
-                    await asyncio.wait_for(self._sproc.wait(), timeout=0.1)
+                    await asyncio.wait_for(self._sproc.wait(), timeout=0.05)
                 except asyncio.TimeoutError:
                     return self._tunnel_url
                 else:

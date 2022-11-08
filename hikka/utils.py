@@ -25,6 +25,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import atexit as _atexit
 import contextlib
 import functools
 import inspect
@@ -35,7 +36,6 @@ import os
 import random
 import re
 import shlex
-import atexit as _atexit
 import signal
 import string
 import time
@@ -1443,7 +1443,13 @@ def get_topic(message: Message) -> typing.Optional[int]:
     """
     return (
         (message.reply_to.reply_to_top_id or message.reply_to.reply_to_msg_id)
-        if message.reply_to and message.reply_to.forum_topic
+        if (
+            isinstance(message, Message)
+            and message.reply_to
+            and message.reply_to.forum_topic
+        )
+        else message.form["top_msg_id"]
+        if isinstance(message, (InlineCall, InlineMessage))
         else None
     )
 

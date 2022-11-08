@@ -270,8 +270,8 @@ class CoreMod(loader.Module):
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
             " <b>Hikka-Pyro:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>Entwickler:t.me/hikariatama</b>"
+            " </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
+            " <b>Entwickler: t.me/hikariatama</b>"
         ),
         "_cls_doc": "Verwaltung der Grundeinstellungen des Userbots",
         "confirm_cleardb": (
@@ -362,8 +362,8 @@ class CoreMod(loader.Module):
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
             " <b>Hikka-Pyro:"
-            " </b><i>{}</i>\n\n<emojidocument_id=5454182070156794055>⌨️</emoji>"
-            " <b>Geliştirici:t.me/hikariatama</b>"
+            " </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
+            " <b>Geliştirici: t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot temel ayar yönetimi",
         "confirm_cleardb": (
@@ -624,7 +624,7 @@ class CoreMod(loader.Module):
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
             " </b><i>{}</i>\n{}"
             " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
-            " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Әзірлеуші:"
             " t.me/hikariatama</b>"
         ),
         "_cls_doc": "Жүйе бастапқы параметрлерін басқару",

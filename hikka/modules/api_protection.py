@@ -18,6 +18,7 @@ from telethon.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
+from ..web.debugger import WebDebugger
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +111,8 @@ class APIRatelimiterMod(loader.Module):
             " anyone.</b>"
         ),
         "web_pin_btn": "🐞 Show Werkzeug PIN",
+        "proxied_url": "🌐 Proxied URL",
+        "local_url": "🏠 Local URL",
     }
 
     strings_ru = {
@@ -154,6 +157,8 @@ class APIRatelimiterMod(loader.Module):
             " никому.</b>"
         ),
         "web_pin_btn": "🐞 Показать Werkzeug PIN",
+        "proxied_url": "🌐 Проксированная ссылка",
+        "local_url": "🏠 Локальная ссылка",
     }
 
     strings_de = {
@@ -201,19 +206,21 @@ class APIRatelimiterMod(loader.Module):
             " anzuzeigen. Gib ihn niemandem.</b>"
         ),
         "web_pin_btn": "🐞 Werkzeug PIN anzeigen",
+        "proxied_url": "🌐 Proxied URL",
+        "local_url": "🏠 Lokale URL",
     }
 
     strings_tr = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
-            " <b>Dikkat!</b>\n\nHesabın ayarlarda belirtilmiş istek sınırını aştı."
-            " Telegram API Flood’unu önlemek için tüm <b>kullanıcı botu<b> {} saniye"
-            " boyunca durduruldu. Daha fazla bilgi almak için ekteki dosyayı"
-            " inceleyebilirsiniz. /n/ Ayrıca <code>{prefix}Destek</code> grubundan"
-            " yardım almanız önerilmektedir. Eğer bu işlemin kasıtlı bir işlem olduğunu"
-            " düşünüyorsanız, kullanıcı botunuzun açılmasının bekleyin ve bu tarz bir"
-            " işlem gerçekleştireceğiniz sıradaki sefer"
-            " <code>{prefix}suspend_api_protect</code> &lt;saniye&gt; kodunu kullanın."
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Dikkat!</b>\n\nHesap"
+            " yapılandırmasında belirtilen sınır değerlerini aştı. Telegram API"
+            " sızmalarını önlemek için <b>tüm Userbot</b> {} sanie donduruldu. Daha"
+            " fazla bilgi için aşağıya eklenen dosyaya bakın.\n\nLütfen"
+            " <code>{prefix}support</code> grubu ile yardım almak için destek"
+            " olun!\n\nEğer bu, Userbot'un planlanmış davranışı olduğunu"
+            " düşünüyorsanız, zamanlayıcı bittiğinde ve"
+            " <code>{prefix}suspend_api_protect</code> &lt;saniye cinsinden süre&gt;"
+            " gibi kaynak tüketen bir işlemi planladığınızda yeniden deneyin."
         ),
         "args_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Geçersiz"
@@ -247,6 +254,8 @@ class APIRatelimiterMod(loader.Module):
             " tıklayın. Onu kimseye vermeyin.</b>"
         ),
         "web_pin_btn": "🐞 Werkzeug PIN'ini göster",
+        "proxied_url": "🌐 Proxied URL",
+        "local_url": "🏠 Lokal URL",
     }
 
     strings_uz = {
@@ -287,6 +296,8 @@ class APIRatelimiterMod(loader.Module):
             " Uni hech kimga bermang.</b>"
         ),
         "web_pin_btn": "🐞 Werkzeug PIN-ni ko'rsatish",
+        "proxied_url": "🌐 Proxied URL",
+        "local_url": "🏠 Lokal URL",
     }
 
     strings_es = {
@@ -334,6 +345,8 @@ class APIRatelimiterMod(loader.Module):
             " Werkzeug. No se lo des a nadie.</b>"
         ),
         "web_pin_btn": "🐞 Mostrar el PIN de Werkzeug",
+        "proxied_url": "🌐 URL de proxy",
+        "local_url": "🏠 URL local",
     }
 
     strings_kk = {
@@ -373,6 +386,8 @@ class APIRatelimiterMod(loader.Module):
             " басыңыз. Оны кімсіне де бермеңіз.</b>"
         ),
         "web_pin_btn": "🐞 Werkzeug PIN кодын көрсету",
+        "proxied_url": "🌐 Прокси URL",
+        "local_url": "🏠 Жергілікті URL",
     }
 
     _ratelimiter = []
@@ -527,11 +542,11 @@ class APIRatelimiterMod(loader.Module):
         )
 
     @property
-    def _pin(self) -> str:
-        return logging.getLogger().handlers[0].web_debugger.pin
+    def _debugger(self) -> WebDebugger:
+        return logging.getLogger().handlers[0].web_debugger
 
     async def _show_pin(self, call: InlineCall):
-        await call.answer(f"Werkzeug PIN: {self._pin}", show_alert=True)
+        await call.answer(f"Werkzeug PIN: {self._debugger.pin}", show_alert=True)
 
     @loader.command(
         ru_doc="Показать PIN Werkzeug",
@@ -541,15 +556,26 @@ class APIRatelimiterMod(loader.Module):
         es_doc="Mostrar herramienta PIN",
         kk_doc="PIN құралын көрсету",
     )
-    async def debugpin(self, message: Message):
+    async def debugger(self, message: Message):
         """Show the Werkzeug PIN"""
         await self.inline.form(
             message=message,
             text=self.strings("web_pin"),
-            reply_markup={
-                "text": self.strings("web_pin_btn"),
-                "callback": self._show_pin,
-            },
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("web_pin_btn"),
+                        "callback": self._show_pin,
+                    }
+                ],
+                [
+                    {"text": self.strings("proxied_url"), "url": self._debugger.url},
+                    {
+                        "text": self.strings("local_url"),
+                        "url": f"http://127.0.0.1:{self._debugger.port}",
+                    },
+                ],
+            ],
         )
 
     async def _finish(self, call: InlineCall):

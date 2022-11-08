@@ -169,14 +169,12 @@ class PythonMod(loader.Module):
                 message,
                 self.strings("err").format(
                     utils.escape_html(utils.get_args_raw(message)),
-                    utils.escape_html(
-                        self.censor(
-                            (
-                                "\n".join(item.full_stack.splitlines()[:-1])
-                                + "\n\n"
-                                + "🚫 "
-                                + item.full_stack.splitlines()[-1]
-                            )
+                    self.censor(
+                        (
+                            "\n".join(item.full_stack.splitlines()[:-1])
+                            + "\n\n"
+                            + "🚫 "
+                            + item.full_stack.splitlines()[-1]
                         )
                     ),
                 ),

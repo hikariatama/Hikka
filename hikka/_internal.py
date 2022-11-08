@@ -1,8 +1,8 @@
 import atexit
 import functools
+import logging
 import os
 import sys
-import logging
 
 
 def get_startup_callback() -> callable:
