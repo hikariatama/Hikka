@@ -19,6 +19,8 @@
 - New README.md with installation steps and new web recording
 - New `utils.atexit` method
 - New restart process, which correctly kills all child processes and threads
+- New interactive web werkzeug debugger (view pin using `.debugpin` command)
+- Minor and major bugfixes, adapt to topics
 
 ## 🌑 Hikka 1.5.3
 
