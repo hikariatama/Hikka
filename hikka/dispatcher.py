@@ -233,6 +233,7 @@ class CommandDispatcher:
         async def my_respond(text, *args, **kwargs):
             text = process_text(text)
             kwargs["parse_mode"] = "HTML"
+            kwargs.setdefault("reply_to", utils.get_topic(message))
             return await old_respond(text, *args, **kwargs)
 
         message.edit = my_edit

@@ -1670,7 +1670,7 @@ class LoaderMod(loader.Module):
         ) and not self._db.get(main.__name__, "permanent_modules_fs", False):
             if message.file:
                 await message.edit("")
-                message = await message.respond("🌘")
+                message = await message.respond("🌘", reply_to=utils.get_topic(message))
 
             if await self.inline.form(
                 self.strings("module_fs"),

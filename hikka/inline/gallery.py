@@ -262,7 +262,8 @@ class Gallery(InlineUnit):
                     )
                     + self._client.loader._lookup("translations").strings(
                         "opening_gallery"
-                    )
+                    ),
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
                 )
             except Exception:
                 status_message = None
@@ -272,7 +273,10 @@ class Gallery(InlineUnit):
         async def answer(msg: str):
             nonlocal message
             if isinstance(message, Message):
-                await (message.edit if message.out else message.respond)(msg)
+                await (message.edit if message.out else message.respond)(
+                    msg,
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                )
             else:
                 await self._client.send_message(message, msg)
 

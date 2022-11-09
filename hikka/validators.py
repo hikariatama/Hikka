@@ -359,15 +359,13 @@ class Series(Validator):
 
         _each_en = f" (each must be {trans('en')})" if validator is not None else ""
         _each_ru = (
-            f" (каждое должно быть {validator.doc['ru']})"
-            if validator is not None
-            else ""
+            f" (каждое должно быть {trans('ru')})" if validator is not None else ""
         )
         _each_de = f" (jedes muss {trans('de')})" if validator is not None else ""
         _each_tr = f" (her biri {trans('tr')})" if validator is not None else ""
         _each_uz = f" (har biri {trans('uz')})" if validator is not None else ""
         _each_es = f" (cada uno {trans('es')})" if validator is not None else ""
-        _each_kk = f" (әрбірі {validator.doc['kk']})" if validator is not None else ""
+        _each_kk = f" (әрбірі {trans('kk')})" if validator is not None else ""
 
         if fixed_len is not None:
             _len_en = f" (exactly {fixed_len} pcs.)"
