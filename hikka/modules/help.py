@@ -633,7 +633,7 @@ class HelpMod(loader.Module):
 
         partial_load = (
             ""
-            if self.lookup("Loader")._fully_loaded
+            if self.lookup("Loader").fully_loaded
             else f"\n\n{self.strings('partial_load')}"
         )
 

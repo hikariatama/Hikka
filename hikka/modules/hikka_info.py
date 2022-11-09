@@ -373,18 +373,6 @@ class HikkaInfoMod(loader.Module):
             ),
         )
 
-    async def client_ready(self):
-        self._me = await self._client.get_me()
-
-        # Legacy migration
-        if (
-            self.config["banner_url"]
-            == "https://github.com/hikariatama/assets/raw/master/hikka_banner.png"
-        ):
-            self.config[
-                "banner_url"
-            ] = "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4"
-
     def _render_info(self, inline: bool) -> str:
         try:
             repo = git.Repo(search_parent_directories=True)
@@ -396,8 +384,8 @@ class HikkaInfoMod(loader.Module):
             upd = ""
 
         me = '<b><a href="tg://user?id={}">{}</a></b>'.format(
-            self._me.id,
-            utils.escape_html(get_display_name(self._me)),
+            self._client.hikka_me.id,
+            utils.escape_html(get_display_name(self._client.hikka_me)),
         )
         build = utils.get_commit_url()
         _version = f'<i>{".".join(list(map(str, list(version.__version__))))}</i>'
@@ -524,7 +512,7 @@ class HikkaInfoMod(loader.Module):
         es_doc="Enviar información sobre el bot",
         kk_doc="Бот туралы ақпарат жіберу",
     )
-    async def hikkainfocmd(self, message: Message):
+    async def hikkainfo(self, message: Message):
         """Send info aka 'What is Hikka?'"""
         await utils.answer(message, self.strings("desc"))
 

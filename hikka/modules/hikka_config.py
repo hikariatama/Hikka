@@ -70,7 +70,7 @@ class HikkaConfigMod(loader.Module):
         "args": "🚫 <b>You specified incorrect args</b>",
         "no_mod": "🚫 <b>Module doesn't exist</b>",
         "no_option": "🚫 <b>Configuration option doesn't exist</b>",
-        "validation_error": "🚫 <b>You entered incorrect config value. \nError: {}</b>",
+        "validation_error": "🚫 <b>You entered incorrect config value.\nError: {}</b>",
         "try_again": "🔁 Try again",
         "typehint": "🕵️ <b>Must be a{eng_art} {}</b>",
         "set": "set",
@@ -135,7 +135,7 @@ class HikkaConfigMod(loader.Module):
         "no_mod": "🚫 <b>Модуль не существует</b>",
         "no_option": "🚫 <b>У модуля нет такого значения конфига</b>",
         "validation_error": (
-            "🚫 <b>Введено некорректное значение конфига. \nОшибка: {}</b>"
+            "🚫 <b>Введено некорректное значение конфига.\nОшибка: {}</b>"
         ),
         "try_again": "🔁 Попробовать еще раз",
         "typehint": "🕵️ <b>Должно быть {}</b>",
@@ -201,7 +201,7 @@ class HikkaConfigMod(loader.Module):
         "no_mod": "🚫 <b>Modul existiert nicht</b>",
         "no_option": "🚫 <b>Modul hat keine solche Konfigurationsoption</b>",
         "validation_error": (
-            "🚫 <b>Ungültiger Konfigurationswert eingegeben. \nFehler: {}</b>"
+            "🚫 <b>Ungültiger Konfigurationswert eingegeben.\nFehler: {}</b>"
         ),
         "try_again": "🔁 Versuche es noch einmal",
         "typehint": "🕵️ <b>Sollte {} sein</b>",
@@ -266,7 +266,7 @@ class HikkaConfigMod(loader.Module):
         "no_mod": "🚫 <b>Modul mavjud emas</b>",
         "no_option": "🚫 <b>Modulda bunday sozlamalar mavjud emas</b>",
         "validation_error": (
-            "🚫 <b>Noto'g'ri konfiguratsiya ma'lumotlari kiritildi. \nXatolik: {}</b>"
+            "🚫 <b>Noto'g'ri konfiguratsiya ma'lumotlari kiritildi.\nXatolik: {}</b>"
         ),
         "try_again": "🔁 Qayta urinib ko'ring",
         "typehint": "🕵️ <b>Buni {} bo'lishi kerak</b>",
@@ -284,6 +284,17 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_tr = {
+        "choose_core": "⚙️ <b>Kategori Seçin</b>",
+        "configure": "⚙️ <b>Bir modülü yapılandırmak için seçin</b>",
+        "configure_lib": "📦 <b>Bir kutuphaneyi yapılandırmak için seçin</b>",
+        "configuring_mod": (
+            "⚙️ <b>Modül için bir ayarı seçin</b> <code>{}</code>\n\n<b>Şu anki"
+            " ayarlar:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Bir kutuphane için bir ayarı seçin</b> <code>{}</code>\n\n<b>Şu anki"
+            " ayarlar:</b>\n\n{}"
+        ),
         "configuring_option": (
             "⚙️ <b>Modül </b><code>{}</code><b> seçeneği </b><code>{}</code>"
             "<b> yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"
@@ -315,7 +326,7 @@ class HikkaConfigMod(loader.Module):
         "args": "🚫 <b>Yanlış argüman girdiniz</b>",
         "no_mod": "🚫 <b>Modül bulunamadı</b>",
         "no_option": "🚫 <b>Modülde böyle bir seçenek bulunamadı</b>",
-        "validation_error": "🚫 <b>Yanlış ayarlama bilgileri girildi. \nHata: {}</b>",
+        "validation_error": "🚫 <b>Yanlış ayarlama bilgileri girildi.\nHata: {}</b>",
         "try_again": "🔁 Tekrar deneyin",
         "typehint": "🕵️ <b>Değer {} türünde olmalıdır</b>",
         "set": "Ayarla",
@@ -331,6 +342,17 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_es = {
+        "choose_core": "⚙️ <b>Elegir la categoría</b>",
+        "configure": "⚙️ <b>Elige un módulo para configurar</b>",
+        "configure_lib": "📦 <b>Elige una librería para configurar</b>",
+        "configuring_mod": (
+            "⚙️ <b>Configurando una opción para el módulo</b>"
+            " <code>{}</code>\n\n<b>Ajustes actuales:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Configurando una opción para la librería</b>"
+            " <code>{}</code>\n\n<b>Ajustes actuales:</b>\n\n{}"
+        ),
         "configuring_option": (
             "⚙️ <b>Configurando la opción </b><code>{}</code><b> del módulo"
             " </b><code>{}</code><b> </b>\n<i>ℹ️ {}</i>\n\n<b>Por defecto:"
@@ -364,7 +386,7 @@ class HikkaConfigMod(loader.Module):
         "args": "🚫 <b>Argumentos no válidos</b>",
         "no_mod": "🚫 <b>No se encontró el módulo</b>",
         "no_option": "🚫 <b>El módulo no tiene esta opción</b>",
-        "validation_error": "🚫 <b>No se pudo analizar la información. \nError: {}</b>",
+        "validation_error": "🚫 <b>No se pudo analizar la información.\nError: {}</b>",
         "try_again": "🔁 Intentar de nuevo",
         "typehint": "🕵️ <b>El valor debe ser de tipo {}</b>",
         "set": "Establecer",
@@ -380,6 +402,17 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_kk = {
+        "choose_core": "⚙️ <b>Санатты таңдаңыз</b>",
+        "configure": "⚙️ <b>Бір модульді конфигурациялау үшін таңдаңыз</b>",
+        "configure_lib": "📦 <b>Бір кітапхананы конфигурациялау үшін таңдаңыз</b>",
+        "configuring_mod": (
+            "⚙️ <b>Модуль </b><code>{}</code><b> опциясын"
+            " конфигурациялау</b>\n\n<b>Ағымдағы параметрлер:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Кітапхана </b><code>{}</code><b> опциясын"
+            " конфигурациялау</b>\n\n<b>Ағымдағы параметрлер:</b>\n\n{}"
+        ),
         "configuring_option": (
             "⚙️ <b>Модуль </b><code>{}</code><b> ішіндегі </b><code>{}</code><b>"
             " параметрін баптау</b>\n<i>ℹ️ {}</i>\n\n<b>Әдепкі:"
@@ -413,7 +446,7 @@ class HikkaConfigMod(loader.Module):
         "args": "🚫 <b>Жарамсыз бағыттар</b>",
         "no_mod": "🚫 <b>Модуль табылмады</b>",
         "no_option": "🚫 <b>Модульде бұл параметр жоқ</b>",
-        "validation_error": "🚫 <b>Мәліметтерді талдау мүмкін емес. \nҚате: {}</b>",
+        "validation_error": "🚫 <b>Мәліметтерді талдау мүмкін емес.\nҚате: {}</b>",
         "try_again": "🔁 Қайталау",
         "typehint": "🕵️ <b>Мәні {} түрі болуы керек</b>",
         "set": "Орнату",
@@ -453,6 +486,17 @@ class HikkaConfigMod(loader.Module):
 
         return self.prep_value("*" * len(str(value)))
 
+    def _get_value(self, mod: str, option: str) -> str:
+        return (
+            self.prep_value(self.lookup(mod).config[option])
+            if (
+                not self.lookup(mod).config._config[option].validator
+                or self.lookup(mod).config._config[option].validator.internal_id
+                != "Hidden"
+            )
+            else self.hide_value(self.lookup(mod).config[option])
+        )
+
     async def inline__set_config(
         self,
         call: InlineCall,
@@ -482,11 +526,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -518,11 +558,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -692,11 +728,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -764,11 +796,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -871,17 +899,13 @@ class HikkaConfigMod(loader.Module):
             )
             return
 
-        validator = self.lookup(mod).config._config[option].validator
-
         await call.edit(
             self.strings(
                 "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not validator.internal_id == "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -1248,18 +1272,11 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 "\n".join(
                     [
-                        f"▫️ <code>{utils.escape_html(key)}</code>: <b>{{}}</b>".format(
-                            self.prep_value(value)
-                            if (
-                                not self.lookup(mod).config._config[key].validator
-                                or self.lookup(mod)
-                                .config._config[key]
-                                .validator.internal_id
-                                != "Hidden"
-                            )
-                            else self.hide_value(value)
+                        "▫️ <code>{}</code>: <b>{}</b>".format(
+                            utils.escape_html(key),
+                            self._get_value(mod, key),
                         )
-                        for key, value in self.lookup(mod).config.items()
+                        for key in self.lookup(mod).config
                     ]
                 ),
             ),
@@ -1451,9 +1468,6 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(instance.config[option])
-                if not instance.config._config[option].validator
-                or instance.config._config[option].validator.internal_id != "Hidden"
-                else self.hide_value(instance.config[option]),
+                self._get_value(mod, option),
             ),
         )

@@ -419,7 +419,6 @@ class Presets(loader.Module):
             return
 
         self.set("sent", True)
-
         await self._menu()
 
     async def _menu(self):
@@ -435,7 +434,8 @@ class Presets(loader.Module):
     async def _install(self, call: InlineCall, preset: str):
         await call.delete()
         m = await self._client.send_message(
-            self.inline.bot_id, self.strings("installing").format(preset)
+            self.inline.bot_id,
+            self.strings("installing").format(preset),
         )
         for i, module in enumerate(PRESETS[preset]):
             await m.edit(
@@ -450,8 +450,8 @@ class Presets(loader.Module):
 
             await asyncio.sleep(1)
 
-        if self.lookup("loader")._fully_loaded:
-            self.lookup("loader")._update_modules_in_db()
+        if self.lookup("loader").fully_loaded:
+            self.lookup("loader").update_modules_in_db()
 
         await m.edit(self.strings("installed").format(preset))
         await self._menu()

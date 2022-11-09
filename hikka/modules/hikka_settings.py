@@ -1927,6 +1927,7 @@ class HikkaSettingsMod(loader.Module):
                 self._client._hikka_entity_cache = {}
                 self._client._hikka_fulluser_cache = {}
                 self._client._hikka_fullchannel_cache = {}
+                self._client.hikka_me = await self._client.get_me()
             elif method == "reload_core":
                 core_quantity = await self.lookup("loader").reload_core()
                 result = f"Reloaded {core_quantity} core modules"

@@ -11,8 +11,19 @@ import logging
 from telethon.tl.types import Message
 
 from .. import loader, translations, utils
+from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
+
+SUPPORTED_LANGUAGES = {
+    "en": "🇬🇧 English",
+    "ru": "🇷🇺 Русский",
+    "de": "🇩🇪 Deutsch",
+    "tr": "🇹🇷 Türkçe",
+    "uz": "🇺🇿 O'zbekcha",
+    "es": "🇪🇸 Español",
+    "kk": "🇰🇿 Қазақша",
+}
 
 
 @loader.tds
@@ -63,6 +74,11 @@ class Translations(loader.Module):
         "command": "🌘 Command «{}»",
         "button403": "You are not allowed to press this button!",
         "keep_id": "⚠️ Do not remove ID! {}",
+        "choose_language": "🗽 <b>Choose language</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>This language is not"
+            " officially supported</b>"
+        ),
     }
 
     strings_ru = {
@@ -108,6 +124,11 @@ class Translations(loader.Module):
         "command": "🌘 Команда «{}»",
         "button403": "Вы не можете нажать на эту кнопку!",
         "keep_id": "⚠️ Не удаляйте ID! {}",
+        "choose_language": "🗽 <b>Выберите язык</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Этот язык не"
+            " поддерживается официально</b>"
+        ),
     }
 
     strings_de = {
@@ -157,6 +178,11 @@ class Translations(loader.Module):
         "command": "🌘 Befehl «{}»",
         "button403": "Sie können auf diese Schaltfläche nicht klicken!",
         "keep_id": "⚠️ Löschen sie das ID nicht! {}",
+        "choose_language": "🗽 <b>Wählen Sie eine Sprache</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Diese Sprache wird"
+            " nicht offiziell unterstützt</b>"
+        ),
     }
 
     strings_tr = {
@@ -205,6 +231,11 @@ class Translations(loader.Module):
         "command": "🌘 Komut «{}»",
         "button403": "Bu düğmeye basamazsınız!",
         "keep_id": "⚠️ ID'yi silmeyin! {}",
+        "choose_language": "🗽 <b>Bir dil seçin</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Bu dil resmi olarak"
+            " desteklenmiyor</b>"
+        ),
     }
 
     strings_uz = {
@@ -256,6 +287,11 @@ class Translations(loader.Module):
         "command": "🌘 Buyruq «{}»",
         "button403": "Siz ushbu tugmani bosib bo'lmaysiz!",
         "keep_id": "⚠️ ID-ni o'chirmang! {}",
+        "choose_language": "🗽 <b>Tilni tanlang</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Ushbu til"
+            " rasmiylashtirilmagan</b>"
+        ),
     }
 
     strings_es = {
@@ -307,6 +343,12 @@ class Translations(loader.Module):
         "command": "🌘 Comando '{}'",
         "button403": "¡No puedes presionar este botón!",
         "button404": "¡No puedes presionar este botón ahora!",
+        "keep_id": "⚠️ ¡No elimines el ID! {}",
+        "choose_language": "🗽 <b>Elige un idioma</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Este idioma no está"
+            " oficialmente respaldado</b>"
+        ),
     }
 
     strings_kk = {
@@ -357,6 +399,11 @@ class Translations(loader.Module):
         "command": "🌘 «{}» командасы",
         "button403": "Сіз бұл түймешіге баса алмайсыз!",
         "keep_id": "⚠️ ID тастамаңыз! {}",
+        "choose_language": "🗽 <b>Тілді таңдаңыз</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Бұл тіл официалдықтың"
+            " тағы да қолдауы көрсетілмейді</b>"
+        ),
     }
 
     strings_tt = {
@@ -402,26 +449,20 @@ class Translations(loader.Module):
         "command": "🌘 Команда «{}»",
         "button403": "Сез төймәгә баса алмыйсыз!",
         "keep_id": "⚠️ ID'ны бетеремэгез {}",
+        "choose_language": "🗽 <b>Телне таңдаңыз</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Бу тел официалдықтың"
+            " тағы да қолдауы көрсетілмейді</b>"
+        ),
     }
 
-    @loader.command(
-        ru_doc="[языки] - Изменить стандартный язык",
-        de_doc="[Sprachen] - Ändere die Standard-Sprache",
-        tr_doc="[Diller] - Varsayılan dili değiştir",
-        uz_doc="[til] - Standart tili o'zgartirish",
-        es_doc="[Idiomas] - Cambiar el idioma predeterminado",
-        kk_doc="[тілдер] - Бастапқы тілді өзгерту",
-    )
-    async def setlang(self, message: Message):
-        """[languages in the order of priority] - Change default language"""
-        args = utils.get_args_raw(message)
-        if not args or any(len(i) != 2 for i in args.split(" ")):
-            await utils.answer(message, self.strings("incorrect_language"))
-            return
-
-        self._db.set(translations.__name__, "lang", args.lower())
+    async def _change_language(self, call: InlineCall, lang: str):
+        self._db.set(translations.__name__, "lang", lang)
         await self.allmodules.reload_translations()
 
+        await call.edit(self.strings("lang_saved").format(self._get_flag(lang)))
+
+    def _get_flag(self, lang: str) -> str:
         emoji_flags = {
             "🇬🇧": "<emoji document_id=6323589145717376403>🇬🇧</emoji>",
             "🇺🇿": " <emoji document_id=6323430017179059570>🇺🇿</emoji>",
@@ -435,18 +476,54 @@ class Translations(loader.Module):
 
         lang2country = {"en": "🇬🇧", "tt": "🥟", "kk": "🇰🇿"}
 
+        lang = lang2country.get(lang) or utils.get_lang_flag(lang)
+        return emoji_flags.get(lang, lang)
+
+    @loader.command(
+        ru_doc="[языки] - Изменить стандартный язык",
+        de_doc="[Sprachen] - Ändere die Standard-Sprache",
+        tr_doc="[Diller] - Varsayılan dili değiştir",
+        uz_doc="[til] - Standart tili o'zgartirish",
+        es_doc="[Idiomas] - Cambiar el idioma predeterminado",
+        kk_doc="[тілдер] - Бастапқы тілді өзгерту",
+    )
+    async def setlang(self, message: Message):
+        """[languages in the order of priority] - Change default language"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await self.inline.form(
+                message=message,
+                text=self.strings("choose_language"),
+                reply_markup=utils.chunks(
+                    [
+                        {
+                            "text": text,
+                            "callback": self._change_language,
+                            "args": (lang,),
+                        }
+                        for lang, text in SUPPORTED_LANGUAGES.items()
+                    ],
+                    2,
+                ),
+            )
+            return
+
+        if any(len(i) != 2 for i in args.split(" ")):
+            await utils.answer(message, self.strings("incorrect_language"))
+            return
+
+        self._db.set(translations.__name__, "lang", args.lower())
+        await self.allmodules.reload_translations()
+
         await utils.answer(
             message,
             self.strings("lang_saved").format(
-                "".join(
-                    [
-                        emoji_flags.get(flag, flag)
-                        for flag in [
-                            lang2country.get(lang) or utils.get_lang_flag(lang)
-                            for lang in args.lower().split(" ")
-                        ]
-                    ]
-                )
+                "".join([self._get_flag(lang) for lang in args.lower().split()])
+            )
+            + (
+                ("\n\n" + self.strings("not_official"))
+                if any(lang not in SUPPORTED_LANGUAGES for lang in args.lower().split())
+                else ""
             ),
         )
 

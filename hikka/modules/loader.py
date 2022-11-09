@@ -18,6 +18,7 @@ import inspect
 import logging
 import os
 import re
+import shutil
 import sys
 import time
 import typing
@@ -1284,7 +1285,7 @@ class LoaderMod(loader.Module):
         ),
     }
 
-    _fully_loaded = False
+    fully_loaded = False
     _links_cache = {}
 
     def __init__(self):
@@ -1322,6 +1323,8 @@ class LoaderMod(loader.Module):
         asyncio.ensure_future(self._update_modules())
         asyncio.ensure_future(self.get_repo_list("full"))
         self._react_queue = []
+
+        self._token_msg = (await self._client.get_messages("@hikka_ub", ids=[10]))[0]
 
     @loader.loop(interval=120, autostart=True)
     async def _react_processor(self):
@@ -1380,7 +1383,7 @@ class LoaderMod(loader.Module):
 
         self._db.save()
 
-    def _update_modules_in_db(self):
+    def update_modules_in_db(self):
         if self.allmodules.secure_boot:
             return
 
@@ -1415,8 +1418,8 @@ class LoaderMod(loader.Module):
             args = args[0]
 
             await self.download_and_install(args, message)
-            if self._fully_loaded:
-                self._update_modules_in_db()
+            if self.fully_loaded:
+                self.update_modules_in_db()
         else:
             await self.inline.list(
                 message,
@@ -1533,23 +1536,16 @@ class LoaderMod(loader.Module):
             if repo.startswith("http")
         }
 
-    async def get_links_list(self):
-        def converter(repo_dict: dict) -> list:
-            return list(dict(ChainMap(*list(repo_dict.values()))).values())
-
+    async def get_links_list(self) -> typing.List[str]:
         links = await self.get_repo_list("full")
-        # Make `MODULES_REPO` primary one
-        main_repo = list(links[self.config["MODULES_REPO"]].values())
-        del links[self.config["MODULES_REPO"]]
-        return main_repo + converter(links)
+        main_repo = list(links.pop(self.config["MODULES_REPO"]).values())
+        return main_repo + list(dict(ChainMap(*list(links.values()))).values())
 
     async def _find_link(self, module_name: str) -> typing.Union[str, bool]:
-        links = await self.get_links_list()
         return next(
-            (
-                link
-                for link in links
-                if link.lower().endswith(f"/{module_name.lower()}.py")
+            filter(
+                lambda link: link.lower().endswith(f"/{module_name.lower()}.py"),
+                await self.get_links_list(),
             ),
             False,
         )
@@ -1582,7 +1578,8 @@ class LoaderMod(loader.Module):
 
             if message:
                 message = await utils.answer(
-                    message, self.strings("installing").format(module_name)
+                    message,
+                    self.strings("installing").format(module_name),
                 )
 
             r = await utils.run_sync(requests.get, url)
@@ -1640,20 +1637,11 @@ class LoaderMod(loader.Module):
         msg = message if message.file else (await message.get_reply_message())
 
         if msg is None or msg.media is None:
-            if args := utils.get_args(message):
-                try:
-                    path_ = args[0]
-                    with open(path_, "rb") as f:
-                        doc = f.read()
-                except FileNotFoundError:
-                    await utils.answer(message, self.strings("no_file"))
-                    return
-            else:
-                await utils.answer(message, self.strings("provide_module"))
-                return
-        else:
-            path_ = None
-            doc = await msg.download_media(bytes)
+            await utils.answer(message, self.strings("provide_module"))
+            return
+
+        path_ = None
+        doc = await msg.download_media(bytes)
 
         logger.debug("Loading external module...")
 
@@ -1724,19 +1712,12 @@ class LoaderMod(loader.Module):
 
     @loader.loop(interval=120, autostart=True)
     async def _stats_sender(self):
-        if not self._pending_stats:
+        if not self._pending_stats or not self._db.get(main.__name__, "stats", True):
             return
 
         try:
             if not self.get("token"):
-                self.set(
-                    "token",
-                    (
-                        await (await self._client.get_messages("@hikka_ub", ids=[10]))[
-                            0
-                        ].click(0)
-                    ).message,
-                )
+                self.set("token", (await self._token_msg.click(0)).message)
 
             res = await utils.run_sync(
                 requests.post,
@@ -1749,14 +1730,18 @@ class LoaderMod(loader.Module):
                 self.set("token", None)
 
             if res.status_code in range(200, 207):
-                if len(self._pending_stats) > 50:
-                    self._pending_stats = self._pending_stats[50:]
+                self._pending_stats = (
+                    self._pending_stats[50:] if len(self._pending_stats) > 50 else []
+                )
+
+            res.raise_for_status()
         except Exception:
             logger.debug("Failed to send stats", exc_info=True)
 
-    async def _send_stats(self, url: str, _=False):
+    async def _send_stats(self, url: str, _=None):
         """Send anonymous stats to Hikka"""
-        self._pending_stats += [url]
+        if self._db.get(main.__name__, "stats", True):
+            self._pending_stats += [url]
 
     async def load_module(
         self,
@@ -1784,7 +1769,7 @@ class LoaderMod(loader.Module):
             return
 
         if re.search(r"# ?scope: ?hikka_min", doc):
-            ver = re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", doc).group(1)
+            ver = re.search(r"# ?scope: ?hikka_min ((?:\d+\.){2}\d+)", doc).group(1)
             ver_ = tuple(map(int, ver.split(".")))
             if main.__version__ < ver_:
                 if isinstance(message, Message):
@@ -1919,12 +1904,19 @@ class LoaderMod(loader.Module):
                                 "No valid pip packages specified in code, attemping"
                                 " installation from error"
                             )
-                            requirements = [e.name]
-
-                        logger.debug("Installing requirements: %s", requirements)
+                            requirements = [
+                                {
+                                    "sklearn": "scikit-learn",
+                                    "pil": "Pillow",
+                                    "telethon": "Hikka-TL",
+                                    "pyrogram": "Hikka-Pyro",
+                                }.get(e.name.lower(), e.name)
+                            ]
 
                         if not requirements:
                             raise Exception("Nothing to install") from e
+
+                        logger.debug("Installing requirements: %s", requirements)
 
                         if did_requirements:
                             if message is not None:
@@ -1939,7 +1931,12 @@ class LoaderMod(loader.Module):
                             await utils.answer(
                                 message,
                                 self.strings("requirements_installing").format(
-                                    "\n".join(f"▫️ {req}" for req in requirements)
+                                    "\n".join(
+                                        "<emoji"
+                                        " document_id=4971987363145188045>▫️</emoji>"
+                                        f" {req}"
+                                        for req in requirements
+                                    )
                                 ),
                             )
 
@@ -2125,7 +2122,6 @@ class LoaderMod(loader.Module):
                             line.replace(" ", "") == "#scope:no_stats"
                             for line in doc.splitlines()
                         )
-                        and self._db.get(main.__name__, "stats", True)
                         and url is not None
                         and utils.check_url(url)
                     ):
@@ -2150,12 +2146,16 @@ class LoaderMod(loader.Module):
                 modname = getattr(instance, "name", "ERROR")
 
             try:
-                if developer in self._client._hikka_entity_cache and getattr(
-                    await self._client.get_entity(developer), "left", True
-                ):
-                    developer_entity = await self._client.force_get_entity(developer)
-                else:
-                    developer_entity = await self._client.get_entity(developer)
+                developer_entity = await (
+                    self._client.force_get_entity
+                    if (
+                        developer in self._client._hikka_entity_cache
+                        and getattr(
+                            await self._client.get_entity(developer), "left", True
+                        )
+                    )
+                    else self._client.get_entity
+                )(developer)
             except Exception:
                 developer_entity = None
 
@@ -2187,7 +2187,8 @@ class LoaderMod(loader.Module):
                 value = getattr(instance, key)
                 if isinstance(value, loader.Library):
                     depends_from.append(
-                        "▫️ <code>{}</code> <b>{} </b><code>{}</code>".format(
+                        "<emoji document_id=4971987363145188045>▫️</emoji>"
+                        " <code>{}</code> <b>{} </b><code>{}</code>".format(
                             value.__class__.__name__,
                             self.strings("by"),
                             (
@@ -2294,19 +2295,18 @@ class LoaderMod(loader.Module):
                 )
 
             if self.inline.init_complete and not is_dragon:
-                if hasattr(instance, "inline_handlers"):
-                    for _name, fun in sorted(
-                        instance.inline_handlers.items(),
-                        key=lambda x: x[0],
-                    ):
-                        modhelp += self.strings("ihandler").format(
-                            f"@{self.inline.bot_username} {_name}",
-                            (
-                                utils.escape_html(inspect.getdoc(fun))
-                                if fun.__doc__
-                                else self.strings("undoc")
-                            ),
-                        )
+                for _name, fun in sorted(
+                    instance.inline_handlers.items(),
+                    key=lambda x: x[0],
+                ):
+                    modhelp += self.strings("ihandler").format(
+                        f"@{self.inline.bot_username} {_name}",
+                        (
+                            utils.escape_html(inspect.getdoc(fun))
+                            if fun.__doc__
+                            else self.strings("undoc")
+                        ),
+                    )
 
             try:
                 await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
@@ -2422,7 +2422,10 @@ class LoaderMod(loader.Module):
         self.set("loaded_modules", {})
 
         for file in os.scandir(loader.LOADED_MODULES_DIR):
-            os.remove(file)
+            try:
+                shutil.rmtree(file.path)
+            except Exception:
+                logger.debug("Failed to remove %s", file.path, exc_info=True)
 
         self.set("chosen_preset", "none")
 
@@ -2441,7 +2444,7 @@ class LoaderMod(loader.Module):
             for mod in todo.values():
                 await self.download_and_install(mod)
 
-            self._update_modules_in_db()
+            self.update_modules_in_db()
 
             aliases = {
                 alias: cmd
@@ -2451,14 +2454,14 @@ class LoaderMod(loader.Module):
 
             self.lookup("settings").set("aliases", aliases)
 
-        self._fully_loaded = True
+        self.fully_loaded = True
 
         with contextlib.suppress(AttributeError):
             await self.lookup("Updater").full_restart_complete(self._secure_boot)
 
     async def reload_core(self) -> int:
         """Forcefully reload all core modules"""
-        self._fully_loaded = False
+        self.fully_loaded = False
 
         if self._secure_boot:
             self._db.set(loader.__name__, "secure_boot", True)
@@ -2476,5 +2479,5 @@ class LoaderMod(loader.Module):
                 from_dlmod=False,
             )
 
-        self._fully_loaded = True
+        self.fully_loaded = True
         return len(loaded)

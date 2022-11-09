@@ -791,35 +791,7 @@ class TestMod(loader.Module):
 
             return
 
-        if btoken := self._db.get("hikka.inline", "bot_token", False):
-            logs = logs.replace(
-                btoken,
-                f'{btoken.split(":")[0]}:***************************',
-            )
-
-        if hikka_token := self._db.get("HikkaDL", "token", False):
-            logs = logs.replace(
-                hikka_token,
-                f'{hikka_token.split("_")[0]}_********************************',
-            )
-
-        if hikka_token := self._db.get("Kirito", "token", False):
-            logs = logs.replace(
-                hikka_token,
-                f'{hikka_token.split("_")[0]}_********************************',
-            )
-
-        if os.environ.get("DATABASE_URL"):
-            logs = logs.replace(
-                os.environ.get("DATABASE_URL"),
-                "postgre://**************************",
-            )
-
-        if os.environ.get("REDIS_URL"):
-            logs = logs.replace(
-                os.environ.get("REDIS_URL"),
-                "postgre://**************************",
-            )
+        logs = self.lookup("python").censor(logs)
 
         logs = BytesIO(logs.encode("utf-16"))
         logs.name = "hikka-logs.txt"
