@@ -1,25 +1,28 @@
-import atexit
-import functools
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+
 import logging
 import os
+import signal
 import sys
 
 
 def get_startup_callback() -> callable:
-    return functools.partial(
-        os.execl,
+    return lambda *_: os.execl(
         sys.executable,
         sys.executable,
         "-m",
-        os.path.relpath(
-            os.path.abspath(
-                os.path.dirname(
-                    os.path.abspath(__file__),
-                ),
-            ),
-        ),
-        *(sys.argv[1:]),
+        os.path.relpath(os.path.abspath(os.path.dirname(os.path.abspath(__file__)))),
+        *sys.argv[1:],
     )
+
+
+def die():
+    """Platform-dependent way to kill the current process group"""
+    os.killpg(os.getpgid(os.getpid()), signal.SIGTERM)
 
 
 def restart():
@@ -35,8 +38,6 @@ def restart():
         os.system("lavhost restart")
         return
 
-    atexit.register(get_startup_callback())
-
     os.environ["HIKKA_DO_NOT_RESTART"] = "1"
-
-    sys.exit(0)
+    signal.signal(signal.SIGTERM, get_startup_callback())
+    die()

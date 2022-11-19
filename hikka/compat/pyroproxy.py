@@ -1,3 +1,9 @@
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+
 import asyncio
 import copy
 import datetime
@@ -85,7 +91,10 @@ class PyroProxyClient(PyroClient):
         *args,
         **kwargs,
     ) -> typing.Union[typing.List[raw.core.TLObject], raw.core.TLObject]:
-        logger.debug("Running Pyrogram's invoke of %s with Telethon proxying", query)
+        logger.debug(
+            "Running Pyrogram's invoke of %s with Telethon proxying",
+            query.__class__.__name__,
+        )
         if self.tl_client.session.takeout_id:
             query = raw.functions.InvokeWithTakeout(
                 takeout_id=self.tl_client.session.takeout_id,

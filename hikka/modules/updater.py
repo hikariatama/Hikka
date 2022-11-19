@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
@@ -26,7 +24,7 @@ from telethon.tl.functions.messages import (
 from telethon.tl.types import DialogFilter, Message
 
 from .. import loader, main, utils, version
-from .._internal import get_startup_callback
+from .._internal import restart
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -55,7 +53,7 @@ class UpdaterMod(loader.Module):
             " updates...</b>"
         ),
         "success": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Restart successful!"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Restart successful!"
             " {}</b>\n<i>But still loading modules...</i>\n<i>Restart took {}s</i>"
         ),
         "origin_cfg_doc": "Git origin URL, for where to update from",
@@ -86,7 +84,8 @@ class UpdaterMod(loader.Module):
             " loaded! {}</b>\n<i>Full restart took {}s</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>Secure boot completed! {}</b>\n<i>Restart took {}s</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Secure boot completed!"
+            " {}</b>\n<i>Restart took {}s</i>"
         ),
     }
 
@@ -108,7 +107,7 @@ class UpdaterMod(loader.Module):
             " обновлений...</b>"
         ),
         "success": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Перезагрузка"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Перезагрузка"
             " успешна! {}</b>\n<i>Но модули еще загружаются...</i>\n<i>Перезагрузка"
             " заняла {} сек</i>"
         ),
@@ -117,8 +116,8 @@ class UpdaterMod(loader.Module):
             " загружен! {}</b>\n<i>Полная перезагрузка заняла {} сек</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>Безопасная загрузка завершена! {}</b>\n<i>Перезагрузка заняла {}"
-            " сек</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Безопасная загрузка"
+            " завершена! {}</b>\n<i>Перезагрузка заняла {} сек</i>"
         ),
         "origin_cfg_doc": "Ссылка, из которой будут загружаться обновления",
         "btn_restart": "🔄 Перезагрузиться",
@@ -165,7 +164,7 @@ class UpdaterMod(loader.Module):
             " werden installiert...</b>"
         ),
         "success": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Neustart erfolgreich!"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Neustart erfolgreich!"
             " {}</b>\n<i>Aber Module werden noch geladen...</i>\n<i>Neustart dauerte {}"
             " Sekunden</i>"
         ),
@@ -175,8 +174,8 @@ class UpdaterMod(loader.Module):
             " Sekunden</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>Sicherer Bootvorgang abgeschlossen! {}</b>\n<i>Neustart dauerte"
-            " {} Sekunden</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Sicherer Bootvorgang"
+            " abgeschlossen! {}</b>\n<i>Neustart dauerte {} Sekunden</i>"
         ),
         "origin_cfg_doc": "Link, von dem Updates heruntergeladen werden",
         "btn_restart": "🔄 Neustart",
@@ -208,8 +207,8 @@ class UpdaterMod(loader.Module):
 
     strings_tr = {
         "source": (
-            "<emoji document_id=5456255401194429832>📖</emoji> <b>Manba kodini shu <a"
-            " href='{}'>yerdan</a> oʻqing</b>"
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Kaynak kodunu"
+            "</b>  <a href='{}'>buradan oku</a>"
         ),
         "restarting": (
             "<emoji document_id=5328274090262275771>🕗</emoji> <b>{}"
@@ -225,22 +224,22 @@ class UpdaterMod(loader.Module):
         ),
         "installing": (
             "<emoji document_id=5328274090262275771>🕗</emoji> <b>Güncelleme"
-            " yükleniyor...</b>"
+            " kuruluyor...</b>"
         ),
         "success": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Yeniden başlatma"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Yeniden başlatma"
             " başarılı! {}</b>\n<i>Modüller yükleniyor...</i>\n<i>Yeniden başlatma {}"
             " saniye sürdü</i>"
         ),
         "full_success": (
-            "<emoji document_id=5301096082674032190>👍</emoji> <b>Botunuz tamamen"
-            " yüklendi! {}</b>\n<i>Toplam yeniden başlatma {} saniye sürdü</i>"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Kullanıcı botunuz"
+            " tamamen yüklendi! {}</b>\n<i>Toplam yeniden başlatma {} saniye sürdü</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>Güvenli mod başarıyla tamamlandı! {}</b>\n<i>Yeniden başlatma {}"
-            " saniye sürdü</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Güvenli mod başarıyla"
+            " tamamlandı! {}</b>\n<i>Yeniden başlatma {} saniye sürdü</i>"
         ),
-        "origin_cfg_doc": "dan güncelleme indirilecek",
+        "origin_cfg_doc": "Git kaynak URL, güncelleme indirilecek kaynak",
         "btn_restart": "🔄 Yeniden başlat",
         "btn_update": "🧭 Güncelle",
         "restart_confirm": "❓ <b>Gerçekten yeniden başlatmak istiyor musunuz?</b>",
@@ -248,7 +247,7 @@ class UpdaterMod(loader.Module):
             "❓ <b>Gerçekten güvenli modda yeniden başlatmak istiyor musunuz?</b>"
         ),
         "update_confirm": (
-            "❓ <b>Gerçekten güncellemek istiyor musunuz??\n\n<a"
+            "❓ <b>Gerçekten güncellemek istiyor musunuz?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
@@ -283,18 +282,19 @@ class UpdaterMod(loader.Module):
             " o'rnatilmoqda...</b>"
         ),
         "success": (
-            "<emoji document_id=5328274090262275771>⏱</emoji> <b>Qayta ishga tushirish"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Qayta ishga tushirish"
             " muvaffaqiyatli yakunlandi! {}</b>\n<i>Modullar"
             " yuklanmoqda...</i>\n<i>Qayta ishga tushirish {} soniya davom etdi</i>"
         ),
         "full_success": (
-            "<emoji document_id=5328274090262275771>👍</emoji> <b>Sizning botingiz"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Sizning botingiz"
             " to'liq yuklandi! {}</b>\n<i>Jami qayta ishga tushirish {} soniya davom"
             " etdi</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>Xavfsiz rejim muvaffaqiyatli yakunlandi! {}</b>\n<i>Qayta ishga"
-            " tushirish {} soniya davom etdi</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Xavfsiz rejim"
+            " muvaffaqiyatli yakunlandi! {}</b>\n<i>Qayta ishga tushirish {} soniya"
+            " davom etdi</i>"
         ),
         "origin_cfg_doc": "dan yangilanish yuklanadi",
         "btn_restart": "🔄 Qayta ishga tushirish",
@@ -339,16 +339,16 @@ class UpdaterMod(loader.Module):
             " actualización...</b>"
         ),
         "success": (
-            "<emoji document_id=5328274090262275771>⏱</emoji> <b>Reiniciado con éxito!"
-            " {}</b>\n<i>Descargandomódulos...</i>\n<i>Reiniciado en {} segundos</i>"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Reiniciado con éxito!"
+            " {}</b>\n<i>Descargando módulos...</i>\n<i>Reiniciado en {} segundos</i>"
         ),
         "full_success": (
-            "<emoji document_id=5328274090262275771>👍</emoji> <b>¡Bot actualizado con"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>¡Bot actualizado con"
             " éxito! {}</b>\n<i>Reiniciado en {} segundos</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>¡Modo de arranque seguro activado! {}</b>\n<i>Reiniciado en {}"
-            " segundos</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>¡Modo de arranque"
+            " seguro activado! {}</b>\n<i>Reiniciado en {} segundos</i>"
         ),
         "origin_cfg_doc": "Descargar actualización desde",
         "btn_restart": "🔄 Reiniciar",
@@ -392,7 +392,7 @@ class UpdaterMod(loader.Module):
             " орнату...</b>"
         ),
         "success": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Жаңарту сәтті"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Жаңарту сәтті"
             " аяқталды! {}</b>\n<i>Бірақ модульдер әлі жүктелуде...</i>\n<i>Жаңарту"
             " {} секундқа аяқталды</i>"
         ),
@@ -401,7 +401,8 @@ class UpdaterMod(loader.Module):
             " жүктелді! {}</b>\n<i>Толық жаңарту {} секундқа аяқталды</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>Безпеке режимі аяқталды! {}</b>\n<i>Жаңарту {} секундқа аяқталды</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Безпеке режимі"
+            " аяқталды! {}</b>\n<i>Жаңарту {} секундқа аяқталды</i>"
         ),
         "origin_cfg_doc": "Жаңартуларды жүктеу үшін сілтеме",
         "btn_restart": "🔄 Жаңарту",
@@ -448,7 +449,7 @@ class UpdaterMod(loader.Module):
             " урнаштыру...</b>"
         ),
         "success": (
-            "<emoji document_id=6321050180095313397>⏱</emoji> <b>Яңарту бетте! {}</b>\n"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Яңарту бетте! {}</b>\n"
             "<i>Ләкин модульләр әле йөкләнә...</i>\n<i>Яңарту {} сек дәвам итте</i>"
         ),
         "full_success": (
@@ -456,8 +457,8 @@ class UpdaterMod(loader.Module):
             " йөкләнгән! {}</b>\n<i>Тулы яңадан башлау {} сек дәвам итте</i>"
         ),
         "secure_boot_complete": (
-            "🔒 <b>Куркынычсыз йөкләү тәмамланды! {}</b>\n"
-            "<i>Яңарту {} сек дәвам итте</i>"
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Куркынычсыз йөкләү"
+            " тәмамланды! {}</b>\n<i>Яңарту {} сек дәвам итте</i>"
         ),
         "origin_cfg_doc": "Яңартулар йөкләнәчәк сылтама",
         "btn_restart": "🔄 Кабызу",
@@ -603,9 +604,7 @@ class UpdaterMod(loader.Module):
                 await client.disconnect()
 
         await message.client.disconnect()
-
-        utils.atexit(get_startup_callback(), signal.SIGTERM)
-        os.kill(os.getpid(), signal.SIGTERM)
+        restart()
 
     async def download_common(self):
         try:

@@ -1,8 +1,14 @@
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+
 import asyncio
+import logging
 import os
 import random
 from threading import Thread
-import logging
 
 from werkzeug import Request, Response
 from werkzeug.debug import DebuggedApplication
@@ -30,20 +36,23 @@ class ServerThread(Thread):
 
 class WebDebugger:
     def __init__(self):
+        self._url = None
+        self.exceptions = {}
         self.pin = str(random.randint(100000, 999999))
         self.port = main.gen_port("werkzeug_port", True)
         main.save_config_key("werkzeug_port", self.port)
-        self._url = None
         self._proxypasser = proxypass.ProxyPasser(self._url_changed)
         asyncio.ensure_future(self._getproxy())
         self._create_server()
         self._controller = ServerThread(self._server)
+        logging.getLogger("werkzeug").setLevel(logging.WARNING)
         self._controller.start()
         utils.atexit(self._controller.shutdown)
-        self.exceptions = {}
+        self.proxy_ready = asyncio.Event()
 
     async def _getproxy(self):
         self._url = await self._proxypasser.get_url(self.port)
+        self.proxy_ready.set()
 
     def _url_changed(self, url: str):
         self._url = url

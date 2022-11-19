@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
@@ -209,6 +207,7 @@ class Gallery(InlineUnit):
         self._units[unit_id] = {
             "type": "gallery",
             "caption": caption,
+            "caller": message,
             "chat": None,
             "message_id": None,
             "top_msg_id": utils.get_topic(message),
@@ -260,7 +259,7 @@ class Gallery(InlineUnit):
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + self._client.loader._lookup("translations").strings(
+                    + self._client.loader.lookup("translations").strings(
                         "opening_gallery"
                     ),
                     **({"reply_to": utils.get_topic(message)} if message.out else {}),
@@ -290,7 +289,7 @@ class Gallery(InlineUnit):
             )
         except ChatSendInlineForbiddenError:
             await answer(
-                self._client.loader._lookup("translations").strings("inline403")
+                self._client.loader.lookup("translations").strings("inline403")
             )
         except Exception:
             logger.exception("Error sending inline gallery")
@@ -301,7 +300,7 @@ class Gallery(InlineUnit):
                 logger.exception("Can't send gallery")
 
                 if not self._db.get(main.__name__, "inlinelogs", True):
-                    msg = self._client.loader._lookup("translations").strings(
+                    msg = self._client.loader.lookup("translations").strings(
                         "invoke_failed"
                     )
                 else:

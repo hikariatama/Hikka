@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import functools
 import re
@@ -875,7 +873,7 @@ class NoneType(Validator):
 
     @staticmethod
     def _validate(value: ConfigAllowedTypes, /) -> None:
-        if value not in {None, False, ""}:
+        if not value:
             raise ValidationError(f"Passed value ({value}) is not None")
 
         return None
@@ -1035,3 +1033,27 @@ class EntityLike(RegExp):
                 "kk": "сынаққа сілтеме, пайдаланушы аты немесе Telegram ID",
             },
         )
+
+    @staticmethod
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        regex: str,
+        flags: typing.Optional[re.RegexFlag],
+    ) -> typing.Union[str, int]:
+        value = super()._validate(value, regex=regex, flags=flags)
+
+        if value.isdigit():
+            if value.startswith("-100"):
+                value = value[4:]
+
+            value = int(value)
+
+        if value.startswith("https://t.me/"):
+            value = value.split("https://t.me/")[1]
+
+        if not value.startswith("@"):
+            value = f"@{value}"
+
+        return value

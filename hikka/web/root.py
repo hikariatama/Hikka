@@ -1,16 +1,15 @@
 """Main bot page"""
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import collections
 import functools
+import logging
 import os
 import re
 import string
@@ -18,11 +17,22 @@ import time
 
 import aiohttp_jinja2
 import requests
-import telethon
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiohttp import web
-from telethon.errors.rpcerrorlist import FloodWaitError, YouBlockedUserError
+from telethon.errors import (
+    FloodWaitError,
+    PasswordHashInvalidError,
+    PhoneCodeExpiredError,
+    PhoneCodeInvalidError,
+    SessionPasswordNeededError,
+    YouBlockedUserError,
+)
+from telethon.password import compute_check
+from telethon.sessions import MemorySession
+from telethon.tl.functions.account import GetPasswordRequest
+from telethon.tl.functions.auth import CheckPasswordRequest
 from telethon.tl.functions.contacts import UnblockRequest
+from telethon.utils import parse_phone
 
 from .. import database, main, utils
 from .._internal import restart
@@ -35,11 +45,16 @@ DATA_DIR = (
     else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
 )
 
+logger = logging.getLogger(__name__)
+
 
 class Web:
     def __init__(self, **kwargs):
         self.sign_in_clients = {}
         self._pending_client = None
+        self._qr_login = None
+        self._qr_task = None
+        self._2fa_needed = None
         self._sessions = []
         self._ratelimit = {}
         self.api_token = kwargs.pop("api_token")
@@ -48,13 +63,16 @@ class Web:
         self.proxy = kwargs.pop("proxy")
 
         self.app.router.add_get("/", self.root)
-        self.app.router.add_put("/setApi", self.set_tg_api)
-        self.app.router.add_post("/sendTgCode", self.send_tg_code)
+        self.app.router.add_put("/set_api", self.set_tg_api)
+        self.app.router.add_post("/send_tg_code", self.send_tg_code)
         self.app.router.add_post("/check_session", self.check_session)
         self.app.router.add_post("/web_auth", self.web_auth)
-        self.app.router.add_post("/tgCode", self.tg_code)
-        self.app.router.add_post("/finishLogin", self.finish_login)
+        self.app.router.add_post("/tg_code", self.tg_code)
+        self.app.router.add_post("/finish_login", self.finish_login)
         self.app.router.add_post("/custom_bot", self.custom_bot)
+        self.app.router.add_post("/init_qr_login", self.init_qr_login)
+        self.app.router.add_post("/get_qr_url", self.get_qr_url)
+        self.app.router.add_post("/qr_2fa", self.qr_2fa)
         self.api_set = asyncio.Event()
         self.clients_set = asyncio.Event()
 
@@ -180,21 +198,65 @@ class Web:
         self.api_set.set()
         return web.Response(body="ok")
 
-    async def send_tg_code(self, request: web.Request) -> web.Response:
+    async def _qr_login_poll(self):
+        logged_in = False
+        self._2fa_needed = False
+        logger.debug("Waiting for QR login to complete")
+        while not logged_in:
+            try:
+                logged_in = await self._qr_login.wait(10)
+            except asyncio.TimeoutError:
+                logger.debug("Recreating QR login")
+                try:
+                    await self._qr_login.recreate()
+                except SessionPasswordNeededError:
+                    self._2fa_needed = True
+                    return
+            except SessionPasswordNeededError:
+                self._2fa_needed = True
+                break
+
+        logger.debug("QR login completed. 2FA needed: %s", self._2fa_needed)
+        self._qr_login = True
+
+    async def init_qr_login(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
-            return web.Response(status=401, body="Authorization required")
+            return web.Response(status=401)
 
-        if self._pending_client:
-            return web.Response(status=208, body="Already pending")
+        if self._pending_client is not None:
+            self._pending_client = None
+            self._qr_login = None
+            if self._qr_task:
+                self._qr_task.cancel()
+                self._qr_task = None
 
-        text = await request.text()
-        phone = telethon.utils.parse_phone(text)
+            self._2fa_needed = False
+            logger.warning("QR login cancelled, new session created")
 
-        if not phone:
-            return web.Response(status=400, body="Invalid phone number")
+        client = self._get_client()
+        self._pending_client = client
 
-        client = CustomTelegramClient(
-            telethon.sessions.MemorySession(),
+        await client.connect()
+        self._qr_login = await client.qr_login()
+        self._qr_task = asyncio.ensure_future(self._qr_login_poll())
+
+        return web.Response(body=self._qr_login.url)
+
+    async def get_qr_url(self, request: web.Request) -> web.Response:
+        if not self._check_session(request):
+            return web.Response(status=401)
+
+        if self._qr_login is True:
+            if self._2fa_needed:
+                return web.Response(status=403, body="2FA")
+
+            return web.Response(status=200, body="SUCCESS")
+
+        return web.Response(status=201, body=self._qr_login.url)
+
+    def _get_client(self) -> CustomTelegramClient:
+        return CustomTelegramClient(
+            MemorySession(),
             self.api_token.ID,
             self.api_token.HASH,
             connection=self.connection,
@@ -204,21 +266,85 @@ class Web:
             app_version=f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}",
         )
 
+    async def send_tg_code(self, request: web.Request) -> web.Response:
+        if not self._check_session(request):
+            return web.Response(status=401, body="Authorization required")
+
+        if self._pending_client:
+            return web.Response(status=208, body="Already pending")
+
+        text = await request.text()
+        phone = parse_phone(text)
+
+        if not phone:
+            return web.Response(status=400, body="Invalid phone number")
+
+        client = self._get_client()
+
         self._pending_client = client
 
         await client.connect()
         try:
             await client.send_code_request(phone)
         except FloodWaitError as e:
-            return web.Response(
-                status=429,
-                body=(
-                    f"You got FloodWait of {e.seconds} seconds. Wait the specified"
-                    " amount of time and try again."
-                ),
-            )
+            return web.Response(status=429, body=self._render_fw_error(e))
 
         return web.Response(body="ok")
+
+    @staticmethod
+    def _render_fw_error(e: FloodWaitError) -> str:
+        seconds, minutes, hours = (
+            e.seconds % 3600 % 60,
+            e.seconds % 3600 // 60,
+            e.seconds // 3600,
+        )
+        seconds, minutes, hours = (
+            f"{seconds} second(-s)",
+            f"{minutes} minute(-s) " if minutes else "",
+            f"{hours} hour(-s) " if hours else "",
+        )
+        return (
+            f"You got FloodWait for {hours}{minutes}{seconds}. Wait the specified"
+            " amount of time and try again."
+        )
+
+    async def qr_2fa(self, request: web.Request) -> web.Response:
+        if not self._check_session(request):
+            return web.Response(status=401)
+
+        text = await request.text()
+
+        logger.debug("2FA code received for QR login: %s", text)
+
+        try:
+            self._pending_client._on_login(
+                (
+                    await self._pending_client(
+                        CheckPasswordRequest(
+                            compute_check(
+                                await self._pending_client(GetPasswordRequest()),
+                                text.strip(),
+                            )
+                        )
+                    )
+                ).user
+            )
+        except PasswordHashInvalidError:
+            logger.debug("Invalid 2FA code")
+            return web.Response(
+                status=403,
+                body="Invalid 2FA password",
+            )
+        except FloodWaitError as e:
+            logger.debug("FloodWait for 2FA code")
+            return web.Response(
+                status=421,
+                body=(self._render_fw_error(e)),
+            )
+
+        logger.debug("2FA code accepted, logging in")
+        await main.hikka.save_client_session(self._pending_client)
+        return web.Response()
 
     async def tg_code(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
@@ -235,7 +361,7 @@ class Web:
             return web.Response(status=400)
 
         code = split[0]
-        phone = telethon.utils.parse_phone(split[1])
+        phone = parse_phone(split[1])
         password = split[2]
 
         if (
@@ -248,38 +374,32 @@ class Web:
         if not password:
             try:
                 await self._pending_client.sign_in(phone, code=code)
-            except telethon.errors.SessionPasswordNeededError:
+            except SessionPasswordNeededError:
                 return web.Response(
                     status=401,
                     body="2FA Password required",
-                )  # Requires 2FA login
-            except telethon.errors.PhoneCodeExpiredError:
+                )
+            except PhoneCodeExpiredError:
                 return web.Response(status=404, body="Code expired")
-            except telethon.errors.PhoneCodeInvalidError:
+            except PhoneCodeInvalidError:
                 return web.Response(status=403, body="Invalid code")
-            except telethon.errors.FloodWaitError as e:
+            except FloodWaitError as e:
                 return web.Response(
                     status=421,
-                    body=(
-                        f"You got FloodWait of {e.seconds} seconds. Wait the specified"
-                        " amount of time and try again."
-                    ),
+                    body=(self._render_fw_error(e)),
                 )
         else:
             try:
                 await self._pending_client.sign_in(phone, password=password)
-            except telethon.errors.PasswordHashInvalidError:
+            except PasswordHashInvalidError:
                 return web.Response(
                     status=403,
                     body="Invalid 2FA password",
-                )  # Invalid 2FA password
-            except telethon.errors.FloodWaitError as e:
+                )
+            except FloodWaitError as e:
                 return web.Response(
                     status=421,
-                    body=(
-                        f"You got FloodWait of {e.seconds} seconds. Wait the specified"
-                        " amount of time and try again."
-                    ),
+                    body=(self._render_fw_error(e)),
                 )
 
         await main.hikka.save_client_session(self._pending_client)

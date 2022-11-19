@@ -1,12 +1,10 @@
 """Main logging part"""
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
@@ -23,6 +21,7 @@ import typing
 from logging.handlers import RotatingFileHandler
 
 import telethon
+from aiogram.utils.exceptions import NetworkError
 
 from . import utils
 from .tl_cache import CustomTelegramClient
@@ -37,9 +36,15 @@ from .web.debugger import WebDebugger
 old = linecache.getlines
 
 
-def getlines(filename, module_globals=None):
-    """Get the lines for a Python source file from the cache.
-    Update the cache if it doesn't contain an entry for this file already."""
+def getlines(filename: str, module_globals=None) -> str:
+    """
+    Get the lines for a Python source file from the cache.
+    Update the cache if it doesn't contain an entry for this file already.
+
+    Modified version of original `linecache.getlines`, which returns the
+    source code of Hikka and Dragon modules properly. This is needed for
+    interactive line debugger in werkzeug web debugger.
+    """
 
     try:
         if filename.startswith("<") and filename.endswith(">"):
@@ -63,6 +68,14 @@ def getlines(filename, module_globals=None):
 linecache.getlines = getlines
 
 
+def override_text(exception: Exception) -> typing.Optional[str]:
+    """Returns error-specific description if available, else `None`"""
+    if isinstance(exception, NetworkError):
+        return "✈️ <b>You have problems with internet connection on your server.</b>"
+
+    return None
+
+
 class HikkaException:
     def __init__(
         self,
@@ -77,6 +90,7 @@ class HikkaException:
         self.local_vars = local_vars
         self.full_stack = full_stack
         self.sysinfo = sysinfo
+        self.debug_url = None
 
     @classmethod
     def from_exc_info(
@@ -92,20 +106,23 @@ class HikkaException:
                 if isinstance(value, dict):
                     dictionary[key] = to_hashable(value)
                 else:
-                    if (
-                        getattr(getattr(value, "__class__", None), "__name__", None)
-                        == "Database"
-                    ):
-                        dictionary[key] = "<Database>"
-                    elif isinstance(
-                        value,
-                        (telethon.TelegramClient, CustomTelegramClient),
-                    ):
+                    try:
+                        if (
+                            getattr(getattr(value, "__class__", None), "__name__", None)
+                            == "Database"
+                        ):
+                            dictionary[key] = "<Database>"
+                        elif isinstance(
+                            value,
+                            (telethon.TelegramClient, CustomTelegramClient),
+                        ):
+                            dictionary[key] = f"<{value.__class__.__name__}>"
+                        elif len(str(value)) > 512:
+                            dictionary[key] = f"{str(value)[:512]}..."
+                        else:
+                            dictionary[key] = str(value)
+                    except Exception:
                         dictionary[key] = f"<{value.__class__.__name__}>"
-                    elif len(str(value)) > 512:
-                        dictionary[key] = f"{str(value)[:512]}..."
-                    else:
-                        dictionary[key] = str(value)
 
             return dictionary
 
@@ -156,7 +173,8 @@ class HikkaException:
         )
 
         return HikkaException(
-            message=(
+            message=override_text(exc_value)
+            or (
                 f"<b>🚫 Error!</b>\n{cause_mod}\n<b>🗄 Where:</b>"
                 f" <code>{utils.escape_html(filename)}:{lineno}</code><b>"
                 f" in </b><code>{utils.escape_html(name)}</code>\n<b>❓ What:</b>"
@@ -180,19 +198,19 @@ class TelegramLogsHandler(logging.Handler):
     first trimming handled then unused.
     """
 
-    def __init__(self, targets: list, capacity: int, web_debugger: WebDebugger):
+    def __init__(self, targets: list, capacity: int):
         super().__init__(0)
-        self.targets = targets
-        self.capacity = capacity
         self.buffer = []
         self.handledbuffer = []
-        self.lvl = logging.NOTSET  # Default loglevel
         self._queue = []
-        self.tg_buff = []
         self._mods = {}
+        self.tg_buff = []
         self.force_send_all = False
         self.tg_level = 20
-        self.web_debugger = web_debugger
+        self.web_debugger = None
+        self.targets = targets
+        self.capacity = capacity
+        self.lvl = logging.NOTSET
         self._send_lock = asyncio.Lock()
 
     def install_tg_log(self, mod: Module):
@@ -200,6 +218,9 @@ class TelegramLogsHandler(logging.Handler):
             self._task.cancel()
 
         self._mods[mod.tg_id] = mod
+
+        if mod.db.get(__name__, "debugger", False):
+            self.web_debugger = WebDebugger()
 
         self._task = asyncio.ensure_future(self.queue_poller())
 
@@ -247,11 +268,7 @@ class TelegramLogsHandler(logging.Handler):
 
         await call.edit(
             chunks[0],
-            reply_markup=[
-                {"text": "🐞 Web debugger", "url": item.debug_url},
-            ]
-            if item.debug_url
-            else None,
+            reply_markup=self._gen_web_debug_button(item),
         )
 
         for chunk in chunks[1:]:
@@ -261,20 +278,45 @@ class TelegramLogsHandler(logging.Handler):
         if not item.sysinfo:
             return []
 
-        try:
-            url = self.web_debugger.feed(*item.sysinfo)
-        except Exception:
-            item.debug_url = None
-            return []
+        if not (url := item.debug_url):
+            try:
+                url = self.web_debugger.feed(*item.sysinfo)
+            except Exception:
+                url = None
 
-        item.debug_url = url
+            item.debug_url = url
 
         return [
             {
                 "text": "🐞 Web debugger",
                 "url": url,
             }
+            if self.web_debugger
+            else {
+                "text": "🪲 Start debugger",
+                "callback": self._start_debugger,
+                "args": (item,),
+            }
         ]
+
+    async def _start_debugger(self, call: "InlineCall", item: HikkaException):  # type: ignore
+        if not self.web_debugger:
+            self.web_debugger = WebDebugger()
+            await self.web_debugger.proxy_ready.wait()
+
+        url = self.web_debugger.feed(*item.sysinfo)
+        item.debug_url = url
+
+        await call.edit(
+            item.message,
+            reply_markup=self._gen_web_debug_button(item),
+        )
+
+        await call.answer(
+            "Web debugger started. You can get PIN using .debugger command. \n⚠️ !DO"
+            " NOT GIVE IT TO ANYONE! ⚠️",
+            show_alert=True,
+        )
 
     async def sender(self):
         async with self._send_lock:
@@ -389,7 +431,6 @@ class TelegramLogsHandler(logging.Handler):
 
         if record.levelno >= self.tg_level:
             if record.exc_info:
-                logging.debug(record.__dict__)
                 self.tg_buff += [
                     (
                         HikkaException.from_exc_info(
@@ -460,9 +501,8 @@ def init():
     handler.setLevel(logging.INFO)
     handler.setFormatter(_main_formatter)
     logging.getLogger().handlers = []
-    web_debugger = WebDebugger()
     logging.getLogger().addHandler(
-        TelegramLogsHandler((handler, rotating_handler), 7000, web_debugger)
+        TelegramLogsHandler((handler, rotating_handler), 7000)
     )
     logging.getLogger().setLevel(logging.NOTSET)
     logging.getLogger("telethon").setLevel(logging.WARNING)
@@ -470,5 +510,4 @@ def init():
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
     logging.getLogger("aiogram").setLevel(logging.WARNING)
     logging.getLogger("pyrogram").setLevel(logging.WARNING)
-    logging.getLogger("werkzeug").setLevel(logging.WARNING)
     logging.captureWarnings(True)

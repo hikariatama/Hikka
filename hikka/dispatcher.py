@@ -16,24 +16,25 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import collections
+import contextlib
 import copy
 import inspect
 import logging
 import re
+import sys
 import traceback
 import typing
 
 from telethon import events
+from telethon.errors import FloodWaitError, RPCError
 from telethon.tl.types import Message
 
 from . import main, security, utils
@@ -259,6 +260,28 @@ class CommandDispatcher:
             return False
 
         if (
+            message.out
+            and len(message.message) > 2
+            and (
+                message.message.startswith(prefix * 2)
+                and any(s != prefix for s in message.message)
+                or message.message.startswith(str.translate(prefix * 2, change))
+                and any(s != str.translate(prefix, change) for s in message.message)
+            )
+        ):
+            # Allow escaping commands using .'s
+            if not watcher:
+                await message.edit(
+                    message.message[1:],
+                    parse_mode=lambda s: (
+                        s,
+                        utils.relocate_entities(message.entities, -1, message.message)
+                        or (),
+                    ),
+                )
+            return False
+
+        if (
             event.message.message.startswith(str.translate(prefix, change))
             and str.translate(prefix, change) != prefix
         ):
@@ -283,24 +306,6 @@ class CommandDispatcher:
         if utils.get_chat_id(message) in blacklist_chats or (
             whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
         ):
-            return False
-
-        if (
-            message.out
-            and len(message.message) > 2
-            and message.message.startswith(prefix * 2)
-            and any(s != prefix for s in message.message)
-        ):
-            # Allow escaping commands using .'s
-            if not watcher:
-                await message.edit(
-                    message.message[1:],
-                    parse_mode=lambda s: (
-                        s,
-                        utils.relocate_entities(message.entities, -1, message.message)
-                        or (),
-                    ),
-                )
             return False
 
         if not message.message or len(message.message) == 1:
@@ -402,31 +407,60 @@ class CommandDispatcher:
         )
 
     async def command_exc(self, _, message: Message):
+        """Handle command exceptions."""
+        exc = sys.exc_info()[1]
         logger.exception("Command failed", extra={"stack": inspect.stack()})
-        if not self._db.get(main.__name__, "inlinelogs", True):
-            try:
+        if isinstance(exc, RPCError):
+            if isinstance(exc, FloodWaitError):
+                hours = exc.seconds // 3600
+                minutes = (exc.seconds % 3600) // 60
+                seconds = exc.seconds % 60
+                hours = f"{hours} hours, " if hours else ""
+                minutes = f"{minutes} minutes, " if minutes else ""
+                seconds = f"{seconds} seconds" if seconds else ""
+                fw_time = f"{hours}{minutes}{seconds}"
                 txt = (
-                    "<b>🚫 Call</b>"
+                    self._client.loader.lookup("translations")
+                    .strings("fw_error")
+                    .format(
+                        utils.escape_html(message.message),
+                        fw_time,
+                        type(exc.request).__name__,
+                    )
+                )
+            else:
+                txt = (
+                    "<emoji document_id=5877477244938489129>🚫</emoji> <b>Call"
+                    f" </b><code>{utils.escape_html(message.message)}</code><b> failed"
+                    " due to RPC (Telegram) error:</b>"
+                    f" <code>{utils.escape_html(str(exc))}</code>"
+                )
+                txt = (
+                    self._client.loader.lookup("translations")
+                    .strings("rpc_error")
+                    .format(
+                        utils.escape_html(message.message),
+                        utils.escape_html(str(exc)),
+                    )
+                )
+        else:
+            if not self._db.get(main.__name__, "inlinelogs", True):
+                txt = (
+                    "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
                     f" <code>{utils.escape_html(message.message)}</code><b>"
                     " failed!</b>"
                 )
-                await (message.edit if message.out else message.reply)(txt)
-            except Exception:
-                pass
-            return
+            else:
+                exc = "\n".join(traceback.format_exc().splitlines()[1:])
+                txt = (
+                    "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
+                    f" <code>{utils.escape_html(message.message)}</code><b>"
+                    " failed!</b>\n\n<b>🧾"
+                    f" Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
+                )
 
-        try:
-            exc = traceback.format_exc()
-            # Remove `Traceback (most recent call last):`
-            exc = "\n".join(exc.splitlines()[1:])
-            txt = (
-                "<b>🚫 Call</b>"
-                f" <code>{utils.escape_html(message.message)}</code><b>"
-                f" failed!</b>\n\n<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
-            )
+        with contextlib.suppress(Exception):
             await (message.edit if message.out else message.reply)(txt)
-        except Exception:
-            pass
 
     async def watcher_exc(self, *_):
         logger.exception("Error running watcher", extra={"stack": inspect.stack()})

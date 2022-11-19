@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import contextlib
 import itertools
@@ -38,7 +36,7 @@ class PythonMod(loader.Module):
         "err": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji><b> Error:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji> <b>Error:</b>\n{}"
         ),
     }
 
@@ -52,7 +50,7 @@ class PythonMod(loader.Module):
         "err": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji><b> Ошибка:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji> <b>Ошибка:</b>\n{}"
         ),
         "_cls_doc": "Выполняет Python код",
     }
@@ -67,7 +65,7 @@ class PythonMod(loader.Module):
         "err": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji><b> Fehler:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji> <b>Fehler:</b>\n{}"
         ),
         "_cls_doc": "Führt Python Code aus",
     }
@@ -82,7 +80,7 @@ class PythonMod(loader.Module):
         "err": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji><b> Hata:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji> <b>Hata:</b>\n{}"
         ),
         "_cls_doc": "Python kodunu çalıştırır",
     }
@@ -97,7 +95,7 @@ class PythonMod(loader.Module):
         "err": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji><b> Xato:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji> <b>Xato:</b>\n{}"
         ),
         "_cls_doc": "Python kodini ishga tushiradi",
     }
@@ -112,7 +110,7 @@ class PythonMod(loader.Module):
         "err": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Código:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji><b> Error:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji> <b>Error:</b>\n{}"
         ),
         "_cls_doc": "Ejecuta código Python",
     }
@@ -127,9 +125,24 @@ class PythonMod(loader.Module):
         "err": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji><b> Қате:</b>\n{}"
+            " document_id=5312526098750252863>🚫</emoji> <b>Қате:</b>\n{}"
         ),
         "_cls_doc": "Python кодын орындау",
+    }
+
+    strings_tt = {
+        "eval": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Код:</b>\n<code>{}</code>\n<emoji"
+            " document_id=5197688912457245639>✅</emoji><b>"
+            " Нәтиҗә:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Код:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=5312526098750252863>🚫</emoji> <b>Хата:</b>\n{}"
+        ),
+        "_cls_doc": "Башкара Python коды",
     }
 
     @loader.owner

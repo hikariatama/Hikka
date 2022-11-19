@@ -11,7 +11,7 @@
 <h2><img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="54" align="middle"> Installation</h2>
 
 ### Installation page
-https://user-images.githubusercontent.com/36935426/197387902-b54d86ef-2374-47b2-bf2c-ff1fca2b461d.mp4
+<img src="https://github.com/hikariatama/assets/raw/master/install_new.gif" height="256">
 
 
 <a href="https://t.me/lavhostbot?start=SGlra2E"><img src="https://user-images.githubusercontent.com/36935426/167272288-85f00779-4b98-47da-8d0d-ea2c6370b979.png" height="40"></a>

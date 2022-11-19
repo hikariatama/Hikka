@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import re
 import string
@@ -25,7 +23,7 @@ class InlineStuffMod(loader.Module):
         "name": "InlineStuff",
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specified bot"
-            " username is invalid. It must end with </b><code>bot</code><b> and contain"
+            " username is invalid. It must end with</b> <code>bot</code> <b>and contain"
             " at least 4 symbols</b>"
         ),
         "bot_username_occupied": (
@@ -47,7 +45,7 @@ class InlineStuffMod(loader.Module):
     strings_ru = {
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неправильный ник"
-            " бота. Он должен заканчиваться на </b><code>bot</code><b> и быть не короче"
+            " бота. Он должен заканчиваться на</b> <code>bot</code> <b>и быть не короче"
             " чем 5 символов</b>"
         ),
         "bot_username_occupied": (
@@ -69,7 +67,7 @@ class InlineStuffMod(loader.Module):
     strings_de = {
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Der angegebene"
-            " Benutzername ist ungültig. Er muss mit </b><code>bot</code><b> enden und"
+            " Benutzername ist ungültig. Er muss mit</b> <code>bot</code> <b>enden und"
             " mindestens 4 Zeichen lang sein</b>"
         ),
         "bot_username_occupied": (
@@ -91,7 +89,7 @@ class InlineStuffMod(loader.Module):
     strings_tr = {
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Belirtilen bot"
-            " kullanıcı adı geçersiz. Botun adı </b><code>bot</code><b> ile bitmeli ve"
+            " kullanıcı adı geçersiz. Botun adı</b> <code>bot</code> <b>ile bitmeli ve"
             " en az 4 karakter içermelidir</b>"
         ),
         "bot_username_occupied": (
@@ -113,7 +111,7 @@ class InlineStuffMod(loader.Module):
     strings_uz = {
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bot foydalanuvchi"
-            " nomi noto'g'ri. U </b><code>bot</code><b> bilan tugashi kerak va kamida 4"
+            " nomi noto'g'ri. U</b> <code>bot</code> <b>bilan tugashi kerak va kamida 4"
             " belgidan iborat bo'lishi kerak</b>"
         ),
         "bot_username_occupied": (
@@ -136,7 +134,7 @@ class InlineStuffMod(loader.Module):
     strings_es = {
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>El nombre de usuario"
-            " del bot no es válido. Debe terminar con </b><code>bot</code><b> y"
+            " del bot no es válido. Debe terminar con</b> <code>bot</code> <b>y"
             " tener al menos 4 caracteres</b>"
         ),
         "bot_username_occupied": (
@@ -159,7 +157,7 @@ class InlineStuffMod(loader.Module):
         "name": "InlineStuff",
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Көрсетілген бот"
-            " аты жарамсыз. Оның соңында </b><code>bot</code><b> қосып, 4 символдан"
+            " аты жарамсыз. Оның соңында</b> <code>bot</code> <b>қосып, 4 символдан"
             " кем болмауы керек</b>"
         ),
         "bot_username_occupied": (

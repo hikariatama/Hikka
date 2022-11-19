@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import difflib
 import inspect
@@ -37,7 +35,7 @@ class HelpMod(loader.Module):
             " {} modules shown:</b>\n{}\n{}"
         ),
         "support": (
-            "{} <b>Link to </b><a href='https://t.me/hikka_talks'>support chat</a></b>"
+            "{} <b>Link to</b> <a href='https://t.me/hikka_talks'>support chat</a></b>"
         ),
         "partial_load": (
             "<emoji document_id=5312383351217201533>☝️</emoji> <b>Userbot is not"
@@ -66,7 +64,7 @@ class HelpMod(loader.Module):
             " {} модулей показано:</b>\n{}\n{}"
         ),
         "support": (
-            "{} <b>Ссылка на </b><a href='https://t.me/hikka_talks'>чат помощи</a></b>"
+            "{} <b>Ссылка на</b> <a href='https://t.me/hikka_talks'>чат помощи</a></b>"
         ),
         "_cls_doc": "Показывает помощь по модулям",
         "partial_load": (
@@ -96,7 +94,7 @@ class HelpMod(loader.Module):
             " {} Module angezeigt:</b>\n{}\n{}"
         ),
         "support": (
-            "{} <b>Link zum </b><a href='https://t.me/hikka_talks'>Supportchat</a></b>"
+            "{} <b>Link zum</b> <a href='https://t.me/hikka_talks'>Supportchat</a></b>"
         ),
         "_cls_doc": "Zeigt Hilfe zu Modulen an",
         "partial_load": (
@@ -195,7 +193,7 @@ class HelpMod(loader.Module):
         "request_join": "Se ha solicitado el enlace al chat de soporte",
         "core_notice": (
             "<emoji document_id=5312383351217201533>☝️</emoji> <b>Este es un módulo"
-            " adicional, por loque no se puede eliminar o modificar</b>"
+            " corazón, por loque no se puede eliminar o modificar</b>"
         ),
     }
 
@@ -239,7 +237,7 @@ class HelpMod(loader.Module):
             " {} модуль яшерелгән:</b>\n{}\n{}"
         ),
         "support": (
-            "{} <b>Сылтама </b><href='https://t.me/hikka_talks'>ярдәм чаты</a></b>"
+            "{} <b>Сылтама</b> <href='https://t.me/hikka_talks'>ярдәм чаты</a></b>"
         ),
         "_cls_doc": "Модульләр буенча ярдәм күрсәтә",
         "partial_load": (
@@ -350,15 +348,25 @@ class HelpMod(loader.Module):
             ),
         )
 
+    def find_aliases(self, command: str) -> list:
+        """Find aliases for command"""
+        aliases = []
+        _command = self.allmodules.commands[command]
+        if getattr(_command, "alias", None) and not (
+            aliases := getattr(_command, "aliases", None)
+        ):
+            aliases = [_command.alias]
+
+        return aliases or []
+
     async def modhelp(self, message: Message, args: str):
         exact = True
         module = self.lookup(args, include_dragon=True)
 
         if not module:
-            _args = args.lower()
-            _args = _args[1:] if _args.startswith(self.get_prefix()) else _args
-            if _args in self.allmodules.commands:
-                module = self.allmodules.commands[_args].__self__
+            cmd = args.lower().strip(self.get_prefix())
+            if method := self.allmodules.dispatch(cmd)[1]:
+                module = method.__self__
 
         if not module:
             module = self.lookup(
@@ -443,10 +451,20 @@ class HelpMod(loader.Module):
 
         for name, fun in commands.items():
             reply += (
-                "\n<emoji document_id=4972307488532595458>▫️</emoji>"
-                " <code>{}{}</code> {}".format(
+                "\n<emoji document_id=4971987363145188045>▫️</emoji>"
+                " <code>{}{}</code>{} {}".format(
                     self.get_prefix("dragon" if is_dragon else None),
                     name,
+                    " ({})".format(
+                        ", ".join(
+                            "<code>{}{}</code>".format(
+                                self.get_prefix("dragon" if is_dragon else None), alias
+                            )
+                            for alias in self.find_aliases(name)
+                        )
+                    )
+                    if self.find_aliases(name)
+                    else "",
                     utils.escape_html(fun)
                     if is_dragon
                     else (

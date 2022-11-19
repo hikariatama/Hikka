@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import io
@@ -43,12 +41,8 @@ GROUPS = [
 ]
 
 
-def decapitalize(string: str) -> str:
-    return string[0].lower() + string[1:]
-
-
 CONSTRUCTORS = {
-    decapitalize(
+    (lambda x: x[0].lower() + x[1:])(
         method.__class__.__name__.rsplit("Request", 1)[0]
     ): method.CONSTRUCTOR_ID
     for method in utils.array_sum(
@@ -113,6 +107,10 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Show Werkzeug PIN",
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Local URL",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web debugger is"
+            " disabled, url is not available</b>"
+        ),
     }
 
     strings_ru = {
@@ -159,6 +157,10 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Показать Werkzeug PIN",
         "proxied_url": "🌐 Проксированная ссылка",
         "local_url": "🏠 Локальная ссылка",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Веб-отладчик отключен,"
+            " ссылка недоступна</b>"
+        ),
     }
 
     strings_de = {
@@ -208,6 +210,10 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Werkzeug PIN anzeigen",
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Lokale URL",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            " deaktiviert, Link nicht verfügbar</b>"
+        ),
     }
 
     strings_tr = {
@@ -256,6 +262,10 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Werkzeug PIN'ini göster",
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Lokal URL",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger devre"
+            " dışı, bağlantı kullanılamaz</b>"
+        ),
     }
 
     strings_uz = {
@@ -298,6 +308,10 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Werkzeug PIN-ni ko'rsatish",
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Lokal URL",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            " o'chirilgan, ulanish mavjud emas</b>"
+        ),
     }
 
     strings_es = {
@@ -347,6 +361,10 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Mostrar el PIN de Werkzeug",
         "proxied_url": "🌐 URL de proxy",
         "local_url": "🏠 URL local",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            " desactivado, conexión no disponible</b>"
+        ),
     }
 
     strings_kk = {
@@ -388,6 +406,10 @@ class APIRatelimiterMod(loader.Module):
         "web_pin_btn": "🐞 Werkzeug PIN кодын көрсету",
         "proxied_url": "🌐 Прокси URL",
         "local_url": "🏠 Жергілікті URL",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            " өшірілген, байланыс жоқ</b>"
+        ),
     }
 
     _ratelimiter = []

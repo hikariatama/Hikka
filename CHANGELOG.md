@@ -8,6 +8,9 @@
 - Fix `.helphide` command
 - Fix visual bug with phone input field in web
 - Fix proxy-passing in web
+- Fix `EntityLike` validator
+- Fix stringifying error in logging
+- Fix command escaping when using layout translated prefix
 - Patch `.info`, `utils.answer` etc to support forums (topics)
 - Drop Okteto support
 - Show Hikka platform and version in Telegram sessions list
@@ -20,10 +23,23 @@
 - New README.md with installation steps and new web recording
 - New `utils.atexit` method
 - New `utils.get_topic` method
+- New `utils.answer_file` method
+- New `utils.get_cpu_usage` method
+- New `utils.get_ram_usage` method
 - New restart process, which correctly kills all child processes and threads
 - New interactive web werkzeug debugger (view pin using `.debugpin` command)
+- New QR login flow
+- New license banners
+- New error-specific messages for RPCErrors, FloodWaitErrors, NetworkErrors
+- Send `start` hook to `InfiniteLoop` instances with `autostart` flag only after `client_ready`
+- Replace `__getattr__` in `Module` object with properties for commands and handlers
+- Move from monkey-patching concept of filling modules' attributes to native one
 - Minor and major bugfixes, adapt to topics
 - Kazakh translation pack
+- Partial Tatar translation pack
+- Logging tweaks
+- Add `caller` field to inline units
+- Add ability to get module help by command alias
 
 ## 🌑 Hikka 1.5.3
 

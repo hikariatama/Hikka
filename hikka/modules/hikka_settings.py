@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
 import os
@@ -19,7 +17,7 @@ from telethon.tl.functions.messages import (
 from telethon.tl.types import Message
 from telethon.utils import get_display_name
 
-from .. import loader, main, utils
+from .. import loader, log, main, utils
 from .._internal import restart
 from ..inline.types import InlineCall
 
@@ -53,7 +51,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "invoke404": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Internal debug method"
-            " </b><code>{}</code><b> not found, ergo can't be invoked</b>"
+            "</b> <code>{}</code> <b>not found, ergo can't be invoked</b>"
         ),
         "module404": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module</b>"
@@ -61,12 +59,12 @@ class HikkaSettingsMod(loader.Module):
         ),
         "invoke": (
             "<emoji document_id=5215519585150706301>👍</emoji> <b>Invoked internal debug"
-            " method </b><code>{}</code>\n\n<emoji"
+            " method</b> <code>{}</code>\n\n<emoji"
             " document_id=5784891605601225888>🔵</emoji> <b>Result:\n{}</b>"
         ),
         "invoking": (
             "<emoji document_id=5213452215527677338>⏳</emoji> <b>Invoking internal"
-            " debug method </b><code>{}</code><b> of </b><code>{}</code><b>...</b>"
+            " debug method</b> <code>{}</code> <b>of</b> <code>{}</code><b>...</b>"
         ),
         "mod404": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Watcher {} not"
@@ -94,7 +92,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick for"
-            " </b><code>{}</code><b> is now {}</b>"
+            "</b> <code>{}</code> <b>is now {}</b>"
         ),
         "cmd404": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Command not found</b>"
@@ -168,7 +166,7 @@ class HikkaSettingsMod(loader.Module):
             "⚠️ <b>This command gives access to your Hikka web interface. It's not"
             " recommended to run it in public group chats. Consider using it in <a"
             " href='tg://openmessage?user_id={}'>Saved messages</a>. Type"
-            " </b><code>{}proxypass force_insecure</code><b> to ignore this warning</b>"
+            "</b> <code>{}proxypass force_insecure</code> <b>to ignore this warning</b>"
         ),
         "privacy_leak_nowarn": (
             "⚠️ <b>This command gives access to your Hikka web interface. It's not"
@@ -187,6 +185,8 @@ class HikkaSettingsMod(loader.Module):
         ),
         "disable_stats": "✅ Anonymous stats allowed",
         "enable_stats": "🚫 Anonymous stats disabled",
+        "disable_debugger": "✅ Debugger enabled",
+        "enable_debugger": "🚫 Debugger disabled",
     }
 
     strings_ru = {
@@ -220,7 +220,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Состояние NoNick для"
-            " </b><code>{}</code><b>: {}</b>"
+            "</b> <code>{}</code><b>: {}</b>"
         ),
         "cmd404": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Команда не найдена</b>"
@@ -290,7 +290,7 @@ class HikkaSettingsMod(loader.Module):
             "⚠️ <b>Эта команда дает доступ к веб-интерфейсу Hikka. Ее выполнение в"
             " публичных чатах является угрозой безопасности. Предпочтительно выполнять"
             " ее в <a href='tg://openmessage?user_id={}'>Избранных сообщениях</a>."
-            " Выполни </b><code>{}proxypass force_insecure</code><b> чтобы отключить"
+            " Выполни</b> <code>{}proxypass force_insecure</code> <b>чтобы отключить"
             " это предупреждение</b>"
         ),
         "privacy_leak_nowarn": (
@@ -312,6 +312,8 @@ class HikkaSettingsMod(loader.Module):
         ),
         "disable_stats": "✅ Анонимная стата разрешена",
         "enable_stats": "🚫 Анонимная стата запрещена",
+        "disable_debugger": "✅ Отладчик включен",
+        "enable_debugger": "🚫 Отладчик выключен",
     }
 
     strings_de = {
@@ -345,7 +347,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick-Status für"
-            " </b><code>{}</code><b>: {}</b>"
+            "</b> <code>{}</code><b>: {}</b>"
         ),
         "cmd404": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Befehl nicht"
@@ -422,7 +424,7 @@ class HikkaSettingsMod(loader.Module):
             "⚠️ <b>Dieser Befehl ermöglicht den Zugriff auf die Hikka-Weboberfläche."
             " Seine Ausführung inÖffentliche Chats sind ein Sicherheitsrisiko. Am"
             " besten durchführen es in <a href='tg://openmessage?user_id={}'>Empfohlene"
-            " Nachrichten</a>.Führen Sie </b><code>{}proxypass force_insecure</code><b>"
+            " Nachrichten</a>.Führen Sie</b> <code>{}proxypass force_insecure</code><b>"
             " zum Deaktivieren ausDies ist eine Warnung</b>"
         ),
         "privacy_leak_nowarn": (
@@ -446,6 +448,8 @@ class HikkaSettingsMod(loader.Module):
         ),
         "disable_stats": "✅ Anonyme Statistiken sind erlaubt",
         "enable_stats": "🚫 Anonyme Statistiken deaktiviert",
+        "disable_debugger": "✅ Debugger aktiviert",
+        "enable_debugger": "🚫 Debugger deaktiviert",
     }
 
     strings_tr = {
@@ -479,7 +483,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick durumu için"
-            " </b><code>{}</code><b>: {}</b>"
+            "</b> <code>{}</code><b>: {}</b>"
         ),
         "cmd404": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Komut bulunamadı</b>"
@@ -553,7 +557,7 @@ class HikkaSettingsMod(loader.Module):
             "⚠️ <b>Bu komut, Hikka web arayüzüne erişim sağlar. YürütülmesiGenel"
             " sohbetler bir güvenlik riskidir. Tercihen gerçekleştirin <a"
             " href='tg://openmessage?user_id={}'>Öne Çıkan Mesajlar</a> içinde.Devre"
-            " dışı bırakmak için </b><code>{}proxypass force_insecure</code><b>"
+            " dışı bırakmak için</b> <code>{}proxypass force_insecure</code><b>"
             " çalıştırınbu bir uyarıdır</b>"
         ),
         "privacy_leak_nowarn": (
@@ -561,6 +565,8 @@ class HikkaSettingsMod(loader.Module):
             "Genel sohbetler bir güvenlik riskidir. Tercihen gerçekleştirin"
             " onu <a href='tg://openmessage?user_id={}'>Öne Çıkan Mesajlar</a>'da.</b>"
         ),
+        "disable_debugger": "✅ Hata ayıklayıcı etkin",
+        "enable_debugger": "🚫 Hata Ayıklayıcı devre dışı",
     }
 
     strings_uz = {
@@ -594,7 +600,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick holati uchun"
-            " </b><code>{}</code><b>: {}</b>"
+            "</b> <code>{}</code><b>: {}</b>"
         ),
         "cmd404": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Buyruq topilmadi</b>"
@@ -671,7 +677,7 @@ class HikkaSettingsMod(loader.Module):
             "⚠️ <b>Ushbu buyruq Hikka veb-interfeysiga kirish imkonini beradi. Uning"
             " bajarilishiOmmaviy chatlar xavfsizlikka xavf tug'diradi. Afzal bajaring"
             " Bu <a href='tg://openmessage?user_id={}'>Taniqli xabarlar</a>da.O'chirish"
-            " uchun </b><code>{}proxypass force_insecure</code><b>ni ishga tushiring bu"
+            " uchun</b> <code>{}proxypass force_insecure</code><b>ni ishga tushiring bu"
             " ogohlantirish</b>"
         ),
         "privacy_leak_nowarn": (
@@ -694,6 +700,8 @@ class HikkaSettingsMod(loader.Module):
         ),
         "disable_stats": "✅ Anonim statistika ruxsat berildi",
         "enable_stats": "🚫 Anonim statistika o'chirilgan",
+        "disable_debugger": "✅ Debugger yoqilgan",
+        "enable_debugger": "🚫 Debugger o'chirilgan",
     }
 
     strings_es = {
@@ -719,7 +727,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "user_nn": (
             "No hay posición de nick para <emoji"
-            " document_id=5469791106591890404>🪄</emoji> <b> no es este usuario: {}</b>"
+            " document_id=5469791106591890404>🪄</emoji>  <b>no es este usuario: {}</b>"
         ),
         "no_cmd": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Un comando para ello"
@@ -727,8 +735,8 @@ class HikkaSettingsMod(loader.Module):
         ),
         "cmd_nn": (
             "No hay posición de nick para <emoji"
-            " document_id=5469791106591890404>🪄</emoji> <b> no es"
-            " </b><código>{}</código><b>: {}</b>"
+            " document_id=5469791106591890404>🪄</emoji>  <b>no es"
+            "</b> <código>{}</código><b>: {}</b>"
         ),
         "cmd404": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Comando no"
@@ -803,7 +811,7 @@ class HikkaSettingsMod(loader.Module):
             "⚠️ <b>Este comando proporciona acceso a la interfaz web de Hikka. Su"
             " ejecuciónEl chat público es un riesgo de seguridad. Preferiblemente"
             " realizarEstá en <a href='tg://openmessage?user_id={}'>mensajes"
-            " seleccionados</a>Ejecute </b><code>{}proxypass force_insecure</code><b>"
+            " seleccionados</a>Ejecute</b> <code>{}proxypass force_insecure</code><b>"
             " para desactivarEsto es una advertencia</b>"
         ),
         "privacy_leak_nowarn": (
@@ -827,6 +835,8 @@ class HikkaSettingsMod(loader.Module):
         ),
         "disable_stats": "✅ Estadísticas anónimas permitidas",
         "enable_stats": "🚫 Estadísticas anónimas deshabilitadas",
+        "disable_debugger": "✅ Depurador habilitado",
+        "enable_debugger": "🚫 Depurador deshabilitado",
     }
 
     strings_kk = {
@@ -860,7 +870,7 @@ class HikkaSettingsMod(loader.Module):
         ),
         "cmd_nn": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick күйі үшін"
-            " </b><code>{}</code><b>: {}</b>"
+            "</b> <code>{}</code><b>: {}</b>"
         ),
         "cmd404": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>Пәрмен табылмады</b>"
@@ -930,7 +940,7 @@ class HikkaSettingsMod(loader.Module):
             "⚠️ <b>Бұл пәрмен Hikka веб-интерфейсіне қол жеткізуге мүмкіндік береді."
             " Оның орындалуындаАшық чаттар - қауіпсіздікке қауіп төндіреді. Жақсырақ"
             " орындаңыз ол <a href='tg://openmessage?user_id={}'>Таңдаулы хабарлар</a>"
-            " ішінде.Өшіру үшін </b><code>{}proxypass force_insecure</code><b> іске"
+            " ішінде.Өшіру үшін</b> <code>{}proxypass force_insecure</code> <b>іске"
             " қосыңыз бұл ескерту</b>"
         ),
         "privacy_leak_nowarn": (
@@ -953,6 +963,8 @@ class HikkaSettingsMod(loader.Module):
         ),
         "disable_stats": "✅ Анонимді статистикаға рұқсат етіледі",
         "enable_stats": "🚫 Анонимді статистика өшірілген",
+        "disable_debugger": "✅ Отладчик қосылған",
+        "enable_debugger": "🚫 Түзету құралы өшірілген",
     }
 
     def get_watchers(self) -> tuple:
@@ -1722,6 +1734,21 @@ class HikkaSettingsMod(loader.Module):
                             "stats",
                             True,
                         ),
+                    }
+                ),
+            ],
+            [
+                (
+                    {
+                        "text": self.strings("disable_debugger"),
+                        "callback": self.inline__setting,
+                        "args": (lambda: self._db.set(log.__name__, "debugger", False)),
+                    }
+                    if self._db.get(log.__name__, "debugger", False)
+                    else {
+                        "text": self.strings("enable_debugger"),
+                        "callback": self.inline__setting,
+                        "args": (lambda: self._db.set(log.__name__, "debugger", True),),
                     }
                 ),
             ],

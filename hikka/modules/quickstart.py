@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
 import os
@@ -42,11 +40,11 @@ class QuickstartMod(loader.Module):
 
 💁‍♀️ <b>Quickstart:</b>
 
-1️⃣ <b>Type </b><code>.help</code> <b>to see modules list</b>
-2️⃣ <b>Type </b><code>.help &lt;ModuleName/command&gt;</code> <b>to see help of module ModuleName</b>
-3️⃣ <b>Type </b><code>.dlmod &lt;link&gt;</code> <b>to load module from link</b>
-4️⃣ <b>Type </b><code>.loadmod</code> <b>with reply to file to install module from it</b>
-5️⃣ <b>Type </b><code>.unloadmod &lt;ModuleName&gt;</code> <b>to unload module ModuleName</b>
+1️⃣ <b>Type</b> <code>.help</code> <b>to see modules list</b>
+2️⃣ <b>Type</b> <code>.help &lt;ModuleName/command&gt;</code> <b>to see help of module ModuleName</b>
+3️⃣ <b>Type</b> <code>.dlmod &lt;link&gt;</code> <b>to load module from link</b>
+4️⃣ <b>Type</b> <code>.loadmod</code> <b>with reply to file to install module from it</b>
+5️⃣ <b>Type</b> <code>.unloadmod &lt;ModuleName&gt;</code> <b>to unload module ModuleName</b>
 
 💡 <b>Hikka supports modules from Friendly-Telegram, DragonUserbot and GeekTG, as well as its own ones.</b>""",
         "railway": (
@@ -71,11 +69,11 @@ class QuickstartMod(loader.Module):
 
 💁‍♀️ <b>Быстрый гайд:</b>
 
-1️⃣ <b>Напиши </b><code>.help</code> <b>чтобы увидеть список модулей</b>
-2️⃣ <b>Напиши </b><code>.help &lt;Название модуля/команда&gt;</code> <b>чтобы увидеть описание модуля</b>
-3️⃣ <b>Напиши </b><code>.dlmod &lt;ссылка&gt;</code> <b>чтобы загрузить модуль из ссылка</b>
-4️⃣ <b>Напиши </b><code>.loadmod</code> <b>ответом на файл, чтобы загрузить модуль из него</b>
-5️⃣ <b>Напиши </b><code>.unloadmod &lt;Название модуля&gt;</code> <b>чтобы выгрузить модуль</b>
+1️⃣ <b>Напиши</b> <code>.help</code> <b>чтобы увидеть список модулей</b>
+2️⃣ <b>Напиши</b> <code>.help &lt;Название модуля/команда&gt;</code> <b>чтобы увидеть описание модуля</b>
+3️⃣ <b>Напиши</b> <code>.dlmod &lt;ссылка&gt;</code> <b>чтобы загрузить модуль из ссылка</b>
+4️⃣ <b>Напиши</b> <code>.loadmod</code> <b>ответом на файл, чтобы загрузить модуль из него</b>
+5️⃣ <b>Напиши</b> <code>.unloadmod &lt;Название модуля&gt;</code> <b>чтобы выгрузить модуль</b>
 
 💡 <b>Hikka поддерживает модули из Friendly-Telegram, DragonUserbot и GeekTG, а также свои собственные.</b>
 """,
@@ -101,11 +99,11 @@ class QuickstartMod(loader.Module):
 
 💁‍♀️ <b>Schnellstart:</b>
 
-1️⃣ <b>Schreibe </b><code>.help</code> <b>um eine Liste der Module zu sehen</b>
-2️⃣ <b>Schreibe </b><code>.help &lt;Modulname/Befehl&gt;</code> <b>um die Beschreibung des Moduls zu sehen</b>
-3️⃣ <b>Schreibe </b><code>.dlmod &lt;Link&gt;</code> <b>um ein Modul aus dem Link zu laden</b>
-4️⃣ <b>Schreibe </b><code>.loadmod</code> <b>als Antwort auf eine Datei, um ein Modul aus der Datei zu laden</b>
-5️⃣ <b>Schreibe </b><code>.unloadmod &lt;Modulname&gt;</code> <b>um ein Modul zu entladen</b>
+1️⃣ <b>Schreibe</b> <code>.help</code> <b>um eine Liste der Module zu sehen</b>
+2️⃣ <b>Schreibe</b> <code>.help &lt;Modulname/Befehl&gt;</code> <b>um die Beschreibung des Moduls zu sehen</b>
+3️⃣ <b>Schreibe</b> <code>.dlmod &lt;Link&gt;</code> <b>um ein Modul aus dem Link zu laden</b>
+4️⃣ <b>Schreibe</b> <code>.loadmod</code> <b>als Antwort auf eine Datei, um ein Modul aus der Datei zu laden</b>
+5️⃣ <b>Schreibe</b> <code>.unloadmod &lt;Modulname&gt;</code> <b>um ein Modul zu entladen</b>
 
 💡 <b>Hikka unterstützt Module von Friendly-Telegram, DragonUserbot und GeekTG sowie eigene Module.</b>
 """,
@@ -131,11 +129,11 @@ class QuickstartMod(loader.Module):
 
 💁‍♀️ <b>Tez ishga tushurish:</b>
 
-1️⃣ <b>Modullar royhatini ko'rish uchun </b><code>.help buyrug'ini</code> <b>yozing</b>
-2️⃣ <b>Modul haqida ma'lumot olish uchun </b><code>.help &lt;Modul nomi/buyruq&gt;</code> <b>yozing</b>
-3️⃣ <b>Modulni havola orqali o'rnatish uchun </b><code>.dlmod &lt;Link&gt;</code> <b>yozing</b>
-4️⃣ <b>Modulni fayl orqali yuklash uchun </b><code>.loadmod</code> <b>faylga javoban yozing</b>
-5️⃣ <b>Modulni olib tashlash uchun </b><code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>
+1️⃣ <b>Modullar royhatini ko'rish uchun</b> <code>.help buyrug'ini</code> <b>yozing</b>
+2️⃣ <b>Modul haqida ma'lumot olish uchun</b> <code>.help &lt;Modul nomi/buyruq&gt;</code> <b>yozing</b>
+3️⃣ <b>Modulni havola orqali o'rnatish uchun</b> <code>.dlmod &lt;Link&gt;</code> <b>yozing</b>
+4️⃣ <b>Modulni fayl orqali yuklash uchun</b> <code>.loadmod</code> <b>faylga javoban yozing</b>
+5️⃣ <b>Modulni olib tashlash uchun</b> <code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>
 
 💡 <b>Hikka, Friendly-Telegram, DragonUserbot ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>
 """,
@@ -162,11 +160,11 @@ class QuickstartMod(loader.Module):
 
 💁‍♀️ <b>Hızlı başlangıç:</b>
 
-1️⃣ <b>Modüller listesini görmek için </b><code>.help</code> <b>yazın</b>
-2️⃣ <b>Modül hakkında bilgi almak için </b><code>.help &lt;Modul adı/Komut&gt;</code> <b>yazın</b>
-3️⃣ <b>Bir bağlantıdan modül yüklemek için </b><code>.dlmod &lt;Link&gt;</code> <b>yazın</b>
-4️⃣ <b>Bir modülü bir dosyadan yüklemek için </b><code>.loadmod</code> <b>bir dosyanın yanıtını yazın</b>
-5️⃣ <b>Bir modülü kaldırmak için </b><code>.unloadmod &lt;Modul adı&gt;</code> <b>yazın</b>
+1️⃣ <b>Modüller listesini görmek için</b> <code>.help</code> <b>yazın</b>
+2️⃣ <b>Modül hakkında bilgi almak için</b> <code>.help &lt;Modul adı/Komut&gt;</code> <b>yazın</b>
+3️⃣ <b>Bir bağlantıdan modül yüklemek için</b> <code>.dlmod &lt;Link&gt;</code> <b>yazın</b>
+4️⃣ <b>Bir modülü bir dosyadan yüklemek için</b> <code>.loadmod</code> <b>bir dosyanın yanıtını yazın</b>
+5️⃣ <b>Bir modülü kaldırmak için</b> <code>.unloadmod &lt;Modul adı&gt;</code> <b>yazın</b>
 
 💡 <b>Hikka, Friendly-Telegram, DragonUserbot ve GeekTG modüllerini de dahil olmak üzere kendi modüllerini destekler.</b>
 """,
@@ -189,11 +187,11 @@ class QuickstartMod(loader.Module):
 
 💁‍♀️ <b>Para comenzar de inmediato:</b>
 
-1️⃣ <b>Para ver la lista de módulos, escriba </b><code>.help</code> <b>y presione</b>
-2️⃣ <b>Para obtener información sobre el módulo, escriba </b><code>.help &lt;nombre del módulo/comando&gt;</code> <b>y presione</b>
-3️⃣ <b>Para instalar el módulo desde el enlace, escriba </b><code>.dlmod &lt;enlace&gt;</code> <b>y presione</b>
-4️⃣ <b>Para cargar el módulo desde el archivo, escriba </b><code>.loadmod</code> <b>y responda al archivo que desea cargar</b>
-5️⃣ <b>Para eliminar el módulo, escriba </b><code>.unloadmod &lt;nombre del módulo&gt;</code> <b>y presione</b>
+1️⃣ <b>Para ver la lista de módulos, escriba</b> <code>.help</code> <b>y presione</b>
+2️⃣ <b>Para obtener información sobre el módulo, escriba</b> <code>.help &lt;nombre del módulo/comando&gt;</code> <b>y presione</b>
+3️⃣ <b>Para instalar el módulo desde el enlace, escriba</b> <code>.dlmod &lt;enlace&gt;</code> <b>y presione</b>
+4️⃣ <b>Para cargar el módulo desde el archivo, escriba</b> <code>.loadmod</code> <b>y responda al archivo que desea cargar</b>
+5️⃣ <b>Para eliminar el módulo, escriba</b> <code>.unloadmod &lt;nombre del módulo&gt;</code> <b>y presione</b>
 
 💡 <b>Para admitir módulos, también incluye Hikka, Friendly-Telegram, DragonUserbot y GeekTG.</b>
 """,
@@ -219,11 +217,11 @@ class QuickstartMod(loader.Module):
 
 💁‍♀️ <b>Жылдам құрал:</b>
 
-1️⃣ <b>Модульдер тізімін көру үшін </b><code>.help</code> <b>жазыңыз</b>
-2️⃣ <b>Модульдің сипаттамасын көру үшін </b><code>.help &lt;Модуль/команда атауы&gt;</code> <b>жазыңыз</b>
-3️⃣ <b>Сілтемеден модульді орнату үшін </b><code>.dlmod &lt;сілтеме&gt;</code> <b>жазыңыз</b>
-4️⃣ <b>Файлдан модульді орнату үшін </b><code>.loadmod</code> <b>жазыңыз</b>
-5️⃣ <b>Модульді жою үшін </b><code>.unloadmod &lt;Модуль атауы&gt;</b> <b>жазыңыз</b>
+1️⃣ <b>Модульдер тізімін көру үшін</b> <code>.help</code> <b>жазыңыз</b>
+2️⃣ <b>Модульдің сипаттамасын көру үшін</b> <code>.help &lt;Модуль/команда атауы&gt;</code> <b>жазыңыз</b>
+3️⃣ <b>Сілтемеден модульді орнату үшін</b> <code>.dlmod &lt;сілтеме&gt;</code> <b>жазыңыз</b>
+4️⃣ <b>Файлдан модульді орнату үшін</b> <code>.loadmod</code> <b>жазыңыз</b>
+5️⃣ <b>Модульді жою үшін</b> <code>.unloadmod &lt;Модуль атауы&gt;</b> <b>жазыңыз</b>
 
 💡 <b>Hikka Friendly-Telegram, DragonUserbot және GeekTG модулдерінен, әйтпесе жеңіл модулдерден қамтамасыз етеді.</b>
 """,
@@ -245,10 +243,10 @@ class QuickstartMod(loader.Module):
 📣 <b>Комьюнити ясаган модульләр белән каналларны карагыз: <a href="https://t.me/hikka_ub/126">күрсәтергә</a></b>
 💁‍♀️ <b>Тиз белешмәлек:</b>
 1️⃣ <b>Языгыз <b><code>.help</code></b> модульләр исемлеген күрү өчен</b>
-2️⃣ <b>Языгыз </b><code>.help &lt;Модуль исеме/командасы&gt;</code> <b>модуль тасвирламасын күрү өчен</b>
-3️⃣ <b>Языгыз </b><code>.dlmod &lt;сылтама&gt;</code> <b>сылтамадан модульне йөкләү өчен</b>
-4️⃣ <b>Языгыз </b><code>.loadmod</code> <b>файлга җавап, аннан модульне йөкләү өчен</b>
-5️⃣ <b>Языгыз </b><code>.unloadmod &lt;модуль исеме&gt;</code> <b>модульне бушату өчен</b>
+2️⃣ <b>Языгыз</b> <code>.help &lt;Модуль исеме/командасы&gt;</code> <b>модуль тасвирламасын күрү өчен</b>
+3️⃣ <b>Языгыз</b> <code>.dlmod &lt;сылтама&gt;</code> <b>сылтамадан модульне йөкләү өчен</b>
+4️⃣ <b>Языгыз</b> <code>.loadmod</code> <b>файлга җавап, аннан модульне йөкләү өчен</b>
+5️⃣ <b>Языгыз</b> <code>.unloadmod &lt;модуль исеме&gt;</code> <b>модульне бушату өчен</b>
 💡 <b>Hikka Friendly-Telegram һәм GeekTG модульләрен, шулай ук үзенекен хуплый.</b>
 """,
         "railway": (

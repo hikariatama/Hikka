@@ -16,13 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import atexit as _atexit
@@ -40,6 +38,7 @@ import signal
 import string
 import time
 import typing
+import psutil
 from datetime import timedelta
 from urllib.parse import urlparse
 
@@ -66,6 +65,7 @@ from telethon.tl.types import (
     Channel,
     Chat,
     ChatAdminRights,
+    InputDocument,
     InputPeerNotifySettings,
     MessageEntityBankCard,
     MessageEntityBlockquote,
@@ -96,7 +96,7 @@ from telethon.tl.types import (
 
 from .inline.types import InlineCall, InlineMessage
 from .tl_cache import CustomTelegramClient
-from .types import ListLike, Module
+from .types import HikkaReplyMarkup, ListLike, Module
 
 FormattingEntity = typing.Union[
     MessageEntityUnknown,
@@ -326,7 +326,6 @@ def run_async(loop: asyncio.AbstractEventLoop, coro: typing.Awaitable) -> typing
     :param coro: Coroutine to run
     :return: Result of the coroutine
     """
-    # When we bump minimum support to 3.7, use run()
     return asyncio.run_coroutine_threadsafe(coro, loop).result()
 
 
@@ -381,13 +380,61 @@ def relocate_entities(
     return entities
 
 
+async def answer_file(
+    message: typing.Union[Message, InlineCall, InlineMessage],
+    file: typing.Union[str, bytes, io.IOBase, InputDocument],
+    caption: typing.Optional[str] = None,
+    **kwargs,
+):
+    """
+    Use this to answer a message with a document
+    :param message: Message to answer
+    :param file: File to send - url, path or bytes
+    :param caption: Caption to send
+    :param kwargs: Extra kwargs to pass to `send_file`
+    :return: Sent message
+
+    :example:
+        >>> await utils.answer_file(message, "test.txt")
+        >>> await utils.answer_file(
+            message,
+            "https://mods.hikariatama.ru/badges/artai.jpg",
+            "This is the cool module, check it out!",
+        )
+    """
+    if isinstance(message, (InlineCall, InlineMessage)):
+        message = message.form["caller"]
+
+    if topic := get_topic(message):
+        kwargs.setdefault("reply_to", topic)
+
+    try:
+        response = await message.client.send_file(
+            message.peer_id,
+            file,
+            caption=caption,
+            **kwargs,
+        )
+    except Exception:
+        if caption:
+            logger.warning(
+                "Failed to send file, sending plain text instead", exc_info=True
+            )
+            return await answer(message, caption, **kwargs)
+
+        raise
+
+    with contextlib.suppress(Exception):
+        await message.delete()
+
+    return response
+
+
 async def answer(
     message: typing.Union[Message, InlineCall, InlineMessage],
     response: str,
     *,
-    reply_markup: typing.Optional[
-        typing.Union[typing.List[typing.List[dict]], typing.List[dict], dict]
-    ] = None,
+    reply_markup: typing.Optional[HikkaReplyMarkup] = None,
     **kwargs,
 ) -> typing.Union[InlineCall, InlineMessage, Message]:
     """
@@ -485,7 +532,7 @@ async def answer(
                 result = await message.client.send_file(
                     message.peer_id,
                     file,
-                    caption=message.client.loader._lookup("translations").strings(
+                    caption=message.client.loader.lookup("translations").strings(
                         "too_long"
                     ),
                     reply_to=kwargs.get("reply_to") or get_topic(message),
@@ -1452,6 +1499,26 @@ def get_topic(message: Message) -> typing.Optional[int]:
         if isinstance(message, (InlineCall, InlineMessage))
         else None
     )
+
+
+def get_ram_usage() -> float:
+    """Returns current process tree memory usage in MB"""
+    current_process = psutil.Process(os.getpid())
+    mem = current_process.memory_info()[0] / 2.0**20
+    for child in current_process.children(recursive=True):
+        mem += child.memory_info()[0] / 2.0**20
+
+    return round(mem, 1)
+
+
+def get_cpu_usage() -> float:
+    """Returns current process tree CPU usage in %"""
+    current_process = psutil.Process(os.getpid())
+    cpu = current_process.cpu_percent()
+    for child in current_process.children(recursive=True):
+        cpu += child.cpu_percent()
+
+    return round(cpu, 1)
 
 
 init_ts = time.perf_counter()

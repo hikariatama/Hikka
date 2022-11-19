@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import inspect
 import logging
@@ -263,7 +261,7 @@ class Events(InlineUnit):
                         + button.get("always_allow", [])
                     ):
                         await call.answer(
-                            self._client.loader._lookup("translations").strings(
+                            self._client.loader.lookup("translations").strings(
                                 "button403"
                             )
                         )
@@ -317,7 +315,7 @@ class Events(InlineUnit):
                 not in self._custom_map[call.data].get("always_allow", [])
             ):
                 await call.answer(
-                    self._client.loader._lookup("translations").strings("button403")
+                    self._client.loader.lookup("translations").strings("button403")
                 )
                 return
 
@@ -407,14 +405,14 @@ class Events(InlineUnit):
                     InlineQueryResultArticle(
                         id=utils.rand(20),
                         title=(
-                            self._client.loader._lookup("translations")
+                            self._client.loader.lookup("translations")
                             .strings("command")
                             .format(name)
                         ),
                         description=doc,
                         input_message_content=InputTextMessageContent(
                             (
-                                self._client.loader._lookup("translations")
+                                self._client.loader.lookup("translations")
                                 .strings("command_msg")
                                 .format(
                                     utils.escape_html(name),
@@ -430,7 +428,7 @@ class Events(InlineUnit):
                         reply_markup=self.generate_markup(
                             {
                                 "text": (
-                                    self._client.loader._lookup("translations").strings(
+                                    self._client.loader.lookup("translations").strings(
                                         "run_command"
                                     )
                                 ),
@@ -450,14 +448,14 @@ class Events(InlineUnit):
                 [
                     InlineQueryResultArticle(
                         id=utils.rand(20),
-                        title=self._client.loader._lookup("translations").strings(
+                        title=self._client.loader.lookup("translations").strings(
                             "show_inline_cmds"
                         ),
-                        description=self._client.loader._lookup("translations").strings(
+                        description=self._client.loader.lookup("translations").strings(
                             "no_inline_cmds"
                         ),
                         input_message_content=InputTextMessageContent(
-                            self._client.loader._lookup("translations").strings(
+                            self._client.loader.lookup("translations").strings(
                                 "no_inline_cmds_msg"
                             ),
                             "HTML",
@@ -478,17 +476,17 @@ class Events(InlineUnit):
             [
                 InlineQueryResultArticle(
                     id=utils.rand(20),
-                    title=self._client.loader._lookup("translations").strings(
+                    title=self._client.loader.lookup("translations").strings(
                         "show_inline_cmds"
                     ),
                     description=(
-                        self._client.loader._lookup("translations")
+                        self._client.loader.lookup("translations")
                         .strings("inline_cmds")
                         .format(len(_help))
                     ),
                     input_message_content=InputTextMessageContent(
                         (
-                            self._client.loader._lookup("translations")
+                            self._client.loader.lookup("translations")
                             .strings("inline_cmds_msg")
                             .format("\n".join(i[1] for i in _help))
                         ),

@@ -1,17 +1,14 @@
 """Registers modules"""
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
 import copy
-import gc as _gc
 import importlib
 import importlib.machinery
 import importlib.util
@@ -20,22 +17,16 @@ import logging
 import os
 import re
 import sys
-import types as _types
 import typing
 from functools import partial, wraps
 from types import FunctionType, ModuleType
 from uuid import uuid4
 
-import requests
-from telethon.hints import EntityLike
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.tl.tlobject import TLObject
-from telethon.tl.types import Channel, InputPeerNotifySettings, Message
 
 from . import security, utils, validators, version
 from .database import Database
 from .inline.core import InlineManager
-from .inline.types import InlineCall
 from .translations import Strings, Translator
 from .types import ConfigValue  # skipcq
 from .types import ModuleConfig  # skipcq
@@ -74,116 +65,6 @@ group_member = security.group_member
 pm = security.pm
 unrestricted = security.unrestricted
 inline_everyone = security.inline_everyone
-
-
-def proxy0(data):
-    def proxy1():
-        return data
-
-    return proxy1
-
-
-_CELLTYPE = type(proxy0(None).__closure__[0])
-
-
-def replace_all_refs(replace_from: typing.Any, replace_to: typing.Any) -> typing.Any:
-    """
-    :summary: Uses the :mod:`gc` module to replace all references to obj
-              :attr:`replace_from` with :attr:`replace_to` (it tries it's best,
-              anyway).
-    :param replace_from: The obj you want to replace.
-    :param replace_to: The new objject you want in place of the old one.
-    :returns: The replace_from
-    """
-    # https://github.com/cart0113/pyjack/blob/dd1f9b70b71f48335d72f53ee0264cf70dbf4e28/pyjack.py
-
-    _gc.collect()
-
-    hit = False
-    for referrer in _gc.get_referrers(replace_from):
-        # FRAMES -- PASS THEM UP
-        if isinstance(referrer, _types.FrameType):
-            continue
-
-        # DICTS
-        if isinstance(referrer, dict):
-            cls = None
-
-            # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
-            if "__dict__" in referrer and "__weakref__" in referrer:
-                for cls in _gc.get_referrers(referrer):
-                    if inspect.isclass(cls) and cls.__dict__ == referrer:
-                        break
-
-            for key, value in referrer.items():
-                # REMEMBER TO REPLACE VALUES ...
-                if value is replace_from:
-                    hit = True
-                    value = replace_to
-                    referrer[key] = value
-                    if cls:  # AGAIN, CLEANUP DICTPROXY PROBLEM
-                        setattr(cls, key, replace_to)
-                # AND KEYS.
-                if key is replace_from:
-                    hit = True
-                    del referrer[key]
-                    referrer[replace_to] = value
-
-        elif isinstance(referrer, list):
-            for i, value in enumerate(referrer):
-                if value is replace_from:
-                    hit = True
-                    referrer[i] = replace_to
-
-        elif isinstance(referrer, set):
-            referrer.remove(replace_from)
-            referrer.add(replace_to)
-            hit = True
-
-        elif isinstance(
-            referrer,
-            (
-                tuple,
-                frozenset,
-            ),
-        ):
-            new_tuple = []
-            for obj in referrer:
-                if obj is replace_from:
-                    new_tuple.append(replace_to)
-                else:
-                    new_tuple.append(obj)
-            replace_all_refs(referrer, type(referrer)(new_tuple))
-
-        elif isinstance(referrer, _CELLTYPE):
-
-            def _proxy0(data):
-                def proxy1():
-                    return data
-
-                return proxy1
-
-            proxy = _proxy0(replace_to)
-            newcell = proxy.__closure__[0]
-            replace_all_refs(referrer, newcell)
-
-        elif isinstance(referrer, _types.FunctionType):
-            localsmap = {}
-            for key in ["code", "globals", "name", "defaults", "closure"]:
-                orgattr = getattr(referrer, f"__{key}__")
-                localsmap[key] = replace_to if orgattr is replace_from else orgattr
-            localsmap["argdefs"] = localsmap["defaults"]
-            del localsmap["defaults"]
-            newfn = _types.FunctionType(**localsmap)
-            replace_all_refs(referrer, newfn)
-
-        else:
-            logger.debug("%s is not supported.", referrer)
-
-    if hit is False:
-        raise AttributeError(f"Object '{replace_from}' not found")
-
-    return replace_from
 
 
 async def stop_placeholder() -> bool:
@@ -427,6 +308,8 @@ def tag(*tags, **kwarg_tags):
         • `from_id` - Capture only messages from given user
         • `chat_id` - Capture only messages from given chat
         • `thumb_url` - Works for inline command handlers. Will be shown in help
+        • `alias` - Set single alias for a command
+        • `aliases` - Set multiple aliases for a command
 
     Usage example:
 
@@ -889,7 +772,7 @@ class Modules:
         for _watcher in instance.hikka_watchers.values():
             self.watchers += [_watcher]
 
-    def _lookup(
+    def lookup(
         self,
         modname: str,
         include_dragon: bool = False,
@@ -926,142 +809,6 @@ class Modules:
     def get_approved_channel(self):
         return self.__approve.pop(0) if self.__approve else None
 
-    async def _approve(
-        self,
-        call: InlineCall,
-        channel: EntityLike,
-        event: asyncio.Event,
-    ):
-        local_event = asyncio.Event()
-        self.__approve += [(channel, local_event)]
-        await local_event.wait()
-        event.status = local_event.status
-        event.set()
-        await call.edit(
-            "💫 <b>Joined <a"
-            f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>',
-            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
-        )
-
-    async def _decline(
-        self,
-        call: InlineCall,
-        channel: EntityLike,
-        event: asyncio.Event,
-    ):
-        self._db.set(
-            "hikka.main",
-            "declined_joins",
-            list(set(self._db.get("hikka.main", "declined_joins", []) + [channel.id])),
-        )
-        event.status = False
-        event.set()
-        await call.edit(
-            "✖️ <b>Declined joining <a"
-            f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>',
-            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
-        )
-
-    async def _request_join(
-        self,
-        peer: EntityLike,
-        reason: str,
-        assure_joined: typing.Optional[bool] = False,
-        _module: Module = None,
-    ) -> bool:
-        """
-        Request to join a channel.
-        :param peer: The channel to join.
-        :param reason: The reason for joining.
-        :param assure_joined: If set, module will not be loaded unless the required channel is joined.
-                              ⚠️ Works only in `client_ready`!
-                              ⚠️ If user declines to join channel, he will not be asked to
-                              join again, so unless he joins it manually, module will not be loaded
-                              ever.
-        :return: Status of the request.
-        :rtype: bool
-        :notice: This method will block module loading until the request is approved or declined.
-        """
-        event = asyncio.Event()
-        await self.client(
-            UpdateNotifySettingsRequest(
-                peer=self.inline.bot_username,
-                settings=InputPeerNotifySettings(show_previews=False, silent=False),
-            )
-        )
-
-        channel = await self.client.get_entity(peer)
-        if channel.id in self._db.get("hikka.main", "declined_joins", []):
-            if assure_joined:
-                raise LoadError(
-                    f"You need to join @{channel.username} in order to use this module"
-                )
-
-            return False
-
-        if not isinstance(channel, Channel):
-            raise TypeError("`peer` field must be a channel")
-
-        if getattr(channel, "left", True):
-            channel = await self.client.force_get_entity(peer)
-
-        if not getattr(channel, "left", True):
-            return True
-
-        _module.strings._base_strings["_hikka_internal_request_join"] = (
-            f"💫 <b>Module </b><code>{_module.__class__.__name__}</code><b> requested to"
-            " join channel <a"
-            f" href='https://t.me/{channel.username}'>{utils.escape_html(channel.title)}</a></b>\n\n<b>❓"
-            f" Reason: </b><i>{utils.escape_html(reason)}</i>"
-        )
-
-        if not hasattr(_module, "strings_ru"):
-            _module.strings_ru = {}
-
-        _module.strings_ru["_hikka_internal_request_join"] = (
-            f"💫 <b>Модуль </b><code>{_module.__class__.__name__}</code><b> запросил"
-            " разрешение на вступление в канал <a"
-            f" href='https://t.me/{channel.username}'>{utils.escape_html(channel.title)}</a></b>\n\n<b>❓"
-            f" Причина: </b><i>{utils.escape_html(reason)}</i>"
-        )
-
-        await self.inline.bot.send_animation(
-            self.client.tg_id,
-            "https://static.hikari.gay/ab3adf144c94a0883bfe489f4eebc520.gif",
-            caption=_module.strings("_hikka_internal_request_join"),
-            reply_markup=self.inline.generate_markup(
-                [
-                    {
-                        "text": "💫 Approve",
-                        "callback": self._approve,
-                        "args": (channel, event),
-                    },
-                    {
-                        "text": "✖️ Decline",
-                        "callback": self._decline,
-                        "args": (channel, event),
-                    },
-                ]
-            ),
-        )
-
-        _module.hikka_wait_channel_approve = (
-            _module.__class__.__name__,
-            channel,
-            reason,
-        )
-        await event.wait()
-
-        with contextlib.suppress(AttributeError):
-            delattr(_module, "hikka_wait_channel_approve")
-
-        if assure_joined and not event.status:
-            raise LoadError(
-                f"You need to join @{channel.username} in order to use this module"
-            )
-
-        return event.status
-
     def get_prefix(self, userbot: typing.Optional[str] = None) -> str:
         """Get prefix for specific userbot. Pass `None` to get Hikka prefix"""
         if userbot == "dragon":
@@ -1078,24 +825,7 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        instance.allclients = self.allclients
         instance.allmodules = self
-        instance.hikka = True
-        instance.get = partial(self._get, _owner=instance.__class__.__name__)
-        instance.set = partial(self._set, _owner=instance.__class__.__name__)
-        instance.pointer = partial(self._pointer, _owner=instance.__class__.__name__)
-        instance.get_prefix = self.get_prefix
-        instance.client = self.client
-        instance._client = self.client
-        instance.db = self._db
-        instance._db = self._db
-        instance.lookup = self._lookup
-        instance.import_lib = self._mod_import_lib
-        instance.tg_id = self.client.tg_id
-        instance._tg_id = self.client.tg_id
-        instance.request_join = partial(self._request_join, _module=instance)
-
-        instance.animate = self._animate
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
@@ -1119,268 +849,37 @@ class Modules:
 
         self.modules += [instance]
 
-    def _get(
-        self,
-        key: str,
-        default: typing.Optional[JSONSerializable] = None,
-        _owner: str = None,
-    ) -> JSONSerializable:
-        return self._db.get(_owner, key, default)
-
-    def _set(self, key: str, value: JSONSerializable, _owner: str = None) -> bool:
-        return self._db.set(_owner, key, value)
-
-    def _pointer(
-        self,
-        key: str,
-        default: typing.Optional[JSONSerializable] = None,
-        _owner: str = None,
-    ) -> JSONSerializable:
-        return self._db.pointer(_owner, key, default)
-
-    async def _mod_import_lib(
-        self,
-        url: str,
-        *,
-        suspend_on_error: typing.Optional[bool] = False,
-        _did_requirements: bool = False,
-    ) -> object:
-        """
-        Import library from url and register it in :obj:`Modules`
-        :param url: Url to import
-        :param suspend_on_error: Will raise :obj:`loader.SelfSuspend` if library can't be loaded
-        :return: :obj:`Library`
-        :raise: SelfUnload if :attr:`suspend_on_error` is True and error occurred
-        :raise: HTTPError if library is not found
-        :raise: ImportError if library doesn't have any class which is a subclass of :obj:`loader.Library`
-        :raise: ImportError if library name doesn't end with `Lib`
-        :raise: RuntimeError if library throws in :method:`init`
-        :raise: RuntimeError if library classname exists in :obj:`Modules`.libraries
-        """
-
-        def _raise(e: Exception):
-            if suspend_on_error:
-                raise SelfSuspend("Required library is not available or is corrupted.")
-
-            raise e
-
-        if not utils.check_url(url):
-            _raise(ValueError("Invalid url for library"))
-
-        code = await utils.run_sync(requests.get, url)
-        code.raise_for_status()
-        code = code.text
-
-        if re.search(r"# ?scope: ?hikka_min", code):
-            ver = tuple(
-                map(
-                    int,
-                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)[1].split(
-                        "."
-                    ),
-                )
-            )
-
-            if version.__version__ < ver:
-                _raise(
-                    RuntimeError(
-                        f"Library requires Hikka version {'{}.{}.{}'.format(*ver)}+"
-                    )
-                )
-
-        module = f"hikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
-        origin = f"<library {url}>"
-
-        spec = importlib.machinery.ModuleSpec(
-            module,
-            StringLoader(code, origin),
-            origin=origin,
-        )
-        try:
-            instance = importlib.util.module_from_spec(spec)
-            sys.modules[module] = instance
-            spec.loader.exec_module(instance)
-        except ImportError as e:
-            logger.info(
-                "Library loading failed, attemping dependency installation (%s)",
-                e.name,
-            )
-            # Let's try to reinstall dependencies
-            try:
-                requirements = list(
-                    filter(
-                        lambda x: not x.startswith(("-", "_", ".")),
-                        map(
-                            str.strip,
-                            VALID_PIP_PACKAGES.search(code)[1].split(),
-                        ),
-                    )
-                )
-            except TypeError:
-                logger.warning(
-                    "No valid pip packages specified in code, attemping"
-                    " installation from error"
-                )
-                requirements = [e.name]
-
-            logger.debug("Installing requirements: %s", requirements)
-
-            if not requirements or _did_requirements:
-                _raise(e)
-
-            pip = await asyncio.create_subprocess_exec(
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                "-q",
-                "--disable-pip-version-check",
-                "--no-warn-script-location",
-                *["--user"] if USER_INSTALL else [],
-                *requirements,
-            )
-
-            rc = await pip.wait()
-
-            if rc != 0:
-                _raise(e)
-
-            importlib.invalidate_caches()
-
-            kwargs = utils.get_kwargs()
-            kwargs["_did_requirements"] = True
-
-            return await self._mod_import_lib(**kwargs)  # Try again
-
-        lib_obj = next(
-            (
-                value()
-                for value in vars(instance).values()
-                if inspect.isclass(value) and issubclass(value, Library)
-            ),
-            None,
-        )
-
-        if not lib_obj:
-            _raise(ImportError("Invalid library. No class found"))
-
-        if not lib_obj.__class__.__name__.endswith("Lib"):
-            _raise(
-                ImportError(
-                    "Invalid library. Classname {} does not end with 'Lib'".format(
-                        lib_obj.__class__.__name__
-                    )
-                )
-            )
-
-        if (
-            all(
-                line.replace(" ", "") != "#scope:no_stats" for line in code.splitlines()
-            )
-            and self._db.get("hikka.main", "stats", True)
-            and url is not None
-            and utils.check_url(url)
-        ):
-            with contextlib.suppress(Exception):
-                await self._lookup("loader")._send_stats(url)
-
-        lib_obj.client = self.client
-        lib_obj._client = self.client  # skipcq
-        lib_obj.db = self._db
-        lib_obj._db = self._db  # skipcq
-        lib_obj.name = lib_obj.__class__.__name__
-        lib_obj.source_url = url.strip("/")
-
-        lib_obj.lookup = self._lookup
-        lib_obj.inline = self.inline
-        lib_obj.tg_id = self.client.tg_id
-        lib_obj.allmodules = self
-        lib_obj._lib_get = partial(
-            self._get,
-            _owner=lib_obj.__class__.__name__,
-        )
-        lib_obj._lib_set = partial(
-            self._set,
-            _owner=lib_obj.__class__.__name__,
-        )
-        lib_obj._lib_pointer = partial(
-            self._pointer,
-            _owner=lib_obj.__class__.__name__,
-        )
-        lib_obj.get_prefix = self.get_prefix
-
-        for old_lib in self.libraries:
-            if old_lib.name == lib_obj.name and (
-                not isinstance(getattr(old_lib, "version", None), tuple)
-                and not isinstance(getattr(lib_obj, "version", None), tuple)
-                or old_lib.version >= lib_obj.version
+    def find_alias(self, alias: str) -> typing.Optional[str]:
+        for command_name, _command in self.commands.items():
+            aliases = []
+            if getattr(_command, "alias", None) and not (
+                aliases := getattr(_command, "aliases", None)
             ):
-                logger.debug("Using existing instance of library %s", old_lib.name)
-                return old_lib
+                aliases = [_command.alias]
 
-        if hasattr(lib_obj, "init"):
-            if not callable(lib_obj.init):
-                _raise(ValueError("Library init() must be callable"))
+            if not aliases:
+                continue
 
-            try:
-                await lib_obj.init()
-            except Exception:
-                _raise(RuntimeError("Library init() failed"))
+            if any(
+                alias.lower() == _alias.lower()
+                and alias.lower() not in self._core_commands
+                for _alias in aliases
+            ):
+                return command_name
 
-        if hasattr(lib_obj, "config"):
-            if not isinstance(lib_obj.config, LibraryConfig):
-                _raise(
-                    RuntimeError("Library config must be a `LibraryConfig` instance")
-                )
+        return None
 
-            libcfg = lib_obj.db.get(
-                lib_obj.__class__.__name__,
-                "__config__",
-                {},
-            )
-
-            for conf in lib_obj.config:
-                with contextlib.suppress(Exception):
-                    lib_obj.config.set_no_raise(
-                        conf,
-                        (
-                            libcfg[conf]
-                            if conf in libcfg
-                            else os.environ.get(f"{lib_obj.__class__.__name__}.{conf}")
-                            or lib_obj.config.getdef(conf)
-                        ),
-                    )
-
-        if hasattr(lib_obj, "strings"):
-            lib_obj.strings = Strings(lib_obj, self._translator)
-
-        lib_obj.translator = self._translator
-
-        for old_lib in self.libraries:
-            if old_lib.name == lib_obj.name:
-                if hasattr(old_lib, "on_lib_update") and callable(
-                    old_lib.on_lib_update
-                ):
-                    await old_lib.on_lib_update(lib_obj)
-
-                replace_all_refs(old_lib, lib_obj)
-                logger.debug(
-                    "Replacing existing instance of library %s with updated object",
-                    lib_obj.name,
-                )
-                return lib_obj
-
-        self.libraries += [lib_obj]
-        return lib_obj
-
-    def dispatch(self, _command: str) -> tuple:
+    def dispatch(self, _command: str) -> typing.Tuple[str, typing.Optional[str]]:
         """Dispatch command to appropriate module"""
 
         return next(
             (
                 (cmd, self.commands[cmd.lower()])
-                for cmd in [_command, self.aliases.get(_command.lower())]
+                for cmd in [
+                    _command,
+                    self.aliases.get(_command.lower()),
+                    self.find_alias(_command),
+                ]
                 if cmd and cmd.lower() in self.commands
             ),
             (_command, None),
@@ -1440,68 +939,15 @@ class Modules:
 
     async def send_ready(self):
         """Send all data to all modules"""
-        # Init inline manager anyway, so the modules
-        # can access its `init_complete`
         inline_manager = InlineManager(self.client, self._db, self)
 
         await inline_manager._register_manager()
-
-        # We save it to `Modules` attribute, so not to re-init
-        # it everytime module is loaded. Then we can just
-        # re-assign it to all modules
         self.inline = inline_manager
 
         try:
             await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
         except Exception as e:
             logger.exception("Failed to send mod init complete signal due to %s", e)
-
-    async def _animate(
-        self,
-        message: typing.Union[Message, InlineMessage],
-        frames: typing.List[str],
-        interval: typing.Union[float, int],
-        *,
-        inline: bool = False,
-    ) -> None:
-        """
-        Animate message
-        :param message: Message to animate
-        :param frames: A List of strings which are the frames of animation
-        :param interval: Animation delay
-        :param inline: Whether to use inline bot for animation
-        :returns message:
-
-        Please, note that if you set `inline=True`, first frame will be shown with an empty
-        button due to the limitations of Telegram API
-        """
-
-        with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
-
-        if interval < 0.1:
-            logger.warning(
-                "Resetting animation interval to 0.1s, because it may get you in"
-                " floodwaits bro"
-            )
-            interval = 0.1
-
-        for frame in frames:
-            if isinstance(message, Message):
-                if inline:
-                    message = await self.inline.form(
-                        message=message,
-                        text=frame,
-                        reply_markup={"text": "\u0020\u2800", "data": "empty"},
-                    )
-                else:
-                    message = await utils.answer(message, frame)
-            elif isinstance(message, InlineMessage) and inline:
-                await message.edit(frame)
-
-            await asyncio.sleep(interval)
-
-        return message
 
     async def send_ready_one(
         self,
@@ -1512,17 +958,6 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
-        mod.inline = self.inline
-
-        for method in dir(mod):
-            if isinstance(getattr(mod, method), InfiniteLoop):
-                setattr(getattr(mod, method), "module_instance", mod)
-
-                if getattr(mod, method).autostart:
-                    getattr(mod, method).start()
-
-                logger.debug("Added module %s to method %s", mod, method)
-
         if from_dlmod:
             try:
                 if len(inspect.signature(mod.on_dlmod).parameters) == 2:
@@ -1531,6 +966,8 @@ class Modules:
                     await mod.on_dlmod()
             except Exception:
                 logger.info("Can't process `on_dlmod` hook", exc_info=True)
+
+        mod.internal_init()
 
         try:
             if len(inspect.signature(mod.client_ready).parameters) == 2:
@@ -1558,6 +995,15 @@ class Modules:
             )
             self.modules.remove(mod)
             raise
+
+        for method in dir(mod):
+            if isinstance(getattr(mod, method), InfiniteLoop):
+                setattr(getattr(mod, method), "module_instance", mod)
+
+                if getattr(mod, method).autostart:
+                    getattr(mod, method).start()
+
+                logger.debug("Added module %s to method %s", mod, method)
 
         self.unregister_commands(mod, "update")
         self.unregister_raw_handlers(mod, "update")

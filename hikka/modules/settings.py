@@ -1,12 +1,11 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import os
+import psutil
 
 import pyrogram
 import telethon
@@ -82,13 +81,13 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>does not exist</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5197474765387864959>👍</emoji><b> Database cleared</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Database cleared</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n{}"
-            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
+            "</b> <i>{}</i>\n{}"
+            " <b>Hikka-Pyro:</b> <i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
             " t.me/hikariatama</b>"
         ),
@@ -96,15 +95,15 @@ class CoreMod(loader.Module):
         "cleardb_confirm": "🗑 Clear database",
         "cancel": "🚫 Cancel",
         "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Who to blacklist?</b>"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Who to blacklist?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Who to"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Who to"
             " unblacklist?</b>"
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>You are using an"
-            " unstable branch </b><code>{}</code><b>!</b>"
+            " unstable branch</b> <code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Your Dragon and Hikka"
@@ -168,17 +167,17 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>удален</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji><b> Алиас</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Алиас</b>"
             " <code>{}</code> <b>не существует</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5197474765387864959>👍</emoji><b> База очищена</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>База очищена</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n{}"
-            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
+            "</b> <i>{}</i>\n{}"
+            " <b>Hikka-Pyro:</b> <i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
             " t.me/hikariatama</b>"
         ),
@@ -187,16 +186,16 @@ class CoreMod(loader.Module):
         "cleardb_confirm": "🗑 Очистить базу",
         "cancel": "🚫 Отмена",
         "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кого заблокировать"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Кого заблокировать"
             " то?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кого разблокировать"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Кого разблокировать"
             " то?</b>"
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Ты используешь"
-            " нестабильную ветку </b><code>{}</code><b>!</b>"
+            " нестабильную ветку</b> <code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Префиксы Dragon и"
@@ -268,9 +267,9 @@ class CoreMod(loader.Module):
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n{}"
+            "</b> <i>{}</i>\n{}"
             " <b>Hikka-Pyro:"
-            " </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
+            "</b> <i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
             " <b>Entwickler: t.me/hikariatama</b>"
         ),
         "_cls_doc": "Verwaltung der Grundeinstellungen des Userbots",
@@ -280,15 +279,15 @@ class CoreMod(loader.Module):
         "cleardb_confirm": "🗑 Basis löschen",
         "cancel": "🚫 Stornieren",
         "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Zu blockierende"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Zu blockierende"
             " Personendann?"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Wen entsperrendann?"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Wen entsperrendann?"
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Sie verwenden"
-            "instabiler Zweig </b><code>{}</code><b>!</b>"
+            "instabiler Zweig</b> <code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Präfixe"
@@ -299,89 +298,91 @@ class CoreMod(loader.Module):
     strings_tr = {
         "too_many_args": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Çok fazla"
-            " argümanlar</b>"
+            " argüman var</b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5197474765387864959>👍</emoji> <b>Sohbet {} eklendi"
-            "userbot kara listesi</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>{} adlı sohbet,"
+            " kullanıcı botu kara listesine eklendi</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5197474765387864959>👍</emoji> <b>Sohbet {} şuradan"
-            " kaldırıldıUserbot Kara Listesi</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>{} adlı sohbet,"
+            " kullanıcı botu kara listesinden çıkartıldı</b>"
         ),
         "user_blacklisted": (
-            "<emoji document_id=5197474765387864959>👍</emoji> <b>Kullanıcı {}"
-            " userbot tarafından kara listeye alındı</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>{} adlı kişi,"
+            " kullanıcı botu kara listesine eklendi</b>"
         ),
         "user_unblacklisted": (
-            "<emoji document_id=5197474765387864959>👍</emoji> <b>Kullanıcı {}"
-            " userbot kara listesinden kaldırıldı</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>{} adlı kişi,"
+            " kullanıcı botu kara listesine eklendi</b>"
         ),
         "what_prefix": (
             "<emoji document_id=5382187118216879236>❓</emoji> <b>Hangi öneki"
             " ayarlamalıyım?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Önek olmalıdır"
-            "sadece bir karakterden oluşur</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Önek sadece"
+            " bir karakterden oluşabilir</b>"
         ),
         "prefix_set": (
-            "{} <b>Önek güncellendi."
-            " Geri vermek için,</b> <code>{newprefix}setprefix'i kullanın"
-            "{oldprefix}</code>"
+            "{} <b>Komut öneki güncellendi. Yeniden değiştirmek için"
+            " için,</b> <code>{newprefix}setprefix {oldprefix}</code> <b>komutunu"
+            " kullanın</b>"
         ),
         "alias_created": (
-            "<emoji document_id=5197474765387864959>👍</emoji> <b>Takma ad"
-            " oluşturuldu.</b> <code>{}</code> yoluyla kullanın"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Komut için takma ad"
+            " oluşturuldu.</b> <code>{}</code> <b>komutuyla kullanabilirsiniz</b>"
         ),
         "aliases": "<b>🔗 Takma adlar:</b>\n",
         "no_command": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Komut</b>"
-            " <code>{}</code> <b>yok</b>"
+            " <code>{}</code> <b>mevcut değil</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Gerekli girin"
-            "komut ve bunun için takma ad</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bunun için bir komut"
+            " ve takma ad girmeniz gerekmektedir</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ad gereklitakma ad</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bunun için bir takma "
+            " ad girmeniz gerekmektedir</b>"
         ),
         "alias_removed": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Takma ad</b>"
-            " <code>{}</code> <b>silindi</b>."
+            " <code>{}</code> <b>kaldırıldı</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji><b> Takma Ad</b>"
-            " <code>{}</code> <b>yok</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Takma Ad</b>"
+            " <code>{}</code> <b>mevcut değil</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5197474765387864959>👍</emoji><b> Taban temizlendi</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Veri Tabanı"
+            " sıfırlandı</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n{}"
+            "</b> <i>{}</i>\n{}"
             " <b>Hikka-Pyro:"
-            " </b><i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
+            "</b> <i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji>"
             " <b>Geliştirici: t.me/hikariatama</b>"
         ),
         "_cls_doc": "Userbot temel ayar yönetimi",
         "confirm_cleardb": (
             "⚠️ <b>Veritabanını sıfırlamak istediğinizden emin misiniz?</b>"
         ),
-        "cleardb_confirm": "🗑 Tabanı temizle",
+        "cleardb_confirm": "🗑 Veri Tabanını sıfırla",
         "cancel": "🚫 İptal",
         "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Kimler engellenir"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Kimler engellenir"
             "sonra?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Kimin engellemesi"
-            " kaldırılırsonra?</b>"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Kimin engellemesi"
+            " kaldırılsın?</b>"
         ),
         "unstable": (
-            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Kullanıyorsunuz"
-            "kararsız dal </b><code>{}</code><b>!</b>"
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Hikka'nın kararsız"
+            " bir sürümü olan <code>{}</code></b>  sürümünü kullanıyorsunuz!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Önekler çakışıyor!</b>"
@@ -424,7 +425,7 @@ class CoreMod(loader.Module):
         ),
         "alias_created": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Taxallus yaratildi."
-            "</b> <code>{}</code> orqali foydalaning"
+            "</b> <code>{}</code> <b>orqali foydalaning</b>"
         ),
         "aliases": "<b>🔗 Taxalluslar:</b>\n",
         "no_command": (
@@ -443,17 +444,17 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>o'chirildi</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji><b> Taxallus</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Taxallus</b>"
             " <code>{}</code> <b>mavjud</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5197474765387864959>👍</emoji><b> Baza tozalandi</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Baza tozalandi</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n{}"
-            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
+            "</b> <i>{}</i>\n{}"
+            " <b>Hikka-Pyro:</b> <i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Ishlab chiquvchi:"
             " t.me/hikariatama</b>"
         ),
@@ -464,16 +465,16 @@ class CoreMod(loader.Module):
         "cleardb_confirm": "🗑 Bazani tozalash",
         "cancel": "🚫 Bekor qilish",
         "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Kimni bloklash kerak"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Kimni bloklash kerak"
             "keyin?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Kimni blokdan"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Kimni blokdan"
             " chiqarish kerakkeyin?</b>"
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Siz"
-            " foydalanayotgan versiya </b><code>{}</code><b>!</b>"
+            " foydalanayotgan versiya</b> <code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon va Hikka"
@@ -520,7 +521,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>ha sido eliminado</b>"
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji><b> Alias</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Alias</b>"
             " <code>{}</code> <b>no existe</b>"
         ),
         "db_cleared": (
@@ -530,8 +531,8 @@ class CoreMod(loader.Module):
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n{}"
-            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
+            "</b> <i>{}</i>\n{}"
+            " <b>Hikka-Pyro:</b> <i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Desarrollador:"
             " t.me/hikariatama</b>"
         ),
@@ -540,16 +541,16 @@ class CoreMod(loader.Module):
         "cleardb_confirm": "🗑 Borrar base de datos",
         "cancel": "🚫 Cancelar",
         "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>¿Quién quieres"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>¿Quién quieres"
             " añadir a la lista negra?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>¿Quién quieres"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>¿Quién quieres"
             " eliminar de la lista negra?</b>"
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Estás usando la"
-            " rama inestable </b><code>{}</code><b>!</b>"
+            " rama inestable</b> <code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>¡Dragon y Hikka deben"
@@ -613,17 +614,17 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>жойылды</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji><b> Алиас</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Алиас</b>"
             " <code>{}</code> <b>жоқ</b>"
         ),
         "db_cleared": (
-            "<emoji document_id=5197474765387864959>👍</emoji><b> База тазаланды</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>База тазаланды</b>"
         ),
         "hikka": (
             "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
             " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
-            " </b><i>{}</i>\n{}"
-            " <b>Hikka-Pyro: </b><i>{}</i>\n\n<emoji"
+            "</b> <i>{}</i>\n{}"
+            " <b>Hikka-Pyro:</b> <i>{}</i>\n\n<emoji"
             " document_id=5454182070156794055>⌨️</emoji> <b>Әзірлеуші:"
             " t.me/hikariatama</b>"
         ),
@@ -634,16 +635,16 @@ class CoreMod(loader.Module):
         "cleardb_confirm": "🗑 База деректерін тазалау",
         "cancel": "🚫 Болдырмау",
         "who_to_blacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кімді блога қою"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Кімді блога қою"
             " керек?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5384612769716774600>❓</emoji> <b>Кімді блога қоюды"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Кімді блога қоюды"
             " болдырмау керек?</b>"
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Сіз қолданбаған"
-            " белгісіз қосымша </b><code>{}</code><b>!</b>"
+            " белгісіз қосымша</b> <code>{}</code><b>!</b>"
         ),
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon және"
@@ -686,6 +687,10 @@ class CoreMod(loader.Module):
     )
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
+        current_process = psutil.Process(os.getpid())
+        mem = current_process.memory_percent()
+        for child in current_process.children(recursive=True):
+            mem += child.memory_percent()
         await utils.answer(
             message,
             self.strings("hikka").format(

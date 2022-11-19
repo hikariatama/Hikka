@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import git
 from telethon.tl.types import Message
@@ -26,14 +24,16 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Prefix",
         "uptime": "Uptime",
         "branch": "Branch",
+        "cpu_usage": "CPU usage",
+        "ram_usage": "RAM usage",
         "send_info": "Send userbot info",
         "description": "ℹ This will not compromise any sensitive info",
         "up-to-date": (
-            "<emoji document_id=5370699111492229743>😌</emoji><b> Up-to-date</b>"
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>Up-to-date</b>"
         ),
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Update required"
-            " </b><code>.update</code>"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Update required"
+            "</b> <code>.update</code>"
         ),
         "setinfo_no_args": (
             "<emoji document_id=5370881342659631698>😢</emoji> <b>You need to specify"
@@ -45,7 +45,7 @@ class HikkaInfoMod(loader.Module):
         ),
         "_cfg_cst_msg": (
             "Custom message for info. May contain {me}, {version}, {build}, {prefix},"
-            " {platform}, {upd}, {uptime}, {branch} keywords"
+            " {platform}, {upd}, {uptime}, {cpu_usage}, {ram_usage}, {branch} keywords"
         ),
         "_cfg_cst_btn": "Custom button for info. Leave empty to remove button",
         "_cfg_banner": "URL to image banner",
@@ -66,19 +66,22 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Префикс",
         "uptime": "Аптайм",
         "branch": "Ветка",
+        "cpu_usage": "Использование CPU",
+        "ram_usage": "Использование RAM",
         "send_info": "Отправить информацию о юзерботе",
         "description": "ℹ Это не раскроет никакой личной информации",
         "_ihandle_doc_info": "Отправить информацию о юзерботе",
         "up-to-date": (
-            "<emoji document_id=5370699111492229743>😌</emoji><b> Актуальная версия</b>"
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>Актуальная версия</b>"
         ),
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Требуется обновление"
-            " </b><code>.update</code>"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Требуется обновление"
+            "</b> <code>.update</code>"
         ),
         "_cfg_cst_msg": (
             "Кастомный текст сообщения в info. Может содержать ключевые слова {me},"
-            " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}, {branch}"
+            " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}, {cpu_usage},"
+            " {ram_usage}, {branch}"
         ),
         "_cfg_cst_btn": (
             "Кастомная кнопка в сообщении в info. Оставь пустым, чтобы убрать кнопку"
@@ -110,17 +113,19 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Prefix",
         "uptime": "Uptime",
         "branch": "Branch",
+        "cpu_usage": "CPU Nutzung",
+        "ram_usage": "RAM Nutzung",
         "send_info": "Botinfo senden",
         "description": "ℹ Dies enthüllt keine persönlichen Informationen",
         "_ihandle_doc_info": "Sende Botinfo",
-        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> Aktuell</b>",
+        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji> <b>Aktuell</b>",
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Update benötigt"
-            " </b><code>.update</code>"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Update benötigt"
+            "</b> <code>.update</code>"
         ),
         "_cfg_cst_msg": (
             "Custom message for info. May contain {me}, {version}, {build}, {prefix},"
-            " {platform}, {upd}, {uptime}, {branch} keywords"
+            " {platform}, {upd}, {uptime}, {cpu_usage}, {ram_usage}, {branch} keywords"
         ),
         "_cfg_cst_btn": "Custom button for info. Leave empty to remove button",
         "_cfg_banner": "URL to image banner",
@@ -149,20 +154,22 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Prefix",
         "uptime": "Ishlash vaqti",
         "branch": "Vetkasi",
+        "cpu_usage": "CPU foydalanish",
+        "ram_usage": "RAM foydalanish",
         "send_info": "Bot haqida ma'lumot",
         "description": "ℹ Bu shaxsiy ma'lumot emas",
         "_ihandle_doc_info": "Bot haqida ma'lumot",
         "up-to-date": (
-            "<emoji document_id=5370699111492229743>😌</emoji><b> So'ngi versia</b>"
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>So'ngi versia</b>"
         ),
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Yangilash"
-            " kerak </b><code>.update</code>"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Yangilash"
+            " kerak</b> <code>.update</code>"
         ),
         "_cfg_cst_msg": (
-            "Xabar uchun shaxsiy xabar. {me}, {version}, {build}, {prefix},"
-            " {platform}, {upd}, {uptime}, {branch} kalit so'zlarni ishlatishingiz"
-            " mumkin"
+            "Xabar uchun shaxsiy xabar. {me}, {version}, {build}, {prefix}, {platform},"
+            " {upd}, {uptime}, {cpu_usage}, {ram_usage}, {branch} kalit so'zlarni"
+            " ishlatishingiz mumkin"
         ),
         "_cfg_cst_btn": (
             "Xabar uchun shaxsiy tugma. Tugmani o'chirish uchun bo'sh qoldiring"
@@ -194,17 +201,20 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Önek",
         "uptime": "Aktif Süre",
         "branch": "Dal",
+        "cpu_usage": "CPU Kullanımı",
+        "ram_usage": "RAM Kullanımı",
         "send_info": "Bot hakkında bilgi",
         "description": "ℹ️ Kişisel bilgileri tehlikeye atmaz",
         "_ihandle_doc_info": "Bot hakkında bilgi",
-        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji><b> Güncel</b>",
+        "up-to-date": "<emoji document_id=5370699111492229743>😌</emoji> <b>Güncel</b>",
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Güncelleme"
-            " gerekli </b><code>.update</code>"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Güncelleme"
+            " gerekli</b> <code>.update</code>"
         ),
         "_cfg_cst_msg": (
-            "Kişisel mesaj için bilgi. {me}, {version}, {build}, {prefix},"
-            " {platform}, {upd}, {uptime}, {branch} anahtar kelimeleri kullanılabilir"
+            "Kişisel mesaj için bilgi. {me}, {version}, {build}, {prefix}, {platform},"
+            " {upd}, {uptime}, {cpu_usage}, {ram_usage}, {branch} anahtar kelimeleri"
+            " kullanılabilir"
         ),
         "_cfg_cst_btn": "Kişisel tuş için bilgi. Tuşu kaldırmak için boş bırakın",
         "_cfg_banner": "Resim için URL",
@@ -234,19 +244,22 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Prefijo",
         "uptime": "Tiempo de actividad",
         "branch": "Rama",
+        "cpu_usage": "Uso de CPU",
+        "ram_usage": "Uso de RAM",
         "send_info": "Enviar información del bot",
         "description": "ℹ️ No exponga su información personal",
         "_ihandle_doc_info": "Información del bot",
         "up-to-date": (
-            "<emoji document_id=5370699111492229743>😌</emoji><b> Actualizado</b>"
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>Actualizado</b>"
         ),
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Actualización"
-            " necesaria </b><code>.update</code>"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Actualización"
+            " necesaria</b> <code>.update</code>"
         ),
         "_cfg_cst_msg": (
             "Información del mensaje personalizado. Puede usar las palabras clave {me},"
-            " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}, {branch}"
+            " {version}, {build}, {prefix}, {platform}, {upd}, {uptime}, {cpu_usage},"
+            " {ram_usage}, {branch}"
         ),
         "_cfg_cst_btn": (
             "Información del botón personalizado. Eliminar el botón deje en blanco"
@@ -277,19 +290,22 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Бастауыш",
         "uptime": "Қосылған кезең",
         "branch": "Бөлімі",
+        "cpu_usage": "CPU қолданымы",
+        "ram_usage": "RAM қолданымы",
         "send_info": "Бот туралы ақпарат",
         "description": "ℹ️ Жеке мәліметтеріңізді қорғау",
         "_ihandle_doc_info": "Бот туралы ақпарат",
         "up-to-date": (
-            "<emoji document_id=5370699111492229743>😌</emoji><b> Жаңартылған</b>"
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>Жаңартылған</b>"
         ),
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Жаңарту"
-            " талап етіледі </b><code>.update</code>"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Жаңарту"
+            " талап етіледі</b> <code>.update</code>"
         ),
         "_cfg_cst_msg": (
             "Жеке хабарлама үшін ақпарат. {me}, {version}, {build}, {prefix},"
-            " {platform}, {upd}, {uptime}, {branch} кілт сөздерді қолдана аласыз"
+            " {platform}, {upd}, {uptime}, {cpu_usage}, {ram_usage}, {branch} кілт"
+            " сөздерді қолдана аласыз"
         ),
         "_cfg_cst_btn": "Жеке түйме үшін ақпарат. Түймесін жою үшін бос қалдырыңыз",
         "_cfg_banner": "Сурет үшін URL",
@@ -317,19 +333,22 @@ class HikkaInfoMod(loader.Module):
         "prefix": "Префикс",
         "uptime": "Тәртиби вакыты",
         "branch": "Кишелек",
+        "cpu_usage": "CPU җыелмасы",
+        "ram_usage": "RAM җыелмасы",
         "send_info": "Бот турында мәгълүматны җибәрү",
         "description": "ℹ️ Шәхси мәгълүматыңызны тыяу",
         "_ihandle_doc_info": "Бот турында мәгълүмат",
         "up-to-date": (
-            "<emoji document_id=5370699111492229743>😌</emoji><b> Яңартылган</b>"
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>Яңартылган</b>"
         ),
         "update_required": (
-            "<emoji document_id=5424728541650494040>😕</emoji><b> Яңартылу"
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Яңартылу"
             " таләп ителә</b><code>.update</code>"
         ),
         "_cfg_cst_msg": (
             "Шәхси хәбәр мәгълүматы. {me}, {version}, {build}, {prefix}, {platform},"
-            " {upd}, {uptime}, {branch} күчермәләрен җибәрү мөмкин"
+            " {upd}, {uptime}, {cpu_usage}, {ram_usage}, {branch} күчермәләрен җибәрү"
+            " мөмкин"
         ),
         "_cfg_cst_btn": "Шәхси төймә мәгълүматы. Төймәне юймагыч, буш җибәрү",
         "_cfg_banner": "Сүрәт URL-ы",
@@ -390,7 +409,23 @@ class HikkaInfoMod(loader.Module):
         build = utils.get_commit_url()
         _version = f'<i>{".".join(list(map(str, list(version.__version__))))}</i>'
         prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"
+
         platform = utils.get_named_platform()
+
+        for emoji, icon in {
+            "🍊": "<emoji document_id=5449599833973203438>🧡</emoji>",
+            "🍇": "<emoji document_id=5449468596952507859>💜</emoji>",
+            "❓": "<emoji document_id=5407025283456835913>📱</emoji>",
+            "🍁": "<emoji document_id=6332120630099445554>🍁</emoji>",
+            "🦾": "<emoji document_id=5386766919154016047>🦾</emoji>",
+            "🚂": "<emoji document_id=5359595190807962128>🚂</emoji>",
+            "🐳": "<emoji document_id=5431815452437257407>🐳</emoji>",
+            "🕶": "<emoji document_id=5407025283456835913>📱</emoji>",
+            "🐈‍⬛": "<emoji document_id=6334750507294262724>🐈‍⬛</emoji>",
+            "✌️": "<emoji document_id=5469986291380657759>✌️</emoji>",
+            "📻": "<emoji document_id=5471952986970267163>💎</emoji>",
+        }.items():
+            platform = platform.replace(emoji, icon)
 
         return (
             (
@@ -406,18 +441,23 @@ class HikkaInfoMod(loader.Module):
                 platform=platform,
                 upd=upd,
                 uptime=utils.formatted_uptime(),
+                cpu_usage=utils.get_cpu_usage(),
+                ram_usage=f"{utils.get_ram_usage()} MB",
                 branch=version.branch,
             )
             if self.config["custom_message"]
             else (
-                "<b>{}</b>\n\n"
-                f'<b>{{}} {self.strings("owner")}: </b>{me}\n\n'
-                f"<b>{{}} {self.strings('version')}: </b>{_version} {build}\n"
-                f"<b>{{}} {self.strings('branch')}: </b><code>{version.branch}</code>\n"
-                f"{upd}\n\n"
-                f"<b>{{}} {self.strings('prefix')}: </b>{prefix}\n"
-                f"<b>{{}} {self.strings('uptime')}: </b>{utils.formatted_uptime()}\n"
-                f"<b>{platform}</b>\n"
+                f'<b>{{}}</b>\n\n<b>{{}} {self.strings("owner")}:</b> {me}\n\n<b>{{}}'
+                f" {self.strings('version')}:</b> {_version} {build}\n<b>{{}}"
+                f" {self.strings('branch')}:"
+                f"</b> <code>{version.branch}</code>\n{upd}\n\n<b>{{}}"
+                f" {self.strings('prefix')}:</b> {prefix}\n<b>{{}}"
+                f" {self.strings('uptime')}:"
+                f"</b> {utils.formatted_uptime()}\n\n<b>{{}}"
+                f" {self.strings('cpu_usage')}:"
+                f"</b> <i>~{utils.get_cpu_usage()} %</i>\n<b>{{}}"
+                f" {self.strings('ram_usage')}:"
+                f"</b> <i>~{utils.get_ram_usage()} MB</i>\n<b>{{}}</b>"
             ).format(
                 *map(
                     lambda x: utils.remove_html(x) if inline else x,
@@ -430,6 +470,9 @@ class HikkaInfoMod(loader.Module):
                         "<emoji document_id=5449918202718985124>🌳</emoji>",
                         "<emoji document_id=5472111548572900003>⌨️</emoji>",
                         "<emoji document_id=5451646226975955576>⌛️</emoji>",
+                        "<emoji document_id=5431449001532594346>⚡️</emoji>",
+                        "<emoji document_id=5359785904535774578>💼</emoji>",
+                        platform,
                     ),
                 )
             )
@@ -490,18 +533,11 @@ class HikkaInfoMod(loader.Module):
                 ),
             )
         else:
-            try:
-                await self._client.send_file(
-                    message.peer_id,
-                    self.config["banner_url"],
-                    caption=self._render_info(False),
-                    reply_to=utils.get_topic(message),
-                )
-            except Exception:
-                await utils.answer(message, self._render_info(False))
-            else:
-                if message.out:
-                    await message.delete()
+            await utils.answer_file(
+                message,
+                self.config["banner_url"],
+                self._render_info(False),
+            )
 
     @loader.unrestricted
     @loader.command(
