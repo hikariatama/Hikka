@@ -22,8 +22,10 @@ from telethon.tl.types import (
     UpdatesCombined,
     UpdateShort,
     UserFull,
+    Message,
 )
 from telethon.utils import is_list_like
+from telethon.errors.rpcerrorlist import TopicDeletedError
 
 from .types import (
     CacheRecord,
@@ -357,6 +359,95 @@ class CustomTelegramClient(TelegramClient):
             exp,
         )
         return result
+
+    @staticmethod
+    def _find_message_obj_in_frame(
+        chat_id: int,
+        frame: inspect.FrameInfo,
+    ) -> typing.Optional[Message]:
+        """
+        Finds the message object from the frame
+        """
+        return next(
+            (
+                obj
+                for obj in frame.frame.f_locals.values()
+                if isinstance(obj, Message)
+                and getattr(obj.reply_to, "forum_topic", False)
+                and chat_id == getattr(obj.peer_id, "channel_id", None)
+            ),
+            None,
+        )
+
+    async def _find_message_obj_in_stack(
+        self,
+        chat: EntityLike,
+        stack: typing.List[inspect.FrameInfo],
+    ) -> typing.Optional[Message]:
+        """
+        Finds the message object from the stack
+        """
+        chat_id = (await self.get_entity(chat, exp=0)).id
+        return next(
+            (
+                self._find_message_obj_in_frame(chat_id, frame_info)
+                for frame_info in stack
+                if self._find_message_obj_in_frame(chat_id, frame_info)
+            ),
+            None,
+        )
+
+    async def _find_topic_in_stack(
+        self,
+        chat: EntityLike,
+        stack: typing.List[inspect.FrameInfo],
+    ) -> typing.Optional[Message]:
+        """
+        Finds the message object from the stack
+        """
+        message = await self._find_message_obj_in_stack(chat, stack)
+        return (
+            (message.reply_to.reply_to_top_id or message.reply_to.reply_to_msg_id)
+            if message
+            else None
+        )
+
+    async def _topic_guesser(
+        self,
+        native_method: typing.Callable,
+        cached_method: typing.Callable,
+        *args,
+        **kwargs,
+    ):
+        no_retry = kwargs.pop("_topic_no_retry", False)
+        try:
+            return await native_method(self, *args, **kwargs)
+        except TopicDeletedError:
+            if no_retry:
+                raise
+
+            kwargs["reply_to"] = await self._find_topic_in_stack(
+                args[0],
+                inspect.stack(),
+            )
+            kwargs["_topic_no_retry"] = True
+            return await cached_method(*args, **kwargs)
+
+    async def send_file(self, *args, **kwargs) -> Message:
+        return await self._topic_guesser(
+            TelegramClient.send_file,
+            self.send_file,
+            *args,
+            **kwargs,
+        )
+
+    async def send_message(self, *args, **kwargs) -> Message:
+        return await self._topic_guesser(
+            TelegramClient.send_message,
+            self.send_message,
+            *args,
+            **kwargs,
+        )
 
     async def _call(
         self,

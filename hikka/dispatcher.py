@@ -103,10 +103,16 @@ class CommandDispatcher:
 
         self.check_security = self.security.check
         self._me = self._client.hikka_me.id
-        self._cached_username = (
-            self._client.hikka_me.username.lower()
-            if self._client.hikka_me.username
-            else str(self._client.hikka_me.id)
+        self._cached_usernames = [
+            (
+                self._client.hikka_me.username.lower()
+                if self._client.hikka_me.username
+                else str(self._client.hikka_me.id)
+            )
+        ]
+
+        self._cached_usernames.extend(
+            getattr(self._client.hikka_me, "usernames", None) or []
         )
 
         self.raw_handlers = []
@@ -320,14 +326,17 @@ class CommandDispatcher:
             if tag[1] == "me":
                 if not message.out:
                     return False
-            elif tag[1].lower() != self._cached_username:
+            elif tag[1].lower() not in self._cached_usernames:
                 return False
         elif (
             event.out
             or event.mentioned
             and event.message is not None
             and event.message.message is not None
-            and f"@{self._cached_username}" not in command.lower()
+            and not any(
+                f"@{username}" not in command.lower()
+                for username in self._cached_usernames
+            )
         ):
             pass
         elif (

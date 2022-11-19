@@ -5,6 +5,7 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import ast
+import contextlib
 import functools
 import typing
 from math import ceil
@@ -762,10 +763,8 @@ class HikkaConfigMod(loader.Module):
         obj_type: typing.Union[bool, str] = False,
     ):
         try:
-            try:
+            with contextlib.suppress(Exception):
                 query = ast.literal_eval(query)
-            except Exception:
-                pass
 
             if isinstance(query, (set, tuple)):
                 query = list(query)
@@ -818,10 +817,8 @@ class HikkaConfigMod(loader.Module):
         obj_type: typing.Union[bool, str] = False,
     ):
         try:
-            try:
+            with contextlib.suppress(Exception):
                 query = ast.literal_eval(query)
-            except Exception:
-                pass
 
             if isinstance(query, (set, tuple)):
                 query = list(query)

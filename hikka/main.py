@@ -511,7 +511,7 @@ class Hikka:
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
-                os.remove(os.path.join(BASE_DIR, f"{session}.session"))
+                os.remove(os.path.join(BASE_DIR, session.filename))
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID

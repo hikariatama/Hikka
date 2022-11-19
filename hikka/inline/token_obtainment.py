@@ -252,7 +252,7 @@ class TokenObtainment(InlineUnit):
         if not is_token_asserted:
             self.init_complete = False
         else:
-            await self._register_manager(ignore_token_checks=True)
+            await self.register_manager(ignore_token_checks=True)
 
     async def _dp_revoke_token(self, already_initialised: bool = True):
         if already_initialised:

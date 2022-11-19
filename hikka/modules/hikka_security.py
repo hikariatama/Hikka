@@ -4,6 +4,7 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
+import contextlib
 import time
 import typing
 
@@ -235,7 +236,10 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specified entity is"
             " not a user</b>"
         ),
-        "li": '⦿ <b><a href="tg://user?id={}">{}</a></b>',
+        "li": (
+            "<emoji document_id=4974307891025543730>▫️</emoji> <b><a"
+            ' href="tg://user?id={}">{}</a></b>'
+        ),
         "warning": (
             "⚠️ <b>Please, confirm, that you want to add <a"
             ' href="tg://user?id={}">{}</a> to group</b> <code>{}</code><b>!\nThis'
@@ -1453,13 +1457,11 @@ class HikkaSecurityMod(loader.Module):
         user = None
 
         if args:
-            try:
+            with contextlib.suppress(Exception):
                 if str(args).isdigit():
                     args = int(args)
 
                 user = await self._client.get_entity(args)
-            except Exception:
-                pass
 
         if user is None:
             user = await self._client.get_entity(reply.sender_id)
@@ -1573,13 +1575,12 @@ class HikkaSecurityMod(loader.Module):
 
     async def _list_group(self, message: Message, group: str):
         _resolved_users = []
-        for user in getattr(self._client.dispatcher.security, group) + (
-            [self.tg_id] if group == "owner" else []
+        for user in set(
+            getattr(self._client.dispatcher.security, group)
+            + ([self.tg_id] if group == "owner" else [])
         ):
-            try:
+            with contextlib.suppress(Exception):
                 _resolved_users += [await self._client.get_entity(user)]
-            except Exception:
-                pass
 
         if _resolved_users:
             await utils.answer(

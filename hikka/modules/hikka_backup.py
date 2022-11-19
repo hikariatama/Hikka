@@ -189,7 +189,7 @@ class HikkaBackupMod(loader.Module):
                                 "callback": self._set_backup_period,
                                 "args": (i,),
                             }
-                            for i in {1, 2, 4, 6, 8, 12, 24, 48, 168}
+                            for i in [1, 2, 4, 6, 8, 12, 24, 48, 168]
                         ],
                         3,
                     )
@@ -208,7 +208,7 @@ class HikkaBackupMod(loader.Module):
         self._backup_channel, _ = await utils.asset_channel(
             self._client,
             "hikka-backups",
-            "📼 Your database backups will appear there",
+            "📼 Your database backups will appear here",
             silent=True,
             archive=True,
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-backups.png",

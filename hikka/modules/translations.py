@@ -94,7 +94,7 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Call"
-            "</b> <code>{}</code> <b>failed due to RPC (Telegram) error:</b>"
+            "</b> <code>{}</code> <b>failed due to RPC error:</b>"
             " <code>{}</code>"
         ),
     }
@@ -160,7 +160,7 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Команда"
-            "</b> <code>{}</code> <b>не удался из-за ошибки RPC (Telegram):</b>"
+            "</b> <code>{}</code> <b>не удался из-за ошибки RPC:</b>"
             " <code>{}</code>"
         ),
     }
@@ -233,7 +233,7 @@ class Translations(loader.Module):
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Befehl"
             "</b> <code>{}</code> <b>ist fehlgeschlagen wegen RPC-Fehler"
-            " (Telegram):</b> <code>{}</code>"
+            ":</b> <code>{}</code>"
         ),
     }
 
@@ -302,7 +302,7 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Komut"
-            "</b> <code>{}</code> <b>RPC hatası (Telegram) nedeniyle başarısız"
+            "</b> <code>{}</code> <b>RPC hatası nedeniyle başarısız"
             " oldu:</b> <code>{}</code>"
         ),
     }
@@ -372,7 +372,7 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Buyruq"
-            "</b> <code>{}</code> <b>RPC xatosi (Telegram) sababli muvaffaqiyatsiz"
+            "</b> <code>{}</code> <b>RPC xatosi sababli muvaffaqiyatsiz"
             " bo'ldi:</b> <code>{}</code>"
         ),
     }
@@ -442,7 +442,7 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>El comando"
-            "</b> <code>{}</code> <b>falló debido a un error RPC (Telegram):</b>"
+            "</b> <code>{}</code> <b>falló debido a un error RPC:</b>"
             " <code>{}</code>"
         ),
     }
@@ -511,7 +511,7 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Команда"
-            "</b> <code>{}</code> <b>RPC (Telegram) қатесінен қате орындалды:</b>"
+            "</b> <code>{}</code> <b>RPC қатесінен қате орындалды:</b>"
             " <code>{}</code>"
         ),
     }
@@ -574,7 +574,7 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Команда"
-            "</b> <code>{}</code> <b>RPC (Telegram) хатасынан баш тартылды:</b>"
+            "</b> <code>{}</code> <b>RPC хатасынан баш тартылды:</b>"
             " <code>{}</code>"
         ),
     }

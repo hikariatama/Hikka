@@ -40,6 +40,10 @@
 - Logging tweaks
 - Add `caller` field to inline units
 - Add ability to get module help by command alias
+- Add ability to decorate aliases with `@loader.command` decorator
+- Add credits to developers and translators
+- Add support for multiple usernames
+- Add topic guesser in `send_message`, `send_file` in order for old modules to work properly
 
 ## 🌑 Hikka 1.5.3
 

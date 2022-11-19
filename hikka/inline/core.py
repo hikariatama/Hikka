@@ -71,7 +71,7 @@ class InlineManager(
 
             await asyncio.sleep(5)
 
-    async def _register_manager(
+    async def register_manager(
         self,
         after_break: bool = False,
         ignore_token_checks: bool = False,
@@ -115,7 +115,7 @@ class InlineManager(
             self._token = False
 
             if not after_break:
-                return await self._register_manager(True)
+                return await self.register_manager(True)
 
             self.init_complete = False
             return False

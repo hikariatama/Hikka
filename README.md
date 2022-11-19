@@ -11,8 +11,8 @@
 <h2><img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="54" align="middle"> Installation</h2>
 
 ### Installation page
-<img src="https://github.com/hikariatama/assets/raw/master/install_new.gif" height="256">
 
+<img src="https://github.com/hikariatama/assets/raw/master/install_qr.gif" height="256">
 
 <a href="https://t.me/lavhostbot?start=SGlra2E"><img src="https://user-images.githubusercontent.com/36935426/167272288-85f00779-4b98-47da-8d0d-ea2c6370b979.png" height="40"></a>
 
@@ -110,10 +110,10 @@ User docs will be available soon
  </tr>
  <tr>
   <td>
-   <img src="https://user-images.githubusercontent.com/36935426/160475881-8463537a-265e-472a-9b1e-ede8b1cc3380.gif">
+   <img src="https://user-images.githubusercontent.com/36935426/202842205-9a3906f8-37b1-47f4-acd1-ae441f84aeab.gif">
   </td>
   <td>
-   <img src="https://user-images.githubusercontent.com/36935426/160475809-c171c5ff-010c-472c-903a-de9b8a2c61cc.gif">
+   <img src="https://user-images.githubusercontent.com/36935426/202842215-b7bddaf2-f544-4823-80b4-5c2cccaf2157.gif">
   </td>
  </tr>
 </table>
@@ -128,7 +128,7 @@ User docs will be available soon
  </tr>
  <tr>
   <td>
-   <img src="https://user-images.githubusercontent.com/36935426/160475934-02e6df9d-e73a-42fc-99c7-8b12d1015336.gif">
+   <img src="https://user-images.githubusercontent.com/36935426/202842234-e53f616d-7423-4a64-a5da-fb71282ad2c4.gif">
   </td>
   <td>
    <img src="https://user-images.githubusercontent.com/36935426/160476037-9537f1c7-8b72-408f-b84c-b89825930bf5.gif">
@@ -146,15 +146,27 @@ User docs will be available soon
  </tr>
  <tr>
   <td>
-   <img src="https://user-images.githubusercontent.com/36935426/160475684-86d11e83-832e-43fc-89d8-fd7bc85b1857.gif">
+   <img src="https://user-images.githubusercontent.com/36935426/202842250-b60d218e-9df4-47f6-8c67-b2ef641b4d2d.gif">
   </td>
   <td>
-   <img src="https://user-images.githubusercontent.com/36935426/160475710-2adb0f11-afb6-4860-b1cd-85ccc5421d22.gif">
+   <img src="https://user-images.githubusercontent.com/36935426/202842263-ee2d5c94-3fd5-43b3-b8ac-2397b69e0fc6.gif">
   </td>
  </tr>
 </table>
 
 <b>👨‍👦 NoNick, NoNickUser, NoNickCmd, NoNickChat - use another account for userbot</b>
-<img src="https://user-images.githubusercontent.com/36935426/158637220-00495363-cf4a-4e6f-a4b2-51d693906ead.png">
+<img src="https://user-images.githubusercontent.com/36935426/202842278-37fbc518-1679-45d7-92f5-9e519275630d.png">
 
+<hr>
 <i>⚠️ In order to provide some credit to module developers, when you load a module, Hikka will automatically (in background) put reactions to corresponding channel posts. This functionality can't be disabled and it doesn't affect usage of userbot. All timings are measured to be safe for your account and whenever the error occurs, it will be ignored.</i>
+
+<b>Special thanks to:</b>
+<ul>
+    <li><a href="https://gitlab.com/hackintosh5">Hackintosh5</a> for FTG, which is the base of project</li>
+    <li><a href="https://t.me/kazunimo">Kazunimo</a> for Turkish translation pack</li>
+    <li><a href="https://t.me/hegaNET">Hegakura</a> for Tatar translation pack</li>
+    <li><a href="https://t.me/tiefeschwarz">Aldehydesäure</a> for German translation pack</li>
+    <li><a href="https://t.me/amorescam">Amore</a> for Uzbek translation pack</li>
+    <li><a href="https://t.me/lonami">Lonami</a> for Telethon, which is the base of Hikka-TL</li>
+    <li><a href="https://github.com/delivrance">Dan</a> for pyrogram, which is the base of Hikka-Pyro</li>
+</ul>

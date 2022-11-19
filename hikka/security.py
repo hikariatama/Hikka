@@ -361,10 +361,11 @@ class SecurityManager:
             cmd = None
 
         if callable(func):
+            command = self._client.loader.find_alias(cmd, include_legacy=True) or cmd
             for info in self._tsec_user.copy():
                 if info["target"] == user_id:
-                    if info["rule_type"] == "command" and info["rule"] == cmd:
-                        logger.debug("tsec match for user %s", cmd)
+                    if info["rule_type"] == "command" and info["rule"] == command:
+                        logger.debug("tsec match for user %s", command)
                         return True
 
                     if (
@@ -380,8 +381,8 @@ class SecurityManager:
             if chat:
                 for info in self._tsec_chat.copy():
                     if info["target"] == chat:
-                        if info["rule_type"] == "command" and info["rule"] == cmd:
-                            logger.debug("tsec match for %s", cmd)
+                        if info["rule_type"] == "command" and info["rule"] == command:
+                            logger.debug("tsec match for %s", command)
                             return True
 
                         if (

@@ -435,6 +435,7 @@ class Modules:
         self._translator = translator
         self.secure_boot = False
         asyncio.ensure_future(self._junk_collector())
+        self.inline = InlineManager(self.client, self._db, self)
 
     async def _junk_collector(self):
         """
@@ -826,6 +827,7 @@ class Modules:
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
 
         instance.allmodules = self
+        instance.internal_init()
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
@@ -840,16 +842,25 @@ class Modules:
                 await module.on_unload()
 
                 self.modules.remove(module)
-                for method in dir(module):
-                    if isinstance(getattr(module, method), InfiniteLoop):
-                        getattr(module, method).stop()
+                for _, method in utils.iter_attrs(module):
+                    if isinstance(method, InfiniteLoop):
+                        method.stop()
                         logger.debug(
-                            "Stopped loop in module %s, method %s", module, method
+                            "Stopped loop in module %s, method %s",
+                            module,
+                            method,
                         )
 
         self.modules += [instance]
 
-    def find_alias(self, alias: str) -> typing.Optional[str]:
+    def find_alias(
+        self,
+        alias: str,
+        include_legacy: bool = False,
+    ) -> typing.Optional[str]:
+        if not alias:
+            return None
+
         for command_name, _command in self.commands.items():
             aliases = []
             if getattr(_command, "alias", None) and not (
@@ -866,6 +877,9 @@ class Modules:
                 for _alias in aliases
             ):
                 return command_name
+
+        if alias in self.aliases and include_legacy:
+            return self.aliases[alias]
 
         return None
 
@@ -939,10 +953,7 @@ class Modules:
 
     async def send_ready(self):
         """Send all data to all modules"""
-        inline_manager = InlineManager(self.client, self._db, self)
-
-        await inline_manager._register_manager()
-        self.inline = inline_manager
+        await self.inline.register_manager()
 
         try:
             await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
@@ -966,8 +977,6 @@ class Modules:
                     await mod.on_dlmod()
             except Exception:
                 logger.info("Can't process `on_dlmod` hook", exc_info=True)
-
-        mod.internal_init()
 
         try:
             if len(inspect.signature(mod.client_ready).parameters) == 2:
@@ -996,12 +1005,12 @@ class Modules:
             self.modules.remove(mod)
             raise
 
-        for method in dir(mod):
-            if isinstance(getattr(mod, method), InfiniteLoop):
-                setattr(getattr(mod, method), "module_instance", mod)
+        for _, method in utils.iter_attrs(mod):
+            if isinstance(method, InfiniteLoop):
+                setattr(method, "module_instance", mod)
 
-                if getattr(mod, method).autostart:
-                    getattr(mod, method).start()
+                if method.autostart:
+                    method.start()
 
                 logger.debug("Added module %s to method %s", mod, method)
 
