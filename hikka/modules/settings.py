@@ -6,7 +6,6 @@
 
 import os
 
-import psutil
 import pyrogram
 import telethon
 from telethon.extensions.html import CUSTOM_EMOJIS
@@ -780,12 +779,9 @@ class CoreMod(loader.Module):
     )
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
-        current_process = psutil.Process(os.getpid())
-        mem = current_process.memory_percent()
-        for child in current_process.children(recursive=True):
-            mem += child.memory_percent()
-        await utils.answer(
+        await utils.answer_file(
             message,
+            "https://github.com/hikariatama/assets/raw/master/hikka_cat_banner.mp4",
             self.strings("hikka").format(
                 (
                     (

@@ -2041,7 +2041,7 @@ class HikkaSettingsMod(loader.Module):
         }
 
     @loader.command()
-    async def invoke(self, message: Message):
+    async def invokecmd(self, message: Message):
         """<module or `core` for built-in methods> <method> - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER
         """
         args = utils.get_args_raw(message)
