@@ -43,7 +43,6 @@ from urllib.parse import urlparse
 
 import git
 import grapheme
-import psutil
 import requests
 import telethon
 from aiogram.types import Message as AiogramMessage
@@ -1503,22 +1502,32 @@ def get_topic(message: Message) -> typing.Optional[int]:
 
 def get_ram_usage() -> float:
     """Returns current process tree memory usage in MB"""
-    current_process = psutil.Process(os.getpid())
-    mem = current_process.memory_info()[0] / 2.0**20
-    for child in current_process.children(recursive=True):
-        mem += child.memory_info()[0] / 2.0**20
+    try:
+        import psutil
 
-    return round(mem, 1)
+        current_process = psutil.Process(os.getpid())
+        mem = current_process.memory_info()[0] / 2.0**20
+        for child in current_process.children(recursive=True):
+            mem += child.memory_info()[0] / 2.0**20
+
+        return round(mem, 1)
+    except Exception:
+        return 0
 
 
 def get_cpu_usage() -> float:
     """Returns current process tree CPU usage in %"""
-    current_process = psutil.Process(os.getpid())
-    cpu = current_process.cpu_percent()
-    for child in current_process.children(recursive=True):
-        cpu += child.cpu_percent()
+    try:
+        import psutil
 
-    return round(cpu, 1)
+        current_process = psutil.Process(os.getpid())
+        cpu = current_process.cpu_percent()
+        for child in current_process.children(recursive=True):
+            cpu += child.cpu_percent()
+
+        return round(cpu, 1)
+    except Exception:
+        return 0
 
 
 init_ts = time.perf_counter()
