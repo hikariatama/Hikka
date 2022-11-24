@@ -293,7 +293,7 @@ class Database(dict):
         owner: str,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
-    ) -> JSONSerializable:
+    ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
         """Get a pointer to database key"""
         value = self.get(owner, key, default)
         mapping = {

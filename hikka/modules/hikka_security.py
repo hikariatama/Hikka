@@ -70,6 +70,23 @@ class HikkaSecurityMod(loader.Module):
         "seconds": "секунд(-ы)",
     }
 
+    service_strings_it = {
+        "for": "per",
+        "forever": "per sempre",
+        "command": "comando",
+        "module": "modulo",
+        "chat": "chat",
+        "user": "utente",
+        "day": "giorno",
+        "days": "giorni",
+        "hour": "ora",
+        "hours": "ore",
+        "minute": "minuto",
+        "minutes": "minuti",
+        "second": "secondo",
+        "seconds": "secondi",
+    }
+
     service_strings_de = {
         "for": "für",
         "forever": "für immer",
@@ -443,6 +460,149 @@ class HikkaSecurityMod(loader.Module):
             ' таргетированной безопасности для <a href="{}">{}</a> удалены</b>'
         ),
         **service_strings_ru,
+    }
+
+    strings_it = {
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Comando non"
+            " trovato</b> <code>{}</code> <b>!</b>"
+        ),
+        "permissions": (
+            "🔐 <b>Qui puoi impostare i permessi per il comando</b> <code>{}{}</code>"
+        ),
+        "close_menu": "🙈 Chiudi questo menu",
+        "global": (
+            "🔐 <b>Qui puoi impostare la maschera di esclusione globale. Se il"
+            " commutatore è spento qui, è spento per tutti i comandi</b>"
+        ),
+        "owner": "😎 Proprietario",
+        "sudo": "🧐 Sudo",
+        "support": "🤓 Supporto",
+        "group_owner": "🧛‍♂️ Proprietario del gruppo",
+        "group_admin_add_admins": "🧑‍⚖️ Amministratore (aggiungere membri)",
+        "group_admin_change_info": "🧑‍⚖️ Amministratore (cambiare info)",
+        "group_admin_ban_users": "🧑‍⚖️ Amministratore (bannare)",
+        "group_admin_delete_messages": "🧑‍⚖️ Amministratore (eliminare messaggi)",
+        "group_admin_pin_messages": "🧑‍⚖️ Amministratore (appuntare)",
+        "group_admin_invite_users": "🧑‍⚖️ Amministratore (invitare)",
+        "group_admin": "🧑‍⚖️ Amministratore (qualsiasi)",
+        "group_member": "👥 Nel gruppo",
+        "pm": "🤙 In pm",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Utenti del gruppo</b>"
+            " <code>owner</code><b>:</b>\n\n{}"
+        ),
+        "sudo_list": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Utenti del gruppo</b>"
+            " <code>sudo</code><b>:</b>\n\n{}"
+        ),
+        "support_list": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Utenti del gruppo</b>"
+            " <code>support</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Nessun utente nel"
+            " gruppo</b> <code>owner</code>"
+        ),
+        "no_sudo": (
+            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Nessun utente nel"
+            " gruppo</b> <code>sudo</code>"
+        ),
+        "no_support": (
+            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Non ci sono utenti nel"
+            " gruppo</b> <code>support</code>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specifica a chi dare i"
+            " permessi</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La destinazione"
+            " specificata non è un utente</b>"
+        ),
+        "cancel": "🚫 Annulla",
+        "confirm": "👑 Conferma",
+        "self": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non puoi modificare i"
+            " tuoi permessi!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>Sei sicuro di voler aggiungere <a href="tg://user?id={}">{}</a> nel'
+            " gruppo</b> <code>{}</code><b>!\nQuesto potrebbe dare a questo utente"
+            " accesso parziale o totale al tuo bot!</b>"
+        ),
+        "suggest_nonick": "🔰 <i>Vuoi abilitare NoNick per questo utente?</i>",
+        "user_nn": '🔰 <b>Abilitato NoNick per <a href="tg://user?id={}">{}</a></b>',
+        "enable_nonick_btn": "🔰 Attiva",
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> aggiunto nel gruppo</b> <code>owner</code>'
+        ),
+        "sudo_added": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> aggiunto nel gruppo</b> <code>sudo</code>'
+        ),
+        "support_added": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> aggiunto nel gruppo</b>'
+            " <code>support</code>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> rimosso dal gruppo</b> <code>owner</code>'
+        ),
+        "sudo_removed": (
+            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> rimosso dal gruppo</b> <code>sudo</code>'
+        ),
+        "support_removed": (
+            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> rimosso dal gruppo</b> <code>support</code>'
+        ),
+        "_cls_doc": "Gestisci le impostazioni di sicurezza",
+        "what": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Devi specificare il"
+            " tipo di destinatario come primo argomento (</b><code>user</code> <b>o"
+            "</b> <code>chat</code><b>)</b>"
+        ),
+        "no_target": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non hai specificato"
+            " il destinatario delle impostazioni di sicurezza</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non hai specificato"
+            " la regola di sicurezza (modulo o comando)</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Conferma che vuoi dare a {} <a href='{}'>{}</a> il permesso di"
+            " usare {}</b> <code>{}</code> <b>{}</b>"
+        ),
+        "multiple_rules": (
+            "🔐 <b>Non sono riuscito a identificare la regola di sicurezza con"
+            " precisione. Scegli quella che intendevi:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>Hai dato a {} <a href='{}'>{}</a> il permesso di"
+            " usare {}</b> <code>{}</code> <b>{}</b>"
+        ),
+        "rules": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Regole di sicurezza"
+            " specifiche:</b>\n\n{}"
+        ),
+        "no_rules": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Nessuna regola di"
+            " sicurezza specifica</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Questo utente è"
+            " il proprietario, i suoi permessi non possono essere controllati"
+            " dalla sicurezza mirata</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Le regole di sicurezza"
+            ' mirate per <a href="{}">{}</a> sono state eliminate</b>'
+        ),
+        **service_strings_it,
     }
 
     strings_de = {
@@ -1382,6 +1542,7 @@ class HikkaSecurityMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="[команда] - Настроить разрешения для команды",
+        it_doc="[comando] - Imposta i permessi per il comando",
         de_doc="[command] - Einstellungen für Befehle ändern",
         tr_doc="[command] - Komut için izinleri ayarla",
         uz_doc="[command] - Buyruq uchun ruxsatlarini sozlash",
@@ -1416,6 +1577,7 @@ class HikkaSecurityMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="[команда] - Настроить разрешения для инлайн команды",
+        it_doc="[comando] - Imposta i permessi per il comando inline",
         de_doc="[command] - Einstellungen für Inline-Befehle ändern",
         tr_doc="[command] - Inline komut için izinleri ayarla",
         uz_doc="[command] - Inline buyruq uchun ruxsatlarini sozlash",
@@ -1601,6 +1763,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `sudo`",
+        it_doc="<utente> - Aggiungi utente al gruppo `sudo`",
         de_doc="<Benutzer> - Füge Benutzer zur `sudo`-Gruppe hinzu",
         tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhiga qo'shish",
@@ -1613,6 +1776,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `owner`",
+        it_doc="<utente> - Aggiungi utente al gruppo `owner`",
         de_doc="<Benutzer> - Füge Benutzer zur `owner`-Gruppe hinzu",
         tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhiga qo'shish",
@@ -1625,6 +1789,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `support`",
+        it_doc="<utente> - Aggiungi utente al gruppo `support`",
         de_doc="<Benutzer> - Füge Benutzer zur `support`-Gruppe hinzu",
         tr_doc="<kullanıcı> - Kullanıcıyı `support` grubuna ekle",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhiga qo'shish",
@@ -1637,6 +1802,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `sudo`",
+        it_doc="<utente> - Rimuovi utente dal gruppo `sudo`",
         de_doc="<Benutzer> - Entferne Benutzer aus der `sudo`-Gruppe",
         tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhidan olib tashlash",
@@ -1649,6 +1815,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `owner`",
+        it_doc="<utente> - Rimuovi utente dal gruppo `owner`",
         de_doc="<Benutzer> - Entferne Benutzer aus der `owner`-Gruppe",
         tr_doc="<kullanıcı> - Kullanıcıyı `owner` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhidan olib tashlash",
@@ -1661,6 +1828,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `support`",
+        it_doc="<utente> - Rimuovi utente dal gruppo `support`",
         de_doc="<Benutzer> - Entferne Benutzer aus der `support`-Gruppe",
         tr_doc="<kullanıcı> - Kullanıcıyı `support` grubundan kaldır",
         uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhidan olib tashlash",
@@ -1673,6 +1841,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать список пользователей в группе `sudo`",
+        it_doc="Mostra la lista degli utenti nel gruppo `sudo`",
         de_doc="Zeige Liste der Benutzer in der `sudo`-Gruppe",
         tr_doc="`sudo` grubundaki kullanıcıların listesini göster",
         uz_doc="`sudo` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
@@ -1685,6 +1854,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать список пользователей в группе `owner`",
+        it_doc="Mostra la lista degli utenti nel gruppo `owner`",
         de_doc="Zeige Liste der Benutzer in der `owner`-Gruppe",
         tr_doc="`owner` grubundaki kullanıcıların listesini göster",
         uz_doc="`owner` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
@@ -1697,6 +1867,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать список пользователей в группе `support`",
+        it_doc="Mostra la lista degli utenti nel gruppo `support`",
         de_doc="Zeige Liste der Benutzer in der `support`-Gruppe",
         tr_doc="`support` grubundaki kullanıcıların listesini göster",
         uz_doc="`support` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
@@ -1972,6 +2143,7 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc='<"user"/"chat"> - Удалить правило таргетированной безопасности',
+        it_doc='<"user"/"chat"> - Rimuovi una regola di sicurezza mirata',
         de_doc='<"user"/"chat"> - Entferne eine Regel für die gezielte Sicherheit',
         tr_doc='<"user"/"chat"> - Hedefli güvenlik için bir kural kaldırın',
         uz_doc='<"user"/"chat"> - Maqsadli xavfsizlik uchun bir qoidani olib tashlang',
@@ -2041,6 +2213,10 @@ class HikkaSecurityMod(loader.Module):
         ru_doc=(
             '<"user"/"chat"> [цель - пользователь или чат] [правило - команда или'
             " модуль] [время] - Настроить таргетированную безопасность"
+        ),
+        it_doc=(
+            '<"user"/"chat"> [obiettivo - utente o chat] [regola - comando o'
+            " modulo] [tempo] - Imposta la sicurezza mirata"
         ),
         de_doc=(
             '<"user"/"chat"> [Ziel - Benutzer oder Chat] [Regel - Befehl oder'

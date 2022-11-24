@@ -36,6 +36,7 @@
 - Move from monkey-patching concept of filling modules' attributes to native one
 - Minor and major bugfixes, adapt to topics
 - Kazakh translation pack
+- Italian translation pack
 - Partial Tatar translation pack
 - Logging tweaks
 - Add `caller` field to inline units
@@ -44,6 +45,8 @@
 - Add credits to developers and translators
 - Add support for multiple usernames
 - Add topic guesser in `send_message`, `send_file` in order for old modules to work properly
+- Add local storage fallback in case remote end is not available
+- Add `self.invoke` method for modules
 
 ## 🌑 Hikka 1.5.3
 

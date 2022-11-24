@@ -155,6 +155,70 @@ class HikkaConfigMod(loader.Module):
         "libraries": "📦 Библиотеки",
     }
 
+    strings_it = {
+        "choose_core": "⚙️ <b>Scegli la categoria</b>",
+        "configure": "⚙️ <b>Scegli il modulo da configurare</b>",
+        "configure_lib": "📦 <b>Scegli la libreria da configurare</b>",
+        "configuring_mod": (
+            "⚙️ <b>Scegli il parametro per il modulo</b> <code>{}</code>\n\n<b>Attuale"
+            " configurazione:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Scegli il parametro per la libreria</b> <code>{}</code>\n\n<b>Attuale"
+            " configurazione:</b>\n\n{}"
+        ),
+        "configuring_option": (
+            "⚙️ <b>Configurazione dell'opzione</b> <code>{}</code> <b>del"
+            " modulo</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Standard:"
+            " {}</b>\n\n<b>Attuale: {}</b>\n\n{}"
+        ),
+        "configuring_option_lib": (
+            "📦 <b>Configurazione dell'opzione</b> <code>{}</code> <b>della"
+            " libreria</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Standard:"
+            " {}</b>\n\n<b>Attuale: {}</b>\n\n{}"
+        ),
+        "option_saved": (
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Opzione"
+            "</b> <code>{}</code> <b>del modulo</b> <code>{}</code><b>"
+            " salvata!</b>\n<b>Attuale: {}</b>"
+        ),
+        "option_saved_lib": (
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Opzione"
+            "</b> <code>{}</code> <b>della libreria</b> <code>{}</code><b>"
+            " salvata!</b>\n<b>Attuale: {}</b>"
+        ),
+        "option_reset": (
+            "♻️ <b>Opzione</b> <code>{}</code> <b>del modulo</b> <code>{}</code><b>"
+            " resettata al valore di default</b>\n<b>Attuale: {}</b>"
+        ),
+        "option_reset_lib": (
+            "♻️ <b>Opzione</b> <code>{}</code> <b>della libreria</b> <code>{}</code><b>"
+            " resettata al valore di default</b>\n<b>Attuale: {}</b>"
+        ),
+        "_cls_doc": "Configuratore interattivo di Hikka",
+        "args": "🚫 <b>Hai fornito argomenti non validi</b>",
+        "validation_error": (
+            "🚫 <b>Hai fornito un valore di configurazione non valido.\nErrore: {}</b>"
+        ),
+        "try_again": "🔁 Riprova",
+        "typehint": "🕵️ <b>Dovrebbe essere {}</b>",
+        "set": "impostare",
+        "set_default_btn": "♻️ Imposta valore di default",
+        "enter_value_btn": "✍️ Inserisci valore",
+        "enter_value_desc": "✍️ Inserisci il nuovo valore di questo parametro",
+        "add_item_desc": "✍️ Inserisci l'elemento che vuoi aggiungere",
+        "remove_item_desc": "✍️ Inserisci l'elemento che vuoi rimuovere",
+        "back_btn": "👈 Indietro",
+        "close_btn": "🔻 Chiudi",
+        "add_item_btn": "➕ Aggiungi elemento",
+        "remove_item_btn": "➖ Rimuovi elemento",
+        "show_hidden": "🚸 Mostra valore",
+        "hide_value": "🔒 Nascondi valore",
+        "builtin": "🛰 Built-in",
+        "external": "🛸 Esterni",
+        "libraries": "📦 Librerie",
+    }
+
     strings_de = {
         "choose_core": "⚙️ <b>Wähle eine Kategorie</b>",
         "configure": "⚙️ <b>Modul zum Konfigurieren auswählen</b>",
@@ -1460,6 +1524,7 @@ class HikkaConfigMod(loader.Module):
 
     @loader.command(
         ru_doc="Настроить модули",
+        it_doc="Configura i moduli",
         de_doc="Konfiguriere Module",
         tr_doc="Modülleri yapılandır",
         uz_doc="Modullarni sozlash",
@@ -1487,6 +1552,10 @@ class HikkaConfigMod(loader.Module):
         ru_doc=(
             "<модуль> <настройка> <значение> - установить значение конфига для модуля"
         ),
+        it_doc=(
+            "<modulo> <impostazione> <valore> - imposta il valore della configurazione"
+            " per il modulo"
+        ),
         de_doc=(
             "<Modul> <Einstellung> <Wert> - Setze den Wert der Konfiguration für das"
             " Modul"
@@ -1499,6 +1568,7 @@ class HikkaConfigMod(loader.Module):
         kk_doc=(
             "<модуль> <настройка> <значение> - модуль үшін конфигурация мәнін орнату"
         ),
+        alias="setcfg",
     )
     async def fconfig(self, message: Message):
         """<module_name> <property_name> <config_value> - set the config value for the module

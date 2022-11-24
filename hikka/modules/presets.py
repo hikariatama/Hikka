@@ -173,6 +173,51 @@ class Presets(loader.Module):
         "already_installed": "✅ [Установлен]",
     }
 
+    strings_it = {
+        "_fun_title": "🪩 Moduli divertenti",
+        "_fun_desc": "Moduli divertenti, animazioni, spam, giochi e altro.",
+        "_chat_title": "👥 Moduli di amministrazione del gruppo",
+        "_chat_desc": (
+            "Una raccolta di moduli che ti aiuteranno ad amministrare il tuo gruppo,"
+            " filtri, note, riconoscimento vocale e altro."
+        ),
+        "_service_title": "⚙️ Moduli utili",
+        "_service_desc": (
+            "Moduli veramente utili, gestione account, url shortener, motore di ricerca"
+            " e altro."
+        ),
+        "_downloaders_title": "📥 Downloaders",
+        "_downloaders_desc": (
+            "Una raccolta di moduli che ti aiuteranno a scaricare file da diversi"
+            " fonti, YouTube, TikTok, Instagram, Spotify, VK Music e altro."
+        ),
+        "welcome": (
+            "👋 <b>Ciao! Ti annoiato a scorrere interminabili liste di moduli nei"
+            " canali? Posso offrirti alcuni pacchetti predefiniti. Se vuoi richiamare"
+            " questo menu, inviami il comando /presets</b>"
+        ),
+        "preset": (
+            "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>Moduli in questo pacchetto:</b>\n\n{}"
+        ),
+        "back": "🔙 Indietro",
+        "install": "📦 Installa",
+        "installing": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installazione"
+            " pacchetto >/b><code>{}</code><b>...</b>"
+        ),
+        "installing_module": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installazione"
+            " pacchetto</b> <code>{}</code> <b>({}/{} moduli)...</b>\n\n<emoji"
+            " document_id=5188377234380954537>🌘</emoji> <i>Installazione modulo"
+            " {}...</i>"
+        ),
+        "installed": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Pacchetto"
+            "</b> <code>{}</code> <b>installato!</b>"
+        ),
+        "already_installed": "✅ [Installato]",
+    }
+
     strings_de = {
         "_fun_title": "🪩 Spaßmodule",
         "_fun_desc": "Spaßmodule — Animationen, Spam, Spiele, und mehr.",

@@ -34,6 +34,7 @@ from telethon.utils import get_display_name
 from . import main, utils
 from .database import Database
 from .tl_cache import CustomTelegramClient
+from .types import Command
 
 logger = logging.getLogger(__name__)
 
@@ -86,67 +87,67 @@ PUBLIC_PERMISSIONS = GROUP_OWNER | GROUP_ADMIN_ANY | GROUP_MEMBER | PM
 ALL = (1 << 13) - 1
 
 
-def owner(func: callable) -> callable:
+def owner(func: Command) -> Command:
     return _sec(func, OWNER)
 
 
-def sudo(func: callable) -> callable:
+def sudo(func: Command) -> Command:
     return _sec(func, SUDO)
 
 
-def support(func: callable) -> callable:
+def support(func: Command) -> Command:
     return _sec(func, SUDO | SUPPORT)
 
 
-def group_owner(func: callable) -> callable:
+def group_owner(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_OWNER)
 
 
-def group_admin_add_admins(func: callable) -> callable:
+def group_admin_add_admins(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_ADMIN_ADD_ADMINS)
 
 
-def group_admin_change_info(func: callable) -> callable:
+def group_admin_change_info(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_ADMIN_CHANGE_INFO)
 
 
-def group_admin_ban_users(func: callable) -> callable:
+def group_admin_ban_users(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_ADMIN_BAN_USERS)
 
 
-def group_admin_delete_messages(func: callable) -> callable:
+def group_admin_delete_messages(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_ADMIN_DELETE_MESSAGES)
 
 
-def group_admin_pin_messages(func: callable) -> callable:
+def group_admin_pin_messages(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_ADMIN_PIN_MESSAGES)
 
 
-def group_admin_invite_users(func: callable) -> callable:
+def group_admin_invite_users(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_ADMIN_INVITE_USERS)
 
 
-def group_admin(func: callable) -> callable:
+def group_admin(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_ADMIN)
 
 
-def group_member(func: callable) -> callable:
+def group_member(func: Command) -> Command:
     return _sec(func, SUDO | GROUP_MEMBER)
 
 
-def pm(func: callable) -> callable:
+def pm(func: Command) -> Command:
     return _sec(func, SUDO | PM)
 
 
-def unrestricted(func: callable) -> callable:
+def unrestricted(func: Command) -> Command:
     return _sec(func, ALL)
 
 
-def inline_everyone(func: callable) -> callable:
+def inline_everyone(func: Command) -> Command:
     return _sec(func, EVERYONE)
 
 
-def _sec(func: callable, flags: int) -> callable:
+def _sec(func: Command, flags: int) -> Command:
     prev = getattr(func, "security", 0)
     func.security = prev | OWNER | flags
     return func
@@ -256,7 +257,7 @@ class SecurityManager:
 
         return any_
 
-    def get_flags(self, func: typing.Union[callable, int]) -> int:
+    def get_flags(self, func: typing.Union[Command, int]) -> int:
         """
         Gets the security flags for the given function
 
@@ -285,7 +286,7 @@ class SecurityManager:
     async def check(
         self,
         message: typing.Optional[Message],
-        func: typing.Union[callable, int],
+        func: typing.Union[Command, int],
         user_id: typing.Optional[int] = None,
     ) -> bool:
         """

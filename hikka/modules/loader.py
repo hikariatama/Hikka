@@ -31,6 +31,7 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.types import Channel, Message
 
 from .. import loader, main, utils
+from .._local_storage import RemoteStorage
 from ..compat import dragon, geek
 from ..compat.pyroproxy import PyroProxyClient
 from ..inline.types import InlineCall
@@ -219,6 +220,26 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Installing module"
             "</b> <code>{}</code><b>...</b>"
         ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>is already added</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>added</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You need to specify"
+            " repo to add</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>is not added</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>deleted</b>"
+        ),
     }
 
     strings_ru = {
@@ -390,6 +411,228 @@ class LoaderMod(loader.Module):
         "installing": (
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Устанавливаю модуль"
             "</b> <code>{}</code><b>...</b>"
+        ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>уже добавлен</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>добавлен</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Вы должны указать"
+            " репозиторий для добавления</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>не добавлен</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>удален</b>"
+        ),
+    }
+
+    strings_it = {
+        "repo_config_doc": "Link per il download dei moduli",
+        "add_repo_config_doc": "Repository aggiuntivi",
+        "avail_header": "🎢 <b>Moduli ufficiali dal repository</b>",
+        "select_preset": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Seleziona un"
+            " preset</b>"
+        ),
+        "no_preset": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Preset non trovato</b>"
+        ),
+        "preset_loaded": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Preset caricato</b>"
+        ),
+        "no_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il modulo non è"
+            " disponibile nel repository.</b>"
+        ),
+        "no_file": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>File non trovato</b>"
+        ),
+        "provide_module": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Specifica il modulo"
+            " da caricare</b>"
+        ),
+        "bad_unicode": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Codifica modulo"
+            " errata</b>"
+        ),
+        "load_failed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Caricamento non"
+            " riuscito. Vedi i log.</b>"
+        ),
+        "loaded": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Modulo"
+            "</b> <code>{}</code>{} <b>caricato {}</b>{}{}{}{}{}{}"
+        ),
+        "no_class": "<b>Cosa devo scaricare?</b>",
+        "unloaded": "{} <b>Modulo {} scaricato.</b>",
+        "not_unloaded": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modulo non"
+            " scaricato.</b>"
+        ),
+        "requirements_failed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Errore di"
+            " installazione dei requisiti</b>"
+        ),
+        "requirements_failed_termux": (
+            "<emoji document_id=5407025283456835913>🕶</emoji> <b>Errore"
+            " nell'installazione dei requisiti</b>\n<b>Si verifica più frequentemente"
+            " perché Termux non supporta molte librerie. Non segnalare questo come"
+            " errore, non può essere corretto.</b>"
+        ),
+        "requirements_installing": (
+            "<emoji document_id=5328311576736833844>🚀</emoji> <b>Installazione"
+            " dei requisiti:\n\n{}</b>"
+        ),
+        "requirements_restart": (
+            "<emoji document_id=5875145601682771643>🚀</emoji> <b>I requisiti sono"
+            " installati, ma è necessario riavviare per applicare</b> <code>{}</code>"
+        ),
+        "all_modules_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>I moduli sono stati"
+            " eliminati</b>"
+        ),
+        "undoc": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> Nessuna descrizione"
+        ),
+        "ihandler": (
+            "\n<emoji document_id=5372981976804366741>🤖</emoji> <code>{}</code> {}"
+        ),
+        "version_incompatible": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Questo modulo"
+            " richiede Hikka versione {}+\nAggiornati con</b> <code>.update</code>"
+        ),
+        "ffmpeg_required": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Questo modulo"
+            " richiede FFMPEG, che non è installato</b>"
+        ),
+        "developer": (
+            "\n\n<emoji document_id=5875452644599795072>🫶</emoji> <b>Sviluppatore:"
+            "</b> {}"
+        ),
+        "depends_from": (
+            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>Dependenze:"
+            "</b> \n{}"
+        ),
+        "by": "di",
+        "module_fs": (
+            "💿 <b>Vuoi salvare il modulo sul disco fisso per non scaricarlo"
+            " al riavvio?</b>"
+        ),
+        "save": "💿 Salva",
+        "no_save": "🚫 Non salvare",
+        "save_for_all": "💽 Salva sempre",
+        "never_save": "🚫 Non salvare mai",
+        "will_save_fs": (
+            "💽 Ora tutti i moduli caricati da file verranno salvati sul disco fisso"
+        ),
+        "inline_init_failed": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Questo modulo ha"
+            " bisogno di HikkaInline, ma l'inizializzazione del gestore inline è"
+            " fallita</b>\n<i>Prova a rimuovere uno dei vecchi bot in @BotFather e"
+            " riavviare l'utente</i>"
+        ),
+        "_cmd_doc_dlmod": "Scarica e installa il modulo dal repository",
+        "_cmd_doc_dlpreset": "Scarica e installa un insieme specifico di moduli",
+        "_cmd_doc_loadmod": "Scarica e installa il modulo dal file",
+        "_cmd_doc_unloadmod": "Scarica (rimuovi) il modulo",
+        "_cmd_doc_clearmodules": "Scarica tutti i moduli installati",
+        "_cls_doc": "Carica moduli",
+        "share_link_doc": (
+            "Specifica il link del modulo dopo aver caricato tramite .dlmod"
+        ),
+        "modlink": (
+            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Link:"
+            "</b> <code>{}</code>"
+        ),
+        "blob_link": (
+            "\n\n<emoji document_id=5312383351217201533>⚠️</emoji> <b>Non usare"
+            " `blob` link per caricare i moduli. È meglio caricare da `raw`</b>"
+        ),
+        "raw_link": (
+            "\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Link:"
+            "</b> <code>{}</code>"
+        ),
+        "suggest_subscribe": (
+            "\n\n⭐️ <b>Questo modulo"
+            " è stato fatto da {}. Sottoscrivere per sostenere il sviluppatore?</b>"
+        ),
+        "subscribe": "💬 Sottoscrivi",
+        "no_subscribe": "🚫 Non sottoscrivere",
+        "subscribed": "💬 Sottoscritto!",
+        "unsubscribed": "🚫 Non ti chiederò più di sottoscrivere questo canale",
+        "confirm_clearmodules": (
+            "⚠️ <b>Sei sicuro di voler scaricare tutti i moduli?</b>"
+        ),
+        "clearmodules": "🗑 Scaricare i moduli",
+        "cancel": "🚫 Annulla",
+        "overwrite_module": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Questo modulo ha"
+            " tentato di sovrascrivere un modulo integrato"
+            " (</b><code>{}</code><b>)</b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Non è un errore, ma un"
+            " misura di sicurezza richiesta per impedire di sovrascrivere i moduli"
+            " integrati con qualsiasi schifo. Non segnalare questo errore nel supporto"
+            " chat</i>"
+        ),
+        "overwrite_command": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Questo modulo ha"
+            " tentato di sovrascrivere un comando integrato"
+            " (</b><code>{}</code><b>)</b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Non è un errore, ma un"
+            " misura di sicurezza richiesta per impedire di sovrascrivere i comandi"
+            " integrati con qualsiasi schifo. Non segnalare questo errore nel supporto"
+            " chat</i>"
+        ),
+        "unload_core": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Non puoi scaricare un"
+            " modulo integrato</b> <code>{}</code><b></b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Non è un errore, ma un"
+            " misura di sicurezza richiesta per impedire di sovrascrivere i moduli"
+            " integrati con qualsiasi schifo. Non segnalare questo errore nel supporto"
+            " chat</i>"
+        ),
+        "cannot_unload_lib": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Non puoi"
+            " scaricare una libreria</b>"
+        ),
+        "wait_channel_approve": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Il modulo</b>"
+            " <code>{}</code> <b>sta richiedendo l'approvazione per entrare nel canale"
+            ' <a href="https://t.me/{}">{}</a>.\n\n<b><emoji'
+            ' document_id="5467666648263564704">❓</emoji> Motivo: {}</b>\n\n<i>In'
+            ' attesa di <a href="https://t.me/{}">conferma</a>...</i>'
+        ),
+        "installing": (
+            "<emoji document_id=5325792861885570739>🕔</emoji> <b>Sto installando il"
+            " modulo</b> <code>{}</code><b>...</b>"
+        ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il repo</b>"
+            " <code>{}</code> <b>è già stato aggiunto</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Il repo</b>"
+            " <code>{}</code> <b>è stato aggiunto</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Devi specificare il"
+            " repo da aggiungere</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il repo</b>"
+            " <code>{}</code> <b>non è stato aggiunto</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Il repo</b>"
+            " <code>{}</code> <b>è stato rimosso</b>"
         ),
     }
 
@@ -578,6 +821,26 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Modul installieren"
             "</b> <code>{}</code><b>...</b>"
         ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>wurde bereits hinzugefügt</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>wurde hinzugefügt</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Du musst ein Repo"
+            " angeben um es hinzuzufügen</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>wurde nicht hinzugefügt</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>wurde gelöscht</b>"
+        ),
     }
 
     strings_tr = {
@@ -744,6 +1007,26 @@ class LoaderMod(loader.Module):
         "installing": (
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Modül yükleme"
             "</b> <code>{}</code><b>...</b>"
+        ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>zaten eklenmiş</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>eklendi</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Eklemek için repo"
+            " belirtmeniz gerekli</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>eklenmemiş</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>silindi</b>"
         ),
     }
 
@@ -926,6 +1209,26 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Modulni o'rnatish"
             "</b> <code>{}</code><b>...</b>"
         ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>aldaqqa qo'shilgan</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>qo'shildi</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo qo'shish uchun"
+            " sizga kerak</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>qo'shilmagan</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b>"
+            " <code>{}</code> <b>o'chirildi</b>"
+        ),
     }
 
     strings_es = {
@@ -1097,6 +1400,26 @@ class LoaderMod(loader.Module):
         "installing": (
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Módulo de instalación"
             "</b> <code>{}</code><b>...</b>"
+        ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El repositorio</b>"
+            " <code>{}</code> <b>ya ha sido añadido</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>El repositorio</b>"
+            " <code>{}</code> <b>ha sido añadido</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Necesitas especificar"
+            " el repositorio a añadir</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El repositorio</b>"
+            " <code>{}</code> <b>no ha sido añadido</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>El repositorio</b>"
+            " <code>{}</code> <b>ha sido eliminado</b>"
         ),
     }
 
@@ -1274,6 +1597,26 @@ class LoaderMod(loader.Module):
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Модульді орнату"
             "</b> <code>{}</code><b>...</b>"
         ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>іске қосылған</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>қосылды</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Қосу үшін repo"
+            " белгілеуіңіз керек</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>қосылмаған</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>жойылды</b>"
+        ),
     }
 
     fully_loaded = False
@@ -1282,6 +1625,9 @@ class LoaderMod(loader.Module):
     def __init__(self):
         self._pending_stats = []
         self._react_queue = []
+
+        self._storage = RemoteStorage()
+
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "MODULES_REPO",
@@ -1307,15 +1653,32 @@ class LoaderMod(loader.Module):
             ),
         )
 
+    async def _async_init(self):
+        modules = list(
+            filter(
+                lambda x: not x.startswith("https://mods.hikariatama.ru"),
+                utils.array_sum(
+                    map(
+                        lambda x: list(x.values()),
+                        (await self.get_repo_list("full")).values(),
+                    )
+                ),
+            )
+        )
+        logger.debug("Modules: %s", modules)
+        asyncio.ensure_future(self._storage.preload(modules))
+        asyncio.ensure_future(self._storage.preload_main_repo())
+
     async def client_ready(self):
+        self._reacted = self.pointer("reacted", [])
+        self._token_msg = (await self._client.get_messages("@hikka_ub", ids=[10]))[0]
+
         self.allmodules.add_aliases(self.lookup("settings").get("aliases", {}))
 
         main.hikka.ready.set()
 
         asyncio.ensure_future(self._update_modules())
-        asyncio.ensure_future(self.get_repo_list("full"))
-
-        self._token_msg = (await self._client.get_messages("@hikka_ub", ids=[10]))[0]
+        asyncio.ensure_future(self._async_init())
 
     @loader.loop(interval=120, autostart=True)
     async def _react_processor(self):
@@ -1326,15 +1689,19 @@ class LoaderMod(loader.Module):
         try:
             await (
                 await self._client.get_messages(
-                    developer_entity, limit=1, search=modname
+                    developer_entity,
+                    limit=1,
+                    search=modname,
                 )
             )[0].react("❤️")
-            self.set(
-                "reacted",
-                self.get("reacted", []) + [f"{developer_entity.id}/{modname}"],
-            )
+            self._reacted += [f"{developer_entity}/{modname}"]
         except Exception:
-            logger.debug("Unable to react to %s about %s", developer_entity.id, modname)
+            logger.debug(
+                "Unable to react to %s about %s",
+                developer_entity.id,
+                modname,
+                exc_info=True,
+            )
 
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
@@ -1351,9 +1718,7 @@ class LoaderMod(loader.Module):
                     continue
 
                 delattr(mod.config._config[option], "_save_marker")
-                self._db.setdefault(mod.__class__.__name__, {}).setdefault(
-                    "__config__", {}
-                )[option] = config.value
+                mod.pointer("__config__", {})[option] = config.value
 
         for lib in self.allmodules.libraries:
             if (
@@ -1368,9 +1733,7 @@ class LoaderMod(loader.Module):
                     continue
 
                 delattr(lib.config._config[option], "_save_marker")
-                self._db.setdefault(lib.__class__.__name__, {}).setdefault(
-                    "__config__", {}
-                )[option] = config.value
+                lib._lib_pointer("__config__", {})[option] = config.value
 
         self._db.save()
 
@@ -1397,6 +1760,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Загрузить модуль из официального репозитория",
+        it_doc="Carica un modulo dal repository ufficiale",
         de_doc="Lade ein Modul aus dem offiziellen Repository",
         tr_doc="Resmi depodan bir modül yükler",
         uz_doc="Ofitsial repodan modulni yuklash",
@@ -1444,6 +1808,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Установить пресет модулей",
+        it_doc="Installa un preset di moduli",
         de_doc="Installiere ein Modul-Preset",
         tr_doc="Modül önbelleğini yükle",
         uz_doc="Modul presetini o'rnatish",
@@ -1461,9 +1826,7 @@ class LoaderMod(loader.Module):
         self.set("chosen_preset", args[0])
 
         await utils.answer(message, self.strings("preset_loaded"))
-        await self.allmodules.commands["restart"](
-            await message.reply(f"{self.get_prefix()}restart --force")
-        )
+        await self.invoke("restart", "-f", message=message)
 
     async def _get_modules_to_load(self):
         preset = self.get("chosen_preset")
@@ -1574,18 +1937,16 @@ class LoaderMod(loader.Module):
                     self.strings("installing").format(module_name),
                 )
 
-            r = await utils.run_sync(requests.get, url)
-
-            if r.status_code == 404:
+            try:
+                r = await self._storage.fetch(url)
+            except requests.exceptions.HTTPError:
                 if message is not None:
                     await utils.answer(message, self.strings("no_module"))
 
                 return False
 
-            r.raise_for_status()
-
             return await self.load_module(
-                r.content.decode("utf-8"),
+                r,
                 message,
                 module_name,
                 url,
@@ -1618,6 +1979,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Загрузить модуль из файла",
+        it_doc="Carica un modulo da un file",
         de_doc="Lade Modul aus Datei",
         tr_doc="Dosyadan modül yükle",
         uz_doc="Fayldan modulni yuklash",
@@ -2155,7 +2517,7 @@ class LoaderMod(loader.Module):
 
             if (
                 developer_entity is not None
-                and f"{developer_entity.id}/{modname}" not in self.get("reacted", [])
+                and f"{developer_entity.id}/{modname}" not in self._reacted
             ):
                 self._react_queue += [(developer_entity, modname)]
 
@@ -2308,7 +2670,7 @@ class LoaderMod(loader.Module):
         self,
         call: InlineCall,
         entity: int,
-        msg: callable,
+        msg: typing.Callable[[], str],
         subscribe: bool,
     ):
         if not subscribe:
@@ -2324,6 +2686,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Выгрузить модуль",
+        it_doc="Scarica il modulo",
         de_doc="Entlädt ein Modul",
         tr_doc="Bir modülü kaldırır",
         uz_doc="Modulni o'chirish",
@@ -2386,6 +2749,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Удалить все модули",
+        it_doc="Rimuovi tutti i moduli",
         de_doc="Entfernt alle Module",
         tr_doc="Tüm modülleri kaldırır",
         uz_doc="Barcha modullarni o'chirish",
@@ -2408,6 +2772,56 @@ class LoaderMod(loader.Module):
                 },
             ],
         )
+
+    @loader.command(
+        ru_doc="Добавить дополнительный репозиторий",
+        it_doc="Aggiungi un repository aggiuntivo",
+        de_doc="Fügt ein zusätzliches Repository hinzu",
+        tr_doc="Ek bir depo ekler",
+        uz_doc="Qo'shimcha repozitoriyani qo'shish",
+        es_doc="Añadir un repositorio adicional",
+        kk_doc="Қосымша қойымдық қосу",
+    )
+    async def addrepo(self, message: Message):
+        """Add a repository to the list of repositories"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await utils.answer(message, self.strings("no_repo"))
+            return
+
+        if args in self.config["ADDITIONAL_REPOS"]:
+            await utils.answer(message, self.strings("repo_exists"))
+            return
+
+        self.config["ADDITIONAL_REPOS"].value = self.config["ADDITIONAL_REPOS"] + [args]
+
+        await utils.answer(message, self.strings("repo_added").format(args))
+
+    @loader.command(
+        ru_doc="Удалить дополнительный репозиторий",
+        it_doc="Rimuovi un repository aggiuntivo",
+        de_doc="Entfernt ein zusätzliches Repository",
+        tr_doc="Ek bir depoyu kaldırır",
+        uz_doc="Qo'shimcha repozitoriyani o'chirish",
+        es_doc="Eliminar un repositorio adicional",
+        kk_doc="Қосымша қойымдықты жою",
+    )
+    async def delrepo(self, message: Message):
+        """Remove a repository from the list of repositories"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await utils.answer(message, self.strings("no_repo"))
+            return
+
+        if args not in self.config["ADDITIONAL_REPOS"]:
+            await utils.answer(message, self.strings("repo_not_exists"))
+            return
+
+        self.config["ADDITIONAL_REPOS"].value = [
+            repo for repo in self.config["ADDITIONAL_REPOS"] if repo != args
+        ]
+
+        await utils.answer(message, self.strings("repo_deleted").format(args))
 
     async def _inline__clearmodules(self, call: InlineCall):
         self.set("loaded_modules", {})

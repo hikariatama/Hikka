@@ -106,6 +106,43 @@ class HikkaInfoMod(loader.Module):
         ),
     }
 
+    strings_it = {
+        "owner": "Proprietario",
+        "version": "Versione",
+        "build": "Build",
+        "prefix": "Prefisso",
+        "uptime": "Uptime",
+        "branch": "Branch",
+        "cpu_usage": "Uso CPU",
+        "ram_usage": "Uso RAM",
+        "send_info": "Invia info del bot",
+        "description": "ℹ Questo non rivelera' alcuna informazione personale",
+        "_ihandle_doc_info": "Invia info del bot",
+        "up-to-date": (
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>Versione"
+            " aggiornata</b>"
+        ),
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Aggiornamento"
+            " richiesto</b> <code>.update</code>"
+        ),
+        "_cfg_cst_msg": (
+            "Messaggio personalizzato per info. Puo' contenere {me}, {version},"
+            " {build}, {prefix}, {platform}, {upd}, {uptime}, {cpu_usage}, {ram_usage},"
+            " {branch} keywords"
+        ),
+        "_cfg_cst_btn": "Bottone personalizzato per info. Lascia vuoto per rimuovere",
+        "_cfg_banner": "URL dell'immagine banner",
+        "desc": (
+            "<emoji document_id=6318565919471699564>🌌</emoji>"
+            " <b>Hikka</b>\n\nUserbot di Telegram con molte funzioni, come gallerie"
+            " inline, form, liste e supporto ad emoji animate. Userbot - software"
+            " che gira sul tuo account Telegram. Se scrivi un comando in qualsiasi"
+            " chat, viene eseguito lì. Controlla gli esempi in <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+        ),
+    }
+
     strings_de = {
         "owner": "Besitzer",
         "version": "Version",
@@ -511,6 +548,7 @@ class HikkaInfoMod(loader.Module):
 
     @loader.command(
         ru_doc="Отправляет информацию о боте",
+        it_doc="Invia informazioni sul bot",
         de_doc="Sendet Informationen über den Bot",
         tr_doc="Bot hakkında bilgi gönderir",
         uz_doc="Bot haqida ma'lumot yuboradi",
@@ -542,6 +580,7 @@ class HikkaInfoMod(loader.Module):
     @loader.unrestricted
     @loader.command(
         ru_doc="Отправить информацию по типу 'Что такое Хикка?'",
+        it_doc="Invia informazioni del tipo 'Cosa è Hikka?'",
         de_doc="Sende Informationen über den Bot",
         tr_doc="Bot hakkında bilgi gönderir",
         uz_doc="Bot haqida ma'lumot yuborish",
@@ -554,6 +593,7 @@ class HikkaInfoMod(loader.Module):
 
     @loader.command(
         ru_doc="<текст> - Изменить текст в .info",
+        it_doc="<testo> - Cambia il testo in .info",
         de_doc="<text> - Ändere den Text in .info",
         tr_doc="<metin> - .info'da metni değiştir",
         uz_doc="<matn> - .info'dagi matnni o'zgartirish",

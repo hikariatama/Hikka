@@ -43,7 +43,7 @@ class List(InlineUnit):
         manual_security: bool = False,
         disable_security: bool = False,
         ttl: typing.Union[int, bool] = False,
-        on_unload: typing.Optional[callable] = None,
+        on_unload: typing.Optional[typing.Callable[[], typing.Any]] = None,
         silent: bool = False,
         custom_buttons: typing.Optional[HikkaReplyMarkup] = None,
     ) -> typing.Union[bool, InlineMessage]:

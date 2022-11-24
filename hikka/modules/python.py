@@ -55,6 +55,21 @@ class PythonMod(loader.Module):
         "_cls_doc": "Выполняет Python код",
     }
 
+    strings_it = {
+        "eval": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Codice:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=5197688912457245639>✅</emoji><b>"
+            " Risultato:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Codice:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=5312526098750252863>🚫</emoji> <b>Errore:</b>\n{}"
+        ),
+        "_cls_doc": "Esegue codice Python",
+    }
+
     strings_de = {
         "eval": (
             "<emoji document_id=4985626654563894116>💻</emoji><b>"
@@ -147,25 +162,14 @@ class PythonMod(loader.Module):
 
     @loader.owner
     @loader.command(
-        ru_doc="Алиас для команды .e",
-        de_doc="Alias für den Befehl .e",
-        tr_doc="Komut .e için takma ad",
-        uz_doc="Buyruq .e uchun alohida nom",
-        es_doc="Alias para el comando .e",
-        kk_doc="Команданың .e үшін арнайы атауы",
-    )
-    async def eval(self, message: Message):
-        """Alias for .e command"""
-        await self.e(message)
-
-    @loader.owner
-    @loader.command(
         ru_doc="Выполняет Python код",
+        it_doc="Esegue codice Python",
         de_doc="Führt Python Code aus",
         tr_doc="Python kodu çalıştırır",
         uz_doc="Python kodini ishga tushiradi",
         es_doc="Ejecuta código Python",
         kk_doc="Python кодын орындау",
+        alias="eval",
     )
     async def e(self, message: Message):
         """Evaluates python code"""

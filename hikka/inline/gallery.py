@@ -339,7 +339,14 @@ class Gallery(InlineUnit):
 
         return InlineMessage(self, unit_id, self._units[unit_id]["inline_message_id"])
 
-    async def _call_photo(self, callback: callable) -> typing.Union[str, bool]:
+    async def _call_photo(
+        self,
+        callback: typing.Union[
+            typing.Callable[[], typing.Awaitable[str]],
+            typing.Callable[[], str],
+            typing.List[str],
+        ],
+    ) -> typing.Union[str, bool]:
         """Parses photo url from `callback`. Returns url on success, otherwise `False`
         """
         if isinstance(callback, str):
@@ -390,7 +397,7 @@ class Gallery(InlineUnit):
     async def _gallery_slideshow_loop(
         self,
         call: CallbackQuery,
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         while True:
             await asyncio.sleep(7)
@@ -416,7 +423,7 @@ class Gallery(InlineUnit):
     async def _gallery_slideshow(
         self,
         call: CallbackQuery,
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         if not self._units[unit_id].get("slideshow", False):
             self._units[unit_id]["slideshow"] = True
@@ -444,7 +451,7 @@ class Gallery(InlineUnit):
     async def _gallery_back(
         self,
         call: CallbackQuery,
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         queue = self._units[unit_id]["photos"]
 
@@ -510,7 +517,7 @@ class Gallery(InlineUnit):
         self,
         call: CallbackQuery,
         page: typing.Union[int, str],
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         if page == "slideshow":
             await self._gallery_slideshow(call, unit_id)

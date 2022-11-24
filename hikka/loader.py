@@ -18,19 +18,20 @@ import os
 import re
 import sys
 import typing
-from functools import partial, wraps
+from functools import wraps
 from types import FunctionType, ModuleType
 from uuid import uuid4
 
 from telethon.tl.tlobject import TLObject
 
-from . import security, utils, validators, version
+from . import security, utils, validators, version  # skipcq
 from .database import Database
 from .inline.core import InlineManager
 from .translations import Strings, Translator
 from .types import ConfigValue  # skipcq
 from .types import ModuleConfig  # skipcq
 from .types import (
+    Command,
     CoreOverwriteError,
     CoreUnloadError,
     DragonModule,
@@ -272,7 +273,7 @@ def translatable_docstring(cls):
 tds = translatable_docstring  # Shorter name for modules to use
 
 
-def ratelimit(func: callable):
+def ratelimit(func: Command) -> Command:
     """Decorator that causes ratelimiting for this command to be enforced more strictly
     """
     func.ratelimit = True
@@ -322,7 +323,7 @@ def tag(*tags, **kwarg_tags):
     @loader.watcher("no_commands", out=True)
     """
 
-    def inner(func: callable):
+    def inner(func: Command) -> Command:
         for _tag in tags:
             setattr(func, _tag, True)
 
@@ -334,12 +335,12 @@ def tag(*tags, **kwarg_tags):
     return inner
 
 
-def _mark_method(mark: str, *args, **kwargs) -> callable:
+def _mark_method(mark: str, *args, **kwargs) -> typing.Callable[..., Command]:
     """
     Mark method as a method of a class
     """
 
-    def decorator(func: callable) -> callable:
+    def decorator(func: Command) -> Command:
         setattr(func, mark, True)
         for arg in args:
             setattr(func, arg, True)
@@ -397,7 +398,7 @@ def raw_handler(*updates: TLObject):
     ⚠️ This feature won't work, if you dynamically declare method with decorator!
     """
 
-    def inner(func: callable):
+    def inner(func: Command) -> Command:
         func.is_raw_handler = True
         func.updates = updates
         func.id = uuid4().hex

@@ -61,6 +61,26 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
+    strings_it = {
+        "period": (
+            "⌚️ <b>Unità «ALPHA»</b> crea backup del database periodicamente. Puoi"
+            " modificare questo comportamento in seguito.\n\nPer favore, seleziona"
+            " la periodicità dei backup automatici"
+        ),
+        "saved": (
+            "✅ Periodo di backup salvato. Puoi modificarlo in seguito con"
+            " .set_backup_period"
+        ),
+        "never": (
+            "✅ Non farò backup automatici. Puoi modificarlo in seguito con"
+            " .set_backup_period"
+        ),
+        "invalid_args": (
+            "🚫 <b>Specifica il periodo di backup corretto in ore, o `0` per"
+            " disabilitarlo</b>"
+        ),
+    }
+
     strings_de = {
         "period": (
             "⌚️ <b>Unit «ALPHA»</b> erstellt regelmäßige Backups. Diese Einstellungen"
@@ -232,6 +252,7 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command(
         ru_doc="<время в часах> - Установить частоту бэкапов",
+        it_doc="<tempo in ore> - Imposta la frequenza dei backup",
         de_doc="<Stunden> - Setze die Backup-Frequenz",
         tr_doc="<saat cinsinden zaman> - Yedekleme periyodunu ayarla",
         uz_doc="<soatda vaqt> - E'lon tartibini belgilash",

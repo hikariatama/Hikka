@@ -38,12 +38,12 @@ import signal
 import string
 import time
 import typing
-import psutil
 from datetime import timedelta
 from urllib.parse import urlparse
 
 import git
 import grapheme
+import psutil
 import requests
 import telethon
 from aiogram.types import Message as AiogramMessage

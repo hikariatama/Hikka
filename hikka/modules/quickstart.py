@@ -88,6 +88,36 @@ class QuickstartMod(loader.Module):
         "btn_support": "🥷 Чат поддержки",
     }
 
+    strings_it = {
+        "base": """🌘🇮🇹 <b>Ciao.</b> Il tuo userbot <b>Hikka</b> è stato installato.
+
+❓ <b>Hai bisogno di aiuto?</b> Entra nel nostro gruppo di supporto. Aiutiamo <b>tutti</b>.
+
+📼 <b>Puoi cercare e installare moduli tramite @hikkamods_bot. Basta inserire una richiesta di ricerca e premere ⛩ Installa sul modulo desiderato</b>
+
+📣 <b>Guarda i canali dei moduli creati dalla community: <a href="https://t.me/hikka_ub/126">mostra</a></b>
+
+💁‍♀️ <b>Guida rapida:</b>
+
+1️⃣ <b>Scrivi</b> <code>.help</code> <b>per vedere l'elenco dei moduli</b>
+2️⃣ <b>Scrivi</b> <code>.help &lt;Nome del modulo/comando&gt;</code> <b>per vedere la descrizione del modulo</b>
+3️⃣ <b>Scrivi</b> <code>.dlmod &lt;link&gt;</code> <b>per caricare il modulo dal link</b>
+4️⃣ <b>Scrivi</b> <code>.loadmod</code> <b>come risposta al file per caricare il modulo da esso</b>
+5️⃣ <b>Scrivi</b> <code>.unloadmod &lt;Nome del modulo&gt;</code> <b>per scaricare il modulo</b>
+
+💡 <b>Hikka supporta i moduli di Friendly-Telegram, DragonUserbot e GeekTG, oltre ai suoi moduli personali.</b>
+""",
+        "railway": (
+            "🚂 <b>Il tuo userbot è stato installato su Railway.</b> Su questa"
+            " piattaforma ricevi solo <b>500 ore gratuite al mese</b>. Quando il limite"
+            " verrà raggiunto, <b>il tuo userbot verrà congelato</b>. Nel mese"
+            " successivo <b>devi andare su https://railway.app e riavviarlo</b>."
+        ),
+        "language_saved": "🇮🇹 Lingua salvata!",
+        "language": "🇮🇹 Italiano",
+        "btn_support": "🥷 Gruppo di supporto",
+    }
+
     strings_de = {
         "base": """🌘🇩🇪 <b>Hallo.</b> Dein Userbot <b>Hikka</b> ist installiert.
 
@@ -297,14 +327,15 @@ class QuickstartMod(loader.Module):
                         "args": (lang,),
                     }
                     for lang in [
-                        "ru",
                         "en",
+                        "ru",
+                        "it",
+                        "de",
                         "uz",
                         "tr",
-                        "de",
                         "es",
-                        "tt",
                         "kk",
+                        "tt",
                     ]
                 ],
                 2,

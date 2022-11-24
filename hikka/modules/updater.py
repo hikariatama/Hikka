@@ -8,7 +8,6 @@ import asyncio
 import contextlib
 import logging
 import os
-import signal
 import subprocess
 import sys
 import time
@@ -143,6 +142,63 @@ class UpdaterMod(loader.Module):
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
             " обновляется...</b>"
+        ),
+    }
+
+    strings_it = {
+        "source": (
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Il codice sorgente può"
+            " essere letto</b> <a href='{}'>qui</a>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Il tuo {}"
+            " si sta riavviando...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Download"
+            " aggiornamenti in corso...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Installazione"
+            " aggiornamenti in corso...</b>"
+        ),
+        "success": (
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Riavvio"
+            " completato! {}</b>\n<i>Ma i moduli stanno ancora caricando...</i>\n<i>Il"
+            " riavvio ha richiesto {} secondi</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>Hikka è stato"
+            " completamente caricato! {}</b>\n<i>Il riavvio completo ha richiesto {}"
+            " secondi</i>"
+        ),
+        "secure_boot_complete": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Avvio sicuro"
+            " completato! {}</b>\n<i>Il riavvio ha richiesto {} secondi</i>"
+        ),
+        "origin_cfg_doc": "Il link da cui scaricare gli aggiornamenti",
+        "btn_restart": "🔄 Riavvio",
+        "btn_update": "🧭 Aggiorna",
+        "restart_confirm": "❓ <b>Sei sicuro di voler riavviare?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>Sei sicuro di voler riavviare in modalità avvio sicuro?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>Sei sicuro di"
+            " voler aggiornare??\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": "🚸 <b>Sei già aggiornato. Forzare l'aggiornamento?</b>",
+        "cancel": "🚫 Annulla",
+        "_cls_doc": "Aggiorna il tuo userbot",
+        "lavhost_restart": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Il tuo {}"
+            " sta per essere riavviato...</b>"
+        ),
+        "lavhost_update": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Il tuo {}"
+            " sta per essere aggiornato...</b>"
         ),
     }
 
@@ -496,6 +552,7 @@ class UpdaterMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Перезагружает юзербот",
+        it_doc="Riavvia il bot",
         de_doc="Startet den Userbot neu",
         tr_doc="Kullanıcı botunu yeniden başlatır",
         uz_doc="Foydalanuvchi botini qayta ishga tushiradi",
@@ -504,11 +561,11 @@ class UpdaterMod(loader.Module):
     )
     async def restart(self, message: Message):
         """Restarts the userbot"""
-        secure_boot = "--secure-boot" in utils.get_args_raw(message)
+        args = utils.get_args_raw(message)
+        secure_boot = any(trigger in args for trigger in {"--secure-boot", "-sb"})
         try:
             if (
-                "--force" in (utils.get_args_raw(message) or "")
-                or "-f" in (utils.get_args_raw(message) or "")
+                "-f" in args
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
@@ -653,6 +710,7 @@ class UpdaterMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Скачивает обновления юзербота",
+        it_doc="Scarica gli aggiornamenti del bot",
         de_doc="Lädt Updates für den Userbot herunter",
         tr_doc="Userbot güncellemelerini indirir",
         uz_doc="Userbot yangilanishlarini yuklaydi",
@@ -662,13 +720,13 @@ class UpdaterMod(loader.Module):
     async def update(self, message: Message):
         """Downloads userbot updates"""
         try:
+            args = utils.get_args_raw(message)
             current = utils.get_git_hash()
             upcoming = next(
                 git.Repo().iter_commits(f"origin/{version.branch}", max_count=1)
             ).hexsha
             if (
-                "--force" in (utils.get_args_raw(message) or "")
-                or "-f" in (utils.get_args_raw(message) or "")
+                "-f" in args
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
@@ -740,6 +798,7 @@ class UpdaterMod(loader.Module):
     @loader.unrestricted
     @loader.command(
         ru_doc="Показать ссылку на исходный код проекта",
+        it_doc="Mostra il link al codice sorgente del progetto",
         de_doc="Zeigt den Link zum Quellcode des Projekts an",
         tr_doc="Proje kaynak kodu bağlantısını gösterir",
         uz_doc="Loyihaning manba kodiga havola ko'rsatadi",

@@ -35,7 +35,9 @@ class PointerList(list):
         return a
 
     def __setitem__(
-        self, __i: typing.Union[typing.SupportsIndex, slice], __v: typing.Any
+        self,
+        __i: typing.Union[typing.SupportsIndex, slice],
+        __v: typing.Any,
     ) -> None:
         a = super().__setitem__(__i, __v)
         self._save()

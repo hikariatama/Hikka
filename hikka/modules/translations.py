@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 SUPPORTED_LANGUAGES = {
     "en": "🇬🇧 English",
     "ru": "🇷🇺 Русский",
+    "it": "🇮🇹 Italiano",
     "de": "🇩🇪 Deutsch",
     "tr": "🇹🇷 Türkçe",
     "uz": "🇺🇿 O'zbekcha",
@@ -160,7 +161,74 @@ class Translations(loader.Module):
         ),
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Команда"
-            "</b> <code>{}</code> <b>не удался из-за ошибки RPC:</b>"
+            "</b> <code>{}</code> <b>не удалась из-за ошибки RPC:</b>"
+            " <code>{}</code>"
+        ),
+    }
+
+    strings_it = {
+        "lang_saved": "{} <b>Lingua salvata!</b>",
+        "pack_saved": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Pacchetto di"
+            " traduzione salvato!</b>"
+        ),
+        "incorrect_language": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lingua specificata"
+            " non corretta</b>"
+        ),
+        "lang_removed": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Traduzioni"
+            " ripristinate</b>"
+        ),
+        "check_pack": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Formato pacchetto di"
+            " traduzione specificato errato</b>"
+        ),
+        "check_url": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Deve essere"
+            " specificata un url contenente il pacchetto di traduzione</b>"
+        ),
+        "too_long": (
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>Output della stringa"
+            " troppo lungo, viene inviato in un file</b>"
+        ),
+        "opening_form": " <b>Apertura form...</b>",
+        "opening_gallery": " <b>Apertura galleria...</b>",
+        "opening_list": " <b>Apertura lista...</b>",
+        "inline403": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non puoi"
+            " inviare inline in questo chat</b>"
+        ),
+        "invoke_failed": "<b>🚫 Invocazione modulo fallita! controlla i log</b>",
+        "show_inline_cmds": "📄 Mostra tutti i comandi inline disponibili",
+        "no_inline_cmds": "Non hai comandi inline disponibili",
+        "no_inline_cmds_msg": (
+            "<b>😔 Non hai comandi inline disponibili o non hai accesso a loro</b>"
+        ),
+        "inline_cmds": "ℹ️ Hai {} comando(-i) disponibili",
+        "inline_cmds_msg": "<b>ℹ️ Comandi inline disponibili:</b>\n\n{}",
+        "run_command": "🏌️ Esegui comando",
+        "command_msg": "<b>🌘 Comando «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 Comando «{}»",
+        "button403": "Non puoi premere questo pulsante!",
+        "keep_id": "⚠️ Non cancellare ID! {}",
+        "choose_language": "🗽 <b>Scegli la lingua</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Questa lingua non"
+            " è supportata ufficialmente</b>"
+        ),
+        "requested_join": (
+            "💫 <b>Il modulo</b> <code>{}</code> <b>ha richiesto di unirsi al canale <a"
+            " href='https://t.me/{}'>{}</a></b>\n\n<b>❓ Motivo:</b> <i>{}</i>"
+        ),
+        "fw_error": (
+            "<emoji document_id=5877458226823302157>🕒</emoji> <b>Il comando</b>"
+            " <code>{}</code> <b>ha causato un FloodWait di {} nel metodo</b> <code>"
+            " {}</code>"
+        ),
+        "rpc_error": (
+            "<emoji document_id=5877477244938489129>🚫</emoji> <b>Il comando"
+            "</b> <code>{}</code> <b>non è riuscito a causa di un RPC error:</b>"
             " <code>{}</code>"
         ),
     }
@@ -588,12 +656,13 @@ class Translations(loader.Module):
     def _get_flag(self, lang: str) -> str:
         emoji_flags = {
             "🇬🇧": "<emoji document_id=6323589145717376403>🇬🇧</emoji>",
-            "🇺🇿": " <emoji document_id=6323430017179059570>🇺🇿</emoji>",
-            "🇷🇺": " <emoji document_id=6323139226418284334>🇷🇺</emoji>",
-            "🇩🇪": " <emoji document_id=6320817337033295141>🇩🇪</emoji>",
-            "🇪🇸": " <emoji document_id=6323315062379382237>🇪🇸</emoji>",
-            "🇹🇷": " <emoji document_id=6321003171678259486>🇹🇷</emoji>",
-            "🇰🇿": " <emoji document_id=6323135275048371614>🇰🇿</emoji>",
+            "🇺🇿": "<emoji document_id=6323430017179059570>🇺🇿</emoji>",
+            "🇷🇺": "<emoji document_id=6323139226418284334>🇷🇺</emoji>",
+            "🇮🇹": "<emoji document_id=6323471399188957082>🇮🇹</emoji>",
+            "🇩🇪": "<emoji document_id=6320817337033295141>🇩🇪</emoji>",
+            "🇪🇸": "<emoji document_id=6323315062379382237>🇪🇸</emoji>",
+            "🇹🇷": "<emoji document_id=6321003171678259486>🇹🇷</emoji>",
+            "🇰🇿": "<emoji document_id=6323135275048371614>🇰🇿</emoji>",
             "🥟": "<emoji document_id=5382337996123020810>🥟</emoji>",
         }
 
@@ -604,6 +673,7 @@ class Translations(loader.Module):
 
     @loader.command(
         ru_doc="[языки] - Изменить стандартный язык",
+        it_doc="[lingue] - Cambia la lingua predefinita",
         de_doc="[Sprachen] - Ändere die Standard-Sprache",
         tr_doc="[Diller] - Varsayılan dili değiştir",
         uz_doc="[til] - Standart tili o'zgartirish",
@@ -652,6 +722,10 @@ class Translations(loader.Module):
 
     @loader.command(
         ru_doc="[ссылка на пак | пустое чтобы удалить] - Изменить внешний пак перевода",
+        it_doc=(
+            "[link al pacchetto | vuoto per rimuovere] - Cambia il pacchetto di"
+            " traduzione esterno"
+        ),
         de_doc=(
             "[Link zum Paket | leer um zu entfernen] - Ändere das externe Übersetzungs"
             " Paket"

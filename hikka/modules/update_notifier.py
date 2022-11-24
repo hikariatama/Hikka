@@ -42,6 +42,20 @@ class UpdateNotifierMod(loader.Module):
         "ignore": "🚫 Игнорировать",
     }
 
+    strings_it = {
+        "update_required": (
+            "🌘 <b>Aggiornamento disponibile per Hikka!</b>\n\nÈ stato rilasciato un"
+            " nuovo aggiornamento per Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 E altri {}...</b></i>",
+        "_cfg_doc_disable_notifications": "Disabilita le notifiche di aggiornamento",
+        "latest_disabled": (
+            "Le notifiche sull'ultimo aggiornamento sono state disattivate"
+        ),
+        "update": "🔄 Aggiorna",
+        "ignore": "🚫 Ignora",
+    }
+
     strings_de = {
         "update_required": (
             "🌘 <b>Hikka Update verfügbar!</b>\n\nNeue Hikka Version veröffentlicht.\n🔮"
@@ -225,9 +239,4 @@ class UpdateNotifierMod(loader.Module):
         with contextlib.suppress(Exception):
             await call.delete()
 
-        await self.allmodules.commands["update"](
-            await self._client.send_message(
-                self.inline.bot_username,
-                f"<code>{self.get_prefix()}update --force</code>",
-            )
-        )
+        await self.invoke("update", "-f", peer=self.inline.bot_username)

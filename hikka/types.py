@@ -20,7 +20,6 @@ import sys
 import time
 import typing
 from dataclasses import dataclass, field
-from functools import partial
 from importlib.abc import SourceLoader
 
 import requests
@@ -53,6 +52,7 @@ logger = logging.getLogger(__name__)
 JSONSerializable = typing.Union[str, int, float, bool, list, dict, None]
 HikkaReplyMarkup = typing.Union[typing.List[typing.List[dict]], typing.List[dict], dict]
 ListLike = typing.Union[list, set, tuple]
+Command = typing.Callable[..., typing.Awaitable[typing.Any]]
 
 
 class StringLoader(SourceLoader):
@@ -87,10 +87,12 @@ class Module:
     def config_complete(self):
         """Called when module.config is populated"""
 
-    async def client_ready(self, client, db):
+    async def client_ready(self):
         """Called after client is ready (after config_loaded)"""
 
     def internal_init(self):
+        """Called after the class is initialized in order to pass the client and db. Do not call it yourself
+        """
         self.db = self.allmodules.db
         self._db = self.allmodules.db
         self.client = self.allmodules.client
@@ -105,13 +107,12 @@ class Module:
     async def on_unload(self):
         """Called after unloading / reloading module"""
 
-    async def on_dlmod(self, client, db):
+    async def on_dlmod(self):
         """
         Called after the module is first time loaded with .dlmod or .loadmod
 
         Possible use-cases:
         - Send reaction to author's channel message
-        - Join author's channel
         - Create asset folder
         - ...
 
@@ -119,43 +120,75 @@ class Module:
         send a message to logs with verbosity INFO and exception traceback
         """
 
+    async def invoke(
+        self,
+        command: str,
+        args: typing.Optional[str] = None,
+        peer: typing.Optional[EntityLike] = None,
+        message: typing.Optional[Message] = None,
+        edit: bool = False,
+    ) -> Message:
+        """
+        Invoke another command
+        :param command: Command to invoke
+        :param args: Arguments to pass to command
+        :param peer: Peer to send the command to. If not specified, will send to the current chat
+        :param edit: Whether to edit the message
+        :returns Message:
+        """
+        if command not in self.allmodules.commands:
+            raise ValueError(f"Command {command} not found")
+
+        if not message and not peer:
+            raise ValueError("Either peer or message must be specified")
+
+        cmd = f"{self.get_prefix()}{command} {args or ''}".strip()
+
+        message = (
+            (await self._client.send_message(peer, cmd))
+            if peer
+            else (await (message.edit if edit else message.respond)(cmd))
+        )
+        await self.allmodules.commands[command](message)
+        return message
+
     @property
-    def commands(self) -> typing.Dict[str, typing.Callable]:
+    def commands(self) -> typing.Dict[str, Command]:
         """List of commands that module supports"""
         return get_commands(self)
 
     @property
-    def hikka_commands(self) -> typing.Dict[str, typing.Callable]:
+    def hikka_commands(self) -> typing.Dict[str, Command]:
         """List of commands that module supports"""
         return get_commands(self)
 
     @property
-    def inline_handlers(self) -> typing.Dict[str, typing.Callable]:
+    def inline_handlers(self) -> typing.Dict[str, Command]:
         """List of inline handlers that module supports"""
         return get_inline_handlers(self)
 
     @property
-    def hikka_inline_handlers(self) -> typing.Dict[str, typing.Callable]:
+    def hikka_inline_handlers(self) -> typing.Dict[str, Command]:
         """List of inline handlers that module supports"""
         return get_inline_handlers(self)
 
     @property
-    def callback_handlers(self) -> typing.Dict[str, typing.Callable]:
+    def callback_handlers(self) -> typing.Dict[str, Command]:
         """List of callback handlers that module supports"""
         return get_callback_handlers(self)
 
     @property
-    def hikka_callback_handlers(self) -> typing.Dict[str, typing.Callable]:
+    def hikka_callback_handlers(self) -> typing.Dict[str, Command]:
         """List of callback handlers that module supports"""
         return get_callback_handlers(self)
 
     @property
-    def watchers(self) -> typing.Dict[str, typing.Callable]:
+    def watchers(self) -> typing.Dict[str, Command]:
         """List of watchers that module supports"""
         return get_watchers(self)
 
     @property
-    def hikka_watchers(self) -> typing.Dict[str, typing.Callable]:
+    def hikka_watchers(self) -> typing.Dict[str, Command]:
         """List of watchers that module supports"""
         return get_watchers(self)
 
@@ -253,7 +286,7 @@ class Module:
         self,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
-    ) -> JSONSerializable:
+    ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
         return self._db.pointer(self.__class__.__name__, key, default)
 
     async def _approve(
@@ -395,7 +428,7 @@ class Module:
         *,
         suspend_on_error: typing.Optional[bool] = False,
         _did_requirements: bool = False,
-    ) -> object:
+    ) -> "Library":
         """
         Import library from url and register it in :obj:`Modules`
         :param url: Url to import
@@ -634,11 +667,13 @@ class DragonModule:
         self.hikka_callback_handlers = {}
 
     @property
-    def hikka_commands(self):
+    def hikka_commands(
+        self,
+    ) -> typing.Dict[str, Command]:
         return self.commands
 
     @property
-    def __origin__(self):
+    def __origin__(self) -> str:
         return f"<dragon {self.name}>"
 
     def config_complete(self):
@@ -684,7 +719,7 @@ class Library:
         self,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
-    ) -> JSONSerializable:
+    ) -> typing.Union[JSONSerializable, PointerDict, PointerList]:
         return self._db.pointer(self.__class__.__name__, key, default)
 
 
@@ -712,9 +747,8 @@ class CoreOverwriteError(LoadError):
 
     def __str__(self) -> str:
         return (
-            f"Module {self.target} will not be overwritten, because it's core"
-            if self.type == "module"
-            else f"Command {self.target} will not be overwritten, because it's core"
+            f"{'Module' if self.type == 'module' else 'command'} {self.target} will not"
+            " be overwritten, because it's core"
         )
 
 
@@ -763,7 +797,7 @@ class StopLoop(Exception):
 class ModuleConfig(dict):
     """Stores config for modules and apparently libraries"""
 
-    def __init__(self, *entries):
+    def __init__(self, *entries: typing.Union[str, "ConfigValue"]):
         if all(isinstance(entry, ConfigValue) for entry in entries):
             # New config format processing
             self._config = {config.option: config for config in entries}
@@ -791,7 +825,7 @@ class ModuleConfig(dict):
             {option: config.value for option, config in self._config.items()}
         )
 
-    def getdoc(self, key: str, message: Message = None) -> str:
+    def getdoc(self, key: str, message: typing.Optional[Message] = None) -> str:
         """Get the documentation by key"""
         ret = self._config[key].doc
 
@@ -835,12 +869,12 @@ class _Placeholder:
     """Placeholder to determine if the default value is going to be set"""
 
 
-async def wrap(func: typing.Awaitable):
+async def wrap(func: typing.Callable[[], typing.Awaitable]) -> typing.Any:
     with contextlib.suppress(Exception):
         return await func()
 
 
-def syncwrap(func: typing.Callable):
+def syncwrap(func: typing.Callable[[], typing.Any]) -> typing.Any:
     with contextlib.suppress(Exception):
         return func()
 
@@ -849,10 +883,14 @@ def syncwrap(func: typing.Callable):
 class ConfigValue:
     option: str
     default: typing.Any = None
-    doc: typing.Union[callable, str] = "No description"
+    doc: typing.Union[typing.Callable[[], str], str] = "No description"
     value: typing.Any = field(default_factory=_Placeholder)
-    validator: typing.Optional[callable] = None
-    on_change: typing.Optional[typing.Union[typing.Awaitable, typing.Callable]] = None
+    validator: typing.Optional[
+        typing.Callable[[JSONSerializable], JSONSerializable]
+    ] = None
+    on_change: typing.Optional[
+        typing.Union[typing.Callable[[], typing.Awaitable], typing.Callable]
+    ] = None
 
     def __post_init__(self):
         if isinstance(self.value, _Placeholder):
@@ -871,7 +909,7 @@ class ConfigValue:
         value: typing.Any,
         *,
         ignore_validation: bool = False,
-    ) -> bool:
+    ):
         if key == "value":
             try:
                 value = ast.literal_eval(value)
@@ -955,7 +993,7 @@ def _get_members(
     }
 
 
-class CacheRecord:
+class CacheRecordEntity:
     def __init__(
         self,
         hashable_entity: "Hashable",  # type: ignore
@@ -967,20 +1005,24 @@ class CacheRecord:
         self._exp = round(time.time() + exp)
         self.ts = time.time()
 
-    def expired(self):
+    @property
+    def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecord"):
+    def __eq__(self, record: "CacheRecordEntity") -> bool:
         return hash(record) == hash(self)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self._hashable_entity)
 
-    def __str__(self):
-        return f"CacheRecord of {self.entity}"
+    def __str__(self) -> str:
+        return f"CacheRecordEntity of {self.entity}"
 
-    def __repr__(self):
-        return f"CacheRecord(entity={type(self.entity).__name__}(...), exp={self._exp})"
+    def __repr__(self) -> str:
+        return (
+            f"CacheRecordEntity(entity={type(self.entity).__name__}(...),"
+            f" exp={self._exp})"
+        )
 
 
 class CacheRecordPerms:
@@ -997,19 +1039,20 @@ class CacheRecordPerms:
         self._exp = round(time.time() + exp)
         self.ts = time.time()
 
-    def expired(self):
+    @property
+    def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecordPerms"):
+    def __eq__(self, record: "CacheRecordPerms") -> bool:
         return hash(record) == hash(self)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((self._hashable_entity, self._hashable_user))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"CacheRecordPerms of {self.perms}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"CacheRecordPerms(perms={type(self.perms).__name__}(...), exp={self._exp})"
         )
@@ -1022,19 +1065,20 @@ class CacheRecordFullChannel:
         self._exp = round(time.time() + exp)
         self.ts = time.time()
 
-    def expired(self):
+    @property
+    def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecordFullChannel"):
+    def __eq__(self, record: "CacheRecordFullChannel") -> bool:
         return hash(record) == hash(self)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((self._hashable_entity, self._hashable_user))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"CacheRecordFullChannel of {self.channel_id}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"CacheRecordFullChannel(channel_id={self.channel_id}(...),"
             f" exp={self._exp})"
@@ -1048,19 +1092,20 @@ class CacheRecordFullUser:
         self._exp = round(time.time() + exp)
         self.ts = time.time()
 
-    def expired(self):
+    @property
+    def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecordFullUser"):
+    def __eq__(self, record: "CacheRecordFullUser") -> bool:
         return hash(record) == hash(self)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((self._hashable_entity, self._hashable_user))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"CacheRecordFullUser of {self.user_id}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"CacheRecordFullUser(channel_id={self.user_id}(...), exp={self._exp})"
 
 

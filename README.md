@@ -72,6 +72,17 @@ Simply run this command out of <b>root</b> and follow the instructions of instal
  <img src="https://img3.teletype.in/files/ef/b1/efb1e78c-9134-4839-b23d-a46f6a4ddc58.png">
 </details>
 
+<b>Some further details:</b>
+<details>
+ <summary>Pre-installed automatic database backuper</summary>
+ <img src="https://user-images.githubusercontent.com/36935426/202905566-964d2904-f3ce-4a14-8f05-0e7840e1b306.png" width="300">
+</details>
+<details>
+ <summary>Welcome installation info</summary>
+ <img src="https://user-images.githubusercontent.com/36935426/202905720-6319993b-697c-4b09-a194-209c110c79fd.png" width="300">
+ <img src="https://user-images.githubusercontent.com/36935426/202905746-2a511129-0208-4581-bb27-7539bd7b53c9.png" width="300">
+</details>
+
 <hr>
 <h2><img src="https://github.com/hikariatama/assets/raw/master/35-edit-flat.webp" height="54" align="middle"> Changes</h2>
 

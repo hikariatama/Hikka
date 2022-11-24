@@ -220,7 +220,7 @@ class Utils(InlineUnit):
     async def _answer_unit_handler(self, call: InlineCall, text: str, show_alert: bool):
         await call.answer(text, show_alert=show_alert)
 
-    async def check_inline_security(self, *, func: callable, user: int) -> bool:
+    async def check_inline_security(self, *, func: typing.Callable, user: int) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
             message=None,
@@ -228,7 +228,7 @@ class Utils(InlineUnit):
             user_id=user,
         )
 
-    def _find_caller_sec_map(self) -> typing.Optional[callable]:
+    def _find_caller_sec_map(self) -> typing.Optional[typing.Callable[[], int]]:
         try:
             caller = utils.find_caller()
             if not caller:
@@ -244,7 +244,9 @@ class Utils(InlineUnit):
 
         return None
 
-    def _normalize_markup(self, reply_markup: typing.Union[dict, list]) -> list:
+    def _normalize_markup(
+        self, reply_markup: HikkaReplyMarkup
+    ) -> typing.List[typing.List[typing.Dict[str, typing.Any]]]:
         if isinstance(reply_markup, dict):
             return [[reply_markup]]
 
@@ -583,11 +585,11 @@ class Utils(InlineUnit):
 
     def build_pagination(
         self,
-        callback: callable,
+        callback: typing.Callable[[int], typing.Awaitable[typing.Any]],
         total_pages: int,
         unit_id: typing.Optional[str] = None,
         current_page: typing.Optional[int] = None,
-    ) -> typing.List[dict]:
+    ) -> typing.List[typing.List[typing.Dict[str, typing.Any]]]:
         # Based on https://github.com/pystorage/pykeyboard/blob/master/pykeyboard/inline_pagination_keyboard.py#L4
         if current_page is None:
             current_page = self._units[unit_id]["current_index"] + 1
@@ -691,7 +693,7 @@ class Utils(InlineUnit):
     def _validate_markup(
         self,
         buttons: typing.Optional[HikkaReplyMarkup],
-    ) -> typing.List[typing.List[dict]]:
+    ) -> typing.List[typing.List[typing.Dict[str, typing.Any]]]:
         if buttons is None:
             buttons = []
 

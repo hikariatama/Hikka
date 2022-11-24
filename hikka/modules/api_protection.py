@@ -163,6 +163,67 @@ class APIRatelimiterMod(loader.Module):
         ),
     }
 
+    strings_it = {
+        "warning": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>ATTENZIONE!</b>\n\nIl"
+            " tuo account è uscito dai limiti di richieste impostati nel file config."
+            " Per evitare flood di richieste, il bot è stato <b>completamente"
+            " sospeso</b> per {} secondi. Ulteriori informazioni sono disponibili nel"
+            " file allegato. \n\nTi consigliamo di unirti al gruppo"
+            " <code>{prefix}support</code> per ulteriore assistenza!\n\nSe ritieni che"
+            " questo sia un comportamento programmato del bot, puoi semplicemente"
+            " aspettare che il timer finisca e, in seguito, quando pianifichi di"
+            " eseguire operazioni così pesanti, usa"
+            " <code>{prefix}suspend_api_protect</code> &lt;tempo in secondi&gt;"
+        ),
+        "args_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Argomenti non"
+            " validi</b>"
+        ),
+        "suspended_for": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protezione API"
+            " disattivata per {} secondi</b>"
+        ),
+        "on": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protezione"
+            " attivata</b>"
+        ),
+        "off": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protezione"
+            " disattivata</b>"
+        ),
+        "u_sure": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Sei sicuro?</b>"
+        ),
+        "_cfg_time_sample": (
+            "Intervallo di tempo per il quale verranno conteggiate le richieste"
+        ),
+        "_cfg_threshold": (
+            "Limite delle richieste, al di sopra del quale verrà attivato"
+            " il sistema di protezione"
+        ),
+        "_cfg_local_floodwait": (
+            "Il bot verrà sospeso per questo numero di secondi se il limite delle"
+            " richieste viene superato"
+        ),
+        "_cfg_forbidden_methods": (
+            "Vieta l'esecuzione di questi metodi in tutti i moduli esterni"
+        ),
+        "btn_no": "🚫 No",
+        "btn_yes": "✅ Sì",
+        "web_pin": (
+            "🔓 <b>Premi il pulsante qui sotto per mostrare il PIN di debug di Werkzeug."
+            " Non darglielo a nessuno.</b>"
+        ),
+        "web_pin_btn": "🐞 Mostra PIN di Werkzeug",
+        "proxied_url": "🌐 URL del proxy",
+        "local_url": "🏠 URL locale",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il debugger web è"
+            " disabilitato, l'URL non è disponibile</b>"
+        ),
+    }
+
     strings_de = {
         "warning": (
             "<emoji document_id=5312383351217201533>⚠️</emoji>"
@@ -527,6 +588,7 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command(
         ru_doc="<время в секундах> - Заморозить защиту API на N секунд",
+        it_doc="<tempo in secondi> - Congela la protezione API per N secondi",
         de_doc="<Sekunden> - API-Schutz für N Sekunden einfrieren",
         tr_doc="<saniye> - API korumasını N saniye dondur",
         uz_doc="<soniya> - API himoyasini N soniya o'zgartirish",
@@ -546,6 +608,7 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command(
         ru_doc="Включить/выключить защиту API",
+        it_doc="Attiva/disattiva la protezione API",
         de_doc="API-Schutz einschalten / ausschalten",
         tr_doc="API korumasını aç / kapat",
         uz_doc="API himoyasini yoqish / o'chirish",
@@ -572,6 +635,7 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать PIN Werkzeug",
+        it_doc="Mostra il PIN Werkzeug",
         de_doc="PIN-Werkzeug anzeigen",
         tr_doc="PIN aracını göster",
         uz_doc="PIN vositasi ko'rsatish",

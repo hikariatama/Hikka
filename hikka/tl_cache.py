@@ -11,6 +11,7 @@ import time
 import typing
 
 from telethon import TelegramClient
+from telethon.errors.rpcerrorlist import TopicDeletedError
 from telethon.hints import EntityLike
 from telethon.network import MTProtoSender
 from telethon.tl.functions.channels import GetFullChannelRequest
@@ -18,17 +19,16 @@ from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.tlobject import TLRequest
 from telethon.tl.types import (
     ChannelFull,
+    Message,
     Updates,
     UpdatesCombined,
     UpdateShort,
     UserFull,
-    Message,
 )
 from telethon.utils import is_list_like
-from telethon.errors.rpcerrorlist import TopicDeletedError
 
 from .types import (
-    CacheRecord,
+    CacheRecordEntity,
     CacheRecordFullChannel,
     CacheRecordFullUser,
     CacheRecordPerms,
@@ -125,7 +125,7 @@ class CustomTelegramClient(TelegramClient):
         resolved_entity = await TelegramClient.get_entity(self, entity)
 
         if resolved_entity:
-            cache_record = CacheRecord(hashable_entity, resolved_entity, exp)
+            cache_record = CacheRecordEntity(hashable_entity, resolved_entity, exp)
             self._hikka_entity_cache[hashable_entity] = cache_record
             logger.debug("Saved hashable_entity %s to cache", hashable_entity)
 
@@ -297,7 +297,7 @@ class CustomTelegramClient(TelegramClient):
         if (
             not force
             and self._hikka_fullchannel_cache.get(hashable_entity)
-            and not self._hikka_fullchannel_cache[hashable_entity].expired()
+            and not self._hikka_fullchannel_cache[hashable_entity].expired
             and self._hikka_fullchannel_cache[hashable_entity].ts + exp > time.time()
         ):
             return self._hikka_fullchannel_cache[hashable_entity].full_channel
@@ -347,7 +347,7 @@ class CustomTelegramClient(TelegramClient):
         if (
             not force
             and self._hikka_fulluser_cache.get(hashable_entity)
-            and not self._hikka_fulluser_cache[hashable_entity].expired()
+            and not self._hikka_fulluser_cache[hashable_entity].expired
             and self._hikka_fulluser_cache[hashable_entity].ts + exp > time.time()
         ):
             return self._hikka_fulluser_cache[hashable_entity].full_user
@@ -368,6 +368,7 @@ class CustomTelegramClient(TelegramClient):
         """
         Finds the message object from the frame
         """
+        logger.debug("Finding message object in frame %s", frame)
         return next(
             (
                 obj
@@ -388,6 +389,7 @@ class CustomTelegramClient(TelegramClient):
         Finds the message object from the stack
         """
         chat_id = (await self.get_entity(chat, exp=0)).id
+        logger.debug("Finding message object in stack for chat %s", chat_id)
         return next(
             (
                 self._find_message_obj_in_frame(chat_id, frame_info)
@@ -414,8 +416,8 @@ class CustomTelegramClient(TelegramClient):
 
     async def _topic_guesser(
         self,
-        native_method: typing.Callable,
-        cached_method: typing.Callable,
+        native_method: typing.Callable[..., typing.Awaitable[Message]],
+        stack: typing.List[inspect.FrameInfo],
         *args,
         **kwargs,
     ):
@@ -426,17 +428,23 @@ class CustomTelegramClient(TelegramClient):
             if no_retry:
                 raise
 
-            kwargs["reply_to"] = await self._find_topic_in_stack(
-                args[0],
-                inspect.stack(),
-            )
+            logger.debug("Topic deleted, trying to guess topic id")
+
+            topic = await self._find_topic_in_stack(args[0], stack)
+
+            logger.debug("Guessed topic id: %s", topic)
+
+            if not topic:
+                raise
+
+            kwargs["reply_to"] = topic
             kwargs["_topic_no_retry"] = True
-            return await cached_method(*args, **kwargs)
+            return await self._topic_guesser(native_method, stack, *args, **kwargs)
 
     async def send_file(self, *args, **kwargs) -> Message:
         return await self._topic_guesser(
             TelegramClient.send_file,
-            self.send_file,
+            inspect.stack(),
             *args,
             **kwargs,
         )
@@ -444,7 +452,7 @@ class CustomTelegramClient(TelegramClient):
     async def send_message(self, *args, **kwargs) -> Message:
         return await self._topic_guesser(
             TelegramClient.send_message,
-            self.send_message,
+            inspect.stack(),
             *args,
             **kwargs,
         )

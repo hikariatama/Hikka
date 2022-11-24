@@ -164,6 +164,73 @@ class TestMod(loader.Module):
         "logs_cleared": "🗑 <b>Логи очищены</b>",
     }
 
+    strings_it = {
+        "set_loglevel": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specifica il livello"
+            " dei log</b>"
+        ),
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Non hai log"
+            " di livello</b> <code>{}</code><b>.</b>"
+        ),
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Log di Hikka a livello"
+            "</b> <code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Versione: {}.{}.{}</b>{}"
+        ),
+        "debugging_enabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Modalità sviluppatore"
+            " abilitata per il modulo</b> <code>{0}</code>\n<i>Vai nella cartella"
+            " `debug_modules`, modifica il file `{0}.py`, e guarda i cambiamenti in"
+            " tempo reale</i>"
+        ),
+        "debugging_disabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Modalità sviluppatore"
+            " disabilitata</b>"
+        ),
+        "suspend_invalid_time": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Tempo di sospensione"
+            " non valido</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Il bot è stato sospeso"
+            " per</b> <code>{}</code> <b>secondi</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Velocità di risposta"
+            " di Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id=5445284980978621387>🚀</emoji> <b>Tempo trascorso dalla"
+            " ultima riavvio: {}</b>"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>La velocità di"
+            " risposta di Telegram dipende maggiormente dalla carica dei server di"
+            " Telegram e da altri fattori esterni e non è in alcun modo correlata ai"
+            " parametri del server su cui è installato lo UserBot</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Il livello di log</b> <code>{}</code> <b>può contenere informazioni"
+            " personali, fai attenzione</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Il livello di log</b> <code>{0}</code> <b>può contenere informazioni"
+            " personali, fai attenzione</b>\n<b>Scrivi</b> <code>.logs {0}"
+            " force_insecure</code><b>, per inviare i log ignorando l'avviso</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Scegli il livello di log</b>",
+        "_cmd_doc_dump": "Mostra le informazioni sul messaggio",
+        "_cmd_doc_logs": (
+            "<livello> - Invia il file di log. I livelli inferiori a WARNING possono"
+            " contenere informazioni personali."
+        ),
+        "_cmd_doc_suspend": "<tempo> - Ferma lo UserBot per un certo tempo",
+        "_cmd_doc_ping": "Controlla la velocità di risposta dello UserBot",
+        "_cls_doc": "Operazioni relative alle prove di autotest",
+        "send_anyway": "📤 Invia comunque",
+        "cancel": "🚫 Annulla",
+        "logs_cleared": "🗑 <b>Log cancellati</b>",
+    }
+
     strings_de = {
         "set_loglevel": (
             "🚫 <b>Geben Sie die Protokollebene als Zahl oder Zeichenfolge an</b>"
@@ -490,6 +557,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="Ответь на сообщение, чтобы показать его дамп",
+        it_doc="Rispondi al messaggio per mostrare il suo dump",
         de_doc="Antworten Sie auf eine Nachricht, um ihren Dump anzuzeigen",
         tr_doc="Dökümünü göstermek için bir iletiyi yanıtlayın",
         uz_doc="Xabarning axlatini ko'rsatish uchun unga javob bering",
@@ -510,6 +578,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="Очистить логи",
+        it_doc="Cancella i log",
         de_doc="Logs löschen",
         tr_doc="Günlükleri temizle",
         uz_doc="Jurnalni tozalash",
@@ -525,7 +594,7 @@ class TestMod(loader.Module):
 
         await utils.answer(message, self.strings("logs_cleared"))
 
-    @loader.loop(interval=1)
+    @loader.loop(interval=1, autostart=True)
     async def watchdog(self):
         if not os.path.isdir(DEBUG_MODS_DIR):
             return
@@ -617,6 +686,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="<уровень> - Показать логи",
+        it_doc="<livello> - Mostra i log",
         de_doc="<Level> - Zeige Logs",
         uz_doc="<daraja> - Loglarni ko'rsatish",
         tr_doc="<seviye> - Günlükleri göster",
@@ -644,45 +714,23 @@ class TestMod(loader.Module):
             try:
                 if not self.inline.init_complete or not await self.inline.form(
                     text=self.strings("choose_loglevel"),
-                    reply_markup=[
+                    reply_markup=utils.chunks(
                         [
                             {
-                                "text": "🚨 Critical",
+                                "text": name,
                                 "callback": self.logs,
-                                "args": (False, 50),
-                            },
-                            {
-                                "text": "🚫 Error",
-                                "callback": self.logs,
-                                "args": (False, 40),
-                            },
+                                "args": (False, level),
+                            }
+                            for name, level in [
+                                ("🚫 Error", 40),
+                                ("⚠️ Warning", 30),
+                                ("ℹ️ Info", 20),
+                                ("🧑‍💻 All", 0),
+                            ]
                         ],
-                        [
-                            {
-                                "text": "⚠️ Warning",
-                                "callback": self.logs,
-                                "args": (False, 30),
-                            },
-                            {
-                                "text": "ℹ️ Info",
-                                "callback": self.logs,
-                                "args": (False, 20),
-                            },
-                        ],
-                        [
-                            {
-                                "text": "🧑‍💻 Debug",
-                                "callback": self.logs,
-                                "args": (False, 10),
-                            },
-                            {
-                                "text": "👁 All",
-                                "callback": self.logs,
-                                "args": (False, 0),
-                            },
-                        ],
-                        [{"text": "🚫 Cancel", "action": "close"}],
-                    ],
+                        2,
+                    )
+                    + [[{"text": self.strings("cancel"), "action": "close"}]],
                     message=message,
                 ):
                     raise
@@ -763,8 +811,8 @@ class TestMod(loader.Module):
         other = (
             *main.__version__,
             (
-                " <i><a"
-                f' href="https://github.com/hikariatama/Hikka/commit/{ghash}">({ghash[:8]})</a></i>'
+                " <a"
+                f' href="https://github.com/hikariatama/Hikka/commit/{ghash}">@{ghash[:8]}</a>'
                 if ghash
                 else ""
             ),
@@ -790,6 +838,7 @@ class TestMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="<время> - Заморозить бота на N секунд",
+        it_doc="<tempo> - Congela il bot per N secondi",
         de_doc="<Zeit> - Stoppe den Bot für N Sekunden",
         tr_doc="<süre> - Botu N saniye boyunca durdur",
         uz_doc="<vaqt> - Botni N soniya davomida to'xtatish",
@@ -810,6 +859,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="Проверить скорость отклика юзербота",
+        it_doc="Controlla la velocità di risposta del userbot",
         de_doc="Überprüfe die Antwortgeschwindigkeit des Userbots",
         tr_doc="Kullanıcı botunun yanıt hızını kontrol edin",
         uz_doc="Foydalanuvchi botining javob tezligini tekshiring",
@@ -819,7 +869,7 @@ class TestMod(loader.Module):
     async def ping(self, message: Message):
         """Test your userbot ping"""
         start = time.perf_counter_ns()
-        message = await utils.answer(message, "<code>🐻 Nofin...</code>")
+        message = await utils.answer(message, "🌘")
 
         await utils.answer(
             message,
@@ -845,8 +895,6 @@ class TestMod(loader.Module):
         )
 
         self._logchat = int(f"-100{chat.id}")
-
-        self.watchdog.start()
 
         logging.getLogger().handlers[0].install_tg_log(self)
         logger.debug("Bot logging installed for %s", self._logchat)
