@@ -255,7 +255,7 @@ class Gallery(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji(self._client)
+                        utils.get_platform_emoji()
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )

@@ -619,7 +619,7 @@ class UpdaterMod(loader.Module):
         msg_obj = await utils.answer(
             msg_obj,
             self.strings("restarting_caption").format(
-                utils.get_platform_emoji(self._client)
+                utils.get_platform_emoji()
                 if self._client.hikka_me.premium
                 and CUSTOM_EMOJIS
                 and isinstance(msg_obj, Message)

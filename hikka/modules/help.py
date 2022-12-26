@@ -723,7 +723,7 @@ class HelpMod(loader.Module):
             message,
             self.strings("support").format(
                 (
-                    utils.get_platform_emoji(self._client)
+                    utils.get_platform_emoji()
                     if self._client.hikka_me.premium and CUSTOM_EMOJIS
                     else "🌘"
                 )

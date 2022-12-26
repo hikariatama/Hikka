@@ -1694,7 +1694,7 @@ class LoaderMod(loader.Module):
                     search=modname,
                 )
             )[0].react("❤️")
-            self._reacted += [f"{developer_entity}/{modname}"]
+            self._reacted += [f"{developer_entity.id}/{modname}"]
         except Exception:
             logger.debug(
                 "Unable to react to %s about %s",
@@ -2165,7 +2165,18 @@ class LoaderMod(loader.Module):
         if name is None:
             try:
                 node = ast.parse(doc)
-                uid = next(n.name for n in node.body if isinstance(n, ast.ClassDef))
+                uid = next(
+                    n.name
+                    for n in node.body
+                    if isinstance(n, ast.ClassDef)
+                    and any(
+                        isinstance(base, ast.Attribute)
+                        and base.value.id == "Module"
+                        or isinstance(base, ast.Name)
+                        and base.id == "Module"
+                        for base in n.bases
+                    )
+                )
             except Exception:
                 logger.debug(
                     "Can't parse classname from code, using legacy uid instead",

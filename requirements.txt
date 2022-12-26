@@ -1,5 +1,5 @@
-hikka-tl==1.24.12
-hikka-pyro==2.0.61
+hikka-tl==1.24.13
+hikka-pyro==2.0.62
 aiofile==3.8.1
 pythondialog==3.5.3
 gitpython==3.1.27
