@@ -928,9 +928,11 @@ def get_platform_emoji() -> str:
     :return: Emoji entity in string
     """
     BASE = "".join(
-        "<emoji document_id={}>🌘</emoji>",
-        "<emoji document_id=5195311729663286630>🌘</emoji>",
-        "<emoji document_id=5195045669324201904>🌘</emoji>",
+        (
+            "<emoji document_id={}>🌘</emoji>",
+            "<emoji document_id=5195311729663286630>🌘</emoji>",
+            "<emoji document_id=5195045669324201904>🌘</emoji>",
+        )
     )
 
     if "MIYAHOST" in os.environ:
