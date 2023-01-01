@@ -439,10 +439,7 @@ class HikkaInfoMod(loader.Module):
         except Exception:
             upd = ""
 
-        me = '<b><a href="tg://user?id={}">{}</a></b>'.format(
-            self._client.hikka_me.id,
-            utils.escape_html(get_display_name(self._client.hikka_me)),
-        )
+        me = f'<b><a href="tg://user?id={self._client.hikka_me.id}">{utils.escape_html(get_display_name(self._client.hikka_me))}</a></b>'
         build = utils.get_commit_url()
         _version = f'<i>{".".join(list(map(str, list(version.__version__))))}</i>'
         prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"

@@ -251,9 +251,9 @@ def translatable_docstring(cls):
         self.__doc__ = self.strings["_cls_doc"]
 
         return (
-            self.config_complete._old_(self, *args, **kwargs)
-            if not kwargs.pop("reload_dynamic_translate", None)
-            else True
+            True
+            if kwargs.pop("reload_dynamic_translate", None)
+            else self.config_complete._old_(self, *args, **kwargs)
         )
 
     config_complete._old_ = cls.config_complete
@@ -450,9 +450,9 @@ class Modules:
             callback_handlers = {}
             watchers = []
             for module in self.modules:
-                commands.update(module.hikka_commands)
-                inline_handlers.update(module.hikka_inline_handlers)
-                callback_handlers.update(module.hikka_callback_handlers)
+                commands |= module.hikka_commands
+                inline_handlers |= module.hikka_inline_handlers
+                callback_handlers |= module.hikka_callback_handlers
                 watchers.extend(module.hikka_watchers.values())
 
             self.commands = commands

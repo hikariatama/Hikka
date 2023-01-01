@@ -36,12 +36,11 @@ class ProxyPasser:
         last_task = None
         for getline in iter(stream.readline, ""):
             data_chunk = await getline
-            if not data_chunk:
-                if last_task:
-                    last_task.cancel()
-                    await callback(data_chunk.decode("utf-8"))
-                    if not self._url_available.is_set():
-                        self._url_available.set()
+            if not data_chunk and last_task:
+                last_task.cancel()
+                await callback(data_chunk.decode("utf-8"))
+                if not self._url_available.is_set():
+                    self._url_available.set()
 
             if last_task:
                 last_task.cancel()

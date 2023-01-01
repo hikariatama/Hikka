@@ -556,52 +556,52 @@ class String(Validator):
                 "es": f"cadena de longitud {length}",
                 "kk": f"{length} ұзындығында сөз",
             }
+        elif min_len is None:
+            doc = (
+                {
+                    "en": "string",
+                    "ru": "строкой",
+                    "it": "stringa",
+                    "de": "Zeichenkette",
+                    "tr": "dize",
+                    "uz": "satr",
+                    "es": "cadena",
+                    "kk": "сөз",
+                }
+                if max_len is None
+                else {
+                    "en": f"string of length up to {max_len}",
+                    "ru": f"строкой не более чем из {max_len} символа(-ов)",
+                    "it": f"stringa di lunghezza massima {max_len}",
+                    "de": f"Zeichenkette mit Länge bis zu {max_len}",
+                    "tr": f"{max_len} karakter uzunluğunda dize",
+                    "uz": f"{max_len} ta belgi uzunlig'ida satr",
+                    "es": f"cadena de longitud {max_len}",
+                    "kk": f"{max_len} ұзындығында сөз",
+                }
+            )
+        elif max_len is not None:
+            doc = {
+                "en": f"string of length from {min_len} to {max_len}",
+                "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
+                "it": f"stringa di lunghezza da {min_len} a {max_len}",
+                "de": f"Zeichenkette mit Länge von {min_len} bis {max_len}",
+                "tr": f"{min_len}-{max_len} karakter uzunluğunda dize",
+                "uz": f"{min_len}-{max_len} ta belgi uzunlig'ida satr",
+                "es": f"cadena de longitud {min_len}-{max_len}",
+                "kk": f"{min_len}-{max_len} ұзындығында сөз",
+            }
         else:
-            if min_len is None:
-                if max_len is None:
-                    doc = {
-                        "en": "string",
-                        "ru": "строкой",
-                        "it": "stringa",
-                        "de": "Zeichenkette",
-                        "tr": "dize",
-                        "uz": "satr",
-                        "es": "cadena",
-                        "kk": "сөз",
-                    }
-                else:
-                    doc = {
-                        "en": f"string of length up to {max_len}",
-                        "ru": f"строкой не более чем из {max_len} символа(-ов)",
-                        "it": f"stringa di lunghezza massima {max_len}",
-                        "de": f"Zeichenkette mit Länge bis zu {max_len}",
-                        "tr": f"{max_len} karakter uzunluğunda dize",
-                        "uz": f"{max_len} ta belgi uzunlig'ida satr",
-                        "es": f"cadena de longitud {max_len}",
-                        "kk": f"{max_len} ұзындығында сөз",
-                    }
-            elif max_len is not None:
-                doc = {
-                    "en": f"string of length from {min_len} to {max_len}",
-                    "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
-                    "it": f"stringa di lunghezza da {min_len} a {max_len}",
-                    "de": f"Zeichenkette mit Länge von {min_len} bis {max_len}",
-                    "tr": f"{min_len}-{max_len} karakter uzunluğunda dize",
-                    "uz": f"{min_len}-{max_len} ta belgi uzunlig'ida satr",
-                    "es": f"cadena de longitud {min_len}-{max_len}",
-                    "kk": f"{min_len}-{max_len} ұзындығында сөз",
-                }
-            else:
-                doc = {
-                    "en": f"string of length at least {min_len}",
-                    "ru": f"строкой не менее чем из {min_len} символа(-ов)",
-                    "it": f"stringa di lunghezza minima {min_len}",
-                    "de": f"Zeichenkette mit Länge mindestens {min_len}",
-                    "tr": f"{min_len} karakter uzunluğunda dize",
-                    "uz": f"{min_len} ta belgi uzunlig'ida satr",
-                    "es": f"cadena de longitud {min_len}",
-                    "kk": f"{min_len} ұзындығында сөз",
-                }
+            doc = {
+                "en": f"string of length at least {min_len}",
+                "ru": f"строкой не менее чем из {min_len} символа(-ов)",
+                "it": f"stringa di lunghezza minima {min_len}",
+                "de": f"Zeichenkette mit Länge mindestens {min_len}",
+                "tr": f"{min_len} karakter uzunluğunda dize",
+                "uz": f"{min_len} ta belgi uzunlig'ida satr",
+                "es": f"cadena de longitud {min_len}",
+                "kk": f"{min_len} ұзындығында сөз",
+            }
 
         super().__init__(
             functools.partial(
@@ -684,11 +684,7 @@ class RegExp(Validator):
                 "kk": f"«{regex}» үлгісіне сәйкес сөз",
             }
         else:
-            if isinstance(description, str):
-                doc = {"en": description}
-            else:
-                doc = description
-
+            doc = {"en": description} if isinstance(description, str) else description
         super().__init__(
             functools.partial(self._validate, regex=regex, flags=flags),
             doc,

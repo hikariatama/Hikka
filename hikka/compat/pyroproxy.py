@@ -230,10 +230,7 @@ class PyroProxyClient(PyroClient):
         return value
 
     def _convert(self, obj: typing.Any) -> typing.Any:
-        if isinstance(obj, datetime.datetime):
-            return int(obj.timestamp())
-
-        return obj
+        return int(obj.timestamp()) if isinstance(obj, datetime.datetime) else obj
 
     async def resolve_peer(self, *args, **kwargs):
         return self._tl2pyro(await self.tl_client.get_entity(*args, **kwargs))
