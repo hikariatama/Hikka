@@ -784,17 +784,7 @@ class CoreMod(loader.Module):
             "https://github.com/hikariatama/assets/raw/master/hikka_cat_banner.mp4",
             self.strings("hikka").format(
                 (
-                    (
-                        utils.get_platform_emoji()
-                        + (
-                            "<emoji document_id=5192756799647785066>✌️</emoji><emoji"
-                            " document_id=5193117564015747203>✌️</emoji><emoji"
-                            " document_id=5195050806105087456>✌️</emoji><emoji"
-                            " document_id=5195457642587233944>✌️</emoji>"
-                            if "LAVHOST" in os.environ
-                            else ""
-                        )
-                    )
+                    utils.get_platform_emoji()
                     if self._client.hikka_me.premium and CUSTOM_EMOJIS
                     else "🌘 <b>Hikka userbot</b>"
                 ),

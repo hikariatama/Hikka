@@ -70,10 +70,6 @@ class UpdaterMod(loader.Module):
         ),
         "no_update": "🚸 <b>You are on the latest version, pull updates anyway?</b>",
         "cancel": "🚫 Cancel",
-        "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Your {} is"
-            " restarting...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Your {} is"
             " updating...</b>"
@@ -128,17 +124,13 @@ class UpdaterMod(loader.Module):
         ),
         "update_confirm": (
             "❓ <b>Ты уверен, что"
-            " хочешь обновиться??\n\n<a"
+            " хочешь обновиться?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
         "no_update": "🚸 <b>У тебя последняя версия. Обновиться принудительно?</b>",
         "cancel": "🚫 Отмена",
         "_cls_doc": "Обновляет юзербот",
-        "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
-            " перезагружается...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
             " обновляется...</b>"
@@ -185,17 +177,13 @@ class UpdaterMod(loader.Module):
         ),
         "update_confirm": (
             "❓ <b>Sei sicuro di"
-            " voler aggiornare??\n\n<a"
+            " voler aggiornare?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
         "no_update": "🚸 <b>Sei già aggiornato. Forzare l'aggiornamento?</b>",
         "cancel": "🚫 Annulla",
         "_cls_doc": "Aggiorna il tuo userbot",
-        "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Il tuo {}"
-            " sta per essere riavviato...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Il tuo {}"
             " sta per essere aggiornato...</b>"
@@ -242,7 +230,7 @@ class UpdaterMod(loader.Module):
         ),
         "update_confirm": (
             "❓ <b>Bist du sicher, dass"
-            " du updaten willst??\n\n<a"
+            " du updaten willst?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
@@ -251,10 +239,6 @@ class UpdaterMod(loader.Module):
         ),
         "cancel": "🚫 Abbrechen",
         "_cls_doc": "Aktualisiert den Userbot",
-        "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Dein {}"
-            " wird neugestartet...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Dein {}"
             " wird aktualisiert...</b>"
@@ -310,10 +294,6 @@ class UpdaterMod(loader.Module):
         "no_update": "🚸 <b>Zaten son sürümünüz. Güncelleme yapmak ister misiniz?</b>",
         "cancel": "🚫 İptal",
         "_cls_doc": "Kullanıcı botunu günceller",
-        "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
-            " yeniden başlatılıyor...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
             " güncelleniyor...</b>"
@@ -360,7 +340,7 @@ class UpdaterMod(loader.Module):
             "❓ <b>Haqiqatan ham xavfsiz rejimda qayta ishga tushirmoqchimisiz?</b>"
         ),
         "update_confirm": (
-            "❓ <b>Haqiqatan ham yangilamoqchimisiz??\n\n<a"
+            "❓ <b>Haqiqatan ham yangilamoqchimisiz?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
@@ -369,10 +349,6 @@ class UpdaterMod(loader.Module):
         ),
         "cancel": "🚫 Bekor qilish",
         "_cls_doc": "Foydalanuvchi botini yangilaydi",
-        "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
-            " qayta ishga tushirilmoqda...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>{}"
             " yangilanmoqda...</b>"
@@ -421,9 +397,6 @@ class UpdaterMod(loader.Module):
         "no_update": "🚸 <b>Esta es la última versión. ¿Quieres actualizar?</b>",
         "cancel": "🚫 Cancelar",
         "_cls_doc": "El usuario reinicia el bot",
-        "lavhost_restart": (
-            "<emoji document_id=5328274090262275771>✌️</emoji> <b>{} Reiniciando...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5328274090262275771>✌️</emoji> <b>{}"
             " Actualizando...</b>"
@@ -468,7 +441,7 @@ class UpdaterMod(loader.Module):
             "❓ <b>Сен бұл бетті безпеке режимінде жаңартуға сенімдісін бе?</b>"
         ),
         "update_confirm": (
-            "❓ <b>Сен жаңартуға сенімдісін бе??\n\n<a"
+            "❓ <b>Сен жаңартуға сенімдісін бе?\n\n<a"
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
@@ -477,10 +450,6 @@ class UpdaterMod(loader.Module):
         ),
         "cancel": "🚫 Бас тарту",
         "_cls_doc": "Юзерботты жаңарту",
-        "lavhost_restart": (
-            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Сіздің {}"
-            " жаңартуға басталды...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Сіздің {}"
             " жаңартуға басталды...</b>"
@@ -529,10 +498,6 @@ class UpdaterMod(loader.Module):
         "no_update": "🚸 <b>Сезнең соңгы версиягез бар. Яңарту мәҗбүриме?</b>",
         "cancel": "🚫 Бетерү",
         "_cls_doc": "Юзерботны яңарта",
-        "lavhost_restart": (
-            "<emoji document_id=5328274090262275771>✌️</emoji> <b>Сезнең {} яңадан"
-            " башлана...</b>"
-        ),
         "lavhost_update": (
             "<emoji document_id=5328274090262275771>✌️</emoji> <b>Сезнең {}"
             " яңартыла...</b>"
@@ -624,17 +589,6 @@ class UpdaterMod(loader.Module):
                 and CUSTOM_EMOJIS
                 and isinstance(msg_obj, Message)
                 else "Hikka"
-            )
-            if "LAVHOST" not in os.environ
-            else self.strings("lavhost_restart").format(
-                '</b><emoji document_id="5192756799647785066">✌️</emoji><emoji'
-                ' document_id="5193117564015747203">✌️</emoji><emoji'
-                ' document_id="5195050806105087456">✌️</emoji><emoji'
-                ' document_id="5195457642587233944">✌️</emoji><b>'
-                if self._client.hikka_me.premium
-                and CUSTOM_EMOJIS
-                and isinstance(msg_obj, Message)
-                else "lavHost"
             ),
         )
 

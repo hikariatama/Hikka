@@ -935,6 +935,9 @@ def get_platform_emoji() -> str:
         )
     )
 
+    if "LAVHOST" in os.environ:
+        return BASE.format(5301078610747074753)
+
     if "MIYAHOST" in os.environ:
         return BASE.format(5280938237785808014)
 
