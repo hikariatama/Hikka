@@ -97,7 +97,7 @@ else:
         log.init()
 
         from . import main
-    except (ModuleNotFoundError, ImportError) as e:
+    except ImportError as e:
         print(f"{str(e)}\n🔄 Attempting dependencies installation... Just wait ⏱")
 
         subprocess.run(

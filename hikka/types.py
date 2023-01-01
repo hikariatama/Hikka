@@ -298,7 +298,7 @@ class Module:
         from . import utils
 
         local_event = asyncio.Event()
-        self.__approve += [(channel, local_event)]
+        self.__approve += [(channel, local_event)]  # skipcq: PTC-W0037
         await local_event.wait()
         event.status = local_event.status
         event.set()

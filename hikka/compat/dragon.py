@@ -40,11 +40,13 @@ DRAGON_EMOJI = "<emoji document_id=5375360100196163660>🐲</emoji>"
 native_import = builtins.__import__
 logger = logging.getLogger(__name__)
 
-# This is used to ensure, that dynamic dragon import passes in
-# the right client. Whenever one of the clients attempts to install
-# dragon-specific module, it must aqcuire the `import_lock` or wait
-# until it's released. Then set the `current_client` variable to self.
+
 class ImportLock:
+    # This is used to ensure, that dynamic dragon import passes in
+    # the right client. Whenever one of the clients attempts to install
+    # dragon-specific module, it must aqcuire the `import_lock` or wait
+    # until it's released. Then set the `current_client` variable to self.
+
     def __init__(self):
         self.lock = asyncio.Lock()
         self.current_client = None
@@ -203,14 +205,12 @@ class DragonScripts:
                 "<b>Telegram API error!</b>\n"
                 f"<code>[{e.CODE} {e.ID or e.NAME}] - {e.MESSAGE}</code>"
             )
-        else:
-            if hint:
-                hint_text = f"\n\n<b>Hint: {hint}</b>"
-            else:
-                hint_text = ""
-            return (
-                f"<b>Error!</b>\n<code>{e.__class__.__name__}: {e}</code>" + hint_text
-            )
+
+        hint_text = f"\n\n<b>Hint: {hint}</b>" if hint else ""
+
+        return (
+            f"<b>Error!</b>\n<code>{e.__class__.__name__}: {e}</code>" + hint_text
+        )
 
     @staticmethod
     def with_reply(func):
@@ -306,7 +306,7 @@ class DragonScripts:
 
         try:
             return importlib.import_module(library_name)
-        except (ImportError, ModuleNotFoundError):
+        except ImportError:
             completed = subprocess.run(
                 [
                     sys.executable,
@@ -325,12 +325,15 @@ class DragonScripts:
                     ),
                     package_name,
                 ],
+                check=False,
             )
+
             if completed.returncode != 0:
-                raise AssertionError(
+                raise RuntimeError(
                     f"Failed to install library {package_name} (pip exited with code"
                     f" {completed.returncode})"
                 )
+
             return importlib.import_module(library_name)
 
     @staticmethod

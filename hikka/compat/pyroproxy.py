@@ -142,23 +142,24 @@ class PyroProxyClient(PyroClient):
         pyro_obj = self._convert(pyro_obj)
         if isinstance(pyro_obj, list):
             return [self._pyro2tl(i) for i in pyro_obj]
-        elif isinstance(pyro_obj, dict):
+        
+        if isinstance(pyro_obj, dict):
             return {k: self._pyro2tl(v) for k, v in pyro_obj.items()}
-        else:
-            if not isinstance(pyro_obj, raw.core.TLObject):
-                return pyro_obj
 
-            if type(pyro_obj) not in PROXY:
-                raise TypeError(
-                    f"Cannot convert Pyrogram's {type(pyro_obj)} to Telethon TLObject"
-                )
+        if not isinstance(pyro_obj, raw.core.TLObject):
+            return pyro_obj
 
-            return PROXY[type(pyro_obj)](
-                **{
-                    attr: self._pyro2tl(getattr(pyro_obj, attr))
-                    for attr in pyro_obj.__slots__
-                }
+        if type(pyro_obj) not in PROXY:
+            raise TypeError(
+                f"Cannot convert Pyrogram's {type(pyro_obj)} to Telethon TLObject"
             )
+
+        return PROXY[type(pyro_obj)](
+            **{
+                attr: self._pyro2tl(getattr(pyro_obj, attr))
+                for attr in pyro_obj.__slots__
+            }
+        )
 
     def _tl2pyro(self, tl_obj: telethon.tl.TLObject) -> raw.core.TLObject:
         """
@@ -180,31 +181,32 @@ class PyroProxyClient(PyroClient):
 
         if isinstance(tl_obj, list):
             return [self._tl2pyro(i) for i in tl_obj]
-        elif isinstance(tl_obj, dict):
+        
+        if isinstance(tl_obj, dict):
             return {k: self._tl2pyro(v) for k, v in tl_obj.items()}
-        else:
-            if isinstance(tl_obj, int) and str(tl_obj).startswith("-100"):
-                return int(str(tl_obj)[4:])
 
-            if not isinstance(tl_obj, telethon.tl.TLObject):
-                return tl_obj
+        if isinstance(tl_obj, int) and str(tl_obj).startswith("-100"):
+            return int(str(tl_obj)[4:])
 
-            if type(tl_obj) not in REVERSED_PROXY:
-                raise TypeError(
-                    f"Cannot convert Telethon's {type(tl_obj)} to Pyrogram TLObject"
-                )
+        if not isinstance(tl_obj, telethon.tl.TLObject):
+            return tl_obj
 
-            hints = typing.get_type_hints(REVERSED_PROXY[type(tl_obj)].__init__) or {}
-
-            return REVERSED_PROXY[type(tl_obj)](
-                **{
-                    attr: self._convert_types(
-                        hints.get(attr),
-                        self._tl2pyro(getattr(tl_obj, attr)),
-                    )
-                    for attr in REVERSED_PROXY[type(tl_obj)].__slots__
-                }
+        if type(tl_obj) not in REVERSED_PROXY:
+            raise TypeError(
+                f"Cannot convert Telethon's {type(tl_obj)} to Pyrogram TLObject"
             )
+
+        hints = typing.get_type_hints(REVERSED_PROXY[type(tl_obj)].__init__) or {}
+
+        return REVERSED_PROXY[type(tl_obj)](
+            **{
+                attr: self._convert_types(
+                    hints.get(attr),
+                    self._tl2pyro(getattr(tl_obj, attr)),
+                )
+                for attr in REVERSED_PROXY[type(tl_obj)].__slots__
+            }
+        )
 
     @staticmethod
     def _get_origin(hint: typing.Any) -> typing.Any:

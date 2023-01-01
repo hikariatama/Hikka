@@ -66,11 +66,12 @@ class WebDebugger:
         def app(request):
             if request.args.get("ping", "N").upper() == "Y":
                 return Response("ok")
+
             if request.args.get("shutdown", "N").upper() == "Y":
                 self._server._BaseServer__shutdown_request = True
                 return Response("Shutdown!")
-            else:
-                raise self.exceptions.get(request.args.get("ex_id"), Exception("idk"))
+
+            raise self.exceptions.get(request.args.get("ex_id"), Exception("idk"))
 
         app = DebuggedApplication(app, evalex=True, pin_security=True)
 
