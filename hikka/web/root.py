@@ -84,6 +84,7 @@ class Web:
             "lavhost": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/victory-hand_270c-fe0f.png",
             "miyahost": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/jack-o-lantern_1f383.png",
             "termux": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/smiling-face-with-sunglasses_1f60e.png",
+            "docker": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/spouting-whale_1f433.png",
         }[
             "lavhost"
             if "LAVHOST" in os.environ
@@ -91,6 +92,8 @@ class Web:
             if "MIYAHOST" in os.environ
             else "termux"
             if "com.termux" in os.environ.get("PREFIX", "")
+            else "docker"
+            if "DOCKER" in os.environ
             else "vds"
         ]
 

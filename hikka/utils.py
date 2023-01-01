@@ -935,6 +935,9 @@ def get_platform_emoji() -> str:
         )
     )
 
+    if "DOCKER" in os.environ:
+        return BASE.format(5298554256603752468)
+
     if "LAVHOST" in os.environ:
         return BASE.format(5301078610747074753)
 
