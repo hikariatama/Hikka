@@ -359,8 +359,8 @@ class Gallery(InlineUnit):
             photo_url = callback()
         else:
             logger.error(
-                "Invalid type for `next_handler`. Expected `str`, `list`, `callable` or"
-                " `asyncio.coroutine`, got %s",
+                "Invalid type for `next_handler`. Expected `str`, `list` or `callable`,"
+                " got %s",
                 type(callback),
             )
             return False

@@ -11,6 +11,8 @@
 {% block head %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bodymovin/5.8.1/lottie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Snowstorm/20131208/snowstorm-min.js" async></script>
+<script src="//unpkg.com/@dotlottie/player-component@1.0.0/dist/dotlottie-player.js"></script>
 <script src="//unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
 
 <link href="//cdn.jsdelivr.net/npm/css.gg/icons/all.css" rel="stylesheet">
@@ -27,7 +29,7 @@
 </div>
 <div class="blur auth vert_center">
   <div id="tg_icon"></div>
-  <div class="waiting_for_auth">Waiting for permission...</div>
+  <div class="waiting_for_auth">Waiting for authentification...</div>
   <div class="confirm_auth">Please, confirm action in <span style="color:#28a0dc">Telegram</span></div>
 </div>
 <div class="auth-code-form blur">
@@ -36,6 +38,15 @@
   <span class="code-caption">Enter the code you recieved from Telegram</span>
   <input type="text" class="code-input" autocomplete="off">
   <div class="enter">Enter</div>
+</div>
+<div class="eula-form blur">
+  <div class="vert_center" style="height: 100%">
+    <div>
+      <div id="law"></div>
+      <br><br>
+      <span class="code-caption">You are <span style="color:#c54245">prohibited</span> from adding more than 1 account on the current platform by its EULA.</span>
+    </div>
+  </div>
 </div>
 <div class="wrapper">
   <div class="blur main finish_block">
@@ -49,8 +60,15 @@
     </div>
   </div>
   <div class="blur main installation">
-    <div class="title">Hikka</div>
-    <div class="description"><span style="color:#28a0dc">Awesomeness</span> is in your hands<br><span
+    <div class="title">
+      <div class="hikka_label">
+        <div class="label_inner">
+          <img src="{{ platform_emoji }}" class="moon">
+          &nbsp;Hikka
+        </div>
+      </div>
+    </div><br>
+    <div class="description">Incomprehensibly <span style="color:#c54245">perfect</span> userbot<br><span
         style="color: #18cc18; display: none" class="authorized">Authorized!</span></div>
     <div class="center">
       {% if not tg_done %}
@@ -65,7 +83,7 @@
           </div>
         </div>
       </div>
-      {% elif not lavhost %}
+      {% else %}
       <div class="button" id="get_started">
         <div class="horiz_center">
           <div class="vert_center">
@@ -78,7 +96,7 @@
         </div>
       </div>
       {% endif %}
-      {% if skip_creds and not lavhost %}
+      {% if skip_creds and not lavhost and not miyahost %}
       <div class="button" id="enter_api">
         <div class="horiz_center">
           <div class="vert_center">
@@ -114,7 +132,16 @@
       </span>
       <span id="block_qr_login">
         <div class="qr_outer">
-          <div class="qr_inner"></div>
+          <div class="qr_inner">
+            <dotlottie-player
+              autoplay
+              loop
+              mode="normal"
+              src="https://static.hikari.gay/4T7FajtZbx.lottie"
+              style="width: 100px; height: 100px"
+            >
+            </dotlottie-player>
+          </div>
         </div>
         <div class="tg_guide">
           <ol>

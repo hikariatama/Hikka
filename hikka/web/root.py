@@ -73,8 +73,26 @@ class Web:
         self.app.router.add_post("/init_qr_login", self.init_qr_login)
         self.app.router.add_post("/get_qr_url", self.get_qr_url)
         self.app.router.add_post("/qr_2fa", self.qr_2fa)
+        self.app.router.add_post("/can_add", self.can_add)
         self.api_set = asyncio.Event()
         self.clients_set = asyncio.Event()
+
+    @property
+    def _platform_emoji(self) -> str:
+        return {
+            "vds": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/waning-crescent-moon_1f318.png",
+            "lavhost": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/victory-hand_270c-fe0f.png",
+            "miyahost": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/jack-o-lantern_1f383.png",
+            "termux": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/smiling-face-with-sunglasses_1f60e.png",
+        }[
+            "lavhost"
+            if "LAVHOST" in os.environ
+            else "miyahost"
+            if "MIYAHOST" in os.environ
+            else "termux"
+            if "com.termux" in os.environ.get("PREFIX", "")
+            else "vds"
+        ]
 
     @aiohttp_jinja2.template("root.jinja2")
     async def root(self, _):
@@ -82,6 +100,8 @@ class Web:
             "skip_creds": self.api_token is not None,
             "tg_done": bool(self.client_data),
             "lavhost": "LAVHOST" in os.environ,
+            "miyahost": "MIYAHOST" in os.environ,
+            "platform_emoji": self._platform_emoji,
         }
 
     async def check_session(self, request: web.Request) -> web.Response:
@@ -220,6 +240,9 @@ class Web:
         self._qr_login = True
 
     async def init_qr_login(self, request: web.Request) -> web.Response:
+        if self.client_data and ("LAVHOST" in os.environ or "MIYAHOST" in os.environ):
+            return web.Response(status=403, body="Forbidden by host EULA")
+
         if not self._check_session(request):
             return web.Response(status=401)
 
@@ -231,7 +254,7 @@ class Web:
                 self._qr_task = None
 
             self._2fa_needed = False
-            logger.warning("QR login cancelled, new session created")
+            logger.debug("QR login cancelled, new session created")
 
         client = self._get_client()
         self._pending_client = client
@@ -252,6 +275,15 @@ class Web:
 
             return web.Response(status=200, body="SUCCESS")
 
+        if self._qr_login is None:
+            await self.init_qr_login(request)
+
+        if self._qr_login is None:
+            return web.Response(
+                status=500,
+                body="Internal Server Error: Unable to initialize QR login",
+            )
+
         return web.Response(status=201, body=self._qr_login.url)
 
     def _get_client(self) -> CustomTelegramClient:
@@ -266,9 +298,18 @@ class Web:
             app_version=f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}",
         )
 
+    async def can_add(self, request: web.Request) -> web.Response:
+        if self.client_data and ("LAVHOST" in os.environ or "MIYAHOST" in os.environ):
+            return web.Response(status=403, body="Forbidden by host EULA")
+
+        return web.Response(status=200, body="Yes")
+
     async def send_tg_code(self, request: web.Request) -> web.Response:
         if not self._check_session(request):
             return web.Response(status=401, body="Authorization required")
+
+        if self.client_data and ("LAVHOST" in os.environ or "MIYAHOST" in os.environ):
+            return web.Response(status=403, body="Forbidden by host EULA")
 
         if self._pending_client:
             return web.Response(status=208, body="Already pending")

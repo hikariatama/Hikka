@@ -47,6 +47,9 @@
 - Add topic guesser in `send_message`, `send_file` in order for old modules to work properly
 - Add local storage fallback in case remote end is not available
 - Add `self.invoke` method for modules
+- Fresh Christmas web design
+- EULA warning for lavHost and MiyaHost
+- Support for Python 3.10
 
 ## 🌑 Hikka 1.5.3
 

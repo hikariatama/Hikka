@@ -9,6 +9,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Open+Sans:wght@300&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Hubballi&display=swap');
 
+@font-face {
+    font-family: 'Movement';
+    src: url('https://static.hikari.gay/Movement.ttf') format('truetype');
+}
+
 body,
 html {
     width: 100%;
@@ -33,6 +38,8 @@ body {
 }
 
 .bg_inner {
+    animation: fadein 1s ease-in-out forwards 1s;
+    opacity: 0;
     width: 90%;
     height: 90%;
     padding: 0;
@@ -44,9 +51,20 @@ body {
     position: fixed;
     z-index: -1;
     border-radius: 50%;
-    background: rgb(127, 35, 112);
+    /* background: rgb(127, 35, 112); */
+    background: rgb(80, 80, 158);
     filter: blur(100px);
     transition: background .5s ease;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 #sky {
@@ -101,7 +119,6 @@ body {
     width: 100%;
     z-index: 2;
     position: relative;
-    padding-top: 20px;
     line-height: 1.3;
     font-family: Hubballi;
 }
@@ -277,6 +294,10 @@ label {
 }
 
 
+.lights {
+    animation: fadein .8s ease-in-out forwards .5s;
+    opacity: 0;
+}
 
 .light {
     position: absolute;
@@ -559,7 +580,7 @@ label {
     right: 0;
     left: 0;
     margin: auto;
-    width: 70%;
+    width: 50%;
     height: 60%;
     padding: 2rem;
     display: none;
@@ -604,7 +625,7 @@ label {
     overflow: hidden;
 }
 
-.auth-code-form {
+.auth-code-form, .eula-form {
     display: none;
     width: 60%;
     height: 80%;
@@ -620,10 +641,20 @@ label {
     text-align: center;
 }
 
+.eula-form .code-caption {
+    padding: 0 30px;
+}
+
+.eula-form {
+    height: 60%;
+    width: 50%;
+}
+
 @media screen and (max-width: 736px) {
-    .auth-code-form {
+    .auth-code-form, .eula-form {
         width: 100%;
         height: 100%;
+        margin: 0;
     }
 }
 
@@ -657,7 +688,8 @@ label {
 }
 
 #monkey,
-#monkey-close {
+#monkey-close,
+#law {
     height: 200px;
     margin-top: 30px;
 }
@@ -726,3 +758,23 @@ label {
     border-radius: 15px;
     background: rgba(255, 255, 255, .8);
 }
+
+.hikka_label {
+    display: inline-block;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-family: "Movement";
+    color: black;
+    font-size: 30px;
+    line-height: 30px;
+}
+
+.label_inner {
+    display: flex;
+}
+
+.moon {
+    height: 30px;
+}
+

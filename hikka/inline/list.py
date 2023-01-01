@@ -162,11 +162,9 @@ class List(InlineUnit):
         btn_call_data = utils.rand(10)
 
         self._custom_map[btn_call_data] = {
-            "handler": asyncio.coroutine(
-                functools.partial(
-                    self._list_page,
-                    unit_id=unit_id,
-                )
+            "handler": functools.partial(
+                self._list_page,
+                unit_id=unit_id,
             ),
             **(
                 {"ttl": self._units[unit_id]["ttl"]}
