@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import inspect
 import logging
@@ -25,7 +23,7 @@ from aiogram.types import (
 from aiogram.types import Message as AiogramMessage
 
 from .. import utils
-from .types import InlineCall, InlineQuery, InlineUnit, BotInlineCall
+from .types import BotInlineCall, InlineCall, InlineQuery, InlineUnit
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +44,7 @@ class Events(InlineUnit):
 
             try:
                 await mod.aiogram_watcher(message)
-            except BaseException:
+            except Exception:
                 logger.exception("Error on running aiogram watcher!")
 
     async def _inline_handler(self, inline_query: AiogramInlineQuery):
@@ -72,7 +70,7 @@ class Events(InlineUnit):
 
             try:
                 result = await self._allmodules.inline_handlers[cmd](instance)
-            except BaseException:
+            except Exception:
                 logger.exception("Error on running inline watcher!")
                 return
 
@@ -197,7 +195,9 @@ class Events(InlineUnit):
     async def _callback_query_handler(
         self,
         call: CallbackQuery,
-        reply_markup: typing.Optional[typing.List[typing.List[dict]]] = None,
+        reply_markup: typing.Optional[
+            typing.List[typing.List[typing.Dict[str, typing.Any]]]
+        ] = None,
     ):
         """Callback query handler (buttons' presses)"""
         if reply_markup is None:
@@ -263,7 +263,7 @@ class Events(InlineUnit):
                         + button.get("always_allow", [])
                     ):
                         await call.answer(
-                            self._client.loader._lookup("translations").strings(
+                            self._client.loader.lookup("translations").strings(
                                 "button403"
                             )
                         )
@@ -317,7 +317,7 @@ class Events(InlineUnit):
                 not in self._custom_map[call.data].get("always_allow", [])
             ):
                 await call.answer(
-                    self._client.loader._lookup("translations").strings("button403")
+                    self._client.loader.lookup("translations").strings("button403")
                 )
                 return
 
@@ -407,14 +407,14 @@ class Events(InlineUnit):
                     InlineQueryResultArticle(
                         id=utils.rand(20),
                         title=(
-                            self._client.loader._lookup("translations")
+                            self._client.loader.lookup("translations")
                             .strings("command")
                             .format(name)
                         ),
                         description=doc,
                         input_message_content=InputTextMessageContent(
                             (
-                                self._client.loader._lookup("translations")
+                                self._client.loader.lookup("translations")
                                 .strings("command_msg")
                                 .format(
                                     utils.escape_html(name),
@@ -430,7 +430,7 @@ class Events(InlineUnit):
                         reply_markup=self.generate_markup(
                             {
                                 "text": (
-                                    self._client.loader._lookup("translations").strings(
+                                    self._client.loader.lookup("translations").strings(
                                         "run_command"
                                     )
                                 ),
@@ -450,14 +450,14 @@ class Events(InlineUnit):
                 [
                     InlineQueryResultArticle(
                         id=utils.rand(20),
-                        title=self._client.loader._lookup("translations").strings(
+                        title=self._client.loader.lookup("translations").strings(
                             "show_inline_cmds"
                         ),
-                        description=self._client.loader._lookup("translations").strings(
+                        description=self._client.loader.lookup("translations").strings(
                             "no_inline_cmds"
                         ),
                         input_message_content=InputTextMessageContent(
-                            self._client.loader._lookup("translations").strings(
+                            self._client.loader.lookup("translations").strings(
                                 "no_inline_cmds_msg"
                             ),
                             "HTML",
@@ -478,17 +478,17 @@ class Events(InlineUnit):
             [
                 InlineQueryResultArticle(
                     id=utils.rand(20),
-                    title=self._client.loader._lookup("translations").strings(
+                    title=self._client.loader.lookup("translations").strings(
                         "show_inline_cmds"
                     ),
                     description=(
-                        self._client.loader._lookup("translations")
+                        self._client.loader.lookup("translations")
                         .strings("inline_cmds")
                         .format(len(_help))
                     ),
                     input_message_content=InputTextMessageContent(
                         (
-                            self._client.loader._lookup("translations")
+                            self._client.loader.lookup("translations")
                             .strings("inline_cmds_msg")
                             .format("\n".join(i[1] for i in _help))
                         ),

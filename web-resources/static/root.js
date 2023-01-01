@@ -1,29 +1,37 @@
+/*
+    ©️ Dan Gazizullin, 2021-2022
+    This file is a part of Hikka Userbot
+    🌐 https://github.com/hikariatama/Hikka
+    You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+    🔑 https://www.gnu.org/licenses/agpl-3.0.html
+*/
+
 function auth(callback) {
-    $(".main").fadeOut(500);
+    $(".main").fadeOut(250);
     setTimeout(() => {
-        $(".auth").hide().fadeIn(500, () => {
+        $(".auth").hide().fadeIn(250, () => {
             $("#tg_icon").html("");
             bodymovin.loadAnimation({
                 container: document.getElementById("tg_icon"),
                 renderer: "canvas",
                 loop: true,
                 autoplay: true,
-                path: "https://raw.githubusercontent.com/hikariatama/Hikka/master/assets/noface.json",
+                path: "https://assets9.lottiefiles.com/packages/lf20_bgqoyj8l.json",
                 rendererSettings: {
                     clearCanvas: true,
                 }
             });
         });
         fetch("/web_auth", {
-                method: "POST",
-                credentials: "include",
-                timeout: 300000
-            })
+            method: "POST",
+            credentials: "include",
+            timeout: 250000
+        })
             .then(response => response.text())
             .then((response) => {
                 if (response == "TIMEOUT") {
                     error_message("Code waiting timeout exceeded. Reload page and try again.");
-                    $(".auth").fadeOut(500);
+                    $(".auth").fadeOut(250);
                     return
                 }
 
@@ -31,25 +39,119 @@ function auth(callback) {
                     $.cookie("session", response)
                     auth_required = false;
                     $(".authorized").hide().fadeIn(100);
-                    $(".auth").fadeOut(500, () => {
-                        $(".installation").fadeIn(500);
+                    $(".auth").fadeOut(250, () => {
+                        $(".installation").fadeIn(250);
                     });
                     callback();
                     return;
                 }
             })
-    }, 500);
+    }, 250);
 }
+
+var qr_interval = null;
+var qr_login = false;
+
+var old_qr_sizes = [
+    document.querySelector(".qr_inner").style.width,
+    document.querySelector(".qr_inner").style.height,
+]
+document.querySelector(".qr_inner").style.width = "100px";
+document.querySelector(".qr_inner").style.height = "100px";
 
 $("#get_started")
     .click(() => {
-        if (auth_required) return auth(() => {
-            $("#get_started").click();
-        });
-        $("#enter_api").fadeOut(500);
-        $("#get_started").fadeOut(500, () => {
-            $("#continue_btn").hide().fadeIn(500);
-            switch_block(_current_block);
+        fetch("/can_add", {
+            method: "POST",
+            credentials: "include"
+        }).then((response) => {
+            if (!response.ok) {
+                show_eula();
+                return;
+            }
+            if (auth_required) return auth(() => {
+                $("#get_started").click();
+            });
+            $("continue_btn").hide().fadeIn(250);
+            $("#enter_api").fadeOut(250);
+            $("#get_started").fadeOut(250, () => {
+                if (_current_block == "phone") {
+                    switch_block(_current_block);
+                    $("#continue_btn").hide().fadeIn(250);
+                    return;
+                }
+
+                switch_block(_current_block);
+                $("#denyqr").hide().fadeIn(250);
+                $(".title, .description").fadeOut(250);
+                // bodymovin.loadAnimation({
+                //     container: document.querySelector(".qr_inner"),
+                //     renderer: "canvas",
+                //     loop: true,
+                //     autoplay: true,
+                //     path: "https://static.hikari.gay/4T7FajtZbx.json",
+                //     rendererSettings: {
+                //         clearCanvas: true,
+                //     }
+                // });
+
+                fetch("/init_qr_login", {
+                    method: "POST",
+                    credentials: "include"
+                })
+                    .then(response => response.text())
+                    .then((response) => {
+                        const qrCode = new QRCodeStyling({
+                            width: window.innerHeight / 3,
+                            height: window.innerHeight / 3,
+                            type: "svg",
+                            data: response,
+                            dotsOptions: {
+                                type: "rounded"
+                            },
+                            cornersSquareOptions: {
+                                type: "extra-rounded",
+                            },
+                            backgroundOptions: {
+                                color: "transparent",
+                            },
+                            imageOptions: {
+                                imageSize: 0.4,
+                                margin: 8,
+                            },
+                            qrOptions: {
+                                errorCorrectionLevel: "M",
+                            },
+                        });
+                        document.querySelector(".qr_inner").innerHTML = "";
+                        document.querySelector(".qr_inner").style.width = old_qr_sizes[0];
+                        document.querySelector(".qr_inner").style.height = old_qr_sizes[1];
+                        qrCode.append(document.querySelector(".qr_inner"));
+
+                        qr_interval = setInterval(() => {
+                            fetch("/get_qr_url", {
+                                method: "POST",
+                                credentials: "include"
+                            })
+                                .then(response => response.text())
+                                .then((response) => {
+                                    if (response == "SUCCESS" || response == "2FA") {
+                                        $("#block_qr_login").fadeOut(250);
+                                        $("#denyqr").fadeOut(250);
+                                        $("#continue_btn, .title, .description").hide().fadeIn(250);
+                                        if (response == "SUCCESS") switch_block("custom_bot");
+                                        if (response == "2FA") {
+                                            show_2fa();
+                                            qr_login = true;
+                                        }
+                                        clearInterval(qr_interval);
+                                        return;
+                                    }
+                                    qrCode.update({ data: response });
+                                })
+                        }, 1250);
+                    })
+            });
         });
     });
 
@@ -58,12 +160,12 @@ $("#enter_api")
         if (auth_required) return auth(() => {
             $("#enter_api").click();
         });
-        $("#get_started").fadeOut(500);
+        $("#get_started").fadeOut(250);
         $("#enter_api")
-            .fadeOut(500, () => {
+            .fadeOut(250, () => {
                 $("#continue_btn")
                     .hide()
-                    .fadeIn(500);
+                    .fadeIn(250);
 
                 switch_block("api_id");
             });
@@ -80,10 +182,10 @@ function isValidPhone(p) {
 }
 
 function finish_login() {
-    fetch("/finishLogin", {
-            method: "POST",
-            credentials: "include"
-        })
+    fetch("/finish_login", {
+        method: "POST",
+        credentials: "include"
+    })
         .then(() => {
             $(".installation").fadeOut(2000);
             setTimeout(() => {
@@ -93,12 +195,12 @@ function finish_login() {
                     renderer: "canvas",
                     loop: true,
                     autoplay: true,
-                    path: "https://assets1.lottiefiles.com/animated_stickers/lf_tgs_j7miwfxd.json",
+                    path: "https://assets1.lottiefiles.com/packages/lf20_n3jgitst.json",
                     rendererSettings: {
                         clearCanvas: true,
                     }
                 });
-                $(".finish_block").fadeIn(300);
+                $(".finish_block").fadeIn(250);
             }, 2000);
         })
         .catch((err) => {
@@ -107,41 +209,87 @@ function finish_login() {
         });
 }
 
-function tg_code() {
-    fetch("/tgCode", {
-            method: "POST",
-            body: `${_tg_pass}\n${_phone}\n${_2fa_pass}`
+function show_2fa() {
+    $(".auth-code-form").hide().fadeIn(250, () => {
+        $("#monkey-close").html("");
+        anim = bodymovin.loadAnimation({
+            container: document.getElementById("monkey-close"),
+            renderer: "canvas",
+            loop: true,
+            autoplay: true,
+            path: "https://assets1.lottiefiles.com/packages/lf20_eg88dyk9.json",
+            rendererSettings: {
+                clearCanvas: true,
+            }
+        });
+        anim.addEventListener("complete", () => {
+            setTimeout(() => {
+                anim.goToAndPlay(0);
+            }, 2000);
         })
+    });
+    $(".code-input").removeAttr("disabled");
+    $(".code-input").attr("inputmode", "text");
+    if ($(".enter").hasClass("tgcode"))
+        $(".enter").removeClass("tgcode");
+    $(".code-caption").html("Enter your Telegram 2FA password, then press <span style='color: #dc137b;'>Enter</span>");
+    cnt_btn.setAttribute("current-step", "2fa");
+    $("#monkey").hide();
+    $("#monkey-close").hide().fadeIn(100);
+    _current_block = "2fa";
+}
+
+function show_eula() {
+    $(".main").fadeOut(250);
+    $(".eula-form").hide().fadeIn(250, () => {
+        $("#law").html("");
+        anim = bodymovin.loadAnimation({
+            container: document.getElementById("law"),
+            renderer: "canvas",
+            loop: true,
+            autoplay: true,
+            path: "https://static.hikari.gay/forbidden.json",
+            rendererSettings: {
+                clearCanvas: true,
+            }
+        });
+    });
+}
+
+function tg_code(processing_2fa = false) {
+    if (processing_2fa && qr_login) {
+        fetch("/qr_2fa", {
+            method: "POST",
+            credentials: "include",
+            body: _2fa_pass,
+        }).then((response) => {
+            if (!response.ok) {
+                $(".code-input").removeAttr("disabled");
+                response.text().then((text) => {
+                    error_state();
+                    Swal.fire(
+                        "Error",
+                        text,
+                        "error"
+                    );
+                });
+            } else {
+                $(".auth-code-form").fadeOut();
+                $("#block_phone").fadeOut();
+                switch_block("custom_bot");
+            }
+        })
+        return;
+    }
+
+    fetch("/tg_code", {
+        method: "POST",
+        body: `${_tg_pass}\n${_phone}\n${_2fa_pass}`
+    })
         .then((response) => {
             if (!response.ok) {
                 if (response.status == 401) {
-                    $(".auth-code-form").hide().fadeIn(300, () => {
-                        $("#monkey-close").html("");
-                        anim = bodymovin.loadAnimation({
-                            container: document.getElementById("monkey-close"),
-                            renderer: "canvas",
-                            loop: false,
-                            autoplay: true,
-                            path: "https://static.hikari.gay/monkey-close.json",
-                            rendererSettings: {
-                                clearCanvas: true,
-                            }
-                        });
-                        anim.addEventListener("complete", () => {
-                            setTimeout(() => {
-                                anim.goToAndPlay(0);
-                            }, 2000);
-                        })
-                    });
-                    $(".code-input").removeAttr("disabled");
-                    $(".code-input").attr("inputmode", "text");
-                    if($(".enter").hasClass("tgcode"))
-                        $(".enter").removeClass("tgcode");
-                    $(".code-caption").html("Enter your Telegram 2FA password, then press <span style='color: #dc137b;'>Enter</span>");
-                    cnt_btn.setAttribute("current-step", "2fa");
-                    $("#monkey").hide();
-                    $("#monkey-close").hide().fadeIn(100);
-                    _current_block = "2fa";
+                    show_2fa();
                 } else {
                     $(".code-input").removeAttr("disabled");
                     response.text().then((text) => {
@@ -155,6 +303,7 @@ function tg_code() {
                 }
             } else {
                 $(".auth-code-form").fadeOut();
+                $("#block_phone").fadeOut();
                 switch_block("custom_bot");
             }
         })
@@ -204,7 +353,15 @@ var _api_id = "",
     _phone = "",
     _2fa_pass = "",
     _tg_pass = "",
-    _current_block = skip_creds ? "phone" : "api_id";
+    _current_block = skip_creds ? "qr_login" : "api_id";
+
+function is_phone() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
+}
+
+if (is_phone() && _current_block == "qr_login") {
+    _current_block = "phone";
+}
 
 const cnt_btn = document.querySelector("#continue_btn");
 
@@ -231,18 +388,18 @@ function process_next() {
         }
 
         _api_hash = api_hash;
-        fetch("/setApi", {
-                method: "PUT",
-                body: _api_hash + _api_id,
-                credentials: "include"
-            })
+        fetch("/set_api", {
+            method: "PUT",
+            body: _api_hash + _api_id,
+            credentials: "include"
+        })
             .then(response => response.text())
             .then((response) => {
                 if (response != "ok") {
                     error_state();
                     error_message(response)
                 } else {
-                    switch_block("phone");
+                    switch_block(is_phone() ? "phone" : "qr_login");
                 }
             })
             .catch((err) => {
@@ -261,26 +418,30 @@ function process_next() {
         }
 
         _phone = phone;
-        fetch("/sendTgCode", {
-                method: "POST",
-                body: _phone,
-                credentials: "include"
-            })
+        fetch("/send_tg_code", {
+            method: "POST",
+            body: _phone,
+            credentials: "include"
+        })
             .then((response) => {
                 if (!response.ok) {
-                    response.text().then((text) => {
-                        error_state();
-                        error_message(text);
-                    });
+                    if (response.status == 403) {
+                        show_eula();
+                    } else {
+                        response.text().then((text) => {
+                            error_state();
+                            error_message(text);
+                        });
+                    }
                 } else {
-                    $(".auth-code-form").hide().fadeIn(300, () => {
+                    $(".auth-code-form").hide().fadeIn(250, () => {
                         $("#monkey").html("");
                         anim2 = bodymovin.loadAnimation({
                             container: document.getElementById("monkey"),
                             renderer: "canvas",
                             loop: false,
                             autoplay: true,
-                            path: "https://static.hikari.gay/monkey.json",
+                            path: "https://assets8.lottiefiles.com/private_files/lf30_t52znxni.json",
                             rendererSettings: {
                                 clearCanvas: true,
                             }
@@ -328,10 +489,10 @@ function process_next() {
         }
 
         fetch("/custom_bot", {
-                method: "POST",
-                credentials: "include",
-                body: custom_bot
-            })
+            method: "POST",
+            credentials: "include",
+            body: custom_bot
+        })
             .then(response => response.text())
             .then((response) => {
                 if (response == "OCCUPIED") {
@@ -362,6 +523,13 @@ cnt_btn.onclick = () => {
     process_next();
 }
 
+$("#denyqr").on("click", () => {
+    if (qr_interval) clearInterval(qr_interval);
+    $("#denyqr").fadeOut(250);
+    $("#continue_btn, .title, .description").hide().fadeIn(250);
+    switch_block("phone");
+});
+
 $(".installation input").on("keyup", (e) => {
     if (cnt_btn.disabled) return;
     if (auth_required) return auth(() => {
@@ -384,7 +552,7 @@ $(".code-input").on("keyup", (e) => {
         _2fa_pass = _2fa;
         $(".code-input").attr("disabled", "true");
         $(".code-input").val("");
-        tg_code();
+        tg_code(true);
     }
 });
 
@@ -394,6 +562,6 @@ $(".enter").on("click", () => {
         _2fa_pass = _2fa;
         $(".code-input").attr("disabled", "true");
         $(".code-input").val("");
-        tg_code();
+        tg_code(true);
     }
 });

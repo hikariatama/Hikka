@@ -1,16 +1,14 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒 Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import logging
 
-from ..inline.types import InlineCall, BotInlineMessage
 from .. import loader, utils
+from ..inline.types import BotInlineMessage, InlineCall
 
 logger = logging.getLogger(__name__)
 
@@ -118,17 +116,17 @@ class Presets(loader.Module):
         "install": "📦 Install",
         "installing": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installing preset"
-            " </b><code>{}</code><b>...</b>"
+            "</b> <code>{}</code><b>...</b>"
         ),
         "installing_module": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installing preset"
-            " </b><code>{}</code><b> ({}/{} modules)...</b>\n\n<emoji"
+            "</b> <code>{}</code> <b>({}/{} modules)...</b>\n\n<emoji"
             " document_id=5188377234380954537>🌘</emoji> <i>Installing module"
             " {}...</i>"
         ),
         "installed": (
             "<emoji document_id=5436040291507247633>🎉</emoji> <b>Preset"
-            " </b><code>{}</code><b> installed!</b>"
+            "</b> <code>{}</code> <b>installed!</b>"
         ),
         "already_installed": "✅ [Installed]",
     }
@@ -165,14 +163,59 @@ class Presets(loader.Module):
         ),
         "installing_module": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Установка набора"
-            " </b><code>{}</code><b> ({}/{} модулей)...</b>\n\n<emoji"
+            "</b> <code>{}</code> <b>({}/{} модулей)...</b>\n\n<emoji"
             " document_id=5188377234380954537>🌘</emoji> <i>Установка модуля {}...</i>"
         ),
         "installed": (
             "<emoji document_id=5436040291507247633>🎉</emoji> <b>Набор"
-            " </b><code>{}</code><b> установлен!</b>"
+            "</b> <code>{}</code> <b>установлен!</b>"
         ),
         "already_installed": "✅ [Установлен]",
+    }
+
+    strings_it = {
+        "_fun_title": "🪩 Moduli divertenti",
+        "_fun_desc": "Moduli divertenti, animazioni, spam, giochi e altro.",
+        "_chat_title": "👥 Moduli di amministrazione del gruppo",
+        "_chat_desc": (
+            "Una raccolta di moduli che ti aiuteranno ad amministrare il tuo gruppo,"
+            " filtri, note, riconoscimento vocale e altro."
+        ),
+        "_service_title": "⚙️ Moduli utili",
+        "_service_desc": (
+            "Moduli veramente utili, gestione account, url shortener, motore di ricerca"
+            " e altro."
+        ),
+        "_downloaders_title": "📥 Downloaders",
+        "_downloaders_desc": (
+            "Una raccolta di moduli che ti aiuteranno a scaricare file da diversi"
+            " fonti, YouTube, TikTok, Instagram, Spotify, VK Music e altro."
+        ),
+        "welcome": (
+            "👋 <b>Ciao! Ti annoiato a scorrere interminabili liste di moduli nei"
+            " canali? Posso offrirti alcuni pacchetti predefiniti. Se vuoi richiamare"
+            " questo menu, inviami il comando /presets</b>"
+        ),
+        "preset": (
+            "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>Moduli in questo pacchetto:</b>\n\n{}"
+        ),
+        "back": "🔙 Indietro",
+        "install": "📦 Installa",
+        "installing": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installazione"
+            " pacchetto >/b><code>{}</code><b>...</b>"
+        ),
+        "installing_module": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installazione"
+            " pacchetto</b> <code>{}</code> <b>({}/{} moduli)...</b>\n\n<emoji"
+            " document_id=5188377234380954537>🌘</emoji> <i>Installazione modulo"
+            " {}...</i>"
+        ),
+        "installed": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Pacchetto"
+            "</b> <code>{}</code> <b>installato!</b>"
+        ),
+        "already_installed": "✅ [Installato]",
     }
 
     strings_de = {
@@ -205,17 +248,17 @@ class Presets(loader.Module):
         "install": "📦 Installieren",
         "installing": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installiere Sammlung"
-            " </b><code>{}</code><b>...</b>"
+            "</b> <code>{}</code><b>...</b>"
         ),
         "installing_module": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installiere Sammlung"
-            " </b><code>{}</code><b> ({}/{} Module)...</b>\n\n<emoji"
+            "</b> <code>{}</code> <b>({}/{} Module)...</b>\n\n<emoji"
             " document_id=5188377234380954537>🌘</emoji> <i>Installiere Modul"
             " {}...</i>"
         ),
         "installed": (
             "<emoji document_id=5436040291507247633>🎉</emoji> <b>Sammlung"
-            " </b><code>{}</code><b> installiert!</b>"
+            "</b> <code>{}</code> <b>installiert!</b>"
         ),
         "already_installed": "✅ [Installiert]",
     }
@@ -251,57 +294,18 @@ class Presets(loader.Module):
         "install": "📦 Kur",
         "installing": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Koleksiyon"
-            " </b><code>{}</code><b> kuruluyor...</b>"
+            "</b> <code>{}</code> <b>kuruluyor...</b>"
         ),
         "installing_module": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Koleksiyon"
-            " </b><code>{}</code><b> ({}/{} modül) kuruluyor...</b>\n\n<emoji"
+            "</b> <code>{}</code> <b>({}/{} modül) kuruluyor...</b>\n\n<emoji"
             " document_id=5188377234380954537>🌘</emoji> <i>Modül {} kuruluyor...</i>"
         ),
         "installed": (
             "<emoji document_id=5436040291507247633>🎉</emoji> <b>Koleksiyon"
-            " </b><code>{}</code><b> kuruldu!</b>"
+            "</b> <code>{}</code> <b>kuruldu!</b>"
         ),
         "already_installed": "✅ [Zaten Kurulu]",
-    }
-
-    strings_hi = {
-        "_fun_title": "🪩 मजेदार मॉड्यूल",
-        "_fun_desc": "मजेदार मॉड्यूल — एनीमेशन, स्पैम, खेल, और अधिक।",
-        "_chat_title": "👥 चैट व्यवस्थापन",
-        "_chat_desc": (
-            "आपको अपने चैट को प्रबंधित करने में मदद करने वाला एक संग्रह भी है —"
-            " फ़िल्टर, नोट, भाषा पहचान, और अधिक।"
-        ),
-        "_service_title": "⚙️ उपयोगी मॉड्यूल",
-        "_service_desc": (
-            "वास्तव में उपयोगी मॉड्यूल — खाता प्रबंधन, लिंक शॉर्टनर, खोज इंजन, और अधिक।"
-        ),
-        "_downloaders_title": "📥 डाउनलोडर मॉड्यूल",
-        "_downloaders_desc": (
-            "इंटरनेट से फ़ाइलों को डाउनलोड करने में मदद करने वाला एक संग्रह भी है —"
-            " YouTube, TikTok, Instagram, Spotify, VK Music, और अधिक।"
-        ),
-        "welcome": (
-            "👋 <b>नमस्ते! क्या आप चैनल में बहुत सारे मॉड्यूल की सूची से आश्चर्य हैं?"
-            " कुछ पूर्व निर्धारित संग्रह भी आपके लिए हैं। यदि आप इस मेनू को फिर से"
-            " खोलना चाहते हैं, तो /presets कमांड भेजें</b>"
-        ),
-        "preset": (
-            "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>इस संग्रह में शामिल मॉड्यूल:</b>\n\n{}"
-        ),
-        "back": "🔙 पीछे",
-        "install": "📦 इंस्टॉल",
-        "installing": (
-            "<emoji document_id=5451732530048802485>⏳</emoji> <b>संग्रह"
-            " </b><code>{}</code><b> इंस्टॉल हो रहा है...</b>"
-        ),
-        "installing_module": (
-            "<emoji document_id=5451732530048802485>⏳</emoji> <b>संग्रह"
-            " </b><code>{}</code><b> ({}/{} मॉड्यूल) इंस्टॉल हो रहा है...</b>\n\n<emoji"
-            " document_id=5188377234380954537>🌘</emoji> <i>मॉड्यूल {} इंस्टॉल हो रहा"
-            " है...</i>"
-        ),
     }
 
     strings_uz = {
@@ -335,74 +339,19 @@ class Presets(loader.Module):
         "install": "📦 O'rnatish",
         "installing": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Koleksiyani"
-            " </b><code>{}</code><b> o'rnatilmoqda...</b>"
+            "</b> <code>{}</code> <b>o'rnatilmoqda...</b>"
         ),
         "installing_module": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Koleksiyani"
-            " </b><code>{}</code><b> ({}/{} modul) o'rnatilmoqda...</b>\n\n<emoji"
+            "</b> <code>{}</code> <b>({}/{} modul) o'rnatilmoqda...</b>\n\n<emoji"
             " document_id=5188377234380954537>🌘</emoji> <i>Modul {}"
             " o'rnatilmoqda...</i>"
         ),
-    }
-
-    strings_ja = {
-        "_fun_title": "🪩 楽しいモジュール",
-        "_fun_desc": "楽しいモジュール — アニメーション、スパム、ゲームなど。",
-        "_chat_title": "👥 チャット管理モジュール",
-        "_chat_desc": "チャット管理モジュールのためのヘルプもあります — フィルター、記録、言語の検出など。",
-        "_service_title": "⚙️ 便利なモジュール",
-        "_service_desc": "便利なモジュール — アカウント管理、リンク短縮、検索エンジン、など。",
-        "_downloaders_title": "📥 ダウンローダー",
-        "_downloaders_desc": "ヘルプもあります — YouTube、TikTok、Instagram、Spotify、VK Musicなど。",
-        "welcome": (
-            "👋 <b>こんにちは！チャンネルでたくさんのモジュールを見て驚いていますか？"
-            "いくつかの事前定義されたコレクションもあります。このメニューをもう一度"
-            "開くには、/presetsコマンドを送信してください</b>"
+        "installed": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Koleksiyani"
+            "</b> <code>{}</code> <b>o'rnatildi!</b>"
         ),
-        "preset": "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>コレクションに含まれるモジュール:</b>\n\n{}",
-        "back": "🔙 戻る",
-        "install": "📦 インストール",
-        "installing": (
-            "<emoji document_id=5451732530048802485>⏳</emoji> <b>コレクション"
-            " </b><code>{}</code><b> インストール中...</b>"
-        ),
-        "installing_module": (
-            "<emoji document_id=5451732530048802485>⏳</emoji> <b>コレクション"
-            " </b><code>{}</code><b> ({}/{} モジュール) インストール中...</b>\n\n<emoji"
-            " document_id=5188377234380954537>🌘</emoji> <i>モジュール {}"
-            " インストール中...</i>"
-        ),
-    }
-
-    strings_kr = {
-        "_fun_title": "🪩 재미있는 모듈",
-        "_fun_desc": "재미있는 모듈 — 애니메이션, 스팸, 게임 등.",
-        "_chat_title": "👥 채팅 관리 모듈",
-        "_chat_desc": "채팅 관리 모듈에 대한 도움말도 있습니다 — 필터, 기록, 언어 감지 등.",
-        "_service_title": "⚙️ 유용한 모듈",
-        "_service_desc": "유용한 모듈 — 계정 관리, 링크 축소, 검색 엔진 등.",
-        "_downloaders_title": "📥 다운로더",
-        "_downloaders_desc": (
-            "도움말도 있습니다 — YouTube, TikTok, Instagram, Spotify, VK Music 등."
-        ),
-        "welcome": (
-            "👋 <b>안녕하세요! 채널에서 많은 모듈을 보고 놀랐습니까?"
-            "몇 가지 사전 정의 된 컬렉션이 있습니다. 이 메뉴를 다시 열려면"
-            "/presets 명령을 보내십시오</b>"
-        ),
-        "preset": "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>컬렉션에 포함 된 모듈:</b>\n\n{}",
-        "back": "🔙 뒤로",
-        "install": "📦 설치",
-        "installing": (
-            "<emoji document_id=5451732530048802485>⏳</emoji> <b>컬렉션"
-            " </b><code>{}</code><b> 설치 중...</b>"
-        ),
-        "installing_module": (
-            "<emoji document_id=5451732530048802485>⏳</emoji> <b>컬렉션"
-            " </b><code>{}</code><b> ({}/{} 모듈) 설치 중...</b>\n\n<emoji"
-            " document_id=5188377234380954537>🌘</emoji> <i>모듈 {}"
-            " 설치 중...</i>"
-        ),
+        "already_installed": "✅ [O'rnatilgan]",
     }
 
     strings_es = {
@@ -435,14 +384,65 @@ class Presets(loader.Module):
         "install": "📦 Instalar",
         "installing": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Instalando la"
-            " colección </b><code>{}</code><b>...</b>"
+            " colección</b> <code>{}</code><b>...</b>"
         ),
         "installing_module": (
             "<emoji document_id=5451732530048802485>⏳</emoji> <b>Instalando la"
-            " colección </b><code>{}</code><b> ({}/{} módulos)...</b>\n\n<emoji"
+            " colección</b> <code>{}</code> <b>({}/{} módulos)...</b>\n\n<emoji"
             " document_id=5188377234380954537>🌘</emoji> <i>Instalando el módulo"
             " {}...</i>"
         ),
+        "installed": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>¡Colección"
+            "</b> <code>{}</code> <b>instalada!</b>"
+        ),
+        "already_installed": "✅ [¡Ya instalado!]",
+    }
+
+    strings_kk = {
+        "_fun_title": "🪩 Құрметті модулдер",
+        "_fun_desc": (
+            "Құрметті модулдер — анимациялар, жондай жазу, ойындар, және басқалар."
+        ),
+        "_chat_title": "👥 Желілікті модулдер",
+        "_chat_desc": (
+            "Тіркелгілерді қамтамасыз ету, ескерту, сөйлесуді білдіру, және басқалардың"
+            " тіркелгілерін қамтамасыз ету үшін модулдердің тізімі — тіркелгілер,"
+            " ескертулер, сөйлесуді білдіру, және басқалар."
+        ),
+        "_service_title": "⚙️ Қажетті модулдер",
+        "_service_desc": (
+            "Қажетті модулдер — аккаунты басқару, сілтемені қысқарап, іздеуші, және"
+            " басқалар."
+        ),
+        "_downloaders_title": "📥 Жүктеушілер",
+        "_downloaders_desc": (
+            "Жүктеушілер тізімі — YouTube, TikTok, Instagram, Spotify, VK Музыка, және"
+            " басқалар үшін файлдарды жүктеуге және қайта жүктеп алуға көмектеседі."
+        ),
+        "welcome": (
+            "👋 <b>Сәлеметсіз бе! Адамдардың каналдарындағы бескінші модулдерді таңдауға"
+            " құндығыңыз бар ба? Мен біздің жүктелген наборлардың бірнеше тізімін сізге"
+            " ұсынамын. Егер сізде бұл менюді қайта қосылуға болса, /presets командасын"
+            " жіберіңіз</b>"
+        ),
+        "preset": "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>Бұл набордағы модулдер:</b>\n\n{}",
+        "back": "🔙 Артқа",
+        "install": "📦 Орнату",
+        "installing": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Орнату наборы"
+            " >/b><code>{}</code><b>...</b>"
+        ),
+        "installing_module": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Орнату наборы"
+            "</b> <code>{}</code> <b>({}/{} модулдер)...</b>\n\n<emoji"
+            " document_id=5188377234380954537>🌘</emoji> <i>Модуль орнату {}...</i>"
+        ),
+        "installed": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>Набор"
+            "</b> <code>{}</code> <b>орнатылды!</b>"
+        ),
+        "already_installed": "✅ [Орнатылды]",
     }
 
     async def client_ready(self):
@@ -462,7 +462,6 @@ class Presets(loader.Module):
             return
 
         self.set("sent", True)
-
         await self._menu()
 
     async def _menu(self):
@@ -478,7 +477,8 @@ class Presets(loader.Module):
     async def _install(self, call: InlineCall, preset: str):
         await call.delete()
         m = await self._client.send_message(
-            self.inline.bot_id, self.strings("installing").format(preset)
+            self.inline.bot_id,
+            self.strings("installing").format(preset),
         )
         for i, module in enumerate(PRESETS[preset]):
             await m.edit(
@@ -493,8 +493,8 @@ class Presets(loader.Module):
 
             await asyncio.sleep(1)
 
-        if self.lookup("loader")._fully_loaded:
-            self.lookup("loader")._update_modules_in_db()
+        if self.lookup("loader").fully_loaded:
+            self.lookup("loader").update_modules_in_db()
 
         await m.edit(self.strings("installed").format(preset))
         await self._menu()

@@ -16,32 +16,27 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
 import inspect
 import logging
 import os
-import re
 import subprocess
-import atexit
-import typing
 
 import aiohttp_jinja2
 import jinja2
 from aiohttp import web
 
-from . import root
-from ..tl_cache import CustomTelegramClient
 from ..database import Database
 from ..loader import Modules
+from ..tl_cache import CustomTelegramClient
+from . import proxypass, root
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +49,7 @@ class Web(root.Web):
         self.ready = asyncio.Event()
         self.client_data = {}
         self.app = web.Application()
+        self.proxypasser = proxypass.ProxyPasser()
         aiohttp_jinja2.setup(
             self.app,
             filters={"getdoc": inspect.getdoc, "ascii": ascii},
@@ -77,91 +73,6 @@ class Web(root.Web):
 
             self.ready.set()
 
-    async def _sleep_for_task(self, callback: callable, data: bytes, delay: int):
-        await asyncio.sleep(delay)
-        await callback(data.decode("utf-8"))
-
-    async def _read_stream(
-        self,
-        callback: callable,
-        stream: typing.BinaryIO,
-        delay: int,
-    ) -> None:
-        last_task = None
-        for getline in iter(stream.readline, ""):
-            data_chunk = await getline
-            if not data_chunk:
-                if last_task:
-                    last_task.cancel()
-                    await callback(data_chunk.decode("utf-8"))
-                    if not self._stream_processed.is_set():
-                        self._stream_processed.set()
-                break
-
-            if last_task:
-                last_task.cancel()
-
-            last_task = asyncio.ensure_future(
-                self._sleep_for_task(callback, data_chunk, delay)
-            )
-
-    def _kill_tunnel(self):
-        try:
-            self._sproc.kill()
-        except Exception:
-            pass
-        else:
-            logger.debug("Proxy pass tunnel killed")
-
-    async def _reopen_tunnel(self):
-        await asyncio.sleep(3600)
-        self._kill_tunnel()
-        self._stream_processed.clear()
-        self._tunnel_url = None
-        url = await asyncio.wait_for(self._get_proxy_pass_url(self.port), timeout=10)
-
-        if not url:
-            raise Exception("Failed to get proxy pass url")
-
-        self._tunnel_url = url
-        asyncio.ensure_future(self._reopen_tunnel())
-
-    async def _process_stream(self, stdout_line: str) -> None:
-        if self._stream_processed.is_set():
-            return
-
-        regex = r"[a-zA-Z0-9]\.lhrtunnel\.link tunneled.*(https:\/\/.*\.link)"
-
-        if re.search(regex, stdout_line):
-            logger.debug("Proxy pass tunneled: %s", stdout_line)
-            self._tunnel_url = re.search(regex, stdout_line)[1]
-            self._stream_processed.set()
-            atexit.register(self._kill_tunnel)
-
-    async def _get_proxy_pass_url(self, port: int) -> typing.Optional[str]:
-        logger.debug("Starting proxy pass shell")
-        self._sproc = await asyncio.create_subprocess_shell(
-            "ssh -o StrictHostKeyChecking=no -R"
-            f" 80:localhost:{port} nokey@localhost.run",
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-
-        self._stream_processed = asyncio.Event()
-        logger.debug("Starting proxy pass reader")
-        asyncio.ensure_future(
-            self._read_stream(
-                self._process_stream,
-                self._sproc.stdout,
-                1,
-            )
-        )
-
-        await self._stream_processed.wait()
-
-        return self._tunnel_url if hasattr(self, "_tunnel_url") else None
-
     async def get_url(self, proxy_pass: bool) -> str:
         url = None
 
@@ -170,9 +81,8 @@ class Web(root.Web):
 
         if proxy_pass:
             with contextlib.suppress(Exception):
-                self._kill_tunnel()
                 url = await asyncio.wait_for(
-                    self._get_proxy_pass_url(self.port),
+                    self.proxypasser.get_url(self.port),
                     timeout=10,
                 )
 
@@ -190,8 +100,6 @@ class Web(root.Web):
             )
 
             url = f"http://{ip}:{self.port}"
-        else:
-            asyncio.ensure_future(self._reopen_tunnel())
 
         self.url = url
         return url

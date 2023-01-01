@@ -1,39 +1,37 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import contextlib
 import copy
 import logging
 import os
-import time
-from asyncio import Event
-import typing
 import random
-from urllib.parse import urlparse
-import grapheme
+import time
 import traceback
+import typing
+from asyncio import Event
+from urllib.parse import urlparse
 
+import grapheme
 from aiogram.types import (
     InlineQuery,
     InlineQueryResultArticle,
-    InlineQueryResultPhoto,
-    InputTextMessageContent,
+    InlineQueryResultAudio,
     InlineQueryResultDocument,
     InlineQueryResultGif,
-    InlineQueryResultVideo,
     InlineQueryResultLocation,
-    InlineQueryResultAudio,
+    InlineQueryResultPhoto,
+    InlineQueryResultVideo,
+    InputTextMessageContent,
 )
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
+from telethon.tl.types import Message
 
-from .. import utils, main
+from .. import main, utils
 from ..types import HikkaReplyMarkup
 from .types import InlineMessage, InlineUnit
 
@@ -271,13 +269,14 @@ class Form(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji(self._client)
+                        utils.get_platform_emoji()
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + self._client.loader._lookup("translations").strings(
+                    + self._client.loader.lookup("translations").strings(
                         "opening_form"
                     ),
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
                 )
             except Exception:
                 status_message = None
@@ -312,8 +311,10 @@ class Form(InlineUnit):
             "type": "form",
             "text": text,
             "buttons": reply_markup,
+            "caller": message,
             "chat": None,
             "message_id": None,
+            "top_msg_id": utils.get_topic(message),
             "uid": unit_id,
             "on_unload": on_unload,
             "future": Event(),
@@ -334,7 +335,10 @@ class Form(InlineUnit):
         async def answer(msg: str):
             nonlocal message
             if isinstance(message, Message):
-                await (message.edit if message.out else message.respond)(msg)
+                await (message.edit if message.out else message.respond)(
+                    msg,
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                )
             else:
                 await self._client.send_message(message, msg)
 
@@ -348,13 +352,13 @@ class Form(InlineUnit):
             )
         except ChatSendInlineForbiddenError:
             await answer(
-                self._client.loader._lookup("translations").strings("inline403")
+                self._client.loader.lookup("translations").strings("inline403")
             )
         except Exception:
             logger.exception("Can't send form")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = self._client.loader._lookup("translations").strings(
+                msg = self._client.loader.lookup("translations").strings(
                     "invoke_failed"
                 )
             else:
@@ -415,7 +419,7 @@ class Form(InlineUnit):
                                 id=utils.rand(20),
                                 title=button["input"],
                                 description=(
-                                    self._client.loader._lookup("translations")
+                                    self._client.loader.lookup("translations")
                                     .strings("keep_id")
                                     .format(random.choice(VERIFICATION_EMOJIES))
                                 ),

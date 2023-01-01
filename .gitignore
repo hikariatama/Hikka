@@ -172,3 +172,4 @@ vendor/
 Pipfile.lock
 
 hikka.log.*
+unknown_errors.txt

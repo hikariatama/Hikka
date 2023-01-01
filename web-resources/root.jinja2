@@ -1,9 +1,9 @@
 <!--
-    █ █ ▀ █▄▀ ▄▀█ █▀█ ▀   ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
-    █▀█ █ █ █ █▀█ █▀▄ █ ▄ █▀█  █  █▀█ █ ▀ █ █▀█
-
-    Copyright 2022 t.me/hikariatama
-    Licensed under the GNU GPLv3
+  ©️ Dan Gazizullin, 2021-2022
+  This file is a part of Hikka Userbot
+  🌐 https://github.com/hikariatama/Hikka
+  You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+  🔑 https://www.gnu.org/licenses/agpl-3.0.html
 -->
 
 {% extends "base.jinja2" %}
@@ -11,6 +11,9 @@
 {% block head %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bodymovin/5.8.1/lottie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Snowstorm/20131208/snowstorm-min.js" async></script>
+<script src="//unpkg.com/@dotlottie/player-component@1.0.0/dist/dotlottie-player.js"></script>
+<script src="//unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
 
 <link href="//cdn.jsdelivr.net/npm/css.gg/icons/all.css" rel="stylesheet">
 
@@ -26,7 +29,7 @@
 </div>
 <div class="blur auth vert_center">
   <div id="tg_icon"></div>
-  <div class="waiting_for_auth">Waiting for permission...</div>
+  <div class="waiting_for_auth">Waiting for authentification...</div>
   <div class="confirm_auth">Please, confirm action in <span style="color:#28a0dc">Telegram</span></div>
 </div>
 <div class="auth-code-form blur">
@@ -35,6 +38,15 @@
   <span class="code-caption">Enter the code you recieved from Telegram</span>
   <input type="text" class="code-input" autocomplete="off">
   <div class="enter">Enter</div>
+</div>
+<div class="eula-form blur">
+  <div class="vert_center" style="height: 100%">
+    <div>
+      <div id="law"></div>
+      <br><br>
+      <span class="code-caption">You are <span style="color:#c54245">prohibited</span> from adding more than 1 account on the current platform by its EULA.</span>
+    </div>
+  </div>
 </div>
 <div class="wrapper">
   <div class="blur main finish_block">
@@ -48,8 +60,15 @@
     </div>
   </div>
   <div class="blur main installation">
-    <div class="title">Hikka</div>
-    <div class="description"><span style="color:#28a0dc">Awesomeness</span> is in your hands<br><span
+    <div class="title">
+      <div class="hikka_label">
+        <div class="label_inner">
+          <img src="{{ platform_emoji }}" class="moon">
+          &nbsp;Hikka
+        </div>
+      </div>
+    </div><br>
+    <div class="description">Incomprehensibly <span style="color:#c54245">the best</span> userbot<br><span
         style="color: #18cc18; display: none" class="authorized">Authorized!</span></div>
     <div class="center">
       {% if not tg_done %}
@@ -64,7 +83,7 @@
           </div>
         </div>
       </div>
-      {% elif not lavhost %}
+      {% else %}
       <div class="button" id="get_started">
         <div class="horiz_center">
           <div class="vert_center">
@@ -77,7 +96,7 @@
         </div>
       </div>
       {% endif %}
-      {% if skip_creds and not lavhost %}
+      {% if skip_creds and not lavhost and not miyahost %}
       <div class="button" id="enter_api">
         <div class="horiz_center">
           <div class="vert_center">
@@ -111,6 +130,33 @@
         <input class="custom_bot" id="custom_bot" placeholder="Leave empty to generate automatically"
           style="width: 20em;" type="text">
       </span>
+      <span id="block_qr_login">
+        <div class="qr_outer">
+          <div class="qr_inner">
+            <dotlottie-player
+              autoplay
+              loop
+              mode="normal"
+              src="https://static.hikari.gay/4T7FajtZbx.lottie"
+              style="width: 100px; height: 100px"
+            >
+            </dotlottie-player>
+          </div>
+        </div>
+        <div class="tg_guide">
+          <ol>
+            <li>
+              <span>Open Telegram on your phone</span>
+            </li>
+            <li>
+              <span>Go to <b>Settings</b> → <b>Devices</b> → <b>Link Desktop Device</b></span>
+            </li>
+            <li>
+              <span>Point your phone at this screen to confirm login</span>
+            </li>
+          </ol>
+        </div>
+      </span>
     </div>
 
     <div class="horiz_center">
@@ -122,6 +168,17 @@
 
           <div class="vert_center">
             <i class="gg-chevron-right-o"></i>
+          </div>
+        </div>
+      </div>
+      <div id="denyqr" class="button">
+        <div class="horiz_center">
+          <div class="vert_center">
+            Auth using phone instead
+          </div>
+
+          <div class="vert_center">
+            <i class="gg-smartphone"></i>
           </div>
         </div>
       </div>
@@ -155,7 +212,4 @@
     })
 </script>
 <script src="{{ static("root.js") }}"></script>
-{% if okteto %}
-<script src="{{ static("okteto.js") }}"></script>
-{% endif %}
 {% endblock %}

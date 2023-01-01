@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
@@ -23,12 +21,11 @@ from aiogram.types import (
     InputTextMessageContent,
 )
 from aiogram.utils.exceptions import RetryAfter
-
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
+from telethon.tl.types import Message
 
-from .. import utils, main
+from .. import main, utils
 from ..types import HikkaReplyMarkup
 from .types import InlineMessage, InlineUnit
 
@@ -46,7 +43,7 @@ class List(InlineUnit):
         manual_security: bool = False,
         disable_security: bool = False,
         ttl: typing.Union[int, bool] = False,
-        on_unload: typing.Optional[callable] = None,
+        on_unload: typing.Optional[typing.Callable[[], typing.Any]] = None,
         silent: bool = False,
         custom_buttons: typing.Optional[HikkaReplyMarkup] = None,
     ) -> typing.Union[bool, InlineMessage]:
@@ -144,8 +141,10 @@ class List(InlineUnit):
 
         self._units[unit_id] = {
             "type": "list",
+            "caller": message,
             "chat": None,
             "message_id": None,
+            "top_msg_id": utils.get_topic(message),
             "uid": unit_id,
             "current_index": 0,
             "strings": strings,
@@ -163,11 +162,9 @@ class List(InlineUnit):
         btn_call_data = utils.rand(10)
 
         self._custom_map[btn_call_data] = {
-            "handler": asyncio.coroutine(
-                functools.partial(
-                    self._list_page,
-                    unit_id=unit_id,
-                )
+            "handler": functools.partial(
+                self._list_page,
+                unit_id=unit_id,
             ),
             **(
                 {"ttl": self._units[unit_id]["ttl"]}
@@ -187,13 +184,14 @@ class List(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji(self._client)
+                        utils.get_platform_emoji()
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + self._client.loader._lookup("translations").strings(
+                    + self._client.loader.lookup("translations").strings(
                         "opening_list"
-                    )
+                    ),
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
                 )
             except Exception:
                 status_message = None
@@ -203,7 +201,10 @@ class List(InlineUnit):
         async def answer(msg: str):
             nonlocal message
             if isinstance(message, Message):
-                await (message.edit if message.out else message.respond)(msg)
+                await (message.edit if message.out else message.respond)(
+                    msg,
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                )
             else:
                 await self._client.send_message(message, msg)
 
@@ -217,13 +218,13 @@ class List(InlineUnit):
             )
         except ChatSendInlineForbiddenError:
             await answer(
-                self._client.loader._lookup("translations").strings("inline403")
+                self._client.loader.lookup("translations").strings("inline403")
             )
         except Exception:
             logger.exception("Can't send list")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = self._client.loader._lookup("translations").strings(
+                msg = self._client.loader.lookup("translations").strings(
                     "invoke_failed"
                 )
             else:

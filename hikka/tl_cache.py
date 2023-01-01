@@ -1,31 +1,37 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import copy
 import inspect
-import time
 import logging
+import time
 import typing
 
 from telethon import TelegramClient
+from telethon.errors.rpcerrorlist import TopicDeletedError
 from telethon.hints import EntityLike
-from telethon.utils import is_list_like
 from telethon.network import MTProtoSender
-from telethon.tl.tlobject import TLRequest
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.types import ChannelFull, UserFull
+from telethon.tl.tlobject import TLRequest
+from telethon.tl.types import (
+    ChannelFull,
+    Message,
+    Updates,
+    UpdatesCombined,
+    UpdateShort,
+    UserFull,
+)
+from telethon.utils import is_list_like
 
 from .types import (
-    CacheRecord,
-    CacheRecordPerms,
+    CacheRecordEntity,
     CacheRecordFullChannel,
     CacheRecordFullUser,
+    CacheRecordPerms,
     Module,
 )
 
@@ -55,6 +61,7 @@ class CustomTelegramClient(TelegramClient):
         self._hikka_fullchannel_cache = {}
         self._hikka_fulluser_cache = {}
         self.__forbidden_constructors = []
+        self.raw_updates_processor = None  # Will be monkeypatched by pyro proxy
 
     async def force_get_entity(self, *args, **kwargs):
         """Forcefully makes a request to Telegram to get the entity."""
@@ -118,7 +125,7 @@ class CustomTelegramClient(TelegramClient):
         resolved_entity = await TelegramClient.get_entity(self, entity)
 
         if resolved_entity:
-            cache_record = CacheRecord(hashable_entity, resolved_entity, exp)
+            cache_record = CacheRecordEntity(hashable_entity, resolved_entity, exp)
             self._hikka_entity_cache[hashable_entity] = cache_record
             logger.debug("Saved hashable_entity %s to cache", hashable_entity)
 
@@ -290,7 +297,7 @@ class CustomTelegramClient(TelegramClient):
         if (
             not force
             and self._hikka_fullchannel_cache.get(hashable_entity)
-            and not self._hikka_fullchannel_cache[hashable_entity].expired()
+            and not self._hikka_fullchannel_cache[hashable_entity].expired
             and self._hikka_fullchannel_cache[hashable_entity].ts + exp > time.time()
         ):
             return self._hikka_fullchannel_cache[hashable_entity].full_channel
@@ -340,7 +347,7 @@ class CustomTelegramClient(TelegramClient):
         if (
             not force
             and self._hikka_fulluser_cache.get(hashable_entity)
-            and not self._hikka_fulluser_cache[hashable_entity].expired()
+            and not self._hikka_fulluser_cache[hashable_entity].expired
             and self._hikka_fulluser_cache[hashable_entity].ts + exp > time.time()
         ):
             return self._hikka_fulluser_cache[hashable_entity].full_user
@@ -352,6 +359,103 @@ class CustomTelegramClient(TelegramClient):
             exp,
         )
         return result
+
+    @staticmethod
+    def _find_message_obj_in_frame(
+        chat_id: int,
+        frame: inspect.FrameInfo,
+    ) -> typing.Optional[Message]:
+        """
+        Finds the message object from the frame
+        """
+        logger.debug("Finding message object in frame %s", frame)
+        return next(
+            (
+                obj
+                for obj in frame.frame.f_locals.values()
+                if isinstance(obj, Message)
+                and getattr(obj.reply_to, "forum_topic", False)
+                and chat_id == getattr(obj.peer_id, "channel_id", None)
+            ),
+            None,
+        )
+
+    async def _find_message_obj_in_stack(
+        self,
+        chat: EntityLike,
+        stack: typing.List[inspect.FrameInfo],
+    ) -> typing.Optional[Message]:
+        """
+        Finds the message object from the stack
+        """
+        chat_id = (await self.get_entity(chat, exp=0)).id
+        logger.debug("Finding message object in stack for chat %s", chat_id)
+        return next(
+            (
+                self._find_message_obj_in_frame(chat_id, frame_info)
+                for frame_info in stack
+                if self._find_message_obj_in_frame(chat_id, frame_info)
+            ),
+            None,
+        )
+
+    async def _find_topic_in_stack(
+        self,
+        chat: EntityLike,
+        stack: typing.List[inspect.FrameInfo],
+    ) -> typing.Optional[Message]:
+        """
+        Finds the message object from the stack
+        """
+        message = await self._find_message_obj_in_stack(chat, stack)
+        return (
+            (message.reply_to.reply_to_top_id or message.reply_to.reply_to_msg_id)
+            if message
+            else None
+        )
+
+    async def _topic_guesser(
+        self,
+        native_method: typing.Callable[..., typing.Awaitable[Message]],
+        stack: typing.List[inspect.FrameInfo],
+        *args,
+        **kwargs,
+    ):
+        no_retry = kwargs.pop("_topic_no_retry", False)
+        try:
+            return await native_method(self, *args, **kwargs)
+        except TopicDeletedError:
+            if no_retry:
+                raise
+
+            logger.debug("Topic deleted, trying to guess topic id")
+
+            topic = await self._find_topic_in_stack(args[0], stack)
+
+            logger.debug("Guessed topic id: %s", topic)
+
+            if not topic:
+                raise
+
+            kwargs["reply_to"] = topic
+            kwargs["_topic_no_retry"] = True
+            return await self._topic_guesser(native_method, stack, *args, **kwargs)
+
+    async def send_file(self, *args, **kwargs) -> Message:
+        return await self._topic_guesser(
+            TelegramClient.send_file,
+            inspect.stack(),
+            *args,
+            **kwargs,
+        )
+
+    async def send_message(self, *args, **kwargs) -> Message:
+        return await self._topic_guesser(
+            TelegramClient.send_message,
+            inspect.stack(),
+            *args,
+            **kwargs,
+        )
 
     async def _call(
         self,
@@ -447,3 +551,12 @@ class CustomTelegramClient(TelegramClient):
         :param constructors: Constructor ids to forbid
         """
         self.__forbidden_constructors = list(set(constructors))
+
+    def _handle_update(
+        self: "CustomTelegramClient",
+        update: typing.Union[Updates, UpdatesCombined, UpdateShort],
+    ):
+        if self.raw_updates_processor is not None:
+            self.raw_updates_processor(update)
+
+        super()._handle_update(update)

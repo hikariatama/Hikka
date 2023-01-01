@@ -1,19 +1,18 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import ast
+import contextlib
 import functools
-from math import ceil
 import typing
+from math import ceil
 
 from telethon.tl.types import Message
 
-from .. import loader, utils, translations
+from .. import loader, translations, utils
 from ..inline.types import InlineCall
 
 # Everywhere in this module, we use the following naming convention:
@@ -28,47 +27,49 @@ class HikkaConfigMod(loader.Module):
 
     strings = {
         "name": "HikkaConfig",
-        "choose_core": "🎚 <b>Choose a category</b>",
-        "configure": "🎚 <b>Choose a module to configure</b>",
-        "configure_lib": "🪴 <b>Choose a library to configure</b>",
+        "choose_core": "⚙️ <b>Choose a category</b>",
+        "configure": "⚙️ <b>Choose a module to configure</b>",
+        "configure_lib": "📦 <b>Choose a library to configure</b>",
         "configuring_mod": (
-            "🎚 <b>Choose config option for mod</b> <code>{}</code>\n\n<b>Current"
+            "⚙️ <b>Choose config option for mod</b> <code>{}</code>\n\n<b>Current"
             " options:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Choose config option for library</b> <code>{}</code>\n\n<b>Current"
+            "📦 <b>Choose config option for library</b> <code>{}</code>\n\n<b>Current"
             " options:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Configuring option </b><code>{}</code><b> of mod"
-            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
+            "⚙️ <b>Configuring option</b> <code>{}</code> <b>of mod"
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
             " {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Configuring option </b><code>{}</code><b> of library"
-            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
+            "📦 <b>Configuring option</b> <code>{}</code> <b>of library"
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Default: {}</b>\n\n<b>Current:"
             " {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Option </b><code>{}</code><b> of module </b><code>{}</code><b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Option"
+            "</b> <code>{}</code> <b>of module</b> <code>{}</code><b>"
             " saved!</b>\n<b>Current: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Option </b><code>{}</code><b> of library </b><code>{}</code><b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Option"
+            "</b> <code>{}</code> <b>of library</b> <code>{}</code><b>"
             " saved!</b>\n<b>Current: {}</b>"
         ),
         "option_reset": (
-            "♻️ <b>Option </b><code>{}</code><b> of module </b><code>{}</code><b> has"
+            "♻️ <b>Option</b> <code>{}</code> <b>of module</b> <code>{}</code> <b>has"
             " been reset to default</b>\n<b>Current: {}</b>"
         ),
         "option_reset_lib": (
-            "♻️ <b>Option </b><code>{}</code><b> of library </b><code>{}</code><b> has"
+            "♻️ <b>Option</b> <code>{}</code> <b>of library</b> <code>{}</code> <b>has"
             " been reset to default</b>\n<b>Current: {}</b>"
         ),
         "args": "🚫 <b>You specified incorrect args</b>",
         "no_mod": "🚫 <b>Module doesn't exist</b>",
         "no_option": "🚫 <b>Configuration option doesn't exist</b>",
-        "validation_error": "🚫 <b>You entered incorrect config value. \nError: {}</b>",
+        "validation_error": "🚫 <b>You entered incorrect config value.\nError: {}</b>",
         "try_again": "🔁 Try again",
         "typehint": "🕵️ <b>Must be a{eng_art} {}</b>",
         "set": "set",
@@ -85,45 +86,47 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Hide value",
         "builtin": "🛰 Built-in",
         "external": "🛸 External",
-        "libraries": "🪴 Libraries",
+        "libraries": "📦 Libraries",
     }
 
     strings_ru = {
-        "choose_core": "🎚 <b>Выбери категорию</b>",
-        "configure": "🎚 <b>Выбери модуль для настройки</b>",
-        "configure_lib": "🪴 <b>Выбери библиотеку для настройки</b>",
+        "choose_core": "⚙️ <b>Выбери категорию</b>",
+        "configure": "⚙️ <b>Выбери модуль для настройки</b>",
+        "configure_lib": "📦 <b>Выбери библиотеку для настройки</b>",
         "configuring_mod": (
-            "🎚 <b>Выбери параметр для модуля</b> <code>{}</code>\n\n<b>Текущие"
+            "⚙️ <b>Выбери параметр для модуля</b> <code>{}</code>\n\n<b>Текущие"
             " настройки:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Выбери параметр для библиотеки</b> <code>{}</code>\n\n<b>Текущие"
+            "📦 <b>Выбери параметр для библиотеки</b> <code>{}</code>\n\n<b>Текущие"
             " настройки:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Управление параметром </b><code>{}</code><b> модуля"
-            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
+            "⚙️ <b>Управление параметром</b> <code>{}</code> <b>модуля"
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
             " {}</b>\n\n<b>Текущее: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Управление параметром </b><code>{}</code><b> библиотеки"
-            " </b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
+            "📦 <b>Управление параметром</b> <code>{}</code> <b>библиотеки"
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандартное:"
             " {}</b>\n\n<b>Текущее: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Параметр"
+            "</b> <code>{}</code> <b>модуля</b> <code>{}</code><b>"
             " сохранен!</b>\n<b>Текущее: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Параметр </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Параметр"
+            "</b> <code>{}</code> <b>библиотеки</b> <code>{}</code><b>"
             " сохранен!</b>\n<b>Текущее: {}</b>"
         ),
         "option_reset": (
-            "♻️ <b>Параметр </b><code>{}</code><b> модуля </b><code>{}</code><b>"
+            "♻️ <b>Параметр</b> <code>{}</code> <b>модуля</b> <code>{}</code><b>"
             " сброшен до значения по умолчанию</b>\n<b>Текущее: {}</b>"
         ),
         "option_reset_lib": (
-            "♻️ <b>Параметр </b><code>{}</code><b> библиотеки </b><code>{}</code><b>"
+            "♻️ <b>Параметр</b> <code>{}</code> <b>библиотеки</b> <code>{}</code><b>"
             " сброшен до значения по умолчанию</b>\n<b>Текущее: {}</b>"
         ),
         "_cls_doc": "Интерактивный конфигуратор Hikka",
@@ -131,7 +134,7 @@ class HikkaConfigMod(loader.Module):
         "no_mod": "🚫 <b>Модуль не существует</b>",
         "no_option": "🚫 <b>У модуля нет такого значения конфига</b>",
         "validation_error": (
-            "🚫 <b>Введено некорректное значение конфига. \nОшибка: {}</b>"
+            "🚫 <b>Введено некорректное значение конфига.\nОшибка: {}</b>"
         ),
         "try_again": "🔁 Попробовать еще раз",
         "typehint": "🕵️ <b>Должно быть {}</b>",
@@ -149,53 +152,119 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Скрыть значение",
         "builtin": "🛰 Встроенные",
         "external": "🛸 Внешние",
-        "libraries": "🪴 Библиотеки",
+        "libraries": "📦 Библиотеки",
+    }
+
+    strings_it = {
+        "choose_core": "⚙️ <b>Scegli la categoria</b>",
+        "configure": "⚙️ <b>Scegli il modulo da configurare</b>",
+        "configure_lib": "📦 <b>Scegli la libreria da configurare</b>",
+        "configuring_mod": (
+            "⚙️ <b>Scegli il parametro per il modulo</b> <code>{}</code>\n\n<b>Attuale"
+            " configurazione:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Scegli il parametro per la libreria</b> <code>{}</code>\n\n<b>Attuale"
+            " configurazione:</b>\n\n{}"
+        ),
+        "configuring_option": (
+            "⚙️ <b>Configurazione dell'opzione</b> <code>{}</code> <b>del"
+            " modulo</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Standard:"
+            " {}</b>\n\n<b>Attuale: {}</b>\n\n{}"
+        ),
+        "configuring_option_lib": (
+            "📦 <b>Configurazione dell'opzione</b> <code>{}</code> <b>della"
+            " libreria</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Standard:"
+            " {}</b>\n\n<b>Attuale: {}</b>\n\n{}"
+        ),
+        "option_saved": (
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Opzione"
+            "</b> <code>{}</code> <b>del modulo</b> <code>{}</code><b>"
+            " salvata!</b>\n<b>Attuale: {}</b>"
+        ),
+        "option_saved_lib": (
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Opzione"
+            "</b> <code>{}</code> <b>della libreria</b> <code>{}</code><b>"
+            " salvata!</b>\n<b>Attuale: {}</b>"
+        ),
+        "option_reset": (
+            "♻️ <b>Opzione</b> <code>{}</code> <b>del modulo</b> <code>{}</code><b>"
+            " resettata al valore di default</b>\n<b>Attuale: {}</b>"
+        ),
+        "option_reset_lib": (
+            "♻️ <b>Opzione</b> <code>{}</code> <b>della libreria</b> <code>{}</code><b>"
+            " resettata al valore di default</b>\n<b>Attuale: {}</b>"
+        ),
+        "_cls_doc": "Configuratore interattivo di Hikka",
+        "args": "🚫 <b>Hai fornito argomenti non validi</b>",
+        "validation_error": (
+            "🚫 <b>Hai fornito un valore di configurazione non valido.\nErrore: {}</b>"
+        ),
+        "try_again": "🔁 Riprova",
+        "typehint": "🕵️ <b>Dovrebbe essere {}</b>",
+        "set": "impostare",
+        "set_default_btn": "♻️ Imposta valore di default",
+        "enter_value_btn": "✍️ Inserisci valore",
+        "enter_value_desc": "✍️ Inserisci il nuovo valore di questo parametro",
+        "add_item_desc": "✍️ Inserisci l'elemento che vuoi aggiungere",
+        "remove_item_desc": "✍️ Inserisci l'elemento che vuoi rimuovere",
+        "back_btn": "👈 Indietro",
+        "close_btn": "🔻 Chiudi",
+        "add_item_btn": "➕ Aggiungi elemento",
+        "remove_item_btn": "➖ Rimuovi elemento",
+        "show_hidden": "🚸 Mostra valore",
+        "hide_value": "🔒 Nascondi valore",
+        "builtin": "🛰 Built-in",
+        "external": "🛸 Esterni",
+        "libraries": "📦 Librerie",
     }
 
     strings_de = {
-        "choose_core": "🎚 <b>Wähle eine Kategorie</b>",
-        "configure": "🎚 <b>Modul zum Konfigurieren auswählen</b>",
-        "configure_lib": "🪴 <b>Wählen Sie eine zu konfigurierende Bibliothek aus</b>",
+        "choose_core": "⚙️ <b>Wähle eine Kategorie</b>",
+        "configure": "⚙️ <b>Modul zum Konfigurieren auswählen</b>",
+        "configure_lib": "📦 <b>Wählen Sie eine zu konfigurierende Bibliothek aus</b>",
         "configuring_mod": (
-            "🎚 <b>Wählen Sie einen Parameter für das Modul aus</b>"
+            "⚙️ <b>Wählen Sie einen Parameter für das Modul aus</b>"
             " <code>{}</code>\n\n<b>Aktuell Einstellungen:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Wählen Sie eine Option für die Bibliothek aus</b>"
+            "📦 <b>Wählen Sie eine Option für die Bibliothek aus</b>"
             " <code>{}</code>\n\n<b>Aktuell Einstellungen:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
-            "<b> konfigurieren</b>\n<i>ℹ️ {}</i>\n\n<b>Standard: {}</b>\n\n<b>"
+            "⚙️ <b>Option</b> <code>{}</code> <b>des Moduls</b> <code>{}</code>"
+            " <b>konfigurieren</b>\n<i>ℹ️ {}</i>\n\n<b>Standard: {}</b>\n\n<b>"
             "Aktuell: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Option </b><code>{}</code><b> der Bibliothek </b><code>{}</code>"
-            "<b> konfigurieren</b>\n<i>ℹ️ {}</i>\n\n<b>Standard: {}</b>\n\n<b>"
+            "📦 <b>Option</b> <code>{}</code> <b>der Bibliothek</b> <code>{}</code>"
+            " <b>konfigurieren</b>\n<i>ℹ️ {}</i>\n\n<b>Standard: {}</b>\n\n<b>"
             "Aktuell: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
-            "<b> gespeichert!</b>\n<b>Aktuell: {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Option"
+            "</b> <code>{}</code> <b>des Moduls</b> <code>{}</code><b>"
+            " gespeichert!</b>\n<b>Aktuell: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Option </b><code>{}</code><b> der Bibliothek </b><code>{}</code>"
-            "<b> gespeichert!</b>\n<b>Aktuell: {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Option"
+            "</b> <code>{}</code> <b>der Bibliothek</b> <code>{}</code><b>"
+            " gespeichert!</b>\n<b>Aktuell: {}</b>"
         ),
         "option_reset": (
-            "♻️ <b>Option </b><code>{}</code><b> des Moduls </b><code>{}</code>"
-            "<b> auf den Standardwert zurückgesetzt</b>\n<b>Aktuell: {}</b>"
+            "♻️ <b>Option</b> <code>{}</code> <b>des Moduls</b> <code>{}</code>"
+            " <b>auf den Standardwert zurückgesetzt</b>\n<b>Aktuell: {}</b>"
         ),
         "option_reset_lib": (
-            "♻️ <b>Option </b><code>{}</code><b> der Bibliothek </b><code>{}</code>"
-            "<b> auf den Standardwert zurückgesetzt</b>\n<b>Aktuell: {}</b>"
+            "♻️ <b>Option</b> <code>{}</code> <b>der Bibliothek</b> <code>{}</code>"
+            " <b>auf den Standardwert zurückgesetzt</b>\n<b>Aktuell: {}</b>"
         ),
         "_cls_doc": "Interaktiver Konfigurator von Hikka",
         "args": "🚫 <b>Du hast falsche Argumente angegeben</b>",
         "no_mod": "🚫 <b>Modul existiert nicht</b>",
         "no_option": "🚫 <b>Modul hat keine solche Konfigurationsoption</b>",
         "validation_error": (
-            "🚫 <b>Ungültiger Konfigurationswert eingegeben. \nFehler: {}</b>"
+            "🚫 <b>Ungültiger Konfigurationswert eingegeben.\nFehler: {}</b>"
         ),
         "try_again": "🔁 Versuche es noch einmal",
         "typehint": "🕵️ <b>Sollte {} sein</b>",
@@ -213,105 +282,46 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Wert verbergen",
         "builtin": "🛰 Ingebaut",
         "external": "🛸 Extern",
-        "libraries": "🪴 Bibliotheken",
-    }
-
-    strings_hi = {
-        "choose_core": "🎚 <b>एक श्रेणी चुनें</b>",
-        "configure": "🎚 <b>कॉन्फ़िगर करने के लिए एक मॉड्यूल चुनें</b>",
-        "configure_lib": "🪴 <b>कॉन्फ़िगर करने के लिए लाइब्रेरी का चयन करें</b>",
-        "configuring_mod": (
-            "🎚 <b>मॉड्यूल के लिए एक पैरामीटर चुनें</b> <code>{}</code>\n\n<b>वर्तमान"
-            " सेटिंग:</b>\n\n{}"
-        ),
-        "configuring_lib": (
-            "🪴 <b>लाइब्रेरी के लिए एक विकल्प चुनें</b> <code>{}</code>\n\n<b>वर्तमान"
-            " सेटिंग:</b>\n\n{}"
-        ),
-        "configuring_option": (
-            "🎚 <b>विकल्प </b><code>{}</code><b> मॉड्यूल </b><code>{}</code>"
-            "<b> कॉन्फ़िगर कर रहा है</b>\n<i>ℹ️ {}</i>\n\n<b>डिफ़ॉल्ट: {}</b>\n\n<b>"
-            "वर्तमान: {}</b>\n\n{}"
-        ),
-        "configuring_option_lib": (
-            "🪴 <b>विकल्प </b><code>{}</code><b> लाइब्रेरी </b><code>{}</code>"
-            "<b> कॉन्फ़िगर कर रहा है</b>\n<i>ℹ️ {}</i>\n\n<b>डिफ़ॉल्ट: {}</b>\n\n<b>"
-            "वर्तमान: {}</b>\n\n{}"
-        ),
-        "option_saved": (
-            "🎚 <b>विकल्प </b><code>{}</code><b> मॉड्यूल </b><code>{}</code>"
-            "<b> सहेजा गया!</b>\n<b>वर्तमान: {}</b>"
-        ),
-        "option_saved_lib": (
-            "🪴 <b>विकल्प </b><code>{}</code><b> लाइब्रेरी </b><code>{}</code>"
-            "<b> सहेजा गया!</b>\n<b>वर्तमान: {}</b>"
-        ),
-        "option_reset": (
-            "♻️ <b>विकल्प </b><code>{}</code><b> मॉड्यूल </b><code>{}</code>"
-            "<b> डिफ़ॉल्ट मान पर रीसेट कर दिया गया</b>\n<b>वर्तमान: {}</b>"
-        ),
-        "option_reset_lib": (
-            "♻️ <b>विकल्प </b><code>{}</code><b> लाइब्रेरी </b><code>{}</code>"
-            "<b> डिफ़ॉल्ट मान पर रीसेट कर दिया गया</b>\n<b>वर्तमान: {}</b>"
-        ),
-        "_cls_doc": "Hikka की इंटरैक्टिव कॉन्फ़िगरेशन",
-        "args": "🚫 <b>आपने गलत तर्क प्रदान किए हैं</b>",
-        "no_mod": "🚫 <b>मॉड्यूल मौजूद नहीं है</b>",
-        "no_option": "🚫 <b>मॉड्यूल में ऐसा कोई विकल्प नहीं है</b>",
-        "validation_error": (
-            "🚫 <b>अमान्य कॉन्फ़िगरेशन मान दर्ज किया गया। \nत्रुटि: {}</b>"
-        ),
-        "try_again": "🔁 पुन: प्रयास करें",
-        "typehint": "🕵️ <b>यह {} होना चाहिए</b>",
-        "set": "सेट करें",
-        "set_default_btn": "♻️ डिफ़ॉल्ट",
-        "enter_value_btn": "✍️ मूल्य दर्ज करें",
-        "remove_item_btn": "➖ आइटम हटाएं",
-        "show_hidden": "🚸 मूल्य दिखाएं",
-        "hide_value": "🔒 मूल्य छिपाएं",
-        "builtin": "🛰 बिल्ट-इन",
-        "external": "🛸 बाहरी",
-        "libraries": "🪴 लाइब्रेरी",
-        "close_btn": "🔻 बंद करें",
-        "back_btn": "👈 पीछे",
+        "libraries": "📦 Bibliotheken",
     }
 
     strings_uz = {
-        "choose_core": "🎚 <b>Kurum tanlang</b>",
-        "configure": "🎚 <b>Sozlash uchun modulni tanlang</b>",
-        "configure_lib": "🪴 <b>Sozlash uchun kutubxonani tanlang</b>",
+        "choose_core": "⚙️ <b>Kurum tanlang</b>",
+        "configure": "⚙️ <b>Sozlash uchun modulni tanlang</b>",
+        "configure_lib": "📦 <b>Sozlash uchun kutubxonani tanlang</b>",
         "configuring_mod": (
-            "🎚 <b>Modul uchun parametrni tanlang</b> <code>{}</code>\n\n<b>Joriy"
+            "⚙️ <b>Modul uchun parametrni tanlang</b> <code>{}</code>\n\n<b>Joriy"
             " sozlamalar:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "🪴 <b>Kutubxona uchun variantni tanlang</b> <code>{}</code>\n\n<b>Hozirgi"
+            "📦 <b>Kutubxona uchun variantni tanlang</b> <code>{}</code>\n\n<b>Hozirgi"
             " sozlamalar:</b>\n\n{}"
         ),
         "configuring_option": (
-            "🎚 <b>Modul </b><code>{}</code><b> sozlamasi </b><code>{}</code><b>"
+            "⚙️ <b>Modul</b> <code>{}</code> <b>sozlamasi</b> <code>{}</code><b>"
             " konfiguratsiya qilinmoqda</b>\n<i>ℹ️ {}</i>\n\n<b>Default:"
             " {}</b>\n\n<b>Hozirgi: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Modul </b><code>{}</code><b> kutubxonasi sozlamasi"
-            " </b><code>{}</code><b> konfiguratsiya qilinmoqda</b>\n<i>ℹ️"
+            "📦 <b>Modul</b> <code>{}</code> <b>kutubxonasi sozlamasi"
+            "</b> <code>{}</code> <b>konfiguratsiya qilinmoqda</b>\n<i>ℹ️"
             " {}</i>\n\n<b>Default: {}</b>\n\n<b>Hozirgi: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Modul </b><code>{}</code><b> sozlamasi saqlandi!</b>\n<b>Hozirgi:"
-            " {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Modul"
+            "</b> <code>{}</code> <b>sozlamasi saqlandi!</b>\n<b>Hozirgi: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Modul </b><code>{}</code><b> kutubxonasi sozlamasi"
-            " saqlandi!</b>\n<b>Hozirgi: {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Modul"
+            "</b> <code>{}</code> <b>kutubxonasi sozlamasi saqlandi!</b>\n<b>Hozirgi:"
+            " {}</b>"
         ),
         "option_reset": (
-            "♻️ <b>Modul </b><code>{}</code><b> sozlamasi standart qiymatga"
+            "♻️ <b>Modul</b> <code>{}</code> <b>sozlamasi standart qiymatga"
             " tiklandi</b>\n<b>Hozirgi: {}</b>"
         ),
         "option_reset_lib": (
-            "♻️ <b>Modul </b><code>{}</code><b> kutubxonasi sozlamasi standart qiymatga"
+            "♻️ <b>Modul</b> <code>{}</code> <b>kutubxonasi sozlamasi standart qiymatga"
             " tiklandi</b>\n<b>Hozirgi: {}</b>"
         ),
         "_cls_doc": "Hikka interaktiv konfiguratsiyasi",
@@ -319,7 +329,7 @@ class HikkaConfigMod(loader.Module):
         "no_mod": "🚫 <b>Modul mavjud emas</b>",
         "no_option": "🚫 <b>Modulda bunday sozlamalar mavjud emas</b>",
         "validation_error": (
-            "🚫 <b>Noto'g'ri konfiguratsiya ma'lumotlari kiritildi. \nXatolik: {}</b>"
+            "🚫 <b>Noto'g'ri konfiguratsiya ma'lumotlari kiritildi.\nXatolik: {}</b>"
         ),
         "try_again": "🔁 Qayta urinib ko'ring",
         "typehint": "🕵️ <b>Buni {} bo'lishi kerak</b>",
@@ -331,43 +341,55 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Qiymatni yashirish",
         "builtin": "🛰 Ichki",
         "external": "🛸 Tashqi",
-        "libraries": "🪴 Kutubxona",
+        "libraries": "📦 Kutubxona",
         "close_btn": "🔻 Yopish",
         "back_btn": "👈 Orqaga",
     }
 
     strings_tr = {
+        "choose_core": "⚙️ <b>Kategori Seçin</b>",
+        "configure": "⚙️ <b>Bir modülü yapılandırmak için seçin</b>",
+        "configure_lib": "📦 <b>Bir kutuphaneyi yapılandırmak için seçin</b>",
+        "configuring_mod": (
+            "⚙️ <b>Modül için bir ayarı seçin</b> <code>{}</code>\n\n<b>Şu anki"
+            " ayarlar:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Bir kutuphane için bir ayarı seçin</b> <code>{}</code>\n\n<b>Şu anki"
+            " ayarlar:</b>\n\n{}"
+        ),
         "configuring_option": (
-            "🎚 <b>Modül </b><code>{}</code><b> seçeneği </b><code>{}</code>"
-            "<b> yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"
+            "⚙️ <b>Modül</b> <code>{}</code> <b>seçeneği</b> <code>{}</code>"
+            " <b>yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"
             "Mevcut: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>Modül </b><code>{}</code><b> kütüphanesi seçeneği </b><code>{}</code>"
-            "<b> yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"
+            "📦 <b>Modül</b> <code>{}</code> <b>kütüphanesi seçeneği</b> <code>{}</code>"
+            " <b>yapılandırılıyor</b>\n<i>ℹ️ {}</i>\n\n<b>Varsayılan: {}</b>\n\n<b>"
             "Mevcut: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>Modül </b><code>{}</code><b> seçeneği kaydedildi!</b>\n<b>Mevcut:"
-            " {}</b>"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Modül"
+            "</b> <code>{}</code> <b>seçeneği kaydedildi!</b>\n<b>Mevcut: {}</b>"
         ),
         "option_saved_lib": (
-            "🪴 <b>Modül </b><code>{}</code><b> kütüphanesi seçeneği"
-            " kaydedildi!</b>\n<b>Mevcut: {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Modül"
+            "</b> <code>{}</code> <b>kütüphanesi seçeneği kaydedildi!</b>\n<b>Mevcut:"
+            " {}</b>"
         ),
         "option_reset": (
-            "♻️ <b>Modül </b><code>{}</code><b> seçeneği varsayılan değere"
+            "♻️ <b>Modül</b> <code>{}</code> <b>seçeneği varsayılan değere"
             " sıfırlandı</b>\n<b>Mevcut: {}</b>"
         ),
         "option_reset_lib": (
-            "♻️ <b>Modül </b><code>{}</code><b> kütüphanesi seçeneği varsayılan değere"
+            "♻️ <b>Modül</b> <code>{}</code> <b>kütüphanesi seçeneği varsayılan değere"
             " sıfırlandı</b>\n<b>Mevcut: {}</b>"
         ),
         "_cls_doc": "Hikka etkileşimli yapılandırması",
         "args": "🚫 <b>Yanlış argüman girdiniz</b>",
         "no_mod": "🚫 <b>Modül bulunamadı</b>",
         "no_option": "🚫 <b>Modülde böyle bir seçenek bulunamadı</b>",
-        "validation_error": "🚫 <b>Yanlış ayarlama bilgileri girildi. \nHata: {}</b>",
+        "validation_error": "🚫 <b>Yanlış ayarlama bilgileri girildi.\nHata: {}</b>",
         "try_again": "🔁 Tekrar deneyin",
         "typehint": "🕵️ <b>Değer {} türünde olmalıdır</b>",
         "set": "Ayarla",
@@ -378,174 +400,56 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Değeri gizle",
         "builtin": "🛰 Dahili",
         "external": "🛸 Harici",
-        "libraries": "🪴 Kütüphane",
+        "libraries": "📦 Kütüphane",
         "back_btn": "👈 Geri",
     }
 
-    strings_ja = {
+    strings_es = {
+        "choose_core": "⚙️ <b>Elegir la categoría</b>",
+        "configure": "⚙️ <b>Elige un módulo para configurar</b>",
+        "configure_lib": "📦 <b>Elige una librería para configurar</b>",
+        "configuring_mod": (
+            "⚙️ <b>Configurando una opción para el módulo</b>"
+            " <code>{}</code>\n\n<b>Ajustes actuales:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Configurando una opción para la librería</b>"
+            " <code>{}</code>\n\n<b>Ajustes actuales:</b>\n\n{}"
+        ),
         "configuring_option": (
-            "🎚 <b>モジュール </b><code>{}</code><b> オプション </b><code>{}</code>"
-            "<b> を設定しています</b>\n<i>ℹ️ {}</i>\n\n<b>デフォルト: {}</b>\n\n<b>"
-            "現在: {}</b>\n\n{}"
+            "⚙️ <b>Configurando la opción</b> <code>{}</code> <b>del módulo"
+            "</b> <code>{}</code> <b></b>\n<i>ℹ️ {}</i>\n\n<b>Por defecto:"
+            " {}</b>\n\n<b>Actual: {}</b>\n\n{}"
         ),
         "configuring_option_lib": (
-            "🪴 <b>モジュール </b><code>{}</code><b> ライブラリオプション </b><code>{}</code>"
-            "<b> を設定しています</b>\n<i>ℹ️ {}</i>\n\n<b>デフォルト: {}</b>\n\n<b>"
-            "現在: {}</b>\n\n{}"
+            "📦 <b>Configurando la opción</b> <code>{}</code> <b>de la librería del"
+            " módulo</b> <code>{}</code> <b></b>\n<i>ℹ️ {}</i>\n\n<b>Por defecto:"
+            " {}</b>\n\n<b>Actual: {}</b>\n\n{}"
         ),
         "option_saved": (
-            "🎚 <b>モジュール </b><code>{}</code><b> オプションが保存されました！</b>\n<b>現在: {}</b>"
-        ),
-        "option_saved_lib": (
-            "🪴 <b>モジュール </b><code>{}</code><b> ライブラリオプション が保存されました！</b>\n<b>現在: {}</b>"
-        ),
-        "option_reset": (
-            "♻️ <b>モジュール </b><code>{}</code><b> オプションがデフォルト値に"
-            " リセットされました</b>\n<b>現在: {}</b>"
-        ),
-        "option_reset_lib": (
-            "♻️ <b>モジュール </b><code>{}</code><b> ライブラリオプションがデフォルト値に"
-            " リセットされました</b>\n<b>現在: {}</b>"
-        ),
-        "_cls_doc": "Hikka対話的な設定",
-        "args": "🚫 <b>引数が間違っています</b>",
-        "no_mod": "🚫 <b>モジュールが見つかりません</b>",
-        "no_option": "🚫 <b>モジュールにこのオプションはありません</b>",
-        "validation_error": "🚫 <b>設定情報が間違っています。 \nエラー: {}</b>",
-        "try_again": "🔁 もう一度試してください",
-        "typehint": "🕵️ <b>値 {} は型でなければなりません</b>",
-        "set": "設定",
-        "set_default_btn": "♻️ デフォルト",
-        "enter_value_btn": "✍️ 値を入力",
-        "remove_item_btn": "➖ 項目を削除",
-        "show_hidden": "🚸 値を表示",
-        "hide_value": "🔒 値を隠す",
-        "builtin": "🛰 ビルトイン",
-        "external": "🛸 エクステンション",
-        "libraries": "🪴 ライブラリ",
-        "back_btn": "👈 戻る",
-    }
-
-    strings_kr = {
-        "configuring_option": (
-            "🎚 <b>모듈 </b><code>{}</code><b> 옵션 </b><code>{}</code>"
-            "<b> 를 설정합니다</b>\n<i>ℹ️ {}</i>\n\n<b>기본값: {}</b>\n\n<b>"
-            "현재: {}</b>\n\n{}"
-        ),
-        "configuring_option_lib": (
-            "🪴 <b>모듈 </b><code>{}</code><b> 라이브러리 옵션 </b><code>{}</code>"
-            "<b> 를 설정합니다</b>\n<i>ℹ️ {}</i>\n\n<b>기본값: {}</b>\n\n<b>"
-            "현재: {}</b>\n\n{}"
-        ),
-        "option_saved": (
-            "🎚 <b>모듈 </b><code>{}</code><b> 옵션이 저장되었습니다!</b>\n<b>현재: {}</b>"
-        ),
-        "option_saved_lib": (
-            "🪴 <b>모듈 </b><code>{}</code><b> 라이브러리 옵션이 저장되었습니다!</b>\n<b>현재: {}</b>"
-        ),
-        "option_reset": (
-            "♻️ <b>모듈 </b><code>{}</code><b> 옵션이 기본값으로 재설정되었습니다</b>\n<b>현재: {}</b>"
-        ),
-        "option_reset_lib": (
-            "♻️ <b>모듈 </b><code>{}</code><b> 라이브러리 옵션이 기본값으로"
-            " 재설정되었습니다</b>\n<b>현재: {}</b>"
-        ),
-        "_cls_doc": "Hikka 대화형 설정",
-        "args": "🚫 <b>잘못된 인수입니다</b>",
-        "no_mod": "🚫 <b>모듈을 찾을 수 없습니다</b>",
-        "no_option": "🚫 <b>모듈에 이 옵션이 없습니다</b>",
-        "validation_error": "🚫 <b>설정 정보가 잘못되었습니다. \n오류: {}</b>",
-        "try_again": "🔁 다시 시도하십시오",
-        "typehint": "🕵️ <b>값 {} 은(는) 타입이어야 합니다</b>",
-        "set": "설정",
-        "set_default_btn": "♻️ 기본값",
-        "enter_value_btn": "✍️ 값 입력",
-        "remove_item_btn": "➖ 항목 제거",
-        "show_hidden": "🚸 값 표시",
-        "hide_value": "🔒 값 숨기기",
-        "builtin": "🛰 빌트인",
-        "external": "🛸 확장",
-        "libraries": "🪴 라이브러리",
-        "back_btn": "👈 뒤로",
-    }
-
-    strings_ar = {
-        "configuring_option": (
-            "🎚 <b>إعداد خيار </b><code>{}</code><b> للموديول </b><code>{}</code>"
-            "<b> </b>\n<i>ℹ️ {}</i>\n\n<b>الافتراضي: {}</b>\n\n<b>"
-            "الحالي: {}</b>\n\n{}"
-        ),
-        "configuring_option_lib": (
-            "🪴 <b>إعداد خيار </b><code>{}</code><b> لمكتبة الموديول </b><code>{}</code>"
-            "<b> </b>\n<i>ℹ️ {}</i>\n\n<b>الافتراضي: {}</b>\n\n<b>"
-            "الحالي: {}</b>\n\n{}"
-        ),
-        "option_saved": (
-            "🎚 <b>تم حفظ خيار الموديول </b><code>{}</code><b> !</b>\n<b>الحالي: {}</b>"
-        ),
-        "option_saved_lib": (
-            "🪴 <b>تم حفظ خيار مكتبة الموديول </b><code>{}</code><b> !</b>\n<b>الحالي:"
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>¡Guardada la opción"
+            "</b> <code>{}</code> <b>del módulo</b> <code>{}</code><b>!</b>\n<b>Actual:"
             " {}</b>"
         ),
-        "option_reset": (
-            "♻️ <b>تمت إعادة تعيين خيار الموديول </b><code>{}</code><b> إلى"
-            " الافتراضي</b>\n<b>الحالي: {}</b>"
-        ),
-        "option_reset_lib": (
-            "♻️ <b>تمت إعادة تعيين خيار مكتبة الموديول </b><code>{}</code><b> إلى"
-            " الافتراضي</b>\n<b>الحالي: {}</b>"
-        ),
-        "_cls_doc": "إعدادات Hikka التفاعلية",
-        "args": "🚫 <b>معلمات غير صحيحة</b>",
-        "no_mod": "🚫 <b>لم يتم العثور على الموديول</b>",
-        "no_option": "🚫 <b>لا يوجد خيار بهذا الاسم في الموديول</b>",
-        "validation_error": "🚫 <b>تعذر تحليل المعلومات. \nالخطأ: {}</b>",
-        "try_again": "🔁 حاول مرة أخرى",
-        "typehint": "🕵️ <b>يجب أن يكون القيمة {} من نوع {}</b>",
-        "set": "تعيين",
-        "set_default_btn": "♻️ الافتراضي",
-        "enter_value_btn": "✍️ إدخال القيمة",
-        "remove_item_btn": "➖ حذف العنصر",
-        "show_hidden": "🚸 إظهار القيم",
-        "hide_value": "🔒 إخفاء القيم",
-        "builtin": "🛰 مدمج",
-        "external": "🛸 خارجي",
-        "libraries": "🪴 مكتبات",
-        "back_btn": "👈 رجوع",
-    }
-
-    strings_es = {
-        "configuring_option": (
-            "🎚 <b>Configurando la opción </b><code>{}</code><b> del módulo"
-            " </b><code>{}</code><b> </b>\n<i>ℹ️ {}</i>\n\n<b>Por defecto:"
-            " {}</b>\n\n<b>Actual: {}</b>\n\n{}"
-        ),
-        "configuring_option_lib": (
-            "🪴 <b>Configurando la opción </b><code>{}</code><b> de la librería del"
-            " módulo </b><code>{}</code><b> </b>\n<i>ℹ️ {}</i>\n\n<b>Por defecto:"
-            " {}</b>\n\n<b>Actual: {}</b>\n\n{}"
-        ),
-        "option_saved": (
-            "🎚 <b>¡Guardada la opción del módulo"
-            " </b><code>{}</code><b>!</b>\n<b>Actual: {}</b>"
-        ),
         "option_saved_lib": (
-            "🪴 <b>¡Guardada la opción de la librería del módulo"
-            " </b><code>{}</code><b>!</b>\n<b>Actual: {}</b>"
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>¡Guardada la opción"
+            "</b> <code>{}</code> <b>de la librería del módulo"
+            "</b> <code>{}</code><b>!</b>\n<b>Actual: {}</b>"
         ),
         "option_reset": (
-            "♻️ <b>La opción del módulo </b><code>{}</code><b> se ha reiniciado a su"
-            " valor por defecto</b>\n<b>Actual: {}</b>"
+            "♻️ <b>La opción</b> <code>{}</code> <b>del módulo</b> <code>{}</code><b>"
+            " se ha reiniciado a su valor por defecto</b>\n<b>Actual: {}</b>"
         ),
         "option_reset_lib": (
-            "♻️ <b>La opción de la librería del módulo </b><code>{}</code><b> se ha"
-            " reiniciado a su valor por defecto</b>\n<b>Actual: {}</b>"
+            "♻️ <b>La opción</b> <code>{}</code> <b>de la librería del módulo"
+            "</b> <code>{}</code> <b>se ha reiniciado a su valor por"
+            " defecto</b>\n<b>Actual: {}</b>"
         ),
         "_cls_doc": "Configuraciones interactivas de Hikka",
         "args": "🚫 <b>Argumentos no válidos</b>",
         "no_mod": "🚫 <b>No se encontró el módulo</b>",
         "no_option": "🚫 <b>El módulo no tiene esta opción</b>",
-        "validation_error": "🚫 <b>No se pudo analizar la información. \nError: {}</b>",
+        "validation_error": "🚫 <b>No se pudo analizar la información.\nError: {}</b>",
         "try_again": "🔁 Intentar de nuevo",
         "typehint": "🕵️ <b>El valor debe ser de tipo {}</b>",
         "set": "Establecer",
@@ -556,8 +460,134 @@ class HikkaConfigMod(loader.Module):
         "hide_value": "🔒 Ocultar valores",
         "builtin": "🛰 Integrado",
         "external": "🛸 Externo",
-        "libraries": "🪴 Librerías",
+        "libraries": "📦 Librerías",
         "back_btn": "👈 Volver",
+    }
+
+    strings_kk = {
+        "choose_core": "⚙️ <b>Санатты таңдаңыз</b>",
+        "configure": "⚙️ <b>Бір модульді конфигурациялау үшін таңдаңыз</b>",
+        "configure_lib": "📦 <b>Бір кітапхананы конфигурациялау үшін таңдаңыз</b>",
+        "configuring_mod": (
+            "⚙️ <b>Модуль</b> <code>{}</code> <b>опциясын"
+            " конфигурациялау</b>\n\n<b>Ағымдағы параметрлер:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Кітапхана</b> <code>{}</code> <b>опциясын"
+            " конфигурациялау</b>\n\n<b>Ағымдағы параметрлер:</b>\n\n{}"
+        ),
+        "configuring_option": (
+            "⚙️ <b>Модуль</b> <code>{}</code> <b>ішіндегі</b> <code>{}</code><b>"
+            " параметрін баптау</b>\n<i>ℹ️ {}</i>\n\n<b>Әдепкі:"
+            " {}</b>\n\n<b>Ағымдағы: {}</b>\n\n{}"
+        ),
+        "configuring_option_lib": (
+            "📦 <b>Модуль</b> <code>{}</code> <b>ішіндегі"
+            " кітапхананың</b><code>{}</code> <b>параметрін баптау</b>\n<i>ℹ️"
+            " {}</i>\n\n<b>Әдепкі: {}</b>\n\n<b>Ағымдағы: {}</b>\n\n{}"
+        ),
+        "option_saved": (
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Модуль"
+            "</b> <code>{}</code> <b>ішіндегі</b> <code>{}</code> <b>параметрі"
+            " сақталды!</b>\n<b>Ағымдағы: {}</b>"
+        ),
+        "option_saved_lib": (
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Модуль"
+            "</b> <code>{}</code> <b>ішіндегі кітапхананың</b><code>{}</code><b>"
+            " параметрі сақталды!</b>\n<b>Ағымдағы: {}</b>"
+        ),
+        "option_reset": (
+            "♻️ <b>Модуль</b> <code>{}</code> <b>ішіндегі</b> <code>{}</code><b>"
+            " параметрі әдепкі мәнге қалпына келтірілді</b>\n<b>Ағымдағы: {}</b>"
+        ),
+        "option_reset_lib": (
+            "♻️ <b>Модуль</b> <code>{}</code> <b>ішіндегі"
+            " кітапхананың</b><code>{}</code> <b>параметрі әдепкі мәнге қалпына"
+            " келтірілді</b>\n<b>Ағымдағы: {}</b>"
+        ),
+        "_cls_doc": "Hikka баптаулары",
+        "args": "🚫 <b>Жарамсыз бағыттар</b>",
+        "no_mod": "🚫 <b>Модуль табылмады</b>",
+        "no_option": "🚫 <b>Модульде бұл параметр жоқ</b>",
+        "validation_error": "🚫 <b>Мәліметтерді талдау мүмкін емес.\nҚате: {}</b>",
+        "try_again": "🔁 Қайталау",
+        "typehint": "🕵️ <b>Мәні {} түрі болуы керек</b>",
+        "set": "Орнату",
+        "set_default_btn": "♻️ Әдепкі",
+        "enter_value_btn": "✍️ Мәнді енгізу",
+        "remove_item_btn": "➖ Элементті жою",
+        "show_hidden": "🚸 Мәндерді көрсету",
+        "hide_value": "🔒 Мәндерді жасыру",
+        "builtin": "🛰 Ішкі",
+        "external": "🛸 Сыртқы",
+        "libraries": "📦 Кітапханалар",
+        "back_btn": "👈 Артқа",
+    }
+
+    strings_tt = {
+        "choose_core": "⚙️ <b>Төркемне сайлагыз</b>",
+        "configure": "⚙️ <b>Көйләү өчен модульне сайлагыз</b>",
+        "configure_lib": "📦 <b>Көйләү өчен китапханә сайлагыз</b>",
+        "configuring_mod": (
+            "⚙️ <b>Модуль өчен вариантны сайлагыз</b> <code>{}</code>\n\n<b>Хәзерге"
+            " көйләүләр:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Китапханә өчен вариантны сайлагыз</b> <code>{}</code>\n\n<b>Хәзерге"
+            " көйләүләр:</b>\n\n{}"
+        ),
+        "configuring_option": (
+            "⚙️</b> <code>{}</code> <b>параметры белән идарә итү</b> "
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i> модуле\n\n<b>Стандарт:"
+            " {}</b>\n\n<b>Агымдагы: {}</b>\n\n{}"
+        ),
+        "configuring_option_lib": (
+            "📦 <code>{}</code> <b>параметры белән идарә итү</b>  <b>китапханә"
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Стандарт:"
+            " {}</b>\n\n<b>Агымдагы: {}</b>\n\n{}"
+        ),
+        "option_saved": (
+            "<emoji document_id=5318933532825888187>⚙️</emoji> "
+            " <code>{}</code> <b>параметры</b> <code>{}</code> <b>модуле"
+            " сакланган!</b>\n<b>Агымдагы: {}</b>"
+        ),
+        "option_saved_lib": (
+            "<emoji document_id=5431736674147114227>📦</emoji> <code>{}</code><b>"
+            " параметры</b> <code>{}</code> <b>китапханә сакоанган!</b>\n<b>Агымдагы:"
+            " {}</b>"
+        ),
+        "option_reset": (
+            "♻️ <code>{}</code> <b>параметры</b> <code>{}</code> <b>модуле"
+            " сброшен кадәр әһәмияте буенча шаблон</b>\n<b>Агымдагы: {}</b>"
+        ),
+        "option_reset_lib": (
+            "♻️ <code>{}</code> <b>библиотеки</b> <code>{}</code><b>"
+            " сброшен кадәр әһәмияте буенча шаблон</b>\n<b>Агымдагы: {}</b>"
+        ),
+        "_cls_doc": "Hikka интерактив конфигураторы",
+        "args": "🚫 <b>Син дөрес булмаган дәлилләрне күрсәттең</b>",
+        "no_mod": "🚫 <b>Модуль юк</b>",
+        "no_option": "🚫 <b>Модульнең андый конфигурациясе юк</b>",
+        "validation_error": (
+            "🚫 <b>Конфигурациянең дөрес булмаган әһәмияте кертелде.\nХата: {}</b>"
+        ),
+        "try_again": "🔁 Тагын бер тапкыр сынап карагыз",
+        "typehint": "🕵️ <b>{} булырга тиеш</b>",
+        "set": "калдыру",
+        "set_default_btn": "♻️ Килешү буенча мәгънә",
+        "enter_value_btn": "✍️ Кыйммәт кертү",
+        "enter_value_desc": "✍️ Бу параметр өчен яңа кыйммәт кертү",
+        "add_item_desc": "✍️ Өстәргә кирәк булган элементны кертегез",
+        "remove_item_desc": "✍️ Бетерергә кирәк булган элементны кертегез",
+        "back_btn": "👈 Элек",
+        "close_btn": "🔻 Каплау",
+        "add_item_btn": "➕ Элемент кушарга",
+        "remove_item_btn": "➖ Элементын бетерегез",
+        "show_hidden": "🚸 Күрсәтү мәгънәсе",
+        "hide_value": "🔒 Яшерергә әһәмияте",
+        "builtin": "🛰 Эчке",
+        "external": "🛸 Тыш",
+        "libraries": "📦 Китапханә",
     }
 
     _row_size = 3
@@ -584,6 +614,17 @@ class HikkaConfigMod(loader.Module):
             return self.prep_value(["*" * len(str(i)) for i in value])
 
         return self.prep_value("*" * len(str(value)))
+
+    def _get_value(self, mod: str, option: str) -> str:
+        return (
+            self.prep_value(self.lookup(mod).config[option])
+            if (
+                not self.lookup(mod).config._config[option].validator
+                or self.lookup(mod).config._config[option].validator.internal_id
+                != "Hidden"
+            )
+            else self.hide_value(self.lookup(mod).config[option])
+        )
 
     async def inline__set_config(
         self,
@@ -614,11 +655,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -650,11 +687,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -794,10 +827,8 @@ class HikkaConfigMod(loader.Module):
         obj_type: typing.Union[bool, str] = False,
     ):
         try:
-            try:
+            with contextlib.suppress(Exception):
                 query = ast.literal_eval(query)
-            except Exception:
-                pass
 
             if isinstance(query, (set, tuple)):
                 query = list(query)
@@ -824,11 +855,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -854,10 +881,8 @@ class HikkaConfigMod(loader.Module):
         obj_type: typing.Union[bool, str] = False,
     ):
         try:
-            try:
+            with contextlib.suppress(Exception):
                 query = ast.literal_eval(query)
-            except Exception:
-                pass
 
             if isinstance(query, (set, tuple)):
                 query = list(query)
@@ -896,11 +921,7 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not self.lookup(mod).config._config[option].validator
-                or self.lookup(mod).config._config[option].validator.internal_id
-                != "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -1003,17 +1024,13 @@ class HikkaConfigMod(loader.Module):
             )
             return
 
-        validator = self.lookup(mod).config._config[option].validator
-
         await call.edit(
             self.strings(
                 "option_saved" if isinstance(obj_type, bool) else "option_saved_lib"
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(self.lookup(mod).config[option])
-                if not validator.internal_id == "Hidden"
-                else self.hide_value(self.lookup(mod).config[option]),
+                self._get_value(mod, option),
             ),
             reply_markup=[
                 [
@@ -1380,18 +1397,11 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 "\n".join(
                     [
-                        f"▫️ <code>{utils.escape_html(key)}</code>: <b>{{}}</b>".format(
-                            self.prep_value(value)
-                            if (
-                                not self.lookup(mod).config._config[key].validator
-                                or self.lookup(mod)
-                                .config._config[key]
-                                .validator.internal_id
-                                != "Hidden"
-                            )
-                            else self.hide_value(value)
+                        "▫️ <code>{}</code>: <b>{}</b>".format(
+                            utils.escape_html(key),
+                            self._get_value(mod, key),
                         )
-                        for key, value in self.lookup(mod).config.items()
+                        for key in self.lookup(mod).config
                     ]
                 ),
             ),
@@ -1514,20 +1524,19 @@ class HikkaConfigMod(loader.Module):
 
     @loader.command(
         ru_doc="Настроить модули",
+        it_doc="Configura i moduli",
         de_doc="Konfiguriere Module",
         tr_doc="Modülleri yapılandır",
-        hi_doc="मॉड्यूल कॉन्फ़िगर करें",
         uz_doc="Modullarni sozlash",
-        ja_doc="モジュールを設定します",
-        kr_doc="모듈 설정",
-        ar_doc="تكوين الوحدات",
         es_doc="Configurar módulos",
+        kk_doc="Модульдерді конфигурациялау",
+        alias="cfg",
     )
     async def configcmd(self, message: Message):
         """Configure modules"""
         args = utils.get_args_raw(message)
         if self.lookup(args) and hasattr(self.lookup(args), "config"):
-            form = await self.inline.form("🌘", message)
+            form = await self.inline.form("🌘", message, silent=True)
             mod = self.lookup(args)
             if isinstance(mod, loader.Library):
                 type_ = "library"
@@ -1543,19 +1552,23 @@ class HikkaConfigMod(loader.Module):
         ru_doc=(
             "<модуль> <настройка> <значение> - установить значение конфига для модуля"
         ),
+        it_doc=(
+            "<modulo> <impostazione> <valore> - imposta il valore della configurazione"
+            " per il modulo"
+        ),
         de_doc=(
             "<Modul> <Einstellung> <Wert> - Setze den Wert der Konfiguration für das"
             " Modul"
         ),
         tr_doc="<modül> <ayar> <değer> - Modül için yapılandırma değerini ayarla",
-        hi_doc="<मॉड्यूल> <सेटिंग> <मान> - मॉड्यूल के लिए कॉन्फ़िगरेशन मान सेट करें",
         uz_doc="<modul> <sozlash> <qiymat> - modul uchun sozlash qiymatini o'rnatish",
-        ja_doc="<モジュール> <設定> <値> - モジュールの設定値を設定します",
-        kr_doc="<모듈> <설정> <값> - 모듈의 구성 값을 설정합니다",
-        ar_doc="<وحدة> <إعداد> <قيمة> - تعيين قيمة التكوين للوحدة",
         es_doc=(
             "<módulo> <configuración> <valor> - Establecer el valor de configuración"
         ),
+        kk_doc=(
+            "<модуль> <настройка> <значение> - модуль үшін конфигурация мәнін орнату"
+        ),
+        alias="setcfg",
     )
     async def fconfig(self, message: Message):
         """<module_name> <property_name> <config_value> - set the config value for the module
@@ -1587,9 +1600,6 @@ class HikkaConfigMod(loader.Module):
             ).format(
                 utils.escape_html(option),
                 utils.escape_html(mod),
-                self.prep_value(instance.config[option])
-                if not instance.config._config[option].validator
-                or instance.config._config[option].validator.internal_id != "Hidden"
-                else self.hide_value(instance.config[option]),
+                self._get_value(mod, option),
             ),
         )

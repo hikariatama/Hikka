@@ -1,15 +1,14 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-import re
-import grapheme
 import functools
+import re
 import typing
+
+import grapheme
 from emoji import get_emoji_unicode_dict
 
 from . import utils
@@ -38,14 +37,12 @@ class Validator:
                 {
                     "en": "docstring",
                     "ru": "докстрингом",
+                    "it": "docstring",
                     "de": "Dokumentation",
                     "tr": "dökümantasyon",
-                    "hi": "दस्तावेज़",
                     "uz": "hujjat",
-                    "ja": "ドキュメント",
-                    "kr": "문서",
-                    "ar": "وثيقة",
                     "es": "documentación",
+                    "kk": "құжат",
                 }
                 Use instrumental case with lowercase
     :param _internal_id: Do not pass anything here, or things will break
@@ -60,7 +57,7 @@ class Validator:
         self.validate = validator
 
         if isinstance(doc, str):
-            doc = {"en": doc, "ru": doc, "de": doc, "tr": doc, "hi": doc, "uz": doc}
+            doc = {"en": doc, "ru": doc, "it": doc, "de": doc, "tr": doc, "uz": doc}
 
         self.doc = doc
         self.internal_id = _internal_id
@@ -78,26 +75,24 @@ class Boolean(Validator):
             {
                 "en": "boolean",
                 "ru": "логическим значением",
+                "it": "booleano",
                 "de": "logischen Wert",
                 "tr": "mantıksal değer",
-                "hi": "अवैध मान",
                 "uz": "mantiqiy qiymat",
-                "ja": "論理値",
-                "kr": "논리적인 값",
-                "ar": "قيمة منطقية",
                 "es": "valor lógico",
+                "kk": "логикалық мән",
             },
             _internal_id="Boolean",
         )
 
     @staticmethod
     def _validate(value: ConfigAllowedTypes, /) -> bool:
-        true_cases = ["True", "true", "1", 1, True]
-        false_cases = ["False", "false", "0", 0, False]
-        if value not in true_cases + false_cases:
+        true = ["True", "true", "1", 1, True, "yes", "Yes", "on", "On", "y", "Y"]
+        false = ["False", "false", "0", 0, False, "no", "No", "off", "Off", "n", "N"]
+        if value not in true + false:
             raise ValidationError("Passed value must be a boolean")
 
-        return value in true_cases
+        return value in true
 
 
 class Integer(Validator):
@@ -117,52 +112,44 @@ class Integer(Validator):
     ):
         _sign_en = "positive " if minimum is not None and minimum == 0 else ""
         _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
+        _sign_it = "positivo " if minimum is not None and minimum == 0 else ""
         _sign_de = "positiv " if minimum is not None and minimum == 0 else ""
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
-        _sign_hi = "सकारात्मक " if minimum is not None and minimum == 0 else ""
         _sign_uz = "musbat " if minimum is not None and minimum == 0 else ""
-        _sign_jp = "正の " if minimum is not None and minimum == 0 else ""
-        _sign_kr = "양수 " if minimum is not None and minimum == 0 else ""
-        _sign_ar = "موجب " if minimum is not None and minimum == 0 else ""
         _sign_es = "positivo " if minimum is not None and minimum == 0 else ""
+        _sign_kk = "мәндік " if minimum is not None and minimum == 0 else ""
 
         _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
         _sign_ru = (
             "отрицательным " if maximum is not None and maximum == 0 else _sign_ru
         )
+        _sign_it = "negativo " if maximum is not None and maximum == 0 else _sign_it
         _sign_de = "negativ " if maximum is not None and maximum == 0 else _sign_de
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
-        _sign_hi = "नकारात्मक " if maximum is not None and maximum == 0 else _sign_hi
         _sign_uz = "manfiy " if maximum is not None and maximum == 0 else _sign_uz
-        _sign_jp = "負の " if maximum is not None and maximum == 0 else _sign_jp
-        _sign_kr = "음수 " if maximum is not None and maximum == 0 else _sign_kr
-        _sign_ar = "سالب " if maximum is not None and maximum == 0 else _sign_ar
         _sign_es = "negativo " if maximum is not None and maximum == 0 else _sign_es
+        _sign_kk = "мәнсіздік " if maximum is not None and maximum == 0 else _sign_kk
 
         _digits_en = f" with exactly {digits} digits" if digits is not None else ""
         _digits_ru = f", в котором ровно {digits} цифр " if digits is not None else ""
+        _digits_it = f" con esattamente {digits} cifre" if digits is not None else ""
         _digits_de = f" mit genau {digits} Ziffern" if digits is not None else ""
         _digits_tr = f" tam olarak {digits} basamaklı" if digits is not None else ""
-        _digits_hi = f" जिसमें ठीक {digits} अंक हो" if digits is not None else ""
         _digits_uz = f" to'g'ri {digits} raqamlar bilan" if digits is not None else ""
-        _digits_jp = f" {digits} 桁の正確な" if digits is not None else ""
-        _digits_kr = f" 정확히 {digits} 자리의" if digits is not None else ""
-        _digits_ar = f" بالضبط {digits} أرقام" if digits is not None else ""
         _digits_es = f" con exactamente {digits} dígitos" if digits is not None else ""
+        _digits_kk = f" тең {digits} сандық" if digits is not None else ""
 
         if minimum is not None and minimum != 0:
             doc = (
                 {
                     "en": f"{_sign_en}integer greater than {minimum}{_digits_en}",
                     "ru": f"{_sign_ru}целым числом больше {minimum}{_digits_ru}",
+                    "it": f"{_sign_it}intero maggiore di {minimum}{_digits_it}",
                     "de": f"{_sign_de}ganze Zahl größer als {minimum}{_digits_de}",
                     "tr": f"{_sign_tr}tam sayı {minimum} den büyük{_digits_tr}",
-                    "hi": f"{_sign_hi}एक पूर्णांक जो {minimum} से अधिक है{_digits_hi}",
                     "uz": f"{_sign_uz}butun son {minimum} dan katta{_digits_uz}",
-                    "ja": f"{_sign_jp}整数は{minimum}より大きい{_digits_jp}",
-                    "kr": f"{_sign_kr}정수는 {minimum}보다 크다{_digits_kr}",
-                    "ar": f"{_sign_ar}عدد صحيح أكبر من {minimum}{_digits_ar}",
                     "es": f"{_sign_es}número entero mayor que {minimum}{_digits_es}",
+                    "kk": f"{_sign_kk}толық сан {minimum} тан көп{_digits_kk}",
                 }
                 if maximum is None and maximum != 0
                 else {
@@ -171,6 +158,10 @@ class Integer(Validator):
                         f"{_sign_ru}целым числом в промежутке от {minimum} до"
                         f" {maximum}{_digits_ru}"
                     ),
+                    "it": (
+                        f"{_sign_it}intero compreso tra {minimum} e {maximum}"
+                        f"{_digits_it}"
+                    ),
                     "de": (
                         f"{_sign_de}ganze Zahl von {minimum} bis {maximum}{_digits_de}"
                     ),
@@ -178,18 +169,14 @@ class Integer(Validator):
                         f"{_sign_tr}tam sayı {minimum} ile {maximum} arasında"
                         f"{_digits_tr}"
                     ),
-                    "hi": (
-                        f"{_sign_hi}एक पूर्णांक जो {minimum} से {maximum} तक"
-                        f" है{_digits_hi}"
-                    ),
                     "uz": (
                         f"{_sign_uz}butun son {minimum} dan {maximum} gacha{_digits_uz}"
                     ),
-                    "ja": f"{_sign_jp}整数は{minimum}から{maximum}まで{_digits_jp}",
-                    "kr": f"{_sign_kr}정수는 {minimum}에서 {maximum}까지{_digits_kr}",
-                    "ar": f"{_sign_ar}عدد صحيح من {minimum} إلى {maximum}{_digits_ar}",
                     "es": (
                         f"{_sign_es}número entero de {minimum} a {maximum}{_digits_es}"
+                    ),
+                    "kk": (
+                        f"{_sign_kk}толық сан {minimum} ден {maximum} қарай{_digits_kk}"
                     ),
                 }
             )
@@ -198,27 +185,23 @@ class Integer(Validator):
             doc = {
                 "en": f"{_sign_en}integer{_digits_en}",
                 "ru": f"{_sign_ru}целым числом{_digits_ru}",
+                "it": f"{_sign_it}intero{_digits_it}",
                 "de": f"{_sign_de}ganze Zahl{_digits_de}",
                 "tr": f"{_sign_tr}tam sayı{_digits_tr}",
-                "hi": f"{_sign_hi}पूर्णांक{_digits_hi}",
                 "uz": f"{_sign_uz}butun son{_digits_uz}",
-                "ja": f"{_sign_jp}整数{_digits_jp}",
-                "kr": f"{_sign_kr}정수{_digits_kr}",
-                "ar": f"{_sign_ar}عدد صحيح{_digits_ar}",
                 "es": f"{_sign_es}número entero{_digits_es}",
+                "kk": f"{_sign_kk}толық сан{_digits_kk}",
             }
         else:
             doc = {
                 "en": f"{_sign_en}integer less than {maximum}{_digits_en}",
                 "ru": f"{_sign_ru}целым числом меньше {maximum}{_digits_ru}",
+                "it": f"{_sign_it}intero minore di {maximum}{_digits_it}",
                 "de": f"{_sign_de}ganze Zahl kleiner als {maximum}{_digits_de}",
                 "tr": f"{_sign_tr}tam sayı {maximum} den küçük{_digits_tr}",
-                "hi": f"{_sign_hi}एक पूर्णांक जो {maximum} से कम है{_digits_hi}",
                 "uz": f"{_sign_uz}butun son {maximum} dan kichik{_digits_uz}",
-                "ja": f"{_sign_jp}整数は{maximum}より小さい{_digits_jp}",
-                "kr": f"{_sign_kr}정수는 {maximum}보다 작다{_digits_kr}",
-                "ar": f"{_sign_ar}عدد صحيح أصغر من {maximum}{_digits_ar}",
                 "es": f"{_sign_es}número entero menor que {maximum}{_digits_es}",
+                "kk": f"{_sign_kk}толық сан {maximum} тан кем{_digits_kk}",
             }
         super().__init__(
             functools.partial(
@@ -278,14 +261,12 @@ class Choice(Validator):
             {
                 "en": f"one of the following: {possible}",
                 "ru": f"одним из: {possible}",
+                "it": f"uno dei seguenti: {possible}",
                 "de": f"einer der folgenden: {possible}",
                 "tr": f"şunlardan biri: {possible}",
-                "hi": f"इनमें से एक: {possible}",
                 "uz": f"quyidagilardan biri: {possible}",
-                "ja": f"次のいずれか: {possible}",
-                "kr": f"다음 중 하나: {possible}",
-                "ar": f"واحد من الأمور التالية: {possible}",
                 "es": f"uno de los siguientes: {possible}",
+                "kk": f"келесілердің бірі: {possible}",
             },
             _internal_id="Choice",
         )
@@ -326,6 +307,10 @@ class MultiChoice(Validator):
                     "список значений, каждое из которых должно быть одним из"
                     f" следующего: {possible}"
                 ),
+                "it": (
+                    "elenco di valori, ognuno dei quali deve essere uno dei"
+                    f" seguenti: {possible}"
+                ),
                 "de": (
                     "Liste von Werten, bei denen jeder einer der folgenden sein muss:"
                     f" {possible}"
@@ -334,15 +319,15 @@ class MultiChoice(Validator):
                     "değerlerin listesi, her birinin şunlardan biri olması gerekir:"
                     f" {possible}"
                 ),
-                "hi": f"वैल्यू की सूची, जहां प्रत्येक एक के बीच होना चाहिए: {possible}",
                 "uz": (
                     "qiymatlar ro'yxati, har biri quyidagilardan biri bo'lishi kerak:"
                     f" {possible}"
                 ),
-                "ja": f"値のリスト、各値は次のいずれかである必要があります: {possible}",
-                "kr": f"값 목록, 각 값은 다음 중 하나여야합니다: {possible}",
-                "ar": f"قائمة القيم ، حيث يجب أن يكون كل واحد من: {possible}",
                 "es": f"lista de valores, donde cada uno debe ser uno de: {possible}",
+                "kk": (
+                    "мәндер тізімі, әрбірінің келесілердің бірі болуы керек:"
+                    f" {possible}"
+                ),
             },
             _internal_id="MultiChoice",
         )
@@ -389,88 +374,63 @@ class Series(Validator):
 
         _each_en = f" (each must be {trans('en')})" if validator is not None else ""
         _each_ru = (
-            f" (каждое должно быть {validator.doc['ru']})"
-            if validator is not None
-            else ""
+            f" (каждое должно быть {trans('ru')})" if validator is not None else ""
+        )
+        _each_it = (
+            f" (ognuno deve essere {trans('it')})" if validator is not None else ""
         )
         _each_de = f" (jedes muss {trans('de')})" if validator is not None else ""
         _each_tr = f" (her biri {trans('tr')})" if validator is not None else ""
-        _each_hi = f" (हर एक {trans('hi')})" if validator is not None else ""
         _each_uz = f" (har biri {trans('uz')})" if validator is not None else ""
-        _each_jp = f" (各 {trans('jp')})" if validator is not None else ""
-        _each_kr = f" (각 {trans('kr')})" if validator is not None else ""
-        _each_ar = f" (كل واحد {trans('ar')})" if validator is not None else ""
         _each_es = f" (cada uno {trans('es')})" if validator is not None else ""
+        _each_kk = f" (әрбірі {trans('kk')})" if validator is not None else ""
 
         if fixed_len is not None:
             _len_en = f" (exactly {fixed_len} pcs.)"
             _len_ru = f" (ровно {fixed_len} шт.)"
+            _len_it = f" (esattamente {fixed_len} pezzi)"
             _len_de = f" (genau {fixed_len} Stück)"
             _len_tr = f" (tam olarak {fixed_len} adet)"
-            _len_hi = f" (ठीक {fixed_len} टुकड़े)"
             _len_uz = f" (to'g'ri {fixed_len} ta)"
-            _len_jp = f" (ちょうど{fixed_len}個)"
-            _len_kr = f" (정확히 {fixed_len} 개)"
-            _len_ar = f" (بالضبط {fixed_len} قطعة)"
             _len_es = f" (exactamente {fixed_len} piezas)"
+            _len_kk = f" (тоғыз {fixed_len} құны)"
         elif min_len is None:
             if max_len is None:
                 _len_en = ""
                 _len_ru = ""
+                _len_it = ""
                 _len_de = ""
                 _len_tr = ""
-                _len_hi = ""
                 _len_uz = ""
-                _len_jp = ""
-                _len_kr = ""
-                _len_ar = ""
                 _len_es = ""
+                _len_kk = ""
             else:
                 _len_en = f" (up to {max_len} pcs.)"
                 _len_ru = f" (до {max_len} шт.)"
+                _len_it = f" (fino a {max_len} pezzi)"
                 _len_de = f" (bis zu {max_len} Stück)"
                 _len_tr = f" (en fazla {max_len} adet)"
-                _len_hi = f" (अधिकतम {max_len} टुकड़े)"
                 _len_uz = f" (eng ko'p {max_len} ta)"
-                _len_jp = f" (最大{max_len}個)"
-                _len_kr = f" (최대 {max_len} 개)"
-                _len_ar = f" (حتى {max_len} قطعة)"
                 _len_es = f" (hasta {max_len} piezas)"
+                _len_kk = f" (көптегенде {max_len} құны)"
         elif max_len is not None:
             _len_en = f" (from {min_len} to {max_len} pcs.)"
             _len_ru = f" (от {min_len} до {max_len} шт.)"
+            _len_it = f" (da {min_len} a {max_len} pezzi)"
             _len_de = f" (von {min_len} bis {max_len} Stück)"
             _len_tr = f" ({min_len} ile {max_len} arasında {max_len} adet)"
-            _len_hi = f" ({min_len} से {max_len} तक {max_len} टुकड़े)"
             _len_uz = f" ({min_len} dan {max_len} gacha {max_len} ta)"
-            _len_jp = f" ({min_len} から {max_len} まで {max_len} 個)"
-            _len_kr = f" ({min_len}에서 {max_len}까지 {max_len} 개)"
-            _len_ar = f" ({min_len} إلى {max_len} {max_len} قطعة)"
             _len_es = f" (desde {min_len} hasta {max_len} piezas)"
+            _len_kk = f" ({min_len} ден {max_len} ге {max_len} құны)"
         else:
             _len_en = f" (at least {min_len} pcs.)"
             _len_ru = f" (как минимум {min_len} шт.)"
+            _len_it = f" (almeno {min_len} pezzi)"
             _len_de = f" (mindestens {min_len} Stück)"
             _len_tr = f" (en az {min_len} adet)"
-            _len_hi = f" (कम से कम {min_len} टुकड़े)"
             _len_uz = f" (kamida {min_len} ta)"
-            _len_jp = f" (少なくとも{min_len}個)"
-            _len_kr = f" (최소 {min_len} 개)"
-            _len_ar = f" (على الأقل {min_len} قطعة)"
             _len_es = f" (al menos {min_len} piezas)"
-
-        doc = {
-            "en": f"series of values{_len_en}{_each_en}, separated with «,»",
-            "ru": f"списком значений{_len_ru}{_each_ru}, разделенных «,»",
-            "de": f"Liste von Werten{_len_de}{_each_de}, getrennt mit «,»",
-            "tr": f"değerlerin listesi{_len_tr}{_each_tr}, «,» ile ayrılmış",
-            "hi": f"वैल्यू की सूची{_len_hi}{_each_hi}, «,» के साथ अलग की गई",
-            "uz": f"qiymatlar ro'yxati{_len_uz}{_each_uz}, «,» bilan ajratilgan",
-            "ja": f"値のリスト{_len_jp}{_each_jp}、 「,」 で区切られています",
-            "kr": f"값 목록{_len_kr}{_each_kr} 「,」로 구분됨",
-            "ar": f"قائمة القيم{_len_ar}{_each_ar} مفصولة بـ «,»",
-            "es": f"lista de valores{_len_es}{_each_es}, separados con «,»",
-        }
+            _len_kk = f" (кем дегенде {min_len} құны)"
 
         super().__init__(
             functools.partial(
@@ -480,7 +440,16 @@ class Series(Validator):
                 max_len=max_len,
                 fixed_len=fixed_len,
             ),
-            doc,
+            {
+                "en": f"series of values{_len_en}{_each_en}, separated with «,»",
+                "ru": f"списком значений{_len_ru}{_each_ru}, разделенных «,»",
+                "it": f"serie di valori{_len_it}{_each_it}, separati con «,»",
+                "de": f"Liste von Werten{_len_de}{_each_de}, getrennt mit «,»",
+                "tr": f"değerlerin listesi{_len_tr}{_each_tr}, «,» ile ayrılmış",
+                "uz": f"qiymatlar ro'yxati{_len_uz}{_each_uz}, «,» bilan ajratilgan",
+                "es": f"lista de valores{_len_es}{_each_es}, separados con «,»",
+                "kk": f"мәндер тізімі{_len_kk}{_each_kk}, «,» бойынша бөлінген",
+            },
             _internal_id="Series",
         )
 
@@ -541,14 +510,12 @@ class Link(Validator):
             {
                 "en": "link",
                 "ru": "ссылкой",
+                "it": "collegamento",
                 "de": "Link",
                 "tr": "bağlantı",
-                "hi": "लिंक",
                 "uz": "havola",
-                "ja": "リンク",
-                "kr": "링크",
-                "ar": "رابط",
                 "es": "enlace",
+                "kk": "сілтеме",
             },
             _internal_id="Link",
         )
@@ -582,14 +549,12 @@ class String(Validator):
             doc = {
                 "en": f"string of length {length}",
                 "ru": f"строкой из {length} символа(-ов)",
+                "it": f"stringa di lunghezza {length}",
                 "de": f"Zeichenkette mit Länge {length}",
                 "tr": f"{length} karakter uzunluğunda dize",
-                "hi": f"{length} अक्षर की लंबाई की तारीख",
                 "uz": f"{length} ta belgi uzunlig'ida satr",
-                "ja": f"{length} 文字の長さの文字列",
-                "kr": f"{length} 글자 길이의 문자열",
-                "ar": f"سلسلة طول {length}",
                 "es": f"cadena de longitud {length}",
+                "kk": f"{length} ұзындығында сөз",
             }
         else:
             if min_len is None:
@@ -597,53 +562,45 @@ class String(Validator):
                     doc = {
                         "en": "string",
                         "ru": "строкой",
+                        "it": "stringa",
                         "de": "Zeichenkette",
                         "tr": "dize",
-                        "hi": "तारीख",
                         "uz": "satr",
-                        "ja": "文字列",
-                        "kr": "문자열",
-                        "ar": "سلسلة",
                         "es": "cadena",
+                        "kk": "сөз",
                     }
                 else:
                     doc = {
                         "en": f"string of length up to {max_len}",
                         "ru": f"строкой не более чем из {max_len} символа(-ов)",
+                        "it": f"stringa di lunghezza massima {max_len}",
                         "de": f"Zeichenkette mit Länge bis zu {max_len}",
                         "tr": f"{max_len} karakter uzunluğunda dize",
-                        "hi": f"{max_len} अक्षर की लंबाई की तारीख",
                         "uz": f"{max_len} ta belgi uzunlig'ida satr",
-                        "ja": f"{max_len} 文字の長さの文字列",
-                        "kr": f"{max_len} 글자 길이의 문자열",
-                        "ar": f"سلسلة طول {max_len}",
                         "es": f"cadena de longitud {max_len}",
+                        "kk": f"{max_len} ұзындығында сөз",
                     }
             elif max_len is not None:
                 doc = {
                     "en": f"string of length from {min_len} to {max_len}",
                     "ru": f"строкой из {min_len}-{max_len} символа(-ов)",
+                    "it": f"stringa di lunghezza da {min_len} a {max_len}",
                     "de": f"Zeichenkette mit Länge von {min_len} bis {max_len}",
                     "tr": f"{min_len}-{max_len} karakter uzunluğunda dize",
-                    "hi": f"{min_len}-{max_len} अक्षर की लंबाई की तारीख",
                     "uz": f"{min_len}-{max_len} ta belgi uzunlig'ida satr",
-                    "ja": f"{min_len}-{max_len} 文字の長さの文字列",
-                    "kr": f"{min_len}-{max_len} 글자 길이의 문자열",
-                    "ar": f"سلسلة طول {min_len}-{max_len}",
                     "es": f"cadena de longitud {min_len}-{max_len}",
+                    "kk": f"{min_len}-{max_len} ұзындығында сөз",
                 }
             else:
                 doc = {
                     "en": f"string of length at least {min_len}",
                     "ru": f"строкой не менее чем из {min_len} символа(-ов)",
+                    "it": f"stringa di lunghezza minima {min_len}",
                     "de": f"Zeichenkette mit Länge mindestens {min_len}",
                     "tr": f"{min_len} karakter uzunluğunda dize",
-                    "hi": f"{min_len} अक्षर की लंबाई की तारीख",
                     "uz": f"{min_len} ta belgi uzunlig'ida satr",
-                    "ja": f"{min_len} 文字の長さの文字列",
-                    "kr": f"{min_len} 글자 길이의 문자열",
-                    "ar": f"سلسلة طول {min_len}",
                     "es": f"cadena de longitud {min_len}",
+                    "kk": f"{min_len} ұзындығында сөз",
                 }
 
         super().__init__(
@@ -719,14 +676,12 @@ class RegExp(Validator):
             doc = {
                 "en": f"string matching pattern «{regex}»",
                 "ru": f"строкой, соответствующей шаблону «{regex}»",
+                "it": f"stringa che corrisponde al modello «{regex}»",
                 "de": f"Zeichenkette, die dem Muster «{regex}» entspricht",
                 "tr": f"«{regex}» kalıbına uygun dize",
                 "uz": f"«{regex}» shabloniga mos matn",
-                "hi": f"«{regex}» पैटर्न के साथ स्ट्रिंग",
-                "ja": f"「{regex}」のパターンに一致する文字列",
-                "kr": f"「{regex}」 패턴과 일치하는 문자열",
-                "ar": f"سلسلة تطابق النمط «{regex}»",
                 "es": f"cadena que coincide con el patrón «{regex}»",
+                "kk": f"«{regex}» үлгісіне сәйкес сөз",
             }
         else:
             if isinstance(description, str):
@@ -768,41 +723,35 @@ class Float(Validator):
     ):
         _sign_en = "positive " if minimum is not None and minimum == 0 else ""
         _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
+        _sign_it = "positivo " if minimum is not None and minimum == 0 else ""
         _sign_de = "positiv " if minimum is not None and minimum == 0 else ""
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
         _sign_uz = "musbat " if minimum is not None and minimum == 0 else ""
-        _sign_hi = "सकारात्मक " if minimum is not None and minimum == 0 else ""
-        _sign_jp = "正の " if minimum is not None and minimum == 0 else ""
-        _sign_kr = "양수 " if minimum is not None and minimum == 0 else ""
-        _sign_ar = "موجب " if minimum is not None and minimum == 0 else ""
         _sign_es = "positivo " if minimum is not None and minimum == 0 else ""
+        _sign_kk = "мың " if minimum is not None and minimum == 0 else ""
 
         _sign_en = "negative " if maximum is not None and maximum == 0 else _sign_en
         _sign_ru = (
             "отрицательным " if maximum is not None and maximum == 0 else _sign_ru
         )
+        _sign_it = "negativo " if maximum is not None and maximum == 0 else _sign_it
         _sign_de = "negativ " if maximum is not None and maximum == 0 else _sign_de
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
         _sign_uz = "manfiy " if maximum is not None and maximum == 0 else _sign_uz
-        _sign_hi = "नकारात्मक " if maximum is not None and maximum == 0 else _sign_hi
-        _sign_jp = "負の " if maximum is not None and maximum == 0 else _sign_jp
-        _sign_kr = "음수 " if maximum is not None and maximum == 0 else _sign_kr
-        _sign_ar = "سالب " if maximum is not None and maximum == 0 else _sign_ar
         _sign_es = "negativo " if maximum is not None and maximum == 0 else _sign_es
+        _sign_kk = "мінус " if maximum is not None and maximum == 0 else _sign_kk
 
         if minimum is not None and minimum != 0:
             doc = (
                 {
                     "en": f"{_sign_en}float greater than {minimum}",
                     "ru": f"{_sign_ru}дробным числом больше {minimum}",
+                    "it": f"{_sign_it}numero decimale maggiore di {minimum}",
                     "de": f"{_sign_de}Fließkommazahl größer als {minimum}",
                     "tr": f"{_sign_tr}ondalık sayı {minimum} dan büyük",
                     "uz": f"{_sign_uz}butun son {minimum} dan katta",
-                    "hi": f"{_sign_hi}दशमलव संख्या {minimum} से अधिक",
-                    "ja": f"{_sign_jp}浮動小数点数 {minimum} より大きい",
-                    "kr": f"{_sign_kr}부동 소수점 숫자 {minimum} 보다 큰",
-                    "ar": f"{_sign_ar}عدد عشري {minimum} أكبر من",
                     "es": f"{_sign_es}número decimal mayor que {minimum}",
+                    "kk": f"{_sign_kk}сандық сан {minimum} тан аспау",
                 }
                 if maximum is None and maximum != 0
                 else {
@@ -811,14 +760,14 @@ class Float(Validator):
                         f"{_sign_ru}дробным числом в промежутке от {minimum} до"
                         f" {maximum}"
                     ),
+                    "it": (
+                        f"{_sign_it}numero decimale compreso tra {minimum} e {maximum}"
+                    ),
                     "de": f"{_sign_de}Fließkommazahl von {minimum} bis {maximum}",
                     "tr": f"{_sign_tr}ondalık sayı {minimum} ile {maximum} arasında",
                     "uz": f"{_sign_uz}butun son {minimum} dan {maximum} gacha",
-                    "hi": f"{_sign_hi}दशमलव संख्या {minimum} से {maximum} तक",
-                    "ja": f"{_sign_jp}浮動小数点数 {minimum} から {maximum} まで",
-                    "kr": f"{_sign_kr}부동 소수점 숫자 {minimum} 에서 {maximum} 까지",
-                    "ar": f"{_sign_ar}عدد عشري من {minimum} إلى {maximum}",
                     "es": f"{_sign_es}número decimal de {minimum} a {maximum}",
+                    "kk": f"{_sign_kk}сандық сан {minimum} ден {maximum} ге",
                 }
             )
 
@@ -826,27 +775,23 @@ class Float(Validator):
             doc = {
                 "en": f"{_sign_en}float",
                 "ru": f"{_sign_ru}дробным числом",
+                "it": f"{_sign_it}numero decimale",
                 "de": f"{_sign_de}Fließkommazahl",
                 "tr": f"{_sign_tr}ondalık sayı",
                 "uz": f"{_sign_uz}butun son",
-                "hi": f"{_sign_hi}दशमलव संख्या",
-                "ja": f"{_sign_jp}浮動小数点数",
-                "kr": f"{_sign_kr}부동 소수점 숫자",
-                "ar": f"{_sign_ar}عدد عشري",
                 "es": f"{_sign_es}número decimal",
+                "kk": f"{_sign_kk}сандық сан",
             }
         else:
             doc = {
                 "en": f"{_sign_en}float less than {maximum}",
                 "ru": f"{_sign_ru}дробным числом меньше {maximum}",
+                "it": f"{_sign_it}numero decimale minore di {maximum}",
                 "de": f"{_sign_de}Fließkommazahl kleiner als {maximum}",
                 "tr": f"{_sign_tr}ondalık sayı {maximum} dan küçük",
                 "uz": f"{_sign_uz}butun son {maximum} dan kichik",
-                "hi": f"{_sign_hi}दशमलव संख्या {maximum} से छोटा",
-                "ja": f"{_sign_jp}浮動小数点数 {maximum} より小さい",
-                "kr": f"{_sign_kr}부동 소수점 숫자 {maximum} 보다 작은",
-                "ar": f"{_sign_ar}عدد عشري {maximum} أصغر من",
                 "es": f"{_sign_es}número decimal menor que {maximum}",
+                "kk": f"{_sign_kk}сандық сан {maximum} тан кіші",
             }
 
         super().__init__(
@@ -912,14 +857,12 @@ class Union(Validator):
         doc = {
             "en": "one of the following:\n",
             "ru": "одним из следующего:\n",
+            "it": "uno dei seguenti:\n",
             "de": "einer der folgenden:\n",
             "tr": "aşağıdakilerden biri:\n",
             "uz": "quyidagi biri:\n",
-            "hi": "निम्नलिखित में से एक:\n",
-            "ja": "次のいずれか:\n",
-            "kr": "다음 중 하나:\n",
-            "ar": "واحد من الآتي:\n",
             "es": "uno de los siguientes:\n",
+            "kk": "келесілердің бірі:\n",
         }
 
         def case(x: str) -> str:
@@ -959,23 +902,21 @@ class NoneType(Validator):
         super().__init__(
             self._validate,
             {
-                "ru": "пустым значением",
                 "en": "empty value",
+                "ru": "пустым значением",
+                "it": "valore vuoto",
                 "de": "leeren Wert",
                 "tr": "boş değer",
                 "uz": "bo'sh qiymat",
-                "hi": "खाली मान",
-                "ja": "空の値",
-                "kr": "빈 값",
-                "ar": "قيمة فارغة",
                 "es": "valor vacío",
+                "kk": "бос мән",
             },
             _internal_id="NoneType",
         )
 
     @staticmethod
     def _validate(value: ConfigAllowedTypes, /) -> None:
-        if value not in {None, False, ""}:
+        if not value:
             raise ValidationError(f"Passed value ({value}) is not None")
 
         return None
@@ -1020,66 +961,56 @@ class Emoji(Validator):
             doc = {
                 "en": f"{length} emojis",
                 "ru": f"ровно {length} эмодзи",
+                "it": f"{length} emoji",
                 "de": f"genau {length} Emojis",
                 "tr": f"tam {length} emoji",
                 "uz": f"to'g'ri {length} emoji",
-                "hi": f"ठीक {length} इमोजी",
-                "ja": f"ちょうど {length} の絵文字",
-                "kr": f"정확히 {length} 개의 이모티콘",
-                "ar": f"تماما {length} الرموز التعبيرية",
                 "es": f"exactamente {length} emojis",
+                "kk": f"тоғыз {length} емодзи",
             }
         elif min_len is not None and max_len is not None:
             doc = {
                 "en": f"{min_len} to {max_len} emojis",
                 "ru": f"от {min_len} до {max_len} эмодзи",
+                "it": f"{min_len} a {max_len} emoji",
                 "de": f"zwischen {min_len} und {max_len} Emojis",
                 "tr": f"{min_len} ile {max_len} arasında emoji",
                 "uz": f"{min_len} dan {max_len} gacha emoji",
-                "hi": f"{min_len} से {max_len} तक इमोजी",
-                "ja": f"{min_len} から {max_len} の絵文字",
-                "kr": f"{min_len} 에서 {max_len} 개의 이모티콘",
-                "ar": f"من {min_len} إلى {max_len} الرموز التعبيرية",
                 "es": f"entre {min_len} y {max_len} emojis",
+                "kk": f"{min_len} ден {max_len} ге емодзи",
             }
         elif min_len is not None:
             doc = {
                 "en": f"at least {min_len} emoji",
                 "ru": f"не менее {min_len} эмодзи",
+                "it": f"almeno {min_len} emoji",
                 "de": f"mindestens {min_len} Emojis",
                 "tr": f"en az {min_len} emoji",
                 "uz": f"kamida {min_len} emoji",
-                "hi": f"कम से कम {min_len} इमोजी",
-                "ja": f"少なくとも {min_len} の絵文字",
-                "kr": f"최소 {min_len} 개의 이모티콘",
-                "ar": f"على الأقل {min_len} الرموز التعبيرية",
                 "es": f"al menos {min_len} emojis",
+                "kk": f"кем дегенде {min_len} емодзи",
             }
         elif max_len is not None:
             doc = {
                 "en": f"no more than {max_len} emojis",
                 "ru": f"не более {max_len} эмодзи",
+                "it": f"non più di {max_len} emoji",
                 "de": f"maximal {max_len} Emojis",
                 "tr": f"en fazla {max_len} emoji",
                 "uz": f"{max_len} dan ko'proq emoji",
-                "hi": f"{max_len} से अधिक इमोजी",
-                "ja": f"{max_len} 以下の絵文字",
-                "kr": f"{max_len} 개 이하의 이모티콘",
-                "ar": f"لا أكثر من {max_len} الرموز التعبيرية",
                 "es": f"no más de {max_len} emojis",
+                "kk": f"{max_len} ден асты емодзи",
             }
         else:
             doc = {
                 "en": "emoji",
                 "ru": "эмодзи",
+                "it": "emoji",
                 "de": "Emoji",
                 "tr": "emoji",
                 "uz": "emoji",
-                "hi": "इमोजी",
-                "ja": "絵文字",
-                "kr": "이모티콘",
-                "ar": "الرموز التعبيرية",
                 "es": "emojis",
+                "kk": "емодзи",
             }
 
         super().__init__(
@@ -1143,13 +1074,35 @@ class EntityLike(RegExp):
             description={
                 "en": "link to entity, username or Telegram ID",
                 "ru": "ссылка на сущность, имя пользователя или Telegram ID",
+                "it": "link all'ent entità, nome utente o ID Telegram",
                 "de": "Link zu einer Entität, Benutzername oder Telegram-ID",
                 "tr": "bir varlığa bağlantı, kullanıcı adı veya Telegram kimliği",
                 "uz": "entityga havola, foydalanuvchi nomi yoki Telegram ID",
-                "hi": "एक एंटिटी के लिए लिंक, उपयोगकर्ता नाम या टेलीग्राम आईडी",
-                "ja": "エンティティへのリンク、ユーザー名またはTelegram ID",
-                "kr": "엔티티에 대한 링크, 사용자 이름 또는 Telegram ID",
-                "ar": "رابط إلى الكيان، اسم المستخدم أو معرف Telegram",
                 "es": "enlace a la entidad, nombre de usuario o ID de Telegram",
+                "kk": "сынаққа сілтеме, пайдаланушы аты немесе Telegram ID",
             },
         )
+
+    @staticmethod
+    def _validate(
+        value: ConfigAllowedTypes,
+        /,
+        *,
+        regex: str,
+        flags: typing.Optional[re.RegexFlag],
+    ) -> typing.Union[str, int]:
+        value = super()._validate(value, regex=regex, flags=flags)
+
+        if value.isdigit():
+            if value.startswith("-100"):
+                value = value[4:]
+
+            value = int(value)
+
+        if value.startswith("https://t.me/"):
+            value = value.split("https://t.me/")[1]
+
+        if not value.startswith("@"):
+            value = f"@{value}"
+
+        return value

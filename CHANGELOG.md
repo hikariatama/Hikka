@@ -1,8 +1,59 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.6.0
+
+- Bring support for Dragon Userbot modules
+- Make `db` attribute of `Modules` public
+- Mess up with some translations
+- Fix `.helphide` command
+- Fix visual bug with phone input field in web
+- Fix proxy-passing in web
+- Fix `EntityLike` validator
+- Fix stringifying error in logging
+- Fix command escaping when using layout translated prefix
+- Patch `.info`, `utils.answer` etc to support forums (topics)
+- Drop Okteto support
+- Show Hikka platform and version in Telegram sessions list
+- New type `DragonModule`
+- New argument of `get_prefix` - `userbot`. Pass in `"dragon"` to get its prefix
+- New attribute of `Modules` - `dragon_modules`
+- New attribute of `CustomTelegramClient` - `pyro_proxy`. Use pyrogram methods natively
+- New appearence of `help` command
+- New module loading animation
+- New README.md with installation steps and new web recording
+- New `utils.atexit` method
+- New `utils.get_topic` method
+- New `utils.answer_file` method
+- New `utils.get_cpu_usage` method
+- New `utils.get_ram_usage` method
+- New restart process, which correctly kills all child processes and threads
+- New interactive web werkzeug debugger (view pin using `.debugpin` command)
+- New QR login flow
+- New license banners
+- New error-specific messages for RPCErrors, FloodWaitErrors, NetworkErrors
+- Send `start` hook to `InfiniteLoop` instances with `autostart` flag only after `client_ready`
+- Replace `__getattr__` in `Module` object with properties for commands and handlers
+- Move from monkey-patching concept of filling modules' attributes to native one
+- Minor and major bugfixes, adapt to topics
+- Kazakh translation pack
+- Italian translation pack
+- Partial Tatar translation pack
+- Logging tweaks
+- Add `caller` field to inline units
+- Add ability to get module help by command alias
+- Add ability to decorate aliases with `@loader.command` decorator
+- Add credits to developers and translators
+- Add support for multiple usernames
+- Add topic guesser in `send_message`, `send_file` in order for old modules to work properly
+- Add local storage fallback in case remote end is not available
+- Add `self.invoke` method for modules
+- Fresh Christmas web design
+- EULA warning for lavHost and MiyaHost
+- Support for Python 3.10
+
 ## 🌑 Hikka 1.5.3
 
-- Add Uzbek, Turkish, German, Hindi, Japanese, Korean, Spanish and Arabic translation packs
+- Add Uzbek, Turkish, German and Spanish translation packs
 - Fix module and command docs not being translated on-the-flight
 - Fix `RegExp` validator
 

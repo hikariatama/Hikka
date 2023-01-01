@@ -16,17 +16,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import atexit as _atexit
 import contextlib
 import functools
+import inspect
 import io
 import json
 import logging
@@ -34,33 +34,37 @@ import os
 import random
 import re
 import shlex
+import signal
 import string
 import time
-import inspect
-from datetime import timedelta
 import typing
+from datetime import timedelta
 from urllib.parse import urlparse
 
 import git
 import grapheme
 import requests
 import telethon
+from aiogram.types import Message as AiogramMessage
 from telethon import hints
 from telethon.tl.custom.message import Message
 from telethon.tl.functions.account import UpdateNotifySettingsRequest
 from telethon.tl.functions.channels import (
     CreateChannelRequest,
-    EditPhotoRequest,
     EditAdminRequest,
+    EditPhotoRequest,
     InviteToChannelRequest,
 )
 from telethon.tl.functions.messages import (
     GetDialogFiltersRequest,
-    UpdateDialogFilterRequest,
     SetHistoryTTLRequest,
+    UpdateDialogFilterRequest,
 )
 from telethon.tl.types import (
     Channel,
+    Chat,
+    ChatAdminRights,
+    InputDocument,
     InputPeerNotifySettings,
     MessageEntityBankCard,
     MessageEntityBlockquote,
@@ -85,18 +89,13 @@ from telethon.tl.types import (
     PeerChannel,
     PeerChat,
     PeerUser,
-    User,
-    Chat,
     UpdateNewChannelMessage,
-    ChatAdminRights,
+    User,
 )
 
-from aiogram.types import Message as AiogramMessage
-
 from .inline.types import InlineCall, InlineMessage
-from .types import Module, ListLike
 from .tl_cache import CustomTelegramClient
-
+from .types import HikkaReplyMarkup, ListLike, Module
 
 FormattingEntity = typing.Union[
     MessageEntityUnknown,
@@ -326,7 +325,6 @@ def run_async(loop: asyncio.AbstractEventLoop, coro: typing.Awaitable) -> typing
     :param coro: Coroutine to run
     :return: Result of the coroutine
     """
-    # When we bump minimum support to 3.7, use run()
     return asyncio.run_coroutine_threadsafe(coro, loop).result()
 
 
@@ -381,13 +379,61 @@ def relocate_entities(
     return entities
 
 
+async def answer_file(
+    message: typing.Union[Message, InlineCall, InlineMessage],
+    file: typing.Union[str, bytes, io.IOBase, InputDocument],
+    caption: typing.Optional[str] = None,
+    **kwargs,
+):
+    """
+    Use this to answer a message with a document
+    :param message: Message to answer
+    :param file: File to send - url, path or bytes
+    :param caption: Caption to send
+    :param kwargs: Extra kwargs to pass to `send_file`
+    :return: Sent message
+
+    :example:
+        >>> await utils.answer_file(message, "test.txt")
+        >>> await utils.answer_file(
+            message,
+            "https://mods.hikariatama.ru/badges/artai.jpg",
+            "This is the cool module, check it out!",
+        )
+    """
+    if isinstance(message, (InlineCall, InlineMessage)):
+        message = message.form["caller"]
+
+    if topic := get_topic(message):
+        kwargs.setdefault("reply_to", topic)
+
+    try:
+        response = await message.client.send_file(
+            message.peer_id,
+            file,
+            caption=caption,
+            **kwargs,
+        )
+    except Exception:
+        if caption:
+            logger.warning(
+                "Failed to send file, sending plain text instead", exc_info=True
+            )
+            return await answer(message, caption, **kwargs)
+
+        raise
+
+    with contextlib.suppress(Exception):
+        await message.delete()
+
+    return response
+
+
 async def answer(
     message: typing.Union[Message, InlineCall, InlineMessage],
     response: str,
     *,
-    reply_markup: typing.Optional[
-        typing.Union[typing.List[typing.List[dict]], typing.List[dict], dict]
-    ] = None,
+    reply_markup: typing.Optional[HikkaReplyMarkup] = None,
     **kwargs,
 ) -> typing.Union[InlineCall, InlineMessage, Message]:
     """
@@ -485,9 +531,10 @@ async def answer(
                 result = await message.client.send_file(
                     message.peer_id,
                     file,
-                    caption=message.client.loader._lookup("translations").strings(
+                    caption=message.client.loader.lookup("translations").strings(
                         "too_long"
                     ),
+                    reply_to=kwargs.get("reply_to") or get_topic(message),
                 )
 
                 if message.out:
@@ -525,7 +572,7 @@ async def answer(
         else:
             kwargs.setdefault(
                 "reply_to",
-                getattr(message, "reply_to_msg_id", None),
+                getattr(message, "reply_to_msg_id", get_topic(message)),
             )
             result = await message.client.send_file(message.peer_id, response, **kwargs)
             if message.out:
@@ -854,6 +901,9 @@ def get_named_platform() -> str:
     except Exception:
         pass
 
+    if "MIYAHOST" in os.environ:
+        return "🎃 MiyaHost"
+
     if "GOORM" in os.environ:
         return "🦾 GoormIDE"
 
@@ -866,42 +916,36 @@ def get_named_platform() -> str:
     if "com.termux" in os.environ.get("PREFIX", ""):
         return "🕶 Termux"
 
-    if "OKTETO" in os.environ:
-        return "☁️ Okteto"
-
     if "CODESPACES" in os.environ:
         return "🐈‍⬛ Codespaces"
 
     return f"✌️ lavHost {os.environ['LAVHOST']}" if "LAVHOST" in os.environ else "📻 VDS"
 
 
-def get_platform_emoji(client: typing.Optional[CustomTelegramClient] = None) -> str:
+def get_platform_emoji() -> str:
     """
     Returns custom emoji for current platform
-    :client: It is recommended to pass the client in here in order
-        to provide correct emojis for rtl languages. Make sure, that other strings
-        you use, are adapted to rtl languages as well. Otherwise, the string
-        will be broken.
     :return: Emoji entity in string
     """
-    BASE = (
-        "<emoji document_id={}>🌘</emoji>",
-        "<emoji document_id=5195311729663286630>🌘</emoji>",
-        "<emoji document_id=5195045669324201904>🌘</emoji>",
+    BASE = "".join(
+        (
+            "<emoji document_id={}>🌘</emoji>",
+            "<emoji document_id=5195311729663286630>🌘</emoji>",
+            "<emoji document_id=5195045669324201904>🌘</emoji>",
+        )
     )
 
-    if client and (
-        client.loader._db.get("hikka.translations", "lang", False) or ""
-    ).startswith("ar"):
-        BASE = tuple(reversed(BASE))
+    if "DOCKER" in os.environ:
+        return BASE.format(5298554256603752468)
 
-    BASE = "".join(BASE)
+    if "LAVHOST" in os.environ:
+        return BASE.format(5301078610747074753)
+
+    if "MIYAHOST" in os.environ:
+        return BASE.format(5280938237785808014)
 
     if "GOORM" in os.environ:
         return BASE.format(5298947740032573902)
-
-    if "OKTETO" in os.environ:
-        return BASE.format(5192767786174128165)
 
     if "CODESPACES" in os.environ:
         return BASE.format(5194976881127989720)
@@ -1294,13 +1338,19 @@ async def get_message_link(
             f"tg://openmessage?user_id={get_chat_id(message)}&message_id={message.id}"
         )
 
-    if not chat:
+    if not chat and not (chat := message.chat):
         chat = await message.get_chat()
 
+    topic_affix = (
+        f"?topic={message.reply_to.reply_to_msg_id}"
+        if getattr(message.reply_to, "forum_topic", False)
+        else ""
+    )
+
     return (
-        f"https://t.me/{chat.username}/{message.id}"
+        f"https://t.me/{chat.username}/{message.id}{topic_affix}"
         if getattr(chat, "username", False)
-        else f"https://t.me/c/{chat.id}/{message.id}"
+        else f"https://t.me/c/{chat.id}/{message.id}{topic_affix}"
     )
 
 
@@ -1404,13 +1454,83 @@ def validate_html(html: str) -> str:
     return telethon.extensions.html.unparse(escape_html(text), entities)
 
 
-def iter_attrs(obj: typing.Any, /) -> typing.Iterator[typing.Tuple[str, typing.Any]]:
+def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]:
     """
-    Iterates over attributes of object
+    Returns list of attributes of object
     :param obj: Object to iterate over
-    :return: Iterator of attributes and their values
+    :return: List of attributes and their values
     """
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
+
+
+def atexit(
+    func: typing.Callable,
+    use_signal: typing.Optional[int] = None,
+    *args,
+    **kwargs,
+) -> None:
+    """
+    Calls function on exit
+    :param func: Function to call
+    :param use_signal: If passed, `signal` will be used instead of `atexit`
+    :param args: Arguments to pass to function
+    :param kwargs: Keyword arguments to pass to function
+    :return: None
+    """
+    if use_signal:
+        signal.signal(use_signal, lambda *_: func(*args, **kwargs))
+        return
+
+    _atexit.register(functools.partial(func, *args, **kwargs))
+
+
+def get_topic(message: Message) -> typing.Optional[int]:
+    """
+    Get topic id of message
+    :param message: Message to get topic of
+    :return: int or None if not present
+    """
+    return (
+        (message.reply_to.reply_to_top_id or message.reply_to.reply_to_msg_id)
+        if (
+            isinstance(message, Message)
+            and message.reply_to
+            and message.reply_to.forum_topic
+        )
+        else message.form["top_msg_id"]
+        if isinstance(message, (InlineCall, InlineMessage))
+        else None
+    )
+
+
+def get_ram_usage() -> float:
+    """Returns current process tree memory usage in MB"""
+    try:
+        import psutil
+
+        current_process = psutil.Process(os.getpid())
+        mem = current_process.memory_info()[0] / 2.0**20
+        for child in current_process.children(recursive=True):
+            mem += child.memory_info()[0] / 2.0**20
+
+        return round(mem, 1)
+    except Exception:
+        return 0
+
+
+def get_cpu_usage() -> float:
+    """Returns current process tree CPU usage in %"""
+    try:
+        import psutil
+
+        current_process = psutil.Process(os.getpid())
+        cpu = current_process.cpu_percent()
+        for child in current_process.children(recursive=True):
+            cpu += child.cpu_percent()
+
+        return round(cpu, 1)
+    except Exception:
+        return 0
 
 
 init_ts = time.perf_counter()

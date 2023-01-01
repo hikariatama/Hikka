@@ -1,19 +1,19 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
 import copy
 import functools
 import logging
+import os
 import time
 import traceback
 import typing
+from urllib.parse import urlparse
 
 from aiogram.types import (
     CallbackQuery,
@@ -25,17 +25,13 @@ from aiogram.types import (
     InputMediaPhoto,
 )
 from aiogram.utils.exceptions import BadRequest, RetryAfter
-
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
 from telethon.extensions.html import CUSTOM_EMOJIS
+from telethon.tl.types import Message
 
-from urllib.parse import urlparse
-import os
-
-from .. import utils, main
+from .. import main, utils
 from ..types import HikkaReplyMarkup
-from .types import InlineUnit, InlineMessage
+from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
 
@@ -211,8 +207,10 @@ class Gallery(InlineUnit):
         self._units[unit_id] = {
             "type": "gallery",
             "caption": caption,
+            "caller": message,
             "chat": None,
             "message_id": None,
+            "top_msg_id": utils.get_topic(message),
             "uid": unit_id,
             "photo_url": (photo_url if isinstance(photo_url, str) else photo_url[0]),
             "next_handler": next_handler,
@@ -257,13 +255,14 @@ class Gallery(InlineUnit):
                     message.edit if message.out else message.respond
                 )(
                     (
-                        utils.get_platform_emoji(self._client)
+                        utils.get_platform_emoji()
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + self._client.loader._lookup("translations").strings(
+                    + self._client.loader.lookup("translations").strings(
                         "opening_gallery"
-                    )
+                    ),
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
                 )
             except Exception:
                 status_message = None
@@ -273,7 +272,10 @@ class Gallery(InlineUnit):
         async def answer(msg: str):
             nonlocal message
             if isinstance(message, Message):
-                await (message.edit if message.out else message.respond)(msg)
+                await (message.edit if message.out else message.respond)(
+                    msg,
+                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                )
             else:
                 await self._client.send_message(message, msg)
 
@@ -287,7 +289,7 @@ class Gallery(InlineUnit):
             )
         except ChatSendInlineForbiddenError:
             await answer(
-                self._client.loader._lookup("translations").strings("inline403")
+                self._client.loader.lookup("translations").strings("inline403")
             )
         except Exception:
             logger.exception("Error sending inline gallery")
@@ -298,7 +300,7 @@ class Gallery(InlineUnit):
                 logger.exception("Can't send gallery")
 
                 if not self._db.get(main.__name__, "inlinelogs", True):
-                    msg = self._client.loader._lookup("translations").strings(
+                    msg = self._client.loader.lookup("translations").strings(
                         "invoke_failed"
                     )
                 else:
@@ -337,7 +339,14 @@ class Gallery(InlineUnit):
 
         return InlineMessage(self, unit_id, self._units[unit_id]["inline_message_id"])
 
-    async def _call_photo(self, callback: callable) -> typing.Union[str, bool]:
+    async def _call_photo(
+        self,
+        callback: typing.Union[
+            typing.Callable[[], typing.Awaitable[str]],
+            typing.Callable[[], str],
+            typing.List[str],
+        ],
+    ) -> typing.Union[str, bool]:
         """Parses photo url from `callback`. Returns url on success, otherwise `False`
         """
         if isinstance(callback, str):
@@ -350,8 +359,8 @@ class Gallery(InlineUnit):
             photo_url = callback()
         else:
             logger.error(
-                "Invalid type for `next_handler`. Expected `str`, `list`, `callable` or"
-                " `asyncio.coroutine`, got %s",
+                "Invalid type for `next_handler`. Expected `str`, `list` or `callable`,"
+                " got %s",
                 type(callback),
             )
             return False
@@ -388,7 +397,7 @@ class Gallery(InlineUnit):
     async def _gallery_slideshow_loop(
         self,
         call: CallbackQuery,
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         while True:
             await asyncio.sleep(7)
@@ -414,7 +423,7 @@ class Gallery(InlineUnit):
     async def _gallery_slideshow(
         self,
         call: CallbackQuery,
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         if not self._units[unit_id].get("slideshow", False):
             self._units[unit_id]["slideshow"] = True
@@ -442,7 +451,7 @@ class Gallery(InlineUnit):
     async def _gallery_back(
         self,
         call: CallbackQuery,
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         queue = self._units[unit_id]["photos"]
 
@@ -508,7 +517,7 @@ class Gallery(InlineUnit):
         self,
         call: CallbackQuery,
         page: typing.Union[int, str],
-        unit_id: str = None,
+        unit_id: typing.Optional[str] = None,
     ):
         if page == "slideshow":
             await self._gallery_slideshow(call, unit_id)

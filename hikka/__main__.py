@@ -1,12 +1,10 @@
 """Entry point. Checks for user and starts main script"""
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import getpass
 import os
@@ -18,7 +16,7 @@ from ._internal import restart
 if (
     getpass.getuser() == "root"
     and "--root" not in " ".join(sys.argv)
-    and all(trigger not in os.environ for trigger in {"OKTETO", "DOCKER", "GOORM"})
+    and all(trigger not in os.environ for trigger in {"DOCKER", "GOORM"})
 ):
     print("🚫" * 15)
     print("You attempted to run Hikka on behalf of root user")
@@ -29,28 +27,6 @@ if (
     print("Type force_insecure to ignore this warning")
     if input("> ").lower() != "force_insecure":
         sys.exit(1)
-
-
-def deps(error):
-    print(f"{str(error)}\n🔄 Attempting dependencies installation... Just wait ⏱")
-
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--upgrade",
-            "-q",
-            "--disable-pip-version-check",
-            "--no-warn-script-location",
-            "-r",
-            "requirements.txt",
-        ],
-        check=True,
-    )
-
-    restart()
 
 
 if sys.version_info < (3, 8, 0):
@@ -66,28 +42,12 @@ else:
         pass
     else:
         try:
-            # This is used as verification markers to ensure that supported
-            # version is installed
-            from telethon.tl.types import MessageEntityCustomEmoji  # skipcq
-            from telethon.extensions.html import CUSTOM_EMOJIS  # skipcq
             import telethon
 
-            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 10):
+            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 14):
                 raise ImportError
         except ImportError:
-            print("🔄 Reinstalling Hikka-TL...")
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "uninstall",
-                    "-y",
-                    "telethon",
-                    "telethon-mod",
-                ],
-                check=False,
-            )
+            print("🔄 Installing Hikka-TL...")
 
             subprocess.run(
                 [
@@ -106,16 +66,57 @@ else:
 
             restart()
 
+        try:
+            import pyrogram
+
+            if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 66):
+                raise ImportError
+        except ImportError:
+            print("🔄 Installing Hikka-Pyro...")
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--force-reinstall",
+                    "-q",
+                    "--disable-pip-version-check",
+                    "--no-warn-script-location",
+                    "hikka-pyro",
+                ],
+                check=True,
+            )
+
+            restart()
+
     try:
         from . import log
 
         log.init()
 
         from . import main
-    except ModuleNotFoundError as e:
-        deps(e)
     except ImportError as e:
-        deps(e)
+        print(f"{str(e)}\n🔄 Attempting dependencies installation... Just wait ⏱")
+
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--upgrade",
+                "-q",
+                "--disable-pip-version-check",
+                "--no-warn-script-location",
+                "-r",
+                "requirements.txt",
+            ],
+            check=True,
+        )
+
+        restart()
 
     if __name__ == "__main__":
         if "HIKKA_DO_NOT_RESTART" in os.environ:

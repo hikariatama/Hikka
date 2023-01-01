@@ -1,46 +1,42 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
-import logging
 import contextlib
+import functools
 import io
+import logging
 import os
-from copy import deepcopy
 import re
 import typing
+from copy import deepcopy
 from urllib.parse import urlparse
-import functools
 
 from aiogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    InputFile,
     InputMediaAnimation,
-    InputMediaDocument,
     InputMediaAudio,
+    InputMediaDocument,
     InputMediaPhoto,
     InputMediaVideo,
-    InputFile,
 )
-
 from aiogram.utils.exceptions import (
+    BadRequest,
     MessageIdInvalid,
     MessageNotModified,
     RetryAfter,
-    BadRequest,
 )
+from telethon.utils import resolve_inline_message_id
 
 from .. import utils
 from ..types import HikkaReplyMarkup
-from .types import InlineUnit, InlineCall
-
-from telethon.utils import resolve_inline_message_id
+from .types import InlineCall, InlineUnit
 
 logger = logging.getLogger(__name__)
 
@@ -224,7 +220,7 @@ class Utils(InlineUnit):
     async def _answer_unit_handler(self, call: InlineCall, text: str, show_alert: bool):
         await call.answer(text, show_alert=show_alert)
 
-    async def check_inline_security(self, *, func: callable, user: int) -> bool:
+    async def check_inline_security(self, *, func: typing.Callable, user: int) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
             message=None,
@@ -232,7 +228,7 @@ class Utils(InlineUnit):
             user_id=user,
         )
 
-    def _find_caller_sec_map(self) -> typing.Optional[callable]:
+    def _find_caller_sec_map(self) -> typing.Optional[typing.Callable[[], int]]:
         try:
             caller = utils.find_caller()
             if not caller:
@@ -248,7 +244,9 @@ class Utils(InlineUnit):
 
         return None
 
-    def _normalize_markup(self, reply_markup: typing.Union[dict, list]) -> list:
+    def _normalize_markup(
+        self, reply_markup: HikkaReplyMarkup
+    ) -> typing.List[typing.List[typing.Dict[str, typing.Any]]]:
         if isinstance(reply_markup, dict):
             return [[reply_markup]]
 
@@ -587,11 +585,11 @@ class Utils(InlineUnit):
 
     def build_pagination(
         self,
-        callback: callable,
+        callback: typing.Callable[[int], typing.Awaitable[typing.Any]],
         total_pages: int,
         unit_id: typing.Optional[str] = None,
         current_page: typing.Optional[int] = None,
-    ) -> typing.List[dict]:
+    ) -> typing.List[typing.List[typing.Dict[str, typing.Any]]]:
         # Based on https://github.com/pystorage/pykeyboard/blob/master/pykeyboard/inline_pagination_keyboard.py#L4
         if current_page is None:
             current_page = self._units[unit_id]["current_index"] + 1
@@ -695,7 +693,7 @@ class Utils(InlineUnit):
     def _validate_markup(
         self,
         buttons: typing.Optional[HikkaReplyMarkup],
-    ) -> typing.List[typing.List[dict]]:
+    ) -> typing.List[typing.List[typing.Dict[str, typing.Any]]]:
         if buttons is None:
             buttons = []
 

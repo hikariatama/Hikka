@@ -1,17 +1,15 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
+import asyncio
+import collections
 import json
 import logging
 import os
 import time
-import asyncio
-import collections
 
 try:
     import redis
@@ -22,20 +20,17 @@ except ImportError as e:
 
 import typing
 
-from telethon.tl.types import Message
 from telethon.errors.rpcerrorlist import ChannelsTooMuchError
+from telethon.tl.types import Message
 
-from . import utils, main
-from .pointers import (
-    PointerList,
-    PointerDict,
-)
-from .types import JSONSerializable
+from . import main, utils
+from .pointers import PointerDict, PointerList
 from .tl_cache import CustomTelegramClient
+from .types import JSONSerializable
 
 DATA_DIR = (
     os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
+    if "DOCKER" not in os.environ
     else "/data"
 )
 
@@ -298,7 +293,7 @@ class Database(dict):
         owner: str,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
-    ) -> JSONSerializable:
+    ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
         """Get a pointer to database key"""
         value = self.get(owner, key, default)
         mapping = {

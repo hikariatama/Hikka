@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
@@ -44,6 +42,20 @@ class UpdateNotifierMod(loader.Module):
         "ignore": "🚫 Игнорировать",
     }
 
+    strings_it = {
+        "update_required": (
+            "🌘 <b>Aggiornamento disponibile per Hikka!</b>\n\nÈ stato rilasciato un"
+            " nuovo aggiornamento per Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 E altri {}...</b></i>",
+        "_cfg_doc_disable_notifications": "Disabilita le notifiche di aggiornamento",
+        "latest_disabled": (
+            "Le notifiche sull'ultimo aggiornamento sono state disattivate"
+        ),
+        "update": "🔄 Aggiorna",
+        "ignore": "🚫 Ignora",
+    }
+
     strings_de = {
         "update_required": (
             "🌘 <b>Hikka Update verfügbar!</b>\n\nNeue Hikka Version veröffentlicht.\n🔮"
@@ -56,18 +68,6 @@ class UpdateNotifierMod(loader.Module):
         ),
         "update": "🔄 Update",
         "ignore": "🚫 Ignorieren",
-    }
-
-    strings_hi = {
-        "update_required": (
-            "🌘 <b>हिक्का अपडेट उपलब्ध है!</b>\n\nनया हिक्का संस्करण जारी किया गया"
-            " है।\n🔮 <b>हिक्का <s>{}</s> -> {}</b>\n\n{}"
-        ),
-        "more": "\n<i><b>🎥 और {} अधिक...</b></i>",
-        "_cfg_doc_disable_notifications": "अपडेट सूचनाएं अक्षम करें",
-        "latest_disabled": "नवीनतम अपडेट के बारे में सूचनाएं अक्षम कर दी गई हैं",
-        "update": "🔄 अपडेट करें",
-        "ignore": "🚫 अनदेखा करें",
     }
 
     strings_uz = {
@@ -94,42 +94,6 @@ class UpdateNotifierMod(loader.Module):
         "ignore": "🚫 Yoksay",
     }
 
-    strings_ja = {
-        "update_required": (
-            "🌘 <b>Hikkaの更新があります！</b>\n新しいHikkaバージョンがリリースされました。\n🔮 <b>Hikka <s>{}</s> ->"
-            " {}</b>\n{}"
-        ),
-        "more": "\n<i><b>🎥 そして{}も...</b></i>",
-        "_cfg_doc_disable_notifications": "更新通知を無効にする",
-        "latest_disabled": "最新の更新に関する通知が抑制されました",
-        "update": "🔄 更新",
-        "ignore": "🚫 無視する",
-    }
-
-    strings_kr = {
-        "update_required": (
-            "🌘 <b>Hikka 업데이트가 있습니다!</b>\n새로운 Hikka 버전이 출시되었습니다.\n🔮 <b>Hikka <s>{}</s>"
-            " -> {}</b>\n{}"
-        ),
-        "more": "\n<i><b>🎥 그리고 {} 더...</b></i>",
-        "_cfg_doc_disable_notifications": "업데이트 알림 비활성화",
-        "latest_disabled": "최신 업데이트에 대한 알림이 비활성화되었습니다",
-        "update": "🔄 업데이트",
-        "ignore": "🚫 무시",
-    }
-
-    strings_ar = {
-        "update_required": (
-            "🌘 <b>يوجد تحديث لـ Hikka!</b>\n\nتم إصدار إصدار جديد من Hikka.\n🔮"
-            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
-        ),
-        "more": "\n<i><b>🎥 و {} أكثر...</b></i>",
-        "_cfg_doc_disable_notifications": "تعطيل إشعارات التحديث",
-        "latest_disabled": "تم تعطيل إشعارات آخر تحديث",
-        "update": "🔄 تحديث",
-        "ignore": "🚫 تجاهل",
-    }
-
     strings_es = {
         "update_required": (
             "🌘 <b>¡Actualización de Hikka disponible!</b>\n\nSe ha publicado una nueva"
@@ -140,6 +104,18 @@ class UpdateNotifierMod(loader.Module):
         "latest_disabled": "Notificaciones de última actualización desactivadas",
         "update": "🔄 Actualizar",
         "ignore": "🚫 Ignorar",
+    }
+
+    strings_kk = {
+        "update_required": (
+            "🌘 <b>Hikka жаңартуға болады!</b>\n\nЖаңа Hikka нұсқасы жарияланды.\n🔮"
+            " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 Мынаның үшінше {}...</b></i>",
+        "_cfg_doc_disable_notifications": "Жаңарту хабарландыруларын өшіру",
+        "latest_disabled": "Соңғы жаңарту туралы хабарландырулар өшірілді",
+        "update": "🔄 Жаңарту",
+        "ignore": "🚫 Елемеу",
     }
 
     _notified = None
@@ -244,7 +220,7 @@ class UpdateNotifierMod(loader.Module):
             with contextlib.suppress(Exception):
                 await client.loader.inline.bot.delete_message(
                     client.tg_id,
-                    client.loader._db.get("UpdateNotifierMod", "upd_msg"),
+                    client.loader.db.get("UpdateNotifierMod", "upd_msg"),
                 )
 
     @loader.callback_handler()
@@ -263,9 +239,4 @@ class UpdateNotifierMod(loader.Module):
         with contextlib.suppress(Exception):
             await call.delete()
 
-        await self.allmodules.commands["update"](
-            await self._client.send_message(
-                self.inline.bot_username,
-                f"<code>{self.get_prefix()}update --force</code>",
-            )
-        )
+        await self.invoke("update", "-f", peer=self.inline.bot_username)

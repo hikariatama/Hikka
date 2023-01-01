@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import re
 import string
@@ -24,12 +22,12 @@ class InlineStuffMod(loader.Module):
     strings = {
         "name": "InlineStuff",
         "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Specified bot"
-            " username is invalid. It must end with </b><code>bot</code><b> and contain"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specified bot"
+            " username is invalid. It must end with</b> <code>bot</code> <b>and contain"
             " at least 4 symbols</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>This username is"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>This username is"
             " already occupied</b>"
         ),
         "bot_updated": (
@@ -46,12 +44,12 @@ class InlineStuffMod(loader.Module):
 
     strings_ru = {
         "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Неправильный ник"
-            " бота. Он должен заканчиваться на </b><code>bot</code><b> и быть не короче"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неправильный ник"
+            " бота. Он должен заканчиваться на</b> <code>bot</code> <b>и быть не короче"
             " чем 5 символов</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Такой ник бота уже"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Такой ник бота уже"
             " занят</b>"
         ),
         "bot_updated": (
@@ -61,19 +59,41 @@ class InlineStuffMod(loader.Module):
         "this_is_hikka": (
             "🌘 <b>Привет! Это Hikka — мощный модульный Telegram юзербот. Вы можете"
             " установить его на свой аккаунт!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
             ' href="https://t.me/hikka_talks">Чат поддержки</a></b>'
+        ),
+    }
+
+    strings_it = {
+        "bot_username_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il nome utente del"
+            " bot non è valido. Deve terminare con</b> <code>bot</code> <b>e contenere"
+            " almeno 4 caratteri</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Questo nome utente è"
+            " già occupato</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Le impostazioni sono"
+            " state salvate. Riavvia il bot per applicare le modifiche</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Ciao! Questo è Hikka — potente userbot modulare per Telegram. Lo"
+            " puoi installare sul tuo account!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Chat di supporto</a></b>'
         ),
     }
 
     strings_de = {
         "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Der angegebene"
-            " Benutzername ist ungültig. Er muss mit </b><code>bot</code><b> enden und"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Der angegebene"
+            " Benutzername ist ungültig. Er muss mit</b> <code>bot</code> <b>enden und"
             " mindestens 4 Zeichen lang sein</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Dieser Benutzername"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Dieser Benutzername"
             " ist bereits vergeben</b>"
         ),
         "bot_updated": (
@@ -83,19 +103,19 @@ class InlineStuffMod(loader.Module):
         "this_is_hikka": (
             "🌘 <b>Hallo! Das ist Hikka — mächtiger modulare Telegram Userbot. Du kannst"
             " ihn auf deinen Account installieren!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
             ' href="https://t.me/hikka_talks">Support Chat</a></b>'
         ),
     }
 
     strings_tr = {
         "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Belirtilen bot"
-            " kullanıcı adı geçersiz. Botun adı </b><code>bot</code><b> ile bitmeli ve"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Belirtilen bot"
+            " kullanıcı adı geçersiz. Botun adı</b> <code>bot</code> <b>ile bitmeli ve"
             " en az 4 karakter içermelidir</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Bu kullanıcı adı"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu kullanıcı adı"
             " zaten alınmış</b>"
         ),
         "bot_updated": (
@@ -105,41 +125,19 @@ class InlineStuffMod(loader.Module):
         "this_is_hikka": (
             "🌘 <b>Merhaba! Bu Hikka — güçlü modüler Telegram kullanıcı botu. Hesabınıza"
             " kurup, kullanabilirsiniz!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
             ' href="https://t.me/hikka_talks">Destek sohbeti</a></b>'
-        ),
-    }
-
-    strings_hi = {
-        "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>बॉट उपयोगकर्ता"
-            " नाम अवैध है। यह </b><code>bot</code><b> से समाप्त होना चाहिए और न्यूनतम"
-            " 4 वर्णों का होना चाहिए</b>"
-        ),
-        "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>यह उपयोगकर्ता नाम पहले"
-            " से ही ले लिया गया है</b>"
-        ),
-        "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>कॉन्फ़िगरेशन"
-            " सफलतापूर्वक सहेजा गया। इसे लागू करने के लिए बॉट को रीस्टार्ट करें</b>"
-        ),
-        "this_is_hikka": (
-            "🌘 <b>नमस्ते! यह Hikka है — एक मजबूत और मॉड्यूलर टेलीग्राम यूजरबॉट। आप इसे"
-            " अपने अकाउंट पर इंस्टॉल कर सकते हैं!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
-            ' href="https://t.me/hikka_talks">सपोर्ट चैट</a></b>'
         ),
     }
 
     strings_uz = {
         "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Bot foydalanuvchi"
-            " nomi noto'g'ri. U </b><code>bot</code><b> bilan tugashi kerak va kamida 4"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bot foydalanuvchi"
+            " nomi noto'g'ri. U</b> <code>bot</code> <b>bilan tugashi kerak va kamida 4"
             " belgidan iborat bo'lishi kerak</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>Ushbu foydalanuvchi"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ushbu foydalanuvchi"
             " nomi allaqachon band</b>"
         ),
         "bot_updated": (
@@ -150,83 +148,19 @@ class InlineStuffMod(loader.Module):
         "this_is_hikka": (
             "🌘 <b>Salom! Bu Hikka - kuchli modulli Telegram userboti. Siz uni"
             " o'zingizni akkauntingizga o'rnatishingiz mumkin!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
             ' href="https://t.me/hikka_talks">Yordam chati</a></b>'
-        ),
-    }
-
-    strings_ja = {
-        "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>ボットのユーザー名が"
-            "無効です。それは</b><code>bot</code><b>で終わり、少なくとも4文字でなければなりません</b>"
-        ),
-        "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>このユーザー名はすでに"
-            "使用されています</b>"
-        ),
-        "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>設定が正常に保存されました。"
-            "変更を適用するには、ボットを再起動してください</b>"
-        ),
-        "this_is_hikka": (
-            "🌘 <b>こんにちは！これはHikkaです — 力強いモジュール式のTelegramユーザーボットです。"
-            "あなたはそれをあなたのアカウントにインストールすることができます！</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
-            ' href="https://t.me/hikka_talks">サポートチャット</a></b>'
-        ),
-    }
-
-    strings_kr = {
-        "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>봇 사용자 이름이"
-            " 잘못되었습니다. 그것은 </b><code>bot</code><b>으로 끝나야하며 최소 4자여야합니다</b>"
-        ),
-        "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>이 사용자 이름은"
-            " 이미 사용 중입니다</b>"
-        ),
-        "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>설정이 성공적으로"
-            " 저장되었습니다. 이러한 변경 사항을 적용하려면 봇을 다시 시작하십시오</b>"
-        ),
-        "this_is_hikka": (
-            "🌘 <b>안녕하세요! 이것은 Hikka입니다 — 강력하고 모듈식인 Telegram 사용자 봇입니다."
-            "당신은 그것을 당신의 계정에 설치할 수 있습니다!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
-            ' href="https://t.me/hikka_talks">지원 채팅</a></b>'
-        ),
-    }
-
-    strings_ar = {
-        "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>اسم مستخدم البوت"
-            " غير صالح. يجب أن ينتهي بـ </b><code>bot</code><b> وأن يكون"
-            " أكثر من 4 أحرف</b>"
-        ),
-        "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>اسم المستخدم مأخوذ"
-            " بالفعل</b>"
-        ),
-        "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>تم حفظ الإعدادات"
-            " بنجاح. يرجى إعادة تشغيل البوت لتطبيق التغييرات</b>"
-        ),
-        "this_is_hikka": (
-            "🌘 <b>مرحبًا! هذا هو Hikka - مستخدم بوت تيليغرام قوي وموديولي. يمكنك تثبيته"
-            " على حسابك!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
-            ' href="https://t.me/hikka_talks">دردشة الدعم</a></b>'
         ),
     }
 
     strings_es = {
         "bot_username_invalid": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>El nombre de usuario"
-            " del bot no es válido. Debe terminar con </b><code>bot</code><b> y"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El nombre de usuario"
+            " del bot no es válido. Debe terminar con</b> <code>bot</code> <b>y"
             " tener al menos 4 caracteres</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5415905755406539934>🚫</emoji> <b>El nombre de usuario"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El nombre de usuario"
             " ya está en uso</b>"
         ),
         "bot_updated": (
@@ -236,8 +170,30 @@ class InlineStuffMod(loader.Module):
         "this_is_hikka": (
             "🌘 <b>¡Hola! Este es Hikka - un poderoso bot de usuario modular de"
             " Telegram. ¡Puedes instalarlo en tu cuenta!</b>\n\n<b>🌍 <a"
-            ' href="https://github.com/hikariaitama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
             ' href="https://t.me/hikka_talks">Chat de soporte</a></b>'
+        ),
+    }
+
+    strings_kk = {
+        "name": "InlineStuff",
+        "bot_username_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Көрсетілген бот"
+            " аты жарамсыз. Оның соңында</b> <code>bot</code> <b>қосып, 4 символдан"
+            " кем болмауы керек</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бұл ат бос емес</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Баптаулар сақталды."
+            " Өзгертулерді қолдану үшін ботты қайта іске қосыңыз</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Сәлеметсіз бе! Бұл Hikka — жақсы модульді Telegram бот. Сіз"
+            " онды аккаунтыңызға орната аласыз!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Қолдау сөйлесу кезегі</a></b>'
         ),
     }
 
@@ -264,7 +220,7 @@ class InlineStuffMod(loader.Module):
 
         await message.delete()
 
-        m = await message.respond("🌘")
+        m = await message.respond("🌘", reply_to=utils.get_topic(message))
 
         await self.inline.gallery(
             message=m,
@@ -308,14 +264,12 @@ class InlineStuffMod(loader.Module):
 
     @loader.command(
         ru_doc="<юзернейм> - Изменить юзернейм инлайн бота",
+        it_doc="<username> - Cambia il nome utente del bot inline",
         de_doc="<username> - Ändere den Inline-Bot-Nutzernamen",
         tr_doc="<kullanıcı adı> - İçe aktarma botunun kullanıcı adını değiştirin",
-        hi_doc="<उपयोगकर्ता नाम> - इनलाइन बॉट का उपयोगकर्ता नाम बदलें",
         uz_doc="<foydalanuvchi nomi> - Bot foydalanuvchi nomini o'zgartiring",
-        ja_doc="<ユーザー名> - インラインボットのユーザー名を変更します",
-        kr_doc="<사용자 이름> - 인라인 봇의 사용자 이름을 변경합니다",
-        ar_doc="<اسم المستخدم> - تغيير اسم المستخدم للبوت الداخلي",
         es_doc="<nombre de usuario> - Cambia el nombre de usuario del bot de inline",
+        kk_doc="<пайдаланушы аты> - Инлайн боттың пайдаланушы атын өзгерту",
     )
     async def ch_hikka_bot(self, message: Message):
         """<username> - Change your Hikka inline bot username"""

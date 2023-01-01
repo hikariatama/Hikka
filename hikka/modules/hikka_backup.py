@@ -1,10 +1,8 @@
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import datetime
@@ -63,6 +61,26 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
+    strings_it = {
+        "period": (
+            "⌚️ <b>Unità «ALPHA»</b> crea backup del database periodicamente. Puoi"
+            " modificare questo comportamento in seguito.\n\nPer favore, seleziona"
+            " la periodicità dei backup automatici"
+        ),
+        "saved": (
+            "✅ Periodo di backup salvato. Puoi modificarlo in seguito con"
+            " .set_backup_period"
+        ),
+        "never": (
+            "✅ Non farò backup automatici. Puoi modificarlo in seguito con"
+            " .set_backup_period"
+        ),
+        "invalid_args": (
+            "🚫 <b>Specifica il periodo di backup corretto in ore, o `0` per"
+            " disabilitarlo</b>"
+        ),
+    }
+
     strings_de = {
         "period": (
             "⌚️ <b>Unit «ALPHA»</b> erstellt regelmäßige Backups. Diese Einstellungen"
@@ -102,24 +120,6 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
-    strings_hi = {
-        "period": (
-            "⌚️ <b>यूनिट «ALPHA»</b> स्वचालित रूप से बैकअप बनाता है। आप इस विशेषता को"
-            " बाद में बदल सकते हैं।\n\nकृपया बैकअप की अनुमति देने के लिए एक अनुमति दें"
-        ),
-        "saved": (
-            "✅ बैकअप अनुमति सहेजी गई! आप इसे .set_backup_period के साथ बदल सकते हैं"
-        ),
-        "never": (
-            "✅ मैं स्वचालित रूप से बैकअप नहीं बनाऊंगा। आप इसे .set_backup_period के साथ"
-            " बदल सकते हैं"
-        ),
-        "invalid_args": (
-            "🚫 <b>सही बैकअप अनुमति देने के लिए एक घंटे में दर दर्ज करें, या इसे अक्षम"
-            " करने के लिए `0` दर्ज करें</b>"
-        ),
-    }
-
     strings_uz = {
         "period": (
             "⌚️ <b>Unit «ALPHA»</b> avtomatik ravishda e'lon qiladi. Ushbu sozlamalarni"
@@ -136,45 +136,6 @@ class HikkaBackupMod(loader.Module):
         ),
         "invalid_args": (
             '🚫 <b>Yaroqli zaxira muddatini soat yoki "0" bilan belgilang o\'chirish</b>'
-        ),
-    }
-
-    strings_ja = {
-        "period": (
-            "⌚️ <b>Unit «ALPHA»</b> は自動的にバックアップを作成します。これらの設定は"
-            " 後で変更できます。\n\nバックアップの頻度を選択してください"
-        ),
-        "saved": "✅ バックアップ頻度が保存されました！ .set_backup_period を使用して 後で変更できます",
-        "never": "✅ 自動的にバックアップを作成しないでください。 .set_backup_period を使用して 後で変更できます",
-        "invalid_args": "🚫 <b>正しいバックアップ頻度を時間単位で指定するか、`0` を指定して無効にします</b>",
-    }
-
-    strings_kr = {
-        "period": (
-            "⌚️ <b>Unit «ALPHA»</b>은 자동으로 백업을 생성합니다. 이러한 설정은"
-            " 나중에 변경할 수 있습니다.\n\n백업 주기를 선택하십시오"
-        ),
-        "saved": "✅ 백업 주기가 저장되었습니다! 나중에 .set_backup_period를 사용하여 변경할 수 있습니다",
-        "never": "✅ 자동으로 백업을 만들지 마십시오. 나중에 .set_backup_period를 사용하여 변경할 수 있습니다",
-        "invalid_args": "🚫 <b>올바른 백업 주기를 시간 단위로 지정하거나 `0`으로 지정하여 비활성화하십시오</b>",
-    }
-
-    strings_ar = {
-        "period": (
-            "⌚️ يقوم <b>Unit «ALPHA»</b> بإنشاء نسخة احتياطية تلقائية. يمكنك تغيير هذه"
-            " الإعدادات في وقت لاحق.\n\nالرجاء اختيار فترة النسخ الاحتياطي"
-        ),
-        "saved": (
-            "✅ تم حفظ فترة النسخ الاحتياطي! يمكنك تغييرها باستخدام .set_backup_period"
-            " في وقت لاحق"
-        ),
-        "never": (
-            "✅ لا تقم بإنشاء نسخة احتياطية تلقائية. يمكنك تغييرها باستخدام"
-            " .set_backup_period في وقت لاحق"
-        ),
-        "invalid_args": (
-            "🚫 <b>الرجاء إدخال فترة النسخ الاحتياطي الصحيحة بالساعات، أو"
-            " `0` لتعطيلها</b>"
         ),
     }
 
@@ -198,6 +159,42 @@ class HikkaBackupMod(loader.Module):
         ),
     }
 
+    strings_kk = {
+        "period": (
+            "⌚️ <b>Unit «ALPHA»</b> автоматты резервтік көшірмелер жасайды. Бұл"
+            " параметрлерді кейінірек өзгерте аласыз.\n\nӨтініш, резервтік көшірмелер"
+            " қайдағы кезеңдерде жасалады"
+        ),
+        "saved": (
+            "✅ Резервтік көшірмелер қайдағы кезеңдерде жасалады! Бұл параметрлерді"
+            " .set_backup_period командасымен кейінірек өзгерте аласыз"
+        ),
+        "never": (
+            "✅ Автоматты резервтік көшірмелер жасауға болмайды. Бұл параметрлерді"
+            " .set_backup_period командасымен кейінірек өзгерте аласыз"
+        ),
+        "invalid_args": (
+            "🚫 <b>Жарамды резервтік көшірмелер қайдағы кезеңдерде жасалады, немесе"
+            " өшіріледі</b>"
+        ),
+    }
+
+    strings_tt = {
+        "period": (
+            "⌚️ <b>«ALPHA» берәмлеге</b> регуляр резервлар тудыра."
+            " Бу көйләүләрне соңрак үзгәртергә мөмкин."
+            "\n\nЗинһар, резерв ешлыкны сайлагыз"
+        ),
+        "saved": "✅ Вакытлылык сакланган! Аны үзгәртеп була .set_backup_period",
+        "never": (
+            "✅ Мин автоматик резерв ясамыйм. Аны кулланып юкка"
+            " чыгарырга мөмкин .set_backup_period"
+        ),
+        "invalid_args": (
+            "🚫 <b>Сәгатьләрдә дөрес ешлыкны күрсәтегез, яки сүндерү өчен 0</b>"
+        ),
+    }
+
     async def client_ready(self):
         if not self.get("period"):
             await self.inline.bot.send_photo(
@@ -212,7 +209,7 @@ class HikkaBackupMod(loader.Module):
                                 "callback": self._set_backup_period,
                                 "args": (i,),
                             }
-                            for i in {1, 2, 4, 6, 8, 12, 24, 48, 168}
+                            for i in [1, 2, 4, 6, 8, 12, 24, 48, 168]
                         ],
                         3,
                     )
@@ -231,7 +228,7 @@ class HikkaBackupMod(loader.Module):
         self._backup_channel, _ = await utils.asset_channel(
             self._client,
             "hikka-backups",
-            "📼 Your database backups will appear there",
+            "📼 Your database backups will appear here",
             silent=True,
             archive=True,
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
@@ -255,14 +252,12 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command(
         ru_doc="<время в часах> - Установить частоту бэкапов",
+        it_doc="<tempo in ore> - Imposta la frequenza dei backup",
         de_doc="<Stunden> - Setze die Backup-Frequenz",
         tr_doc="<saat cinsinden zaman> - Yedekleme periyodunu ayarla",
-        hi_doc="<घंटों में समय> - बैकअप अनुमति सेट करें",
         uz_doc="<soatda vaqt> - E'lon tartibini belgilash",
-        ja_doc="<時間> - バックアップ頻度を設定します",
-        kr_doc="<시간> - 백업 빈도 설정",
-        ar_doc="<ساعات> - ضبط فترة النسخ الاحتياطي",
         es_doc="<horas> - Establecer la frecuencia de copia de seguridad",
+        kk_doc="<сағатты уақыт> - Резервтік көшірмелер қайдағы кезеңдерде жасалады",
     )
     async def set_backup_period(self, message: Message):
         """<time in hours> - Change backup frequency"""
@@ -284,6 +279,9 @@ class HikkaBackupMod(loader.Module):
     @loader.loop(interval=1)
     async def handler(self):
         try:
+            if self.get("period") == "disabled":
+                raise loader.StopLoop
+
             if not self.get("period"):
                 await asyncio.sleep(3)
                 return
@@ -292,9 +290,6 @@ class HikkaBackupMod(loader.Module):
                 self.set("last_backup", round(time.time()))
                 await asyncio.sleep(self.get("period"))
                 return
-
-            if self.get("period") == "disabled":
-                raise loader.StopLoop
 
             await asyncio.sleep(
                 self.get("last_backup") + self.get("period") - time.time()

@@ -1,12 +1,10 @@
 """Inline buttons, galleries and other Telegram-Bot-API stuff"""
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import logging
@@ -19,6 +17,8 @@ from telethon.errors.rpcerrorlist import InputUserDeactivatedError, YouBlockedUs
 from telethon.tl.functions.contacts import UnblockRequest
 from telethon.utils import get_display_name
 
+from ..database import Database
+from ..tl_cache import CustomTelegramClient
 from .bot_pm import BotPM
 from .events import Events
 from .form import Form
@@ -27,8 +27,6 @@ from .list import List
 from .query_gallery import QueryGallery
 from .token_obtainment import TokenObtainment
 from .utils import Utils
-from ..database import Database
-from ..tl_cache import CustomTelegramClient
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +71,7 @@ class InlineManager(
 
             await asyncio.sleep(5)
 
-    async def _register_manager(
+    async def register_manager(
         self,
         after_break: bool = False,
         ignore_token_checks: bool = False,
@@ -117,7 +115,7 @@ class InlineManager(
             self._token = False
 
             if not after_break:
-                return await self._register_manager(True)
+                return await self.register_manager(True)
 
             self.init_complete = False
             return False

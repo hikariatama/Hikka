@@ -17,13 +17,11 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-#             █ █ ▀ █▄▀ ▄▀█ █▀█ ▀
-#             █▀█ █ █ █ █▀█ █▀▄ █
-#              © Copyright 2022
-#           https://t.me/hikariatama
-#
-# 🔒      Licensed under the GNU AGPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# ©️ Dan Gazizullin, 2021-2022
+# This file is a part of Hikka Userbot
+# 🌐 https://github.com/hikariatama/Hikka
+# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
+# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 
 import argparse
@@ -37,8 +35,9 @@ import random
 import socket
 import sqlite3
 import sys
-from math import ceil
 import typing
+from math import ceil
+
 import telethon
 from telethon import events
 from telethon.errors.rpcerrorlist import (
@@ -50,13 +49,13 @@ from telethon.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import SQLiteSession, MemorySession
+from telethon.sessions import MemorySession, SQLiteSession
 
 from . import database, loader, utils, version
 from .dispatcher import CommandDispatcher
+from .tl_cache import CustomTelegramClient
 from .translations import Translator
 from .version import __version__
-from .tl_cache import CustomTelegramClient
 
 try:
     from .web import core
@@ -67,9 +66,9 @@ else:
     web_available = True
 
 BASE_DIR = (
-    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "OKTETO" not in os.environ and "DOCKER" not in os.environ
-    else "/data"
+    "/data"
+    if "DOCKER" in os.environ
+    else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
 )
 
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
@@ -131,7 +130,7 @@ def save_config_key(key: str, value: str) -> bool:
     return True
 
 
-def gen_port() -> int:
+def gen_port(cfg: str = "port", no8080: bool = False) -> int:
     """
     Generates random free port in case of VDS, and
     8080 in case of Okteto
@@ -139,12 +138,12 @@ def gen_port() -> int:
     exposed by default
     :returns: Integer value of generated port
     """
-    if any(trigger in os.environ for trigger in {"OKTETO", "DOCKER"}):
+    if "DOCKER" in os.environ and not no8080:
         return 8080
 
     # But for own server we generate new free port, and assign to it
 
-    port = get_config_key("port")
+    port = get_config_key(cfg)
     if port:
         return port
 
@@ -451,7 +450,12 @@ class Hikka:
                     connection=self.conn,
                     proxy=self.proxy,
                     connection_retries=None,
-                    device_model="Hikka",
+                    device_model=(
+                        f"Hikka on {utils.get_named_platform().split(maxsplit=1)[1]}"
+                    ),
+                    app_version=(
+                        f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}"
+                    ),
                 )
 
                 client.start(phone)
@@ -507,7 +511,7 @@ class Hikka:
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
-                os.remove(os.path.join(BASE_DIR, f"{session}.session"))
+                os.remove(os.path.join(BASE_DIR, session.filename))
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
@@ -641,6 +645,8 @@ class Hikka:
         await translator.init()
         modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
+
+        client.pyro_proxy = None  # Will be set later if needed
 
         if self.web:
             await self.web.add_loader(client, modules, db)
