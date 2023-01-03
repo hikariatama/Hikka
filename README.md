@@ -169,7 +169,7 @@ User docs will be available soon
 <img src="https://user-images.githubusercontent.com/36935426/202842278-37fbc518-1679-45d7-92f5-9e519275630d.png">
 
 <hr>
-<i>⚠️ In order to provide some credit to module developers, when you load a module, Hikka will automatically (in background) put reactions to corresponding channel posts. This functionality can't be disabled and it doesn't affect usage of userbot. All timings are measured to be safe for your account and whenever the error occurs, it will be ignored.</i>
+<i>⚠️ This project is provided as-is. Developer doesn't take ANY responsibility over any problems, caused by userbot. By installing Hikka you take all risks on you. This is but not limited to account bans, deleted (by Telegram algorithms) messages, SCAM-modules, leaked sessions (due to SCAM-modules). It is <b>highly</b> recommended to enable the API Flood protection (.api_fw_protection) and not to install many modules at once. By using Hikka you give your consent to any actions made by your account in background in purposes of automatization. Please, consider reading https://core.telegram.org/api/terms for more information.</i>
 
 <b>Special thanks to:</b>
 <ul>

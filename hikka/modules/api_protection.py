@@ -8,6 +8,7 @@ import asyncio
 import io
 import json
 import logging
+import random
 import time
 
 from telethon.tl import functions
@@ -532,6 +533,7 @@ class APIRatelimiterMod(loader.Module):
             ordered: bool = False,
             flood_sleep_threshold: int = None,
         ):
+            await asyncio.sleep(random.randint(1, 5) / 100)
             if time.perf_counter() > self._suspend_until and not self.get(
                 "disable_protection",
                 True,

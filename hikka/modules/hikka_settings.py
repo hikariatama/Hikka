@@ -18,7 +18,7 @@ from telethon.tl.types import Message
 from telethon.utils import get_display_name
 
 from .. import loader, log, main, utils
-from .._internal import restart
+from .._internal import restart, fw_protect
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -1115,11 +1115,14 @@ class HikkaSettingsMod(loader.Module):
                 f"@{self.inline.bot_username}",
                 "Yes, I am totally sure.",
             ]:
+                await fw_protect()
                 m = await conv.send_message(msg)
                 r = await conv.get_response()
 
                 logger.debug(">> %s", m.raw_text)
                 logger.debug("<< %s", r.raw_text)
+
+                await fw_protect()
 
                 await m.delete()
                 await r.delete()
@@ -1149,7 +1152,10 @@ class HikkaSettingsMod(loader.Module):
                     and dialog.entity.id == self._client.loader.inline.bot_id
                 )
             ):
+                await fw_protect()
                 await self._client.delete_dialog(dialog.entity)
+
+        await fw_protect()
 
         folders = await self._client(GetDialogFiltersRequest())
 
@@ -1158,15 +1164,15 @@ class HikkaSettingsMod(loader.Module):
                 folders,
                 key=lambda x: x.id,
             ).id
-
+            await fw_protect()
             await self._client(UpdateDialogFilterRequest(id=folder_id))
 
         for handler in logging.getLogger().handlers:
             handler.setLevel(logging.CRITICAL)
 
-        await self._client.log_out()
+        await fw_protect()
 
-        await call.edit(self.strings("uninstalled"))
+        await self._client.log_out()
 
         restart()
 

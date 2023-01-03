@@ -1624,7 +1624,6 @@ class LoaderMod(loader.Module):
 
     def __init__(self):
         self._pending_stats = []
-        self._react_queue = []
 
         self._storage = RemoteStorage()
 
@@ -1670,7 +1669,6 @@ class LoaderMod(loader.Module):
         asyncio.ensure_future(self._storage.preload_main_repo())
 
     async def client_ready(self):
-        self._reacted = self.pointer("reacted", [])
         self._token_msg = (await self._client.get_messages("@hikka_ub", ids=[10]))[0]
 
         self.allmodules.add_aliases(self.lookup("settings").get("aliases", {}))
@@ -1679,29 +1677,6 @@ class LoaderMod(loader.Module):
 
         asyncio.ensure_future(self._update_modules())
         asyncio.ensure_future(self._async_init())
-
-    @loader.loop(interval=120, autostart=True)
-    async def _react_processor(self):
-        if not self._react_queue:
-            return
-
-        developer_entity, modname = self._react_queue.pop(0)
-        try:
-            await (
-                await self._client.get_messages(
-                    developer_entity,
-                    limit=1,
-                    search=modname,
-                )
-            )[0].react("❤️")
-            self._reacted += [f"{developer_entity.id}/{modname}"]
-        except Exception:
-            logger.debug(
-                "Unable to react to %s about %s",
-                developer_entity.id,
-                modname,
-                exc_info=True,
-            )
 
     @loader.loop(interval=3, wait_before=True, autostart=True)
     async def _config_autosaver(self):
@@ -2525,12 +2500,6 @@ class LoaderMod(loader.Module):
 
             if not isinstance(developer_entity, Channel):
                 developer_entity = None
-
-            if (
-                developer_entity is not None
-                and f"{developer_entity.id}/{modname}" not in self._reacted
-            ):
-                self._react_queue += [(developer_entity, modname)]
 
             if message is None:
                 return

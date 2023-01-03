@@ -142,7 +142,7 @@ class PyroProxyClient(PyroClient):
         pyro_obj = self._convert(pyro_obj)
         if isinstance(pyro_obj, list):
             return [self._pyro2tl(i) for i in pyro_obj]
-        
+
         if isinstance(pyro_obj, dict):
             return {k: self._pyro2tl(v) for k, v in pyro_obj.items()}
 
@@ -181,7 +181,7 @@ class PyroProxyClient(PyroClient):
 
         if isinstance(tl_obj, list):
             return [self._tl2pyro(i) for i in tl_obj]
-        
+
         if isinstance(tl_obj, dict):
             return {k: self._tl2pyro(v) for k, v in tl_obj.items()}
 
