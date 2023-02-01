@@ -1,6 +1,6 @@
 """Loads and registers modules"""
 
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -1623,8 +1623,6 @@ class LoaderMod(loader.Module):
     _links_cache = {}
 
     def __init__(self):
-        self._pending_stats = []
-
         self._storage = RemoteStorage()
 
         self.config = loader.ModuleConfig(
@@ -2040,39 +2038,6 @@ class LoaderMod(loader.Module):
                 and not self._db.get(main.__name__, "disable_modules_fs", False),
             )
 
-    @loader.loop(interval=120, autostart=True)
-    async def _stats_sender(self):
-        if not self._pending_stats or not self._db.get(main.__name__, "stats", True):
-            return
-
-        try:
-            if not self.get("token"):
-                self.set("token", (await self._token_msg.click(0)).message)
-
-            res = await utils.run_sync(
-                requests.post,
-                "https://heta.hikariatama.ru/stats",
-                data={"urls": ",".join(self._pending_stats[:50])},
-                headers={"X-Hikka-Token": self.get("token")},
-            )
-
-            if res.status_code == 403:
-                self.set("token", None)
-
-            if res.status_code in range(200, 207):
-                self._pending_stats = (
-                    self._pending_stats[50:] if len(self._pending_stats) > 50 else []
-                )
-
-            res.raise_for_status()
-        except Exception:
-            logger.debug("Failed to send stats", exc_info=True)
-
-    async def _send_stats(self, url: str, _=None):
-        """Send anonymous stats to Hikka"""
-        if self._db.get(main.__name__, "stats", True):
-            self._pending_stats += [url]
-
     async def load_module(
         self,
         doc: str,
@@ -2454,17 +2419,6 @@ class LoaderMod(loader.Module):
                     ),
                     None,
                 )
-
-                with contextlib.suppress(Exception):
-                    if (
-                        not any(
-                            line.replace(" ", "") == "#scope:no_stats"
-                            for line in doc.splitlines()
-                        )
-                        and url is not None
-                        and utils.check_url(url)
-                    ):
-                        await self._send_stats(url)
 
                 if is_dragon:
                     instance.name = (

@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -58,11 +58,6 @@ class QuickstartMod(loader.Module):
             " for important notifications and updates. All questions regarding the"
             " platform should be asked in @lavhostchat."
         ),
-        "miyahost": (
-            "🎃 <b>Your userbot is installed on MiyaHost</b>. Make sure to join"
-            " @miyahost for important notifications and updates. All questions"
-            " regarding the platform should be asked in @miyahost_support."
-        ),
         "language_saved": "🇬🇧 Language saved!",
         "language": "🇬🇧 English",
         "btn_support": "🥷 Support chat",
@@ -97,11 +92,6 @@ class QuickstartMod(loader.Module):
             "✌️ <b>Твой юзербот установлен на lavHost</b>. Вступи в @lavhost, чтобы"
             " получать важные уведомления и обновления. Все вопросы, связанные с"
             " платформой, следует задавать в @lavhostchat."
-        ),
-        "miyahost": (
-            "🎃 <b>Твой юзербот установлен на MiyaHost</b>. Вступи в @miyahost, чтобы"
-            " получать важные уведомления и обновления. Все вопросы, связанные с"
-            " платформой, следует задавать в @miyahost_support."
         ),
         "language_saved": "🇷🇺 Язык сохранен!",
         "language": "🇷🇺 Русский",
@@ -138,11 +128,6 @@ class QuickstartMod(loader.Module):
             " ricevere importanti notifiche e aggiornamenti. Tutte le domande relative"
             " alla piattaforma devono essere poste in @lavhostchat."
         ),
-        "miyahost": (
-            "🎃 <b>Il tuo userbot è installato su MiyaHost</b>. Unisciti a @miyahost,"
-            " per ricevere importanti notifiche e aggiornamenti. Tutte le domande"
-            " relative alla piattaforma devono essere poste in @miyahost_support."
-        ),
         "language_saved": "🇮🇹 Lingua salvata!",
         "language": "🇮🇹 Italiano",
         "btn_support": "🥷 Gruppo di supporto",
@@ -177,12 +162,6 @@ class QuickstartMod(loader.Module):
             "✌️ <b>Dein Userbot ist auf lavHost installiert</b>. Trete @lavhost bei, um"
             " wichtige Benachrichtigungen und Updates zu erhalten. Alle Fragen, die"
             " sich auf die Plattform beziehen, sollten im @lavhostchat gestellt werden."
-        ),
-        "miyahost": (
-            "🎃 <b>Dein Userbot ist auf MiyaHost installiert</b>. Trete @miyahost bei,"
-            " um wichtige Benachrichtigungen und Updates zu erhalten. Alle Fragen, die"
-            " sich auf die Plattform beziehen, sollten im @miyahost_support gestellt"
-            " werden."
         ),
         "language_saved": "🇩🇪 Sprache gespeichert!",
         "language": "🇩🇪 Deutsch",
@@ -221,12 +200,6 @@ class QuickstartMod(loader.Module):
             " yangilanishlar olishingiz mumkin. Platforma haqida savollaringizni"
             " @lavhostchat ga yozing."
         ),
-        "miyahost": (
-            "🎃 <b>Sizning foydalanuvchi botingiz MiyaHost-da o'rnatildi</b>. Kiritish"
-            " uchun @miyahost ga a'zo bo'ling, shuningdek muhim xabarlar va"
-            " yangilanishlar olishingiz mumkin. Platforma haqida savollaringizni"
-            " @miyahost_support ga yozing."
-        ),
         "language_saved": "🇺🇿 Til saqlandi!",
         "language": "🇺🇿 O'zbekcha",
         "btn_support": "🥷 Qo'llab-quvvatlash guruhi",
@@ -262,11 +235,6 @@ class QuickstartMod(loader.Module):
             " güncellemeleri almak için @lavhost'a katılın. Platformla ilgili"
             " sorularınızı @lavhostchat'da sorabilirsiniz."
         ),
-        "miyahost": (
-            "🎃 <b>MiyaHost'a kurulumunuz tamamlandı.</b> Önemli duyurular ve"
-            " güncellemeleri almak için @miyahost'a katılın. Platformla ilgili"
-            " sorularınızı @miyahost_support'da sorabilirsiniz."
-        ),
         "language_saved": "🇹🇷 Dil kaydedildi!",
         "language": "🇹🇷 Türkçe",
         "btn_support": "🥷 Destek grubu",
@@ -298,12 +266,6 @@ class QuickstartMod(loader.Module):
             "✌️ <b>Tu bot de usuario está instalado en lavHost</b>. Únete a @lavhost"
             " para recibir notificaciones y actualizaciones importantes. Todas las"
             " preguntas relacionadas con la plataforma deben hacerse en @lavhostchat."
-        ),
-        "miyahost": (
-            "🎃 <b>Tu bot de usuario está instalado en MiyaHost</b>. Únete a @miyahost"
-            " para recibir notificaciones y actualizaciones importantes. Todas las"
-            " preguntas relacionadas con la plataforma deben hacerse en"
-            " @miyahost_support."
         ),
         "language_saved": "🇪🇸 ¡El idioma se ha guardado!",
         "language": "🇪🇸 Español",
@@ -340,11 +302,6 @@ class QuickstartMod(loader.Module):
             " хабарландырулар мен жаңартулар алу үшін @lavhost-ға кіріңіз. Платформа"
             " және қателер туралы барлық сұрақтарды @lavhostchat-ға жіберіңіз."
         ),
-        "miyahost": (
-            "🎃 <b>Сіздің Жеке ботыңыз MiyaHost-та орнатылған</b>. Маңызды"
-            " хабарландырулар мен жаңартулар алу үшін @miyahost-ға кіріңіз. Платформа"
-            " және қателер туралы барлық сұрақтарды @miyahost_support-ға жіберіңіз."
-        ),
         "language_saved": "🇰🇿 Тіл сақталды!",
         "language": "🇰🇿 Қазақша",
         "btn_support": "🥷 Қолдау сөйлесу кітабы",
@@ -373,12 +330,6 @@ class QuickstartMod(loader.Module):
             "✌️ <b>Сезерботың сез lavHost җибәрелде</b>. Ләкин @lavhost җибәрелгән"
             " хәбәрләр һәм яңа яңалыклар үзенә алу өчен керегез. Сезербот җибәрелгән"
             " хәбәрләр һәм яңа яңалыклар турында сорауларны @lavhostchat җибәрегез."
-        ),
-        "miyahost": (
-            "🎃 <b>Сезерботың сез MiyaHost җибәрелде</b>. Ләкин @miyahost җибәрелгән"
-            " хәбәрләр һәм яңа яңалыклар үзенә алу өчен керегез. Сезербот җибәрелгән"
-            " хәбәрләр һәм яңа яңалыклар турында сорауларны @miyahost_support"
-            " җибәрегез."
         ),
         "language_saved": "🥟 Тел сакланган!",
         "language": "🥟 Татар теле",
@@ -444,13 +395,7 @@ class QuickstartMod(loader.Module):
                 + (
                     self.strings("railway")
                     if "RAILWAY" in os.environ
-                    else (
-                        self.strings("lavhost")
-                        if "LAVHOST" in os.environ
-                        else (
-                            self.strings("miyahost") if "MIYAHOST" in os.environ else ""
-                        )
-                    )
+                    else (self.strings("lavhost") if "LAVHOST" in os.environ else "")
                 )
             ).rstrip()
         )

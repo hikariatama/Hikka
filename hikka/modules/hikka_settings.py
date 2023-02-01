@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -18,7 +18,7 @@ from telethon.tl.types import Message
 from telethon.utils import get_display_name
 
 from .. import loader, log, main, utils
-from .._internal import restart, fw_protect
+from .._internal import fw_protect, restart
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -183,8 +183,6 @@ class HikkaSettingsMod(loader.Module):
             " You'll need to authorize using lavHost credentials, specified on"
             " registration</i>"
         ),
-        "disable_stats": "✅ Anonymous stats allowed",
-        "enable_stats": "🚫 Anonymous stats disabled",
         "disable_debugger": "✅ Debugger enabled",
         "enable_debugger": "🚫 Debugger disabled",
     }
@@ -310,8 +308,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Тебе нужно будет авторизоваться, используя данные,"
             " указанные при настройке lavHost</i>"
         ),
-        "disable_stats": "✅ Анонимная стата разрешена",
-        "enable_stats": "🚫 Анонимная стата запрещена",
         "disable_debugger": "✅ Отладчик включен",
         "enable_debugger": "🚫 Отладчик выключен",
     }
@@ -442,8 +438,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Dovrai autenticarti utilizzando le credenziali"
             " impostate su lavHost</i>"
         ),
-        "disable_stats": "✅ Statistiche anonime abilitate",
-        "enable_stats": "🚫 La condivisione anonima è disabilitata",
         "disable_debugger": "✅ Debugger abilitato",
         "enable_debugger": "🚫 Debugger disabilitato",
     }
@@ -578,8 +572,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Sie müssen sich mit Ihren Zugangsdaten anmelden,"
             "beim Setzen von lavHost angegeben</i>"
         ),
-        "disable_stats": "✅ Anonyme Statistiken sind erlaubt",
-        "enable_stats": "🚫 Anonyme Statistiken deaktiviert",
         "disable_debugger": "✅ Debugger aktiviert",
         "enable_debugger": "🚫 Debugger deaktiviert",
     }
@@ -830,8 +822,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Hisob ma'lumotlaringizdan foydalanib tizimga"
             " kirishingiz kerak,lavHost</i>ni sozlashda ko'rsatilgan"
         ),
-        "disable_stats": "✅ Anonim statistika ruxsat berildi",
-        "enable_stats": "🚫 Anonim statistika o'chirilgan",
         "disable_debugger": "✅ Debugger yoqilgan",
         "enable_debugger": "🚫 Debugger o'chirilgan",
     }
@@ -965,8 +955,6 @@ class HikkaSettingsMod(loader.Module):
             "debe iniciar sesión con sus credenciales al configurar lavHost"
             "Especificado</i>"
         ),
-        "disable_stats": "✅ Estadísticas anónimas permitidas",
-        "enable_stats": "🚫 Estadísticas anónimas deshabilitadas",
         "disable_debugger": "✅ Depurador habilitado",
         "enable_debugger": "🚫 Depurador deshabilitado",
     }
@@ -1093,8 +1081,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Сізге тіркелгі деректерін пайдаланып кіру қажет,"
             "lavHost</i> орнату кезінде көрсетілген"
         ),
-        "disable_stats": "✅ Анонимді статистикаға рұқсат етіледі",
-        "enable_stats": "🚫 Анонимді статистика өшірілген",
         "disable_debugger": "✅ Отладчик қосылған",
         "enable_debugger": "🚫 Түзету құралы өшірілген",
     }
@@ -1867,24 +1853,6 @@ class HikkaSettingsMod(loader.Module):
                         "callback": self.inline__setting,
                         "args": (
                             lambda: main.save_config_key("disable_custom_emojis", True),
-                        ),
-                    }
-                ),
-            ],
-            [
-                (
-                    {
-                        "text": self.strings("disable_stats"),
-                        "callback": self.inline__setting,
-                        "args": ("stats", False),
-                    }
-                    if self._db.get(main.__name__, "stats", True)
-                    else {
-                        "text": self.strings("enable_stats"),
-                        "callback": self.inline__setting,
-                        "args": (
-                            "stats",
-                            True,
                         ),
                     }
                 ),

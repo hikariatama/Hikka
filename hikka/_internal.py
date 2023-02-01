@@ -1,15 +1,16 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
+import asyncio
+import atexit
 import logging
 import os
+import random
 import signal
 import sys
-import asyncio
-import random
 
 
 async def fw_protect():
@@ -28,7 +29,12 @@ def get_startup_callback() -> callable:
 
 def die():
     """Platform-dependent way to kill the current process group"""
-    os.killpg(os.getpgid(os.getpid()), signal.SIGTERM)
+    if "DOCKER" in os.environ:
+        sys.exit(0)
+    else:
+        # This one is actually better, because it kills all subprocesses
+        # but it can't be used inside the Docker
+        os.killpg(os.getpgid(os.getpid()), signal.SIGTERM)
 
 
 def restart():
@@ -49,5 +55,12 @@ def restart():
         return
 
     os.environ["HIKKA_DO_NOT_RESTART"] = "1"
-    signal.signal(signal.SIGTERM, get_startup_callback())
+
+    if "DOCKER" in os.environ:
+        atexit.register(get_startup_callback())
+    else:
+        # This one is requried for better way of killing to work properly,
+        # since we kill the process group using unix signals
+        signal.signal(signal.SIGTERM, get_startup_callback())
+
     die()
