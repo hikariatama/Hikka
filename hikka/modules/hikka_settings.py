@@ -1736,10 +1736,7 @@ class HikkaSettingsMod(loader.Module):
                 continue
 
             users += [
-                '▫️ <b><a href="tg://user?id={}">{}</a></b>'.format(
-                    user_id,
-                    utils.escape_html(get_display_name(user)),
-                )
+                f'▫️ <b><a href="tg://user?id={user_id}">{utils.escape_html(get_display_name(user))}</a></b>'
             ]
 
         if not users:
@@ -1780,10 +1777,7 @@ class HikkaSettingsMod(loader.Module):
                 continue
 
             chats += [
-                '▫️ <b><a href="{}">{}</a></b>'.format(
-                    utils.get_entity_url(chat_entity),
-                    utils.escape_html(get_display_name(chat_entity)),
-                )
+                f'▫️ <b><a href="{utils.get_entity_url(chat_entity)}">{utils.escape_html(get_display_name(chat_entity))}</a></b>'
             ]
 
         if not chats:

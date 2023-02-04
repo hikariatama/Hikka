@@ -246,12 +246,10 @@ class PythonMod(loader.Module):
         if htoken := self.lookup("loader").get("token", False):
             ret = ret.replace(htoken, f'eugeo_{"*" * 26}')
 
-        ret = ret.replace(
+        return ret.replace(
             StringSession.save(self._client.session),
             "StringSession(**************************)",
         )
-
-        return ret
 
     async def getattrs(self, message: Message) -> dict:
         reply = await message.get_reply_message()

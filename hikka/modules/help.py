@@ -430,7 +430,6 @@ class HelpMod(loader.Module):
         return aliases or []
 
     async def modhelp(self, message: Message, args: str):
-        exact = True
         module = self.lookup(args, include_dragon=True)
 
         if not module:
@@ -438,6 +437,7 @@ class HelpMod(loader.Module):
             if method := self.allmodules.dispatch(cmd)[1]:
                 module = method.__self__
 
+        exact = True
         if not module:
             module = self.lookup(
                 next(
@@ -470,24 +470,12 @@ class HelpMod(loader.Module):
             name = getattr(module, "name", "ERROR")
 
         _name = (
-            "{} (v{}.{}.{})".format(
-                utils.escape_html(name),
-                module.__version__[0],
-                module.__version__[1],
-                module.__version__[2],
-            )
+            f"{utils.escape_html(name)} (v{module.__version__[0]}.{module.__version__[1]}.{module.__version__[2]})"
             if hasattr(module, "__version__")
             else utils.escape_html(name)
         )
 
-        reply = "{} <b>{}</b>:".format(
-            (
-                DRAGON_EMOJI
-                if is_dragon
-                else "<emoji document_id=5188377234380954537>🌘</emoji>"
-            ),
-            _name,
-        )
+        reply = f'{DRAGON_EMOJI if is_dragon else "<emoji document_id=5188377234380954537>🌘</emoji>"} <b>{_name}</b>:'
         if module.__doc__:
             reply += (
                 "<i>\n<emoji document_id=5787544344906959608>ℹ️</emoji> "
@@ -507,48 +495,15 @@ class HelpMod(loader.Module):
 
         if hasattr(module, "inline_handlers") and not is_dragon:
             for name, fun in module.inline_handlers.items():
-                reply += (
-                    "\n<emoji document_id=5372981976804366741>🤖</emoji>"
-                    " <code>{}</code> {}".format(
-                        f"@{self.inline.bot_username} {name}",
-                        (
-                            utils.escape_html(inspect.getdoc(fun))
-                            if fun.__doc__
-                            else self.strings("undoc")
-                        ),
-                    )
-                )
+                reply += f'\n<emoji document_id=5372981976804366741>🤖</emoji> <code>{f"@{self.inline.bot_username} {name}"}</code> {utils.escape_html(inspect.getdoc(fun)) if fun.__doc__ else self.strings("undoc")}'
 
         for name, fun in commands.items():
-            reply += (
-                "\n<emoji document_id=4971987363145188045>▫️</emoji>"
-                " <code>{}{}</code>{} {}".format(
-                    self.get_prefix("dragon" if is_dragon else None),
-                    name,
-                    " ({})".format(
-                        ", ".join(
-                            "<code>{}{}</code>".format(
-                                self.get_prefix("dragon" if is_dragon else None), alias
-                            )
-                            for alias in self.find_aliases(name)
-                        )
-                    )
-                    if self.find_aliases(name)
-                    else "",
-                    utils.escape_html(fun)
-                    if is_dragon
-                    else (
-                        utils.escape_html(inspect.getdoc(fun))
-                        if fun.__doc__
-                        else self.strings("undoc")
-                    ),
-                )
-            )
+            reply += f'''\n<emoji document_id=4971987363145188045>▫️</emoji> <code>{self.get_prefix("dragon" if is_dragon else None)}{name}</code>{f""" ({", ".join(f'<code>{self.get_prefix("dragon" if is_dragon else None)}{alias}</code>' for alias in self.find_aliases(name))})""" if self.find_aliases(name) else ""} {utils.escape_html(fun) if is_dragon else utils.escape_html(inspect.getdoc(fun)) if fun.__doc__ else self.strings("undoc")}'''
 
         await utils.answer(
             message,
             reply
-            + (f"\n\n{self.strings('not_exact')}" if not exact else "")
+            + ("" if exact else f"\n\n{self.strings('not_exact')}")
             + (
                 f"\n\n{self.strings('core_notice')}"
                 if module.__origin__.startswith("<core")
@@ -603,7 +558,7 @@ class HelpMod(loader.Module):
             if mod.name in self.get("hide", []) and not force:
                 continue
 
-            tmp = "\n{} <code>{}</code>".format(DRAGON_EMOJI, mod.name)
+            tmp = f"\n{DRAGON_EMOJI} <code>{mod.name}</code>"
             first = True
 
             for cmd in mod.commands:
@@ -614,7 +569,7 @@ class HelpMod(loader.Module):
                 else:
                     tmp += f" | {cmd}"
 
-            dragon_ += [tmp + " )"]
+            dragon_ += [f"{tmp} )"]
 
         for mod in self.allmodules.modules:
             if not hasattr(mod, "commands"):
@@ -661,12 +616,10 @@ class HelpMod(loader.Module):
                 and not getattr(mod, "inline_handlers", None)
                 and not getattr(mod, "callback_handlers", None)
             ):
-                no_commands_ += [
-                    "\n{} <code>{}</code>".format(self.config["empty_emoji"], name)
-                ]
+                no_commands_ += [f'\n{self.config["empty_emoji"]} <code>{name}</code>']
                 continue
 
-            tmp += "\n{} <code>{}</code>".format(emoji, name)
+            tmp += f"\n{emoji} <code>{name}</code>"
             first = True
 
             commands = [
@@ -729,15 +682,7 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            "{}\n{}{}{}{}{}{}".format(
-                reply,
-                "".join(core_),
-                "".join(plain_),
-                "".join(inline_),
-                "".join(dragon_),
-                no_commands_,
-                partial_load,
-            ),
+            f'{reply}\n{"".join(core_)}{"".join(plain_)}{"".join(inline_)}{"".join(dragon_)}{no_commands_}{partial_load}',
         )
 
     @loader.command(

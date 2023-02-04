@@ -1458,15 +1458,14 @@ class HikkaConfigMod(loader.Module):
 
         await call.edit(
             self.strings(
-                "configuring_mod" if isinstance(obj_type, bool) else "configuring_lib"
+                "configuring_mod"
+                if isinstance(obj_type, bool)
+                else "configuring_lib"
             ).format(
                 utils.escape_html(mod),
                 "\n".join(
                     [
-                        "▫️ <code>{}</code>: <b>{}</b>".format(
-                            utils.escape_html(key),
-                            self._get_value(mod, key),
-                        )
+                        f"▫️ <code>{utils.escape_html(key)}</code>: <b>{self._get_value(mod, key)}</b>"
                         for key in self.lookup(mod).config
                     ]
                 ),
