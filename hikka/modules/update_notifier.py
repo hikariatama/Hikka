@@ -49,7 +49,9 @@ class UpdateNotifierMod(loader.Module):
         ),
         "more": "\n<i><b>🎥 Et {} de plus...</b></i>",
         "_cfg_doc_disable_notifications": "Désactiver les notifications de mise à jour",
-        "latest_disabled": "Les notifications sur la dernière mise à jour ont été désactivées",
+        "latest_disabled": (
+            "Les notifications sur la dernière mise à jour ont été désactivées"
+        ),
         "update": "🔄 Mettre à jour",
         "ignore": "🚫 Ignorer",
     }

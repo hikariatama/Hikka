@@ -160,12 +160,12 @@ class HikkaConfigMod(loader.Module):
         "configure": "⚙️ <b>Choisissez le module à configurer</b>",
         "configure_lib": "📦 <b>Choisissez la bibliothèque à configurer</b>",
         "configuring_mod": (
-            "⚙️ <b>Choisissez le paramètre pour le module</b> <code>{}</code>\n\n<b>Actuellement"
-            " réglages:</b>\n\n{}"
+            "⚙️ <b>Choisissez le paramètre pour le module</b>"
+            " <code>{}</code>\n\n<b>Actuellement réglages:</b>\n\n{}"
         ),
         "configuring_lib": (
-            "📦 <b>Choisissez le paramètre pour la bibliothèque</b> <code>{}</code>\n\n<b>Actuellement"
-            " réglages:</b>\n\n{}"
+            "📦 <b>Choisissez le paramètre pour la bibliothèque</b>"
+            " <code>{}</code>\n\n<b>Actuellement réglages:</b>\n\n{}"
         ),
         "configuring_option": (
             "⚙️ <b>Contrôle des paramètres</b> <code>{}</code> <b>module"
@@ -191,16 +191,18 @@ class HikkaConfigMod(loader.Module):
             "♻️ <b>Paramètre</b> <code>{}</code> <b>module</b> <code>{}</code><b>"
             " réinitialisé à la valeur par défaut</b>\n<b>Actuelle: {}</b>"
         ),
-    "option_reset_lib": (
-            "♻️ <b>Paramètre</b> <code>{}</code> <b>de la librairie</b> <code>{}</code><b>"
-            " réinitialisé à sa valeur par défaut</b>\n<b>Actuel: {}</b>"
+        "option_reset_lib": (
+            "♻️ <b>Paramètre</b> <code>{}</code> <b>de la librairie</b>"
+            " <code>{}</code><b> réinitialisé à sa valeur par défaut</b>\n<b>Actuel:"
+            " {}</b>"
         ),
         "_cls_doc": "Configuration interactive Hikka",
         "args": "🚫 <b>Vous avez spécifié des arguments incorrects</b>",
         "no_mod": "🚫 <b>Le module n'existe pas</b>",
         "no_option": "🚫 <b>Le module n'a pas de paramètre</b>",
         "validation_error": (
-            "🚫 <b>Vous avez entré une valeur de configuration incorrecte.\nErreur: {}</b>"
+            "🚫 <b>Vous avez entré une valeur de configuration incorrecte.\nErreur:"
+            " {}</b>"
         ),
         "try_again": "🔁 Essayez à nouveau",
         "typehint": "🕵️ <b>Doit être {}</b>",
@@ -219,7 +221,7 @@ class HikkaConfigMod(loader.Module):
         "builtin": "🛰 Intégré",
         "external": "🛸 Externe",
         "libraries": "📦 Bibliothèques",
-}
+    }
 
     strings_it = {
         "choose_core": "⚙️ <b>Scegli la categoria</b>",

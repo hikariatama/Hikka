@@ -180,7 +180,8 @@ class APIRatelimiterMod(loader.Module):
             " secondes&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Arguments invalides</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Arguments"
+            " invalides</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection API"
@@ -211,15 +212,15 @@ class APIRatelimiterMod(loader.Module):
         "btn_no": "🚫 Non",
         "btn_yes": "✅ Oui",
         "web_pin": (
-            "🔓 <b>Cliquez sur le bouton ci-dessous pour afficher le code PIN de débogage de Werkzeug."
-            " Ne le donnez pas à personne.</b>"
+            "🔓 <b>Cliquez sur le bouton ci-dessous pour afficher le code PIN de"
+            " débogage de Werkzeug. Ne le donnez pas à personne.</b>"
         ),
         "web_pin_btn": "🐞 Afficher le code PIN de Werkzeug",
         "proxied_url": "🌐 Lien de proxification",
         "local_url": "🏠 Lien local",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le débogueur Web est désactivé,"
-            " le lien n'est pas disponible</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le débogueur Web est"
+            " désactivé, le lien n'est pas disponible</b>"
         ),
     }
 

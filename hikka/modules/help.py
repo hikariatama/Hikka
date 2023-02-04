@@ -99,16 +99,17 @@ class HelpMod(loader.Module):
         "_cls_doc": "Affiche l'aide par module",
         "partial_load": (
             "<emoji document_id=5312383351217201533>☝️</emoji> <b>Le robot utilisateur"
-            " n'a pas encore complètement chargé, donc pas tous les modules ont été montrés</b>"
+            " n'a pas encore complètement chargé, donc pas tous les modules ont été"
+            " montrés</b>"
         ),
         "not_exact": (
-            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Pas de correspondance exacte"
-            " trouvé, donc le plus approprié a été choisi</b>"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Pas de correspondance"
+            " exacte trouvé, donc le plus approprié a été choisi</b>"
         ),
         "request_join": "Vous avez demandé un lien vers le chat d'aide Hikka",
         "core_notice": (
-            "<emoji document_id=5312383351217201533>☝️</emoji> <b>C'est un module intégré."
-            " Vous ne pouvez pas le décharger ou le remplacer</b>"
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>C'est un module"
+            " intégré. Vous ne pouvez pas le décharger ou le remplacer</b>"
         ),
     }
 

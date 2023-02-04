@@ -202,16 +202,15 @@ class CoreMod(loader.Module):
 
     strings_fr = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Trop d'arguments"
-            " </b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Trop d'arguments </b>"
         ),
         "blacklisted": (
-            "<emoji document_id=5197474765387864959>👍</emoji> <b>Le chat {} a été ajouté à"
-            " la liste noire du robot utilisateur</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Le chat {} a été"
+            " ajouté à la liste noire du robot utilisateur</b>"
         ),
         "unblacklisted": (
-            "<emoji document_id=5197474765387864959>👍</emoji> <b>Le chat {} a été supprimé de"
-            " la liste noire du robot utilisateur</b>"
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Le chat {} a été"
+            " supprimé de la liste noire du robot utilisateur</b>"
         ),
         "user_blacklisted": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>L'utilisateur {}"
@@ -281,8 +280,7 @@ class CoreMod(loader.Module):
             "<emoji document_id=5382187118216879236>❓</emoji> <b>Qui bloquer?</b>"
         ),
         "who_to_unblacklist": (
-            "<emoji document_id=5382187118216879236>❓</emoji> <b>Qui débloquer?"
-            "</b>"
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Qui débloquer?</b>"
         ),
         "unstable": (
             "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Vous utilisez"

@@ -58,7 +58,15 @@ class Validator:
         self.validate = validator
 
         if isinstance(doc, str):
-            doc = {"en": doc, "ru": doc, "fr": doc, "it": doc, "de": doc, "tr": doc, "uz": doc}
+            doc = {
+                "en": doc,
+                "ru": doc,
+                "fr": doc,
+                "it": doc,
+                "de": doc,
+                "tr": doc,
+                "uz": doc,
+            }
 
         self.doc = doc
         self.internal_id = _internal_id
@@ -393,9 +401,7 @@ class Series(Validator):
         _each_ru = (
             f" (каждое должно быть {trans('ru')})" if validator is not None else ""
         )
-        _each_fr = (
-            f" (chaque doit être {trans('fr')})" if validator is not None else ""
-        )
+        _each_fr = f" (chaque doit être {trans('fr')})" if validator is not None else ""
         _each_it = (
             f" (ognuno deve essere {trans('it')})" if validator is not None else ""
         )
@@ -789,9 +795,7 @@ class Float(Validator):
                         f"{_sign_ru}дробным числом в промежутке от {minimum} до"
                         f" {maximum}"
                     ),
-                    "fr": (
-                        f"{_sign_fr}flottant de {minimum} à {maximum}"
-                    ),
+                    "fr": f"{_sign_fr}flottant de {minimum} à {maximum}",
                     "it": (
                         f"{_sign_it}numero decimale compreso tra {minimum} e {maximum}"
                     ),

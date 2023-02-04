@@ -64,17 +64,20 @@ class HikkaBackupMod(loader.Module):
     strings_fr = {
         "period": (
             "⌚️ <b>Unité «ALPHA»</b> crée des sauvegardes régulières. Ces paramètres"
-            " peuvent être modifiés ultérieurement.\n\nVeuillez choisir la périodicité de sauvegarde"
+            " peuvent être modifiés ultérieurement.\n\nVeuillez choisir la périodicité"
+            " de sauvegarde"
         ),
         "saved": (
-            "✅ La périodicité a été enregistrée! Il peut être modifié en utilisant .set_backup_period"
+            "✅ La périodicité a été enregistrée! Il peut être modifié en utilisant"
+            " .set_backup_period"
         ),
         "never": (
             "✅ Je ne vais pas faire des sauvegardes automatiques. Peut être annulé"
             " en utilisant .set_backup_period"
         ),
         "invalid_args": (
-            "🚫 <b>Indiquez la périodicité correcte en heures, ou `0` pour désactiver</b>"
+            "🚫 <b>Indiquez la périodicité correcte en heures, ou `0` pour"
+            " désactiver</b>"
         ),
     }
 

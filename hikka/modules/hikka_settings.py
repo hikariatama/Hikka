@@ -318,16 +318,16 @@ class HikkaSettingsMod(loader.Module):
             " <b>Les observateurs:</b>\n\n<b>{}</b>"
         ),
         "mod404": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>L'observateur {} n'est pas"
-            " trouvé</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>L'observateur {} n'est"
+            " pas trouvé</b>"
         ),
         "disabled": (
-            "<emoji document_id=5424885441100782420>👀</emoji> <b>L'observateur {} est maintenant"
-            " <u>désactivé</u></b>"
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>L'observateur {} est"
+            " maintenant <u>désactivé</u></b>"
         ),
         "enabled": (
-            "<emoji document_id=5424885441100782420>👀</emoji> <b>L'observateur {} est maintenant"
-            " <u>activé</u></b>"
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>L'observateur {} est"
+            " maintenant <u>activé</u></b>"
         ),
         "args": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Indiquez le nom"
@@ -338,16 +338,21 @@ class HikkaSettingsMod(loader.Module):
             " cet utilisateur: {}</b>"
         ),
         "no_cmd": (
-            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Indiquez la commande pour laquelle vous souhaitez activer\\désactiver NoNick</b>"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Indiquez la commande"
+            " pour laquelle vous souhaitez activer\\désactiver NoNick</b>"
         ),
         "cmd_nn": (
-            "<emoji document_id=5469791106591890404>🪄</emoji> <b>L'état de NoNick pour</b> <code>{}</code><b>: {}</b>"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>L'état de NoNick"
+            " pour</b> <code>{}</code><b>: {}</b>"
         ),
         "cmd404": (
-            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Commande non trouvée</b>"
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Commande non"
+            " trouvée</b>"
         ),
         "inline_settings": "⚙️ <b>Vous pouvez gérer les paramètres Hikka ici</b>",
-        "confirm_update": "🧭 <b>Confirmez la mise à jour. L'utilisateur-bot sera redémarré</b>",
+        "confirm_update": (
+            "🧭 <b>Confirmez la mise à jour. L'utilisateur-bot sera redémarré</b>"
+        ),
         "confirm_restart": "🔄 <b>Confirmez le redémarrage</b>",
         "suggest_fs": "✅ Suggérer l'enregistrement des modules",
         "do_not_suggest_fs": "🚫 Suggérer l'enregistrement des modules",
@@ -377,8 +382,8 @@ class HikkaSettingsMod(loader.Module):
         "deauth_confirm": (
             "⚠️ <b>Cette action supprimera complètement Hikka de ce compte! Il ne peut"
             " pas être annulé</b>\n\n<i>- Toutes les conversations liées à Hikka seront"
-            " supprimées\n- La session Hikka sera réinitialisée\n- Le bot en ligne Hikka"
-            " sera supprimé</i>"
+            " supprimées\n- La session Hikka sera réinitialisée\n- Le bot en ligne"
+            " Hikka sera supprimé</i>"
         ),
         "deauth_confirm_step2": "⚠️ <b>Êtes-vous sûr de vouloir supprimer Hikka?</b>",
         "deauth_yes": "Je suis sûr",
@@ -389,8 +394,8 @@ class HikkaSettingsMod(loader.Module):
         "deauth_confirm_btn": "😢 Supprimer",
         "uninstall": "😢 <b>Je supprime Hikka...</b>",
         "uninstalled": (
-            "😢 <b>Hikka a été supprimé. L'interface Web est toujours active, vous pouvez"
-            " ajouter d'autres comptes!</b>"
+            "😢 <b>Hikka a été supprimé. L'interface Web est toujours active, vous"
+            " pouvez ajouter d'autres comptes!</b>"
         ),
         "cmd_nn_list": (
             "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick est activé pour"
@@ -420,7 +425,9 @@ class HikkaSettingsMod(loader.Module):
             " dans les groupes est une menace pour la sécurité. Préférez l'exécution"
             " dans <a href='tg://openmessage?user_id={}'>Messages favoris</a>.</b>"
         ),
-        "opening_tunnel": "🔁 <b>Ouverture du tunnel vers l'interface web de Hikka...</b>",
+        "opening_tunnel": (
+            "🔁 <b>Ouverture du tunnel vers l'interface web de Hikka...</b>"
+        ),
         "tunnel_opened": (
             "🎉 <b>Tunnel ouvert. Ce lien ne sera actif que pendant une heure</b>"
         ),

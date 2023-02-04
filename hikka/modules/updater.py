@@ -155,25 +155,26 @@ class UpdaterMod(loader.Module):
             " des mises à jour...</b>"
         ),
         "success": (
-            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Redémarrage"
-            " réussi! {}</b>\n<i>Mais les modules sont toujours en cours de chargement...</i>\n<i>Redémarrer"
-            " a pris {} s</i>"
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Redémarrage réussi!"
+            " {}</b>\n<i>Mais les modules sont toujours en cours de"
+            " chargement...</i>\n<i>Redémarrer a pris {} s</i>"
         ),
         "full_success": (
-            "<emoji document_id=5301096082674032190>👍</emoji> <b>L'utilisateur est totalement"
-            " chargé! {}</b>\n<i>Redémarrer a pris {} s</i>"
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>L'utilisateur est"
+            " totalement chargé! {}</b>\n<i>Redémarrer a pris {} s</i>"
         ),
         "secure_boot_complete": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Le démarrage sécurisé"
             " est terminé! {}</b>\n<i>Redémarrer a pris {} s</i>"
         ),
-        "origin_cfg_doc": "Le lien à partir duquel les mises à jour seront téléchargées",
+        "origin_cfg_doc": (
+            "Le lien à partir duquel les mises à jour seront téléchargées"
+        ),
         "btn_restart": "🔄 Redémarrer",
         "btn_update": "🧭 Mettre à jour",
         "restart_confirm": "❓ <b>Êtes-vous sûr de vouloir redémarrer?</b>",
         "secure_boot_confirm": (
-            "❓ <b>Êtes-vous sûr de"
-            " vouloir redémarrer en mode démarrage sécurisé?</b>"
+            "❓ <b>Êtes-vous sûr de vouloir redémarrer en mode démarrage sécurisé?</b>"
         ),
         "update_confirm": (
             "❓ <b>Êtes-vous sûr de vouloir"
@@ -181,7 +182,9 @@ class UpdaterMod(loader.Module):
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
             ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
         ),
-        "no_update": "🚸 <b>Vous avez la dernière version. Mettez-vous à jour de force?</b>",
+        "no_update": (
+            "🚸 <b>Vous avez la dernière version. Mettez-vous à jour de force?</b>"
+        ),
         "cancel": "🚫 Annuler",
         "_cls_doc": "Mettre à jour l'utilisateur",
         "lavhost_update": (

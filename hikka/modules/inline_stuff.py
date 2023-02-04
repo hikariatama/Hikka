@@ -75,8 +75,8 @@ class InlineStuffMod(loader.Module):
             " bot déjà occupé</b>"
         ),
         "bot_updated": (
-            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Paramètres enregistrés."
-            " Redémarrez le bot pour les appliquer</b>"
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Paramètres"
+            " enregistrés. Redémarrez le bot pour les appliquer</b>"
         ),
         "this_is_hikka": (
             "🌘 <b>Bonjour! C'est Hikka — un puissant module Telegram userbot. Vous"

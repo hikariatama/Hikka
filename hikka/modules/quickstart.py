@@ -118,15 +118,15 @@ class QuickstartMod(loader.Module):
 💡 <b>Hikka prend en charge les modules de Friendly-Telegram, DragonUserbot et GeekTG ainsi que ses propres modules.</b>
 """,
         "railway": (
-            "🚂 <b>Votre userbot est installé sur Railway</b>. Sur cette plateforme, vous"
-            " obtenez seulement <b>500 heures gratuites par mois</b>. Lorsque la limite sera"
-            " atteint, <b>votre userbot sera gelé</b>. Au mois prochain <b>vous"
-            " devez aller sur https://railway.app et le redémarrer</b>."
+            "🚂 <b>Votre userbot est installé sur Railway</b>. Sur cette plateforme,"
+            " vous obtenez seulement <b>500 heures gratuites par mois</b>. Lorsque la"
+            " limite sera atteint, <b>votre userbot sera gelé</b>. Au mois prochain"
+            " <b>vous devez aller sur https://railway.app et le redémarrer</b>."
         ),
         "lavhost": (
             "✌️ <b>Votre userbot est installé sur lavHost</b>. Rejoignez @lavhost pour"
-            " recevoir des notifications et des mises à jour importantes. Toutes les questions"
-            " liées à la plateforme doivent être posées dans @lavhostchat."
+            " recevoir des notifications et des mises à jour importantes. Toutes les"
+            " questions liées à la plateforme doivent être posées dans @lavhostchat."
         ),
         "language_saved": "🇫🇷 Langue sauvegardée!",
         "language": "🇫🇷 Français",

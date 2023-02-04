@@ -508,7 +508,6 @@ class HikkaSecurityMod(loader.Module):
             ' href="tg://user?id={}">{}</a> ajouté au groupe</b> <code>sudo</code>'
         ),
         "support_added": (
-        
             '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> ajouté au groupe</b> <code>support</code>'
         ),
@@ -526,9 +525,9 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Gestion des paramètres de sécurité",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez"
-            " spécifier le type de cible en premier argument (</b><code>user</code> <b>ou"
-            "</b> <code>chat</code><b>)</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez spécifier"
+            " le type de cible en premier argument (</b><code>user</code> <b>ou</b>"
+            " <code>chat</code><b>)</b>"
         ),
         "no_target": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune cible"

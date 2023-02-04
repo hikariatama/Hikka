@@ -454,7 +454,8 @@ class LoaderMod(loader.Module):
             " dans le dépôt.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Fichier introuvable</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Fichier"
+            " introuvable</b>"
         ),
         "provide_module": (
             "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Indiquez le module à"
@@ -465,12 +466,12 @@ class LoaderMod(loader.Module):
             " invalide</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le chargement a échoué."
-            " Vérifiez les journaux.</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le chargement a"
+            " échoué. Vérifiez les journaux.</b>"
         ),
         "loaded": (
-            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Module</b> <code>{}</code>"
-            "{} <b>chargé {}</b>{}{}{}{}{}{}"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Module</b>"
+            " <code>{}</code>{} <b>chargé {}</b>{}{}{}{}{}{}"
         ),
         "no_class": "<b>Qu'est-ce qu'il faut décharger?</b>",
         "unloaded": "{} <b>Module {} déchargé.</b>",
@@ -479,10 +480,10 @@ class LoaderMod(loader.Module):
             " été déchargé.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Échec de l'installation"
-            " des dépendances</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Échec de"
+            " l'installation des dépendances</b>"
         ),
-                "requirements_failed_termux": (
+        "requirements_failed_termux": (
             "<emoji document_id=5407025283456835913>🕶</emoji> <b>Erreur d'installation"
             " des dépendances</b>\n<b>Cela arrive souvent parce que Termux ne"
             " prend pas en charge de nombreuses bibliothèques. N'indiquez pas cela"
@@ -493,14 +494,16 @@ class LoaderMod(loader.Module):
             " des dépendances:\n\n{}</b>"
         ),
         "requirements_restart": (
-            "<emoji document_id=5875145601682771643>🚀</emoji> <b>Les dépendances"
-            " sont installées, mais un redémarrage est nécessaire pour les appliquer</b>"
+            "<emoji document_id=5875145601682771643>🚀</emoji> <b>Les dépendances sont"
+            " installées, mais un redémarrage est nécessaire pour les appliquer</b>"
             " <code>{}</code>"
         ),
         "all_modules_deleted": (
             "<emoji document_id=5784993237412351403>✅</emoji> <b>Modules supprimés</b>"
         ),
-        "undoc": "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> Aucune description",
+        "undoc": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> Aucune description"
+        ),
         "ihandler": (
             "\n<emoji document_id=5372981976804366741>🤖</emoji> <code>{}</code> {}"
         ),
@@ -545,23 +548,24 @@ class LoaderMod(loader.Module):
         "_cmd_doc_unloadmod": "Décharge (supprime) le module",
         "_cmd_doc_clearmodules": "Décharge tous les modules installés",
         "_cls_doc": "Charge les modules",
-        "share_link_doc": "Spécifiez le lien vers le module après avoir téléchargé avec"
-        " .dlmod",
+        "share_link_doc": (
+            "Spécifiez le lien vers le module après avoir téléchargé avec .dlmod"
+        ),
         "modlink": (
             "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Lien:"
             "</b> <code>{}</code>"
         ),
         "blob_link": (
-            "\n\n<emoji document_id=5312383351217201533>⚠️</emoji> <b>Ne utilisé"
-            " `blob` liens pour télécharger des modules. Il est préférable de télécharger à partir de `raw`</b>"
+            "\n\n<emoji document_id=5312383351217201533>⚠️</emoji> <b>Ne utilisé `blob`"
+            " liens pour télécharger des modules. Il est préférable de télécharger à"
+            " partir de `raw`</b>"
         ),
         "raw_link": (
             "\n<emoji document_id=6037284117505116849>🌐</emoji> <b>lien:"
             "</b> <code>{}</code>"
         ),
         "suggest_subscribe": (
-            "\n\n⭐️ <b>Ce module"
-            " fait {}. Abonnez-vous à lui pour le soutenir?</b>"
+            "\n\n⭐️ <b>Ce module fait {}. Abonnez-vous à lui pour le soutenir?</b>"
         ),
         "subscribe": "💬 S'abonner",
         "no_subscribe": "🚫 Ne pas s'abonner",
@@ -573,11 +577,12 @@ class LoaderMod(loader.Module):
         "clearmodules": "🗑 Décharger les modules",
         "cancel": "🚫 Annuler",
         "overwrite_module": (
-            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module"
-            " a tenté d'écraser le module intégré (</b><code>{}</code><b>)</b>\n\n<emoji"
-            " document_id=5472146462362048818>💡</emoji><i> Ce n'est pas une erreur, mais une mesure"
-            " de sécurité nécessaire pour empêcher la substitution des modules intégrés"
-            " avec n'importe quel bazar. Ne signalez pas cela à la chaîne support</i>"
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module a tenté"
+            " d'écraser le module intégré (</b><code>{}</code><b>)</b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Ce n'est pas une erreur,"
+            " mais une mesure de sécurité nécessaire pour empêcher la substitution des"
+            " modules intégrés avec n'importe quel bazar. Ne signalez pas cela à la"
+            " chaîne support</i>"
         ),
         "overwrite_command": (
             "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module a essayé"
@@ -601,11 +606,11 @@ class LoaderMod(loader.Module):
             " décharger une bibliothèque</b>"
         ),
         "wait_channel_approve": (
-            "<emoji document_id=5469741319330996757>💫</emoji> <b>Le module"
-            "</b> <code>{}</code> <b>demande à rejoindre le canal <a"
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Le module</b>"
+            " <code>{}</code> <b>demande à rejoindre le canal <a"
             ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
-            ' document_id="5467666648263564704">❓</emoji> Raison:'
-            ' {}</b>\n\n<i>En attente de <a href="https://t.me/{}">confirmation</a>...</i>'
+            ' document_id="5467666648263564704">❓</emoji> Raison: {}</b>\n\n<i>En'
+            ' attente de <a href="https://t.me/{}">confirmation</a>...</i>'
         ),
         "installing": (
             "<emoji document_id=5325792861885570739>🕔</emoji> <b>Installation du module"

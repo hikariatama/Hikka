@@ -166,12 +166,12 @@ class TestMod(loader.Module):
 
     strings_fr = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Spécifiez le niveau de journalisation"
-            " en nombre ou en chaîne</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Spécifiez le niveau de"
+            " journalisation en nombre ou en chaîne</b>"
         ),
         "no_logs": (
-            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Vous n'avez pas de journaux"
-            " niveau</b> <code>{}</code><b>.</b>"
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Vous n'avez pas de"
+            " journaux niveau</b> <code>{}</code><b>.</b>"
         ),
         "logs_caption": (
             "<emoji document_id=5188377234380954537>🌘</emoji> <b>Journal Hikka niveau"
@@ -193,8 +193,8 @@ class TestMod(loader.Module):
             " invalide</b>"
         ),
         "suspended": (
-            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Le bot est suspendu pour</b>"
-            " <code>{}</code> <b>secondes</b>"
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Le bot est suspendu"
+            " pour</b> <code>{}</code> <b>secondes</b>"
         ),
         "results_ping": (
             "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Vitesse de réponse"
@@ -204,25 +204,29 @@ class TestMod(loader.Module):
         ),
         "ping_hint": (
             "<emoji document_id=5472146462362048818>💡</emoji> <i>La vitesse de réponse"
-            " Telegram est en grande partie dépendante de la charge des serveurs Telegram et"
-            " d'autres facteurs externes et n'a aucun rapport avec les paramètres du serveur, sur"
-            " lequel l'usagerbot est installé</i>"
+            " Telegram est en grande partie dépendante de la charge des serveurs"
+            " Telegram et d'autres facteurs externes et n'a aucun rapport avec les"
+            " paramètres du serveur, sur lequel l'usagerbot est installé</i>"
         ),
         "confidential": (
-            "⚠️ <b>Niveau de journaux</b> <code>{}</code> <b>peut contenir des informations personnelles, soyez prudent</b>"
+            "⚠️ <b>Niveau de journaux</b> <code>{}</code> <b>peut contenir des"
+            " informations personnelles, soyez prudent</b>"
         ),
         "confidential_text": (
-            "⚠️ <b>Niveau de journaux</b> <code>{0}</code> <b>peut contenir des informations personnelles, soyez prudent</b>\n<b>Ecris</b> <code>.logs {0}"
-            " force_insecure</code><b>, pour envoyer les journaux en ignorant"
+            "⚠️ <b>Niveau de journaux</b> <code>{0}</code> <b>peut contenir des"
+            " informations personnelles, soyez prudent</b>\n<b>Ecris</b> <code>.logs"
+            " {0} force_insecure</code><b>, pour envoyer les journaux en ignorant"
             " l'avertissement</b>"
         ),
         "choose_loglevel": "💁‍♂️ <b>Choisissez le niveau de journaux</b>",
         "_cmd_doc_dump": "Afficher les informations du message",
         "_cmd_doc_logs": (
-            "<niveau> - Envoyer le fichier journal. Les niveaux inférieurs à WARNING peuvent contenir"
-            " des informations personnelles."
+            "<niveau> - Envoyer le fichier journal. Les niveaux inférieurs à WARNING"
+            " peuvent contenir des informations personnelles."
         ),
-        "_cmd_doc_suspend": "<temps> - Mettre en pause l'utilisateurbot pendant un certain temps",
+        "_cmd_doc_suspend": (
+            "<temps> - Mettre en pause l'utilisateurbot pendant un certain temps"
+        ),
         "_cmd_doc_ping": "Vérifie la vitesse de réponse de l'utilisateurbot",
         "_cls_doc": "Opérations liées à l'auto-test",
         "send_anyway": "📤 Envoyer quand même",

@@ -172,8 +172,7 @@ class Translations(loader.Module):
             " enregistré!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Langue incorrecte"
-            "</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Langue incorrecte</b>"
         ),
         "lang_removed": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Traductions"
@@ -188,8 +187,8 @@ class Translations(loader.Module):
             " lien contenant un paquet de traduction</b>"
         ),
         "too_long": (
-            "<emoji document_id=5433653135799228968>📁</emoji> <b>La sortie de la commande"
-            " est trop longue, donc elle a été envoyée dans un fichier.</b>"
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>La sortie de la"
+            " commande est trop longue, donc elle a été envoyée dans un fichier.</b>"
         ),
         "opening_form": " <b>Ouverture du formulaire...</b>",
         "opening_gallery": " <b>Ouverture de la galerie...</b>",
@@ -198,11 +197,15 @@ class Translations(loader.Module):
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous ne pouvez pas"
             " envoyer d'éléments intégrés dans ce chat</b>"
         ),
-        "invoke_failed": "<b>🚫 L'appel du module a échoué! Voir les journaux pour plus de détails</b>",
+        "invoke_failed": (
+            "<b>🚫 L'appel du module a échoué! Voir les journaux pour plus de"
+            " détails</b>"
+        ),
         "show_inline_cmds": "📄 Afficher toutes les commandes intégrées disponibles",
         "no_inline_cmds": "Vous n'avez aucune commande inline disponible",
         "no_inline_cmds_msg": (
-            "<b>😔 Vous n'avez aucune commande inline disponible ou vous n'avez pas accès à celles-ci</b>"
+            "<b>😔 Vous n'avez aucune commande inline disponible ou vous n'avez pas"
+            " accès à celles-ci</b>"
         ),
         "inline_cmds": "ℹ️ Vous avez {} commande disponible",
         "inline_cmds_msg": "<b>ℹ️ Commandes inline disponibles:</b>\n\n{}",
@@ -221,12 +224,13 @@ class Translations(loader.Module):
             " href='https://t.me/{}'>{}</a></b>\n\n<b>❓ Raison:</b> <i>{}</i>"
         ),
         "fw_error": (
-            "<emoji document_id=5877458226823302157>🕒</emoji> <b>La commande"
-            "</b> <code>{}</code> <b>a provoqué un FloodWait {} dans la méthode</b> <code> {}</code>"
+            "<emoji document_id=5877458226823302157>🕒</emoji> <b>La commande</b>"
+            " <code>{}</code> <b>a provoqué un FloodWait {} dans la méthode</b> <code>"
+            " {}</code>"
         ),
         "rpc_error": (
-            "<emoji document_id=5877477244938489129>🚫</emoji> <b>La commande"
-            "</b> <code>{}</code> <b>ne s'est pas déroulée en raison d'une erreur RPC:</b>"
+            "<emoji document_id=5877477244938489129>🚫</emoji> <b>La commande</b>"
+            " <code>{}</code> <b>ne s'est pas déroulée en raison d'une erreur RPC:</b>"
             " <code>{}</code>"
         ),
     }
