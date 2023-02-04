@@ -173,6 +173,48 @@ class Presets(loader.Module):
         "already_installed": "✅ [Установлен]",
     }
 
+    strings_fr = {
+        "_fun_title": "🪩 Modules de divertissement",
+        "_fun_desc": "Modules amusants - animations, spam, jeux, etc.",
+        "_chat_title": "👥 Modules d'administration de chat",
+        "_chat_desc": (
+            "Collection de modules qui vous aideront à administrer votre chat - filtres,"
+            " notes, reconnaissance vocale, etc."
+        ),
+        "_service_title": "⚙️ Modules utiles",
+        "_service_desc": (
+            "Vraiment des modules utiles - gestion de compte, raccourcisseur d'URL,"
+            " moteur de recherche, etc."
+        ),
+        "_downloaders_title": "📥 Téléchargeurs",
+        "_downloaders_desc": (
+            "Collection de modules qui vous aideront à télécharger des fichiers à partir de/vers"
+            " diverses sources - YouTube, TikTok, Instagram, Spotify, VK Music, etc."
+        ),
+        "welcome": (
+            "👋 <b>Bonjour! Vous êtes fatigué d'effectuer un balayage infini de modules dans les canaux?"
+            " Je peux vous proposer quelques ensembles prêts à l'emploi. Si vous avez besoin"
+            " d'appeler à nouveau ce menu, envoyez-moi la commande /presets</b>"
+        ),
+        "preset": "<b>{}:</b>\nℹ️ <i>{}</i>\n\n⚒ <b>Modules dans cet ensemble:</b>\n\n{}",
+        "back": "🔙 Retour",
+        "install": "📦 Installer",
+        "installing": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installation de l'ensemble"
+            " >/b><code>{}</code><b>...</b>"
+        ),
+        "installing_module": (
+            "<emoji document_id=5451732530048802485>⏳</emoji> <b>Installation de l'ensemble"
+            "</b> <code>{}</code> <b>({}/{} modules)...</b>\n\n<emoji"
+            " document_id=5188377234380954537>🌘</emoji> <i>Installation du module {}...</i>"
+        ),
+        "installed": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>L'ensemble"
+            "</b> <code>{}</code> <b>est installé!</b>"
+        ),
+        "already_installed": "✅ [Installé]",
+    }
+
     strings_it = {
         "_fun_title": "🪩 Moduli divertenti",
         "_fun_desc": "Moduli divertenti, animazioni, spam, giochi e altro.",

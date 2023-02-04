@@ -37,6 +37,7 @@ class Validator:
                 {
                     "en": "docstring",
                     "ru": "докстрингом",
+                    "fr": "chaîne de documentation",
                     "it": "docstring",
                     "de": "Dokumentation",
                     "tr": "dökümantasyon",
@@ -57,7 +58,7 @@ class Validator:
         self.validate = validator
 
         if isinstance(doc, str):
-            doc = {"en": doc, "ru": doc, "it": doc, "de": doc, "tr": doc, "uz": doc}
+            doc = {"en": doc, "ru": doc, "fr": doc, "it": doc, "de": doc, "tr": doc, "uz": doc}
 
         self.doc = doc
         self.internal_id = _internal_id
@@ -75,6 +76,7 @@ class Boolean(Validator):
             {
                 "en": "boolean",
                 "ru": "логическим значением",
+                "fr": "booléen",
                 "it": "booleano",
                 "de": "logischen Wert",
                 "tr": "mantıksal değer",
@@ -112,6 +114,7 @@ class Integer(Validator):
     ):
         _sign_en = "positive " if minimum is not None and minimum == 0 else ""
         _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
+        _sign_fr = "positif " if minimum is not None and minimum == 0 else ""
         _sign_it = "positivo " if minimum is not None and minimum == 0 else ""
         _sign_de = "positiv " if minimum is not None and minimum == 0 else ""
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
@@ -123,6 +126,7 @@ class Integer(Validator):
         _sign_ru = (
             "отрицательным " if maximum is not None and maximum == 0 else _sign_ru
         )
+        _sign_fr = "négatif " if maximum is not None and maximum == 0 else _sign_fr
         _sign_it = "negativo " if maximum is not None and maximum == 0 else _sign_it
         _sign_de = "negativ " if maximum is not None and maximum == 0 else _sign_de
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
@@ -132,6 +136,7 @@ class Integer(Validator):
 
         _digits_en = f" with exactly {digits} digits" if digits is not None else ""
         _digits_ru = f", в котором ровно {digits} цифр " if digits is not None else ""
+        _digits_fr = f" avec exactement {digits} chiffres" if digits is not None else ""
         _digits_it = f" con esattamente {digits} cifre" if digits is not None else ""
         _digits_de = f" mit genau {digits} Ziffern" if digits is not None else ""
         _digits_tr = f" tam olarak {digits} basamaklı" if digits is not None else ""
@@ -144,6 +149,7 @@ class Integer(Validator):
                 {
                     "en": f"{_sign_en}integer greater than {minimum}{_digits_en}",
                     "ru": f"{_sign_ru}целым числом больше {minimum}{_digits_ru}",
+                    "fr": f"{_sign_fr}entier supérieur à {minimum}{_digits_fr}",
                     "it": f"{_sign_it}intero maggiore di {minimum}{_digits_it}",
                     "de": f"{_sign_de}ganze Zahl größer als {minimum}{_digits_de}",
                     "tr": f"{_sign_tr}tam sayı {minimum} den büyük{_digits_tr}",
@@ -157,6 +163,10 @@ class Integer(Validator):
                     "ru": (
                         f"{_sign_ru}целым числом в промежутке от {minimum} до"
                         f" {maximum}{_digits_ru}"
+                    ),
+                    "fr": (
+                        f"{_sign_fr}entier compris entre {minimum} et {maximum}"
+                        f"{_digits_fr}"
                     ),
                     "it": (
                         f"{_sign_it}intero compreso tra {minimum} e {maximum}"
@@ -185,6 +195,7 @@ class Integer(Validator):
             doc = {
                 "en": f"{_sign_en}integer{_digits_en}",
                 "ru": f"{_sign_ru}целым числом{_digits_ru}",
+                "fr": f"{_sign_fr}entier{_digits_fr}",
                 "it": f"{_sign_it}intero{_digits_it}",
                 "de": f"{_sign_de}ganze Zahl{_digits_de}",
                 "tr": f"{_sign_tr}tam sayı{_digits_tr}",
@@ -196,6 +207,7 @@ class Integer(Validator):
             doc = {
                 "en": f"{_sign_en}integer less than {maximum}{_digits_en}",
                 "ru": f"{_sign_ru}целым числом меньше {maximum}{_digits_ru}",
+                "fr": f"{_sign_fr}entier inférieur à {maximum}{_digits_fr}",
                 "it": f"{_sign_it}intero minore di {maximum}{_digits_it}",
                 "de": f"{_sign_de}ganze Zahl kleiner als {maximum}{_digits_de}",
                 "tr": f"{_sign_tr}tam sayı {maximum} den küçük{_digits_tr}",
@@ -261,6 +273,7 @@ class Choice(Validator):
             {
                 "en": f"one of the following: {possible}",
                 "ru": f"одним из: {possible}",
+                "fr": f"un des suivants: {possible}",
                 "it": f"uno dei seguenti: {possible}",
                 "de": f"einer der folgenden: {possible}",
                 "tr": f"şunlardan biri: {possible}",
@@ -306,6 +319,10 @@ class MultiChoice(Validator):
                 "ru": (
                     "список значений, каждое из которых должно быть одним из"
                     f" следующего: {possible}"
+                ),
+                "fr": (
+                    "liste de valeurs, chacune d'elles doit être l'une des"
+                    f" suivant: {possible}"
                 ),
                 "it": (
                     "elenco di valori, ognuno dei quali deve essere uno dei"
@@ -376,6 +393,9 @@ class Series(Validator):
         _each_ru = (
             f" (каждое должно быть {trans('ru')})" if validator is not None else ""
         )
+        _each_fr = (
+            f" (chaque doit être {trans('fr')})" if validator is not None else ""
+        )
         _each_it = (
             f" (ognuno deve essere {trans('it')})" if validator is not None else ""
         )
@@ -388,6 +408,7 @@ class Series(Validator):
         if fixed_len is not None:
             _len_en = f" (exactly {fixed_len} pcs.)"
             _len_ru = f" (ровно {fixed_len} шт.)"
+            _len_fr = f" (exactement {fixed_len} pcs.)"
             _len_it = f" (esattamente {fixed_len} pezzi)"
             _len_de = f" (genau {fixed_len} Stück)"
             _len_tr = f" (tam olarak {fixed_len} adet)"
@@ -398,6 +419,7 @@ class Series(Validator):
             if max_len is None:
                 _len_en = ""
                 _len_ru = ""
+                _len_fr = ""
                 _len_it = ""
                 _len_de = ""
                 _len_tr = ""
@@ -407,6 +429,7 @@ class Series(Validator):
             else:
                 _len_en = f" (up to {max_len} pcs.)"
                 _len_ru = f" (до {max_len} шт.)"
+                _len_fr = f" (jusqu'à {max_len} pcs.)"
                 _len_it = f" (fino a {max_len} pezzi)"
                 _len_de = f" (bis zu {max_len} Stück)"
                 _len_tr = f" (en fazla {max_len} adet)"
@@ -416,6 +439,7 @@ class Series(Validator):
         elif max_len is not None:
             _len_en = f" (from {min_len} to {max_len} pcs.)"
             _len_ru = f" (от {min_len} до {max_len} шт.)"
+            _len_fr = f" (de {min_len} à {max_len} pcs.)"
             _len_it = f" (da {min_len} a {max_len} pezzi)"
             _len_de = f" (von {min_len} bis {max_len} Stück)"
             _len_tr = f" ({min_len} ile {max_len} arasında {max_len} adet)"
@@ -425,6 +449,7 @@ class Series(Validator):
         else:
             _len_en = f" (at least {min_len} pcs.)"
             _len_ru = f" (как минимум {min_len} шт.)"
+            _len_fr = f" (au moins {min_len} pcs.)"
             _len_it = f" (almeno {min_len} pezzi)"
             _len_de = f" (mindestens {min_len} Stück)"
             _len_tr = f" (en az {min_len} adet)"
@@ -443,6 +468,7 @@ class Series(Validator):
             {
                 "en": f"series of values{_len_en}{_each_en}, separated with «,»",
                 "ru": f"списком значений{_len_ru}{_each_ru}, разделенных «,»",
+                "fr": f"série de valeurs{_len_fr}{_each_fr}, séparées par «,»",
                 "it": f"serie di valori{_len_it}{_each_it}, separati con «,»",
                 "de": f"Liste von Werten{_len_de}{_each_de}, getrennt mit «,»",
                 "tr": f"değerlerin listesi{_len_tr}{_each_tr}, «,» ile ayrılmış",
@@ -723,6 +749,7 @@ class Float(Validator):
     ):
         _sign_en = "positive " if minimum is not None and minimum == 0 else ""
         _sign_ru = "положительным " if minimum is not None and minimum == 0 else ""
+        _sign_fr = "positif " if minimum is not None and minimum == 0 else ""
         _sign_it = "positivo " if minimum is not None and minimum == 0 else ""
         _sign_de = "positiv " if minimum is not None and minimum == 0 else ""
         _sign_tr = "pozitif " if minimum is not None and minimum == 0 else ""
@@ -734,6 +761,7 @@ class Float(Validator):
         _sign_ru = (
             "отрицательным " if maximum is not None and maximum == 0 else _sign_ru
         )
+        _sign_fr = "négatif " if maximum is not None and maximum == 0 else _sign_fr
         _sign_it = "negativo " if maximum is not None and maximum == 0 else _sign_it
         _sign_de = "negativ " if maximum is not None and maximum == 0 else _sign_de
         _sign_tr = "negatif " if maximum is not None and maximum == 0 else _sign_tr
@@ -746,6 +774,7 @@ class Float(Validator):
                 {
                     "en": f"{_sign_en}float greater than {minimum}",
                     "ru": f"{_sign_ru}дробным числом больше {minimum}",
+                    "fr": f"{_sign_fr}flottant supérieur à {minimum}",
                     "it": f"{_sign_it}numero decimale maggiore di {minimum}",
                     "de": f"{_sign_de}Fließkommazahl größer als {minimum}",
                     "tr": f"{_sign_tr}ondalık sayı {minimum} dan büyük",
@@ -759,6 +788,9 @@ class Float(Validator):
                     "ru": (
                         f"{_sign_ru}дробным числом в промежутке от {minimum} до"
                         f" {maximum}"
+                    ),
+                    "fr": (
+                        f"{_sign_fr}flottant de {minimum} à {maximum}"
                     ),
                     "it": (
                         f"{_sign_it}numero decimale compreso tra {minimum} e {maximum}"
@@ -775,6 +807,7 @@ class Float(Validator):
             doc = {
                 "en": f"{_sign_en}float",
                 "ru": f"{_sign_ru}дробным числом",
+                "fr": f"{_sign_fr}flottant",
                 "it": f"{_sign_it}numero decimale",
                 "de": f"{_sign_de}Fließkommazahl",
                 "tr": f"{_sign_tr}ondalık sayı",
@@ -786,6 +819,7 @@ class Float(Validator):
             doc = {
                 "en": f"{_sign_en}float less than {maximum}",
                 "ru": f"{_sign_ru}дробным числом меньше {maximum}",
+                "fr": f"{_sign_fr}flottant inférieur à {maximum}",
                 "it": f"{_sign_it}numero decimale minore di {maximum}",
                 "de": f"{_sign_de}Fließkommazahl kleiner als {maximum}",
                 "tr": f"{_sign_tr}ondalık sayı {maximum} dan küçük",

@@ -42,6 +42,18 @@ class UpdateNotifierMod(loader.Module):
         "ignore": "🚫 Игнорировать",
     }
 
+    strings_fr = {
+        "update_required": (
+            "🌘 <b>Mise à jour Hikka disponible!</b>\n\nNouvelle version de Hikka"
+            " publiée.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 Et {} de plus...</b></i>",
+        "_cfg_doc_disable_notifications": "Désactiver les notifications de mise à jour",
+        "latest_disabled": "Les notifications sur la dernière mise à jour ont été désactivées",
+        "update": "🔄 Mettre à jour",
+        "ignore": "🚫 Ignorer",
+    }
+
     strings_it = {
         "update_required": (
             "🌘 <b>Aggiornamento disponibile per Hikka!</b>\n\nÈ stato rilasciato un"

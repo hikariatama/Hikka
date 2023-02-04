@@ -98,6 +98,41 @@ class QuickstartMod(loader.Module):
         "btn_support": "🥷 Чат поддержки",
     }
 
+    strings_fr = {
+        "base": """🌘🇫🇷 <b>Bonjour.</b> Ton userbot <b>Hikka</b> est installé.
+
+❓ <b>Besoin d'aide?</b> Rejoignez notre chat de support. Nous aidons <b>tout le monde</b>.
+
+📼 <b>Vous pouvez rechercher et installer des modules via @hikkamods_bot. Il suffit d'entrer une requête de recherche et de cliquer sur ⛩ Install sur le module souhaité</b>
+
+📣 <b>Jetez un coup d'œil aux canaux de modules créés par la communauté: <a href="https://t.me/hikka_ub/126">afficher</a></b>
+
+💁‍♀️ <b>Guide rapide:</b>
+
+1️⃣ <b>Écrivez</b> <code>.help</code> <b>pour voir la liste des modules</b>
+2️⃣ <b>Écrivez</b> <code>.help &lt;Nom du module/commande&gt;</code> <b>pour voir la description du module</b>
+3️⃣ <b>Écrivez</b> <code>.dlmod &lt;lien&gt;</code> <b>pour télécharger le module à partir du lien</b>
+4️⃣ <b>Écrivez</b> <code>.loadmod</code> <b>en réponse à un fichier pour charger le module depuis celui-ci</b>
+5️⃣ <b>Écrivez</b> <code>.unloadmod &lt;Nom du module&gt;</code> <b>pour décharger le module</b>
+
+💡 <b>Hikka prend en charge les modules de Friendly-Telegram, DragonUserbot et GeekTG ainsi que ses propres modules.</b>
+""",
+        "railway": (
+            "🚂 <b>Votre userbot est installé sur Railway</b>. Sur cette plateforme, vous"
+            " obtenez seulement <b>500 heures gratuites par mois</b>. Lorsque la limite sera"
+            " atteint, <b>votre userbot sera gelé</b>. Au mois prochain <b>vous"
+            " devez aller sur https://railway.app et le redémarrer</b>."
+        ),
+        "lavhost": (
+            "✌️ <b>Votre userbot est installé sur lavHost</b>. Rejoignez @lavhost pour"
+            " recevoir des notifications et des mises à jour importantes. Toutes les questions"
+            " liées à la plateforme doivent être posées dans @lavhostchat."
+        ),
+        "language_saved": "🇫🇷 Langue sauvegardée!",
+        "language": "🇫🇷 Français",
+        "btn_support": "🥷 Chat de support",
+    }
+
     strings_it = {
         "base": """🌘🇮🇹 <b>Ciao.</b> Il tuo userbot <b>Hikka</b> è stato installato.
 
@@ -375,6 +410,7 @@ class QuickstartMod(loader.Module):
                     for lang in [
                         "en",
                         "ru",
+                        "fr",
                         "it",
                         "de",
                         "uz",

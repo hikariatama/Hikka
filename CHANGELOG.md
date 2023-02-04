@@ -6,6 +6,7 @@
 - Fix memory leak when using 1.6.0 inside Docker
 - Fix userbot dying after restart on Docker
 - Root out stats mechanism
+- Add French translation pack
 
 ## 🌑 Hikka 1.6.0
 

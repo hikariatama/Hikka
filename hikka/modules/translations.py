@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 SUPPORTED_LANGUAGES = {
     "en": "🇬🇧 English",
     "ru": "🇷🇺 Русский",
+    "fr": "🇫🇷 Français",
     "it": "🇮🇹 Italiano",
     "de": "🇩🇪 Deutsch",
     "tr": "🇹🇷 Türkçe",
@@ -160,6 +161,72 @@ class Translations(loader.Module):
         "rpc_error": (
             "<emoji document_id=5877477244938489129>🚫</emoji> <b>Команда"
             "</b> <code>{}</code> <b>не удалась из-за ошибки RPC:</b>"
+            " <code>{}</code>"
+        ),
+    }
+
+    strings_fr = {
+        "lang_saved": "{} <b>Langue enregistrée!</b>",
+        "pack_saved": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Paquet de traduction"
+            " enregistré!</b>"
+        ),
+        "incorrect_language": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Langue incorrecte"
+            "</b>"
+        ),
+        "lang_removed": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Traductions"
+            " réinitialisées à celles par défaut</b>"
+        ),
+        "check_pack": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Format de paquet de"
+            " traduction invalide dans le lien</b>"
+        ),
+        "check_url": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez fournir un"
+            " lien contenant un paquet de traduction</b>"
+        ),
+        "too_long": (
+            "<emoji document_id=5433653135799228968>📁</emoji> <b>La sortie de la commande"
+            " est trop longue, donc elle a été envoyée dans un fichier.</b>"
+        ),
+        "opening_form": " <b>Ouverture du formulaire...</b>",
+        "opening_gallery": " <b>Ouverture de la galerie...</b>",
+        "opening_list": " <b>Ouverture de la liste...</b>",
+        "inline403": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous ne pouvez pas"
+            " envoyer d'éléments intégrés dans ce chat</b>"
+        ),
+        "invoke_failed": "<b>🚫 L'appel du module a échoué! Voir les journaux pour plus de détails</b>",
+        "show_inline_cmds": "📄 Afficher toutes les commandes intégrées disponibles",
+        "no_inline_cmds": "Vous n'avez aucune commande inline disponible",
+        "no_inline_cmds_msg": (
+            "<b>😔 Vous n'avez aucune commande inline disponible ou vous n'avez pas accès à celles-ci</b>"
+        ),
+        "inline_cmds": "ℹ️ Vous avez {} commande disponible",
+        "inline_cmds_msg": "<b>ℹ️ Commandes inline disponibles:</b>\n\n{}",
+        "run_command": "🏌️ Exécuter la commande",
+        "command_msg": "<b>🌘 Commande «{}»</b>\n\n<i>{}</i>",
+        "command": "🌘 Commande «{}»",
+        "button403": "Vous ne pouvez pas appuyer sur ce bouton!",
+        "keep_id": "⚠️ Ne supprimez pas l'ID! {}",
+        "choose_language": "🗽 <b>Choisissez la langue</b>",
+        "not_official": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Cette langue n'est"
+            " pas officiellement prise en charge</b>"
+        ),
+        "requested_join": (
+            "💫 <b>Le module</b> <code>{}</code> <b>a demandé à rejoindre le canal <a"
+            " href='https://t.me/{}'>{}</a></b>\n\n<b>❓ Raison:</b> <i>{}</i>"
+        ),
+        "fw_error": (
+            "<emoji document_id=5877458226823302157>🕒</emoji> <b>La commande"
+            "</b> <code>{}</code> <b>a provoqué un FloodWait {} dans la méthode</b> <code> {}</code>"
+        ),
+        "rpc_error": (
+            "<emoji document_id=5877477244938489129>🚫</emoji> <b>La commande"
+            "</b> <code>{}</code> <b>ne s'est pas déroulée en raison d'une erreur RPC:</b>"
             " <code>{}</code>"
         ),
     }
@@ -671,6 +738,7 @@ class Translations(loader.Module):
 
     @loader.command(
         ru_doc="[языки] - Изменить стандартный язык",
+        fr_doc="[langues] - Changer la langue par défaut",
         it_doc="[lingue] - Cambia la lingua predefinita",
         de_doc="[Sprachen] - Ändere die Standard-Sprache",
         tr_doc="[Diller] - Varsayılan dili değiştir",
@@ -720,6 +788,10 @@ class Translations(loader.Module):
 
     @loader.command(
         ru_doc="[ссылка на пак | пустое чтобы удалить] - Изменить внешний пак перевода",
+        fr_doc=(
+            "[lien vers le paquet | vide pour supprimer] - Changer le paquet de"
+            " traduction externe"
+        ),
         it_doc=(
             "[link al pacchetto | vuoto per rimuovere] - Cambia il pacchetto di"
             " traduzione esterno"

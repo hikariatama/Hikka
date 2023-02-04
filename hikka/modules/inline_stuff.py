@@ -64,6 +64,28 @@ class InlineStuffMod(loader.Module):
         ),
     }
 
+    strings_fr = {
+        "bot_username_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Nom d'utilisateur du"
+            " bot incorrect. Il doit être de plus de 5 caractères et se terminer par"
+            " </b> <code>bot</code>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Nom d'utilisateur du"
+            " bot déjà occupé</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Paramètres enregistrés."
+            " Redémarrez le bot pour les appliquer</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Bonjour! C'est Hikka — un puissant module Telegram userbot. Vous"
+            " pouvez l'installer sur votre compte!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Chat de support</a></b>'
+        ),
+    }
+
     strings_it = {
         "bot_username_invalid": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il nome utente del"
@@ -264,6 +286,7 @@ class InlineStuffMod(loader.Module):
 
     @loader.command(
         ru_doc="<юзернейм> - Изменить юзернейм инлайн бота",
+        fr_doc="<nom d'utilisateur> - Changez le nom d'utilisateur de votre bot inline",
         it_doc="<username> - Cambia il nome utente del bot inline",
         de_doc="<username> - Ändere den Inline-Bot-Nutzernamen",
         tr_doc="<kullanıcı adı> - İçe aktarma botunun kullanıcı adını değiştirin",

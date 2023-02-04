@@ -82,6 +82,36 @@ class HelpMod(loader.Module):
         ),
     }
 
+    strings_fr = {
+        "undoc": "🦥 Pas de description",
+        "all_header": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} module disponible,"
+            " {} caché:</b>"
+        ),
+        "no_mod": "🚫 <b>Indiquer le module(-s) à cacher</b>",
+        "hidden_shown": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>{} module caché,"
+            " {} module montré:</b>\n{}\n{}"
+        ),
+        "support": (
+            "{} <b>Liens</b> <a href='https://t.me/hikka_talks'>chat d'aide</a></b>"
+        ),
+        "_cls_doc": "Affiche l'aide par module",
+        "partial_load": (
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Le robot utilisateur"
+            " n'a pas encore complètement chargé, donc pas tous les modules ont été montrés</b>"
+        ),
+        "not_exact": (
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>Pas de correspondance exacte"
+            " trouvé, donc le plus approprié a été choisi</b>"
+        ),
+        "request_join": "Vous avez demandé un lien vers le chat d'aide Hikka",
+        "core_notice": (
+            "<emoji document_id=5312383351217201533>☝️</emoji> <b>C'est un module intégré."
+            " Vous ne pouvez pas le décharger ou le remplacer</b>"
+        ),
+    }
+
     strings_it = {
         "undoc": "🦥 Nessuna documentazione",
         "all_header": (
@@ -320,6 +350,10 @@ class HelpMod(loader.Module):
             "<модуль или модули> - Спрятать модуль(-и) из помощи\n*Разделяй модули"
             " пробелами"
         ),
+        fr_doc=(
+            "<module ou modules> - Cache le module (-s) de l'aide\n*Séparez les"
+            " modules avec des espaces"
+        ),
         it_doc=(
             "<module o moduli> - Nascondi il modulo (- i) dalla guida\n*Separa i moduli"
             " spazi"
@@ -525,6 +559,7 @@ class HelpMod(loader.Module):
     @loader.unrestricted
     @loader.command(
         ru_doc="[модуль] [-f] - Показать помощь",
+        fr_doc="[module] [-f] - Afficher l'aide",
         it_doc="[modulo] [-f] - Mostra l'aiuto",
         de_doc="[Modul] [-f] - Hilfe anzeigen",
         tr_doc="[modül] [-f] - Yardımı göster",
@@ -707,6 +742,7 @@ class HelpMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать ссылку на чат помощи Hikka",
+        fr_doc="Afficher le lien du chat d'aide de Hikka",
         it_doc="Mostra il link al gruppo di supporto Hikka",
         de_doc="Zeige den Link zum Hikka-Hilfe-Chat",
         tr_doc="Hikka yardım sohbetinin bağlantısını göster",

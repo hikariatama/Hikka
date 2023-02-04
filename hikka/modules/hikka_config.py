@@ -155,6 +155,72 @@ class HikkaConfigMod(loader.Module):
         "libraries": "📦 Библиотеки",
     }
 
+    strings_fr = {
+        "choose_core": "⚙️ <b>choisissez la catégorie</b>",
+        "configure": "⚙️ <b>Choisissez le module à configurer</b>",
+        "configure_lib": "📦 <b>Choisissez la bibliothèque à configurer</b>",
+        "configuring_mod": (
+            "⚙️ <b>Choisissez le paramètre pour le module</b> <code>{}</code>\n\n<b>Actuellement"
+            " réglages:</b>\n\n{}"
+        ),
+        "configuring_lib": (
+            "📦 <b>Choisissez le paramètre pour la bibliothèque</b> <code>{}</code>\n\n<b>Actuellement"
+            " réglages:</b>\n\n{}"
+        ),
+        "configuring_option": (
+            "⚙️ <b>Contrôle des paramètres</b> <code>{}</code> <b>module"
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Standard:"
+            " {}</b>\n\n<b>Actuelle: {}</b>\n\n{}"
+        ),
+        "configuring_option_lib": (
+            "📦 <b>Contrôle des paramètres</b> <code>{}</code> <b>library"
+            "</b> <code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>Standard:"
+            " {}</b>\n\n<b>Actuelle: {}</b>\n\n{}"
+        ),
+        "option_saved": (
+            "<emoji document_id=5318933532825888187>⚙️</emoji> <b>Paramètre"
+            "</b> <code>{}</code> <b>module</b> <code>{}</code><b>"
+            " enregistré!</b>\n<b>Actuelle: {}</b>"
+        ),
+        "option_saved_lib": (
+            "<emoji document_id=5431736674147114227>📦</emoji> <b>Paramètre"
+            "</b> <code>{}</code> <b>library</b> <code>{}</code><b>"
+            " enregistré!</b>\n<b>Actuelle: {}</b>"
+        ),
+        "option_reset": (
+            "♻️ <b>Paramètre</b> <code>{}</code> <b>module</b> <code>{}</code><b>"
+            " réinitialisé à la valeur par défaut</b>\n<b>Actuelle: {}</b>"
+        ),
+    "option_reset_lib": (
+            "♻️ <b>Paramètre</b> <code>{}</code> <b>de la librairie</b> <code>{}</code><b>"
+            " réinitialisé à sa valeur par défaut</b>\n<b>Actuel: {}</b>"
+        ),
+        "_cls_doc": "Configuration interactive Hikka",
+        "args": "🚫 <b>Vous avez spécifié des arguments incorrects</b>",
+        "no_mod": "🚫 <b>Le module n'existe pas</b>",
+        "no_option": "🚫 <b>Le module n'a pas de paramètre</b>",
+        "validation_error": (
+            "🚫 <b>Vous avez entré une valeur de configuration incorrecte.\nErreur: {}</b>"
+        ),
+        "try_again": "🔁 Essayez à nouveau",
+        "typehint": "🕵️ <b>Doit être {}</b>",
+        "set": "mettre",
+        "set_default_btn": "♻️ Valeur par défaut",
+        "enter_value_btn": "✍️ Entrer une valeur",
+        "enter_value_desc": "✍️ Entrez une nouvelle valeur pour ce paramètre",
+        "add_item_desc": "✍️ Entrez l'élément à ajouter",
+        "remove_item_desc": "✍️ Entrez l'élément à supprimer",
+        "back_btn": "👈 Retour",
+        "close_btn": "🔻 Fermer",
+        "add_item_btn": "➕ Ajouter un élément",
+        "remove_item_btn": "➖ Supprimer un élément",
+        "show_hidden": "🚸 Afficher la valeur",
+        "hide_value": "🔒 Masquer la valeur",
+        "builtin": "🛰 Intégré",
+        "external": "🛸 Externe",
+        "libraries": "📦 Bibliothèques",
+}
+
     strings_it = {
         "choose_core": "⚙️ <b>Scegli la categoria</b>",
         "configure": "⚙️ <b>Scegli il modulo da configurare</b>",
@@ -1524,6 +1590,7 @@ class HikkaConfigMod(loader.Module):
 
     @loader.command(
         ru_doc="Настроить модули",
+        fr_doc="Configurer les modules",
         it_doc="Configura i moduli",
         de_doc="Konfiguriere Module",
         tr_doc="Modülleri yapılandır",
@@ -1551,6 +1618,10 @@ class HikkaConfigMod(loader.Module):
     @loader.command(
         ru_doc=(
             "<модуль> <настройка> <значение> - установить значение конфига для модуля"
+        ),
+        fr_doc=(
+            "<module> <paramètre> <valeur> - définir la valeur de configuration pour le"
+            " module"
         ),
         it_doc=(
             "<modulo> <impostazione> <valore> - imposta il valore della configurazione"
