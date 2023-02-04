@@ -1,5 +1,13 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.6.1
+
+- Remove miyahost from official hosts
+- Fix memory leak when using 1.6.0 inside Docker
+- Fix userbot dying after restart on Docker
+- Root out stats mechanism
+- Add French translation pack
+
 ## 🌑 Hikka 1.6.0
 
 - Bring support for Dragon Userbot modules

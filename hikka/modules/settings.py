@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -197,6 +197,98 @@ class CoreMod(loader.Module):
         "prefix_collision": (
             "<emoji document_id=5469654973308476699>💣</emoji> <b>Префиксы Dragon и"
             " Hikka должны отличаться!</b>"
+        ),
+    }
+
+    strings_fr = {
+        "too_many_args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Trop d'arguments </b>"
+        ),
+        "blacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Le chat {} a été"
+            " ajouté à la liste noire du robot utilisateur</b>"
+        ),
+        "unblacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Le chat {} a été"
+            " supprimé de la liste noire du robot utilisateur</b>"
+        ),
+        "user_blacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>L'utilisateur {}"
+            " a été ajouté à la liste noire du robot utilisateur</b>"
+        ),
+        "user_unblacklisted": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>L'utilisateur {}"
+            " a été supprimé de la liste noire du robot utilisateur</b>"
+        ),
+        "what_prefix": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Et quel préfixe"
+            " mettre alors ?</b>"
+        ),
+        "prefix_incorrect": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le préfixe doit"
+            " être composé d'un seul caractère</b>"
+        ),
+        "prefix_set": (
+            "{} <b>Le préfixe a été mis à jour."
+            " Pour le rétablir, utilisez</b> <code>{newprefix}setprefix"
+            " {oldprefix}</code>"
+        ),
+        "alias_created": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>L'alias a été créé."
+            " Utilisez-le avec</b> <code>{}</code>"
+        ),
+        "aliases": "<b>🔗 Alias:</b>\n",
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La commande</b>"
+            " <code>{}</code> <b>n'existe pas</b>"
+        ),
+        "alias_args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez entrer"
+            " une commande et un alias pour elle</b>"
+        ),
+        "delalias_args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez entrer"
+            " un alias</b>"
+        ),
+        "alias_removed": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Alias</b>"
+            " <code>{}</code> <b>supprimé</b>."
+        ),
+        "no_alias": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Alias</b>"
+            " <code>{}</code> <b>n'existe pas</b>"
+        ),
+        "db_cleared": (
+            "<emoji document_id=5197474765387864959>👍</emoji> <b>Base de données"
+            " effacée</b>"
+        ),
+        "hikka": (
+            "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji"
+            " document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:"
+            "</b> <i>{}</i>\n{}"
+            " <b>Hikka-Pyro:</b> <i>{}</i>\n\n<emoji"
+            " document_id=5454182070156794055>⌨️</emoji> <b>Developer:"
+            " t.me/hikariatama</b>"
+        ),
+        "_cls_doc": "Gérer les paramètres de base du userbot",
+        "confirm_cleardb": (
+            "⚠️ <b>Êtes-vous sûr de vouloir réinitialiser la base de données?</b>"
+        ),
+        "cleardb_confirm": "🗑 Effacer la base de données",
+        "cancel": "🚫 Annuler",
+        "who_to_blacklist": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Qui bloquer?</b>"
+        ),
+        "who_to_unblacklist": (
+            "<emoji document_id=5382187118216879236>❓</emoji> <b>Qui débloquer?</b>"
+        ),
+        "unstable": (
+            "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Vous utilisez"
+            " une branche instable</b> <code>{}</code><b>!</b>"
+        ),
+        "prefix_collision": (
+            "<emoji document_id=5469654973308476699>💣</emoji> <b>Les préfixes Dragon"
+            " et Hikka doivent être différents!</b>"
         ),
     }
 
@@ -768,6 +860,7 @@ class CoreMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать версию Hikka",
+        fr_doc="Afficher la version de Hikka",
         it_doc="Mostra la versione di Hikka",
         de_doc="Zeige die Hikka-Version an",
         tr_doc="Hikka sürümünü gösterir",
@@ -805,6 +898,7 @@ class CoreMod(loader.Module):
 
     @loader.command(
         ru_doc="[чат] [модуль] - Отключить бота где-либо",
+        fr_doc="[chat] [module] - Désactiver le bot n'importe où",
         it_doc="[chat] [module] - Disattiva il bot ovunque",
         de_doc="[chat] [Modul] - Deaktiviere den Bot irgendwo",
         tr_doc="[sohbet] [modül] - Botu herhangi bir yerde devre dışı bırakın",
@@ -826,6 +920,7 @@ class CoreMod(loader.Module):
 
     @loader.command(
         ru_doc="[чат] - Включить бота где-либо",
+        fr_doc="[chat] - Activer le bot n'importe où",
         it_doc="[chat] - Attiva il bot ovunque",
         de_doc="[chat] - Aktiviere den Bot irgendwo",
         tr_doc="[sohbet] - Botu herhangi bir yerde etkinleştirin",
@@ -858,6 +953,7 @@ class CoreMod(loader.Module):
 
     @loader.command(
         ru_doc="[пользователь] - Запретить пользователю выполнять команды",
+        fr_doc="[utilisateur] - Interdire à l'utilisateur d'exécuter des commandes",
         it_doc="[utente] - Impedisci all'utente di eseguire comandi",
         de_doc="[Benutzer] - Verbiete dem Benutzer, Befehle auszuführen",
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
@@ -883,6 +979,7 @@ class CoreMod(loader.Module):
 
     @loader.command(
         ru_doc="[пользователь] - Разрешить пользователю выполнять команды",
+        fr_doc="[utilisateur] - Autoriser l'utilisateur à exécuter des commandes",
         it_doc="[utente] - Consenti all'utente di eseguire comandi",
         de_doc="[Benutzer] - Erlaube dem Benutzer, Befehle auszuführen",
         tr_doc="[kullanıcı] - Kullanıcıya komutları yürütmeyi yasakla",
@@ -912,6 +1009,7 @@ class CoreMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="[dragon] <префикс> - Установить префикс команд",
+        fr_doc="[dragon] <préfixe> - Définir le préfixe des commandes",
         it_doc="[dragon] <prefisso> - Imposta il prefisso dei comandi",
         de_doc="[dragon] <Präfix> - Setze das Befehlspräfix",
         tr_doc="[dragon] <önek> - Komut öneki ayarla",
@@ -972,6 +1070,7 @@ class CoreMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Показать список алиасов",
+        fr_doc="Afficher la liste des alias",
         it_doc="Mostra la lista degli alias",
         de_doc="Zeige Aliase",
         tr_doc="Takma adları göster",
@@ -993,6 +1092,7 @@ class CoreMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Установить алиас для команды",
+        fr_doc="Définir un alias pour la commande",
         it_doc="Imposta un alias per il comando",
         de_doc="Setze einen Alias für einen Befehl",
         tr_doc="Bir komut için takma ad ayarla",
@@ -1030,6 +1130,7 @@ class CoreMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Удалить алиас для команды",
+        fr_doc="Supprimer un alias pour la commande",
         it_doc="Rimuovi un alias per il comando",
         de_doc="Entferne einen Alias für einen Befehl",
         tr_doc="Bir komut için takma ad kaldır",
@@ -1066,6 +1167,7 @@ class CoreMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Очистить базу данных",
+        fr_doc="Vider la base de données",
         it_doc="Cancella il database",
         de_doc="Datenbank leeren",
         tr_doc="Veritabanını temizle",

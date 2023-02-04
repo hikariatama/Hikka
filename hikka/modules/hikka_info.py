@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -103,6 +103,55 @@ class HikkaInfoMod(loader.Module):
             " твоем Telegram-аккаунте. Когда ты пишешь команду в любом чате, она"
             " сразу же выполняется. Обрати внимание на живые примеры на <a"
             ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+        ),
+    }
+
+    strings_fr = {
+        "owner": "Propriétaire",
+        "version": "Version",
+        "build": "Construire",
+        "prefix": "Préfixe",
+        "uptime": "Uptime",
+        "branch": "Branche",
+        "cpu_usage": "Utilisation du CPU",
+        "ram_usage": "Utilisation de la RAM",
+        "send_info": "Envoyer des informations sur l'utilisateurbot",
+        "description": "ℹ Cela ne révélera aucune information personnelle",
+        "_ihandle_doc_info": "Envoyer des informations sur l'utilisateurbot",
+        "up-to-date": (
+            "<emoji document_id=5370699111492229743>😌</emoji> <b>Version à jour</b>"
+        ),
+        "update_required": (
+            "<emoji document_id=5424728541650494040>😕</emoji> <b>Mise à jour"
+            " requise</b> <code>.update</code>"
+        ),
+        "_cfg_cst_msg": (
+            "Texte de message personnalisé dans info. Peut contenir les mots clés"
+            " {me}, {version}, {build}, {prefix}, {platform}, {upd}, {uptime},"
+            " {cpu_usage}, {ram_usage}, {branch}"
+        ),
+        "_cfg_cst_btn": (
+            "Bouton personnalisé dans le message dans info. Laissez vide pour supprimer"
+            " le bouton"
+        ),
+        "_cfg_banner": "Lien vers la bannière de l'image",
+        "setinfo_no_args": (
+            "<emoji document_id=5370881342659631698>😢</emoji> <b>Vous devez spécifier"
+            " le texte pour l'info personnalisée</b>"
+        ),
+        "setinfo_success": (
+            "<emoji document_id=5436040291507247633>🎉</emoji> <b>L'info personnalisée"
+            " a bien été modifiée</b>"
+        ),
+        "desc": (
+            "<emoji document_id=6318565919471699564>🌌</emoji>"
+            " <b>Hikka</b>\n\nUn bot utilisateur de Telegram avec beaucoup de"
+            " fonctions, y compris des galeries en ligne, des formulaires, des"
+            " listes, et également la prise en charge des émoticônes animées."
+            " Le bot utilisateur est un programme qui s'exécute sur votre compte"
+            " de Telegram. Lorsque vous tapez une commande dans n'importe quel"
+            " chat, elle est exécutée immédiatement. Notez les exemples en"
+            ' direct sur <a href="https://github.com/hikariatama/Hikka">GitHub</a>'
         ),
     }
 
@@ -549,6 +598,7 @@ class HikkaInfoMod(loader.Module):
 
     @loader.command(
         ru_doc="Отправляет информацию о боте",
+        fr_doc="Envoie des informations sur le bot",
         it_doc="Invia informazioni sul bot",
         de_doc="Sendet Informationen über den Bot",
         tr_doc="Bot hakkında bilgi gönderir",
@@ -581,6 +631,7 @@ class HikkaInfoMod(loader.Module):
     @loader.unrestricted
     @loader.command(
         ru_doc="Отправить информацию по типу 'Что такое Хикка?'",
+        fr_doc="Envoyer des informations du type 'Qu'est-ce que Hikka?'",
         it_doc="Invia informazioni del tipo 'Cosa è Hikka?'",
         de_doc="Sende Informationen über den Bot",
         tr_doc="Bot hakkında bilgi gönderir",
@@ -594,6 +645,7 @@ class HikkaInfoMod(loader.Module):
 
     @loader.command(
         ru_doc="<текст> - Изменить текст в .info",
+        fr_doc="<texte> - Changer le texte dans .info",
         it_doc="<testo> - Cambia il testo in .info",
         de_doc="<text> - Ändere den Text in .info",
         tr_doc="<metin> - .info'da metni değiştir",

@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -18,7 +18,7 @@ from telethon.tl.types import Message
 from telethon.utils import get_display_name
 
 from .. import loader, log, main, utils
-from .._internal import restart, fw_protect
+from .._internal import fw_protect, restart
 from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
@@ -183,8 +183,6 @@ class HikkaSettingsMod(loader.Module):
             " You'll need to authorize using lavHost credentials, specified on"
             " registration</i>"
         ),
-        "disable_stats": "✅ Anonymous stats allowed",
-        "enable_stats": "🚫 Anonymous stats disabled",
         "disable_debugger": "✅ Debugger enabled",
         "enable_debugger": "🚫 Debugger disabled",
     }
@@ -310,10 +308,139 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Тебе нужно будет авторизоваться, используя данные,"
             " указанные при настройке lavHost</i>"
         ),
-        "disable_stats": "✅ Анонимная стата разрешена",
-        "enable_stats": "🚫 Анонимная стата запрещена",
         "disable_debugger": "✅ Отладчик включен",
         "enable_debugger": "🚫 Отладчик выключен",
+    }
+
+    strings_fr = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji>"
+            " <b>Les observateurs:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>L'observateur {} n'est"
+            " pas trouvé</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>L'observateur {} est"
+            " maintenant <u>désactivé</u></b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>L'observateur {} est"
+            " maintenant <u>activé</u></b>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Indiquez le nom"
+            " de l'observateur</b>"
+        ),
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>L'état de NoNick pour"
+            " cet utilisateur: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Indiquez la commande"
+            " pour laquelle vous souhaitez activer\\désactiver NoNick</b>"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>L'état de NoNick"
+            " pour</b> <code>{}</code><b>: {}</b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Commande non"
+            " trouvée</b>"
+        ),
+        "inline_settings": "⚙️ <b>Vous pouvez gérer les paramètres Hikka ici</b>",
+        "confirm_update": (
+            "🧭 <b>Confirmez la mise à jour. L'utilisateur-bot sera redémarré</b>"
+        ),
+        "confirm_restart": "🔄 <b>Confirmez le redémarrage</b>",
+        "suggest_fs": "✅ Suggérer l'enregistrement des modules",
+        "do_not_suggest_fs": "🚫 Suggérer l'enregistrement des modules",
+        "use_fs": "✅ Toujours enregistrer les modules",
+        "do_not_use_fs": "🚫 Toujours enregistrer les modules",
+        "btn_restart": "🔄 Redémarrer",
+        "btn_update": "🧭 Mise à jour",
+        "close_menu": "😌 Fermer le menu",
+        "custom_emojis": "✅ Émoticônes personnalisées",
+        "no_custom_emojis": "🚫 Émoticônes personnalisées",
+        "suggest_subscribe": "✅ Suggérer l'abonnement au canal",
+        "do_not_suggest_subscribe": "🚫 Suggérer l'abonnement au canal",
+        "private_not_allowed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez exécuter"
+            " cette commande dans un chat</b>"
+        ),
+        "_cls_doc": "Paramètres supplémentaires Hikka",
+        "nonick_warning": (
+            "Attention! Vous avez activé NoNick avec le préfixe standard! "
+            "Vous pouvez être muté dans les chats Hikka. Changez le préfixe ou "
+            "désactivez NoNick global!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Répondez au message"
+            " de l'utilisateur pour lequel vous devez activer NoNick</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>Cette action supprimera complètement Hikka de ce compte! Il ne peut"
+            " pas être annulé</b>\n\n<i>- Toutes les conversations liées à Hikka seront"
+            " supprimées\n- La session Hikka sera réinitialisée\n- Le bot en ligne"
+            " Hikka sera supprimé</i>"
+        ),
+        "deauth_confirm_step2": "⚠️ <b>Êtes-vous sûr de vouloir supprimer Hikka?</b>",
+        "deauth_yes": "Je suis sûr",
+        "deauth_no_1": "Je ne suis pas sûr",
+        "deauth_no_2": "Pas vraiment",
+        "deauth_no_3": "Non",
+        "deauth_cancel": "🚫 Annuler",
+        "deauth_confirm_btn": "😢 Supprimer",
+        "uninstall": "😢 <b>Je supprime Hikka...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka a été supprimé. L'interface Web est toujours active, vous"
+            " pouvez ajouter d'autres comptes!</b>"
+        ),
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick est activé pour"
+            " ces commandes:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick est activé"
+            " pour ces utilisateurs:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick est activé"
+            " pour ces groupes:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>Rien à"
+            " montrer...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>Cette commande donne accès à l'interface web de Hikka. L'exécution"
+            " dans les groupes est une menace pour la sécurité. Préférez l'exécution"
+            " dans <a href='tg://openmessage?user_id={}'>Messages favoris</a>."
+            " Exécutez</b> <code>{}proxypass force_insecure</code> <b>pour désactiver"
+            " cette alerte</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>Cette commande donne accès à l'interface web de Hikka. L'exécution"
+            " dans les groupes est une menace pour la sécurité. Préférez l'exécution"
+            " dans <a href='tg://openmessage?user_id={}'>Messages favoris</a>.</b>"
+        ),
+        "opening_tunnel": (
+            "🔁 <b>Ouverture du tunnel vers l'interface web de Hikka...</b>"
+        ),
+        "tunnel_opened": (
+            "🎉 <b>Tunnel ouvert. Ce lien ne sera actif que pendant une heure</b>"
+        ),
+        "web_btn": "🌍 Interface web",
+        "btn_yes": "🚸 Ouvrir quand même",
+        "btn_no": "🔻 Fermer",
+        "lavhost_web": (
+            "✌️ <b>En cliquant sur ce lien, tu accèderas à l'interface web de Hikka"
+            " sur lavHost</b>\n\n<i>💡 Tu devras t'authentifier avec les données"
+            " spécifiées lors de la configuration de lavHost</i>"
+        ),
+        "disable_debugger": "✅ Débogueur activé",
+        "enable_debugger": "🚫 Débogueur désactivé",
     }
 
     strings_it = {
@@ -442,8 +569,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Dovrai autenticarti utilizzando le credenziali"
             " impostate su lavHost</i>"
         ),
-        "disable_stats": "✅ Statistiche anonime abilitate",
-        "enable_stats": "🚫 La condivisione anonima è disabilitata",
         "disable_debugger": "✅ Debugger abilitato",
         "enable_debugger": "🚫 Debugger disabilitato",
     }
@@ -578,8 +703,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Sie müssen sich mit Ihren Zugangsdaten anmelden,"
             "beim Setzen von lavHost angegeben</i>"
         ),
-        "disable_stats": "✅ Anonyme Statistiken sind erlaubt",
-        "enable_stats": "🚫 Anonyme Statistiken deaktiviert",
         "disable_debugger": "✅ Debugger aktiviert",
         "enable_debugger": "🚫 Debugger deaktiviert",
     }
@@ -830,8 +953,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Hisob ma'lumotlaringizdan foydalanib tizimga"
             " kirishingiz kerak,lavHost</i>ni sozlashda ko'rsatilgan"
         ),
-        "disable_stats": "✅ Anonim statistika ruxsat berildi",
-        "enable_stats": "🚫 Anonim statistika o'chirilgan",
         "disable_debugger": "✅ Debugger yoqilgan",
         "enable_debugger": "🚫 Debugger o'chirilgan",
     }
@@ -965,8 +1086,6 @@ class HikkaSettingsMod(loader.Module):
             "debe iniciar sesión con sus credenciales al configurar lavHost"
             "Especificado</i>"
         ),
-        "disable_stats": "✅ Estadísticas anónimas permitidas",
-        "enable_stats": "🚫 Estadísticas anónimas deshabilitadas",
         "disable_debugger": "✅ Depurador habilitado",
         "enable_debugger": "🚫 Depurador deshabilitado",
     }
@@ -1093,8 +1212,6 @@ class HikkaSettingsMod(loader.Module):
             " lavHost</b>\n\n<i>💡 Сізге тіркелгі деректерін пайдаланып кіру қажет,"
             "lavHost</i> орнату кезінде көрсетілген"
         ),
-        "disable_stats": "✅ Анонимді статистикаға рұқсат етіледі",
-        "enable_stats": "🚫 Анонимді статистика өшірілген",
         "disable_debugger": "✅ Отладчик қосылған",
         "enable_debugger": "🚫 Түзету құралы өшірілген",
     }
@@ -1213,6 +1330,7 @@ class HikkaSettingsMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Удалить Hikka",
+        fr_doc="Désinstaller Hikka",
         it_doc="Disinstalla Hikka",
         de_doc="Hikka deinstallieren",
         tr_doc="Hikka'yı kaldır",
@@ -1236,6 +1354,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать активные смотрители",
+        fr_doc="Afficher les observateurs actifs",
         it_doc="Mostra i guardatori attivi",
         de_doc="Aktive Beobachter anzeigen",
         tr_doc="Etkin gözlemcileri göster",
@@ -1258,6 +1377,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="<module> - Включить/выключить смотрителя в текущем чате",
+        fr_doc="<module> - Activer / désactiver l'observateur dans ce chat",
         it_doc="<module> - Abilita/disabilita il guardatore nel gruppo corrente",
         de_doc="<module> - Aktiviere/Deaktiviere Beobachter in diesem Chat",
         tr_doc="<module> - Bu sohbetteki gözlemciyi etkinleştirin/devre dışı bırakın",
@@ -1322,6 +1442,14 @@ class HikkaSettingsMod(loader.Module):
             "[-p - только в лс]\n"
             "[-o - только исходящие]\n"
             "[-i - только входящие]"
+        ),
+        fr_doc=(
+            "<module> - Gérer les règles globales de l'observateur\n"
+            "Arguments:\n"
+            "[-c - uniquement dans les chats]\n"
+            "[-p - uniquement dans les messages privés]\n"
+            "[-o - uniquement sortant]\n"
+            "[-i - uniquement entrant]"
         ),
         it_doc=(
             "<module> - Gestisci le regole globali del guardatore\n"
@@ -1440,6 +1568,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="Включить NoNick для определенного пользователя",
+        fr_doc="Activer NoNick pour un utilisateur spécifique",
         it_doc="Abilita NoNick per un utente specifico",
         de_doc="Aktiviere NoNick für einen bestimmten Benutzer",
         tr_doc="Belirli bir kullanıcı için NoNick'i etkinleştirin",
@@ -1471,6 +1600,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="Включить NoNick для определенного чата",
+        fr_doc="Activer NoNick pour un chat spécifique",
         it_doc="Abilita NoNick per una chat specifica",
         de_doc="Aktiviere NoNick für einen bestimmten Chat",
         tr_doc="Belirli bir sohbet için NoNick'i etkinleştirin",
@@ -1511,6 +1641,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="Включить NoNick для определенной команды",
+        fr_doc="Activer NoNick pour une commande spécifique",
         it_doc="Abilita NoNick per un comando specifico",
         de_doc="Aktiviere NoNick für einen bestimmten Befehl",
         tr_doc="Belirli bir komut için NoNick'i etkinleştirin",
@@ -1554,6 +1685,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать список активных NoNick команд",
+        fr_doc="Afficher la liste des commandes NoNick actives",
         it_doc="Mostra la lista dei comandi NoNick attivi",
         de_doc="Zeige eine Liste der aktiven NoNick Befehle",
         tr_doc="Etkin NoNick komutlarının listesini göster",
@@ -1581,6 +1713,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать список активных NoNick пользователей",
+        fr_doc="Afficher la liste des utilisateurs NoNick actifs",
         it_doc="Mostra la lista degli utenti NoNick attivi",
         de_doc="Zeige eine Liste der aktiven NoNick Benutzer",
         tr_doc="Etkin NoNick kullanıcılarının listesini göster",
@@ -1627,6 +1760,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать список активных NoNick чатов",
+        fr_doc="Afficher la liste des chats NoNick actifs",
         it_doc="Mostra la lista dei gruppi NoNick attivi",
         de_doc="Zeige eine Liste der aktiven NoNick Chats",
         tr_doc="Etkin NoNick sohbetlerinin listesini göster",
@@ -1874,24 +2008,6 @@ class HikkaSettingsMod(loader.Module):
             [
                 (
                     {
-                        "text": self.strings("disable_stats"),
-                        "callback": self.inline__setting,
-                        "args": ("stats", False),
-                    }
-                    if self._db.get(main.__name__, "stats", True)
-                    else {
-                        "text": self.strings("enable_stats"),
-                        "callback": self.inline__setting,
-                        "args": (
-                            "stats",
-                            True,
-                        ),
-                    }
-                ),
-            ],
-            [
-                (
-                    {
                         "text": self.strings("disable_debugger"),
                         "callback": self.inline__setting,
                         "args": (lambda: self._db.set(log.__name__, "debugger", False)),
@@ -1922,6 +2038,7 @@ class HikkaSettingsMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Показать настройки",
+        fr_doc="Afficher les paramètres",
         it_doc="Mostra le impostazioni",
         de_doc="Zeige die Einstellungen",
         tr_doc="Ayarları göster",
@@ -1940,6 +2057,7 @@ class HikkaSettingsMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Открыть тоннель к веб-интерфейсу Hikka",
+        fr_doc="Ouvrir un tunnel vers l'interface web de Hikka",
         it_doc="Apri il tunnel al web interface di Hikka",
         de_doc="Öffne einen Tunnel zum Hikka Webinterface",
         tr_doc="Hikka Web Arayüzüne bir tünel aç",

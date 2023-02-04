@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -162,6 +162,76 @@ class TestMod(loader.Module):
         "send_anyway": "📤 Все равно отправить",
         "cancel": "🚫 Отмена",
         "logs_cleared": "🗑 <b>Логи очищены</b>",
+    }
+
+    strings_fr = {
+        "set_loglevel": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Spécifiez le niveau de"
+            " journalisation en nombre ou en chaîne</b>"
+        ),
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Vous n'avez pas de"
+            " journaux niveau</b> <code>{}</code><b>.</b>"
+        ),
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Journal Hikka niveau"
+            "</b> <code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Version: {}.{}.{}</b>{}"
+        ),
+        "debugging_enabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Mode développeur"
+            " activé pour le module</b> <code>{0}</code>\n<i>Allez dans le dossier"
+            " `debug_modules`, modifier le fichier `{0}.py`, et voir les modifications"
+            " en temps réel</i>"
+        ),
+        "debugging_disabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Mode développeur"
+            " désactivé</b>"
+        ),
+        "suspend_invalid_time": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Temps de suspension"
+            " invalide</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Le bot est suspendu"
+            " pour</b> <code>{}</code> <b>secondes</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Vitesse de réponse"
+            " Telegram:</b> <code>{}</code> <b>ms</b>\n<emoji"
+            " document_id=5445284980978621387>🚀</emoji> <b>Passé depuis la dernière"
+            " redémarrage: {}</b>"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>La vitesse de réponse"
+            " Telegram est en grande partie dépendante de la charge des serveurs"
+            " Telegram et d'autres facteurs externes et n'a aucun rapport avec les"
+            " paramètres du serveur, sur lequel l'usagerbot est installé</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Niveau de journaux</b> <code>{}</code> <b>peut contenir des"
+            " informations personnelles, soyez prudent</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Niveau de journaux</b> <code>{0}</code> <b>peut contenir des"
+            " informations personnelles, soyez prudent</b>\n<b>Ecris</b> <code>.logs"
+            " {0} force_insecure</code><b>, pour envoyer les journaux en ignorant"
+            " l'avertissement</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Choisissez le niveau de journaux</b>",
+        "_cmd_doc_dump": "Afficher les informations du message",
+        "_cmd_doc_logs": (
+            "<niveau> - Envoyer le fichier journal. Les niveaux inférieurs à WARNING"
+            " peuvent contenir des informations personnelles."
+        ),
+        "_cmd_doc_suspend": (
+            "<temps> - Mettre en pause l'utilisateurbot pendant un certain temps"
+        ),
+        "_cmd_doc_ping": "Vérifie la vitesse de réponse de l'utilisateurbot",
+        "_cls_doc": "Opérations liées à l'auto-test",
+        "send_anyway": "📤 Envoyer quand même",
+        "cancel": "🚫 Annuler",
+        "logs_cleared": "🗑 <b>Les journaux ont été nettoyés</b>",
     }
 
     strings_it = {
@@ -557,6 +627,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="Ответь на сообщение, чтобы показать его дамп",
+        fr_doc="Répondre au message pour montrer sa décharge",
         it_doc="Rispondi al messaggio per mostrare il suo dump",
         de_doc="Antworten Sie auf eine Nachricht, um ihren Dump anzuzeigen",
         tr_doc="Dökümünü göstermek için bir iletiyi yanıtlayın",
@@ -578,6 +649,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="Очистить логи",
+        fr_doc="Effacer les journaux",
         it_doc="Cancella i log",
         de_doc="Logs löschen",
         tr_doc="Günlükleri temizle",
@@ -686,6 +758,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="<уровень> - Показать логи",
+        fr_doc="<niveau> - Afficher les journaux",
         it_doc="<livello> - Mostra i log",
         de_doc="<Level> - Zeige Logs",
         uz_doc="<daraja> - Loglarni ko'rsatish",
@@ -838,6 +911,7 @@ class TestMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="<время> - Заморозить бота на N секунд",
+        fr_doc="<temps> - Congeler le bot pendant N secondes",
         it_doc="<tempo> - Congela il bot per N secondi",
         de_doc="<Zeit> - Stoppe den Bot für N Sekunden",
         tr_doc="<süre> - Botu N saniye boyunca durdur",
@@ -859,6 +933,7 @@ class TestMod(loader.Module):
 
     @loader.command(
         ru_doc="Проверить скорость отклика юзербота",
+        fr_doc="Vérifiez la vitesse de réponse du bot utilisateur",
         it_doc="Controlla la velocità di risposta del userbot",
         de_doc="Überprüfe die Antwortgeschwindigkeit des Userbots",
         tr_doc="Kullanıcı botunun yanıt hızını kontrol edin",

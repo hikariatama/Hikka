@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -58,6 +58,26 @@ class HikkaBackupMod(loader.Module):
         ),
         "invalid_args": (
             "🚫 <b>Укажи правильную периодичность в часах, или `0` для отключения</b>"
+        ),
+    }
+
+    strings_fr = {
+        "period": (
+            "⌚️ <b>Unité «ALPHA»</b> crée des sauvegardes régulières. Ces paramètres"
+            " peuvent être modifiés ultérieurement.\n\nVeuillez choisir la périodicité"
+            " de sauvegarde"
+        ),
+        "saved": (
+            "✅ La périodicité a été enregistrée! Il peut être modifié en utilisant"
+            " .set_backup_period"
+        ),
+        "never": (
+            "✅ Je ne vais pas faire des sauvegardes automatiques. Peut être annulé"
+            " en utilisant .set_backup_period"
+        ),
+        "invalid_args": (
+            "🚫 <b>Indiquez la périodicité correcte en heures, ou `0` pour"
+            " désactiver</b>"
         ),
     }
 
@@ -252,6 +272,7 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command(
         ru_doc="<время в часах> - Установить частоту бэкапов",
+        fr_doc="<heures> - Définir la fréquence des sauvegardes",
         it_doc="<tempo in ore> - Imposta la frequenza dei backup",
         de_doc="<Stunden> - Setze die Backup-Frequenz",
         tr_doc="<saat cinsinden zaman> - Yedekleme periyodunu ayarla",

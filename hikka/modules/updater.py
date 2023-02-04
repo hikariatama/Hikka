@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -134,6 +134,62 @@ class UpdaterMod(loader.Module):
         "lavhost_update": (
             "<emoji document_id=5469986291380657759>✌️</emoji> <b>Твой {}"
             " обновляется...</b>"
+        ),
+    }
+
+    strings_fr = {
+        "source": (
+            "<emoji document_id=5456255401194429832>📖</emoji> <b>Le code source peut"
+            " être lu</b> <a href='{}'>ici</a>"
+        ),
+        "restarting_caption": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Votre {}"
+            " se redémarre...</b>"
+        ),
+        "downloading": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Téléchargement"
+            " des mises à jour...</b>"
+        ),
+        "installing": (
+            "<emoji document_id=5328274090262275771>🕗</emoji> <b>Installation"
+            " des mises à jour...</b>"
+        ),
+        "success": (
+            "<emoji document_id=5326015457155620929>⏱</emoji> <b>Redémarrage réussi!"
+            " {}</b>\n<i>Mais les modules sont toujours en cours de"
+            " chargement...</i>\n<i>Redémarrer a pris {} s</i>"
+        ),
+        "full_success": (
+            "<emoji document_id=5301096082674032190>👍</emoji> <b>L'utilisateur est"
+            " totalement chargé! {}</b>\n<i>Redémarrer a pris {} s</i>"
+        ),
+        "secure_boot_complete": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Le démarrage sécurisé"
+            " est terminé! {}</b>\n<i>Redémarrer a pris {} s</i>"
+        ),
+        "origin_cfg_doc": (
+            "Le lien à partir duquel les mises à jour seront téléchargées"
+        ),
+        "btn_restart": "🔄 Redémarrer",
+        "btn_update": "🧭 Mettre à jour",
+        "restart_confirm": "❓ <b>Êtes-vous sûr de vouloir redémarrer?</b>",
+        "secure_boot_confirm": (
+            "❓ <b>Êtes-vous sûr de vouloir redémarrer en mode démarrage sécurisé?</b>"
+        ),
+        "update_confirm": (
+            "❓ <b>Êtes-vous sûr de vouloir"
+            " mettre à jour?</b>\n\n<a"
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a> ⤑ <a'
+            ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>'
+        ),
+        "no_update": (
+            "🚸 <b>Vous avez la dernière version. Mettez-vous à jour de force?</b>"
+        ),
+        "cancel": "🚫 Annuler",
+        "_cls_doc": "Mettre à jour l'utilisateur",
+        "lavhost_update": (
+            "<emoji document_id=5469986291380657759>✌️</emoji> <b>Votre {}"
+            " est en cours de mise à jour ...</b>"
         ),
     }
 
@@ -517,6 +573,7 @@ class UpdaterMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Перезагружает юзербот",
+        fr_doc="Redémarre le bot",
         it_doc="Riavvia il bot",
         de_doc="Startet den Userbot neu",
         tr_doc="Kullanıcı botunu yeniden başlatır",
@@ -664,6 +721,7 @@ class UpdaterMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Скачивает обновления юзербота",
+        fr_doc="Télécharge les mises à jour du bot",
         it_doc="Scarica gli aggiornamenti del bot",
         de_doc="Lädt Updates für den Userbot herunter",
         tr_doc="Userbot güncellemelerini indirir",
@@ -752,6 +810,7 @@ class UpdaterMod(loader.Module):
     @loader.unrestricted
     @loader.command(
         ru_doc="Показать ссылку на исходный код проекта",
+        fr_doc="Affiche le lien vers le code source du projet",
         it_doc="Mostra il link al codice sorgente del progetto",
         de_doc="Zeigt den Link zum Quellcode des Projekts an",
         tr_doc="Proje kaynak kodu bağlantısını gösterir",

@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -93,10 +93,10 @@ from telethon.tl.types import (
     User,
 )
 
+from ._internal import fw_protect
 from .inline.types import InlineCall, InlineMessage
 from .tl_cache import CustomTelegramClient
 from .types import HikkaReplyMarkup, ListLike, Module
-from ._internal import fw_protect
 
 FormattingEntity = typing.Union[
     MessageEntityUnknown,
@@ -914,9 +914,6 @@ def get_named_platform() -> str:
     except Exception:
         pass
 
-    if "MIYAHOST" in os.environ:
-        return "🎃 MiyaHost"
-
     if "GOORM" in os.environ:
         return "🦾 GoormIDE"
 
@@ -953,9 +950,6 @@ def get_platform_emoji() -> str:
 
     if "LAVHOST" in os.environ:
         return BASE.format(5301078610747074753)
-
-    if "MIYAHOST" in os.environ:
-        return BASE.format(5280938237785808014)
 
     if "GOORM" in os.environ:
         return BASE.format(5298947740032573902)

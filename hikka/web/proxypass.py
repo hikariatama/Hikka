@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -6,6 +6,7 @@
 
 import asyncio
 import logging
+import os
 import re
 import typing
 
@@ -76,6 +77,13 @@ class ProxyPasser:
                     return self._tunnel_url
                 else:
                     self.kill()
+
+            if "DOCKER" in os.environ:
+                # We're in a Docker container, so we can't use ssh
+                # Also, the concept of Docker is to keep
+                # everything isolated, so we can't proxy-pass to
+                # open web.
+                return None
 
             logger.debug("Starting proxy pass shell for port %d", port)
             self._sproc = await asyncio.create_subprocess_shell(

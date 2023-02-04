@@ -1,6 +1,6 @@
 """Loads and registers modules"""
 
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -431,6 +431,210 @@ class LoaderMod(loader.Module):
         "repo_deleted": (
             "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b>"
             " <code>{}</code> <b>удален</b>"
+        ),
+    }
+
+    strings_fr = {
+        "repo_config_doc": "Lien de téléchargement des modules",
+        "add_repo_config_doc": "Dépôts supplémentaires",
+        "avail_header": "🎢 <b>Modules officiels du dépôt</b>",
+        "select_preset": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Sélectionnez un"
+            " préréglage</b>"
+        ),
+        "no_preset": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Préréglage introuvable"
+            "</b>"
+        ),
+        "preset_loaded": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Préréglage chargé</b>"
+        ),
+        "no_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module non disponible"
+            " dans le dépôt.</b>"
+        ),
+        "no_file": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Fichier"
+            " introuvable</b>"
+        ),
+        "provide_module": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Indiquez le module à"
+            " charger</b>"
+        ),
+        "bad_unicode": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Encodage de module"
+            " invalide</b>"
+        ),
+        "load_failed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le chargement a"
+            " échoué. Vérifiez les journaux.</b>"
+        ),
+        "loaded": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Module</b>"
+            " <code>{}</code>{} <b>chargé {}</b>{}{}{}{}{}{}"
+        ),
+        "no_class": "<b>Qu'est-ce qu'il faut décharger?</b>",
+        "unloaded": "{} <b>Module {} déchargé.</b>",
+        "not_unloaded": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le module n'a pas"
+            " été déchargé.</b>"
+        ),
+        "requirements_failed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Échec de"
+            " l'installation des dépendances</b>"
+        ),
+        "requirements_failed_termux": (
+            "<emoji document_id=5407025283456835913>🕶</emoji> <b>Erreur d'installation"
+            " des dépendances</b>\n<b>Cela arrive souvent parce que Termux ne"
+            " prend pas en charge de nombreuses bibliothèques. N'indiquez pas cela"
+            " comme une erreur, car cela ne peut pas être corrigé.</b>"
+        ),
+        "requirements_installing": (
+            "<emoji document_id=5328311576736833844>🚀</emoji> <b>Installation"
+            " des dépendances:\n\n{}</b>"
+        ),
+        "requirements_restart": (
+            "<emoji document_id=5875145601682771643>🚀</emoji> <b>Les dépendances sont"
+            " installées, mais un redémarrage est nécessaire pour les appliquer</b>"
+            " <code>{}</code>"
+        ),
+        "all_modules_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Modules supprimés</b>"
+        ),
+        "undoc": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> Aucune description"
+        ),
+        "ihandler": (
+            "\n<emoji document_id=5372981976804366741>🤖</emoji> <code>{}</code> {}"
+        ),
+        "version_incompatible": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module"
+            " nécessite Hikka version {}+\nMettez à jour avec</b> <code>.update</code>"
+        ),
+        "ffmpeg_required": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module"
+            " nécessite FFMPEG, qui n'est pas installé</b>"
+        ),
+        "developer": (
+            "\n\n<emoji document_id=5875452644599795072>🫶</emoji> <b>Développeur:"
+            "</b> {}"
+        ),
+        "depends_from": (
+            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>Dépendances:"
+            "</b> \n{}"
+        ),
+        "by": "by",
+        "module_fs": (
+            "💿 <b>Voulez-vous sauvegarder le module sur le disque dur pour qu'il ne"
+            " soit pas déchargé lors du redémarrage?</b>"
+        ),
+        "save": "💿 Enregistrer",
+        "no_save": "🚫 Ne pas enregistrer",
+        "save_for_all": "💽 Toujours enregistrer",
+        "never_save": "🚫 Ne jamais enregistrer",
+        "will_save_fs": (
+            "💽 Maintenant tous les modules téléchargés à partir d'un fichier seront"
+            " sauvegardés sur le disque"
+        ),
+        "inline_init_failed": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module a besoin de"
+            " HikkaInline, mais l'initialisation du gestionnaire d'inline a échoué</b>"
+            "\n<i>Essayez de supprimer un ancien bot dans @BotFather et de redémarrer"
+            " l'usagerbot</i>"
+        ),
+        "_cmd_doc_dlmod": "Télécharge et installe le module à partir du référentiel",
+        "_cmd_doc_dlpreset": "Télécharge et installe un ensemble de modules spécifique",
+        "_cmd_doc_loadmod": "Télécharge et installe le module à partir d'un fichier",
+        "_cmd_doc_unloadmod": "Décharge (supprime) le module",
+        "_cmd_doc_clearmodules": "Décharge tous les modules installés",
+        "_cls_doc": "Charge les modules",
+        "share_link_doc": (
+            "Spécifiez le lien vers le module après avoir téléchargé avec .dlmod"
+        ),
+        "modlink": (
+            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Lien:"
+            "</b> <code>{}</code>"
+        ),
+        "blob_link": (
+            "\n\n<emoji document_id=5312383351217201533>⚠️</emoji> <b>Ne utilisé `blob`"
+            " liens pour télécharger des modules. Il est préférable de télécharger à"
+            " partir de `raw`</b>"
+        ),
+        "raw_link": (
+            "\n<emoji document_id=6037284117505116849>🌐</emoji> <b>lien:"
+            "</b> <code>{}</code>"
+        ),
+        "suggest_subscribe": (
+            "\n\n⭐️ <b>Ce module fait {}. Abonnez-vous à lui pour le soutenir?</b>"
+        ),
+        "subscribe": "💬 S'abonner",
+        "no_subscribe": "🚫 Ne pas s'abonner",
+        "subscribed": "💬 Je m'abonne!",
+        "unsubscribed": "🚫 Je ne vous proposerai plus de m'abonner à ce canal",
+        "confirm_clearmodules": (
+            "⚠️ <b>Êtes-vous sûr de vouloir décharger tous les modules?</b>"
+        ),
+        "clearmodules": "🗑 Décharger les modules",
+        "cancel": "🚫 Annuler",
+        "overwrite_module": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module a tenté"
+            " d'écraser le module intégré (</b><code>{}</code><b>)</b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Ce n'est pas une erreur,"
+            " mais une mesure de sécurité nécessaire pour empêcher la substitution des"
+            " modules intégrés avec n'importe quel bazar. Ne signalez pas cela à la"
+            " chaîne support</i>"
+        ),
+        "overwrite_command": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ce module a essayé"
+            " de remplacer une commande intégrée"
+            " (</b><code>{}</code><b>)</b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Ce n'est pas une"
+            " erreur, mais une mesure de sécurité requise pour éviter de remplacer"
+            " les commandes intégrées par du spam. Ne le signale pas au support"
+            " chat</i>"
+        ),
+        "unload_core": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Vous ne pouvez pas"
+            " décharger le module intégré</b> <code>{}</code><b></b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Ce n'est pas une"
+            " erreur, mais une mesure de sécurité requise pour éviter de remplacer"
+            " les modules intégrés par du spam. Ne le signale pas au support"
+            " chat</i>"
+        ),
+        "cannot_unload_lib": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Vous ne pouvez pas"
+            " décharger une bibliothèque</b>"
+        ),
+        "wait_channel_approve": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Le module</b>"
+            " <code>{}</code> <b>demande à rejoindre le canal <a"
+            ' href="https://t.me/{}">{}</a>.\n\n<b><emoji'
+            ' document_id="5467666648263564704">❓</emoji> Raison: {}</b>\n\n<i>En'
+            ' attente de <a href="https://t.me/{}">confirmation</a>...</i>'
+        ),
+        "installing": (
+            "<emoji document_id=5325792861885570739>🕔</emoji> <b>Installation du module"
+            "</b> <code>{}</code><b>...</b>"
+        ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le dépôt</b>"
+            " <code>{}</code> <b>est déjà ajouté</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Le dépôt</b>"
+            " <code>{}</code> <b>ajouté</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez spécifier"
+            " le dépôt à ajouter</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le dépôt</b>"
+            " <code>{}</code> <b>n'est pas ajouté</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Le dépôt</b>"
+            " <code>{}</code> <b>supprimé</b>"
         ),
     }
 
@@ -1623,8 +1827,6 @@ class LoaderMod(loader.Module):
     _links_cache = {}
 
     def __init__(self):
-        self._pending_stats = []
-
         self._storage = RemoteStorage()
 
         self.config = loader.ModuleConfig(
@@ -1735,6 +1937,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Загрузить модуль из официального репозитория",
+        fr_doc="Charge un module depuis le dépôt officiel",
         it_doc="Carica un modulo dal repository ufficiale",
         de_doc="Lade ein Modul aus dem offiziellen Repository",
         tr_doc="Resmi depodan bir modül yükler",
@@ -1783,6 +1986,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Установить пресет модулей",
+        fr_doc="Installe un preset de modules",
         it_doc="Installa un preset di moduli",
         de_doc="Installiere ein Modul-Preset",
         tr_doc="Modül önbelleğini yükle",
@@ -1954,6 +2158,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Загрузить модуль из файла",
+        fr_doc="Charge un module depuis un fichier",
         it_doc="Carica un modulo da un file",
         de_doc="Lade Modul aus Datei",
         tr_doc="Dosyadan modül yükle",
@@ -2039,39 +2244,6 @@ class LoaderMod(loader.Module):
                 save_fs=self._db.get(main.__name__, "permanent_modules_fs", False)
                 and not self._db.get(main.__name__, "disable_modules_fs", False),
             )
-
-    @loader.loop(interval=120, autostart=True)
-    async def _stats_sender(self):
-        if not self._pending_stats or not self._db.get(main.__name__, "stats", True):
-            return
-
-        try:
-            if not self.get("token"):
-                self.set("token", (await self._token_msg.click(0)).message)
-
-            res = await utils.run_sync(
-                requests.post,
-                "https://heta.hikariatama.ru/stats",
-                data={"urls": ",".join(self._pending_stats[:50])},
-                headers={"X-Hikka-Token": self.get("token")},
-            )
-
-            if res.status_code == 403:
-                self.set("token", None)
-
-            if res.status_code in range(200, 207):
-                self._pending_stats = (
-                    self._pending_stats[50:] if len(self._pending_stats) > 50 else []
-                )
-
-            res.raise_for_status()
-        except Exception:
-            logger.debug("Failed to send stats", exc_info=True)
-
-    async def _send_stats(self, url: str, _=None):
-        """Send anonymous stats to Hikka"""
-        if self._db.get(main.__name__, "stats", True):
-            self._pending_stats += [url]
 
     async def load_module(
         self,
@@ -2455,17 +2627,6 @@ class LoaderMod(loader.Module):
                     None,
                 )
 
-                with contextlib.suppress(Exception):
-                    if (
-                        not any(
-                            line.replace(" ", "") == "#scope:no_stats"
-                            for line in doc.splitlines()
-                        )
-                        and url is not None
-                        and utils.check_url(url)
-                    ):
-                        await self._send_stats(url)
-
                 if is_dragon:
                     instance.name = (
                         "Dragon" + notifier.modname[0].upper() + notifier.modname[1:]
@@ -2666,6 +2827,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Выгрузить модуль",
+        fr_doc="Décharger le module",
         it_doc="Scarica il modulo",
         de_doc="Entlädt ein Modul",
         tr_doc="Bir modülü kaldırır",
@@ -2729,6 +2891,7 @@ class LoaderMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Удалить все модули",
+        fr_doc="Supprimer tous les modules",
         it_doc="Rimuovi tutti i moduli",
         de_doc="Entfernt alle Module",
         tr_doc="Tüm modülleri kaldırır",
@@ -2755,6 +2918,7 @@ class LoaderMod(loader.Module):
 
     @loader.command(
         ru_doc="Добавить дополнительный репозиторий",
+        fr_doc="Ajouter un dépôt supplémentaire",
         it_doc="Aggiungi un repository aggiuntivo",
         de_doc="Fügt ein zusätzliches Repository hinzu",
         tr_doc="Ek bir depo ekler",
@@ -2779,6 +2943,7 @@ class LoaderMod(loader.Module):
 
     @loader.command(
         ru_doc="Удалить дополнительный репозиторий",
+        fr_doc="Supprimer un dépôt supplémentaire",
         it_doc="Rimuovi un repository aggiuntivo",
         de_doc="Entfernt ein zusätzliches Repository",
         tr_doc="Ek bir depoyu kaldırır",

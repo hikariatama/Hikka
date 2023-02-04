@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -161,6 +161,66 @@ class APIRatelimiterMod(loader.Module):
         "debugger_disabled": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Веб-отладчик отключен,"
             " ссылка недоступна</b>"
+        ),
+    }
+
+    strings_fr = {
+        "warning": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            " <b>ATTENTION!</b>\n\nLe compte a dépassé les limites de requêtes"
+            " spécifiées dans la configuration. En vue de prévenir le flood de"
+            " l'API Telegram, le userbot a été <b>complètement gelé</b> pendant {}"
+            " secondes. Des informations supplémentaires sont ajoutées dans le"
+            " fichier ci-dessous.\n\nIl est recommandé de contacter le groupe"
+            " <code>{prefix}support</code> pour obtenir de l'aide!\n\nSi vous"
+            " pensez que le comportement du userbot a été planifié, attendez"
+            " simplement que le minuteur se termine et, la prochaine fois que"
+            " vous prévoyez d'exécuter une opération aussi coûteuse en ressources,"
+            " utilisez <code>{prefix}suspend_api_protect</code> &lt;temps en"
+            " secondes&gt;"
+        ),
+        "args_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Arguments"
+            " invalides</b>"
+        ),
+        "suspended_for": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection API"
+            " désactivée pendant {} secondes</b>"
+        ),
+        "on": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection activée</b>"
+        ),
+        "off": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection"
+            " désactivée</b>"
+        ),
+        "u_sure": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Êtes-vous sûr?</b>"
+        ),
+        "_cfg_time_sample": (
+            "Intervalle de temps sur lequel le nombre de demandes sera compté"
+        ),
+        "_cfg_threshold": "Seuil de demandes auquel la protection sera déclenchée",
+        "_cfg_local_floodwait": (
+            "Geler le userbot pendant cette durée de secondes si la limite de"
+            " requêtes est dépassée"
+        ),
+        "_cfg_forbidden_methods": (
+            "Interdire l'exécution des méthodes spécifiées dans tous les modules"
+            " externes"
+        ),
+        "btn_no": "🚫 Non",
+        "btn_yes": "✅ Oui",
+        "web_pin": (
+            "🔓 <b>Cliquez sur le bouton ci-dessous pour afficher le code PIN de"
+            " débogage de Werkzeug. Ne le donnez pas à personne.</b>"
+        ),
+        "web_pin_btn": "🐞 Afficher le code PIN de Werkzeug",
+        "proxied_url": "🌐 Lien de proxification",
+        "local_url": "🏠 Lien local",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le débogueur Web est"
+            " désactivé, le lien n'est pas disponible</b>"
         ),
     }
 
@@ -590,6 +650,7 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command(
         ru_doc="<время в секундах> - Заморозить защиту API на N секунд",
+        fr_doc="<secondes> - Congeler la protection de l'API pendant N secondes",
         it_doc="<tempo in secondi> - Congela la protezione API per N secondi",
         de_doc="<Sekunden> - API-Schutz für N Sekunden einfrieren",
         tr_doc="<saniye> - API korumasını N saniye dondur",
@@ -610,6 +671,7 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command(
         ru_doc="Включить/выключить защиту API",
+        fr_doc="Activer / désactiver la protection de l'API",
         it_doc="Attiva/disattiva la protezione API",
         de_doc="API-Schutz einschalten / ausschalten",
         tr_doc="API korumasını aç / kapat",
@@ -637,6 +699,7 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command(
         ru_doc="Показать PIN Werkzeug",
+        fr_doc="Afficher le PIN Werkzeug",
         it_doc="Mostra il PIN Werkzeug",
         de_doc="PIN-Werkzeug anzeigen",
         tr_doc="PIN aracını göster",

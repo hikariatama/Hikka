@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -40,6 +40,20 @@ class UpdateNotifierMod(loader.Module):
         "latest_disabled": "Уведомления о последнем обновлении были отключены",
         "update": "🔄 Обновить",
         "ignore": "🚫 Игнорировать",
+    }
+
+    strings_fr = {
+        "update_required": (
+            "🌘 <b>Mise à jour Hikka disponible!</b>\n\nNouvelle version de Hikka"
+            " publiée.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
+        ),
+        "more": "\n<i><b>🎥 Et {} de plus...</b></i>",
+        "_cfg_doc_disable_notifications": "Désactiver les notifications de mise à jour",
+        "latest_disabled": (
+            "Les notifications sur la dernière mise à jour ont été désactivées"
+        ),
+        "update": "🔄 Mettre à jour",
+        "ignore": "🚫 Ignorer",
     }
 
     strings_it = {

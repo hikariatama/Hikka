@@ -1,4 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2022
+# ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
@@ -53,6 +53,21 @@ class PythonMod(loader.Module):
             " document_id=5312526098750252863>🚫</emoji> <b>Ошибка:</b>\n{}"
         ),
         "_cls_doc": "Выполняет Python код",
+    }
+
+    strings_fr = {
+        "eval": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Code:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=5197688912457245639>✅</emoji><b>"
+            " Resultat:</b>\n<code>{}</code>"
+        ),
+        "err": (
+            "<emoji document_id=4985626654563894116>💻</emoji><b>"
+            " Code:</b>\n<code>{}</code>\n\n<emoji"
+            " document_id=5312526098750252863>🚫</emoji> <b>Erreur:</b>\n{}"
+        ),
+        "_cls_doc": "Execute Python code",
     }
 
     strings_it = {
@@ -163,6 +178,7 @@ class PythonMod(loader.Module):
     @loader.owner
     @loader.command(
         ru_doc="Выполняет Python код",
+        fr_doc="Évalue du code Python",
         it_doc="Esegue codice Python",
         de_doc="Führt Python Code aus",
         tr_doc="Python kodu çalıştırır",
