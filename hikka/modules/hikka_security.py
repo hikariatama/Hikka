@@ -1870,6 +1870,7 @@ class HikkaSecurityMod(loader.Module):
         else:
             await utils.answer(message, self.strings(f"no_{group}"))
 
+    @loader.owner
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `sudo`",
         fr_doc="<utilisateur> - Ajouter un utilisateur au groupe `sudo`",
@@ -1884,6 +1885,7 @@ class HikkaSecurityMod(loader.Module):
         """<user> - Add user to `sudo`"""
         await self._add_to_group(message, "sudo")
 
+    @loader.owner
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `owner`",
         fr_doc="<utilisateur> - Ajouter un utilisateur au groupe `owner`",
@@ -1898,6 +1900,7 @@ class HikkaSecurityMod(loader.Module):
         """<user> - Add user to `owner`"""
         await self._add_to_group(message, "owner")
 
+    @loader.owner
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `support`",
         fr_doc="<utilisateur> - Ajouter un utilisateur au groupe `support`",
@@ -1912,6 +1915,7 @@ class HikkaSecurityMod(loader.Module):
         """<user> - Add user to `support`"""
         await self._add_to_group(message, "support")
 
+    @loader.owner
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `sudo`",
         fr_doc="<utilisateur> - Supprimer un utilisateur du groupe `sudo`",
@@ -1926,6 +1930,7 @@ class HikkaSecurityMod(loader.Module):
         """<user> - Remove user from `sudo`"""
         await self._remove_from_group(message, "sudo")
 
+    @loader.owner
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `owner`",
         fr_doc="<utilisateur> - Supprimer un utilisateur du groupe `owner`",
@@ -1940,6 +1945,7 @@ class HikkaSecurityMod(loader.Module):
         """<user> - Remove user from `owner`"""
         await self._remove_from_group(message, "owner")
 
+    @loader.owner
     @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `support`",
         fr_doc="<utilisateur> - Supprimer un utilisateur du groupe `support`",
