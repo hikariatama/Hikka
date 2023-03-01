@@ -27,9 +27,9 @@ from aiogram.types import (
     InlineQueryResultVideo,
     InputTextMessageContent,
 )
-from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
-from telethon.extensions.html import CUSTOM_EMOJIS
-from telethon.tl.types import Message
+from hikkatl.errors.rpcerrorlist import ChatSendInlineForbiddenError
+from hikkatl.extensions.html import CUSTOM_EMOJIS
+from hikkatl.tl.types import Message
 
 from .. import main, utils
 from ..types import HikkaReplyMarkup
@@ -226,8 +226,10 @@ class Form(InlineUnit):
             or not all(isinstance(item, float) for item in location)
         ):
             logger.error(
-                "Invalid type for `location`. Expected `list` or `tuple` with 2 `float`"
-                " items, got `%s`",
+                (
+                    "Invalid type for `location`. Expected `list` or `tuple` with 2"
+                    " `float` items, got `%s`"
+                ),
                 type(location),
             )
             return False
@@ -346,9 +348,9 @@ class Form(InlineUnit):
             q = await self._client.inline_query(self.bot_username, unit_id)
             m = await q[0].click(
                 utils.get_chat_id(message) if isinstance(message, Message) else message,
-                reply_to=message.reply_to_msg_id
-                if isinstance(message, Message)
-                else None,
+                reply_to=(
+                    message.reply_to_msg_id if isinstance(message, Message) else None
+                ),
             )
         except ChatSendInlineForbiddenError:
             await answer(
@@ -424,10 +426,13 @@ class Form(InlineUnit):
                                     .format(random.choice(VERIFICATION_EMOJIES))
                                 ),
                                 input_message_content=InputTextMessageContent(
-                                    "🔄 <b>Transferring value to userbot...</b>\n"
-                                    "<i>This message will be deleted automatically</i>"
-                                    if inline_query.from_user.id == self._me
-                                    else "🔄 <b>Transferring value to userbot...</b>",
+                                    (
+                                        "🔄 <b>Transferring value to"
+                                        " userbot...</b>\n<i>This message will be"
+                                        " deleted automatically</i>"
+                                        if inline_query.from_user.id == self._me
+                                        else "🔄 <b>Transferring value to userbot...</b>"
+                                    ),
                                     "HTML",
                                     disable_web_page_preview=True,
                                 ),

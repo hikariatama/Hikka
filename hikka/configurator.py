@@ -20,80 +20,34 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-import locale
-import os
 import string
-import sys
-import typing
-
-from dialog import Dialog, ExecutableNotFound
-
-from . import utils
 
 
-def _safe_input(*args, **kwargs):
-    """Try to invoke input(*), print an error message if an EOFError or OSError occurs)
-    """
-    try:
-        return input(*args, **kwargs)
-    except (EOFError, OSError):
-        raise
-    except KeyboardInterrupt:
-        print()
-        return None
-
-
-class TDialog:
-    """Reimplementation of dialog.Dialog without external dependencies"""
-
-    def inputbox(self, query: str) -> typing.Tuple[bool, str]:
-        """Get a text input of the query"""
-        print(query)
-        print()
-        inp = _safe_input("Please enter your response, or type nothing to cancel: ")
-        return (False, "Cancelled") if not inp else (True, inp)
-
-    def msgbox(self, msg: str) -> bool:
-        """Print some info"""
-        print(msg)
-        return True
-
-
-TITLE = ""
-
-if sys.stdout.isatty():
-    try:
-        DIALOG = Dialog(dialog="dialog", autowidgetsize=True)
-        locale.setlocale(locale.LC_ALL, "")
-    except (ExecutableNotFound, locale.Error):
-        # Fall back to a terminal based configurator.
-        DIALOG = TDialog()
-else:
-    DIALOG = TDialog()
-
-
-def api_config(data_root: str):
+def api_config():
     """Request API config from user and set"""
-    code, hash_value = DIALOG.inputbox("Enter your API Hash")
-    if not code:
-        return
+    from . import main
 
-    if len(hash_value) != 32 or any(it not in string.hexdigits for it in hash_value):
-        DIALOG.msgbox("Invalid hash")
-        return
+    while api_hash := input("\033[0;96mEnter API hash: \033[0m"):
+        if len(api_hash) == 32 and all(
+            symbol in string.hexdigits for symbol in api_hash
+        ):
+            break
 
-    code, id_value = DIALOG.inputbox("Enter your API ID")
+        print("\033[0;91mInvalid hash\033[0m")
 
-    if not id_value or any(it not in string.digits for it in id_value):
-        DIALOG.msgbox("Invalid ID")
-        return
+    if not api_hash:
+        print("\033[0;91mCancelled\033[0m")
+        exit(0)
 
-    with open(
-        os.path.join(
-            data_root or os.path.dirname(utils.get_base_dir()), "api_token.txt"
-        ),
-        "w",
-    ) as file:
-        file.write(id_value + "\n" + hash_value)
+    while api_id := input("\033[0;96mEnter API ID: \033[0m"):
+        if api_id.isdigit():
+            break
 
-    DIALOG.msgbox("API Token and ID set.")
+        print("\033[0;91mInvalid ID\033[0m")
+
+    if not api_id:
+        print("\033[0;91mCancelled\033[0m")
+        exit(0)
+
+    (main.BASE_PATH / "api_token.txt").write_text(api_id + "\n" + api_hash)
+    print("\033[0;92mAPI config saved\033[0m")

@@ -19,19 +19,19 @@ import re
 import sys
 import typing
 from functools import wraps
+from pathlib import Path
 from types import FunctionType, ModuleType
 from uuid import uuid4
 
-from telethon.tl.tlobject import TLObject
+from hikkatl.tl.tlobject import TLObject
 
-from . import security, utils, validators, version  # skipcq
+from . import security, utils, validators
 from .database import Database
 from .inline.core import InlineManager
 from .translations import Strings, Translator
-from .types import ConfigValue  # skipcq
-from .types import ModuleConfig  # skipcq
 from .types import (
     Command,
+    ConfigValue,
     CoreOverwriteError,
     CoreUnloadError,
     DragonModule,
@@ -41,13 +41,60 @@ from .types import (
     LibraryConfig,
     LoadError,
     Module,
+    ModuleConfig,
     SelfSuspend,
     SelfUnload,
     StopLoop,
     StringLoader,
+    get_callback_handlers,
     get_commands,
     get_inline_handlers,
 )
+
+__all__ = [
+    "Modules",
+    "InfiniteLoop",
+    "Command",
+    "CoreOverwriteError",
+    "CoreUnloadError",
+    "DragonModule",
+    "InlineMessage",
+    "JSONSerializable",
+    "Library",
+    "LibraryConfig",
+    "LoadError",
+    "Module",
+    "SelfSuspend",
+    "SelfUnload",
+    "StopLoop",
+    "StringLoader",
+    "get_commands",
+    "get_inline_handlers",
+    "get_callback_handlers",
+    "validators",
+    "Database",
+    "InlineManager",
+    "Strings",
+    "Translator",
+    "ConfigValue",
+    "ModuleConfig",
+    "owner",
+    "sudo",
+    "support",
+    "group_owner",
+    "group_admin_add_admins",
+    "group_admin_change_info",
+    "group_admin_ban_users",
+    "group_admin_delete_messages",
+    "group_admin_pin_messages",
+    "group_admin_invite_users",
+    "group_admin",
+    "group_member",
+    "pm",
+    "unrestricted",
+    "inline_everyone",
+    "loop",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -210,9 +257,8 @@ BASE_DIR = (
 )
 
 LOADED_MODULES_DIR = os.path.join(BASE_DIR, "loaded_modules")
-
-if not os.path.isdir(LOADED_MODULES_DIR):
-    os.mkdir(LOADED_MODULES_DIR, mode=0o755)
+LOADED_MODULES_PATH = Path(LOADED_MODULES_DIR)
+LOADED_MODULES_PATH.mkdir(parents=True, exist_ok=True)
 
 
 def translatable_docstring(cls):
@@ -274,8 +320,7 @@ tds = translatable_docstring  # Shorter name for modules to use
 
 
 def ratelimit(func: Command) -> Command:
-    """Decorator that causes ratelimiting for this command to be enforced more strictly
-    """
+    """Decorator that causes ratelimiting for this command to be enforced more strictly"""
     func.ratelimit = True
     return func
 
@@ -412,7 +457,7 @@ class Modules:
 
     def __init__(
         self,
-        client: "CustomTelegramClient",  # type: ignore
+        client: "CustomTelegramClient",  # type: ignore  # noqa: F821
         db: Database,
         allclients: list,
         translator: Translator,
@@ -461,10 +506,12 @@ class Modules:
             self.watchers = watchers
 
             logger.debug(
-                "Reloaded %s commands,"
-                " %s inline handlers,"
-                " %s callback handlers and"
-                " %s watchers",
+                (
+                    "Reloaded %s commands,"
+                    " %s inline handlers,"
+                    " %s callback handlers and"
+                    " %s watchers"
+                ),
                 len(self.commands),
                 len(self.inline_handlers),
                 len(self.callback_handlers),
@@ -494,7 +541,7 @@ class Modules:
                 []
                 if self.secure_boot
                 else [
-                    os.path.join(LOADED_MODULES_DIR, mod)
+                    (LOADED_MODULES_PATH / mod).resolve()
                     for mod in filter(
                         lambda x: (
                             x.endswith(f"{self.client.tg_id}.py")
@@ -533,12 +580,11 @@ class Modules:
 
                 logger.debug("Loading %s from filesystem", module_name)
 
-                with open(mod, "r") as file:
-                    spec = importlib.machinery.ModuleSpec(
-                        module_name,
-                        StringLoader(file.read(), user_friendly_origin),
-                        origin=user_friendly_origin,
-                    )
+                spec = importlib.machinery.ModuleSpec(
+                    module_name,
+                    StringLoader(Path(mod).read_text(), user_friendly_origin),
+                    origin=user_friendly_origin,
+                )
 
                 loaded += [await self.register_module(spec, module_name, origin)]
             except Exception as e:
@@ -636,8 +682,7 @@ class Modules:
             )
 
             if origin == "<string>":
-                with open(path, "w") as f:
-                    f.write(spec.loader.data.decode("utf-8"))
+                Path(path).write_text(spec.loader.data.decode("utf-8"))
 
                 logger.debug("Saved class %s to path %s", cls_name, path)
 
@@ -834,9 +879,11 @@ class Modules:
             if module.__class__.__name__ == instance.__class__.__name__:
                 if module.__origin__.startswith("<core"):
                     raise CoreOverwriteError(
-                        module=module.__class__.__name__[:-3]
-                        if module.__class__.__name__.endswith("Mod")
-                        else module.__class__.__name__
+                        module=(
+                            module.__class__.__name__[:-3]
+                            if module.__class__.__name__.endswith("Mod")
+                            else module.__class__.__name__
+                        )
                     )
 
                 logger.debug("Removing module %s for update", module)
@@ -998,8 +1045,10 @@ class Modules:
             return
         except Exception as e:
             logger.exception(
-                "Failed to send mod init complete signal for %s due to %s,"
-                " attempting unload",
+                (
+                    "Failed to send mod init complete signal for %s due to %s,"
+                    " attempting unload"
+                ),
                 mod,
                 e,
             )

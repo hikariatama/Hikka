@@ -8,9 +8,9 @@ import contextlib
 import time
 import typing
 
-from telethon.hints import EntityLike
-from telethon.tl.types import Message, PeerUser, User
-from telethon.utils import get_display_name
+from hikkatl.hints import EntityLike
+from hikkatl.tl.types import Message, PeerUser, User
+from hikkatl.utils import get_display_name
 
 from .. import loader, main, security, utils
 from ..inline.types import InlineCall, InlineMessage
@@ -332,6 +332,10 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Targeted security"
             ' rules for <a href="{}">{}</a> removed</b>'
         ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Targeted security"
+            ' rule for <a href="{}">{}</a> (</b><code>{}</code><b>) removed</b>'
+        ),
         **service_strings,
     }
 
@@ -476,6 +480,10 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Правила"
             ' таргетированной безопасности для <a href="{}">{}</a> удалены</b>'
         ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Удалено правило"
+            ' безопасности для <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
         **service_strings_ru,
     }
 
@@ -565,6 +573,10 @@ class HikkaSecurityMod(loader.Module):
         "rules_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Les règles de sécurité"
             " ciblées pour <a href='{}'>{}</a> ont été supprimées</b>"
+        ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>La règle de sécurité"
+            ' pour <a href="{}">{}</a> (</b><code>{}</code><b>)</b> a été supprimée'
         ),
         **service_strings_fr,
     }
@@ -708,6 +720,10 @@ class HikkaSecurityMod(loader.Module):
         "rules_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Le regole di sicurezza"
             ' mirate per <a href="{}">{}</a> sono state eliminate</b>'
+        ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Regola di sicurezza"
+            ' rimossa per <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
         ),
         **service_strings_it,
     }
@@ -863,6 +879,10 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Die Sicherheitsregeln"
             " für <a href='{}'>{}</a> wurden entfernt</b>"
         ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Sicherheitsregel"
+            ' entfernt für <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
         **service_strings_de,
     }
 
@@ -1017,6 +1037,10 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b><a"
             ' href="{}">{}</a> için güvenlik kuralları kaldırıldı</b>'
         ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>İzin kaldırıldı"
+            ' <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
         **service_strings_tr,
     }
 
@@ -1168,6 +1192,10 @@ class HikkaSecurityMod(loader.Module):
             '<emoji document_id=5472308992514464048>🔐</emoji> <b><a href="{}">{}</a>'
             " uchun targ'etlangan xavfsizlik qoidalari o'chirildi</b>"
         ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Qo'shimcha tizim "
+            'xavfsizligi uchun <a href="{}">{}</a> (<code>{}</code>)</b> o\'chirildi'
+        ),
         **service_strings_uz,
     }
 
@@ -1311,6 +1339,10 @@ class HikkaSecurityMod(loader.Module):
         "rules_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Reglas de seguridad"
             " dirigidas para <a href='{}'>{}</a> eliminadas</b>"
+        ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Regla de seguridad"
+            ' eliminada para <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
         ),
         **service_strings_es,
     }
@@ -1456,6 +1488,11 @@ class HikkaSecurityMod(loader.Module):
             " қатысу үшін <a href='{}'>{}</a> үшін белгіленген баптаулар"
             " жойылды</b>"
         ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Қауіпсіздік"
+            ' қауіпсіздік қауіпсіздік қауіпсіздік <a href="{}">{}</a>'
+            " (</b><code>{}</code><b>)</b>"
+        ),
         **service_strings_kk,
     }
 
@@ -1495,8 +1532,10 @@ class HikkaSecurityMod(loader.Module):
             and level
         ):
             await call.answer(
-                "Security value set but not applied. Consider enabling this value in"
-                f" .{'inlinesec' if is_inline else 'security'}",
+                (
+                    "Security value set but not applied. Consider enabling this value"
+                    f" in .{'inlinesec' if is_inline else 'security'}"
+                ),
                 show_alert=True,
             )
         else:
@@ -2091,9 +2130,11 @@ class HikkaSecurityMod(loader.Module):
                 utils.escape_html(get_display_name(target)),
                 self.strings(rule.split("/", maxsplit=1)[0]),
                 rule.split("/", maxsplit=1)[1],
-                (self.strings("for") + " " + self._convert_time(duration))
-                if duration
-                else self.strings("forever"),
+                (
+                    (self.strings("for") + " " + self._convert_time(duration))
+                    if duration
+                    else self.strings("forever")
+                ),
             )
         )
 
@@ -2113,9 +2154,11 @@ class HikkaSecurityMod(loader.Module):
                 utils.escape_html(get_display_name(target)),
                 self.strings(rule.split("/", maxsplit=1)[0]),
                 rule.split("/", maxsplit=1)[1],
-                (self.strings("for") + " " + self._convert_time(duration))
-                if duration
-                else self.strings("forever"),
+                (
+                    (self.strings("for") + " " + self._convert_time(duration))
+                    if duration
+                    else self.strings("forever")
+                ),
             ),
             reply_markup=[
                 {
@@ -2260,19 +2303,146 @@ class HikkaSecurityMod(loader.Module):
         await self._confirm(message, "user", target, possible_rules[0], duration)
 
     @loader.command(
-        ru_doc='<"user"/"chat"> - Удалить правило таргетированной безопасности',
-        fr_doc='<"user"/"chat"> - Supprimer une règle de sécurité ciblée',
-        it_doc='<"user"/"chat"> - Rimuovi una regola di sicurezza mirata',
-        de_doc='<"user"/"chat"> - Entferne eine Regel für die gezielte Sicherheit',
-        tr_doc='<"user"/"chat"> - Hedefli güvenlik için bir kural kaldırın',
-        uz_doc='<"user"/"chat"> - Maqsadli xavfsizlik uchun bir qoidani olib tashlang',
-        es_doc='<"user"/"chat"> - Eliminar una regla de seguridad dirigida',
+        ru_doc=(
+            '<"user"/"chat"> <правило - модуль или команда> - Удалить правило'
+            " таргетированной безопасности\nНапример: .tsecrm user ban, .tsecrm chat"
+            " HikariChat"
+        ),
+        fr_doc=(
+            '<"user"/"chat"> <règle - module ou commande> - Supprimer la règle de'
+            " sécurité ciblée\nPar exemple: .tsecrm user ban, .tsecrm chat HikariChat"
+        ),
+        es_doc=(
+            '<"user"/"chat"> <regla - módulo o comando> - Eliminar la regla de'
+            " seguridad dirigida\nPor ejemplo: .tsecrm user ban, .tsecrm chat"
+            " HikariChat"
+        ),
+        de_doc=(
+            '<"user"/"chat"> <Regel - Modul oder Befehl> - Entferne die Regel der'
+            " zielgerichteten Sicherheit\nBeispiel: .tsecrm user ban, .tsecrm chat"
+            " HikariChat"
+        ),
+        it_doc=(
+            '<"user"/"chat"> <regola - modulo o comando> - Rimuovi la regola di'
+            " sicurezza mirata\nEsempio: .tsecrm user ban, .tsecrm chat HikariChat"
+        ),
+        tr_doc=(
+            '<"user"/"chat"> <kural - modül veya komut> - Hedefli güvenlik kuralını'
+            " kaldır\nÖrnek: .tsecrm user ban, .tsecrm chat HikariChat"
+        ),
+        uz_doc=(
+            '<"user"/"chat"> <qoida - modul yoki buyruq> - Maqsadli xavfsizlik'
+            " qoidasini olib tashlang\nMasalan: .tsecrm user ban, .tsecrm chat"
+            " HikariChat"
+        ),
         kk_doc=(
-            '<"user"/"chat"> - Мақсадымдық қауіпсіздік үшін қоғамдық қауіпсіздікті жою'
+            '<"user"/"chat"> <құқық - модуль немесе команда> - Мақсатты қауіпсіздік'
+            " құқығын өшіріңіз\nМысалы: .tsecrm user ban, .tsecrm chat HikariChat"
         ),
     )
     async def tsecrm(self, message: Message):
-        """<"user"/"chat"> - Remove targeted security rule"""
+        """
+        <"user"/"chat"> <rule - command or module> - Remove targeted security rule
+        For example: .tsecrm user ban, .tsecrm chat HikariChat
+        """
+        if (
+            not self._client.dispatcher.security.tsec_chat
+            and not self._client.dispatcher.security.tsec_user
+        ):
+            await utils.answer(message, self.strings("no_rules"))
+            return
+
+        args = utils.get_args(message)
+        if not args or args[0] not in {"user", "chat"}:
+            await utils.answer(message, self.strings("no_target"))
+            return
+
+        if args[0] == "user":
+            if not message.is_private and not message.is_reply:
+                await utils.answer(message, self.strings("no_target"))
+                return
+
+            if message.is_private:
+                target = await self._client.get_entity(message.peer_id)
+            elif message.is_reply:
+                target = await self._client.get_entity(
+                    (await message.get_reply_message()).sender_id
+                )
+
+            if not self._client.dispatcher.security.remove_rule(
+                "user", target.id, args[1]
+            ):
+                await utils.answer(message, self.strings("no_rules"))
+                return
+
+            await utils.answer(
+                message,
+                self.strings("rule_removed").format(
+                    utils.get_entity_url(target),
+                    utils.escape_html(get_display_name(target)),
+                    utils.escape_html(args[1]),
+                ),
+            )
+            return
+
+        if message.is_private:
+            await utils.answer(message, self.strings("no_target"))
+            return
+
+        target = await self._client.get_entity(message.peer_id)
+
+        if not self._client.dispatcher.security.remove_rule("chat", target.id, args[1]):
+            await utils.answer(message, self.strings("no_rules"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("rule_removed").format(
+                utils.get_entity_url(target),
+                utils.escape_html(get_display_name(target)),
+                utils.escape_html(args[1]),
+            ),
+        )
+
+    @loader.command(
+        ru_doc=(
+            '<"user"/"chat"> - Очистить правила таргетированной безопасности\nНапример:'
+            " .tsecclr user, .tsecclr chat"
+        ),
+        fr_doc=(
+            '<"user"/"chat"> - Supprimer les règles de sécurité ciblées\nPar exemple:'
+            " .tsecclr user, .tsecclr chat"
+        ),
+        es_doc=(
+            '<"user"/"chat"> - Eliminar las reglas de seguridad dirigidas\nPor ejemplo:'
+            " .tsecclr user, .tsecclr chat"
+        ),
+        de_doc=(
+            '<"user"/"chat"> - Entferne die Regeln der zielgerichteten'
+            " Sicherheit\nBeispiel: .tsecclr user, .tsecclr chat"
+        ),
+        it_doc=(
+            '<"user"/"chat"> - Rimuovi le regole di sicurezza mirate\nEsempio: .tsecclr'
+            " user, .tsecclr chat"
+        ),
+        tr_doc=(
+            '<"user"/"chat"> - Hedefli güvenlik kurallarını temizle\nÖrnek: .tsecclr'
+            " user, .tsecclr chat"
+        ),
+        uz_doc=(
+            '<"user"/"chat"> - Maqsadli xavfsizlik qoidalarini tozalash\nMasalan:'
+            " .tsecclr user, .tsecclr chat"
+        ),
+        kk_doc=(
+            '<"user"/"chat"> - Мақсатты қауіпсіздік құқығын тазалаңыз\nМысалы: .tsecclr'
+            " user, .tsecclr chat"
+        ),
+    )
+    async def tsecclr(self, message: Message):
+        """
+        <"user"/"chat"> - Clear targeted security rules
+        For example: .tsecclr user, .tsecclr chat
+        """
         if (
             not self._client.dispatcher.security.tsec_chat
             and not self._client.dispatcher.security.tsec_user
@@ -2330,40 +2500,51 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command(
         ru_doc=(
-            '<"user"/"chat"> [цель - пользователь или чат] [правило - команда или'
-            " модуль] [время] - Настроить таргетированную безопасность"
+            '<"user"/"chat"> [цель пользователя или чата] [правило (команда/модуль)]'
+            " [время] - Добавить новое правило таргетированной безопасности\nНапример:"
+            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
         ),
         fr_doc=(
-            '<"user"/"chat"> [cible - utilisateur ou chat] [règle - commande ou'
-            " module] [temps] - Définir la sécurité ciblée"
-        ),
-        it_doc=(
-            '<"user"/"chat"> [obiettivo - utente o chat] [regola - comando o'
-            " modulo] [tempo] - Imposta la sicurezza mirata"
-        ),
-        de_doc=(
-            '<"user"/"chat"> [Ziel - Benutzer oder Chat] [Regel - Befehl oder'
-            " Modul] [Zeit] - Targeted-Sicherheit einstellen"
-        ),
-        tr_doc=(
-            '<"user"/"chat"> [hedef - kullanıcı veya sohbet] [kural - komut veya'
-            " modül] [zaman] - Hedefli güvenliği ayarla"
-        ),
-        uz_doc=(
-            '<"user"/"chat"> [maqsad - foydalanuvchi yoki chat] [qoida - buyruq yoki'
-            " modul] [vaqt] - Maqsadli xavfsizlikni sozlash"
+            '<"user"/"chat"> [cible utilisateur ou chat] [règle (commande/module)]'
+            " [temps] - Ajouter une nouvelle règle de sécurité ciblée\nPar exemple:"
+            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
         ),
         es_doc=(
-            '<"user"/"chat"> [objetivo - usuario o chat] [regla - comando o'
-            " módulo] [tiempo] - Establecer seguridad dirigida"
+            '<"user"/"chat"> [objetivo de usuario o chat] [regla (comando/módulo)]'
+            " [tiempo] - Agregar una nueva regla de seguridad dirigida\nPor ejemplo:"
+            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
+        ),
+        de_doc=(
+            '<"user"/"chat"> [Zielbenutzer oder Chat] [Regel (Befehl/Modul)] [Zeit] -'
+            " Füge eine neue zielgerichtete Sicherheitsregel hinzu\nBeispiel: .tsec"
+            " user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
+        ),
+        it_doc=(
+            '<"user"/"chat"> [utente o chat di destinazione] [regola (comando/modulo)]'
+            " [tempo] - Aggiungi una nuova regola di sicurezza mirata\nEsempio: .tsec"
+            " user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
+        ),
+        tr_doc=(
+            '<"user"/"chat"> [hedef kullanıcı veya sohbet] [kural (komut/modül)]'
+            " [zaman] - Yeni hedefli güvenlik kuralı ekleyin\nÖrnek: .tsec user ban 1d,"
+            " .tsec chat weather 1h, .tsec user HikariChat"
+        ),
+        uz_doc=(
+            '<"user"/"chat"> [maqsadli foydalanuvchi yoki chat] [qoida (buyruq/modul)]'
+            " [vaqt] - Yangi maqsadli xavfsizlik qoidasini qo`shing\nMasalan: .tsec"
+            " user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
         ),
         kk_doc=(
-            '<"user"/"chat"> [мынақ - пайдаланушы немесе топ] [қоғам - команда немесе'
-            " модуль] [уақыт] - Мақсадымдық қауіпсіздікті баптау"
+            '<"user"/"chat"> [мақсатты пайдаланушы немесе сөйлесу] [құқық'
+            " (команда/модуль)] [уақыт] - Жаңа мақсатты қауіпсіздік құқығын"
+            " қосыңыз\nМысалы: .tsec user ban 1d, .tsec chat weather 1h, .tsec user"
+            " HikariChat"
         ),
     )
     async def tsec(self, message: Message):
-        """<"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule
+        """
+        <"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule
+        For example: .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat
         """
         args = utils.get_args(message)
         if not args:

@@ -11,7 +11,7 @@ import json
 import logging
 import time
 
-from telethon.tl.types import Message
+from hikkatl.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import BotInlineCall

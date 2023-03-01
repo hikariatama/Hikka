@@ -87,8 +87,10 @@ class ProxyPasser:
 
             logger.debug("Starting proxy pass shell for port %d", port)
             self._sproc = await asyncio.create_subprocess_shell(
-                "ssh -o StrictHostKeyChecking=no -R"
-                f" 80:127.0.0.1:{port} nokey@localhost.run",
+                (
+                    "ssh -o StrictHostKeyChecking=no -R"
+                    f" 80:127.0.0.1:{port} nokey@localhost.run"
+                ),
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,

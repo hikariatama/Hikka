@@ -26,9 +26,9 @@ from importlib.machinery import ModuleSpec
 from urllib.parse import urlparse
 
 import requests
-import telethon
-from telethon.tl.functions.channels import JoinChannelRequest
-from telethon.tl.types import Channel, Message
+from hikkatl.errors.rpcerrorlist import MediaCaptionTooLongError
+from hikkatl.tl.functions.channels import JoinChannelRequest
+from hikkatl.tl.types import Channel, Message
 
 from .. import loader, main, utils
 from .._local_storage import RemoteStorage
@@ -2361,9 +2361,11 @@ class LoaderMod(loader.Module):
             await utils.answer(
                 message,
                 self.strings(f"overwrite_{e.type}").format(
-                    *(e.target,)
-                    if e.type == "module"
-                    else (self.get_prefix(), e.target)
+                    *(
+                        (e.target,)
+                        if e.type == "module"
+                        else (self.get_prefix(), e.target)
+                    )
                 ),
             )
 
@@ -2395,8 +2397,10 @@ class LoaderMod(loader.Module):
                             instance.url = url
                     except ImportError as e:
                         logger.info(
-                            "Module loading failed, attemping dependency installation"
-                            " (%s)",
+                            (
+                                "Module loading failed, attemping dependency"
+                                " installation (%s)"
+                            ),
                             e.name,
                         )
                         # Let's try to reinstall dependencies
@@ -2421,7 +2425,7 @@ class LoaderMod(loader.Module):
                                 {
                                     "sklearn": "scikit-learn",
                                     "pil": "Pillow",
-                                    "telethon": "Hikka-TL",
+                                    "hikkatl": "Hikka-TL",
                                     "pyrogram": "Hikka-Pyro",
                                 }.get(e.name.lower(), e.name)
                             ]
@@ -2504,8 +2508,10 @@ class LoaderMod(loader.Module):
                         if message:
                             await utils.answer(
                                 message,
-                                "<emoji document_id=5454225457916420314>😖</emoji>"
-                                f" <b>{utils.escape_html(str(e))}</b>",
+                                (
+                                    "<emoji document_id=5454225457916420314>😖</emoji>"
+                                    f" <b>{utils.escape_html(str(e))}</b>"
+                                ),
                             )
                         return
                 except Exception as e:
@@ -2576,8 +2582,10 @@ class LoaderMod(loader.Module):
                         if message:
                             await utils.answer(
                                 message,
-                                "<emoji document_id=5454225457916420314>😖</emoji>"
-                                f" <b>{utils.escape_html(str(e))}</b>",
+                                (
+                                    "<emoji document_id=5454225457916420314>😖</emoji>"
+                                    f" <b>{utils.escape_html(str(e))}</b>"
+                                ),
                             )
                         return
                     except loader.SelfUnload as e:
@@ -2595,8 +2603,10 @@ class LoaderMod(loader.Module):
                         if message:
                             await utils.answer(
                                 message,
-                                "<emoji document_id=5454225457916420314>😖</emoji>"
-                                f" <b>{utils.escape_html(str(e))}</b>",
+                                (
+                                    "<emoji document_id=5454225457916420314>😖</emoji>"
+                                    f" <b>{utils.escape_html(str(e))}</b>"
+                                ),
                             )
                         return
                     except loader.SelfSuspend as e:
@@ -2606,8 +2616,10 @@ class LoaderMod(loader.Module):
                         if message:
                             await utils.answer(
                                 message,
-                                "🥶 <b>Module suspended itself\nReason:"
-                                f" {utils.escape_html(str(e))}</b>",
+                                (
+                                    "🥶 <b>Module suspended itself\nReason:"
+                                    f" {utils.escape_html(str(e))}</b>"
+                                ),
                             )
                         return
                 except Exception as e:
@@ -2804,7 +2816,7 @@ class LoaderMod(loader.Module):
 
             try:
                 await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
-            except telethon.errors.rpcerrorlist.MediaCaptionTooLongError:
+            except MediaCaptionTooLongError:
                 await message.reply(loaded_msg(False))
 
     async def _inline__subscribe(
@@ -2875,9 +2887,11 @@ class LoaderMod(loader.Module):
 
         msg = (
             self.strings("unloaded").format(
-                dragon.DRAGON_EMOJI
-                if is_dragon
-                else "<emoji document_id=5784993237412351403>✅</emoji>",
+                (
+                    dragon.DRAGON_EMOJI
+                    if is_dragon
+                    else "<emoji document_id=5784993237412351403>✅</emoji>"
+                ),
                 ", ".join(
                     [(mod[:-3] if mod.endswith("Mod") else mod) for mod in worked]
                 ),

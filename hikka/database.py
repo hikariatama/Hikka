@@ -20,19 +20,13 @@ except ImportError as e:
 
 import typing
 
-from telethon.errors.rpcerrorlist import ChannelsTooMuchError
-from telethon.tl.types import Message
+from hikkatl.errors.rpcerrorlist import ChannelsTooMuchError
+from hikkatl.tl.types import Message
 
 from . import main, utils
 from .pointers import PointerDict, PointerList
 from .tl_cache import CustomTelegramClient
 from .types import JSONSerializable
-
-DATA_DIR = (
-    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "DOCKER" not in os.environ
-    else "/data"
-)
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +93,7 @@ class Database(dict):
         if os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             await self.redis_init()
 
-        self._db_path = os.path.join(DATA_DIR, f"config-{self._client.tg_id}.json")
+        self._db_file = main.BASE_PATH / f"config-{self._client.tg_id}.json"
         self.read()
 
         try:
@@ -136,8 +130,7 @@ class Database(dict):
             return
 
         try:
-            with open(self._db_path, "r", encoding="utf-8") as f:
-                self.update(**json.load(f))
+            self.update(**json.loads(self._db_file.read_text()))
         except (FileNotFoundError, json.decoder.JSONDecodeError):
             logger.warning("Database read failed! Creating new one...")
 
@@ -168,8 +161,10 @@ class Database(dict):
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
                     logger.warning(
-                        "DbAutoFix: Dropped subkey %s of db key %s, because it is not"
-                        " string or int",
+                        (
+                            "DbAutoFix: Dropped subkey %s of db key %s, because it is"
+                            " not string or int"
+                        ),
                         subkey,
                         key,
                     )
@@ -211,8 +206,7 @@ class Database(dict):
             return True
 
         try:
-            with open(self._db_path, "w", encoding="utf-8") as f:
-                json.dump(self, f, indent=4)
+            self._db_file.write_text(json.dumps(self, indent=4))
         except Exception:
             logger.exception("Database save failed!")
             return False

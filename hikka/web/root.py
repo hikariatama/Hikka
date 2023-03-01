@@ -19,7 +19,7 @@ import aiohttp_jinja2
 import requests
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiohttp import web
-from telethon.errors import (
+from hikkatl.errors import (
     FloodWaitError,
     PasswordHashInvalidError,
     PhoneCodeExpiredError,
@@ -27,12 +27,12 @@ from telethon.errors import (
     SessionPasswordNeededError,
     YouBlockedUserError,
 )
-from telethon.password import compute_check
-from telethon.sessions import MemorySession
-from telethon.tl.functions.account import GetPasswordRequest
-from telethon.tl.functions.auth import CheckPasswordRequest
-from telethon.tl.functions.contacts import UnblockRequest
-from telethon.utils import parse_phone
+from hikkatl.password import compute_check
+from hikkatl.sessions import MemorySession
+from hikkatl.tl.functions.account import GetPasswordRequest
+from hikkatl.tl.functions.auth import CheckPasswordRequest
+from hikkatl.tl.functions.contacts import UnblockRequest
+from hikkatl.utils import parse_phone
 
 from .. import database, main, utils
 from .._internal import restart
@@ -85,13 +85,15 @@ class Web:
             "termux": "https://github.com/hikariatama/assets/raw/master/smiling-face-with-sunglasses_1f60e.png",
             "docker": "https://github.com/hikariatama/assets/raw/master/spouting-whale_1f433.png",
         }[
-            "lavhost"
-            if "LAVHOST" in os.environ
-            else "termux"
-            if "com.termux" in os.environ.get("PREFIX", "")
-            else "docker"
-            if "DOCKER" in os.environ
-            else "vds"
+            (
+                "lavhost"
+                if "LAVHOST" in os.environ
+                else (
+                    "termux"
+                    if "com.termux" in os.environ.get("PREFIX", "")
+                    else "docker" if "DOCKER" in os.environ else "vds"
+                )
+            )
         ]
 
     @aiohttp_jinja2.template("root.jinja2")
@@ -293,8 +295,11 @@ class Web:
             connection=self.connection,
             proxy=self.proxy,
             connection_retries=None,
-            device_model=f"Hikka on {utils.get_named_platform().split(maxsplit=1)[1]}",
-            app_version=f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}",
+            device_model=main.generate_app_name(),
+            system_version="Windows 10",
+            app_version=".".join(map(str, __version__)) + " x64",
+            lang_code="en",
+            system_lang_code="en-US",
         )
 
     async def can_add(self, request: web.Request) -> web.Response:
@@ -357,7 +362,7 @@ class Web:
         logger.debug("2FA code received for QR login: %s", text)
 
         try:
-            self._pending_client._on_login(
+            await self._pending_client._on_login(
                 (
                     await self._pending_client(
                         CheckPasswordRequest(
@@ -527,9 +532,11 @@ class Web:
                 bot = user[0].inline.bot
                 msg = await bot.send_message(
                     user[1].tg_id,
-                    "🌘🔐 <b>Click button below to confirm web application"
-                    f" ops</b>\n\n<b>Client IP</b>: {ips}\n{cities}\n<i>If you did not"
-                    " request any codes, simply ignore this message</i>",
+                    (
+                        "🌘🔐 <b>Click button below to confirm web application"
+                        f" ops</b>\n\n<b>Client IP</b>: {ips}\n{cities}\n<i>If you did"
+                        " not request any codes, simply ignore this message</i>"
+                    ),
                     disable_web_page_preview=True,
                     reply_markup=markup,
                 )

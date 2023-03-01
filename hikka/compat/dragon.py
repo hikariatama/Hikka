@@ -27,7 +27,7 @@ except Exception:
 else:
     PIP_AVAILABLE = True
 
-from pyrogram import Client, errors, types
+from hikkapyro import Client, errors, types
 
 from .. import version
 from .._internal import restart
@@ -122,8 +122,8 @@ class Notifier:
     def commands(self):
         return {
             key.split()[0]: (
-                ((key.split()[1] + " - ") if len(key.split()) > 1 else "") + value
-            )
+                (key.split()[1] + " - ") if len(key.split()) > 1 else ""
+            ) + value
             for key, value in self.cache[self.modname].items()
         }
 
@@ -385,6 +385,12 @@ def patched_import(name: str, *args, **kwargs):
             )
 
         raise ImportError(f"Unknown module {name}")
+
+    if name.startswith("telethon"):
+        return native_import("hikkatl" + name[8:], *args, **kwargs)
+
+    if name.startswith("pyrogram"):
+        return native_import("hikkapyro" + name[8:], *args, **kwargs)
 
     return native_import(name, *args, **kwargs)
 

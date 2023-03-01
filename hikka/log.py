@@ -20,7 +20,7 @@ import traceback
 import typing
 from logging.handlers import RotatingFileHandler
 
-import telethon
+import hikkatl
 from aiogram.utils.exceptions import NetworkError
 
 from . import utils
@@ -114,7 +114,7 @@ class HikkaException:
                             dictionary[key] = "<Database>"
                         elif isinstance(
                             value,
-                            (telethon.TelegramClient, CustomTelegramClient),
+                            (hikkatl.TelegramClient, CustomTelegramClient),
                         ):
                             dictionary[key] = f"<{value.__class__.__name__}>"
                         elif len(str(value)) > 512:
@@ -153,9 +153,11 @@ class HikkaException:
 
         full_stack = "\n".join(
             [
-                format_line(line)
-                if re.search(line_regex, line)
-                else f"<code>{utils.escape_html(line)}</code>"
+                (
+                    format_line(line)
+                    if re.search(line_regex, line)
+                    else f"<code>{utils.escape_html(line)}</code>"
+                )
                 for line in full_stack.splitlines()
             ]
         )
@@ -252,7 +254,7 @@ class TelegramLogsHandler(logging.Handler):
     async def _show_full_trace(
         self,
         call: BotInlineCall,
-        bot: "aiogram.Bot",  # type: ignore
+        bot: "aiogram.Bot",  # type: ignore  # noqa: F821
         item: HikkaException,
     ):
         chunks = (
@@ -264,7 +266,7 @@ class TelegramLogsHandler(logging.Handler):
             + item.full_stack
         )
 
-        chunks = list(utils.smart_split(*telethon.extensions.html.parse(chunks), 4096))
+        chunks = list(utils.smart_split(*hikkatl.extensions.html.parse(chunks), 4096))
 
         await call.edit(
             chunks[0],
@@ -287,19 +289,25 @@ class TelegramLogsHandler(logging.Handler):
             item.debug_url = url
 
         return [
-            {
-                "text": "🐞 Web debugger",
-                "url": url,
-            }
-            if self.web_debugger
-            else {
-                "text": "🪲 Start debugger",
-                "callback": self._start_debugger,
-                "args": (item,),
-            }
+            (
+                {
+                    "text": "🐞 Web debugger",
+                    "url": url,
+                }
+                if self.web_debugger
+                else {
+                    "text": "🪲 Start debugger",
+                    "callback": self._start_debugger,
+                    "args": (item,),
+                }
+            )
         ]
 
-    async def _start_debugger(self, call: "InlineCall", item: HikkaException):  # type: ignore
+    async def _start_debugger(
+        self,
+        call: "InlineCall",  # type: ignore  # noqa: F821
+        item: HikkaException,
+    ):
         if not self.web_debugger:
             self.web_debugger = WebDebugger()
             await self.web_debugger.proxy_ready.wait()
@@ -313,8 +321,10 @@ class TelegramLogsHandler(logging.Handler):
         )
 
         await call.answer(
-            "Web debugger started. You can get PIN using .debugger command. \n⚠️ !DO"
-            " NOT GIVE IT TO ANYONE! ⚠️",
+            (
+                "Web debugger started. You can get PIN using .debugger command. \n⚠️"
+                " !DO NOT GIVE IT TO ANYONE! ⚠️"
+            ),
             show_alert=True,
         )
 
@@ -505,9 +515,9 @@ def init():
         TelegramLogsHandler((handler, rotating_handler), 7000)
     )
     logging.getLogger().setLevel(logging.NOTSET)
-    logging.getLogger("telethon").setLevel(logging.WARNING)
+    logging.getLogger("hikkatl").setLevel(logging.WARNING)
+    logging.getLogger("hikkapyro").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
     logging.getLogger("aiogram").setLevel(logging.WARNING)
-    logging.getLogger("pyrogram").setLevel(logging.WARNING)
     logging.captureWarnings(True)

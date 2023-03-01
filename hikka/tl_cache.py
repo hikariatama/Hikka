@@ -10,14 +10,14 @@ import logging
 import time
 import typing
 
-from telethon import TelegramClient
-from telethon.errors.rpcerrorlist import TopicDeletedError
-from telethon.hints import EntityLike
-from telethon.network import MTProtoSender
-from telethon.tl.functions.channels import GetFullChannelRequest
-from telethon.tl.functions.users import GetFullUserRequest
-from telethon.tl.tlobject import TLRequest
-from telethon.tl.types import (
+from hikkatl import TelegramClient
+from hikkatl.errors.rpcerrorlist import TopicDeletedError
+from hikkatl.hints import EntityLike
+from hikkatl.network import MTProtoSender
+from hikkatl.tl.functions.channels import GetFullChannelRequest
+from hikkatl.tl.functions.users import GetFullUserRequest
+from hikkatl.tl.tlobject import TLRequest
+from hikkatl.tl.types import (
     ChannelFull,
     Message,
     Updates,
@@ -25,7 +25,7 @@ from telethon.tl.types import (
     UpdateShort,
     UserFull,
 )
-from telethon.utils import is_list_like
+from hikkatl.utils import is_list_like
 
 from .types import (
     CacheRecordEntity,
@@ -62,6 +62,26 @@ class CustomTelegramClient(TelegramClient):
         self._hikka_fulluser_cache = {}
         self.__forbidden_constructors = []
         self.raw_updates_processor = None  # Will be monkeypatched by pyro proxy
+
+    @property
+    def hikka_entity_cache(self) -> typing.Dict[int, CacheRecordEntity]:
+        return self._hikka_entity_cache
+
+    @property
+    def hikka_perms_cache(self) -> typing.Dict[int, CacheRecordPerms]:
+        return self._hikka_perms_cache
+
+    @property
+    def hikka_fullchannel_cache(self) -> typing.Dict[int, CacheRecordFullChannel]:
+        return self._hikka_fullchannel_cache
+
+    @property
+    def hikka_fulluser_cache(self) -> typing.Dict[int, CacheRecordFullUser]:
+        return self._hikka_fulluser_cache
+
+    @property
+    def forbidden_constructors(self) -> typing.List[str]:
+        return self.__forbidden_constructors
 
     async def force_get_entity(self, *args, **kwargs):
         """Forcefully makes a request to Telegram to get the entity."""
@@ -283,8 +303,10 @@ class CustomTelegramClient(TelegramClient):
                 )
             except StopIteration:
                 logger.debug(
-                    "Can't parse hashable from entity %s, using legacy fullchannel"
-                    " request",
+                    (
+                        "Can't parse hashable from entity %s, using legacy fullchannel"
+                        " request"
+                    ),
                     entity,
                 )
                 return await self(GetFullChannelRequest(channel=entity))
@@ -333,8 +355,10 @@ class CustomTelegramClient(TelegramClient):
                 )
             except StopIteration:
                 logger.debug(
-                    "Can't parse hashable from entity %s, using legacy fulluser"
-                    " request",
+                    (
+                        "Can't parse hashable from entity %s, using legacy fulluser"
+                        " request"
+                    ),
                     entity,
                 )
                 return await self(GetFullUserRequest(entity))
@@ -481,15 +505,6 @@ class CustomTelegramClient(TelegramClient):
         # Let USER decide, which channel he will follow. Do not be so petty
         # I hope, you understood me.
         # Thank you
-
-        if not self.__forbidden_constructors:
-            return await TelegramClient._call(
-                self,
-                sender,
-                request,
-                ordered,
-                flood_sleep_threshold,
-            )
 
         not_tuple = False
         if not is_list_like(request):

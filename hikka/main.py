@@ -27,6 +27,7 @@
 import argparse
 import asyncio
 import collections
+import contextlib
 import importlib
 import json
 import logging
@@ -37,19 +38,20 @@ import sqlite3
 import sys
 import typing
 from math import ceil
+from pathlib import Path
 
-import telethon
-from telethon import events
-from telethon.errors.rpcerrorlist import (
+import hikkatl
+from hikkatl import events
+from hikkatl.errors.rpcerrorlist import (
     ApiIdInvalidError,
     AuthKeyDuplicatedError,
     PhoneNumberInvalidError,
 )
-from telethon.network.connection import (
+from hikkatl.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import MemorySession, SQLiteSession
+from hikkatl.sessions import MemorySession, SQLiteSession
 
 from . import database, loader, utils, version
 from .dispatcher import CommandDispatcher
@@ -68,10 +70,67 @@ else:
 BASE_DIR = (
     "/data"
     if "DOCKER" in os.environ
-    else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
+    else os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 )
 
-CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
+BASE_PATH = Path(BASE_DIR)
+CONFIG_PATH = BASE_PATH / "config.json"
+
+IS_TERMUX = "com.termux" in os.environ.get("PREFIX", "")
+IS_CODESPACES = "CODESPACES" in os.environ
+IS_DOCKER = "DOCKER" in os.environ
+IS_RAILWAY = "RAILWAY" in os.environ
+IS_GOORM = "GOORM" in os.environ
+IS_LAVHOST = "LAVHOST" in os.environ
+IS_WSL = False
+with contextlib.suppress(Exception):
+    from platform import uname
+
+    if "microsoft-standard" in uname().release:
+        IS_WSL = True
+
+# fmt: off
+LATIN_MOCK = [
+    "Amor", "Arbor", "Astra", "Aurum", "Bellum", "Caelum",
+    "Calor", "Candor", "Carpe", "Celer", "Certo", "Cibus",
+    "Civis", "Clemens", "Coetus", "Cogito", "Conexus",
+    "Consilium", "Cresco", "Cura", "Cursus", "Decus",
+    "Deus", "Dies", "Digitus", "Discipulus", "Dominus",
+    "Donum", "Dulcis", "Durus", "Elementum", "Emendo",
+    "Ensis", "Equus", "Espero", "Fidelis", "Fides",
+    "Finis", "Flamma", "Flos", "Fortis", "Frater", "Fuga",
+    "Fulgeo", "Genius", "Gloria", "Gratia", "Gravis",
+    "Habitus", "Honor", "Hora", "Ignis", "Imago",
+    "Imperium", "Inceptum", "Infinitus", "Ingenium",
+    "Initium", "Intra", "Iunctus", "Iustitia", "Labor",
+    "Laurus", "Lectus", "Legio", "Liberi", "Libertas",
+    "Lumen", "Lux", "Magister", "Magnus", "Manus",
+    "Memoria", "Mens", "Mors", "Mundo", "Natura",
+    "Nexus", "Nobilis", "Nomen", "Novus", "Nox",
+    "Oculus", "Omnis", "Opus", "Orbis", "Ordo", "Os",
+    "Pax", "Perpetuus", "Persona", "Petra", "Pietas",
+    "Pons", "Populus", "Potentia", "Primus", "Proelium",
+    "Pulcher", "Purus", "Quaero", "Quies", "Ratio",
+    "Regnum", "Sanguis", "Sapientia", "Sensus", "Serenus",
+    "Sermo", "Signum", "Sol", "Solus", "Sors", "Spes",
+    "Spiritus", "Stella", "Summus", "Teneo", "Terra",
+    "Tigris", "Trans", "Tribuo", "Tristis", "Ultimus",
+    "Unitas", "Universus", "Uterque", "Valde", "Vates",
+    "Veritas", "Verus", "Vester", "Via", "Victoria",
+    "Vita", "Vox", "Vultus", "Zephyrus"
+]
+# fmt: on
+
+
+def generate_app_name() -> str:
+    """
+    Generate random app name
+    :return: Random app name
+    :example: "Cresco Cibus Consilium"
+    """
+    random.seed(0)
+    return " ".join(random.choices(LATIN_MOCK, k=3))
+
 
 try:
     import uvloop
@@ -81,11 +140,11 @@ except Exception:
     pass
 
 
-def run_config(data_root: str):
+def run_config():
     """Load configurator.py"""
     from . import configurator
 
-    return configurator.api_config(data_root)
+    return configurator.api_config()
 
 
 def get_config_key(key: str) -> typing.Union[str, bool]:
@@ -95,10 +154,7 @@ def get_config_key(key: str) -> typing.Union[str, bool]:
     :return: Value of config key or `False`, if it doesn't exist
     """
     try:
-        with open(CONFIG_PATH, "r") as f:
-            config = json.load(f)
-
-        return config.get(key, False)
+        return json.loads(CONFIG_PATH.read_text()).get(key, False)
     except FileNotFoundError:
         return False
 
@@ -112,8 +168,7 @@ def save_config_key(key: str, value: str) -> bool:
     """
     try:
         # Try to open our newly created json config
-        with open(CONFIG_PATH, "r") as f:
-            config = json.load(f)
+        config = json.loads(CONFIG_PATH.read_text())
     except FileNotFoundError:
         # If it doesn't exist, just default config to none
         # It won't cause problems, bc after new save
@@ -122,11 +177,8 @@ def save_config_key(key: str, value: str) -> bool:
 
     # Assign config value
     config[key] = value
-
     # And save config
-    with open(CONFIG_PATH, "w") as f:
-        json.dump(config, f, indent=4)
-
+    CONFIG_PATH.write_text(json.dumps(config, indent=4))
     return True
 
 
@@ -142,22 +194,16 @@ def gen_port(cfg: str = "port", no8080: bool = False) -> int:
         return 8080
 
     # But for own server we generate new free port, and assign to it
-
-    port = get_config_key(cfg)
-    if port:
+    if port := get_config_key(cfg):
         return port
 
     # If we didn't get port from config, generate new one
     # First, try to randomly get port
-    port = random.randint(1024, 65536)
-
-    # Then ensure it's free
-    while not socket.socket(
-        socket.AF_INET,
-        socket.SOCK_STREAM,
-    ).connect_ex(("localhost", port)):
-        # Until we find the free port, generate new one
-        port = random.randint(1024, 65536)
+    while port := random.randint(1024, 65536):
+        if socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect_ex(
+            ("localhost", port)
+        ):
+            break
 
     return port
 
@@ -269,7 +315,12 @@ class Hikka:
     omit_log = False
 
     def __init__(self):
+        global BASE_DIR, BASE_PATH, CONFIG_PATH
         self.arguments = parse_arguments()
+        if self.arguments.data_root:
+            BASE_DIR = self.arguments.data_root
+            BASE_PATH = Path(BASE_DIR)
+            CONFIG_PATH = BASE_PATH / "config.json"
         self.loop = asyncio.get_event_loop()
 
         self.clients = SuperList()
@@ -311,13 +362,13 @@ class Hikka:
         self.sessions += [
             SQLiteSession(
                 os.path.join(
-                    self.arguments.data_root or BASE_DIR,
+                    BASE_DIR,
                     session.rsplit(".session", maxsplit=1)[0],
                 )
             )
             for session in filter(
                 lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                os.listdir(self.arguments.data_root or BASE_DIR),
+                os.listdir(BASE_DIR),
             )
         ]
 
@@ -327,13 +378,14 @@ class Hikka:
 
         # Try to retrieve credintials from file, or from env vars
         try:
-            with open(
-                os.path.join(
-                    self.arguments.data_root or BASE_DIR,
-                    "api_token.txt",
-                )
-            ) as f:
-                api_token = api_token_type(*[line.strip() for line in f.readlines()])
+            api_token = api_token_type(
+                *[
+                    line.strip()
+                    for line in (Path(BASE_DIR) / "api_token.txt")
+                    .read_text()
+                    .splitlines()
+                ]
+            )
         except FileNotFoundError:
             try:
                 from . import api_token
@@ -355,7 +407,7 @@ class Hikka:
             return
 
         self.web = core.Web(
-            data_root=self.arguments.data_root,
+            data_root=BASE_DIR,
             api_token=self.api_token,
             proxy=self.proxy,
             connection=self.conn,
@@ -377,7 +429,7 @@ class Hikka:
                 self.loop.run_until_complete(self.web.wait_for_api_token_setup())
                 self.api_token = self.web.api_token
             else:
-                run_config(self.arguments.data_root)
+                run_config()
                 importlib.invalidate_caches()
                 self._get_api_token()
 
@@ -393,7 +445,7 @@ class Hikka:
 
         session = SQLiteSession(
             os.path.join(
-                self.arguments.data_root or BASE_DIR,
+                BASE_DIR,
                 f"hikka-{telegram_id}",
             )
         )
@@ -442,7 +494,9 @@ class Hikka:
 
         if not self.web:
             try:
-                phone = input("Phone: ")
+                phone = input(
+                    "\033[0;96mEnter phone: \033[0m" if IS_TERMUX else "Enter phone: "
+                )
                 client = CustomTelegramClient(
                     MemorySession(),
                     self.api_token.ID,
@@ -450,12 +504,11 @@ class Hikka:
                     connection=self.conn,
                     proxy=self.proxy,
                     connection_retries=None,
-                    device_model=(
-                        f"Hikka on {utils.get_named_platform().split(maxsplit=1)[1]}"
-                    ),
-                    app_version=(
-                        f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}"
-                    ),
+                    device_model=generate_app_name(),
+                    system_version="Windows 10",
+                    app_version=".".join(map(str, __version__)) + " x64",
+                    lang_code="en",
+                    system_lang_code="en-US",
                 )
 
                 client.start(phone)
@@ -495,27 +548,42 @@ class Hikka:
                     connection=self.conn,
                     proxy=self.proxy,
                     connection_retries=None,
-                    device_model="Hikka",
+                    device_model=generate_app_name(),
+                    system_version="Windows 10",
+                    app_version=".".join(map(str, __version__)) + " x64",
+                    lang_code="en",
+                    system_lang_code="en-US",
                 )
 
-                client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
-
+                client.start(
+                    phone=(
+                        raise_auth
+                        if self.web
+                        else lambda: input(
+                            "\033[0;96mEnter phone: \033[0m"
+                            if IS_TERMUX
+                            else "Enter phone: "
+                        )
+                    )
+                )
                 client.phone = "never gonna give you up"
 
                 self.clients += [client]
             except sqlite3.OperationalError:
                 logging.error(
-                    "Check that this is the only instance running. "
-                    "If that doesn't help, delete the file '%s'",
+                    (
+                        "Check that this is the only instance running. "
+                        "If that doesn't help, delete the file '%s'"
+                    ),
                     session.filename,
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
-                os.remove(os.path.join(BASE_DIR, session.filename))
+                Path(session.filename).unlink(missing_ok=True)
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
-                run_config(self.arguments.data_root)
+                run_config()
                 return False
             except PhoneNumberInvalidError:
                 logging.error(
@@ -691,6 +759,6 @@ class Hikka:
         self._init_loop()
 
 
-telethon.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
+hikkatl.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
 
 hikka = Hikka()

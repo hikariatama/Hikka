@@ -33,9 +33,9 @@ import sys
 import traceback
 import typing
 
-from telethon import events
-from telethon.errors import FloodWaitError, RPCError
-from telethon.tl.types import Message
+from hikkatl import events
+from hikkatl.errors import FloodWaitError, RPCError
+from hikkatl.tl.types import Message
 
 from . import main, security, utils
 from .database import Database
@@ -356,6 +356,11 @@ class CommandDispatcher:
             or not await self._handle_ratelimit(message, func)
             or not await self.security.check(message, func)
         ):
+            return False
+
+        if message.is_channel and message.edit_date and not message.is_group:
+            # TODO: search admin log for the author of the event
+            logger.debug("Ignoring edit in channel")
             return False
 
         if (

@@ -26,10 +26,10 @@ import logging
 import time
 import typing
 
-from telethon.hints import EntityLike
-from telethon.tl.functions.messages import GetFullChatRequest
-from telethon.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
-from telethon.utils import get_display_name
+from hikkatl.hints import EntityLike
+from hikkatl.tl.functions.messages import GetFullChatRequest
+from hikkatl.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
+from hikkatl.utils import get_display_name
 
 from . import main, utils
 from .database import Database

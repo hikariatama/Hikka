@@ -20,7 +20,7 @@ class UpdateNotifierMod(loader.Module):
     strings = {
         "name": "UpdateNotifier",
         "update_required": (
-            "🌘 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮"
+            "🆕 <b>Hikka Update available!</b>\n\nNew Hikka version released.\n🔮"
             " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 And {} more...</b></i>",
@@ -32,7 +32,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_ru = {
         "update_required": (
-            "🌘 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮"
+            "🆕 <b>Доступно обновление Hikka!</b>\n\nОпубликована новая версия Hikka.\n🔮"
             " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 И еще {}...</b></i>",
@@ -44,7 +44,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_fr = {
         "update_required": (
-            "🌘 <b>Mise à jour Hikka disponible!</b>\n\nNouvelle version de Hikka"
+            "🆕 <b>Mise à jour Hikka disponible!</b>\n\nNouvelle version de Hikka"
             " publiée.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 Et {} de plus...</b></i>",
@@ -58,7 +58,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_it = {
         "update_required": (
-            "🌘 <b>Aggiornamento disponibile per Hikka!</b>\n\nÈ stato rilasciato un"
+            "🆕 <b>Aggiornamento disponibile per Hikka!</b>\n\nÈ stato rilasciato un"
             " nuovo aggiornamento per Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 E altri {}...</b></i>",
@@ -72,7 +72,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_de = {
         "update_required": (
-            "🌘 <b>Hikka Update verfügbar!</b>\n\nNeue Hikka Version veröffentlicht.\n🔮"
+            "🆕 <b>Hikka Update verfügbar!</b>\n\nNeue Hikka Version veröffentlicht.\n🔮"
             " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 Und {} mehr...</b></i>",
@@ -86,7 +86,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_uz = {
         "update_required": (
-            "🌘 <b>Hikka yangilash mavjud!</b>\n\nYangi Hikka versiyasi chiqdi.\n🔮"
+            "🆕 <b>Hikka yangilash mavjud!</b>\n\nYangi Hikka versiyasi chiqdi.\n🔮"
             " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 Va {} boshqa...</b></i>",
@@ -98,7 +98,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_tr = {
         "update_required": (
-            "🌘 <b>Hikka güncellemesi mevcut!</b>\n\nYeni bir Hikka sürümü"
+            "🆕 <b>Hikka güncellemesi mevcut!</b>\n\nYeni bir Hikka sürümü"
             " yayınlandı.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 Ve {} daha fazlası...</b></i>",
@@ -110,7 +110,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_es = {
         "update_required": (
-            "🌘 <b>¡Actualización de Hikka disponible!</b>\n\nSe ha publicado una nueva"
+            "🆕 <b>¡Actualización de Hikka disponible!</b>\n\nSe ha publicado una nueva"
             " versión de Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 Y {} más...</b></i>",
@@ -122,7 +122,7 @@ class UpdateNotifierMod(loader.Module):
 
     strings_kk = {
         "update_required": (
-            "🌘 <b>Hikka жаңартуға болады!</b>\n\nЖаңа Hikka нұсқасы жарияланды.\n🔮"
+            "🆕 <b>Hikka жаңартуға болады!</b>\n\nЖаңа Hikka нұсқасы жарияланды.\n🔮"
             " <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
         ),
         "more": "\n<i><b>🎥 Мынаның үшінше {}...</b></i>",
@@ -170,9 +170,9 @@ class UpdateNotifierMod(loader.Module):
 
     def get_latest(self) -> str:
         try:
-            return list(
+            return next(
                 git.Repo().iter_commits(f"origin/{version.branch}", max_count=1)
-            )[0].hexsha
+            ).hexsha
         except Exception:
             return ""
 
@@ -205,10 +205,11 @@ class UpdateNotifierMod(loader.Module):
             await asyncio.sleep(60)
             return
 
-        if self._pending not in [utils.get_git_hash(), self._notified]:
-            m = await self.inline.bot.send_message(
+        if self._pending not in {utils.get_git_hash(), self._notified}:
+            m = await self.inline.bot.send_animation(
                 self.tg_id,
-                self.strings("update_required").format(
+                "https://t.me/hikari_assets/71",
+                caption=self.strings("update_required").format(
                     utils.get_git_hash()[:6],
                     '<a href="https://github.com/hikariatama/Hikka/compare/{}...{}">{}</a>'
                     .format(
@@ -218,7 +219,6 @@ class UpdateNotifierMod(loader.Module):
                     ),
                     self.get_changelog(),
                 ),
-                disable_web_page_preview=True,
                 reply_markup=self._markup(),
             )
 

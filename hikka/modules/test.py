@@ -12,7 +12,7 @@ import time
 import typing
 from io import BytesIO
 
-from telethon.tl.types import Message
+from hikkatl.tl.types import Message
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
@@ -594,21 +594,25 @@ class TestMod(loader.Module):
             loader.ConfigValue(
                 "force_send_all",
                 False,
-                "⚠️ Do not touch, if you don't know what it does!\nBy default, Hikka"
-                " will try to determine, which client caused logs. E.g. there is a"
-                " module TestModule installed on Client1 and TestModule2 on Client2. By"
-                " default, Client2 will get logs from TestModule2, and Client1 will get"
-                " logs from TestModule. If this option is enabled, Hikka will send all"
-                " logs to Client1 and Client2, even if it is not the one that caused"
-                " the log.",
+                (
+                    "⚠️ Do not touch, if you don't know what it does!\nBy default,"
+                    " Hikka will try to determine, which client caused logs. E.g. there"
+                    " is a module TestModule installed on Client1 and TestModule2 on"
+                    " Client2. By default, Client2 will get logs from TestModule2, and"
+                    " Client1 will get logs from TestModule. If this option is enabled,"
+                    " Hikka will send all logs to Client1 and Client2, even if it is"
+                    " not the one that caused the log."
+                ),
                 validator=loader.validators.Boolean(),
                 on_change=self._pass_config_to_logger,
             ),
             loader.ConfigValue(
                 "tglog_level",
                 "INFO",
-                "⚠️ Do not touch, if you don't know what it does!\n"
-                "Minimal loglevel for records to be sent in Telegram.",
+                (
+                    "⚠️ Do not touch, if you don't know what it does!\n"
+                    "Minimal loglevel for records to be sent in Telegram."
+                ),
                 validator=loader.validators.Choice(
                     ["INFO", "WARNING", "ERROR", "CRITICAL"]
                 ),
@@ -874,7 +878,7 @@ class TestMod(loader.Module):
 
             return
 
-        logs = self.lookup("python").censor(logs)
+        logs = self.lookup("evaluator").censor(logs)
 
         logs = BytesIO(logs.encode("utf-16"))
         logs.name = "hikka-logs.txt"

@@ -8,8 +8,8 @@ import difflib
 import inspect
 import logging
 
-from telethon.extensions.html import CUSTOM_EMOJIS
-from telethon.tl.types import Message
+from hikkatl.extensions.html import CUSTOM_EMOJIS
+from hikkatl.tl.types import Message
 
 from .. import loader, utils
 from ..compat.dragon import DRAGON_EMOJI
@@ -526,22 +526,27 @@ class HelpMod(loader.Module):
                 " <code>{}{}</code>{} {}".format(
                     self.get_prefix("dragon" if is_dragon else None),
                     name,
-                    " ({})".format(
-                        ", ".join(
-                            "<code>{}{}</code>".format(
-                                self.get_prefix("dragon" if is_dragon else None), alias
+                    (
+                        " ({})".format(
+                            ", ".join(
+                                "<code>{}{}</code>".format(
+                                    self.get_prefix("dragon" if is_dragon else None),
+                                    alias,
+                                )
+                                for alias in self.find_aliases(name)
                             )
-                            for alias in self.find_aliases(name)
                         )
-                    )
-                    if self.find_aliases(name)
-                    else "",
-                    utils.escape_html(fun)
-                    if is_dragon
-                    else (
-                        utils.escape_html(inspect.getdoc(fun))
-                        if fun.__doc__
-                        else self.strings("undoc")
+                        if self.find_aliases(name)
+                        else ""
+                    ),
+                    (
+                        utils.escape_html(fun)
+                        if is_dragon
+                        else (
+                            utils.escape_html(inspect.getdoc(fun))
+                            if fun.__doc__
+                            else self.strings("undoc")
+                        )
                     ),
                 )
             )
@@ -584,13 +589,17 @@ class HelpMod(loader.Module):
 
         reply = self.strings("all_header").format(
             len(self.allmodules.modules) + len(self.allmodules.dragon_modules),
-            0
-            if force
-            else sum(
-                module.__class__.__name__ in hidden
-                for module in self.allmodules.modules
-            )
-            + sum(module.name in hidden for module in self.allmodules.dragon_modules),
+            (
+                0
+                if force
+                else sum(
+                    module.__class__.__name__ in hidden
+                    for module in self.allmodules.modules
+                )
+                + sum(
+                    module.name in hidden for module in self.allmodules.dragon_modules
+                )
+            ),
         )
         shown_warn = False
 

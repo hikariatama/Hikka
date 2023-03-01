@@ -15,12 +15,12 @@ import typing
 
 import git
 from git import GitCommandError, Repo
-from telethon.extensions.html import CUSTOM_EMOJIS
-from telethon.tl.functions.messages import (
+from hikkatl.extensions.html import CUSTOM_EMOJIS
+from hikkatl.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
-from telethon.tl.types import DialogFilter, Message
+from hikkatl.tl.types import DialogFilter, Message
 
 from .. import loader, main, utils, version
 from .._internal import restart
@@ -614,9 +614,11 @@ class UpdaterMod(loader.Module):
     async def process_restart_message(self, msg_obj: typing.Union[InlineCall, Message]):
         self.set(
             "selfupdatemsg",
-            msg_obj.inline_message_id
-            if hasattr(msg_obj, "inline_message_id")
-            else f"{utils.get_chat_id(msg_obj)}:{msg_obj.id}",
+            (
+                msg_obj.inline_message_id
+                if hasattr(msg_obj, "inline_message_id")
+                else f"{utils.get_chat_id(msg_obj)}:{msg_obj.id}"
+            ),
         )
 
     async def restart_common(
@@ -742,11 +744,13 @@ class UpdaterMod(loader.Module):
                 or not self.inline.init_complete
                 or not await self.inline.form(
                     message=message,
-                    text=self.strings("update_confirm").format(
-                        current, current[:8], upcoming, upcoming[:8]
-                    )
-                    if upcoming != current
-                    else self.strings("no_update"),
+                    text=(
+                        self.strings("update_confirm").format(
+                            current, current[:8], upcoming, upcoming[:8]
+                        )
+                        if upcoming != current
+                        else self.strings("no_update")
+                    ),
                     reply_markup=[
                         {
                             "text": self.strings("btn_update"),

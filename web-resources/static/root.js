@@ -230,6 +230,11 @@ function show_2fa() {
     });
     $(".code-input").removeAttr("disabled");
     $(".code-input").attr("inputmode", "text");
+    $(".code-input").attr("autocomplete", "off");
+    $(".code-input").attr("autocorrect", "off");
+    $(".code-input").attr("autocapitalize", "off");
+    $(".code-input").attr("spellcheck", "false");
+    $(".code-input").attr("type", "password");
     if ($(".enter").hasClass("tgcode"))
         $(".enter").removeClass("tgcode");
     $(".code-caption").html("Enter your Telegram 2FA password, then press <span style='color: #dc137b;'>Enter</span>");
@@ -455,6 +460,11 @@ function process_next() {
                     $(".code-input").removeAttr("disabled");
                     $(".enter").addClass("tgcode");
                     $(".code-caption").text("Enter the code you recieved in Telegram");
+                    $(".code-input").attr("autocomplete", "off");
+                    $(".code-input").attr("autocorrect", "off");
+                    $(".code-input").attr("autocapitalize", "off");
+                    $(".code-input").attr("spellcheck", "false");
+                    $(".code-input").attr("type", "number");
                     cnt_btn.setAttribute("current-step", "code");
                     _current_block = "code";
                 }

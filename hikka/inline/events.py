@@ -92,8 +92,10 @@ class Events(InlineUnit):
                 mandatory = {"message", "photo", "gif", "video", "file"}
                 if all(item not in res for item in mandatory):
                     logger.error(
-                        "Got invalid type from inline handler. It must contain one of"
-                        " `%s`",
+                        (
+                            "Got invalid type from inline handler. It must contain one"
+                            " of `%s`"
+                        ),
                         mandatory,
                     )
                     await instance.e500()
@@ -282,8 +284,10 @@ class Events(InlineUnit):
                     except Exception:
                         logger.exception("Error on running callback watcher!")
                         await call.answer(
-                            "Error occurred while processing request. More info in"
-                            " logs",
+                            (
+                                "Error occurred while processing request. More info in"
+                                " logs"
+                            ),
                             show_alert=True,
                         )
                         return
@@ -429,11 +433,9 @@ class Events(InlineUnit):
                         thumb_height=128,
                         reply_markup=self.generate_markup(
                             {
-                                "text": (
-                                    self._client.loader.lookup("translations").strings(
-                                        "run_command"
-                                    )
-                                ),
+                                "text": self._client.loader.lookup(
+                                    "translations"
+                                ).strings("run_command"),
                                 "switch_inline_query_current_chat": f"{name} ",
                             }
                         ),

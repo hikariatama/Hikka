@@ -25,9 +25,9 @@ from aiogram.types import (
     InputMediaPhoto,
 )
 from aiogram.utils.exceptions import BadRequest, RetryAfter
-from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
-from telethon.extensions.html import CUSTOM_EMOJIS
-from telethon.tl.types import Message
+from hikkatl.errors.rpcerrorlist import ChatSendInlineForbiddenError
+from hikkatl.extensions.html import CUSTOM_EMOJIS
+from hikkatl.tl.types import Message
 
 from .. import main, utils
 from ..types import HikkaReplyMarkup
@@ -104,8 +104,10 @@ class Gallery(InlineUnit):
             and all(isinstance(item, str) for item in caption)
         ) and not callable(caption):
             logger.error(
-                "Invalid type for `caption`. Expected `str` or `list` or `callable`,"
-                " got `%s`",
+                (
+                    "Invalid type for `caption`. Expected `str` or `list` or"
+                    " `callable`, got `%s`"
+                ),
                 type(caption),
             )
             return False
@@ -182,8 +184,10 @@ class Gallery(InlineUnit):
                 next_handler = ListGalleryHelper(next_handler)
             else:
                 logger.error(
-                    "Invalid type for `next_handler`. Expected `callable` or `list` of"
-                    " `str`, got `%s`",
+                    (
+                        "Invalid type for `next_handler`. Expected `callable` or `list`"
+                        " of `str`, got `%s`"
+                    ),
                     type(next_handler),
                 )
                 return False
@@ -212,7 +216,7 @@ class Gallery(InlineUnit):
             "message_id": None,
             "top_msg_id": utils.get_topic(message),
             "uid": unit_id,
-            "photo_url": (photo_url if isinstance(photo_url, str) else photo_url[0]),
+            "photo_url": photo_url if isinstance(photo_url, str) else photo_url[0],
             "next_handler": next_handler,
             "btn_call_data": btn_call_data,
             "photos": [photo_url] if isinstance(photo_url, str) else photo_url,
@@ -283,9 +287,9 @@ class Gallery(InlineUnit):
             q = await self._client.inline_query(self.bot_username, unit_id)
             m = await q[0].click(
                 utils.get_chat_id(message) if isinstance(message, Message) else message,
-                reply_to=message.reply_to_msg_id
-                if isinstance(message, Message)
-                else None,
+                reply_to=(
+                    message.reply_to_msg_id if isinstance(message, Message) else None
+                ),
             )
         except ChatSendInlineForbiddenError:
             await answer(
@@ -347,8 +351,7 @@ class Gallery(InlineUnit):
             typing.List[str],
         ],
     ) -> typing.Union[str, bool]:
-        """Parses photo url from `callback`. Returns url on success, otherwise `False`
-        """
+        """Parses photo url from `callback`. Returns url on success, otherwise `False`"""
         if isinstance(callback, str):
             photo_url = callback
         elif isinstance(callback, list):
@@ -359,16 +362,20 @@ class Gallery(InlineUnit):
             photo_url = callback()
         else:
             logger.error(
-                "Invalid type for `next_handler`. Expected `str`, `list` or `callable`,"
-                " got %s",
+                (
+                    "Invalid type for `next_handler`. Expected `str`, `list` or"
+                    " `callable`, got %s"
+                ),
                 type(callback),
             )
             return False
 
         if not isinstance(photo_url, (str, list)):
             logger.error(
-                "Got invalid result from `next_handler`. Expected `str` or `list`,"
-                " got %s",
+                (
+                    "Got invalid result from `next_handler`. Expected `str` or `list`,"
+                    " got %s"
+                ),
                 type(photo_url),
             )
             return False
@@ -603,9 +610,7 @@ class Gallery(InlineUnit):
         return (
             caption
             if isinstance(caption, str)
-            else caption()
-            if callable(caption)
-            else ""
+            else caption() if callable(caption) else ""
         )
 
     def _gallery_markup(self, unit_id: str) -> InlineKeyboardMarkup:
@@ -637,9 +642,9 @@ class Gallery(InlineUnit):
                             *(
                                 [
                                     {
-                                        "text": "🛑"
-                                        if unit.get("slideshow", False)
-                                        else "⏱",
+                                        "text": (
+                                            "🛑" if unit.get("slideshow", False) else "⏱"
+                                        ),
                                         "callback": callback,
                                         "args": ("slideshow",),
                                     }

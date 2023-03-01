@@ -5,28 +5,17 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
-import io
 import logging
-import os
 import re
 
-from telethon.errors.rpcerrorlist import YouBlockedUserError
-from telethon.tl.functions.contacts import UnblockRequest
+from hikkatl.errors.rpcerrorlist import YouBlockedUserError
+from hikkatl.tl.functions.contacts import UnblockRequest
 
 from .. import utils
 from .._internal import fw_protect
 from .types import InlineUnit
 
 logger = logging.getLogger(__name__)
-
-with open(
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "assets", "bot_pfp.png")
-    ),
-    "rb",
-) as f:
-    photo = io.BytesIO(f.read())
-    photo.name = "avatar.png"
 
 
 class TokenObtainment(InlineUnit):
@@ -85,7 +74,9 @@ class TokenObtainment(InlineUnit):
 
             try:
                 await fw_protect()
-                m = await conv.send_file(photo)
+                from .. import main
+
+                m = await conv.send_file(main.BASE_PATH / "assets" / "bot_pfp.png")
                 r = await conv.get_response()
 
                 logger.debug(">> <Photo>")
@@ -252,7 +243,11 @@ class TokenObtainment(InlineUnit):
 
                     try:
                         await fw_protect()
-                        m = await conv.send_file(photo)
+                        from .. import main
+
+                        m = await conv.send_file(
+                            main.BASE_PATH / "assets" / "bot_pfp.png"
+                        )
                         r = await conv.get_response()
 
                         logger.debug(">> <Photo>")

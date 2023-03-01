@@ -6,7 +6,7 @@
 
 import logging
 
-from telethon.tl.types import Message
+from hikkatl.tl.types import Message
 
 from .. import loader, translations, utils
 from ..inline.types import InlineCall
@@ -819,8 +819,7 @@ class Translations(loader.Module):
         ),
     )
     async def dllangpackcmd(self, message: Message):
-        """[link to a langpack | empty to remove] - Change Hikka translate pack (external)
-        """
+        """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""
         args = utils.get_args_raw(message)
 
         if not args:

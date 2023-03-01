@@ -12,26 +12,26 @@ import logging
 import re
 import typing
 
-import telethon
-from pyrogram import Client as PyroClient
-from pyrogram import errors as pyro_errors
-from pyrogram import raw
+import hikkatl
+from hikkapyro import Client as PyroClient
+from hikkapyro import errors as pyro_errors
+from hikkapyro import raw
 
 from .. import translations, utils
 from ..tl_cache import CustomTelegramClient
 from ..version import __version__
 
 PROXY = {
-    pyro_object: telethon.tl.alltlobjects.tlobjects[constructor_id]
+    pyro_object: hikkatl.tl.alltlobjects.tlobjects[constructor_id]
     for constructor_id, pyro_object in raw.all.objects.items()
-    if constructor_id in telethon.tl.alltlobjects.tlobjects
+    if constructor_id in hikkatl.tl.alltlobjects.tlobjects
 }
 
 REVERSED_PROXY = {
     **{tl_object: pyro_object for pyro_object, tl_object in PROXY.items()},
     **{
         tl_object: raw.all.objects[tl_object.CONSTRUCTOR_ID]
-        for _, tl_object in utils.iter_attrs(telethon.tl.custom)
+        for _, tl_object in utils.iter_attrs(hikkatl.tl.custom)
         if getattr(tl_object, "CONSTRUCTOR_ID", None) in raw.all.objects
     },
 }
@@ -47,6 +47,12 @@ logger = logging.getLogger(__name__)
 
 
 class PyroProxyClient(PyroClient):
+    """
+    Pyrogram client that redirects all requests to telethon's handler
+    :param tl_client: telethon client
+    :type tl_client: CustomTelegramClient
+    """
+
     def __init__(self, tl_client: CustomTelegramClient):
         self.tl_client = tl_client
         super().__init__(
@@ -72,15 +78,19 @@ class PyroProxyClient(PyroClient):
         self.conn = tl_client.session._conn
 
     async def start(self):
+        """
+        Starts the client
+        :return: None
+        """
         self.me = await self.get_me()
         self.tl_client.raw_updates_processor = self._on_event
 
     def _on_event(
         self,
         event: typing.Union[
-            telethon.tl.types.Updates,
-            telethon.tl.types.UpdatesCombined,
-            telethon.tl.types.UpdateShort,
+            hikkatl.tl.types.Updates,
+            hikkatl.tl.types.UpdatesCombined,
+            hikkatl.tl.types.UpdateShort,
         ],
     ):
         asyncio.ensure_future(self.handle_updates(self._tl2pyro(event)))
@@ -91,6 +101,13 @@ class PyroProxyClient(PyroClient):
         *args,
         **kwargs,
     ) -> typing.Union[typing.List[raw.core.TLObject], raw.core.TLObject]:
+        """
+        Invokes a Pyrogram request through telethon
+        :param query: Pyrogram request
+        :return: Pyrogram response
+        :raises RPCError: if Telegram returns an error
+        :rtype: typing.Union[typing.List[raw.core.TLObject], raw.core.TLObject]
+        """
         logger.debug(
             "Running Pyrogram's invoke of %s with Telethon proxying",
             query.__class__.__name__,
@@ -103,14 +120,14 @@ class PyroProxyClient(PyroClient):
 
         try:
             r = await self.tl_client(self._pyro2tl(query))
-        except telethon.errors.rpcerrorlist.RPCError as e:
+        except hikkatl.errors.rpcerrorlist.RPCError as e:
             raise self._tl_error2pyro(e)
 
         return self._tl2pyro(r)
 
     @staticmethod
     def _tl_error2pyro(
-        error: telethon.errors.rpcerrorlist.RPCError,
+        error: hikkatl.errors.rpcerrorlist.RPCError,
     ) -> pyro_errors.RPCError:
         rpc = (
             re.sub(r"([A-Z])", r"_\1", error.__class__.__name__)
@@ -130,7 +147,7 @@ class PyroProxyClient(PyroClient):
             ),
         )()
 
-    def _pyro2tl(self, pyro_obj: raw.core.TLObject) -> telethon.tl.TLObject:
+    def _pyro2tl(self, pyro_obj: raw.core.TLObject) -> hikkatl.tl.TLObject:
         """
         Recursively converts Pyrogram TLObjects to Telethon TLObjects (methods,
         types and everything else, which is in tl schema)
@@ -161,7 +178,7 @@ class PyroProxyClient(PyroClient):
             }
         )
 
-    def _tl2pyro(self, tl_obj: telethon.tl.TLObject) -> raw.core.TLObject:
+    def _tl2pyro(self, tl_obj: hikkatl.tl.TLObject) -> raw.core.TLObject:
         """
         Recursively converts Telethon TLObjects to Pyrogram TLObjects (methods,
         types and everything else, which is in tl schema)
@@ -177,7 +194,7 @@ class PyroProxyClient(PyroClient):
             and hasattr(tl_obj, "sender_id")
         ):
             tl_obj = copy.copy(tl_obj)
-            tl_obj.from_id = telethon.tl.types.PeerUser(tl_obj.sender_id)
+            tl_obj.from_id = hikkatl.tl.types.PeerUser(tl_obj.sender_id)
 
         if isinstance(tl_obj, list):
             return [self._tl2pyro(i) for i in tl_obj]
@@ -188,7 +205,7 @@ class PyroProxyClient(PyroClient):
         if isinstance(tl_obj, int) and str(tl_obj).startswith("-100"):
             return int(str(tl_obj)[4:])
 
-        if not isinstance(tl_obj, telethon.tl.TLObject):
+        if not isinstance(tl_obj, hikkatl.tl.TLObject):
             return tl_obj
 
         if type(tl_obj) not in REVERSED_PROXY:
@@ -235,7 +252,13 @@ class PyroProxyClient(PyroClient):
 
         return obj
 
-    async def resolve_peer(self, *args, **kwargs):
+    async def resolve_peer(self, *args, **kwargs) -> raw.types.Peer:
+        """
+        Resolve a peer (user, chat or channel) from the given input.
+        :param args: Arguments to pass to the Telethon client's
+        :return: The resolved peer
+        :rtype: :obj:`Peer <pyrogram.api.types.Peer>`
+        """
         return self._tl2pyro(await self.tl_client.get_entity(*args, **kwargs))
 
     async def fetch_peers(
@@ -244,22 +267,32 @@ class PyroProxyClient(PyroClient):
             typing.Union[raw.types.User, raw.types.Chat, raw.types.Channel]
         ],
     ) -> bool:
+        """
+        Fetches the given peers (users, chats or channels) from the server.
+        :param peers: List of peers to fetch
+        :return: True if the peers were fetched successfully
+        :rtype: bool
+        """
         return any(getattr(peer, "min", False) for peer in peers)
 
     @property
     def iter_chat_members(self):
+        """Alias for :obj:`get_chat_members <pyrogram.Client.get_chat_members>`"""
         return self.get_chat_members
 
     @property
     def iter_dialogs(self):
+        """Alias for :obj:`get_dialogs <pyrogram.Client.get_dialogs>`"""
         return self.get_dialogs
 
     @property
     def iter_history(self):
+        """Alias for :obj:`get_history <pyrogram.Client.get_history>`"""
         return self.get_chat_history
 
     @property
     def iter_profile_photos(self):
+        """Alias for :obj:`get_profile_photos <pyrogram.Client.get_profile_photos>`"""
         return self.get_chat_photos
 
     async def save_file(
@@ -269,7 +302,17 @@ class PyroProxyClient(PyroClient):
         file_part: int = 0,
         progress: typing.Callable = None,
         progress_args: tuple = (),
-    ):
+    ) -> raw.types.InputFileLocation:
+        """
+        Save a file to the given path.
+        :param path: The path to save the file to
+        :param file_id: The file ID to save
+        :param file_part: The file part to save
+        :param progress: A callback function to track the progress
+        :param progress_args: Arguments to pass to the progress callback
+        :return: The file location
+        :rtype: :obj:`InputFileLocation <pyrogram.api.types.InputFileLocation>`
+        """
         return self._tl2pyro(
             await self.tl_client.upload_file(
                 path,

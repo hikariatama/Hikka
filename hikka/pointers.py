@@ -12,7 +12,7 @@ class PointerList(list):
 
     def __init__(
         self,
-        db: "Database",  # type: ignore
+        db: "Database",  # type: ignore  # noqa: F821
         module: str,
         key: str,
         default: typing.Optional[typing.Any] = None,
@@ -22,6 +22,16 @@ class PointerList(list):
         self._key = key
         self._default = default
         super().__init__(db.get(module, key, default))
+
+    @property
+    def data(self) -> list:
+        return list(self)
+
+    @data.setter
+    def data(self, value: list):
+        self.clear()
+        self.extend(value)
+        self._save()
 
     def __repr__(self):
         return f"PointerList({list(self)})"
@@ -43,12 +53,12 @@ class PointerList(list):
         self._save()
         return a
 
-    def __iadd__(self, __x: typing.Iterable) -> "Self":  # type: ignore
+    def __iadd__(self, __x: typing.Iterable) -> "Self":  # type: ignore  # noqa: F821
         a = super().__iadd__(__x)
         self._save()
         return a
 
-    def __imul__(self, __x: int) -> "Self":  # type: ignore
+    def __imul__(self, __x: int) -> "Self":  # type: ignore  # noqa: F821
         a = super().__imul__(__x)
         self._save()
         return a
@@ -87,7 +97,7 @@ class PointerDict(dict):
 
     def __init__(
         self,
-        db: "Database",  # type: ignore
+        db: "Database",  # type: ignore  # noqa: F821
         module: str,
         key: str,
         default: typing.Optional[typing.Any] = None,
@@ -97,6 +107,16 @@ class PointerDict(dict):
         self._key = key
         self._default = default
         super().__init__(db.get(module, key, default))
+
+    @property
+    def data(self) -> dict:
+        return dict(self)
+
+    @data.setter
+    def data(self, value: dict):
+        self.clear()
+        self.update(value)
+        self._save()
 
     def __repr__(self):
         return f"PointerDict({dict(self)})"

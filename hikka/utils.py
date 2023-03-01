@@ -43,24 +43,24 @@ from urllib.parse import urlparse
 
 import git
 import grapheme
+import hikkatl
 import requests
-import telethon
 from aiogram.types import Message as AiogramMessage
-from telethon import hints
-from telethon.tl.custom.message import Message
-from telethon.tl.functions.account import UpdateNotifySettingsRequest
-from telethon.tl.functions.channels import (
+from hikkatl import hints
+from hikkatl.tl.custom.message import Message
+from hikkatl.tl.functions.account import UpdateNotifySettingsRequest
+from hikkatl.tl.functions.channels import (
     CreateChannelRequest,
     EditAdminRequest,
     EditPhotoRequest,
     InviteToChannelRequest,
 )
-from telethon.tl.functions.messages import (
+from hikkatl.tl.functions.messages import (
     GetDialogFiltersRequest,
     SetHistoryTTLRequest,
     UpdateDialogFilterRequest,
 )
-from telethon.tl.types import (
+from hikkatl.tl.types import (
     Channel,
     Chat,
     ChatAdminRights,
@@ -122,15 +122,15 @@ FormattingEntity = typing.Union[
 
 emoji_pattern = re.compile(
     "["
-    "\U0001F600-\U0001F64F"  # emoticons
-    "\U0001F300-\U0001F5FF"  # symbols & pictographs
-    "\U0001F680-\U0001F6FF"  # transport & map symbols
-    "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+    "\U0001f600-\U0001f64f"  # emoticons
+    "\U0001f300-\U0001f5ff"  # symbols & pictographs
+    "\U0001f680-\U0001f6ff"  # transport & map symbols
+    "\U0001f1e0-\U0001f1ff"  # flags (iOS)
     "]+",
     flags=re.UNICODE,
 )
 
-parser = telethon.utils.sanitize_parse_mode("html")
+parser = hikkatl.utils.sanitize_parse_mode("html")
 logger = logging.getLogger(__name__)
 
 
@@ -222,7 +222,7 @@ def get_chat_id(message: typing.Union[Message, AiogramMessage]) -> int:
     :param message: Message to get chat ID from
     :return: Chat ID
     """
-    return telethon.utils.resolve_id(
+    return hikkatl.utils.resolve_id(
         getattr(message, "chat_id", None)
         or getattr(getattr(message, "chat", None), "id", None)
     )[0]
@@ -234,7 +234,7 @@ def get_entity_id(entity: hints.Entity) -> int:
     :param entity: Entity to get ID from
     :return: Entity ID
     """
-    return telethon.utils.get_peer_id(entity)
+    return hikkatl.utils.get_peer_id(entity)
 
 
 def escape_html(text: str, /) -> str:  # sourcery skip
@@ -495,8 +495,10 @@ async def answer(
             "reply_to",
             getattr(message, "reply_to_msg_id", None),
         )
+    elif "reply_to" in kwargs:
+        kwargs.pop("reply_to")
 
-    parse_mode = telethon.utils.sanitize_parse_mode(
+    parse_mode = hikkatl.utils.sanitize_parse_mode(
         kwargs.pop(
             "parse_mode",
             message.client.parse_mode,
@@ -894,7 +896,9 @@ def get_named_platform() -> str:
     Returns formatted platform name
     :return: Platform name
     """
-    try:
+    from . import main
+
+    with contextlib.suppress(Exception):
         if os.path.isfile("/proc/device-tree/model"):
             with open("/proc/device-tree/model") as f:
                 model = f.read()
@@ -902,34 +906,26 @@ def get_named_platform() -> str:
                     return f"🍊 {model}"
 
                 return f"🍇 {model}" if "Raspberry" in model else f"❓ {model}"
-    except Exception:
-        # In case of weird fs, aka Termux
-        pass
 
-    try:
-        from platform import uname
+    if main.IS_WSL:
+        return "🍁 WSL"
 
-        if "microsoft-standard" in uname().release:
-            return "🍁 WSL"
-    except Exception:
-        pass
-
-    if "GOORM" in os.environ:
+    if main.IS_GOORM:
         return "🦾 GoormIDE"
 
-    if "RAILWAY" in os.environ:
+    if main.IS_RAILWAY:
         return "🚂 Railway"
 
-    if "DOCKER" in os.environ:
+    if main.IS_DOCKER:
         return "🐳 Docker"
 
-    if "com.termux" in os.environ.get("PREFIX", ""):
+    if main.IS_TERMUX:
         return "🕶 Termux"
 
-    if "CODESPACES" in os.environ:
+    if main.IS_CODESPACES:
         return "🐈‍⬛ Codespaces"
 
-    return f"✌️ lavHost {os.environ['LAVHOST']}" if "LAVHOST" in os.environ else "📻 VDS"
+    return f"✌️ lavHost {os.environ['LAVHOST']}" if main.IS_LAVHOST else "📻 VDS"
 
 
 def get_platform_emoji() -> str:
@@ -937,6 +933,8 @@ def get_platform_emoji() -> str:
     Returns custom emoji for current platform
     :return: Emoji entity in string
     """
+    from . import main
+
     BASE = "".join(
         (
             "<emoji document_id={}>🌘</emoji>",
@@ -945,22 +943,22 @@ def get_platform_emoji() -> str:
         )
     )
 
-    if "DOCKER" in os.environ:
+    if main.IS_DOCKER:
         return BASE.format(5298554256603752468)
 
-    if "LAVHOST" in os.environ:
+    if main.IS_LAVHOST:
         return BASE.format(5301078610747074753)
 
-    if "GOORM" in os.environ:
+    if main.IS_GOORM:
         return BASE.format(5298947740032573902)
 
-    if "CODESPACES" in os.environ:
+    if main.IS_CODESPACES:
         return BASE.format(5194976881127989720)
 
-    if "com.termux" in os.environ.get("PREFIX", ""):
+    if main.IS_TERMUX:
         return BASE.format(5193051778001673828)
 
-    if "RAILWAY" in os.environ:
+    if main.IS_RAILWAY:
         return BASE.format(5199607521593007466)
 
     return BASE.format(5192765204898783881)
@@ -979,7 +977,7 @@ def formatted_uptime() -> str:
     Returnes formmated uptime
     :return: Formatted uptime
     """
-    return f"{str(timedelta(seconds=uptime()))}"
+    return str(timedelta(seconds=uptime()))
 
 
 def ascii_face() -> str:
@@ -1099,7 +1097,7 @@ def smart_split(
 
     :example:
         >>> utils.smart_split(
-            *telethon.extensions.html.parse(
+            *hikkatl.extensions.html.parse(
                 "<b>Hello, world!</b>"
             )
         )
@@ -1371,9 +1369,11 @@ def remove_html(text: str, escape: bool = False, keep_emojis: bool = False) -> s
     """
     return (escape_html if escape else str)(
         re.sub(
-            r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>)"
-            if keep_emojis
-            else r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>|<\/?emoji.*?>)",
+            (
+                r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>)"
+                if keep_emojis
+                else r"(<\/?a.*?>|<\/?b>|<\/?i>|<\/?u>|<\/?strong>|<\/?em>|<\/?code>|<\/?strike>|<\/?del>|<\/?pre.*?>|<\/?emoji.*?>)"
+            ),
             "",
             text,
         )
@@ -1457,8 +1457,8 @@ def validate_html(html: str) -> str:
     :param html: HTML to validate
     :return: Valid HTML
     """
-    text, entities = telethon.extensions.html.parse(html)
-    return telethon.extensions.html.unparse(escape_html(text), entities)
+    text, entities = hikkatl.extensions.html.parse(html)
+    return hikkatl.extensions.html.unparse(escape_html(text), entities)
 
 
 def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]:
@@ -1504,9 +1504,11 @@ def get_topic(message: Message) -> typing.Optional[int]:
             and message.reply_to
             and message.reply_to.forum_topic
         )
-        else message.form["top_msg_id"]
-        if isinstance(message, (InlineCall, InlineMessage))
-        else None
+        else (
+            message.form["top_msg_id"]
+            if isinstance(message, (InlineCall, InlineMessage))
+            else None
+        )
     )
 
 

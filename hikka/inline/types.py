@@ -21,7 +21,7 @@ class InlineMessage:
 
     def __init__(
         self,
-        inline_manager: "InlineManager",  # type: ignore
+        inline_manager: "InlineManager",  # type: ignore  # noqa: F821
         unit_id: str,
         inline_message_id: str,
     ):
@@ -62,7 +62,7 @@ class BotInlineMessage:
 
     def __init__(
         self,
-        inline_manager: "InlineManager",  # type: ignore
+        inline_manager: "InlineManager",  # type: ignore  # noqa: F821
         unit_id: str,
         chat_id: int,
         message_id: int,
@@ -119,7 +119,7 @@ class InlineCall(CallbackQuery, InlineMessage):
     def __init__(
         self,
         call: CallbackQuery,
-        inline_manager: "InlineManager",  # type: ignore
+        inline_manager: "InlineManager",  # type: ignore  # noqa: F821
         unit_id: str,
     ):
         CallbackQuery.__init__(self)
@@ -151,7 +151,7 @@ class BotInlineCall(CallbackQuery, BotInlineMessage):
     def __init__(
         self,
         call: CallbackQuery,
-        inline_manager: "InlineManager",  # type: ignore
+        inline_manager: "InlineManager",  # type: ignore  # noqa: F821
         unit_id: str,
     ):
         CallbackQuery.__init__(self)
@@ -229,8 +229,10 @@ class InlineQuery(AiogramInlineQuery):
         await self.answer(
             self._get_res(
                 "🚫 400",
-                "Bad request. You need to pass right arguments, follow module's"
-                " documentation",
+                (
+                    "Bad request. You need to pass right arguments, follow module's"
+                    " documentation"
+                ),
                 "https://img.icons8.com/color/344/swearing-male--v1.png",
             ),
             cache_time=0,

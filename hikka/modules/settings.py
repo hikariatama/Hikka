@@ -4,10 +4,10 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-import pyrogram
-import telethon
-from telethon.extensions.html import CUSTOM_EMOJIS
-from telethon.tl.types import Message
+import hikkapyro
+import hikkatl
+from hikkatl.extensions.html import CUSTOM_EMOJIS
+from hikkatl.tl.types import Message
 
 from .. import loader, main, utils, version
 from ..compat.dragon import DRAGON_EMOJI
@@ -881,13 +881,13 @@ class CoreMod(loader.Module):
                 ),
                 *version.__version__,
                 utils.get_commit_url(),
-                f"{telethon.__version__} #{telethon.tl.alltlobjects.LAYER}",
+                f"{hikkatl.__version__} #{hikkatl.tl.alltlobjects.LAYER}",
                 (
                     "<emoji document_id=5377399247589088543>🔥</emoji>"
                     if self._client.pyro_proxy
                     else "<emoji document_id=5418308381586759720>📴</emoji>"
                 ),
-                f"{pyrogram.__version__} #{pyrogram.raw.all.layer}",
+                f"{hikkapyro.__version__} #{hikkapyro.raw.all.layer}",
             )
             + (
                 ""

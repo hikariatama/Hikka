@@ -1,5 +1,18 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.6.2
+
+- Fix security issue with edited channel messages
+- Add interface to interact with raw pointer data (`.data` attribute)
+- Translation fixes
+- Randomize `device_model` to bypass fraud detection
+- Pass proper device information to Telegram
+- Update `hikka-tl` in accordance to upstream telethon v1
+- Update `hikka-pyro` in accordance to upstream pyrogram
+- Rename packages so that they don't conflict with originals
+- Partially migrate to `pathlib`
+- Code cleanup
+
 ## 🌑 Hikka 1.6.1
 
 - Remove miyahost from official hosts

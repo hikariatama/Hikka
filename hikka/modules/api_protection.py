@@ -11,9 +11,9 @@ import logging
 import random
 import time
 
-from telethon.tl import functions
-from telethon.tl.tlobject import TLRequest
-from telethon.tl.types import Message
+from hikkatl.tl import functions
+from hikkatl.tl.tlobject import TLRequest
+from hikkatl.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import InlineCall
@@ -588,8 +588,8 @@ class APIRatelimiterMod(loader.Module):
         old_call = self._client._call
 
         async def new_call(
-            sender: "MTProtoSender",  # type: ignore
-            request: "TLRequest",  # type: ignore
+            sender: "MTProtoSender",  # type: ignore  # noqa: F821
+            request: TLRequest,
             ordered: bool = False,
             flood_sleep_threshold: int = None,
         ):

@@ -13,9 +13,9 @@ import time
 from aiogram import Bot, Dispatcher
 from aiogram.types import ParseMode
 from aiogram.utils.exceptions import TerminatedByOtherGetUpdates, Unauthorized
-from telethon.errors.rpcerrorlist import InputUserDeactivatedError, YouBlockedUserError
-from telethon.tl.functions.contacts import UnblockRequest
-from telethon.utils import get_display_name
+from hikkatl.errors.rpcerrorlist import InputUserDeactivatedError, YouBlockedUserError
+from hikkatl.tl.functions.contacts import UnblockRequest
+from hikkatl.utils import get_display_name
 
 from ..database import Database
 from ..tl_cache import CustomTelegramClient
@@ -41,11 +41,21 @@ class InlineManager(
     List,
     BotPM,
 ):
+    """
+    Inline buttons, galleries and other Telegram-Bot-API stuff
+    :param client: Telegram client
+    :param db: Database instance
+    :param allmodules: All modules
+    :type client: hikka.tl_cache.CustomTelegramClient
+    :type db: hikka.database.Database
+    :type allmodules: hikka.loader.Modules
+    """
+
     def __init__(
         self,
         client: CustomTelegramClient,
         db: Database,
-        allmodules: "Modules",  # type: ignore
+        allmodules: "Modules",  # type: ignore  # noqa: F821
     ):
         """Initialize InlineManager to create forms"""
         self._client = client
@@ -76,6 +86,15 @@ class InlineManager(
         after_break: bool = False,
         ignore_token_checks: bool = False,
     ):
+        """
+        Register manager
+        :param after_break: Loop marker
+        :param ignore_token_checks: If `True`, will not check for token
+        :type after_break: bool
+        :type ignore_token_checks: bool
+        :return: None
+        :rtype: None
+        """
         # Get info about user to use it in this class
         self._me = self._client.tg_id
         self._name = get_display_name(self._client.hikka_me)
@@ -179,18 +198,21 @@ class InlineManager(
         self._cleaner_task = asyncio.ensure_future(self._cleaner())
 
     async def _stop(self):
+        """Stop the bot"""
         self._task.cancel()
         self._dp.stop_polling()
         self._cleaner_task.cancel()
 
-    def pop_web_auth_token(self, token) -> bool:
-        """Check if web confirmation button was pressed"""
+    def pop_web_auth_token(self, token: str) -> bool:
+        """
+        Check if web confirmation button was pressed
+        :param token: Token to check
+        :type token: str
+        :return: `True` if token was found, `False` otherwise
+        :rtype: bool
+        """
         if token not in self._web_auth_tokens:
             return False
 
         self._web_auth_tokens.remove(token)
         return True
-
-
-if __name__ == "__main__":
-    raise Exception("This file must be called as a module")

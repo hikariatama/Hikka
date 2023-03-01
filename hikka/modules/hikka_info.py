@@ -5,8 +5,8 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import git
-from telethon.tl.types import Message
-from telethon.utils import get_display_name
+from hikkatl.tl.types import Message
+from hikkatl.utils import get_display_name
 
 from .. import loader, utils, version
 from ..inline.types import InlineQuery
@@ -50,12 +50,21 @@ class HikkaInfoMod(loader.Module):
         "_cfg_cst_btn": "Custom button for info. Leave empty to remove button",
         "_cfg_banner": "URL to image banner",
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji>"
-            " <b>Hikka</b>\n\nTelegram userbot with a lot of features, like inline"
-            " galleries, forms, lists and animated emojis support. Userbot - software,"
-            " running on your Telegram account. If you write a command to any chat, it"
-            " will get executed right there. Check out live examples at <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Userbot — what is"
+            " it?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> A userbot"
+            " refers to a <b>third-party program</b> that interacts with the Telegram"
+            " API to perform <b>automated tasks on behalf of a user</b>. These userbots"
+            " can be used to automate various tasks such as <b>sending messages,"
+            " joining channels, downloading media, and much more</b>.\n\n<emoji"
+            " document_id=5474667187258006816>😎</emoji> Userbots are different from"
+            " regular Telegram bots as <b>they run on the user's account</b> rather"
+            " than a bot account. This means that userbots can access more features and"
+            " have greater flexibility in terms of the actions they can"
+            " perform.\n\n<emoji document_id=5472267631979405211>🚫</emoji> However, it"
+            " is important to note that <b>userbots are not officially supported by"
+            " Telegram</b> and their use may violate the platform's terms of service."
+            " As such, <b>users should exercise caution when using userbots</b> and"
+            " ensure that they are not being used for malicious purposes.\n\n"
         ),
     }
 
@@ -96,13 +105,22 @@ class HikkaInfoMod(loader.Module):
             " изменен</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji>"
-            " <b>Hikka</b>\n\nTelegram юзербот с огромным количеством функций, из"
-            " которых: инлайн галереи, формы, списки, а также поддержка"
-            " анимированных эмодзи. Юзербот - программа, которая запускается на"
-            " твоем Telegram-аккаунте. Когда ты пишешь команду в любом чате, она"
-            " сразу же выполняется. Обрати внимание на живые примеры на <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Что такое"
+            " Userbot?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Userbot"
+            " - это <b>сторонняя программа</b>, которая взаимодействует с Telegram API"
+            " для выполнения <b>автоматизированных задач от имени пользователя</b>."
+            " Юзерботы могут использоваться для автоматизации различных задач, таких"
+            " как <b>отправка сообщений, присоединение к каналам, загрузка медиафайлов"
+            " и многое другое</b>.\n\n<emoji document_id=5474667187258006816>😎</emoji>"
+            " Юзерботы отличаются от обычных ботов в Telegram тем, что <b>они работают"
+            " на аккаунте пользователя</b>, а не на бот-аккаунте. Это означает, что они"
+            " могут иметь доступ к большему количеству функций и обладают большей"
+            " гибкостью в плане выполнения действий.\n\n<emoji"
+            " document_id=5472267631979405211>🚫</emoji> Однако важно отметить, что"
+            " <b>юзерботы официально не поддерживаются Telegram</b> и их использование"
+            " может нарушать условия использования платформы. Поэтому <b>пользователи"
+            " должны быть осторожны при их использовании</b> и убедиться, что на их"
+            " аккаунте не выполняется вредоносный код.\n\n"
         ),
     }
 
@@ -144,14 +162,24 @@ class HikkaInfoMod(loader.Module):
             " a bien été modifiée</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji>"
-            " <b>Hikka</b>\n\nUn bot utilisateur de Telegram avec beaucoup de"
-            " fonctions, y compris des galeries en ligne, des formulaires, des"
-            " listes, et également la prise en charge des émoticônes animées."
-            " Le bot utilisateur est un programme qui s'exécute sur votre compte"
-            " de Telegram. Lorsque vous tapez une commande dans n'importe quel"
-            " chat, elle est exécutée immédiatement. Notez les exemples en"
-            ' direct sur <a href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Qu'est-ce qu'un"
+            " Userbot?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Userbot"
+            " est un <b>programme tiers</b> qui interagit avec l'API Telegram pour"
+            " exécuter des <b>tâches automatisées au nom de l'utilisateur</b>. Les"
+            " userbots peuvent être utilisés pour automatiser diverses tâches, telles"
+            " que <b>l'envoi de messages, l'adhésion aux canaux, le téléchargement de"
+            " fichiers multimédias et bien plus encore</b>.\n\n<emoji"
+            " document_id=5474667187258006816>😎</emoji> Les userbots diffèrent des bots"
+            " Telegram classiques dans le sens où <b>ils fonctionnent sur le compte de"
+            " l'utilisateur</b> et non sur un compte de bot. Cela signifie qu'ils"
+            " peuvent avoir accès à plus de fonctions et être plus flexibles dans"
+            " l'exécution de leurs actions.\n\n<emoji"
+            " document_id=5472267631979405211>🚫</emoji> Cependant, il est important de"
+            " noter que <b>les userbots ne sont pas officiellement pris en charge par"
+            " Telegram</b> et leur utilisation peut enfreindre les conditions"
+            " d'utilisation de la plateforme. Par conséquent, <b>les utilisateurs"
+            " doivent faire preuve de prudence lors de leur utilisation</b> et"
+            " s'assurer que le code malveillant n'est pas exécuté sur leur compte.\n\n"
         ),
     }
 
@@ -183,12 +211,23 @@ class HikkaInfoMod(loader.Module):
         "_cfg_cst_btn": "Bottone personalizzato per info. Lascia vuoto per rimuovere",
         "_cfg_banner": "URL dell'immagine banner",
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji>"
-            " <b>Hikka</b>\n\nUserbot di Telegram con molte funzioni, come gallerie"
-            " inline, form, liste e supporto ad emoji animate. Userbot - software"
-            " che gira sul tuo account Telegram. Se scrivi un comando in qualsiasi"
-            " chat, viene eseguito lì. Controlla gli esempi in <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Che cos'è un"
+            " Userbot?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Il"
+            " Userbot è un <b>programma esterno</b> che interagisce con l'API di"
+            " Telegram per eseguire <b>compiti automatizzati</b> a nome dell'utente. I"
+            " userbot possono essere utilizzati per automatizzare diversi compiti, come"
+            " <b>invio di messaggi, iscrizione a canali, caricamento di file"
+            " multimediali e molto altro ancora</b>.\n\n<emoji"
+            " document_id=5474667187258006816>😎</emoji> I userbot differiscono dai bot"
+            " di Telegram nel fatto che <b>funzionano con gli account utente</b> e non"
+            " con quelli di bot. Ciò significa che possono avere accesso a più"
+            " funzionalità e una maggiore flessibilità nella loro esecuzione.\n\n<emoji"
+            " document_id=5472267631979405211>🚫</emoji> Tuttavia, è importante notare"
+            " che <b>i userbot non sono supportati ufficialmente da Telegram</b> e"
+            " l'utilizzo di quest'ultimi può violare i termini di utilizzo della"
+            " piattaforma. Pertanto, <b>gli utenti devono essere cautelosi quando li"
+            " utilizzano e assicurarsi che sul loro account non venga eseguito codice"
+            " malevolo</b>.\n\n"
         ),
     }
 
@@ -223,13 +262,23 @@ class HikkaInfoMod(loader.Module):
             "<emoji document_id=5436040291507247633>🎉</emoji> <b>Info geändert</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji>"
-            " <b>Hikka</b>\n\nTelegram userbot mit vielen Funktionen, wie z.B. Inline"
-            " Galerien, Formulare, Listen und Unterstützung für animierte Emojis."
-            " Userbot - Software, die auf deinem Telegram-Account läuft. Wenn du"
-            " einen Befehl in irgendeinem Chat schreibst, wird er dort ausgeführt."
-            " Sieh dir Live-Beispiele auf <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Was ist ein"
+            " Userbot?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Userbot"
+            " ist ein <b>externe Programm</b>, welches mit der Telegram API"
+            " kommuniziert, um <b>automatisierte Aufgaben</b> für den Benutzer"
+            " auszuführen. Userbots können benutzt werden, um verschiedene Aufgaben zu"
+            " automatisieren, wie zum Beispiel <b>Nachrichten senden, Kanäle beitreten,"
+            " Medien hochladen und vieles mehr</b>.\n\n<emoji"
+            " document_id=5474667187258006816>😎</emoji> Userbots unterscheiden sich von"
+            " normalen Telegram Bots darin, dass <b>sie auf einem Benutzerkonto"
+            " laufen</b> und nicht auf einem Botkonto. Das bedeutet, dass sie mehr"
+            " Funktionen haben und mehr Flexibilität bei der Ausführung von Aktionen"
+            " haben.\n\n<emoji document_id=5472267631979405211>🚫</emoji> Es ist jedoch"
+            " wichtig zu beachten, dass <b>Userbots nicht offiziell von Telegram"
+            " unterstützt werden</b> und ihre Verwendung gegen die Nutzungsbedingungen"
+            " von Telegram verstoßen kann. Deshalb <b>müssen Benutzer vorsichtig sein,"
+            " wenn sie Userbots benutzen</b> und sicherstellen, dass auf ihrem Konto"
+            " kein schädlicher Code ausgeführt wird.\n\n"
         ),
     }
 
@@ -270,13 +319,25 @@ class HikkaInfoMod(loader.Module):
             " o'zgartirildi</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nKo'p"
-            " funksiyali userbot, buning ichida: ichki-gallereya, formalar, ro'yhatlar,"
-            " hamda animatsiyalangan emojilar. Userbot - bu sening"
-            " telegram-akkauntingni ichida ishlaydigan ilova. Hohlagan chatga komanda"
-            " yozsangiz, tez orada bu komanda ishlaydi. <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub</a> da misollarni'
-            " ko'rishingiz mumkin"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Userbot"
+            " nima?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Userbot -"
+            " bu <b>tashqi dastur</b>, <b>foydalanuvchi tomonidan</b> ishlaydigan"
+            " Telegram API bilan aloqa qilish uchun ishlatiladi. Userbotlarni"
+            " <b>avtomatlashtirilgan vazifalarni bajarish</b> uchun ishlatish mumkin."
+            " Userbotlar <b>habarlarni yuborish, kanallarga ulanish, media fayllarni"
+            " yuklash va boshqa biror vazifa bajarish</b> uchun ishlatilishi"
+            " mumkin.\n\n<emoji document_id=5474667187258006816>😎</emoji> Userbotlar"
+            " Telegramda obyektiv bo'lgan botlardan farqli. Userbotlar"
+            " <b>bot-hisobotlaridan</b> ishlaydi, <b>foydalanuvchi hisobotidan</b>"
+            " ishlaydi. Bu shuni anglatadiki, userbotlar <b>Telegram platformasida"
+            " ishlash</b> uchun kerakli funksiyalarga ega va ular <b>qanday vazifalarni"
+            " bajarishni</b> xohlayotgan bo'lishi mumkin.\n\n<emoji"
+            " document_id=5472267631979405211>🚫</emoji> Lekin shuni unutmangki,"
+            " <b>userbotlar Telegram tomonidan rasmiylashtirilmagan</b> va ularni"
+            " ishlatish <b>Telegram shartlari bilan</b> bir-biriga mos kelmaydi."
+            " Shuning uchun <b>foydalanuvchilar userbotlarni ishlatishda</b> qattiq"
+            " bo'lishi lozim va <b>ularning hisobotlari</b> bo'lmaguncha biror zararli"
+            " kod yuklamasini tekshirish kerak.\n\n"
         ),
     }
 
@@ -313,13 +374,22 @@ class HikkaInfoMod(loader.Module):
             " değiştirildi</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\\Çok fazla"
-            " özellik barındıran Telegram kullanıcı botu, örneğin Çevrimiçi galeri,"
-            " formlar, listeler ve animasyonlu emoji desteği gibi. Kullanıcı botu -"
-            " Telegram hesabınızda çalışan bir yazılımdır. Bir sohbete bir komut"
-            " yazarsanız, hemen orada çalışacaktır. Örnekleri görmek için <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub\'ı ziyaret'
-            " edebilirsin</a>"
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Neden"
+            " Userbot?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Userbot"
+            " - <b>Telegram API ile</b> <b>Kullanıcı adına</b> <b>otomatikleştirilmiş"
+            " işlemleri</b> yürüten bir <b>üçüncü taraf programıdır</b>. Userbotlar,"
+            " <b>mesaj gönderme, kanallara katılma, medya yükleme ve diğer işlemleri"
+            " otomatize etmek için kullanılabilecek</b> birçok işi otomatize etmenizi"
+            " sağlar.\n\n<emoji document_id=5474667187258006816>😎</emoji> Userbotlar,"
+            " <b>normal Telegram botlarından farklı olarak</b>, <b>Kullanıcı hesabında"
+            " çalışırlar</b>. Bu, <b>daha fazla iş yapmalarına</b> ve <b>daha esnek"
+            " olmalarına</b> olanak verir.\n\n<emoji"
+            " document_id=5472267631979405211>🚫</emoji> Bununla birlikte, <b>Userbotlar"
+            " Telegram tarafından resmi olarak desteklenmez</b> ve bunların kullanımı"
+            " platformun kullanım koşullarını ihlal edebilir. Kullanıcılar <b>bu"
+            " nedenle Userbotların kullanımını dikkatli bir şekilde yapmalıdır</b> ve"
+            " kullanıcı hesaplarında kötü niyetli kodun çalıştırılmadığından emin"
+            " olmalıdırlar.\n\n"
         ),
     }
 
@@ -360,12 +430,22 @@ class HikkaInfoMod(loader.Module):
             " con éxito</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nEl bot de"
-            " usuario proporciona varias funciones. Por ejemplo: Galería en línea,"
-            " formulario, lista, Emoji animado y más. El bot de usuario es una"
-            " aplicación que funciona dentro de una cuenta de Telegram. Las órdenes de"
-            " chat se ejecutan de inmediato. Para obtener más información, consulte <a"
-            ' href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>¿Qué es un"
+            " Userbot?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Un"
+            " Userbot es un <b>programa externo</b> que interactúa con la API de"
+            " Telegram para realizar <b>tareas automatizadas en nombre del usuario</b>."
+            " Los userbots pueden utilizarse para automatizar diversas tareas, como"
+            " <b>envío de mensajes, unirse a canales, subir archivos multimedia y mucho"
+            " más</b>.\n\n<emoji document_id=5474667187258006816>😎</emoji> Los userbots"
+            " se diferencian de los bots normales de Telegram en que <b>trabajan en la"
+            " cuenta del usuario</b> en lugar de en una cuenta de bot. Esto significa"
+            " que tienen acceso a más funciones y son más flexibles a la hora de"
+            " realizar acciones.\n\n<emoji document_id=5472267631979405211>🚫</emoji>"
+            " Sin embargo, es importante señalar que <b>los userbots no son oficiales y"
+            " no son compatibles con Telegram</b> y su uso puede violar los términos de"
+            " servicio de la plataforma. Por lo tanto, <b>los usuarios deben tener"
+            " cuidado al usarlos</b> y asegurarse de que en su cuenta no se ejecute"
+            " código malicioso.\n\n"
         ),
     }
 
@@ -404,11 +484,23 @@ class HikkaInfoMod(loader.Module):
             " өзгертілді</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nПайдалы"
-            " бот қосымшалары бар. Мысалы: Онлайн галерея, форма, тізім, анимациялы"
-            " emoji және басқалар. Пайдалы бот - телеграм аккаунтында іске қосылған"
-            " бағдарлама. Сөйлесу бойынша әрекетті қылуға болады. Қосымша ақпарат үшін"
-            ' <a href="https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Пайдаланушы боттарды"
+            " қандай болады?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji>"
+            " Пайдаланушы боттар - <b>шетел программа</b>, ол Telegram API мен"
+            " қолданушының атымен байланысады және <b>автоматтандырылған жұмыстарды"
+            " өткізеді</b>. Пайдаланушы боттар <b>хабарламаларды жіберу, каналға"
+            " қосылу, медиа файлдарды жүктеу және басқа қарастырылмаған жұмыстарды"
+            " жасау</b> үшін пайдаланылады.\n\n<emoji"
+            " document_id=5474667187258006816>😎</emoji> Пайдаланушы боттар Telegram"
+            " боттарынан айырмалы, себебі олар <b>пайдаланушының аккаунтымен жұмыс"
+            " істейді</b>, бот-аккаунтпен жұмыс істеуге берілмейді. Бұл оларға"
+            " <b>қатысуға болатын көп көрсеткіштерге және жұмыс істеуге көп"
+            " құралдарға</b> болатын жақсы құралдарды береді.\n\n<emoji"
+            " document_id=5472267631979405211>🚫</emoji> Одан қосымша, <b>пайдаланушы"
+            " боттардың Telegram үшін официалды қолдау көрсетуі жоқ</b> және оларды"
+            " пайдалану орталығының қолдану шарттарын бүгінге дейін бұзуы мүмкін."
+            " Оларды пайдалану <b>қолданушыларға қатысатын нәтижелердің барлығын"
+            " қарауға</b> мүмкіндік береді.\n\n"
         ),
     }
 
@@ -447,11 +539,20 @@ class HikkaInfoMod(loader.Module):
             " мөмкин булды</b>"
         ),
         "desc": (
-            "<emoji document_id=6318565919471699564>🌌</emoji> <b>Hikka</b>\n\nКулланучы"
-            " боты монда бер көйләүләрне күрсәтә: онлайн галерея, форма, рәвештә,"
-            " эмоджи һәм башкалары. Кулланучы боты Telegram аккаунтында исәпләнә. Чат"
-            " өчен күрсәтмәләр асабынча исәпләнә. Башка мәгълүмат өчен <a href="
-            '"https://github.com/hikariatama/Hikka">GitHub</a>'
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Катта"
+            " Userbot?</b>\n\n<emoji document_id=5472238129849048175>😎</emoji> Userbot"
+            " - бу <b>сайлама программа</b>, калан <b>Telegram API</b> ишләп <b>хисап"
+            " язмасы исеме</b> белән <b>автоматик өтәргә</b> мөмкин. Юзерботлар <b>хат"
+            " җибәрү, каналга җибәрү, медиа файлларны юкләү вә күбрәк башка"
+            " мәгълүматлар</b> ны автоматик өтәргә мөмкин.\n\n<emoji"
+            " document_id=5474667187258006816>😎</emoji> Юзерботлар <b>хисап язмасы"
+            " исеме</b> белән бергәндә, <b>бот исеме</b> белән бермәгәндән яңа"
+            " исемлектә булыр.\n\n<emoji document_id=5472267631979405211>🚫</emoji>"
+            " <b>Юзерботлар Telegram</b> тарафыннан <b>дөрес ярдәмендәр</b> булганында"
+            " ясалган. <b>Юзерботлар</b> <b>хисап язмасы исеме</b> белән бергәндә,"
+            " <b>бот исеме</b> белән бермәгәндән яңа исемлектә булыр. <b>Юзерботлар</b>"
+            " <b>хисап язмасы исеме</b> белән бергәндә, <b>бот исеме</b> белән"
+            " бермәгәндән яңа исемлектә булыр.\n\n"
         ),
     }
 
@@ -535,23 +636,25 @@ class HikkaInfoMod(loader.Module):
             if self.config["custom_message"]
             else (
                 f'<b>{{}}</b>\n\n<b>{{}} {self.strings("owner")}:</b> {me}\n\n<b>{{}}'
-                f" {self.strings('version')}:</b> {_version} {build}\n<b>{{}}"
-                f" {self.strings('branch')}:"
+                f' {self.strings("version")}:</b> {_version} {build}\n<b>{{}}'
+                f' {self.strings("branch")}:'
                 f"</b> <code>{version.branch}</code>\n{upd}\n\n<b>{{}}"
-                f" {self.strings('prefix')}:</b> {prefix}\n<b>{{}}"
-                f" {self.strings('uptime')}:"
+                f' {self.strings("prefix")}:</b> {prefix}\n<b>{{}}'
+                f' {self.strings("uptime")}:'
                 f"</b> {utils.formatted_uptime()}\n\n<b>{{}}"
-                f" {self.strings('cpu_usage')}:"
+                f' {self.strings("cpu_usage")}:'
                 f"</b> <i>~{utils.get_cpu_usage()} %</i>\n<b>{{}}"
-                f" {self.strings('ram_usage')}:"
+                f' {self.strings("ram_usage")}:'
                 f"</b> <i>~{utils.get_ram_usage()} MB</i>\n<b>{{}}</b>"
             ).format(
                 *map(
                     lambda x: utils.remove_html(x) if inline else x,
                     (
-                        utils.get_platform_emoji()
-                        if self._client.hikka_me.premium and not inline
-                        else "🌘 Hikka",
+                        (
+                            utils.get_platform_emoji()
+                            if self._client.hikka_me.premium and not inline
+                            else "🌘 Hikka"
+                        ),
                         "<emoji document_id=5373141891321699086>😎</emoji>",
                         "<emoji document_id=5469741319330996757>💫</emoji>",
                         "<emoji document_id=5449918202718985124>🌳</emoji>",

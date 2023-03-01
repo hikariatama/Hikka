@@ -120,8 +120,6 @@ elif echo "$OSTYPE" | grep -qE '^darwin.*'; then
 	runout "$SUDO_CMD$ $PKGMGR jpeg webp"
 fi
 
-runout "$SUDO_CMD $PKGMGR neofetch dialog"
-
 printf "\r\033[K\033[0;32mPackages installed!\e[0m"
 printf "\n\r\033[0;34mCloning repo...\e[0m"
 

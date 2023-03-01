@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import typing
+from pathlib import Path
 
 import requests
 
@@ -54,9 +55,7 @@ class Translator:
             )
 
             if os.path.isfile(possible_pack_path):
-                with open(possible_pack_path, "r") as f:
-                    self._data.update(json.load(f))
-
+                self._data.update(json.loads(Path(possible_pack_path).read_text()))
                 return True
 
         return True

@@ -35,16 +35,14 @@ elif __package__ != "hikka":  # In case they did python __main__.py
     print("🚫 Error: you cannot run this as a script; you must execute as a package")
 else:
     try:
-        # If telethon is not installed, just skip to a part of main startup
-        # then main.py will through an error and re-install all deps
-        import telethon
+        import hikkatl
     except Exception:
         pass
     else:
         try:
-            import telethon
+            import hikkatl  # noqa: F811
 
-            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 14):
+            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 0):
                 raise ImportError
         except ImportError:
             print("🔄 Installing Hikka-TL...")
@@ -67,9 +65,9 @@ else:
             restart()
 
         try:
-            import pyrogram
+            import hikkapyro
 
-            if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 66):
+            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 100):
                 raise ImportError
         except ImportError:
             print("🔄 Installing Hikka-Pyro...")
@@ -118,8 +116,7 @@ else:
 
         restart()
 
-    if __name__ == "__main__":
-        if "HIKKA_DO_NOT_RESTART" in os.environ:
-            del os.environ["HIKKA_DO_NOT_RESTART"]
+    if "HIKKA_DO_NOT_RESTART" in os.environ:
+        del os.environ["HIKKA_DO_NOT_RESTART"]
 
-        main.hikka.main()  # Execute main function
+    main.hikka.main()  # Execute main function
