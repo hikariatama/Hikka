@@ -252,12 +252,16 @@ class PyroProxyClient(PyroClient):
 
         return obj
 
-    async def resolve_peer(self, *args, **kwargs) -> raw.types.Peer:
+    async def resolve_peer(
+        self,
+        *args,
+        **kwargs,
+    ) -> "typing.Union[hikkapyro.raw.types.PeerChat, hikkapyro.raw.types.PeerChannel, hikkapyro.raw.types.PeerUser]":  # type: ignore  # noqa: E501
         """
         Resolve a peer (user, chat or channel) from the given input.
         :param args: Arguments to pass to the Telethon client's
         :return: The resolved peer
-        :rtype: :obj:`Peer <pyrogram.api.types.Peer>`
+        :rtype: typing.Union[hikkapyro.raw.types.PeerChat, hikkapyro.raw.types.PeerChannel, hikkapyro.raw.types.PeerUser]
         """
         return self._tl2pyro(await self.tl_client.get_entity(*args, **kwargs))
 
