@@ -547,7 +547,6 @@ class Hikka:
                 self.clients += [client]
                 return True
 
-
             print("\033[0;96mLoading QR code...\033[0m")
             await client.connect()
             qr_login = await client.qr_login()

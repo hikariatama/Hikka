@@ -12,6 +12,9 @@
 - Rename packages so that they don't conflict with originals
 - Partially migrate to `pathlib`
 - Code cleanup
+- Add ability to log in using QR code and --no-web
+- Disable web interface for Termux and fallback to CLI login instead
+- Add fancy ANSI banner
 
 ## 🌑 Hikka 1.6.1
 

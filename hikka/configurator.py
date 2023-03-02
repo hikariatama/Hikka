@@ -20,12 +20,23 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
+import os
 import string
 
 
 def api_config():
     """Request API config from user and set"""
     from . import main
+
+    with open(
+        os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "assets", "banner.txt")
+        ),
+        "r",
+    ) as banner:
+        print(banner.read().replace("\\033", "\033"))
+
+    print("\033[0;96mWelcome to Hikka Userbot!\033[0m")
 
     while api_hash := input("\033[0;96mEnter API hash: \033[0m"):
         if len(api_hash) == 32 and all(
