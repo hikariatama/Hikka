@@ -257,6 +257,31 @@ class SecurityManager:
 
         return any_
 
+    def remove_rule(self, target_type: str, target_id: int, rule_cont: str) -> bool:
+        """
+        Removes targeted security rules for the given target
+
+        :param target_type: "user" or "chat"
+        :param target_id: target entity ID
+        :param rule_cont: rule name (module or command)
+        :return: True if any rules were removed
+        """
+
+        any_ = False
+
+        if target_type == "user":
+            for rule in self.tsec_user.copy():
+                if rule["target"] == target_id and rule["rule"] == rule_cont:
+                    self.tsec_user.remove(rule)
+                    any_ = True
+        elif target_type == "chat":
+            for rule in self.tsec_chat.copy():
+                if rule["target"] == target_id and rule["rule"] == rule_cont:
+                    self.tsec_chat.remove(rule)
+                    any_ = True
+
+        return any_
+
     def get_flags(self, func: typing.Union[Command, int]) -> int:
         """
         Gets the security flags for the given function

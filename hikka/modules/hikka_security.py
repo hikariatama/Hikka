@@ -2370,7 +2370,9 @@ class HikkaSecurityMod(loader.Module):
                 )
 
             if not self._client.dispatcher.security.remove_rule(
-                "user", target.id, args[1]
+                "user",
+                target.id,
+                args[1],
             ):
                 await utils.answer(message, self.strings("no_rules"))
                 return
