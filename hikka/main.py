@@ -547,6 +547,7 @@ class Hikka:
                 self.clients += [client]
                 return True
 
+            await client.connect()
             qr_login = await client.qr_login()
 
             def print_qr():
