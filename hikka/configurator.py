@@ -28,6 +28,7 @@ def api_config():
     """Request API config from user and set"""
     from . import main
 
+    print("\033[2J\033[3;1f")
     with open(
         os.path.abspath(
             os.path.join(os.path.dirname(__file__), "..", "assets", "banner.txt")
