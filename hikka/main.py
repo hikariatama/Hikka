@@ -562,8 +562,7 @@ class Hikka:
 
                 client.start(phone)
 
-                asyncio.ensure_future(self.save_client_session(client))
-
+                await self.save_client_session(client)
                 self.clients += [client]
                 return True
 
@@ -633,6 +632,8 @@ class Hikka:
                     else:
                         break
 
+            await self.save_client_session(client)
+            self.clients += [client]
             return True
 
         if not self.web.running.is_set():
