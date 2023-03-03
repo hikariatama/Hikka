@@ -152,7 +152,7 @@ def run_config():
     """Load configurator.py"""
     from . import configurator
 
-    return configurator.api_config()
+    return configurator.api_config(IS_TERMUX or None)
 
 
 def get_config_key(key: str) -> typing.Union[str, bool]:
@@ -526,6 +526,13 @@ class Hikka:
                 app_version=".".join(map(str, __version__)) + " x64",
                 lang_code="en",
                 system_lang_code="en-US",
+            )
+
+            print(
+                ("\033[0;96m{}\033[0m" if IS_TERMUX else "{}").format(
+                    "You can use QR-code to login from another device (your friend's"
+                    " phone, for example)."
+                )
             )
 
             if (

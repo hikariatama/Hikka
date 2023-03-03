@@ -21,45 +21,76 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import os
+import re
 import string
+import typing
 
 
-def api_config():
+def tty_print(text: str, tty: bool):
+    """
+    Print text to terminal if tty is True,
+    otherwise removes all ANSI escape sequences
+    """
+    print(text if tty else re.sub(r"\033\[[0-9;]*m", "", text))
+
+
+def tty_input(text: str, tty: bool) -> str:
+    """
+    Print text to terminal if tty is True,
+    otherwise removes all ANSI escape sequences
+    """
+    return input(text if tty else re.sub(r"\033\[[0-9;]*m", "", text))
+
+
+def api_config(tty: typing.Optional[bool] = None):
     """Request API config from user and set"""
     from . import main
 
-    print("\033[2J\033[3;1f")
-    with open(
-        os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "assets", "banner.txt")
-        ),
-        "r",
-    ) as banner:
-        print(banner.read().replace("\\033", "\033"))
+    if tty is None:
+        print("\033[0;91mThe quick brown fox jumps over the lazy dog\033[0m")
+        tty = input("Is the text above colored? [y/N]").lower() == "y"
 
-    print("\033[0;96mWelcome to Hikka Userbot!\033[0m")
+    if tty:
+        print("\033[2J\033[3;1f")
+        with open(
+            os.path.abspath(
+                os.path.join(os.path.dirname(__file__), "..", "assets", "banner.txt")
+            ),
+            "r",
+        ) as banner:
+            print(banner.read().replace("\\033", "\033"))
 
-    while api_hash := input("\033[0;96mEnter API hash: \033[0m"):
+    tty_print("\033[0;96mWelcome to Hikka Userbot!\033[0m", tty)
+    tty_print("\033[0;96m1. Go to https://my.telegram.org\033[0m", tty)
+    tty_print("\033[0;96m2. Login using your Telegram account\033[0m", tty)
+    tty_print("\033[0;96m3. Click on API development tools\033[0m", tty)
+    tty_print(
+        "\033[0;96m4. Create a new application, by entering the required details\033[0m",
+        tty,
+    )
+    tty_print("\033[0;96m5. Copy your API ID and API hash\033[0m", tty)
+
+    while api_id := tty_input("\033[0;96mEnter API ID: \033[0m", tty):
+        if api_id.isdigit():
+            break
+
+        tty_print("\033[0;91mInvalid ID\033[0m", tty)
+
+    if not api_id:
+        tty_print("\033[0;91mCancelled\033[0m", tty)
+        exit(0)
+
+    while api_hash := tty_input("\033[0;96mEnter API hash: \033[0m", tty):
         if len(api_hash) == 32 and all(
             symbol in string.hexdigits for symbol in api_hash
         ):
             break
 
-        print("\033[0;91mInvalid hash\033[0m")
+        tty_print("\033[0;91mInvalid hash\033[0m", tty)
 
     if not api_hash:
-        print("\033[0;91mCancelled\033[0m")
-        exit(0)
-
-    while api_id := input("\033[0;96mEnter API ID: \033[0m"):
-        if api_id.isdigit():
-            break
-
-        print("\033[0;91mInvalid ID\033[0m")
-
-    if not api_id:
-        print("\033[0;91mCancelled\033[0m")
+        tty_print("\033[0;91mCancelled\033[0m", tty)
         exit(0)
 
     (main.BASE_PATH / "api_token.txt").write_text(api_id + "\n" + api_hash)
-    print("\033[0;92mAPI config saved\033[0m")
+    tty_print("\033[0;92mAPI config saved\033[0m", tty)
