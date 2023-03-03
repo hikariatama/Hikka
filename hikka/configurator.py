@@ -88,7 +88,7 @@ def api_config(tty: typing.Optional[bool] = None):
         tty_print("\033[0;91mCancelled\033[0m", tty)
         exit(0)
 
-    while api_hash := tty_input("\033[0;96mEnter API hash: \033[0m", tty):
+    while api_hash := tty_input("\033[0;95mEnter API hash: \033[0m", tty):
         if len(api_hash) == 32 and all(
             symbol in string.hexdigits for symbol in api_hash
         ):

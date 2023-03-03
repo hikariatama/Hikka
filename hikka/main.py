@@ -598,9 +598,9 @@ class Hikka:
                 password = await client(GetPasswordRequest())
                 while True:
                     _2fa = getpass(
-                        f"\033[0;96mEnter 2FA password ({password}): \033[0m"
+                        f"\033[0;96mEnter 2FA password ({password.hint}): \033[0m"
                         if IS_TERMUX
-                        else f"Enter 2FA password ({password}): "
+                        else f"Enter 2FA password ({password.hint}): "
                     )
                     try:
                         await client._on_login(
@@ -859,7 +859,7 @@ class Hikka:
             not self.clients  # Search for already inited clients
             and not self.sessions  # Search for already added sessions
             or not self._init_clients()  # Attempt to read sessions from env
-        ) and not asyncio.run(self._initial_setup()):
+        ) and not self.loop.run_until_complete(self._initial_setup()):
             return
 
         self.loop.set_exception_handler(
