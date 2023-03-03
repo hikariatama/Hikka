@@ -635,6 +635,7 @@ class Hikka:
                         break
 
             print_banner("success.txt")
+            print("\033[0;92mLogged in successfully!\033[0m")
             await self.save_client_session(client)
             self.clients += [client]
             return True
