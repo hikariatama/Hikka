@@ -274,6 +274,7 @@ class Web:
             if self._2fa_needed:
                 return web.Response(status=403, body="2FA")
 
+            await main.hikka.save_client_session(self._pending_client)
             return web.Response(status=200, body="SUCCESS")
 
         if self._qr_login is None:
@@ -295,7 +296,7 @@ class Web:
             connection=self.connection,
             proxy=self.proxy,
             connection_retries=None,
-            device_model=main.generate_app_name(),
+            device_model=main.get_app_name(),
             system_version="Windows 10",
             app_version=".".join(map(str, __version__)) + " x64",
             lang_code="en",

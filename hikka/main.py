@@ -140,6 +140,19 @@ def generate_app_name() -> str:
     return " ".join(random.choices(LATIN_MOCK, k=3))
 
 
+def get_app_name() -> str:
+    """
+    Generates random app name or gets the saved one of present
+    :return: App name
+    :example: "Cresco Cibus Consilium"
+    """
+    if not (app_name := get_config_key("app_name")):
+        app_name = generate_app_name()
+        save_config_key("app_name", app_name)
+
+    return app_name
+
+
 try:
     import uvloop
 
@@ -301,7 +314,7 @@ class SuperList(list):
         if hasattr(list, attr):
             return list.__getattribute__(self, attr)
 
-        for obj in self:  # TODO: find other way
+        for obj in self:
             attribute = getattr(obj, attr)
             if callable(attribute):
                 if asyncio.iscoroutinefunction(attribute):
@@ -521,7 +534,7 @@ class Hikka:
                 connection=self.conn,
                 proxy=self.proxy,
                 connection_retries=None,
-                device_model=generate_app_name(),
+                device_model=get_app_name(),
                 system_version="Windows 10",
                 app_version=".".join(map(str, __version__)) + " x64",
                 lang_code="en",
@@ -649,7 +662,7 @@ class Hikka:
                     connection=self.conn,
                     proxy=self.proxy,
                     connection_retries=None,
-                    device_model=generate_app_name(),
+                    device_model=get_app_name(),
                     system_version="Windows 10",
                     app_version=".".join(map(str, __version__)) + " x64",
                     lang_code="en",

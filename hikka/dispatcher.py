@@ -359,9 +359,17 @@ class CommandDispatcher:
             return False
 
         if message.is_channel and message.edit_date and not message.is_group:
-            # TODO: search admin log for the author of the event
-            logger.debug("Ignoring edit in channel")
-            return False
+            async for event in self._client.iter_admin_log(
+                utils.get_chat_id(message),
+                limit=10,
+                edit=True,
+            ):
+                if event.action.prev_message.id == message.id:
+                    if event.user_id != self._client.tg_id:
+                        logger.debug("Ignoring edit in channel")
+                        return False
+                    else:
+                        break
 
         if (
             message.is_channel

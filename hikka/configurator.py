@@ -60,17 +60,25 @@ def api_config(tty: typing.Optional[bool] = None):
         ) as banner:
             print(banner.read().replace("\\033", "\033"))
 
-    tty_print("\033[0;96mWelcome to Hikka Userbot!\033[0m", tty)
-    tty_print("\033[0;96m1. Go to https://my.telegram.org\033[0m", tty)
-    tty_print("\033[0;96m2. Login using your Telegram account\033[0m", tty)
-    tty_print("\033[0;96m3. Click on API development tools\033[0m", tty)
+    tty_print("\033[0;95mWelcome to Hikka Userbot!\033[0m", tty)
+    tty_print("\033[0;96m1. Go to https://my.telegram.org and login\033[0m", tty)
+    tty_print("\033[0;96m2. Click on \033[1;96mAPI development tools\033[0m", tty)
     tty_print(
-        "\033[0;96m4. Create a new application, by entering the required details\033[0m",
+        (
+            "\033[0;96m3. Create a new application, by entering the required"
+            " details\033[0m"
+        ),
         tty,
     )
-    tty_print("\033[0;96m5. Copy your API ID and API hash\033[0m", tty)
+    tty_print(
+        (
+            "\033[0;96m4. Copy your \033[1;96mAPI ID\033[0;96m and \033[1;96mAPI"
+            " hash\033[0m"
+        ),
+        tty,
+    )
 
-    while api_id := tty_input("\033[0;96mEnter API ID: \033[0m", tty):
+    while api_id := tty_input("\033[0;95mEnter API ID: \033[0m", tty):
         if api_id.isdigit():
             break
 
