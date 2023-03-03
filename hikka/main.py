@@ -61,6 +61,7 @@ from hikkatl.tl.functions.account import GetPasswordRequest
 from hikkatl.tl.functions.auth import CheckPasswordRequest
 
 from . import database, loader, utils, version
+from ._internal import print_banner
 from .dispatcher import CommandDispatcher
 from .qr import QRCode
 from .tl_cache import CustomTelegramClient
@@ -594,17 +595,7 @@ class Hikka:
                 return False
 
             if await qr_login_poll():
-                print("\033[2J\033[3;1f")
-                with open(
-                    os.path.abspath(
-                        os.path.join(
-                            os.path.dirname(__file__), "..", "assets", "2fa.txt"
-                        )
-                    ),
-                    "r",
-                ) as banner:
-                    print(banner.read().replace("\\033", "\033"))
-
+                print_banner("2fa.txt")
                 password = await client(GetPasswordRequest())
                 while True:
                     _2fa = getpass(
@@ -643,6 +634,7 @@ class Hikka:
                     else:
                         break
 
+            print_banner("success.txt")
             await self.save_client_session(client)
             self.clients += [client]
             return True

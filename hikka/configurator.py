@@ -45,20 +45,14 @@ def tty_input(text: str, tty: bool) -> str:
 def api_config(tty: typing.Optional[bool] = None):
     """Request API config from user and set"""
     from . import main
+    from ._internal import print_banner
 
     if tty is None:
         print("\033[0;91mThe quick brown fox jumps over the lazy dog\033[0m")
         tty = input("Is the text above colored? [y/N]").lower() == "y"
 
     if tty:
-        print("\033[2J\033[3;1f")
-        with open(
-            os.path.abspath(
-                os.path.join(os.path.dirname(__file__), "..", "assets", "banner.txt")
-            ),
-            "r",
-        ) as banner:
-            print(banner.read().replace("\\033", "\033"))
+        print_banner("banner.txt")
 
     tty_print("\033[0;95mWelcome to Hikka Userbot!\033[0m", tty)
     tty_print("\033[0;96m1. Go to https://my.telegram.org and login\033[0m", tty)
