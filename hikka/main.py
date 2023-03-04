@@ -481,7 +481,9 @@ class Hikka:
         if hasattr(client, "_tg_id"):
             telegram_id = client._tg_id
         else:
-            me = await client.get_me()
+            if not (me := await client.get_me()):
+                raise RuntimeError("Attempted to save non-inited session")
+
             telegram_id = me.id
             client._tg_id = telegram_id
             client.tg_id = telegram_id
@@ -571,7 +573,7 @@ class Hikka:
                     "\033[0;96mEnter phone: \033[0m" if IS_TERMUX else "Enter phone: "
                 )
 
-                client.start(phone)
+                await client.start(phone)
 
                 await self.save_client_session(client)
                 self.clients += [client]
@@ -662,7 +664,7 @@ class Hikka:
 
         return True
 
-    def _init_clients(self) -> bool:
+    async def _init_clients(self) -> bool:
         """
         Reads session from disk and inits them
         :returns: `True` if at least one client started successfully
@@ -683,7 +685,7 @@ class Hikka:
                     system_lang_code="en-US",
                 )
 
-                client.start(
+                await client.start(
                     phone=(
                         raise_auth
                         if self.web
@@ -870,9 +872,9 @@ class Hikka:
         self._get_token()
 
         if (
-            not self.clients  # Search for already inited clients
-            and not self.sessions  # Search for already added sessions
-            or not self._init_clients()  # Attempt to read sessions from env
+            not self.clients
+            and not self.sessions
+            or not self.loop.run_until_complete(self._init_clients())
         ) and not self.loop.run_until_complete(self._initial_setup()):
             return
 
