@@ -79,7 +79,9 @@ class Database(dict):
 
     async def redis_init(self) -> bool:
         """Init redis database"""
-        if REDIS_URI := (os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")):
+        if REDIS_URI := (
+            os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")
+        ):
             self._redis = redis.Redis.from_url(REDIS_URI)
         else:
             return False

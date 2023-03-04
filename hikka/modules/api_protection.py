@@ -66,7 +66,7 @@ class APIRatelimiterMod(loader.Module):
     strings = {
         "name": "APILimiter",
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            "⚠️"
             " <b>WARNING!</b>\n\nYour account exceeded the limit of requests, specified"
             " in config. In order to prevent Telegram API Flood, userbot has been"
             " <b>fully frozen</b> for {} seconds. Further info is provided in attached"
@@ -116,7 +116,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_ru = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            "⚠️"
             " <b>ВНИМАНИЕ!</b>\n\nАккаунт вышел за лимиты запросов, указанные в"
             " конфиге. С целью предотвращения флуда Telegram API, юзербот был"
             " <b>полностью заморожен</b> на {} секунд. Дополнительная информация"
@@ -138,7 +138,7 @@ class APIRatelimiterMod(loader.Module):
         "off": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита отключена</b>"
         ),
-        "u_sure": "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Ты уверен?</b>",
+        "u_sure": "⚠️ <b>Ты уверен?</b>",
         "_cfg_time_sample": (
             "Временной промежуток, по которому будет считаться количество запросов"
         ),
@@ -166,7 +166,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_fr = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            "⚠️"
             " <b>ATTENTION!</b>\n\nLe compte a dépassé les limites de requêtes"
             " spécifiées dans la configuration. En vue de prévenir le flood de"
             " l'API Telegram, le userbot a été <b>complètement gelé</b> pendant {}"
@@ -194,9 +194,7 @@ class APIRatelimiterMod(loader.Module):
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Protection"
             " désactivée</b>"
         ),
-        "u_sure": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Êtes-vous sûr?</b>"
-        ),
+        "u_sure": "⚠️ <b>Êtes-vous sûr?</b>",
         "_cfg_time_sample": (
             "Intervalle de temps sur lequel le nombre de demandes sera compté"
         ),
@@ -226,7 +224,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_it = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>ATTENZIONE!</b>\n\nIl"
+            "⚠️ <b>ATTENZIONE!</b>\n\nIl"
             " tuo account è uscito dai limiti di richieste impostati nel file config."
             " Per evitare flood di richieste, il bot è stato <b>completamente"
             " sospeso</b> per {} secondi. Ulteriori informazioni sono disponibili nel"
@@ -253,9 +251,7 @@ class APIRatelimiterMod(loader.Module):
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Protezione"
             " disattivata</b>"
         ),
-        "u_sure": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Sei sicuro?</b>"
-        ),
+        "u_sure": "⚠️ <b>Sei sicuro?</b>",
         "_cfg_time_sample": (
             "Intervallo di tempo per il quale verranno conteggiate le richieste"
         ),
@@ -287,7 +283,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_de = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            "⚠️"
             " <b>Achtung!</b>\n\nDas Konto hat die in der Konfiguration angegebenen"
             " Grenzwerte für Anfragen überschritten. Um Telegram API-Flooding zu"
             " verhindern, wurde der <b>ganze Userbot</b> für {} Sekunden"
@@ -340,7 +336,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_tr = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Dikkat!</b>\n\nHesap"
+            "⚠️ <b>Dikkat!</b>\n\nHesap"
             " yapılandırmasında belirtilen sınır değerlerini aştı. Telegram API"
             " sızmalarını önlemek için <b>tüm Userbot</b> {} sanie donduruldu. Daha"
             " fazla bilgi için aşağıya eklenen dosyaya bakın.\n\nLütfen"
@@ -392,7 +388,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_uz = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            "⚠️"
             " <b>Ogohlantirish!</b>\n\nBu hisob uchun konfiguratsiyada ko'rsatilgan"
             " chegaralar chegarani o'zgartirgan.\n\nTelegram API Flood"
             " to'xtatish uchun, bu <b>hammasi userbot</b> uchun {} sekundni"
@@ -438,7 +434,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_es = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            "⚠️"
             " <b>¡Advertencia!</b>\n\nDe acuerdo con la configuración de esta cuenta,"
             " las siguientes limitaciones serán aplicadas.\n\nSe bloqueará <b>a todos"
             " los bots de los usuarios</b> por {} segundos para evitar el exceso de las"
@@ -491,7 +487,7 @@ class APIRatelimiterMod(loader.Module):
 
     strings_kk = {
         "warning": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji>"
+            "⚠️"
             " <b>Ескерту!</b>\n\nБұл есептің конфигурациясына сәйкес, келесі"
             " шектелген шарттар қолданылады.\n\nTelegram API үлеслерінен қорғалмасы"
             " үшін, <b>барлық пайдаланушылардың боттары</b> {} секунд құлыпталады."
@@ -625,9 +621,11 @@ class APIRatelimiterMod(loader.Module):
                     await self.inline.bot.send_document(
                         self.tg_id,
                         report,
-                        caption=self.strings("warning").format(
-                            self.config["local_floodwait"],
-                            prefix=self.get_prefix(),
+                        caption=self.inline.sanitise_text(
+                            self.strings("warning").format(
+                                self.config["local_floodwait"],
+                                prefix=self.get_prefix(),
+                            )
                         ),
                     )
 

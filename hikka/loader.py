@@ -999,14 +999,19 @@ class Modules:
             logger.exception("Failed to send mod config complete signal due to %s", e)
             raise
 
+    async def send_ready_one_wrapper(self, *args, **kwargs):
+        """Wrapper for send_ready_one"""
+        try:
+            await self.send_ready_one(*args, **kwargs)
+        except Exception as e:
+            logger.exception("Failed to send mod init complete signal due to %s", e)
+
     async def send_ready(self):
         """Send all data to all modules"""
         await self.inline.register_manager()
-
-        try:
-            await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
-        except Exception as e:
-            logger.exception("Failed to send mod init complete signal due to %s", e)
+        await asyncio.gather(
+            *[self.send_ready_one_wrapper(mod) for mod in self.modules]
+        )
 
     async def send_ready_one(
         self,

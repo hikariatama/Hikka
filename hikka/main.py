@@ -457,20 +457,15 @@ class Hikka:
             connection=self.conn,
         )
 
-    def _get_token(self):
+    async def _get_token(self):
         """Reads or waits for user to enter API credentials"""
         while self.api_token is None:
             if self.arguments.no_auth:
                 return
             if self.web:
-                self.loop.run_until_complete(
-                    self.web.start(
-                        self.arguments.port,
-                        proxy_pass=True,
-                    )
-                )
-                self.loop.run_until_complete(self._web_banner())
-                self.loop.run_until_complete(self.web.wait_for_api_token_setup())
+                await self.web.start(self.arguments.port, proxy_pass=True)
+                await self._web_banner()
+                await self.web.wait_for_api_token_setup()
                 self.api_token = self.web.api_token
             else:
                 run_config()
@@ -652,15 +647,13 @@ class Hikka:
             return True
 
         if not self.web.running.is_set():
-            self.loop.run_until_complete(
-                self.web.start(
-                    self.arguments.port,
-                    proxy_pass=True,
-                )
+            await self.web.start(
+                self.arguments.port,
+                proxy_pass=True,
             )
-            asyncio.ensure_future(self._web_banner())
+            await self._web_banner()
 
-        self.loop.run_until_complete(self.web.wait_for_clients_setup())
+        await self.web.wait_for_clients_setup()
 
         return True
 
@@ -729,11 +722,6 @@ class Hikka:
                 self.sessions.remove(session)
 
         return bool(self.sessions)
-
-    def _init_loop(self):
-        """Initializes main event loop and starts handler for each client"""
-        loops = [self.amain_wrapper(client) for client in self.clients]
-        self.loop.run_until_complete(asyncio.gather(*loops))
 
     async def amain_wrapper(self, client: CustomTelegramClient):
         """Wrapper around amain"""
@@ -865,17 +853,15 @@ class Hikka:
 
         await client.run_until_disconnected()
 
-    def main(self):
+    async def _main(self):
         """Main entrypoint"""
         self._init_web()
         save_config_key("port", self.arguments.port)
-        self._get_token()
+        await self._get_token()
 
         if (
-            not self.clients
-            and not self.sessions
-            or not self.loop.run_until_complete(self._init_clients())
-        ) and not self.loop.run_until_complete(self._initial_setup()):
+            not self.clients and not self.sessions or not await self._init_clients()
+        ) and not await self._initial_setup():
             return
 
         self.loop.set_exception_handler(
@@ -886,7 +872,12 @@ class Hikka:
             )
         )
 
-        self._init_loop()
+        await asyncio.gather(*[self.amain_wrapper(client) for client in self.clients])
+
+    def main(self):
+        """Main entrypoint"""
+        self.loop.run_until_complete(self._main())
+        self.loop.close()
 
 
 hikkatl.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
