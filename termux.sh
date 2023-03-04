@@ -1,16 +1,11 @@
 #!/bin/bash
 
-printf "
-\033[0;35m _   _ _ _    _         \033[0m
-\033[0;35m| | | (_) | _| | ____ _ \033[0m
-\033[0;35m| |_| | | |/ / |/ / _  |\033[0m
-\033[0;35m|  _  | |   <|   < (_| |\033[0m
-\033[0;35m|_| |_|_|_|\\_\\_|\\_\\__,_|\033[0m
+echo -e "\033[2J\033[3;1f"
 
-\033[1;35mSit still, Hikka is installing!\033[0m
-"
+eval "cat ~/Hikka/assets/download.txt"
+printf "\n\n\033[1;35mHikka is being installed... ✨\033[0m"
 
-echo -e "\033[0;96mInstalling base packages...\033[0m"
+echo -e "\n\n\033[0;96mInstalling base packages...\033[0m"
 
 eval "pkg i git python libjpeg-turbo openssl -y"
 
@@ -34,7 +29,7 @@ eval "cd && git clone https://github.com/hikariatama/Hikka && cd Hikka"
 echo -e "\033[0;96mSource code downloaded!...\033[0m\n"
 printf "\r\033[0;34mInstalling requirements...\e[0m"
 
-eval "pip install -r requirements.txt --no-cache-dir --no-warn-script-location --disable-pip-version-check"
+eval "pip install -r requirements.txt --no-cache-dir --no-warn-script-location --disable-pip-version-check --upgrade"
 
 printf "\r\033[K\033[0;32mRequirements installed!\e[0m\n"
 
@@ -50,14 +45,6 @@ fi
 echo -e "\033[0;96mStarting Hikka...\033[0m"
 echo -e "\033[2J\033[3;1f"
 
-printf "
-\033[0;35m _   _ _ _    _         \033[0m
-\033[0;35m| | | (_) | _| | ____ _ \033[0m
-\033[0;35m| |_| | | |/ / |/ / _  |\033[0m
-\033[0;35m|  _  | |   <|   < (_| |\033[0m
-\033[0;35m|_| |_|_|_|\\_\\_|\\_\\__,_|\033[0m
-
-\033[1;32mHikka is installed!\033[0m\n
-"
+printf "\033[1;32mHikka is starting...\033[0m\n"
 
 eval "python3 -m hikka"

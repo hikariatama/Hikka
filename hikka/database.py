@@ -21,7 +21,7 @@ except ImportError as e:
 import typing
 
 from hikkatl.errors.rpcerrorlist import ChannelsTooMuchError
-from hikkatl.tl.types import Message
+from hikkatl.tl.types import Message, User
 
 from . import main, utils
 from .pointers import PointerDict, PointerList
@@ -36,16 +36,15 @@ class NoAssetsChannel(Exception):
 
 
 class Database(dict):
-    _next_revision_call = 0
-    _revisions = []
-    _assets = None
-    _me = None
-    _redis = None
-    _saving_task = None
-
     def __init__(self, client: CustomTelegramClient):
         super().__init__()
-        self._client = client
+        self._client: CustomTelegramClient = client
+        self._next_revision_call: int = 0
+        self._revisions: typing.List[dict] = []
+        self._assets: int = None
+        self._me: User = None
+        self._redis: redis.Redis = None
+        self._saving_task: asyncio.Future = None
 
     def __repr__(self):
         return object.__repr__(self)
@@ -73,17 +72,14 @@ class Database(dict):
             return False
 
         await asyncio.sleep(5)
-
         await utils.run_sync(self._redis_save_sync)
-
         logger.debug("Published db to Redis")
-
         self._saving_task = None
         return True
 
     async def redis_init(self) -> bool:
         """Init redis database"""
-        if REDIS_URI := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
+        if REDIS_URI := (os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")):
             self._redis = redis.Redis.from_url(REDIS_URI)
         else:
             return False
@@ -131,8 +127,10 @@ class Database(dict):
 
         try:
             self.update(**json.loads(self._db_file.read_text()))
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
+        except json.decoder.JSONDecodeError:
             logger.warning("Database read failed! Creating new one...")
+        except FileNotFoundError:
+            logger.debug("Database file not found, creating new one...")
 
     def process_db_autofix(self, db: dict) -> bool:
         if not utils.is_serializable(db):

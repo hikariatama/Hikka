@@ -407,15 +407,24 @@ class Hikka:
         """Get API Token from disk or environment"""
         api_token_type = collections.namedtuple("api_token", ("ID", "HASH"))
 
-        # Try to retrieve credintials from file, or from env vars
+        # Try to retrieve credintials from config, or from env vars
         try:
-            api_token = api_token_type(
-                *[
+            # Legacy migration
+            if not get_config_key("api_id"):
+                api_id, api_hash = (
                     line.strip()
                     for line in (Path(BASE_DIR) / "api_token.txt")
                     .read_text()
                     .splitlines()
-                ]
+                )
+                save_config_key("api_id", int(api_id))
+                save_config_key("api_hash", api_hash)
+                (Path(BASE_DIR) / "api_token.txt").unlink()
+                logging.debug("Migrated api_token.txt to config.json")
+
+            api_token = api_token_type(
+                get_config_key("api_id"),
+                get_config_key("api_hash"),
             )
         except FileNotFoundError:
             try:

@@ -157,7 +157,7 @@ class InfiniteLoop:
 
     def stop(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(
+            _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -174,7 +174,7 @@ class InfiniteLoop:
 
     def start(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(
+            _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -566,7 +566,7 @@ class Modules:
         origin: str = "<core>",
     ) -> typing.List[Module]:
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         loaded = []
 
@@ -642,7 +642,7 @@ class Modules:
     ) -> typing.Union[Module, typing.Tuple[ModuleType, DragonModule]]:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
@@ -709,7 +709,7 @@ class Modules:
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if instance.__origin__.startswith("<core"):
             self._core_commands += list(
@@ -809,7 +809,7 @@ class Modules:
     def register_watchers(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         for _watcher in self.watchers:
             if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
@@ -870,7 +870,7 @@ class Modules:
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         instance.allmodules = self
         instance.internal_init()
@@ -955,7 +955,7 @@ class Modules:
     def send_config_one(self, mod: Module, skip_hook: bool = False):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if hasattr(mod, "config"):
             modcfg = self._db.get(
@@ -1015,7 +1015,7 @@ class Modules:
         from_dlmod: bool = False,
     ):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if from_dlmod:
             try:
@@ -1086,7 +1086,7 @@ class Modules:
         worked = []
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         for module in self.modules:
             if classname.lower() in (

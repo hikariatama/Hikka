@@ -1,26 +1,9 @@
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 # ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-import os
 import re
 import string
 import typing
@@ -94,5 +77,6 @@ def api_config(tty: typing.Optional[bool] = None):
         tty_print("\033[0;91mCancelled\033[0m", tty)
         exit(0)
 
-    (main.BASE_PATH / "api_token.txt").write_text(api_id + "\n" + api_hash)
+    main.save_config_key("api_id", int(api_id))
+    main.save_config_key("api_hash", api_hash)
     tty_print("\033[0;92mAPI config saved\033[0m", tty)

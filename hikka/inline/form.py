@@ -109,7 +109,7 @@ class Form(InlineUnit):
         :return: If form is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)  # noqa: F841
 
         if reply_markup is None:
             reply_markup = []

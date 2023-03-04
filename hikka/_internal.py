@@ -79,4 +79,4 @@ def print_banner(banner: str):
         ),
         "r",
     ) as banner:
-        print(banner.read().replace("\\033", "\033"))
+        print(banner.read())

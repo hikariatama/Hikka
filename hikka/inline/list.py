@@ -67,7 +67,7 @@ class List(InlineUnit):
         :return: If list is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)  # noqa: F841
 
         custom_buttons = self._validate_markup(custom_buttons)
 

@@ -105,7 +105,7 @@ class CustomTelegramClient(TelegramClient):
 
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # skipcq
+        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
 
         if not hashable(entity):
             try:
@@ -182,7 +182,7 @@ class CustomTelegramClient(TelegramClient):
 
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # skipcq
+        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
 
         entity = await self.get_entity(entity)
         user = await self.get_entity(user) if user else None

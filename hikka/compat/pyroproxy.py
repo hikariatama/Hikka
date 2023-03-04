@@ -256,7 +256,7 @@ class PyroProxyClient(PyroClient):
         self,
         *args,
         **kwargs,
-    ) -> "typing.Union[hikkapyro.raw.types.PeerChat, hikkapyro.raw.types.PeerChannel, hikkapyro.raw.types.PeerUser]":  # type: ignore  # noqa: E501
+    ) -> "typing.Union[hikkapyro.raw.types.PeerChat, hikkapyro.raw.types.PeerChannel, hikkapyro.raw.types.PeerUser]":  # type: ignore  # noqa: E501, F821
         """
         Resolve a peer (user, chat or channel) from the given input.
         :param args: Arguments to pass to the Telethon client's

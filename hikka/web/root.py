@@ -205,11 +205,8 @@ class Web:
                 body="You specified invalid API ID and/or API HASH",
             )
 
-        with open(
-            os.path.join(self.data_root or DATA_DIR, "api_token.txt"),
-            "w",
-        ) as f:
-            f.write(api_id + "\n" + api_hash)
+        main.save_config_key("api_id", int(api_id))
+        main.save_config_key("api_hash", api_hash)
 
         self.api_token = collections.namedtuple("api_token", ("ID", "HASH"))(
             api_id,

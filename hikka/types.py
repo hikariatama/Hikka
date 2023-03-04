@@ -267,7 +267,7 @@ class Module:
         from . import utils
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if interval < 0.1:
             logger.warning(

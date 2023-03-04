@@ -14,9 +14,11 @@
 - Code cleanup
 - Add ability to log in using QR code and --no-web
 - Disable web interface for Termux and fallback to CLI login instead
-- Add fancy ANSI banner
+- Add fancy ANSI banners
 - Add guidelines to `--no-web` login
 - Fix session not being saved after logging in using QR without 2fa
+- Minify static assets in web
+- Replace snowfall with sakura flowers
 
 ## 🌑 Hikka 1.6.1
 
