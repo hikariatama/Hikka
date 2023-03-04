@@ -550,6 +550,7 @@ class Hikka:
                 lang_code="en",
                 system_lang_code="en-US",
             )
+            await client.connect()
 
             print(
                 ("\033[0;96m{}\033[0m" if IS_TERMUX else "{}").format(
@@ -577,7 +578,6 @@ class Hikka:
                 return True
 
             print("\033[0;96mLoading QR code...\033[0m")
-            await client.connect()
             qr_login = await client.qr_login()
 
             def print_qr():
