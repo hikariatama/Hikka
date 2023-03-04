@@ -12,6 +12,7 @@ import random
 import time
 
 from hikkatl.tl import functions
+from hikkatl.tl.functions.updates import GetChannelDifferenceRequest
 from hikkatl.tl.tlobject import TLRequest
 from hikkatl.tl.types import Message
 
@@ -600,9 +601,13 @@ class APIRatelimiterMod(loader.Module):
             flood_sleep_threshold: int = None,
         ):
             await asyncio.sleep(random.randint(1, 5) / 100)
-            if time.perf_counter() > self._suspend_until and not self.get(
-                "disable_protection",
-                True,
+            if (
+                time.perf_counter() > self._suspend_until
+                and not self.get(
+                    "disable_protection",
+                    True,
+                )
+                and not isinstance(request, GetChannelDifferenceRequest)
             ):
                 request_name = type(request).__name__
                 self._ratelimiter += [[request_name, time.perf_counter()]]
