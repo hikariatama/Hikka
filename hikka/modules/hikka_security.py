@@ -43,6 +43,7 @@ class HikkaSecurityMod(loader.Module):
         "chat": "chat",
         "command": "command",
         "module": "module",
+        "inline": "inline command",
         "day": "day",
         "days": "days",
         "hour": "hour",
@@ -58,6 +59,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "навсегда",
         "command": "команду",
         "module": "модуль",
+        "inline": "инлайн-команду",
         "chat": "чату",
         "user": "пользователю",
         "day": "день",
@@ -75,6 +77,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "pour toujours",
         "command": "commande",
         "module": "module",
+        "inline": "commande en ligne",
         "chat": "chat",
         "user": "utilisateur",
         "day": "jour",
@@ -92,6 +95,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "per sempre",
         "command": "comando",
         "module": "modulo",
+        "inline": "comando inline",
         "chat": "chat",
         "user": "utente",
         "day": "giorno",
@@ -109,6 +113,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "für immer",
         "command": "Befehl",
         "module": "Modul",
+        "inline": "Inline-Befehl",
         "chat": "Chat",
         "user": "Benutzer",
         "day": "Tag",
@@ -126,6 +131,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "doimiy",
         "command": "buyruq",
         "module": "modul",
+        "inline": "inline buyruq",
         "chat": "guruh",
         "user": "foydalanuvchi",
         "day": "kun",
@@ -143,6 +149,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "sürekli",
         "command": "komut",
         "module": "modül",
+        "inline": "satır içi komut",
         "chat": "sohbet",
         "user": "kullanıcı",
         "day": "gün",
@@ -160,6 +167,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "para siempre",
         "command": "comando",
         "module": "módulo",
+        "inline": "comando en línea",
         "chat": "chat",
         "user": "usuario",
         "day": "día",
@@ -177,6 +185,7 @@ class HikkaSecurityMod(loader.Module):
         "forever": "әрқашан",
         "command": "команда",
         "module": "модуль",
+        "inline": "inline команда",
         "chat": "сөйлесу",
         "user": "пайдаланушы",
         "day": "күн",
@@ -267,7 +276,7 @@ class HikkaSecurityMod(loader.Module):
             " permit</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specified entity is"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Specified entity is"
             " not a user</b>"
         ),
         "li": (
@@ -284,7 +293,7 @@ class HikkaSecurityMod(loader.Module):
         "confirm": "👑 Confirm",
         "enable_nonick_btn": "🔰 Enable",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You can't"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>You can't"
             " promote/demote yourself!</b>"
         ),
         "suggest_nonick": "🔰 <i>Do you want to enable NoNick for this user?</i>",
@@ -325,7 +334,7 @@ class HikkaSecurityMod(loader.Module):
             " rules</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>This user is owner"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>This user is owner"
             " and can't be promoted by targeted security</b>"
         ),
         "rules_removed": (
@@ -336,6 +345,7 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Targeted security"
             ' rule for <a href="{}">{}</a> (</b><code>{}</code><b>) removed</b>'
         ),
+        "chat_inline": "⚠️ <b>You can't create an inline command rule for chats!</b>",
         **service_strings,
     }
 
@@ -394,13 +404,13 @@ class HikkaSecurityMod(loader.Module):
             " права</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Указанная цель - не"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Указанная цель - не"
             " пользователь</b>"
         ),
         "cancel": "🚫 Отмена",
         "confirm": "👑 Подтвердить",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Нельзя управлять"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Нельзя управлять"
             " своими правами!</b>"
         ),
         "warning": (
@@ -472,7 +482,7 @@ class HikkaSecurityMod(loader.Module):
             " правил безопасности</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Этот пользователь -"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Этот пользователь -"
             " владелец, его права не могут управляться таргетированной"
             " безопасностью</b>"
         ),
@@ -483,6 +493,9 @@ class HikkaSecurityMod(loader.Module):
         "rule_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Удалено правило"
             ' безопасности для <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
+        "chat_inline": (
+            "⚠️ <b>Вы не можете создать правило inline-команды для чатов!</b>"
         ),
         **service_strings_ru,
     }
@@ -566,7 +579,7 @@ class HikkaSecurityMod(loader.Module):
             " sécurité ciblées</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Cet utilisateur est"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Cet utilisateur est"
             " le propriétaire, ses droits ne peuvent pas être gérés via la sécurité"
             " ciblée</b>"
         ),
@@ -577,6 +590,10 @@ class HikkaSecurityMod(loader.Module):
         "rule_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>La règle de sécurité"
             ' pour <a href="{}">{}</a> (</b><code>{}</code><b>)</b> a été supprimée'
+        ),
+        "chat_inline": (
+            "⚠️ <b>Vous ne pouvez pas créer de règle inline-commands pour les"
+            " chats!</b>"
         ),
         **service_strings_fr,
     }
@@ -636,13 +653,13 @@ class HikkaSecurityMod(loader.Module):
             " permessi</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La destinazione"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>La destinazione"
             " specificata non è un utente</b>"
         ),
         "cancel": "🚫 Annulla",
         "confirm": "👑 Conferma",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non puoi modificare i"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Non puoi modificare i"
             " tuoi permessi!</b>"
         ),
         "warning": (
@@ -713,7 +730,7 @@ class HikkaSecurityMod(loader.Module):
             " sicurezza specifica</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Questo utente è"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Questo utente è"
             " il proprietario, i suoi permessi non possono essere controllati"
             " dalla sicurezza mirata</b>"
         ),
@@ -725,6 +742,7 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Regola di sicurezza"
             ' rimossa per <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
         ),
+        "chat_inline": "⚠️ <b>Non puoi creare una regola inline per i gruppi!</b>",
         **service_strings_it,
     }
 
@@ -784,13 +802,13 @@ class HikkaSecurityMod(loader.Module):
             " Rechte geben willst</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Die angegebene Person"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Die angegebene Person"
             " ist kein Benutzer</b>"
         ),
         "cancel": "🚫 Abbrechen",
         "confirm": "👑 Bestätigen",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Du kannst deine"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Du kannst deine"
             " eigenen Rechte nicht verwalten!</b>"
         ),
         "warning": (
@@ -871,7 +889,7 @@ class HikkaSecurityMod(loader.Module):
             " Sicherheit</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Dieser Benutzer ist"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Dieser Benutzer ist"
             " der Besitzer, seine Rechte können nicht mit Sicherheitszielen"
             " verwaltet werden</b>"
         ),
@@ -882,6 +900,9 @@ class HikkaSecurityMod(loader.Module):
         "rule_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Sicherheitsregel"
             ' entfernt für <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
+        "chat_inline": (
+            "⚠️ <b>Du kannst keine Regel für inline-Befehle für Chats erstellen!</b>"
         ),
         **service_strings_de,
     }
@@ -942,13 +963,13 @@ class HikkaSecurityMod(loader.Module):
             " kullanıcıya izin vereceğinizi belirtin</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Belirtilen kişi bir"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Belirtilen kişi bir"
             " kullanıcı değil</b>"
         ),
         "cancel": "🚫 İptal",
         "confirm": "👑 Onayla",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kendi izinlerini"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Kendi izinlerini"
             " yönetemezsin!</b>"
         ),
         "warning": (
@@ -1030,7 +1051,7 @@ class HikkaSecurityMod(loader.Module):
             " yok</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu kullanıcı sahip,"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Bu kullanıcı sahip,"
             " güvenlik hedefleriyle yönetilemeyen hakları vardır</b>"
         ),
         "rules_removed": (
@@ -1040,6 +1061,9 @@ class HikkaSecurityMod(loader.Module):
         "rule_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>İzin kaldırıldı"
             ' <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
+        "chat_inline": (
+            "⚠️ <b>Inline komutu için bir sohbet kuralı oluşturamazsınız!</b>"
         ),
         **service_strings_tr,
     }
@@ -1101,13 +1125,13 @@ class HikkaSecurityMod(loader.Module):
             " huquqlarni berishni xohlaysiz</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Tayinlangan maqsad -"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Tayinlangan maqsad -"
             " foydalanuvchi emas</b>"
         ),
         "cancel": "🚫 Bekor qilish",
         "confirm": "👑 Tasdiqlash",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>O'zingizning"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>O'zingizning"
             " huquqlaringizni boshqalariga bermang!</b>"
         ),
         "warning": (
@@ -1184,7 +1208,7 @@ class HikkaSecurityMod(loader.Module):
             " xavfsizlik qoidalari yo'q</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ushbu foydalanuvchi"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Ushbu foydalanuvchi"
             " guruhning egasi, u uchun targ'etlangan xavfsizlik qoidalari"
             " boshqarilishi mumkin emas</b>"
         ),
@@ -1195,6 +1219,9 @@ class HikkaSecurityMod(loader.Module):
         "rule_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Qo'shimcha tizim "
             'xavfsizligi uchun <a href="{}">{}</a> (<code>{}</code>)</b> o\'chirildi'
+        ),
+        "chat_inline": (
+            "⚠️ <b>Siz chatlar uchun inline buyruqini yaratib bo'lmaysiz!</b>"
         ),
         **service_strings_uz,
     }
@@ -1255,13 +1282,13 @@ class HikkaSecurityMod(loader.Module):
             " otorgarle permisos</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La meta indicada no es"
-            " un usuario</b>"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>La meta indicada no"
+            " es un usuario</b>"
         ),
         "cancel": "🚫 Cancelar",
         "confirm": "👑 Confirmar",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No puedes administrar"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>No puedes administrar"
             " tus propios permisos!</b>"
         ),
         "warning": (
@@ -1332,7 +1359,7 @@ class HikkaSecurityMod(loader.Module):
             " seguridad dirigidas</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Este usuario es el"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Este usuario es el"
             " propietario, sus derechos no pueden ser manejados por reglas de"
             " seguridad dirigidas</b>"
         ),
@@ -1343,6 +1370,9 @@ class HikkaSecurityMod(loader.Module):
         "rule_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Regla de seguridad"
             ' eliminada para <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
+        "chat_inline": (
+            "⚠️ <b>¡No puedes crear una regla de comando inline para chats!</b>"
         ),
         **service_strings_es,
     }
@@ -1403,13 +1433,13 @@ class HikkaSecurityMod(loader.Module):
             " қатысушыны көрсет</b>"
         ),
         "not_a_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Көрсетілген мақсат -"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Көрсетілген мақсат -"
             " қатысушы емес</b>"
         ),
         "cancel": "🚫 Болдырмау",
         "confirm": "👑 Растау",
         "self": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Өзіңіздің құқықтарын"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Өзіңіздің құқықтарын"
             " басқаруға болмайды!</b>"
         ),
         "warning": (
@@ -1479,7 +1509,7 @@ class HikkaSecurityMod(loader.Module):
             " қатысу үшін белгіленген баптаулар жоқ</b>"
         ),
         "owner_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бұл пайдаланушы"
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Бұл пайдаланушы"
             " босқа құжаттамаларға қатысу үшін баптауларды белгілеуі мүмкін"
             " емес</b>"
         ),
@@ -1492,6 +1522,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Қауіпсіздік"
             ' қауіпсіздік қауіпсіздік қауіпсіздік <a href="{}">{}</a>'
             " (</b><code>{}</code><b>)</b>"
+        ),
+        "chat_inline": (
+            "⚠️ <b>Сіз inline-командасының чаттар үшін ережесін жасай алмайсыз!</b>"
         ),
         **service_strings_kk,
     }
@@ -2037,17 +2070,25 @@ class HikkaSecurityMod(loader.Module):
 
     def _lookup(self, needle: str) -> str:
         return (
-            []
-            if needle.lower().startswith(self.get_prefix())
-            else (
-                [f"module/{self.lookup(needle).__class__.__name__}"]
-                if self.lookup(needle)
+            (
+                []
+                if needle.lower().startswith(self.get_prefix())
+                else (
+                    [f"module/{self.lookup(needle).__class__.__name__}"]
+                    if self.lookup(needle)
+                    else []
+                )
+            )
+            + (
+                [f"command/{needle.lower().strip(self.get_prefix())}"]
+                if needle.lower().strip(self.get_prefix()) in self.allmodules.commands
                 else []
             )
-        ) + (
-            [f"command/{needle.lower().strip(self.get_prefix())}"]
-            if needle.lower().strip(self.get_prefix()) in self.allmodules.commands
-            else []
+            + (
+                [f"inline/{needle.lower().strip('@')}"]
+                if needle.lower().strip("@") in self.allmodules.inline_handlers
+                else []
+            )
         )
 
     @staticmethod
@@ -2116,6 +2157,10 @@ class HikkaSecurityMod(loader.Module):
         rule: str,
         duration: int,
     ):
+        if rule.startswith("inline") and target_type == "chat":
+            await call.edit(self.strings("chat_inline"))
+            return
+
         self._client.dispatcher.security.add_rule(
             target_type,
             target,
@@ -2129,7 +2174,14 @@ class HikkaSecurityMod(loader.Module):
                 utils.get_entity_url(target),
                 utils.escape_html(get_display_name(target)),
                 self.strings(rule.split("/", maxsplit=1)[0]),
-                rule.split("/", maxsplit=1)[1],
+                (
+                    (
+                        f"@{self.inline.bot_username} "
+                        if rule.split("/", maxsplit=1)[0] == "inline"
+                        else ""
+                    )
+                    + rule.split("/", maxsplit=1)[1]
+                ),
                 (
                     (self.strings("for") + " " + self._convert_time(duration))
                     if duration
@@ -2153,7 +2205,14 @@ class HikkaSecurityMod(loader.Module):
                 utils.get_entity_url(target),
                 utils.escape_html(get_display_name(target)),
                 self.strings(rule.split("/", maxsplit=1)[0]),
-                rule.split("/", maxsplit=1)[1],
+                (
+                    (
+                        f"@{self.inline.bot_username} "
+                        if rule.split("/", maxsplit=1)[0] == "inline"
+                        else ""
+                    )
+                    + rule.split("/", maxsplit=1)[1]
+                ),
                 (
                     (self.strings("for") + " " + self._convert_time(duration))
                     if duration

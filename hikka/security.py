@@ -216,7 +216,10 @@ class SecurityManager:
         if target_type not in {"chat", "user"}:
             raise ValueError(f"Invalid target_type: {target_type}")
 
-        if not rule.startswith("command") and not rule.startswith("module"):
+        if all(
+            not rule.startswith(rule_type)
+            for rule_type in {"command", "module", "inline"}
+        ):
             raise ValueError(f"Invalid rule: {rule}")
 
         if duration < 0:
@@ -308,11 +311,30 @@ class SecurityManager:
 
         return config & self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS)
 
+    def _check_tsec_inline(self, user_id: int, command: str) -> bool:
+        """
+        Checks if user is permitted to execute certain inline command
+
+        :param user_id: user ID
+        :param command: command name
+        :return: True if permitted, False otherwise
+        """
+
+        return command and any(
+            (
+                rule["target"] == user_id
+                and rule["rule_type"] == "inline"
+                and rule["rule"] == command
+            )
+            for rule in self._tsec_user
+        )
+
     async def check(
         self,
         message: typing.Optional[Message],
         func: typing.Union[Command, int],
         user_id: typing.Optional[int] = None,
+        inline_cmd: typing.Optional[str] = None,
     ) -> bool:
         """
         Checks if message sender is permitted to execute certain function
@@ -374,7 +396,9 @@ class SecurityManager:
             return False
 
         if message is None:  # In case of checking inline query security map
-            return bool(config & EVERYONE)
+            return self._check_tsec_inline(user_id, inline_cmd) or bool(
+                config & EVERYONE
+            )
 
         try:
             chat = utils.get_chat_id(message)

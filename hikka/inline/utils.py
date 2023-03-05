@@ -8,6 +8,7 @@ import asyncio
 import contextlib
 import functools
 import io
+import itertools
 import logging
 import os
 import re
@@ -222,12 +223,26 @@ class Utils(InlineUnit):
     async def _answer_unit_handler(self, call: InlineCall, text: str, show_alert: bool):
         await call.answer(text, show_alert=show_alert)
 
+    def _reverse_method_lookup(self, needle: callable, /) -> typing.Optional[str]:
+        return next(
+            (
+                name
+                for name, method in itertools.chain(
+                    self._allmodules.inline_handlers.items(),
+                    self._allmodules.callback_handlers.items(),
+                )
+                if method == needle
+            ),
+            None,
+        )
+
     async def check_inline_security(self, *, func: typing.Callable, user: int) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
             message=None,
             func=func,
             user_id=user,
+            inline_cmd=self._reverse_method_lookup(func),
         )
 
     def _find_caller_sec_map(self) -> typing.Optional[typing.Callable[[], int]]:

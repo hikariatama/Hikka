@@ -19,6 +19,10 @@
 - Fix session not being saved after logging in using QR without 2fa
 - Minify static assets in web
 - Replace snowfall with sakura flowers
+- Update Termux installation design
+- Whitelist internal requests in APILimiter
+- Start web when using `.weburl` and `--no-web` is used
+- Add inline commands targeted security rules control
 
 ## 🌑 Hikka 1.6.1
 

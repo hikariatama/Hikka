@@ -20,6 +20,7 @@ from hikkatl.utils import get_display_name
 from .. import loader, log, main, utils
 from .._internal import fw_protect, restart
 from ..inline.types import InlineCall
+from ..web import core
 
 logger = logging.getLogger(__name__)
 
@@ -2111,6 +2112,20 @@ class HikkaSettingsMod(loader.Module):
                 )
 
             return
+
+        if not main.hikka.web:
+            main.hikka.web = core.Web(
+                data_root=main.BASE_DIR,
+                api_token=main.hikka.api_token,
+                proxy=main.hikka.proxy,
+                connection=main.hikka.conn,
+            )
+            await main.hikka.web.add_loader(self._client, self.allmodules, self._db)
+            await main.hikka.web.start_if_ready(
+                len(self.allclients),
+                main.hikka.arguments.port,
+                proxy_pass=main.hikka.arguments.proxy_pass,
+            )
 
         if force:
             form = message
