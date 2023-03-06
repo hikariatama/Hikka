@@ -118,10 +118,7 @@ class CommandDispatcher:
         self.raw_handlers = []
 
     async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
-        if await self.security.check(
-            message,
-            security.OWNER | security.SUDO | security.SUPPORT,
-        ):
+        if await self.security.check(message, security.OWNER):
             return True
 
         func = getattr(func, "__func__", func)

@@ -79,8 +79,6 @@ __all__ = [
     "ConfigValue",
     "ModuleConfig",
     "owner",
-    "sudo",
-    "support",
     "group_owner",
     "group_admin_add_admins",
     "group_admin_change_info",
@@ -99,8 +97,12 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 owner = security.owner
+
+# deprecated
 sudo = security.sudo
 support = security.support
+# /deprecated
+
 group_owner = security.group_owner
 group_admin_add_admins = security.group_admin_add_admins
 group_admin_change_info = security.group_admin_change_info

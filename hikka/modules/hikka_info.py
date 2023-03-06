@@ -709,7 +709,6 @@ class HikkaInfoMod(loader.Module):
         es_doc="Envía información sobre el bot",
         kk_doc="Бот туралы ақпарат жібереді",
     )
-    @loader.unrestricted
     async def infocmd(self, message: Message):
         """Send userbot info"""
 
@@ -731,7 +730,6 @@ class HikkaInfoMod(loader.Module):
                 self._render_info(False),
             )
 
-    @loader.unrestricted
     @loader.command(
         ru_doc="Отправить информацию по типу 'Что такое Хикка?'",
         fr_doc="Envoyer des informations du type 'Qu'est-ce que Hikka?'",

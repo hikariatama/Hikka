@@ -23,6 +23,7 @@
 - Whitelist internal requests in APILimiter
 - Start web when using `.weburl` and `--no-web` is used
 - Add inline commands targeted security rules control
+- Completely remove security groups `sudo` and `support`
 
 ## 🌑 Hikka 1.6.1
 

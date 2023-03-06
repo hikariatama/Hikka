@@ -27,8 +27,6 @@ from ..security import (
     GROUP_MEMBER,
     GROUP_OWNER,
     PM,
-    SUDO,
-    SUPPORT,
 )
 
 
@@ -210,8 +208,6 @@ class HikkaSecurityMod(loader.Module):
             " excluded here, it is excluded everywhere!</b>"
         ),
         "owner": "😎 Owner",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Support",
         "group_owner": "🧛‍♂️ Group owner",
         "group_admin_add_admins": "🧑‍⚖️ Admin (add members)",
         "group_admin_change_info": "🧑‍⚖️ Admin (change info)",
@@ -227,49 +223,17 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Users in group"
             "</b> <code>owner</code><b>:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Users in group"
-            "</b> <code>sudo</code><b>:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Users in group"
-            "</b> <code>support</code><b>:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>There is no users in"
             " group</b> <code>owner</code>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>There is no users in"
-            " group</b> <code>sudo</code>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>There is no users in"
-            " group</b> <code>support</code>"
         ),
         "owner_added": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> added to group</b> <code>owner</code>'
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> added to group</b> <code>sudo</code>'
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> added to group</b> <code>support</code>'
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> removed from group</b> <code>owner</code>'
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> removed from group</b> <code>sudo</code>'
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> removed from group</b> <code>support</code>'
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specify user to"
@@ -363,8 +327,6 @@ class HikkaSecurityMod(loader.Module):
             " выключен здесь, он выключен для всех команд</b>"
         ),
         "owner": "😎 Владелец",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Помощник",
         "group_owner": "🧛‍♂️ Влад. группы",
         "group_admin_add_admins": "🧑‍⚖️ Админ (добавлять участников)",
         "group_admin_change_info": "🧑‍⚖️ Админ (изменять инфо)",
@@ -379,25 +341,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Пользователи группы"
             "</b> <code>owner</code><b>:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Пользователи группы"
-            "</b> <code>sudo</code><b>:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Пользователи группы"
-            "</b> <code>support</code><b>:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Нет пользователей в"
             " группе</b> <code>owner</code>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Нет пользователей в"
-            " группе</b> <code>sudo</code>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Нет пользователей в"
-            " группе</b> <code>support</code>"
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Укажи, кому выдавать"
@@ -427,25 +373,9 @@ class HikkaSecurityMod(loader.Module):
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> добавлен в группу</b> <code>owner</code>'
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> добавлен в группу</b> <code>sudo</code>'
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> добавлен в группу</b> <code>support</code>'
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> удален из группы</b> <code>owner</code>'
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> удален из группы</b> <code>sudo</code>'
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> удален из группы</b> <code>support</code>'
         ),
         "_cls_doc": "Управление настройками безопасности",
         "what": (
@@ -502,98 +432,117 @@ class HikkaSecurityMod(loader.Module):
 
     strings_fr = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Commande non"
-            " trouvée</b> <code>{}</code> <b>!</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La commande</b>"
+            " <code>{}</code> <b>est introuvable !</b>"
         ),
         "permissions": (
-            "🔐 <b>Ici, vous pouvez définir les autorisations pour la commande</b>"
+            "🔐 <b>Vous pouvez régler les autorisations pour la commande</b>"
             " <code>{}{}</code>"
         ),
         "close_menu": "🙈 Fermer ce menu",
         "global": (
-            "🔐 <b>Ici, vous pouvez définir le masque d'exclusion global. Si le"
-            " commutateur est éteint ici, il est éteint pour toutes les commandes</b>"
+            "🔐 <b>Vous pouvez régler la masque d'exclusion globale ici. Si le bouton"
+            " est désactivé ici, il est désactivé pour toutes les commandes</b>"
         ),
         "owner": "😎 Propriétaire",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Support",
         "group_owner": "🧛‍♂️ Propriétaire du groupe",
-        "group_admin": "🧛‍♀️ Administrateur du groupe",
-        "group_user": "🧛‍♂️ Utilisateur du groupe",
+        "group_admin_add_admins": "🧑‍⚖️ Admin (ajouter des membres)",
+        "group_admin_change_info": "🧑‍⚖️ Admin (modifier les infos)",
+        "group_admin_ban_users": "🧑‍⚖️ Admin (bannir)",
+        "group_admin_delete_messages": "🧑‍⚖️ Admin (supprimer les messages)",
+        "group_admin_pin_messages": "🧑‍⚖️ Admin (épingler)",
+        "group_admin_invite_users": "🧑‍⚖️ Admin (inviter)",
+        "group_admin": "🧑‍⚖️ Admin (tous)",
+        "group_member": "👥 Dans un groupe",
+        "pm": "🤙 Dans un message privé",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Utilisateurs du"
+            " groupe</b> <code>owner</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Aucun utilisateur dans"
+            " le groupe</b> <code>owner</code>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Spécifiez à qui"
+            " accorder les droits</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>La cible spécifiée"
+            " n'est pas un utilisateur</b>"
+        ),
+        "cancel": "🚫 Annuler",
+        "confirm": "👑 Confirmer",
+        "self": (
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Vous ne pouvez pas"
+            " gérer vos propres droits!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>Es-tu vraiment prêt à ajouter <a href="tg://user?id={}">{}</a> dans'
+            " le groupe</b> <code>{}</code><b>!\nCela peut permettre à cet utilisateur"
+            " d'accéder partiellement ou entièrement au bot utilisateur!</b>"
+        ),
+        "suggest_nonick": "🔰 <i>Voulez-vous activer NoNick pour cet utilisateur?</i>",
+        "user_nn": '🔰 <b>NoNick pour <a href="tg://user?id={}">{}</a> activé</b>',
+        "enable_nonick_btn": "🔰 Activer",
         "owner_added": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> ajouté au groupe</b> <code>owner</code>'
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ajouté au groupe</b> <code>sudo</code>'
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> ajouté au groupe</b> <code>support</code>'
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> retiré du groupe</b> <code>owner</code>'
+            ' href="tg://user?id={}">{}</a> supprimé du groupe</b> <code>owner</code>'
         ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> retiré du groupe</b> <code>sudo</code>'
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> retiré du groupe</b> <code>support</code>'
-        ),
-        "_cls_doc": "Gestion des paramètres de sécurité",
+        "_cls_doc": "Gérer les paramètres de sécurité",
         "what": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez spécifier"
-            " le type de cible en premier argument (</b><code>user</code> <b>ou</b>"
-            " <code>chat</code><b>)</b>"
+            " le type de cible en premier argument (</b><code>user</code> <b>ou"
+            "</b> <code>chat</code><b>)</b>"
         ),
         "no_target": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune cible"
-            " de sécurité spécifiée</b>"
+            " spécifiée pour la règle de sécurité</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune règle"
-            " de sécurité spécifiée (module ou commande)</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune règle de"
+            " sécurité n'a été spécifiée (module ou commande)</b>"
         ),
         "confirm_rule": (
-            "🔐 <b>Veuillez confirmer que vous souhaitez donner à {} <a href='{}'>{}</a>"
-            " le droit d’utiliser {}</b> <code>{}</code> <b>{}</b>"
+            "🔐 <b>Veuillez confirmer que vous souhaitez donner {} <a href='{}'>{}</a>"
+            " le droit d'utiliser {}</b> <code>{}</code> <b>{}</b>"
         ),
         "multiple_rules": (
-            "🔐 <b>Impossible de reconnaître de manière unique les règles de sécurité."
-            " Veuillez sélectionner celui que vous souhaitez:</b>\n\n{}"
+            "🔐 <b>Impossible de reconnaître clairement les règles de sécurité. Veuillez"
+            " sélectionner celle que vous vouliez:</b>\n\n{}"
         ),
         "rule_added": (
-            "🔐 <b>Vous avez donné à {} <a href='{}'>{}</a> le droit d’utiliser"
-            " {}</b> <code>{}</code> <b>{}</b>"
+            "🔐 <b>Vous avez donné {} <a href='{}'>{}</a> le droit"
+            " d'utiliser {}</b> <code>{}</code> <b>{}</b>"
         ),
         "rules": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Règles de sécurité"
             " ciblées:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Pas de règles de"
-            " sécurité ciblées</b>"
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune règle de"
+            " sécurité ciblée</b>"
         ),
         "owner_target": (
             "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Cet utilisateur est"
-            " le propriétaire, ses droits ne peuvent pas être gérés via la sécurité"
+            " le propriétaire, ses droits ne peuvent pas être gérés par la sécurité"
             " ciblée</b>"
         ),
         "rules_removed": (
             "<emoji document_id=5472308992514464048>🔐</emoji> <b>Les règles de sécurité"
-            " ciblées pour <a href='{}'>{}</a> ont été supprimées</b>"
+            ' ciblées pour <a href="{}">{}</a> ont été supprimées</b>'
         ),
         "rule_removed": (
-            "<emoji document_id=5472308992514464048>🔐</emoji> <b>La règle de sécurité"
-            ' pour <a href="{}">{}</a> (</b><code>{}</code><b>)</b> a été supprimée'
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Supprimé la règle de"
+            ' sécurité pour <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
         ),
         "chat_inline": (
-            "⚠️ <b>Vous ne pouvez pas créer de règle inline-commands pour les"
-            " chats!</b>"
+            "⚠️ <b>Vous ne pouvez pas créer de règle de commande inline pour les"
+            " groupes!</b>"
         ),
         **service_strings_fr,
     }
@@ -612,8 +561,6 @@ class HikkaSecurityMod(loader.Module):
             " commutatore è spento qui, è spento per tutti i comandi</b>"
         ),
         "owner": "😎 Proprietario",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Supporto",
         "group_owner": "🧛‍♂️ Proprietario del gruppo",
         "group_admin_add_admins": "🧑‍⚖️ Amministratore (aggiungere membri)",
         "group_admin_change_info": "🧑‍⚖️ Amministratore (cambiare info)",
@@ -628,25 +575,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Utenti del gruppo</b>"
             " <code>owner</code><b>:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Utenti del gruppo</b>"
-            " <code>sudo</code><b>:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Utenti del gruppo</b>"
-            " <code>support</code><b>:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Nessun utente nel"
             " gruppo</b> <code>owner</code>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Nessun utente nel"
-            " gruppo</b> <code>sudo</code>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Non ci sono utenti nel"
-            " gruppo</b> <code>support</code>"
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specifica a chi dare i"
@@ -674,26 +605,9 @@ class HikkaSecurityMod(loader.Module):
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> aggiunto nel gruppo</b> <code>owner</code>'
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> aggiunto nel gruppo</b> <code>sudo</code>'
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> aggiunto nel gruppo</b>'
-            " <code>support</code>"
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> rimosso dal gruppo</b> <code>owner</code>'
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> rimosso dal gruppo</b> <code>sudo</code>'
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> rimosso dal gruppo</b> <code>support</code>'
         ),
         "_cls_doc": "Gestisci le impostazioni di sicurezza",
         "what": (
@@ -761,8 +675,6 @@ class HikkaSecurityMod(loader.Module):
             " Schalter hier deaktiviert ist, ist er für alle Befehle deaktiviert</b>"
         ),
         "owner": "👑 Besitzer",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Support",
         "group_owner": "🧛‍♂️ Gruppenbesitzer",
         "group_admin_add_admins": "🧑‍⚖️ Admin (Mitglieder hinzufügen)",
         "group_admin_change_info": "🧑‍⚖️ Admin (Info ändern)",
@@ -777,25 +689,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji>"
             " <b>Gruppenbesitzer</b><code>owner</code><b>:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji>"
-            " <b>Gruppenbesitzer</b><code>sudo</code><b>:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji>"
-            " <b>Gruppenbesitzer</b><code>support</code><b>:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Es gibt keine"
             " Gruppenbesitzer</b><code>owner</code>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Es gibt keine"
-            " Gruppenbesitzer</b><code>sudo</code>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Es gibt keine"
-            " Gruppenbesitzer</b><code>support</code>"
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bitte gib an, wem du"
@@ -825,30 +721,10 @@ class HikkaSecurityMod(loader.Module):
             ' href="tg://user?id={}">{}</a> wurde der Gruppe</b> <code>owner</code>'
             " <b>hinzugefügt</b>"
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> wurde der Gruppe</b> <code>sudo</code>'
-            " <b>hinzugefügt</b>"
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> wurde der Gruppe</b> <code>support</code>'
-            " <b>hinzugefügt</b>"
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> wurde aus der Gruppe</b> <code>owner</code>'
             " <b>entfernt</b>"
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> wurde aus der Gruppe</b> <code>sudo</code>'
-            " <b>entfernt</b>"
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> wurde aus der Gruppe'
-            "</b> <code>support</code> <b>entfernt</b>"
         ),
         "_cls_doc": "Verwalten Sie die Sicherheitseinstellungen",
         "what": (
@@ -922,8 +798,6 @@ class HikkaSecurityMod(loader.Module):
             " maskesini ayarlamanıza olanak tanır</b>"
         ),
         "owner": "👑 Sahip",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Destek",
         "group_owner": "🧛‍♂️ Grup Sahibi",
         "group_admin_add_admins": "🧑‍⚖️ Yönetici (Üyeleri ekle)",
         "group_admin_change_info": "🧑‍⚖️ Yönetici (Bilgi değiştir)",
@@ -938,25 +812,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji>"
             " <b>Grup Sahibi</b><code>owner</code><b>:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji>"
-            " <b>Grup Sahibi</b><code>sudo</code><b>:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji>"
-            " <b>Grup Sahibi</b><code>support</code><b>:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Grup Sahibi"
             " yok</b><code>owner</code>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Grup Sahibi"
-            " yok</b><code>sudo</code>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Grup Sahibi"
-            " yok</b><code>support</code>"
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lütfen hangi"
@@ -989,29 +847,9 @@ class HikkaSecurityMod(loader.Module):
             ' href="tg://user?id={}">{}</a> adlı kullanıcı</b> <code>sahip</code>'
             " <b>grubuna eklendi</b>"
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> adlı kullanıcı</b> <code>yönetici</code>'
-            " <b>grubuna eklendi</b>"
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> adlı kullanıcı</b> <code>destek</code>'
-            " <b>grubuna eklendi</b>"
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> adlı kullanıcı</b> <code>sahip</code>'
-            " <b>grubundan çıkartıldı</b>"
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> adlı kullanıcı</b> <code>yönetici</code>'
-            " <b>grubundan çıkartıldı</b>"
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> adlı kullanıcı</b> <code>destek</code>'
             " <b>grubundan çıkartıldı</b>"
         ),
         "_cls_doc": "Güvenlik ayarlarını yönet",
@@ -1084,8 +922,6 @@ class HikkaSecurityMod(loader.Module):
             " o'chirilgan bo'ladi</b>"
         ),
         "owner": "😎 Sahib",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Yordamchi",
         "group_owner": "🧛‍♂️ Guruh egasi",
         "group_admin_add_admins": "🧑‍⚖️ Admin (qo'shish)",
         "group_admin_change_info": "🧑‍⚖️ Admin (info o'zgartirish)",
@@ -1100,25 +936,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Guruh</b> <code>sahibi"
             "</code> <b>foydalanuvchilari:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Guruh</b> <code>sudo"
-            "</code> <b>foydalanuvchilari:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Guruh"
-            "</b> <code>yordamchi</code> <b>foydalanuvchilari:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Guruhda"
             "</b> <code>sahib</code> <b>foydalanuvchilar yo'q</b>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Guruhda</b> <code>sudo"
-            "</code> <b>foydalanuvchilar yo'q</b>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Guruhda"
-            "</b> <code>yordamchi</code> <b>foydalanuvchilar yo'q</b>"
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Qaysi foydalanuvchiga"
@@ -1149,29 +969,9 @@ class HikkaSecurityMod(loader.Module):
             ' href="tg://user?id={}">{}</a> guruhga</b> <code>owner</code>'
             " <b>qo'shildi</b>"
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> guruhga</b> <code>sudo</code>'
-            " <b>qo'shildi</b>"
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> guruhga</b> <code>support</code>'
-            " <b>qo'shildi</b>"
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> guruhdan</b> <code>owner</code>'
-            " <b>o'chirildi</b>"
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> guruhdan</b> <code>sudo</code>'
-            " <b>o'chirildi</b>"
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> guruhdan</b> <code>support</code>'
             " <b>o'chirildi</b>"
         ),
         "_cls_doc": "Xavfsizlik sozlamalarini boshqarish",
@@ -1241,8 +1041,6 @@ class HikkaSecurityMod(loader.Module):
             " interruptor está apagado aquí, está apagado para todos los comandos</b>"
         ),
         "owner": "😎 Dueño",
-        "sudo": "🧐 Sudo",
-        "support": "🤓 Asistente",
         "group_owner": "🧛‍♂️ Dueño del grupo",
         "group_admin_add_admins": "🧑‍⚖️ Admin (agregar miembros)",
         "group_admin_change_info": "🧑‍⚖️ Admin (cambiar información)",
@@ -1257,25 +1055,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Usuarios del grupo"
             "</b> <code>owner</code><b>:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Usuarios del grupo"
-            "</b> <code>sudo</code><b>:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Usuarios del grupo"
-            "</b> <code>support</code><b>:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>No hay usuarios en el"
             " grupo</b> <code>owner</code>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>No hay usuarios en el"
-            " grupo</b> <code>sudo</code>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>No hay usuarios en el"
-            " grupo</b> <code>support</code>"
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Indica a quien"
@@ -1303,26 +1085,9 @@ class HikkaSecurityMod(loader.Module):
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> añadido al grupo</b> <code>owner</code>'
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> añadido al grupo</b> <code>sudo</code>'
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> añadido al grupo</b> <code>support</code>'
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> eliminado del grupo</b> <code>owner</code>'
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> eliminado del grupo</b> <code>sudo</code>'
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> eliminado del grupo'
-            "</b> <code>support</code>"
         ),
         "_cls_doc": "Administrar configuraciones de seguridad",
         "what": (
@@ -1392,8 +1157,6 @@ class HikkaSecurityMod(loader.Module):
             " бұл жерде өшірілген болса, барлық командалар үшін өшіріледі</b>"
         ),
         "owner": "😎 Есімші",
-        "sudo": "🧐 Судо",
-        "support": "🤓 Көмекші",
         "group_owner": "🧛‍♂️ Топ есімшісі",
         "group_admin_add_admins": "🧑‍⚖️ Админ (қатысушыларды қосу)",
         "group_admin_change_info": "🧑‍⚖️ Админ (ақпаратты өзгерту)",
@@ -1408,25 +1171,9 @@ class HikkaSecurityMod(loader.Module):
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Топ"
             "</b> <code>owner</code><b>дегендері:</b>\n\n{}"
         ),
-        "sudo_list": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Топ"
-            "</b> <code>sudo</code><b>дегендері:</b>\n\n{}"
-        ),
-        "support_list": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Топ"
-            "</b> <code>support</code><b>дегендері:</b>\n\n{}"
-        ),
         "no_owner": (
             "<emoji document_id=5386399931378440814>😎</emoji> <b>Топ"
             "</b> <code>owner</code><b>дегендері жоқ</b>"
-        ),
-        "no_sudo": (
-            "<emoji document_id=5418133868475587618>🧐</emoji> <b>Топ"
-            "</b> <code>sudo</code><b>дегендері жоқ</b>"
-        ),
-        "no_support": (
-            "<emoji document_id=5415729507128580146>🤓</emoji> <b>Топ"
-            "</b> <code>support</code><b>дегендері жоқ</b>"
         ),
         "no_user": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Құқықтарды беру үшін"
@@ -1453,25 +1200,9 @@ class HikkaSecurityMod(loader.Module):
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> қосылды</b> <code>owner</code> топқа'
         ),
-        "sudo_added": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> қосылды</b> <code>sudo</code> топқа'
-        ),
-        "support_added": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> қосылды</b> <code>support</code> топқа'
-        ),
         "owner_removed": (
             '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
             ' href="tg://user?id={}">{}</a> алынды</b> <code>owner</code> топтан'
-        ),
-        "sudo_removed": (
-            '<emoji document_id="5418133868475587618">🧐</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> алынды</b> <code>sudo</code> топтан'
-        ),
-        "support_removed": (
-            '<emoji document_id="5415729507128580146">🤓</emoji> <b><a'
-            ' href="tg://user?id={}">{}</a> алынды</b> <code>support</code> топтан'
         ),
         "_cls_doc": "Безпеке баптауларын басқару",
         "what": (
@@ -1681,15 +1412,9 @@ class HikkaSecurityMod(loader.Module):
     @staticmethod
     def _perms_map(perms: int, is_inline: bool) -> dict:
         return (
-            {
-                "sudo": bool(perms & SUDO),
-                "support": bool(perms & SUPPORT),
-                "everyone": bool(perms & EVERYONE),
-            }
+            {"everyone": bool(perms & EVERYONE)}
             if is_inline
             else {
-                "sudo": bool(perms & SUDO),
-                "support": bool(perms & SUPPORT),
                 "group_owner": bool(perms & GROUP_OWNER),
                 "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
                 "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
@@ -1804,10 +1529,10 @@ class HikkaSecurityMod(loader.Module):
                 if str(args).isdigit():
                     args = int(args)
 
-                user = await self._client.get_entity(args)
+                user = await self._client.get_entity(args, exp=0)
 
         if user is None:
-            user = await self._client.get_entity(reply.sender_id)
+            user = await self._client.get_entity(reply.sender_id, exp=0)
 
         if not isinstance(user, (User, PeerUser)):
             await utils.answer(message, self.strings("not_a_user"))
@@ -1827,12 +1552,11 @@ class HikkaSecurityMod(loader.Module):
         user: int = None,
     ):
         if user is None:
-            user = await self._resolve_user(message)
-            if not user:
+            if not (user := await self._resolve_user(message)):
                 return
 
         if isinstance(user, int):
-            user = await self._client.get_entity(user)
+            user = await self._client.get_entity(user, exp=0)
 
         if not confirmed:
             await self.inline.form(
@@ -1901,61 +1625,6 @@ class HikkaSecurityMod(loader.Module):
 
         await call.unload()
 
-    async def _remove_from_group(self, message: Message, group: str):
-        user = await self._resolve_user(message)
-        if not user:
-            return
-
-        if user.id in getattr(self._client.dispatcher.security, group):
-            getattr(self._client.dispatcher.security, group).remove(user.id)
-
-        m = self.strings(f"{group}_removed").format(
-            user.id,
-            utils.escape_html(get_display_name(user)),
-        )
-
-        await utils.answer(message, m)
-
-    async def _list_group(self, message: Message, group: str):
-        _resolved_users = []
-        for user in set(
-            getattr(self._client.dispatcher.security, group)
-            + ([self.tg_id] if group == "owner" else [])
-        ):
-            with contextlib.suppress(Exception):
-                _resolved_users += [await self._client.get_entity(user)]
-
-        if _resolved_users:
-            await utils.answer(
-                message,
-                self.strings(f"{group}_list").format(
-                    "\n".join(
-                        [
-                            self.strings("li").format(
-                                i.id, utils.escape_html(get_display_name(i))
-                            )
-                            for i in _resolved_users
-                        ]
-                    )
-                ),
-            )
-        else:
-            await utils.answer(message, self.strings(f"no_{group}"))
-
-    @loader.command(
-        ru_doc="<пользователь> - Добавить пользователя в группу `sudo`",
-        fr_doc="<utilisateur> - Ajouter un utilisateur au groupe `sudo`",
-        it_doc="<utente> - Aggiungi utente al gruppo `sudo`",
-        de_doc="<Benutzer> - Füge Benutzer zur `sudo`-Gruppe hinzu",
-        tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubuna ekle",
-        uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhiga qo'shish",
-        es_doc="<usuario> - Agregar usuario al grupo `sudo`",
-        kk_doc="<пайдаланушы> - Пайдаланушыны `sudo` тобына қосу",
-    )
-    async def sudoadd(self, message: Message):
-        """<user> - Add user to `sudo`"""
-        await self._add_to_group(message, "sudo")
-
     @loader.command(
         ru_doc="<пользователь> - Добавить пользователя в группу `owner`",
         fr_doc="<utilisateur> - Ajouter un utilisateur au groupe `owner`",
@@ -1971,34 +1640,6 @@ class HikkaSecurityMod(loader.Module):
         await self._add_to_group(message, "owner")
 
     @loader.command(
-        ru_doc="<пользователь> - Добавить пользователя в группу `support`",
-        fr_doc="<utilisateur> - Ajouter un utilisateur au groupe `support`",
-        it_doc="<utente> - Aggiungi utente al gruppo `support`",
-        de_doc="<Benutzer> - Füge Benutzer zur `support`-Gruppe hinzu",
-        tr_doc="<kullanıcı> - Kullanıcıyı `support` grubuna ekle",
-        uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhiga qo'shish",
-        es_doc="<usuario> - Agregar usuario al grupo `support`",
-        kk_doc="<пайдаланушы> - Пайдаланушыны `support` тобына қосу",
-    )
-    async def supportadd(self, message: Message):
-        """<user> - Add user to `support`"""
-        await self._add_to_group(message, "support")
-
-    @loader.command(
-        ru_doc="<пользователь> - Удалить пользователя из группы `sudo`",
-        fr_doc="<utilisateur> - Supprimer un utilisateur du groupe `sudo`",
-        it_doc="<utente> - Rimuovi utente dal gruppo `sudo`",
-        de_doc="<Benutzer> - Entferne Benutzer aus der `sudo`-Gruppe",
-        tr_doc="<kullanıcı> - Kullanıcıyı `sudo` grubundan kaldır",
-        uz_doc="<foydalanuvchi> - Foydalanuvchini `sudo` guruhidan olib tashlash",
-        es_doc="<usuario> - Eliminar usuario del grupo `sudo`",
-        kk_doc="<пайдаланушы> - Пайдаланушыны `sudo` тобынан алып тастау",
-    )
-    async def sudorm(self, message: Message):
-        """<user> - Remove user from `sudo`"""
-        await self._remove_from_group(message, "sudo")
-
-    @loader.command(
         ru_doc="<пользователь> - Удалить пользователя из группы `owner`",
         fr_doc="<utilisateur> - Supprimer un utilisateur du groupe `owner`",
         it_doc="<utente> - Rimuovi utente dal gruppo `owner`",
@@ -2010,35 +1651,18 @@ class HikkaSecurityMod(loader.Module):
     )
     async def ownerrm(self, message: Message):
         """<user> - Remove user from `owner`"""
-        await self._remove_from_group(message, "owner")
+        if not (user := await self._resolve_user(message)):
+            return
 
-    @loader.command(
-        ru_doc="<пользователь> - Удалить пользователя из группы `support`",
-        fr_doc="<utilisateur> - Supprimer un utilisateur du groupe `support`",
-        it_doc="<utente> - Rimuovi utente dal gruppo `support`",
-        de_doc="<Benutzer> - Entferne Benutzer aus der `support`-Gruppe",
-        tr_doc="<kullanıcı> - Kullanıcıyı `support` grubundan kaldır",
-        uz_doc="<foydalanuvchi> - Foydalanuvchini `support` guruhidan olib tashlash",
-        es_doc="<usuario> - Eliminar usuario del grupo `support`",
-        kk_doc="<пайдаланушы> - Пайдаланушыны `support` тобынан алып тастау",
-    )
-    async def supportrm(self, message: Message):
-        """<user> - Remove user from `support`"""
-        await self._remove_from_group(message, "support")
+        if user.id in getattr(self._client.dispatcher.security, "owner"):
+            getattr(self._client.dispatcher.security, "owner").remove(user.id)
 
-    @loader.command(
-        ru_doc="Показать список пользователей в группе `sudo`",
-        fr_doc="Afficher la liste des utilisateurs dans le groupe `sudo`",
-        it_doc="Mostra la lista degli utenti nel gruppo `sudo`",
-        de_doc="Zeige Liste der Benutzer in der `sudo`-Gruppe",
-        tr_doc="`sudo` grubundaki kullanıcıların listesini göster",
-        uz_doc="`sudo` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
-        es_doc="Mostrar lista de usuarios en el grupo `sudo`",
-        kk_doc="`sudo` тобындағы пайдаланушылар тізімін көрсету",
-    )
-    async def sudolist(self, message: Message):
-        """List users in `sudo`"""
-        await self._list_group(message, "sudo")
+        m = self.strings("owner_removed").format(
+            user.id,
+            utils.escape_html(get_display_name(user)),
+        )
+
+        await utils.answer(message, m)
 
     @loader.command(
         ru_doc="Показать список пользователей в группе `owner`",
@@ -2052,21 +1676,30 @@ class HikkaSecurityMod(loader.Module):
     )
     async def ownerlist(self, message: Message):
         """List users in `owner`"""
-        await self._list_group(message, "owner")
+        _resolved_users = []
+        for user in set(
+            getattr(self._client.dispatcher.security, "owner") + [self.tg_id]
+        ):
+            with contextlib.suppress(Exception):
+                _resolved_users += [await self._client.get_entity(user, exp=0)]
 
-    @loader.command(
-        ru_doc="Показать список пользователей в группе `support`",
-        fr_doc="Afficher la liste des utilisateurs dans le groupe `support`",
-        it_doc="Mostra la lista degli utenti nel gruppo `support`",
-        de_doc="Zeige Liste der Benutzer in der `support`-Gruppe",
-        tr_doc="`support` grubundaki kullanıcıların listesini göster",
-        uz_doc="`support` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
-        es_doc="Mostrar lista de usuarios en el grupo `support`",
-        kk_doc="`support` тобындағы пайдаланушылар тізімін көрсету",
-    )
-    async def supportlist(self, message: Message):
-        """List users in `support`"""
-        await self._list_group(message, "support")
+        if not _resolved_users:
+            await utils.answer(message, self.strings("no_owner"))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("owner_list").format(
+                "\n".join(
+                    [
+                        self.strings("li").format(
+                            i.id, utils.escape_html(get_display_name(i))
+                        )
+                        for i in _resolved_users
+                    ]
+                )
+            ),
+        )
 
     def _lookup(self, needle: str) -> str:
         return (
@@ -2240,11 +1873,12 @@ class HikkaSecurityMod(loader.Module):
                     raise ValueError
 
                 target = await self._client.get_entity(
-                    int(args[1]) if args[1].isdigit() else args[1]
+                    int(args[1]) if args[1].isdigit() else args[1],
+                    exp=0,
                 )
             except (ValueError, TypeError):
                 if not message.is_private:
-                    target = await self._client.get_entity(message.peer_id)
+                    target = await self._client.get_entity(message.peer_id, exp=0)
                 else:
                     await utils.answer(message, self.strings("no_target"))
                     return
@@ -2302,14 +1936,16 @@ class HikkaSecurityMod(loader.Module):
                     raise ValueError
 
                 target = await self._client.get_entity(
-                    int(args[1]) if args[1].isdigit() else args[1]
+                    int(args[1]) if args[1].isdigit() else args[1],
+                    exp=0,
                 )
             except (ValueError, TypeError):
                 if message.is_private:
-                    target = await self._client.get_entity(message.peer_id)
+                    target = await self._client.get_entity(message.peer_id, exp=0)
                 elif message.is_reply:
                     target = await self._client.get_entity(
-                        (await message.get_reply_message()).sender_id
+                        (await message.get_reply_message()).sender_id,
+                        exp=0,
                     )
                 else:
                     await utils.answer(message, self.strings("no_target"))
@@ -2422,10 +2058,11 @@ class HikkaSecurityMod(loader.Module):
                 return
 
             if message.is_private:
-                target = await self._client.get_entity(message.peer_id)
+                target = await self._client.get_entity(message.peer_id, exp=0)
             elif message.is_reply:
                 target = await self._client.get_entity(
-                    (await message.get_reply_message()).sender_id
+                    (await message.get_reply_message()).sender_id,
+                    exp=0,
                 )
 
             if not self._client.dispatcher.security.remove_rule(
@@ -2450,7 +2087,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_target"))
             return
 
-        target = await self._client.get_entity(message.peer_id)
+        target = await self._client.get_entity(message.peer_id, exp=0)
 
         if not self._client.dispatcher.security.remove_rule("chat", target.id, args[1]):
             await utils.answer(message, self.strings("no_rules"))
@@ -2522,10 +2159,11 @@ class HikkaSecurityMod(loader.Module):
                 return
 
             if message.is_private:
-                target = await self._client.get_entity(message.peer_id)
+                target = await self._client.get_entity(message.peer_id, exp=0)
             elif message.is_reply:
                 target = await self._client.get_entity(
-                    (await message.get_reply_message()).sender_id
+                    (await message.get_reply_message()).sender_id,
+                    exp=0,
                 )
 
             if not self._client.dispatcher.security.remove_rules("user", target.id):
@@ -2545,7 +2183,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_target"))
             return
 
-        target = await self._client.get_entity(message.peer_id)
+        target = await self._client.get_entity(message.peer_id, exp=0)
 
         if not self._client.dispatcher.security.remove_rules("chat", target.id):
             await utils.answer(message, self.strings("no_rules"))

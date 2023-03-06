@@ -562,7 +562,6 @@ class HelpMod(loader.Module):
             ),
         )
 
-    @loader.unrestricted
     @loader.command(
         ru_doc="[модуль] [-f] - Показать помощь",
         fr_doc="[module] [-f] - Afficher l'aide",

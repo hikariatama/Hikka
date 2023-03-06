@@ -811,7 +811,6 @@ class UpdaterMod(loader.Module):
 
             logger.critical("Got update loop. Update manually via .terminal")
 
-    @loader.unrestricted
     @loader.command(
         ru_doc="Показать ссылку на исходный код проекта",
         fr_doc="Affiche le lien vers le code source du projet",
