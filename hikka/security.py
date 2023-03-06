@@ -351,7 +351,12 @@ class SecurityManager:
 
         is_channel = False
 
-        if message.is_channel and not message.is_group and message.edit_date:
+        if (
+            message
+            and message.is_channel
+            and not message.is_group
+            and message.edit_date
+        ):
             async for event in self._client.iter_admin_log(
                 utils.get_chat_id(message),
                 limit=10,
