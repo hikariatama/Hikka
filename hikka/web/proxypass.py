@@ -24,32 +24,18 @@ class ProxyPasser:
         self._lock = asyncio.Lock()
         self._change_url_callback = change_url_callback
 
-    async def _sleep_for_task(self, callback: callable, data: bytes, delay: int):
-        await asyncio.sleep(delay)
-        await callback(data.decode("utf-8"))
-
     async def _read_stream(
         self,
         callback: callable,
         stream: typing.BinaryIO,
         delay: int,
     ) -> None:
-        last_task = None
         for getline in iter(stream.readline, ""):
+            await asyncio.sleep(delay)
             data_chunk = await getline
-            if not data_chunk:
-                if last_task:
-                    last_task.cancel()
-                    await callback(data_chunk.decode("utf-8"))
-                    if not self._url_available.is_set():
-                        self._url_available.set()
-
-            if last_task:
-                last_task.cancel()
-
-            last_task = asyncio.ensure_future(
-                self._sleep_for_task(callback, data_chunk, delay)
-            )
+            if await callback(data_chunk.decode("utf-8")):
+                if not self._url_available.is_set():
+                    self._url_available.set()
 
     def kill(self):
         try:
@@ -60,7 +46,8 @@ class ProxyPasser:
             logger.debug("Proxy pass tunnel killed")
 
     async def _process_stream(self, stdout_line: str) -> None:
-        regex = r"tunneled.*?(https:\/\/.*?\..*?\.[a-z]+)"
+        logger.debug(stdout_line)
+        regex = r"tunneled.*?(https:\/\/.+)"
 
         if re.search(regex, stdout_line):
             self._tunnel_url = re.search(regex, stdout_line)[1]
@@ -68,7 +55,7 @@ class ProxyPasser:
             logger.debug("Proxy pass tunneled: %s", self._tunnel_url)
             self._url_available.set()
 
-    async def get_url(self, port: int) -> typing.Optional[str]:
+    async def get_url(self, port: int, no_retry: bool = False) -> typing.Optional[str]:
         async with self._lock:
             if self._tunnel_url:
                 try:
@@ -113,7 +100,10 @@ class ProxyPasser:
             except asyncio.TimeoutError:
                 self.kill()
                 self._tunnel_url = None
-                return await self.get_url(port)
+                if no_retry:
+                    return None
+
+                return await self.get_url(port, no_retry=True)
 
             logger.debug("Proxy pass tunnel url to port %d: %s", port, self._tunnel_url)
 
