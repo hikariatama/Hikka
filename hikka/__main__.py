@@ -42,7 +42,7 @@ else:
         try:
             import hikkatl  # noqa: F811
 
-            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 0):
+            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 1):
                 raise ImportError
         except ImportError:
             print("🔄 Installing Hikka-TL...")
