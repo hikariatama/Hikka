@@ -137,7 +137,6 @@ def generate_app_name() -> str:
     :return: Random app name
     :example: "Cresco Cibus Consilium"
     """
-    random.seed(0)
     return " ".join(random.choices(LATIN_MOCK, k=3))
 
 

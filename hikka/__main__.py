@@ -29,6 +29,24 @@ if (
         sys.exit(1)
 
 
+def deps():
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "-q",
+            "--disable-pip-version-check",
+            "--no-warn-script-location",
+            "-r",
+            "requirements.txt",
+        ],
+        check=True,
+    )
+
+
 if sys.version_info < (3, 8, 0):
     print("🚫 Error: you must use at least Python version 3.8.0")
 elif __package__ != "hikka":  # In case they did python __main__.py
@@ -44,49 +62,14 @@ else:
 
             if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 2):
                 raise ImportError
-        except ImportError:
-            print("🔄 Installing Hikka-TL...")
 
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--force-reinstall",
-                    "-q",
-                    "--disable-pip-version-check",
-                    "--no-warn-script-location",
-                    "hikka-tl-new",
-                ],
-                check=True,
-            )
-
-            restart()
-
-        try:
             import hikkapyro
 
             if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 102):
                 raise ImportError
         except ImportError:
-            print("🔄 Installing Hikka-Pyro...")
-
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--force-reinstall",
-                    "-q",
-                    "--disable-pip-version-check",
-                    "--no-warn-script-location",
-                    "hikka-pyro-new",
-                ],
-                check=True,
-            )
-
+            print("🔄 Installing dependencies...")
+            deps()
             restart()
 
     try:
@@ -97,23 +80,7 @@ else:
         from . import main
     except ImportError as e:
         print(f"{str(e)}\n🔄 Attempting dependencies installation... Just wait ⏱")
-
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                "-q",
-                "--disable-pip-version-check",
-                "--no-warn-script-location",
-                "-r",
-                "requirements.txt",
-            ],
-            check=True,
-        )
-
+        deps()
         restart()
 
     if "HIKKA_DO_NOT_RESTART" in os.environ:
