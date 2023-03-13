@@ -317,7 +317,7 @@ class UnitHeta(loader.Module):
 
         text = strings.format(**kwargs)
 
-        if len(text) > 4096:
+        if len(text) > 2048:
             kwargs["commands"] = "..."
             text = strings.format(**kwargs)
 
