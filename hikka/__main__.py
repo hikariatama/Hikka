@@ -42,7 +42,7 @@ else:
         try:
             import hikkatl  # noqa: F811
 
-            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 1):
+            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 2):
                 raise ImportError
         except ImportError:
             print("🔄 Installing Hikka-TL...")
@@ -67,7 +67,7 @@ else:
         try:
             import hikkapyro
 
-            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 100):
+            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 102):
                 raise ImportError
         except ImportError:
             print("🔄 Installing Hikka-Pyro...")
