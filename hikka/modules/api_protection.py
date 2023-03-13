@@ -12,12 +12,6 @@ import random
 import time
 
 from hikkatl.tl import functions
-from hikkatl.tl.functions.updates import (
-    GetChannelDifferenceRequest,
-    GetDifferenceRequest,
-    GetStateRequest,
-)
-from hikkatl.tl.functions.upload import SaveBigFilePartRequest, SaveFilePartRequest
 from hikkatl.tl.tlobject import TLRequest
 from hikkatl.tl.types import Message
 
@@ -612,15 +606,9 @@ class APIRatelimiterMod(loader.Module):
                     "disable_protection",
                     True,
                 )
-                and not isinstance(
-                    request,
-                    (
-                        GetChannelDifferenceRequest,
-                        SaveBigFilePartRequest,
-                        SaveFilePartRequest,
-                        GetStateRequest,
-                        GetDifferenceRequest,
-                    ),
+                and (
+                    request.__module__.rsplit(".", maxsplit=1)[1]
+                    in {"messages", "account", "channels"}
                 )
             ):
                 request_name = type(request).__name__
