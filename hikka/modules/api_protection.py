@@ -14,6 +14,7 @@ import time
 from hikkatl.tl import functions
 from hikkatl.tl.tlobject import TLRequest
 from hikkatl.tl.types import Message
+from hikkatl.utils import is_list_like
 
 from .. import loader, utils
 from ..inline.types import InlineCall
@@ -600,55 +601,57 @@ class APIRatelimiterMod(loader.Module):
             flood_sleep_threshold: int = None,
         ):
             await asyncio.sleep(random.randint(1, 5) / 100)
-            if (
-                time.perf_counter() > self._suspend_until
-                and not self.get(
-                    "disable_protection",
-                    True,
-                )
-                and (
-                    request.__module__.rsplit(".", maxsplit=1)[1]
-                    in {"messages", "account", "channels"}
-                )
-            ):
-                request_name = type(request).__name__
-                self._ratelimiter += [[request_name, time.perf_counter()]]
-
-                self._ratelimiter = list(
-                    filter(
-                        lambda x: time.perf_counter() - x[1]
-                        < int(self.config["time_sample"]),
-                        self._ratelimiter,
-                    )
-                )
-
+            req = (request,) if not is_list_like(request) else request
+            for r in req:
                 if (
-                    len(self._ratelimiter) > int(self.config["threshold"])
-                    and not self._lock
+                    time.perf_counter() > self._suspend_until
+                    and not self.get(
+                        "disable_protection",
+                        True,
+                    )
+                    and (
+                        r.__module__.rsplit(".", maxsplit=1)[1]
+                        in {"messages", "account", "channels"}
+                    )
                 ):
-                    self._lock = True
-                    report = io.BytesIO(
-                        json.dumps(
+                    request_name = type(r).__name__
+                    self._ratelimiter += [[request_name, time.perf_counter()]]
+
+                    self._ratelimiter = list(
+                        filter(
+                            lambda x: time.perf_counter() - x[1]
+                            < int(self.config["time_sample"]),
                             self._ratelimiter,
-                            indent=4,
-                        ).encode("utf-8")
-                    )
-                    report.name = "local_fw_report.json"
-
-                    await self.inline.bot.send_document(
-                        self.tg_id,
-                        report,
-                        caption=self.inline.sanitise_text(
-                            self.strings("warning").format(
-                                self.config["local_floodwait"],
-                                prefix=self.get_prefix(),
-                            )
-                        ),
+                        )
                     )
 
-                    # It is intented to use time.sleep instead of asyncio.sleep
-                    time.sleep(int(self.config["local_floodwait"]))
-                    self._lock = False
+                    if (
+                        len(self._ratelimiter) > int(self.config["threshold"])
+                        and not self._lock
+                    ):
+                        self._lock = True
+                        report = io.BytesIO(
+                            json.dumps(
+                                self._ratelimiter,
+                                indent=4,
+                            ).encode("utf-8")
+                        )
+                        report.name = "local_fw_report.json"
+
+                        await self.inline.bot.send_document(
+                            self.tg_id,
+                            report,
+                            caption=self.inline.sanitise_text(
+                                self.strings("warning").format(
+                                    self.config["local_floodwait"],
+                                    prefix=self.get_prefix(),
+                                )
+                            ),
+                        )
+
+                        # It is intented to use time.sleep instead of asyncio.sleep
+                        time.sleep(int(self.config["local_floodwait"]))
+                        self._lock = False
 
             return await old_call(sender, request, ordered, flood_sleep_threshold)
 
