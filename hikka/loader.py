@@ -348,6 +348,21 @@ def tag(*tags, **kwarg_tags):
         • `only_channels` - Capture only messages with channels
         • `only_groups` - Capture only messages with groups
         • `only_pm` - Capture only messages with private chats
+        • `no_pm` - Exclude messages with private chats
+        • `no_channels` - Exclude messages with channels
+        • `no_groups` - Exclude messages with groups
+        • `no_inline` - Exclude messages with inline queries
+        • `no_stickers` - Exclude messages with stickers
+        • `no_docs` - Exclude messages with documents
+        • `no_audios` - Exclude messages with audios
+        • `no_videos` - Exclude messages with videos
+        • `no_photos` - Exclude messages with photos
+        • `no_forwards` - Exclude forwarded messages
+        • `no_reply` - Exclude messages with replies
+        • `no_mention` - Exclude messages with mentions
+        • `mention` - Capture only messages with mentions
+        • `only_reply` - Capture only messages with replies
+        • `only_forwards` - Capture only forwarded messages
         • `startswith` - Capture only messages that start with given text
         • `endswith` - Capture only messages that end with given text
         • `contains` - Capture only messages that contain given text

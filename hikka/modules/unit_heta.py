@@ -16,15 +16,10 @@ import rsa
 from hikkatl.tl.types import Message
 from hikkatl.utils import resolve_inline_message_id
 
-from .. import loader, translations, utils
+from .. import loader, utils
 from ..types import InlineCall
 
 logger = logging.getLogger(__name__)
-
-pubkey = rsa.PublicKey(
-    7110455561671499155469672749235101198284219627796886527432331759773809536504953770286294224729310191037878347906574131955439231159825047868272932664151403,
-    65537,
-)
 
 REGEXES = [
     re.compile(
@@ -38,7 +33,7 @@ REGEXES = [
 
 @loader.tds
 class UnitHeta(loader.Module):
-    """Gives @hikkamods_bot a right to download modules from official modules aggregator and autoupdate them"""
+    """Manages stuff with @hikkamods_bot"""
 
     e = "<emoji document_id=5210952531676504517>❌</emoji>"
 
@@ -73,6 +68,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Успешно установлено</b>",
         "not_loaded": "❌ <b>Установка не удалась</b>",
         "language": "ru",
+        "_cls_doc": "Управляет вещами, связанными с @hikkamods_bot",
     }
 
     strings_es = {
@@ -89,6 +85,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Instalado con éxito</b>",
         "not_loaded": "❌ <b>La instalación falló</b>",
         "language": "es",
+        "_cls_doc": "Administra cosas relacionadas con @hikkamods_bot",
     }
 
     strings_de = {
@@ -105,6 +102,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Erfolgreich installiert</b>",
         "not_loaded": "❌ <b>Die Installation ist fehlgeschlagen</b>",
         "language": "de",
+        "_cls_doc": "Verwaltet Dinge, die mit @hikkamods_bot zu tun haben",
     }
 
     strings_fr = {
@@ -121,6 +119,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Installation réussie</b>",
         "not_loaded": "❌ <b>Installation échouée</b>",
         "language": "fr",
+        "_cls_doc": "Gère les choses liées à @hikkamods_bot",
     }
 
     strings_uz = {
@@ -137,6 +136,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Muvaffaqiyatli o'rnatildi</b>",
         "not_loaded": "❌ <b>O'rnatish muvaffaqiyatsiz bo'ldi</b>",
         "language": "uz",
+        "_cls_doc": "@hikkamods_bot bilan bog'liq narsalarni boshqarish",
     }
 
     strings_tr = {
@@ -153,6 +153,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Başarıyla yüklendi</b>",
         "not_loaded": "❌ <b>Yükleme başarısız oldu</b>",
         "language": "tr",
+        "_cls_doc": "@hikkamods_bot ile ilgili şeyleri yönetir",
     }
 
     strings_it = {
@@ -169,6 +170,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Installazione riuscita</b>",
         "not_loaded": "❌ <b>Installazione non riuscita</b>",
         "language": "it",
+        "_cls_doc": "Gestisce le cose relative a @hikkamods_bot",
     }
 
     strings_kk = {
@@ -185,6 +187,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Орнату сәтті аяқталды</b>",
         "not_loaded": "❌ <b>Орнату сәтсіз аяқталды</b>",
         "language": "kk",
+        "_cls_doc": "@hikkamods_bot-ға қатысты барлық қызметтерді басқару",
     }
 
     strings_tt = {
@@ -201,6 +204,7 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Установка уңышлы тамамланды</b>",
         "not_loaded": "❌ <b>Установка үтәлмәде</b>",
         "language": "tt",
+        "_cls_doc": "@hikkamods_bot-җә белән үзгәртүләрне башкару",
     }
 
     def __init__(self):
@@ -357,7 +361,7 @@ class UnitHeta(loader.Module):
     async def _load_module(
         self,
         url: str,
-        message: typing.Optional[Message] = None,
+        dl_id: typing.Optional[int] = None,
     ) -> bool:
         loader_m = self.lookup("loader")
         await loader_m.download_and_install(url, None)
@@ -369,16 +373,16 @@ class UnitHeta(loader.Module):
             link == url for link in loader_m.get("loaded_modules", {}).values()
         )
 
-        if message:
+        if dl_id:
             if loaded:
                 await self._client.inline_query(
                     "@hikkamods_bot",
-                    f"#confirm_load {message.raw_text.splitlines()[2].strip()}",
+                    f"#confirm_load {dl_id}",
                 )
             else:
                 await self._client.inline_query(
                     "@hikkamods_bot",
-                    f"#confirm_fload {message.raw_text.splitlines()[2].strip()}",
+                    f"#confirm_fload {dl_id}",
                 )
 
         return loaded
@@ -429,26 +433,35 @@ class UnitHeta(loader.Module):
                         )
                         return
 
-    @loader.watcher("in", "only_messages", from_user=5519484330)
+    @loader.watcher(
+        "in",
+        "only_messages",
+        from_id=5519484330,
+        regex="^#install:.*?\/.*?\/.*?\n.*?\n\d+\n\n.*$",
+    )
     async def watcher(self, message: Message):
-        if message.raw_text.startswith("#install"):
-            await message.delete()
+        await message.delete()
 
-            fileref = (
-                message.raw_text.split("#install:")[1].strip().splitlines()[0].strip()
+        data = re.search(
+            r"^#install:(?P<file>.*?\/.*?\/.*?)\n(?P<sig>.*?)\n(?P<dl_id>\d+)\n\n.*$",
+            message.raw.text,
+        )
+
+        uri = data["file"]
+        try:
+            rsa.verify(
+                rsa.compute_hash(uri.encode("utf-8"), "SHA-1"),
+                base64.b64decode(data["sig"]),
+                rsa.PublicKey(
+                    7110455561671499155469672749235101198284219627796886527432331759773809536504953770286294224729310191037878347906574131955439231159825047868272932664151403,
+                    65537,
+                ),
             )
-            sig = base64.b64decode(message.raw_text.splitlines()[1].strip().encode())
-            try:
-                rsa.verify(
-                    rsa.compute_hash(fileref.encode("utf-8"), "SHA-1"), sig, pubkey
-                )
-            except rsa.pkcs1.VerificationError:
-                logger.error("Got message with non-verified signature %s", fileref)
-                return
+        except rsa.pkcs1.VerificationError:
+            logger.error("Got message with non-verified signature %s", uri)
+            return
 
-            await self._load_module(f"https://heta.hikariatama.ru/{fileref}", message)
-        elif message.raw_text.startswith("#setlang"):
-            lang = message.raw_text.split()[1]
-            self._db.set(translations.__name__, "lang", lang)
-            await self.allmodules.reload_translations()
-            await self._client.inline_query("@hikkamods_bot", "#confirm_setlang")
+        await self._load_module(
+            f"https://heta.hikariatama.ru/{uri}",
+            int(data["dl_id"]),
+        )

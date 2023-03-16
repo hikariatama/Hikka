@@ -26,6 +26,7 @@
 - Completely remove security groups `sudo` and `support`
 - Fix proxy-pass
 - New core modules: `UnitHeta`, `Translator`
+- New watcher tags: `no_pm`, `no_channels`, `no_groups`, `no_inline`, `no_stickers`, `no_docs`, `no_audios`, `no_videos`, `no_photos`, `no_forwards`, `no_reply`, `no_mention`, `mention`, `only_reply`, `only_forwards`
 
 ## 🌑 Hikka 1.6.1
 

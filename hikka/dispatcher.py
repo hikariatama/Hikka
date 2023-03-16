@@ -559,6 +559,63 @@ class CommandDispatcher:
                 )
             )
             or (
+                getattr(func, "no_channels", False)
+                and (
+                    getattr(message, "is_channel", False)
+                    or not getattr(message, "is_group", False)
+                )
+            )
+            or (
+                getattr(func, "no_groups", False)
+                and getattr(message, "is_group", False)
+            )
+            or (getattr(func, "no_pm", False) and getattr(message, "is_private", False))
+            or (
+                getattr(func, "no_inline", False)
+                and getattr(message, "via_bot_id", False)
+            )
+            or (
+                getattr(func, "no_stickers", False)
+                and getattr(message, "sticker", False)
+            )
+            or (getattr(func, "no_docs", False) and getattr(message, "document", False))
+            or (
+                getattr(func, "no_audios", False)
+                and utils.mime_type(message).startswith("audio/")
+            )
+            or (
+                getattr(func, "no_photos", False)
+                and utils.mime_type(message).startswith("image/")
+            )
+            or (
+                getattr(func, "no_videos", False)
+                and utils.mime_type(message).startswith("video/")
+            )
+            or (
+                getattr(func, "no_forwards", False)
+                and getattr(message, "fwd_from", False)
+            )
+            or (
+                getattr(func, "no_reply", False)
+                and getattr(message, "reply_to_msg_id", False)
+            )
+            or (
+                getattr(func, "only_forwards", False)
+                and not getattr(message, "fwd_from", False)
+            )
+            or (
+                getattr(func, "only_reply", False)
+                and not getattr(message, "reply_to_msg_id", False)
+            )
+            or (
+                getattr(func, "mention", False)
+                and not getattr(message, "mentioned", False)
+            )
+            or (
+                getattr(func, "no_mention", False)
+                and getattr(message, "mentioned", False)
+            )
+            or (
                 getattr(func, "only_groups", False)
                 and not getattr(message, "is_group", False)
             )

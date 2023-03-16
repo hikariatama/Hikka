@@ -30,54 +30,63 @@ class Translator(loader.Module):
         "no_args": f"{e} <b>Не указаны аргументы</b>",
         "error": f"{e} <b>Не удалось перевести текст</b>",
         "language": "ru",
+        "_cls_doc": "Переводит текст (очевидно)",
     }
 
     strings_de = {
         "no_args": f"{e} <b>Keine Argumente angegeben</b>",
         "error": f"{e} <b>Konnte Text nicht übersetzen</b>",
         "language": "de",
+        "_cls_doc": "Übersetzt den Text (offensichtlich)",
     }
 
     strings_es = {
         "no_args": f"{e} <b>No se han proporcionado argumentos</b>",
         "error": f"{e} <b>No se pudo traducir el texto</b>",
         "language": "es",
+        "_cls_doc": "Traduce el texto (obviamente)",
     }
 
     strings_uz = {
         "no_args": f"{e} <b>Argumentlar berilmadi</b>",
         "error": f"{e} <b>Matnni tarjima qilishda xatolik yuz berdi</b>",
         "language": "uz",
+        "_cls_doc": "Matnni tarjima qilish (a'lohida)",
     }
 
     strings_tr = {
         "no_args": f"{e} <b>Argümanlar verilmedi</b>",
         "error": f"{e} <b>Metin çevirilemedi</b>",
         "language": "tr",
+        "_cls_doc": "Metni çevir (açıkçası)",
     }
 
     strings_kk = {
         "no_args": f"{e} <b>Аргументтер көрсетілмеген</b>",
         "error": f"{e} <b>Мәтінді тілден түсірмеді</b>",
         "language": "kk",
+        "_cls_doc": "Мәтінді тілден түсір (ағылшындай)",
     }
 
     strings_it = {
         "no_args": f"{e} <b>Nessun argomento fornito</b>",
         "error": f"{e} <b>Impossibile tradurre il testo</b>",
         "language": "it",
+        "_cls_doc": "Traduci il testo (ovviamente)",
     }
 
     strings_fr = {
         "no_args": f"{e} <b>Aucun argument fourni</b>",
         "error": f"{e} <b>Impossible de traduire le texte</b>",
         "language": "fr",
+        "_cls_doc": "Traduit le texte (évidemment)",
     }
 
     strings_tt = {
         "no_args": f"{e} <b>Аргументлар күрсәтелмәгән</b>",
         "error": f"{e} <b>Мәтинне тәрҗемә итү мөмкин түгел</b>",
         "language": "tt",
+        "_cls_doc": "Мәтинне тәрҗемә итү (ағылшындай)",
     }
 
     @loader.command(
