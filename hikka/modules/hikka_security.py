@@ -196,6 +196,24 @@ class HikkaSecurityMod(loader.Module):
         "seconds": "секунд",
     }
 
+    service_strings_tt = {
+        "for": "өчен",
+        "forever": "үткәнчәк",
+        "command": "команда",
+        "module": "модуль",
+        "inline": "инлайн-команда",
+        "chat": "чат",
+        "user": "үзәнчә",
+        "day": "көн",
+        "days": "көн(-нәрсә)",
+        "hour": "сәгать",
+        "hours": "сәгать(-сә)",
+        "minute": "минут",
+        "minutes": "минут(-сә)",
+        "second": "секунда",
+        "seconds": "секунд(-сә)",
+    }
+
     strings = {
         "name": "HikkaSecurity",
         "no_command": "🚫 <b>Command</b> <code>{}</code> <b>not found!</b>",
@@ -1260,6 +1278,126 @@ class HikkaSecurityMod(loader.Module):
         **service_strings_kk,
     }
 
+    strings_tt = {
+        "no_command": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда"
+            "</b> <code>{}</code> <b>табылмады!</b>"
+        ),
+        "permissions": (
+            "🔐 <b>Бу ешкереләрне көйләү өчен бу сылтамага күчерәгез</b>"
+            " <code>{}{}</code>"
+        ),
+        "close_menu": "🙈 Бу менюны ябу",
+        "global": (
+            "🔐 <b>Глобаль маска өчен бу ешкереләрне көйләү өчен бу тумблерга күчерәгез."
+            " Әгәр бу тумблер өчен якланмаган булса, барлык командалар өчен якланмаган."
+        ),
+        "owner": "😎 Эшкәртәче",
+        "group_owner": "🧛‍♂️ Группа эшкәртәчесе",
+        "group_admin_add_admins": "🧑‍⚖️ Админ (участникларны кертү)",
+        "group_admin_change_info": "🧑‍⚖️ Админ (мәгълүматны үзгәртү)",
+        "group_admin_ban_users": "🧑‍⚖️ Админ (банлау)",
+        "group_admin_delete_messages": "🧑‍⚖️ Админ (хәбәрләрне бетерү)",
+        "group_admin_pin_messages": "🧑‍⚖️ Админ (хәбәрләрне керү)",
+        "group_admin_invite_users": "🧑‍⚖️ Админ (кулланучыларны кертү)",
+        "group_admin": "🧑‍⚖️ Админ (барлык)",
+        "group_member": "👥 Группада",
+        "pm": "🤙 ЛС",
+        "owner_list": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Группада эшкәртәчеләр"
+            "</b> <code>owner</code><b>:</b>\n\n{}"
+        ),
+        "no_owner": (
+            "<emoji document_id=5386399931378440814>😎</emoji> <b>Группада эшкәртәчеләр"
+            " табылмады</b> <code>owner</code>"
+        ),
+        "no_user": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Эшкәреләрне күчерү"
+            " өчен кулланучыны күрсәтергә кәрәк</b>"
+        ),
+        "not_a_user": (
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Бу мәҗбүри кулланучы"
+            " түгел</b>"
+        ),
+        "cancel": "🚫 Баш тарту",
+        "confirm": "👑 Ышандыр",
+        "self": (
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Сезне кергән"
+            " хокукларыңызны башкаруга мөмкин түгел!</b>"
+        ),
+        "warning": (
+            '⚠️ <b>Сез <a href="tg://user?id={}">{}</a> чатны</b> <code>{}</code><b>гә'
+            " кертүне һәм чатның хокукларын башкаруга мөмкинлеген берә аласыз!</b>"
+        ),
+        "suggest_nonick": (
+            "🔰 <i>Сез бу кулланучының NoNick хокукын җибәрмәгә телисезме?</i>"
+        ),
+        "user_nn": (
+            '🔰 <b><a href="tg://user?id={}">{}</a> чатының NoNick хокукы җибәрелде</b>'
+        ),
+        "enable_nonick_btn": "🔰 Җибәрү",
+        "owner_added": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> чатына керүче хокукы берелде</b>'
+            " <code>owner</code>"
+        ),
+        "owner_removed": (
+            '<emoji document_id="5386399931378440814">😎</emoji> <b><a'
+            ' href="tg://user?id={}">{}</a> чатынан керүче хокукы алынды</b>'
+            " <code>owner</code>"
+        ),
+        "_cls_doc": "Җибәрү хокукларын башкару",
+        "what": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сез башкаруу"
+            " хокукларының цельларын (</b><code>user</code> <b>яки</b>"
+            " <code>chat</code><b>) башта күрсәтеп була</b>"
+        ),
+        "no_target": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Җибәрү хокукларының"
+            " цельлары күрсәтелмәгән</b>"
+        ),
+        "no_rule": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Җибәрү хокукларының"
+            " башкаруу модулы яки командасе күрсәтелмәгән</b>"
+        ),
+        "confirm_rule": (
+            "🔐 <b>Сез һәм <a href='{}'>{}</a> {} <a href='{}'>{}</a> чатына"
+            " җибәрү хокукын берә аласызмы?</b> <code>{}</code> <b>{}</b>"
+        ),
+        "multiple_rules": (
+            "🔐 <b>Нәтиҗә җитекле қаулларны анықлау мөмкин түгел. Кереткән"
+            " белән берсен:</b>\n\n{}"
+        ),
+        "rule_added": (
+            "🔐 <b>Сез {} <a href='{}'>{}</a> қаулын"
+            " куллану өчен {}</b> <code>{}</code> <b>{}</b>"
+        ),
+        "rules": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Үзлекле"
+            " қауллар:</b>\n\n{}"
+        ),
+        "no_rules": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Үзлекле қауллар юк</b>"
+        ),
+        "owner_target": (
+            "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Бу кулланучы аның"
+            " саклаучы, уны үзлекле қауллар белән башҡару мөмкин түгел</b>"
+        ),
+        "rules_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Үзлекле қауллар"
+            ' <a href="{}">{}</a> белән бетерелде</b>'
+        ),
+        "rule_removed": (
+            "<emoji document_id=5472308992514464048>🔐</emoji> <b>Қаул бетерелде"
+            ' <a href="{}">{}</a> (</b><code>{}</code><b>)</b>'
+        ),
+        "chat_inline": (
+            "⚠️ <b>Сез чатлар өчен inline-командалар үзлекле қаулларын башҡара"
+            " алмыйсыз!</b>"
+        ),
+        **service_strings_tt,
+    }
+
     async def inline__switch_perm(
         self,
         call: InlineCall,
@@ -1307,7 +1445,9 @@ class HikkaSecurityMod(loader.Module):
 
         await call.edit(
             self.strings("permissions").format(
-                f"@{self.inline.bot_username} " if is_inline else self.get_prefix(),
+                utils.escape_html(
+                    f"@{self.inline.bot_username} " if is_inline else self.get_prefix()
+                ),
                 command,
             ),
             reply_markup=self._build_markup(cmd, is_inline),
@@ -1388,9 +1528,9 @@ class HikkaSecurityMod(loader.Module):
         )
 
     def _build_markup_global(
-        self, is_inline: bool = False
+        self,
+        is_inline: bool = False,
     ) -> typing.List[typing.List[dict]]:
-        perms = self._get_current_bm(is_inline)
         return utils.chunks(
             [
                 {
@@ -1398,7 +1538,7 @@ class HikkaSecurityMod(loader.Module):
                     "callback": self.inline__switch_perm_bm,
                     "args": (group, not level, is_inline),
                 }
-                for group, level in perms.items()
+                for group, level in self._get_current_bm(is_inline).items()
             ],
             2,
         ) + [[{"text": self.strings("close_menu"), "action": "close"}]]
@@ -1412,22 +1552,22 @@ class HikkaSecurityMod(loader.Module):
     @staticmethod
     def _perms_map(perms: int, is_inline: bool) -> dict:
         return (
-            {"everyone": bool(perms & EVERYONE)}
+            {"everyone": not not (perms & EVERYONE)}
             if is_inline
             else {
-                "group_owner": bool(perms & GROUP_OWNER),
-                "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
-                "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
-                "group_admin_ban_users": bool(perms & GROUP_ADMIN_BAN_USERS),
-                "group_admin_delete_messages": bool(
+                "group_owner": not not (perms & GROUP_OWNER),
+                "group_admin_add_admins": not not (perms & GROUP_ADMIN_ADD_ADMINS),
+                "group_admin_change_info": not not (perms & GROUP_ADMIN_CHANGE_INFO),
+                "group_admin_ban_users": not not (perms & GROUP_ADMIN_BAN_USERS),
+                "group_admin_delete_messages": not not (
                     perms & GROUP_ADMIN_DELETE_MESSAGES
                 ),
-                "group_admin_pin_messages": bool(perms & GROUP_ADMIN_PIN_MESSAGES),
-                "group_admin_invite_users": bool(perms & GROUP_ADMIN_INVITE_USERS),
-                "group_admin": bool(perms & GROUP_ADMIN),
-                "group_member": bool(perms & GROUP_MEMBER),
-                "pm": bool(perms & PM),
-                "everyone": bool(perms & EVERYONE),
+                "group_admin_pin_messages": not not (perms & GROUP_ADMIN_PIN_MESSAGES),
+                "group_admin_invite_users": not not (perms & GROUP_ADMIN_INVITE_USERS),
+                "group_admin": not not (perms & GROUP_ADMIN),
+                "group_member": not not (perms & GROUP_MEMBER),
+                "pm": not not (perms & PM),
+                "everyone": not not (perms & EVERYONE),
             }
         )
 
@@ -1436,14 +1576,14 @@ class HikkaSecurityMod(loader.Module):
         command: callable,
         is_inline: bool = False,
     ) -> dict:
-        config = self._db.get(security.__name__, "masks", {}).get(
-            f"{command.__module__}.{command.__name__}",
-            getattr(command, "security", self._client.dispatcher.security.default),
+        return self._perms_map(
+            self._db.get(security.__name__, "masks", {}).get(
+                f"{command.__module__}.{command.__name__}",
+                getattr(command, "security", self._client.dispatcher.security.default),
+            ),
+            is_inline,
         )
 
-        return self._perms_map(config, is_inline)
-
-    @loader.owner
     @loader.command(
         ru_doc="[команда] - Настроить разрешения для команды",
         fr_doc="[command] - Configure les permissions pour les commandes",
@@ -1453,11 +1593,13 @@ class HikkaSecurityMod(loader.Module):
         uz_doc="[command] - Buyruq uchun ruxsatlarini sozlash",
         es_doc="[command] - Configurar permisos para comandos",
         kk_doc="[command] - Команданың рұқсаттарын баптау",
+        tt_doc="[command] - Команданың рөхсәттәрен баптау",
     )
     async def security(self, message: Message):
         """[command] - Configure command's security settings"""
-        args = utils.get_args_raw(message).lower().strip()
-        if args and args not in self.allmodules.commands:
+        if (
+            args := utils.get_args_raw(message).lower().strip()
+        ) and args not in self.allmodules.commands:
             await utils.answer(message, self.strings("no_command").format(args))
             return
 
@@ -1470,16 +1612,13 @@ class HikkaSecurityMod(loader.Module):
             )
             return
 
-        cmd = self.allmodules.commands[args]
-
         await self.inline.form(
             self.strings("permissions").format(self.get_prefix(), args),
-            reply_markup=self._build_markup(cmd),
+            reply_markup=self._build_markup(self.allmodules.commands[args]),
             message=message,
             ttl=5 * 60,
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="[команда] - Настроить разрешения для инлайн команды",
         fr_doc="[command] - Configure les permissions pour les commandes inline",
@@ -1489,11 +1628,11 @@ class HikkaSecurityMod(loader.Module):
         uz_doc="[command] - Inline buyruq uchun ruxsatlarini sozlash",
         es_doc="[command] - Configurar permisos para comandos inline",
         kk_doc="[command] - Инлайн команданың рұқсаттарын баптау",
+        tt_doc="[command] - Инлайн команданың рөхсәттәрен баптау",
     )
     async def inlinesec(self, message: Message):
         """[command] - Configure inline command's security settings"""
-        args = utils.get_args_raw(message).lower().strip()
-        if not args:
+        if not (args := utils.get_args_raw(message).lower().strip()):
             await self.inline.form(
                 self.strings("global"),
                 reply_markup=self._build_markup_global(True),
@@ -1506,19 +1645,20 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_command").format(args))
             return
 
-        i_handler = self.allmodules.inline_handlers[args]
         await self.inline.form(
             self.strings("permissions").format(f"@{self.inline.bot_username} ", args),
-            reply_markup=self._build_markup(i_handler, True),
+            reply_markup=self._build_markup(
+                self.allmodules.inline_handlers[args],
+                True,
+            ),
             message=message,
             ttl=5 * 60,
         )
 
     async def _resolve_user(self, message: Message):
-        reply = await message.get_reply_message()
-        args = utils.get_args_raw(message)
-
-        if not args and not reply:
+        if not (args := utils.get_args_raw(message)) and not (
+            reply := await message.get_reply_message()
+        ):
             await utils.answer(message, self.strings("no_user"))
             return
 
@@ -1532,7 +1672,10 @@ class HikkaSecurityMod(loader.Module):
                 user = await self._client.get_entity(args, exp=0)
 
         if user is None:
-            user = await self._client.get_entity(reply.sender_id, exp=0)
+            try:
+                user = await self._client.get_entity(reply.sender_id, exp=0)
+            except ValueError:
+                user = await reply.get_sender()
 
         if not isinstance(user, (User, PeerUser)):
             await utils.answer(message, self.strings("not_a_user"))
@@ -1551,9 +1694,8 @@ class HikkaSecurityMod(loader.Module):
         confirmed: bool = False,
         user: int = None,
     ):
-        if user is None:
-            if not (user := await self._resolve_user(message)):
-                return
+        if user is None and not (user := await self._resolve_user(message)):
+            return
 
         if isinstance(user, int):
             user = await self._client.get_entity(user, exp=0)
@@ -1584,18 +1726,15 @@ class HikkaSecurityMod(loader.Module):
         if user.id not in getattr(self._client.dispatcher.security, group):
             getattr(self._client.dispatcher.security, group).append(user.id)
 
-        m = (
-            self.strings(f"{group}_added").format(
-                user.id,
-                utils.escape_html(get_display_name(user)),
-            )
-            + "\n\n"
-            + self.strings("suggest_nonick")
-        )
-
-        await utils.answer(message, m)
         await message.edit(
-            m,
+            (
+                self.strings(f"{group}_added").format(
+                    user.id,
+                    utils.escape_html(get_display_name(user)),
+                )
+                + "\n\n"
+                + self.strings("suggest_nonick")
+            ),
             reply_markup=[
                 {
                     "text": self.strings("cancel"),
@@ -1634,6 +1773,7 @@ class HikkaSecurityMod(loader.Module):
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhiga qo'shish",
         es_doc="<usuario> - Agregar usuario al grupo `owner`",
         kk_doc="<пайдаланушы> - Пайдаланушыны `owner` тобына қосу",
+        tt_doc="<пайдаланушы> - Пайдаланушыны `owner` тобына өстәү",
     )
     async def owneradd(self, message: Message):
         """<user> - Add user to `owner`"""
@@ -1648,6 +1788,7 @@ class HikkaSecurityMod(loader.Module):
         uz_doc="<foydalanuvchi> - Foydalanuvchini `owner` guruhidan olib tashlash",
         es_doc="<usuario> - Eliminar usuario del grupo `owner`",
         kk_doc="<пайдаланушы> - Пайдаланушыны `owner` тобынан алып тастау",
+        tt_doc="<пайдаланушы> - Пайдаланушыны `owner` тобынан алып ташлау",
     )
     async def ownerrm(self, message: Message):
         """<user> - Remove user from `owner`"""
@@ -1657,12 +1798,13 @@ class HikkaSecurityMod(loader.Module):
         if user.id in getattr(self._client.dispatcher.security, "owner"):
             getattr(self._client.dispatcher.security, "owner").remove(user.id)
 
-        m = self.strings("owner_removed").format(
-            user.id,
-            utils.escape_html(get_display_name(user)),
+        await utils.answer(
+            message,
+            self.strings("owner_removed").format(
+                user.id,
+                utils.escape_html(get_display_name(user)),
+            ),
         )
-
-        await utils.answer(message, m)
 
     @loader.command(
         ru_doc="Показать список пользователей в группе `owner`",
@@ -1673,6 +1815,7 @@ class HikkaSecurityMod(loader.Module):
         uz_doc="`owner` guruhidagi foydalanuvchilar ro'yxatini ko'rsatish",
         es_doc="Mostrar lista de usuarios en el grupo `owner`",
         kk_doc="`owner` тобындағы пайдаланушылар тізімін көрсету",
+        tt_doc="`owner` тобындағы пайдаланушылар тизмесин күрсәтү",
     )
     async def ownerlist(self, message: Message):
         """List users in `owner`"""
@@ -1726,13 +1869,12 @@ class HikkaSecurityMod(loader.Module):
 
     @staticmethod
     def _extract_time(args: list) -> int:
-        suffixes = {
+        for suffix, quantifier in {
             "d": 24 * 60 * 60,
             "h": 60 * 60,
             "m": 60,
             "s": 1,
-        }
-        for suffix, quantifier in suffixes.items():
+        }.items():
             duration = next(
                 (
                     int(arg.rsplit(suffix, maxsplit=1)[0])
@@ -1883,12 +2025,11 @@ class HikkaSecurityMod(loader.Module):
                     await utils.answer(message, self.strings("no_target"))
                     return
 
-        duration = self._extract_time(args)
-
-        possible_rules = utils.array_sum([self._lookup(arg) for arg in args])
-        if not possible_rules:
+        if not (possible_rules := utils.array_sum([self._lookup(arg) for arg in args])):
             await utils.answer(message, self.strings("no_rule"))
             return
+
+        duration = self._extract_time(args)
 
         if len(possible_rules) > 1:
 
@@ -1957,8 +2098,7 @@ class HikkaSecurityMod(loader.Module):
 
         duration = self._extract_time(args)
 
-        possible_rules = utils.array_sum([self._lookup(arg) for arg in args])
-        if not possible_rules:
+        if not (possible_rules := utils.array_sum([self._lookup(arg) for arg in args])):
             await utils.answer(message, self.strings("no_rule"))
             return
 
@@ -2034,6 +2174,10 @@ class HikkaSecurityMod(loader.Module):
             '<"user"/"chat"> <құқық - модуль немесе команда> - Мақсатты қауіпсіздік'
             " құқығын өшіріңіз\nМысалы: .tsecrm user ban, .tsecrm chat HikariChat"
         ),
+        tt_doc=(
+            '<"user"/"chat"> <көйләү - модуль немесе команда> - Мақсатлы қауіпсіздік'
+            " көйләүен өшерү\nМисаллы: .tsecrm user ban, .tsecrm chat HikariChat"
+        ),
     )
     async def tsecrm(self, message: Message):
         """
@@ -2047,8 +2191,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_rules"))
             return
 
-        args = utils.get_args(message)
-        if not args or args[0] not in {"user", "chat"}:
+        if not (args := utils.get_args(message)) or args[0] not in {"user", "chat"}:
             await utils.answer(message, self.strings("no_target"))
             return
 
@@ -2135,6 +2278,10 @@ class HikkaSecurityMod(loader.Module):
             '<"user"/"chat"> - Мақсатты қауіпсіздік құқығын тазалаңыз\nМысалы: .tsecclr'
             " user, .tsecclr chat"
         ),
+        tt_doc=(
+            '<"user"/"chat"> - Мақсатлы қауіпсіздік көйләүен тазалаңыз\nМисаллы:'
+            " .tsecclr user, .tsecclr chat"
+        ),
     )
     async def tsecclr(self, message: Message):
         """
@@ -2148,8 +2295,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_rules"))
             return
 
-        args = utils.get_args_raw(message)
-        if not args or args not in {"user", "chat"}:
+        if not (args := utils.get_args_raw(message)) or args not in {"user", "chat"}:
             await utils.answer(message, self.strings("no_target"))
             return
 
@@ -2239,14 +2385,18 @@ class HikkaSecurityMod(loader.Module):
             " қосыңыз\nМысалы: .tsec user ban 1d, .tsec chat weather 1h, .tsec user"
             " HikariChat"
         ),
+        tt_doc=(
+            '<"user"/"chat"> [мәҗбүри кулланучы немесе сөйләшү] [җөйләү'
+            " (команда/модуль)] [вакыт] - Яңа мәҗбүри һаҡлылык җөйләүен өстәү\nМисалы:"
+            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
+        ),
     )
     async def tsec(self, message: Message):
         """
         <"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule
         For example: .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat
         """
-        args = utils.get_args(message)
-        if not args:
+        if not (args := utils.get_args(message)):
             if (
                 not self._client.dispatcher.security.tsec_chat
                 and not self._client.dispatcher.security.tsec_user

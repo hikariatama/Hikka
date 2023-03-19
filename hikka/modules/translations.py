@@ -752,8 +752,7 @@ class Translations(loader.Module):
     )
     async def setlang(self, message: Message):
         """[languages in the order of priority] - Change default language"""
-        args = utils.get_args_raw(message)
-        if not args:
+        if not (args := utils.get_args_raw(message)):
             await self.inline.form(
                 message=message,
                 text=self.strings("choose_language"),
@@ -771,7 +770,7 @@ class Translations(loader.Module):
             )
             return
 
-        if any(len(i) != 2 for i in args.split(" ")):
+        if any(len(i) != 2 for i in args.split()):
             await utils.answer(message, self.strings("incorrect_language"))
             return
 
@@ -820,9 +819,7 @@ class Translations(loader.Module):
     )
     async def dllangpackcmd(self, message: Message):
         """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""
-        args = utils.get_args_raw(message)
-
-        if not args:
+        if not (args := utils.get_args_raw(message)):
             self._db.set(translations.__name__, "pack", False)
             await self.translator.init()
             await utils.answer(message, self.strings("lang_removed"))

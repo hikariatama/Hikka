@@ -27,6 +27,10 @@
 - Fix proxy-pass
 - New core modules: `UnitHeta`, `Translator`
 - New watcher tags: `no_pm`, `no_channels`, `no_groups`, `no_inline`, `no_stickers`, `no_docs`, `no_audios`, `no_videos`, `no_photos`, `no_forwards`, `no_reply`, `no_mention`, `mention`, `only_reply`, `only_forwards`
+- Remove default presets since they are the security risk
+- Update and extend Tatar translation pack
+- Restrict setting `s` as command prefix, since it will break command `setprefix`
+- Transfer all previously non-essential modules to core ones
 
 ## 🌑 Hikka 1.6.1
 

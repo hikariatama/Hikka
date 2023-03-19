@@ -64,16 +64,6 @@ class LoaderMod(loader.Module):
         "name": "Loader",
         "repo_config_doc": "URL to a module repo",
         "avail_header": "🎢 <b>Modules from repo</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Please select a"
-            " preset</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Preset not found</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Preset loaded</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module not available"
             " in repo.</b>"
@@ -246,15 +236,6 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Ссылка для загрузки модулей",
         "add_repo_config_doc": "Дополнительные репозитории",
         "avail_header": "🎢 <b>Официальные модули из репозитория</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Выбери пресет</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Пресет не найден</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Пресет загружен</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль недоступен в"
             " репозитории.</b>"
@@ -344,7 +325,6 @@ class LoaderMod(loader.Module):
             " удалить одного из старых ботов в @BotFather и перезагрузить юзербота</i>"
         ),
         "_cmd_doc_dlmod": "Скачивает и устаналвивает модуль из репозитория",
-        "_cmd_doc_dlpreset": "Скачивает и устанавливает определенный набор модулей",
         "_cmd_doc_loadmod": "Скачивает и устанавливает модуль из файла",
         "_cmd_doc_unloadmod": "Выгружает (удаляет) модуль",
         "_cmd_doc_clearmodules": "Выгружает все установленные модули",
@@ -438,17 +418,6 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Lien de téléchargement des modules",
         "add_repo_config_doc": "Dépôts supplémentaires",
         "avail_header": "🎢 <b>Modules officiels du dépôt</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Sélectionnez un"
-            " préréglage</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Préréglage introuvable"
-            "</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Préréglage chargé</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module non disponible"
             " dans le dépôt.</b>"
@@ -543,7 +512,6 @@ class LoaderMod(loader.Module):
             " l'usagerbot</i>"
         ),
         "_cmd_doc_dlmod": "Télécharge et installe le module à partir du référentiel",
-        "_cmd_doc_dlpreset": "Télécharge et installe un ensemble de modules spécifique",
         "_cmd_doc_loadmod": "Télécharge et installe le module à partir d'un fichier",
         "_cmd_doc_unloadmod": "Décharge (supprime) le module",
         "_cmd_doc_clearmodules": "Décharge tous les modules installés",
@@ -642,16 +610,6 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Link per il download dei moduli",
         "add_repo_config_doc": "Repository aggiuntivi",
         "avail_header": "🎢 <b>Moduli ufficiali dal repository</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Seleziona un"
-            " preset</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Preset non trovato</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Preset caricato</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il modulo non è"
             " disponibile nel repository.</b>"
@@ -744,7 +702,6 @@ class LoaderMod(loader.Module):
             " riavviare l'utente</i>"
         ),
         "_cmd_doc_dlmod": "Scarica e installa il modulo dal repository",
-        "_cmd_doc_dlpreset": "Scarica e installa un insieme specifico di moduli",
         "_cmd_doc_loadmod": "Scarica e installa il modulo dal file",
         "_cmd_doc_unloadmod": "Scarica (rimuovi) il modulo",
         "_cmd_doc_clearmodules": "Scarica tutti i moduli installati",
@@ -844,18 +801,6 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Modul-Download-Link",
         "add_repo_config_doc": "Zusätzliche Repositorys",
         "avail_header": "🎢 <b>Offizielle Moduleaus Repository</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Voreinstellung"
-            " auswählen</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Voreinstellung nicht"
-            " gefunden</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Voreinstellung"
-            " geladen</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modul nicht verfügbar"
             " in Repositorys.</b>"
@@ -949,9 +894,6 @@ class LoaderMod(loader.Module):
             " @BotFather und lade den Userbot neu</i>"
         ),
         "_cmd_doc_dlmod": "Modul aus dem Repository herunterladen und installieren",
-        "_cmd_doc_dlpreset": (
-            "Lädt einen bestimmten Satz von Modulen herunter und installiert ihn"
-        ),
         "_cmd_doc_loadmod": (
             "Lädt ein Modul aus einer Datei herunter und installiert es"
         ),
@@ -1050,17 +992,6 @@ class LoaderMod(loader.Module):
     strings_tr = {
         "repo_config_doc": "Bir modül deposunun URL'si",
         "avail_header": "🎢 <b>Depodan modüller</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Lütfen bir ön ayar"
-            " seçin</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=53752013968596607943>🚫</emoji> <b>Ön ayar"
-            " bulunamadı</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Ön ayar yüklendi</b>"
-        ),
         "no_module": (
             "<emoji document_id=53752013968596607943>🚫</emoji> <b>Modül depoda mevcut"
             " değil.</b>"
@@ -1238,18 +1169,6 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Modulni yuklab olish havolasi",
         "add_repo_config_doc": "Qo'shimcha omborlar",
         "avail_header": "🎢 <b>Rasmiy modullarombordan</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Oldindan sozlashni"
-            " tanlang</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Oldindan sozlash"
-            " topilmadi</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Oldindan"
-            " o'rnatilgan</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>modul mavjud emas"
             " omborlar</b>"
@@ -1340,7 +1259,6 @@ class LoaderMod(loader.Module):
             " userbotni qayta yuklang</i>"
         ),
         "_cmd_doc_dlmod": "Modulni ombordan yuklab oling va o'rnating",
-        "_cmd_doc_dlpreset": "Muayyan modullar to'plamini yuklab oladi va o'rnatadi",
         "_cmd_doc_loadmod": "Fayldan modulni yuklab oladi va o'rnatadi",
         "_cmd_doc_unloadmod": "Modulni yuklaydi (o'chiradi)",
         "_cmd_doc_clearmodules": "Barcha o'rnatilgan modullarni yuklaydi",
@@ -1438,17 +1356,6 @@ class LoaderMod(loader.Module):
     strings_es = {
         "repo_config_doc": "Enlace al repositorio de módulos",
         "avail_header": "🎢 <b>Módulos del repositorio</b>",
-        "select_preset": (
-            "<b>⚠️ Por favor, selecciona una configuración preestablecida</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontraron"
-            " configuraciones preestablecidas</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Configuración"
-            " preestablecida cargada</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontró el"
             " módulo en el repositorio.</b>"
@@ -1631,15 +1538,6 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Модульдерді жүктеу үшін сілтеме",
         "add_repo_config_doc": "Қосымша қоры",
         "avail_header": "🎢 <b>Репозиториядан қолданылатын официалды модульдер</b>",
-        "select_preset": (
-            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Пресетті таңда</b>"
-        ),
-        "no_preset": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Пресет табылмады</b>"
-        ),
-        "preset_loaded": (
-            "<emoji document_id=5784993237412351403>✅</emoji> <b>Пресет жүктелді</b>"
-        ),
         "no_module": (
             "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторияда модуль"
             " жоқ.</b>"
@@ -1730,7 +1628,6 @@ class LoaderMod(loader.Module):
             " жүктеуіңізді ұсыныңыз</i>"
         ),
         "_cmd_doc_dlmod": "Репозиториянан модульді жүктеу және орнату",
-        "_cmd_doc_dlpreset": "Белгіленген нұсқа модулдерді жүктеу және орнату",
         "_cmd_doc_loadmod": "Файлдан модульді жүктеу және орнату",
         "_cmd_doc_unloadmod": "Модульді жою",
         "_cmd_doc_clearmodules": "Барлық орнатылған модульді жою",
@@ -1823,6 +1720,188 @@ class LoaderMod(loader.Module):
         ),
     }
 
+    strings_kk = {
+        "repo_config_doc": "Модульләрне күчерер өчен сылтама",
+        "add_repo_config_doc": "Өстәмә репозитори",
+        "avail_header": "🎢 <b>Репозиториядан булган модульләр</b>",
+        "no_module": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторияда бу"
+            " модуль табылмады.</b>"
+        ),
+        "no_file": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Файл табылмады.</b>"
+        ),
+        "provide_module": (
+            "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Күчерер өчен модульне"
+            " күрсәтергә кирәк.</b>"
+        ),
+        "bad_unicode": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модульне күчерүдә"
+            " хата бар.</b>"
+        ),
+        "load_failed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модульне күчерү"
+            " хата бар. Хаталарны карагыз.</b>"
+        ),
+        "loaded": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Модуль"
+            "</b> <code>{}</code>{} <b>{} күчерелде {}</b>{}{}{}{}{}"
+        ),
+        "no_class": "<b>Чыгарырга модуль табылмады.</b>",
+        "unloaded": "{} <b>Модуль {} чыгарылды.</b>",
+        "not_unloaded": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль"
+            " чыгарылмады.</b>"
+        ),
+        "requirements_failed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Таләпләрне күчерү"
+            " хата бар.</b>"
+        ),
+        "requirements_failed_termux": (
+            "<emoji document_id=5407025283456835913>🕶</emoji> <b>Таләпләрне күчерү хата"
+            " бар.</b>\n<b>Бу хата Termux-дә алдан башка мөмкин булган библиотекалар"
+            " күчерелмәгән өчен туры килә. Бу хата туры килмәгәндә, билдирүне"
+            " бермәгәндән күбрәк.</b>"
+        ),
+        "requirements_installing": (
+            "<emoji document_id=5328311576736833844>🚀</emoji> <b>Кертемне төшәрергә"
+            " кертемдәр:\n\n{}</b>"
+        ),
+        "requirements_restart": (
+            "<emoji document_id=5875145601682771643>🚀</emoji> <b>Кертемне төшәрергә"
+            " кертемдәр урнаштырылды, бу модульны куллану өчен программаны"
+            " яңартырга кирәк</b> <code>{}</code>"
+        ),
+        "all_modules_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Барлык модульләр"
+            " юйылды</b>"
+        ),
+        "undoc": "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> Хисап ителмәгән",
+        "ihandler": (
+            "\n<emoji document_id=5372981976804366741>🤖</emoji> <code>{}</code> {}"
+        ),
+        "version_incompatible": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Бу модуль"
+            " Hikka версиясы {}+ җитәкләнгән\nЯңартырга</b> <code>.update</code>"
+        ),
+        "ffmpeg_required": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Бу модуль"
+            " FFMPEG җитәкләнгән, алар урнаштырылмаган</b>"
+        ),
+        "developer": (
+            "\n\n<emoji document_id=5875452644599795072>🫶</emoji> <b>Кулланучы:</b> {}"
+        ),
+        "depends_from": (
+            "\n\n<emoji document_id=5431736674147114227>📦</emoji> <b>Төзәтелгән:"
+            "</b> \n{}"
+        ),
+        "by": "үзенчә",
+        "module_fs": (
+            "💿 <b>Модульне файлга сакларга телисезми? Бу модульне яңарту өчен"
+            " яңартырга кирәк</b>"
+        ),
+        "save": "💿 Саклау",
+        "no_save": "🚫 Сакламаячым",
+        "save_for_all": "💽 Урнаштырылган һәмдә төзәтелгән модульләрне сакларга",
+        "never_save": "🚫 Хәзерге һәмдә бу модульне сакламаячым",
+        "will_save_fs": (
+            "💽 Барлык модульләрне файлга сакларга телисез, бу модульне яңарту"
+            " өчен яңартырга кирәк"
+        ),
+        "inline_init_failed": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Булышлык"
+            " HikkaInline, булышлык инициализация менеджера инлайна</b>\n<i>Соңгы бот"
+            " @BotFather өчен сайлаганны өчереп кайтарып карагыз</i>"
+        ),
+        "_cmd_doc_dlmod": "Йөкләү һәм установка модуль репозитория",
+        "_cmd_doc_loadmod": "Йөкләү һәм установка модуль файлы",
+        "_cmd_doc_unloadmod": "Йөкләү (өчерү) модуль",
+        "_cmd_doc_clearmodules": "Йөкләү установленны модули",
+        "_cls_doc": "Установка модули",
+        "share_link_doc": "Йөкләү буйынса .dlmod өчен модуль сайлаган",
+        "modlink": (
+            "\n\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Сылтаны:"
+            "</b> <code>{}</code>"
+        ),
+        "blob_link": (
+            "\n\n<emoji document_id=5312383351217201533>⚠️</emoji> <b>Модульнең сылтаны"
+            " `blob` белән юкләүне җибәрмәү. `raw` белән юкләү күрсәтелгән.</b>"
+        ),
+        "raw_link": (
+            "\n<emoji document_id=6037284117505116849>🌐</emoji> <b>Сылтаны:"
+            "</b> <code>{}</code>"
+        ),
+        "suggest_subscribe": (
+            "\n\n⭐️ <b>Бу модуль"
+            " {} төзәткән. Аларның каналына абонемент булдырырга мөмкинчелек бирәгезме?"
+        ),
+        "subscribe": "💬 Абонемент булдырырга",
+        "no_subscribe": "🚫 Абонемент булдырырга теләмәгән",
+        "subscribed": "💬 Абонемент булдырылды!",
+        "unsubscribed": "🚫 Мен бу каналның абонементы булдырырга теләмәм.",
+        "confirm_clearmodules": (
+            "⚠️ <b>Сез модульнең барлыгын юкләргә рөхсәт итәргә теләймисез?</b>"
+        ),
+        "clearmodules": "🗑 Модульнең барлыгын юкләргә",
+        "cancel": "🚫 Баш тарту",
+        "overwrite_module": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Бу модуль"
+            " төзәткән (</b><code>{}</code><b>)</b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Бу хата дегәндә дә бу"
+            " кимсән модульне куллануны куллана алмый. Бу модульне үзгәртү мөмкин"
+            " булмаска тиеш. Сизне бу хата белән теләфонлау җибәрергә кирәк, яки"
+            " support чатына хат җибәрегез</i>"
+        ),
+        "overwrite_command": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Бу модуль"
+            " төзәткән (</b><code>{}</code><b>)</b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Бу хата дегәндә дә бу"
+            " кимсән модульне куллануны куллана алмый. Бу модульне үзгәртү мөмкин"
+            " булмаска тиеш. Сизне бу хата белән теләфонлау җибәрергә кирәк, яки"
+            " support чатына хат җибәрегез</i>"
+        ),
+        "unload_core": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Сезне берген"
+            " встроенный модуль</b> <code>{}</code><b></b>\n\n<emoji"
+            " document_id=5472146462362048818>💡</emoji><i> Булган эмес, бирге"
+            " сакланган модулдарды чончу тамалдырғанда тиешелер. Бу support чаты"
+            "нда булганы белдермәңләр</i>"
+        ),
+        "cannot_unload_lib": (
+            "<emoji document_id=5454225457916420314>😖</emoji> <b>Ты тапкыр"
+            " библиотеканы ташлабашмый</b>"
+        ),
+        "wait_channel_approve": (
+            "<emoji document_id=5469741319330996757>💫</emoji> <b>Модуль"
+            "</b> <code>{}</code> <b>каналга <a"
+            ' href="https://t.me/{}">{}</a> төшәрәп булыр, каналга кереп карый.</b>'
+        ),
+        "installing": (
+            "<emoji document_id=5325792861885570739>🕔</emoji> <b>Модуль"
+            "</b> <code>{}</code><b> өстәү...</b>"
+        ),
+        "repo_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>артык добавлен</b>"
+        ),
+        "repo_added": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>добавлен</b>"
+        ),
+        "no_repo": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий"
+            " добавланы тапкыр</b>"
+        ),
+        "repo_not_exists": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>не добавлен</b>"
+        ),
+        "repo_deleted": (
+            "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b>"
+            " <code>{}</code> <b>удален</b>"
+        ),
+    }
+
     fully_loaded = False
     _links_cache = {}
 
@@ -1861,7 +1940,7 @@ class LoaderMod(loader.Module):
                 utils.array_sum(
                     map(
                         lambda x: list(x.values()),
-                        (await self.get_repo_list("full")).values(),
+                        (await self.get_repo_list()).values(),
                     )
                 ),
             )
@@ -1934,7 +2013,6 @@ class LoaderMod(loader.Module):
             },
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="Загрузить модуль из официального репозитория",
         fr_doc="Charge un module depuis le dépôt officiel",
@@ -1979,89 +2057,49 @@ class LoaderMod(loader.Module):
                             )
                         ]
                     )
-                    for repo, mods in (await self.get_repo_list("full")).items()
+                    for repo, mods in (await self.get_repo_list()).items()
                 ],
             )
 
-    @loader.owner
-    @loader.command(
-        ru_doc="Установить пресет модулей",
-        fr_doc="Installe un preset de modules",
-        it_doc="Installa un preset di moduli",
-        de_doc="Installiere ein Modul-Preset",
-        tr_doc="Modül önbelleğini yükle",
-        uz_doc="Modul presetini o'rnatish",
-        es_doc="Instalar un conjunto de módulos",
-        kk_doc="Модульдің пресетін орнату",
-    )
-    async def dlpreset(self, message: Message):
-        """Set modules preset"""
-        args = utils.get_args(message)
-        if not args:
-            await utils.answer(message, self.strings("select_preset"))
-            return
-
-        await self.get_repo_list(args[0])
-        self.set("chosen_preset", args[0])
-
-        await utils.answer(message, self.strings("preset_loaded"))
-        await self.invoke("restart", "-f", message=message)
-
     async def _get_modules_to_load(self):
-        preset = self.get("chosen_preset")
-
-        if preset != "disable":
-            possible_mods = (
-                await self.get_repo_list(preset, only_primary=True)
-            ).values()
-            todo = dict(ChainMap(*possible_mods))
-        else:
-            todo = {}
-
-        todo.update(**self.get("loaded_modules", {}))
+        todo = self.get("loaded_modules", {})
         logger.debug("Loading modules: %s", todo)
         return todo
 
-    async def _get_repo(self, repo: str, preset: str) -> str:
+    async def _get_repo(self, repo: str) -> str:
         repo = repo.strip("/")
-        preset_id = f"{repo}/{preset}"
 
-        if self._links_cache.get(preset_id, {}).get("exp", 0) >= time.time():
-            return self._links_cache[preset_id]["data"]
+        if self._links_cache.get(repo, {}).get("exp", 0) >= time.time():
+            return self._links_cache[repo]["data"]
 
         res = await utils.run_sync(
             requests.get,
-            f"{repo}/{preset}.txt",
+            f"{repo}/full.txt",
         )
 
         if not str(res.status_code).startswith("2"):
             logger.debug(
-                "Can't load repo %s, preset %s because of %s status code",
+                "Can't load repo %s contents because of %s status code",
                 repo,
-                preset,
                 res.status_code,
             )
             return []
 
-        self._links_cache[preset_id] = {
+        self._links_cache[repo] = {
             "exp": time.time() + 5 * 60,
             "data": [link for link in res.text.strip().splitlines() if link],
         }
 
-        return self._links_cache[preset_id]["data"]
+        return self._links_cache[repo]["data"]
 
     async def get_repo_list(
         self,
-        preset: typing.Optional[str] = None,
         only_primary: bool = False,
     ) -> dict:
-        if preset is None or preset == "none":
-            preset = "minimal"
-
         return {
             repo: {
                 f"Mod/{repo_id}/{i}": f'{repo.strip("/")}/{link}.py'
-                for i, link in enumerate(set(await self._get_repo(repo, preset)))
+                for i, link in enumerate(set(await self._get_repo(repo)))
             }
             for repo_id, repo in enumerate(
                 [self.config["MODULES_REPO"]]
@@ -2071,7 +2109,7 @@ class LoaderMod(loader.Module):
         }
 
     async def get_links_list(self) -> typing.List[str]:
-        links = await self.get_repo_list("full")
+        links = await self.get_repo_list()
         main_repo = list(links.pop(self.config["MODULES_REPO"]).values())
         return main_repo + list(dict(ChainMap(*list(links.values()))).values())
 
@@ -2155,7 +2193,6 @@ class LoaderMod(loader.Module):
 
         await self.load_module(doc, call, origin=path_ or "<string>", save_fs=save)
 
-    @loader.owner
     @loader.command(
         ru_doc="Загрузить модуль из файла",
         fr_doc="Charge un module depuis un fichier",
@@ -2181,7 +2218,7 @@ class LoaderMod(loader.Module):
         logger.debug("Loading external module...")
 
         try:
-            doc = doc.decode("utf-8")
+            doc = doc.decode()
         except UnicodeDecodeError:
             await utils.answer(message, self.strings("bad_unicode"))
             return
@@ -2364,7 +2401,7 @@ class LoaderMod(loader.Module):
                     *(
                         (e.target,)
                         if e.type == "module"
-                        else (self.get_prefix(), e.target)
+                        else (utils.escape_html(self.get_prefix()), e.target)
                     )
                 ),
             )
@@ -2787,7 +2824,7 @@ class LoaderMod(loader.Module):
                         if is_dragon
                         else "<emoji document_id=4971987363145188045>▫️</emoji>"
                     ),
-                    self.get_prefix("dragon" if is_dragon else None),
+                    utils.escape_html(self.get_prefix("dragon" if is_dragon else None)),
                     _name,
                     (
                         utils.escape_html(fun)
@@ -2836,7 +2873,6 @@ class LoaderMod(loader.Module):
         await utils.answer(call, msg())
         await call.answer(self.strings("subscribed"))
 
-    @loader.owner
     @loader.command(
         ru_doc="Выгрузить модуль",
         fr_doc="Décharger le module",
@@ -2902,7 +2938,6 @@ class LoaderMod(loader.Module):
 
         await utils.answer(message, msg)
 
-    @loader.owner
     @loader.command(
         ru_doc="Удалить все модули",
         fr_doc="Supprimer tous les modules",
@@ -2990,8 +3025,6 @@ class LoaderMod(loader.Module):
                 shutil.rmtree(file.path)
             except Exception:
                 logger.debug("Failed to remove %s", file.path, exc_info=True)
-
-        self.set("chosen_preset", "none")
 
         await utils.answer(call, self.strings("all_modules_deleted"))
         await self.lookup("Updater").restart_common(call)

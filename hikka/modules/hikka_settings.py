@@ -1217,6 +1217,129 @@ class HikkaSettingsMod(loader.Module):
         "enable_debugger": "🚫 Түзету құралы өшірілген",
     }
 
+    strings_tt = {
+        "watchers": (
+            "<emoji document_id=5424885441100782420>👀</emoji>"
+            " <b>Сыркәләр:</b>\n\n<b>{}</b>"
+        ),
+        "mod404": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сыркә {} табылмады</b>"
+        ),
+        "disabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Сыркә {} аңланган</b>"
+        ),
+        "enabled": (
+            "<emoji document_id=5424885441100782420>👀</emoji> <b>Сыркә {}"
+            " җибәрелгән</b>"
+        ),
+        "args": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сыркәнең исемен"
+            " күрсәтергә</b>"
+        ),
+        "user_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Кулланучы өчен NoNick"
+            " мөмкинлеге: {}</b>"
+        ),
+        "no_cmd": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Кулланучы өчен NoNick"
+            " мөмкинлеге: {}</b>"
+        ),
+        "cmd_nn": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Статус NoNick для"
+            "</b> <code>{}</code><b>: {}</b>"
+        ),
+        "cmd404": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>Команда табылмады</b>"
+        ),
+        "inline_settings": "⚙️ <b>Hikka көйләнмәләрен буенча урнаштыру мөмкин</b>",
+        "confirm_update": (
+            "🧭 <b>Яңартып торганыгызны растыйсыз. Юзербот яңартылып чыгарылачак</b>"
+        ),
+        "confirm_restart": "🔄 <b>Тикшереп торганыгызны растыйсыз</b>",
+        "suggest_fs": "✅ Модульләрне саклауны төяләтү",
+        "do_not_suggest_fs": "🚫 Модульләрне саклауны төяләтү",
+        "use_fs": "✅ Әрвайы модульләрне сакларга",
+        "do_not_use_fs": "🚫 Әрвайы модульләрне сакларга",
+        "btn_restart": "🔄 Тикшереп тору",
+        "btn_update": "🧭 Яңарту",
+        "close_menu": "😌 Мәзәрләрне ябу",
+        "custom_emojis": "✅ Кастом эмодзи",
+        "no_custom_emojis": "🚫 Кастом эмодзи",
+        "suggest_subscribe": "✅ Каналга абонемент бирүне төяләтү",
+        "do_not_suggest_subscribe": "🚫 Каналга абонемент бирүне төяләтү",
+        "private_not_allowed": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бу команда чаттага"
+            " кулланыла</b>"
+        ),
+        "_cls_doc": "Hikka көйләнмәләре",
+        "nonick_warning": (
+            "Игътибар! Ты килешүсе башкармасыз NoNick кулланган! "
+            "Тебя могут замьютить в чатах Hikka. Измени префикс или "
+            "отключи глобальный NoNick!"
+        ),
+        "reply_required": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Пайда булган хисап"
+            " язмасы кулланучыса NoNick кулланырга тиешләнгән җавап бирү</b>"
+        ),
+        "deauth_confirm": (
+            "⚠️ <b>Булығыңызды ибергәндә Hikka бу аккаунттан төҙәтеү булыр! Буны кире"
+            " кайтара булмай.</b>\n\n<i>- Бул Hikka белән бәйле чаттар үҙгәртелмәй\n-"
+            " Hikka сессиясы төшәрелә\n- Hikka бул инлайн-бот күрһәтелмәй</i>"
+        ),
+        "deauth_confirm_step2": "⚠️ <b>Бул Hikka булырға теләүегездәм?</b>",
+        "deauth_yes": "Бәлки",
+        "deauth_no_1": "Бәлки емес",
+        "deauth_no_2": "Теләмәй",
+        "deauth_no_3": "Юҡ",
+        "deauth_cancel": "🚫 Баш тартыу",
+        "deauth_confirm_btn": "😢 Юйырға",
+        "uninstall": "😢 <b>Hikka Юйылырға...</b>",
+        "uninstalled": (
+            "😢 <b>Hikka Юйылған. Веб-интерфейс һеҙгә булдырылған, башка аккаунттар өҫтә"
+            " булған!</b>"
+        ),
+        "cmd_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick булырға"
+            " теләнгән булыр командалар:</b>\n\n{}"
+        ),
+        "user_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick булырға"
+            " теләнгән булыр ҡатнашыусылар:</b>\n\n{}"
+        ),
+        "chat_nn_list": (
+            "<emoji document_id=5469791106591890404>🪄</emoji> <b>NoNick булырға"
+            " теләнгән булыр чаттар:</b>\n\n{}"
+        ),
+        "nothing": (
+            "<emoji document_id=5427052514094619126>🤷‍♀️</emoji> <b>Ҡарағыҙ булмай."
+            " ...</b>"
+        ),
+        "privacy_leak": (
+            "⚠️ <b>Бу эм команда веб-интерфейс Hikka'га кирәксез. Бу команда"
+            " публикаларда җибәрелсә катнашу кертәлә алмый. Бу команданы  <a"
+            " href='tg://openmessage?user_id={}'>Избранных сообщениях</a>. Выполни</b>"
+            " <code>{}proxypass force_insecure</code> <b>чтобы отключить это"
+            " предупреждение</b>"
+        ),
+        "privacy_leak_nowarn": (
+            "⚠️ <b>Бу команда веб-интерфейс Hikka'га кирәксез. Бу команда публикаларда"
+            " җибәрелсә катнашу кертәлә алмый. Бу команданы  <a"
+            " href='tg://openmessage?user_id={}'>Избранных сообщениях</a>.</b>"
+        ),
+        "opening_tunnel": "🔁 <b>Веб-интерфейс Hikka'га кирәк тоннель ачылыр...</b>",
+        "tunnel_opened": "🎉 <b>Тоннель ачылды. Бу сылтама 1 сәгатьчә кулланыла аласаң.",
+        "web_btn": "🌍 Веб-интерфейс",
+        "btn_yes": "🚸 Булып табырға",
+        "btn_no": "🔻 Ябырға",
+        "lavhost_web": (
+            "✌️ <b>Бу сылтама Hikka веб-интерфейсына керергә керә."
+            " lavHost</b>\n\n<i>💡 Тебе нужно будет авторизоваться, используя данные,"
+            " указанные при настройке lavHost</i>"
+        ),
+        "disable_debugger": "✅ Отладчик включен",
+        "enable_debugger": "🚫 Отладчик выключен",
+    }
+
     def get_watchers(self) -> tuple:
         return [
             str(watcher.__self__.__class__.strings["name"])
@@ -1328,7 +1451,6 @@ class HikkaSettingsMod(loader.Module):
             ],
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="Удалить Hikka",
         fr_doc="Désinstaller Hikka",
@@ -1338,6 +1460,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Hikka'ni o'chirish",
         es_doc="Desinstalar Hikka",
         kk_doc="Hikka'ны жою",
+        tt_doc="Hikka'ны юйү",
     )
     async def uninstall_hikka(self, message: Message):
         """Uninstall Hikka"""
@@ -1362,6 +1485,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Faol ko'rib chiqqanlarni ko'rsatish",
         es_doc="Mostrar observadores activos",
         kk_doc="Белсенді көздерді көрсету",
+        tt_doc="Актив күзәткәнләрне күрсәтү",
     )
     async def watchers(self, message: Message):
         """List current watchers"""
@@ -1385,11 +1509,11 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="<module> - Joriy suhbatda ko'rib chiqqanlarni yoqish/yopish",
         es_doc="<module> - Habilitar / deshabilitar observador en este chat",
         kk_doc="<module> - Бұл сөйлесуде көздерді қосу/өшіру",
+        tt_doc="<module> - Бу сөйләшмәде күзәткәнләрне җибәрү/өшерү",
     )
     async def watcherbl(self, message: Message):
         """<module> - Toggle watcher in current chat"""
-        args = utils.get_args_raw(message)
-        if not args:
+        if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("args"))
             return
 
@@ -1500,6 +1624,14 @@ class HikkaSettingsMod(loader.Module):
             "[-o - Тек шығарылған хабарлар]\n"
             "[-i - Тек келген хабарлар]"
         ),
+        tt_doc=(
+            "<module> - Шулай ук глобаль күзәтүче киңәшләрен башкару\n"
+            "Аргументлар:\n"
+            "[-c - Тек чаттарда]\n"
+            "[-p - Тек шәхси чаттарда]\n"
+            "[-o - Тек чыгарылган хәбәрләр]\n"
+            "[-i - Тек килгән хәбәрләр]"
+        ),
     )
     async def watchercmd(self, message: Message):
         """<module> - Toggle global watcher rules
@@ -1508,8 +1640,7 @@ class HikkaSettingsMod(loader.Module):
         [-p - only in pm]
         [-o - only out]
         [-i - only incoming]"""
-        args = utils.get_args_raw(message)
-        if not args:
+        if not (args := utils.get_args_raw(message)):
             return await utils.answer(message, self.strings("args"))
 
         chats, pm, out, incoming = False, False, False, False
@@ -1576,11 +1707,11 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Belgilangan foydalanuvchi uchun NoNickni yoqish",
         es_doc="Habilitar NoNick para un usuario específico",
         kk_doc="Белгіленген пайдаланушы үшін NoNick түрлендірілген",
+        tt_doc="Беләнгән кулланучы өчен NoNick үзгәртелгән",
     )
     async def nonickuser(self, message: Message):
         """Allow no nickname for certain user"""
-        reply = await message.get_reply_message()
-        if not reply:
+        if not (reply := await message.get_reply_message()):
             await utils.answer(message, self.strings("reply_required"))
             return
 
@@ -1608,6 +1739,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Belgilangan suhbat uchun NoNickni yoqish",
         es_doc="Habilitar NoNick para un chat específico",
         kk_doc="Белгіленген сөйлесу үшін NoNick түрлендірілген",
+        tt_doc="Беләнгән сөйләшмә өчен NoNick үзгәртелгән",
     )
     async def nonickchat(self, message: Message):
         """Allow no nickname in certain chat"""
@@ -1641,19 +1773,19 @@ class HikkaSettingsMod(loader.Module):
         self._db.set(main.__name__, "nonickchats", nn)
 
     @loader.command(
-        ru_doc="Включить NoNick для определенной команды",
-        fr_doc="Activer NoNick pour une commande spécifique",
-        it_doc="Abilita NoNick per un comando specifico",
-        de_doc="Aktiviere NoNick für einen bestimmten Befehl",
-        tr_doc="Belirli bir komut için NoNick'i etkinleştirin",
-        uz_doc="Belgilangan buyruq uchun NoNickni yoqish",
-        es_doc="Habilitar NoNick para un comando específico",
-        kk_doc="Белгіленген комманда үшін NoNick түрлендірілген",
+        ru_doc="<команда> - Включить NoNick для определенной команды",
+        fr_doc="<commande> - Activer NoNick pour une commande spécifique",
+        it_doc="<comando> - Abilita NoNick per un comando specifico",
+        de_doc="<Befehl> - Aktiviere NoNick für einen bestimmten Befehl",
+        tr_doc="<komut> - Belirli bir komut için NoNick'i etkinleştirin",
+        uz_doc="<buyruq> - Belgilangan buyruq uchun NoNickni yoqish",
+        es_doc="<comando> - Habilitar NoNick para un comando específico",
+        kk_doc="<команда> - Белгіленген команда үшін NoNick түрлендірілген",
+        tt_doc="<command> - Билгеле бер боерык өчен NoNick кушу",
     )
     async def nonickcmdcmd(self, message: Message):
-        """Allow certain command to be executed without nickname"""
-        args = utils.get_args_raw(message)
-        if not args:
+        """<command> - Allow certain command to be executed without nickname"""
+        if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("no_cmd"))
             return
 
@@ -1668,7 +1800,7 @@ class HikkaSettingsMod(loader.Module):
             await utils.answer(
                 message,
                 self.strings("cmd_nn").format(
-                    self.get_prefix() + args,
+                    utils.escape_html(self.get_prefix() + args),
                     "on",
                 ),
             )
@@ -1677,7 +1809,7 @@ class HikkaSettingsMod(loader.Module):
             await utils.answer(
                 message,
                 self.strings("cmd_nn").format(
-                    self.get_prefix() + args,
+                    utils.escape_html(self.get_prefix() + args),
                     "off",
                 ),
             )
@@ -1693,6 +1825,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Yoqilgan NoNick buyruqlar ro'yxatini ko'rsatish",
         es_doc="Mostrar una lista de comandos NoNick activos",
         kk_doc="Қосылған NoNick коммандалар тізімін көрсету",
+        tt_doc="Кушылган NoNick боерыклар исемлеген күрсәтү",
     )
     async def nonickcmds(self, message: Message):
         """Returns the list of NoNick commands"""
@@ -1705,7 +1838,7 @@ class HikkaSettingsMod(loader.Module):
             self.strings("cmd_nn_list").format(
                 "\n".join(
                     [
-                        f"▫️ <code>{self.get_prefix()}{cmd}</code>"
+                        f"▫️ <code>{utils.escape_html(self.get_prefix() + cmd)}</code>"
                         for cmd in self._db.get(main.__name__, "nonickcmds", [])
                     ]
                 )
@@ -1721,6 +1854,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Yoqilgan NoNick foydalanuvchilar ro'yxatini ko'rsatish",
         es_doc="Mostrar una lista de usuarios NoNick activos",
         kk_doc="Қосылған NoNick пайдаланушылар тізімін көрсету",
+        tt_doc="Кушылган NoNick кулланучылар исемлеген күрсәтү",
     )
     async def nonickusers(self, message: Message):
         """Returns the list of NoNick users"""
@@ -1768,6 +1902,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Yoqilgan NoNick suhbatlar ro'yxatini ko'rsatish",
         es_doc="Mostrar una lista de chats NoNick activos",
         kk_doc="Қосылған NoNick сөйлесушілер тізімін көрсету",
+        tt_doc="Кушылган NoNick сөйләшмәләр исемлеген күрсәтү",
     )
     async def nonickchats(self, message: Message):
         """Returns the list of NoNick chats"""
@@ -2038,7 +2173,6 @@ class HikkaSettingsMod(loader.Module):
             [{"text": self.strings("close_menu"), "action": "close"}],
         ]
 
-    @loader.owner
     @loader.command(
         ru_doc="Показать настройки",
         fr_doc="Afficher les paramètres",
@@ -2048,6 +2182,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Sozlamalarni ko'rsatish",
         es_doc="Mostrar configuración",
         kk_doc="Баптауларды көрсету",
+        tt_doc="Көйләнмәләрне күрсәтү",
     )
     async def settings(self, message: Message):
         """Show settings menu"""
@@ -2057,7 +2192,6 @@ class HikkaSettingsMod(loader.Module):
             reply_markup=self._get_settings_markup(),
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="Открыть тоннель к веб-интерфейсу Hikka",
         fr_doc="Ouvrir un tunnel vers l'interface web de Hikka",
@@ -2067,6 +2201,7 @@ class HikkaSettingsMod(loader.Module):
         uz_doc="Hikka veb-interfeysi uchun tunel ochish",
         es_doc="Abrir un túnel al interfaz web de Hikka",
         kk_doc="Hikka веб-интерфейсіне тунель ашу",
+        tt_doc="Hikka веб-интерфейсенә тунель ачу",
     )
     async def weburl(self, message: Message, force: bool = False):
         """Opens web tunnel to your Hikka web interface"""
@@ -2107,7 +2242,7 @@ class HikkaSettingsMod(loader.Module):
                     message,
                     self.strings("privacy_leak").format(
                         self._client.tg_id,
-                        self.get_prefix(),
+                        utils.escape_html(self.get_prefix()),
                     ),
                 )
 
@@ -2156,8 +2291,7 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.loop(interval=1, autostart=True)
     async def loop(self):
-        obj = self.allmodules.get_approved_channel
-        if not obj:
+        if not (obj := self.allmodules.get_approved_channel):
             return
 
         channel, event = obj
@@ -2184,8 +2318,7 @@ class HikkaSettingsMod(loader.Module):
     @loader.command()
     async def invokecmd(self, message: Message):
         """<module or `core` for built-in methods> <method> - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER"""
-        args = utils.get_args_raw(message)
-        if not args or len(args.split()) < 2:
+        if not (args := utils.get_args_raw(message)) or len(args.split()) < 2:
             await utils.answer(message, self.strings("no_args"))
             return
 

@@ -219,6 +219,27 @@ class InlineStuffMod(loader.Module):
         ),
     }
 
+    strings_tt = {
+        "bot_username_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ботын нике дөрес түгел"
+            " булуы керек. Оны <code>bot</code> <b>белән ачып, 5 символдан аз булмаска"
+            " тиеш</b>"
+        ),
+        "bot_username_occupied": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бу ник боты бар</b>"
+        ),
+        "bot_updated": (
+            "<emoji document_id=6318792204118656433>🎉</emoji> <b>Көйләүләр сакланды."
+            " Уларны үзгәртү өчен юзерботны яңартыгыз</b>"
+        ),
+        "this_is_hikka": (
+            "🌘 <b>Сәлам! Бу Хикка, көчле модульле телеграмма кулланучысы. Сез аны үз"
+            " хисабыгызда урнаштыра аласыз!</b>\n\n<b>🌍 <a"
+            ' href="https://github.com/hikariatama/Hikka">GitHub</a></b>\n<b>👥 <a'
+            ' href="https://t.me/hikka_talks">Чатка ярдәм</a></b>'
+        ),
+    }
+
     async def watcher(self, message: Message):
         if (
             getattr(message, "out", False)
@@ -293,6 +314,7 @@ class InlineStuffMod(loader.Module):
         uz_doc="<foydalanuvchi nomi> - Bot foydalanuvchi nomini o'zgartiring",
         es_doc="<nombre de usuario> - Cambia el nombre de usuario del bot de inline",
         kk_doc="<пайдаланушы аты> - Инлайн боттың пайдаланушы атын өзгерту",
+        tt_doc="<username> - Инлайн ботын никен үзгәртү",
     )
     async def ch_hikka_bot(self, message: Message):
         """<username> - Change your Hikka inline bot username"""

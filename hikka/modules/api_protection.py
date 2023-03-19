@@ -10,6 +10,7 @@ import json
 import logging
 import random
 import time
+import typing
 
 from hikkatl.tl import functions
 from hikkatl.tl.tlobject import TLRequest
@@ -541,11 +542,64 @@ class APIRatelimiterMod(loader.Module):
         ),
     }
 
-    _ratelimiter = []
-    _suspend_until = 0
-    _lock = False
+    strings_tt = {
+        "warning": (
+            "⚠️ <b>ДИЯК!</b>\n\nАккаунт чыкты аныкларны кәйберле көрсәтелгән конфигтан"
+            " ашты. Telegram API-ның флуд булдырыуыны тышкылау үчен, юзербот <b>тулы"
+            " төшерелде</b> {} секунд. Өстәмә мәгълүмат файлда күрсәтелгән."
+            " \n\nКулланучыны төшерү үчен, <code>{prefix}support</code> группасына"
+            " мөмкинчәлек булса, көрсәтелгән группага кереп кулланыгыз!\n\nАгыллы"
+            " булсаң, юзерботның бул белән бәйле тәртибен үзгәрткән үзгәрешләре булса,"
+            " <code>{prefix}suspend_api_protect</code> &lt;секундлар саны&gt;"
+            " кулланыгыз!"
+        ),
+        "args_invalid": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Хаталы аргументлар</b>"
+        ),
+        "suspended_for": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>API тышкылауы"
+            " {} секундлар өчен төшерелде</b>"
+        ),
+        "on": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Тышкылау включена</b>"
+        ),
+        "off": (
+            "<emoji document_id=5458450833857322148>👌</emoji> <b>Тышкылау төшерелде</b>"
+        ),
+        "u_sure": "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Сез белем?</b>",
+        "_cfg_time_sample": (
+            "Йөклек вакыт аралыгы, мөмкин болса өчен сораулар санын табып берет"
+        ),
+        "_cfg_threshold": (
+            "Сораулар саны, үзгәртүлгән вакыт аралыгында күплегеннән күбрәк булса,"
+            " мөмкин болса өчен җибәрелсен"
+        ),
+        "_cfg_local_floodwait": (
+            "Юзерботны үзеннән үзенә күбрәк сораулар булса, бу көндә күбрәк секундлар"
+            " буенча үзенән үзенә күбрәк сораулар күрсәтелмәсе"
+        ),
+        "_cfg_forbidden_methods": (
+            "Барлык тышкы модулларда бу методларның исәпләүен тыя"
+        ),
+        "btn_no": "🚫 Яңа",
+        "btn_yes": "✅ Хәлә",
+        "web_pin": (
+            "🔓 <b>Пин кодын күйгә түшереп күрсәтегез, Werkzeug debug PIN кодын"
+            " күрсәтегез. Уны башкаларына бирәргә башкаларына бирмәй.</b>"
+        ),
+        "web_pin_btn": "🐞 Werkzeug PIN кодын күрсәтегез",
+        "proxied_url": "⚜️ Проксиленнә URL",
+        "local_url": "🏠 Локальнә URL",
+        "debugger_disabled": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Веб төзәтүче инвалид,"
+            " сылтама мөмкин түгел</b>"
+        ),
+    }
 
     def __init__(self):
+        self._ratelimiter: typing.List[tuple] = []
+        self._suspend_until = 0
+        self._lock = False
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "time_sample",
@@ -578,7 +632,8 @@ class APIRatelimiterMod(loader.Module):
                 ),
                 on_change=lambda: self._client.forbid_constructors(
                     map(
-                        lambda x: CONSTRUCTORS[x], self.config["forbidden_constructors"]
+                        lambda x: CONSTRUCTORS[x],
+                        self.config["forbidden_constructors"],
                     )
                 ),
             ),
@@ -615,7 +670,7 @@ class APIRatelimiterMod(loader.Module):
                     )
                 ):
                     request_name = type(r).__name__
-                    self._ratelimiter += [[request_name, time.perf_counter()]]
+                    self._ratelimiter += [(request_name, time.perf_counter())]
 
                     self._ratelimiter = list(
                         filter(
@@ -634,7 +689,7 @@ class APIRatelimiterMod(loader.Module):
                             json.dumps(
                                 self._ratelimiter,
                                 indent=4,
-                            ).encode("utf-8")
+                            ).encode()
                         )
                         report.name = "local_fw_report.json"
 
@@ -644,7 +699,7 @@ class APIRatelimiterMod(loader.Module):
                             caption=self.inline.sanitise_text(
                                 self.strings("warning").format(
                                     self.config["local_floodwait"],
-                                    prefix=self.get_prefix(),
+                                    prefix=utils.escape_html(self.get_prefix()),
                                 )
                             ),
                         )
@@ -675,12 +730,11 @@ class APIRatelimiterMod(loader.Module):
         uz_doc="<soniya> - API himoyasini N soniya o'zgartirish",
         es_doc="<segundos> - Congela la protección de la API durante N segundos",
         kk_doc="<секунд> - API қорғауын N секундтік уақытта құлыптау",
+        tt_doc="<секундларда вакыт> - N секунд өчен API саклауны туңдырыгыз",
     )
     async def suspend_api_protect(self, message: Message):
         """<time in seconds> - Suspend API Ratelimiter for n seconds"""
-        args = utils.get_args_raw(message)
-
-        if not args or not args.isdigit():
+        if not (args := utils.get_args_raw(message)) or not args.isdigit():
             await utils.answer(message, self.strings("args_invalid"))
             return
 
@@ -696,6 +750,7 @@ class APIRatelimiterMod(loader.Module):
         uz_doc="API himoyasini yoqish / o'chirish",
         es_doc="Activar / desactivar la protección de API",
         kk_doc="API қорғауын қосу / жою",
+        tt_doc="API саклауын қосу / алып тастау",
     )
     async def api_fw_protection(self, message: Message):
         """Toggle API Ratelimiter"""
@@ -724,6 +779,7 @@ class APIRatelimiterMod(loader.Module):
         uz_doc="PIN vositasi ko'rsatish",
         es_doc="Mostrar herramienta PIN",
         kk_doc="PIN құралын көрсету",
+        tt_doc="PIN Werkzeug күрсәтегез",
     )
     async def debugger(self, message: Message):
         """Show the Werkzeug PIN"""

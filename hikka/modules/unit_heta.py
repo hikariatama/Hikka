@@ -6,6 +6,9 @@
 
 import asyncio
 import base64
+import difflib
+import inspect
+import io
 import logging
 import random
 import re
@@ -36,6 +39,10 @@ class UnitHeta(loader.Module):
     """Manages stuff with @hikkamods_bot"""
 
     e = "<emoji document_id=5210952531676504517>❌</emoji>"
+    w = "<emoji document_id=5312383351217201533>⚠️</emoji>"
+    moon = "<emoji document_id=5188377234380954537>🌘</emoji>"
+    link = "<emoji document_id=5280658777148760247>🌐</emoji>"
+    f = "<emoji document_id=5433653135799228968>📁</emoji>"
 
     strings = {
         "name": "UnitHeta",
@@ -52,6 +59,22 @@ class UnitHeta(loader.Module):
         "loaded": "✅ <b>Sucessfully installed</b>",
         "not_loaded": "❌ <b>Installation failed</b>",
         "language": "en",
+        "404": f"{e} <b>Module not found</b>",
+        "not_exact": (
+            f"{w} <b>No exact match has been found, so the closest result is shown"
+            " instead</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Link</a> of</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>File of</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>in"
+            " reply to this message to install</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>You must specify arguments</b>",
     }
 
     strings_ru = {
@@ -69,6 +92,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>Установка не удалась</b>",
         "language": "ru",
         "_cls_doc": "Управляет вещами, связанными с @hikkamods_bot",
+        "404": f"{e} <b>Модуль не найден</b>",
+        "not_exact": (
+            f"{w} <b>Точного совпадения не найдено, поэтому показан ближайший"
+            " результат</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Ссылка</a> на</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Файл</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>в"
+            " ответ на это сообщение, чтобы установить</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Вы должны указать аргументы</b>",
     }
 
     strings_es = {
@@ -86,6 +125,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>La instalación falló</b>",
         "language": "es",
         "_cls_doc": "Administra cosas relacionadas con @hikkamods_bot",
+        "404": f"{e} <b>Módulo no encontrado</b>",
+        "not_exact": (
+            f"{w} <b>No se ha encontrado una coincidencia exacta, por lo que se muestra"
+            " el resultado más cercano</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Enlace</a> de</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Archivo de</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>en"
+            " respuesta a este mensaje para instalar</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Debes especificar argumentos</b>",
     }
 
     strings_de = {
@@ -103,6 +158,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>Die Installation ist fehlgeschlagen</b>",
         "language": "de",
         "_cls_doc": "Verwaltet Dinge, die mit @hikkamods_bot zu tun haben",
+        "404": f"{e} <b>Modul nicht gefunden</b>",
+        "not_exact": (
+            f"{w} <b>Es wurde keine exakte Übereinstimmung gefunden, daher wird"
+            " stattdessen das nächstgelegene Ergebnis angezeigt</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Link</a> zu</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Datei</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>in"
+            " Antwort auf diese Nachricht, um sie zu installieren</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Du musst Argumente angeben</b>",
     }
 
     strings_fr = {
@@ -120,6 +191,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>Installation échouée</b>",
         "language": "fr",
         "_cls_doc": "Gère les choses liées à @hikkamods_bot",
+        "404": f"{e} <b>Module introuvable</b>",
+        "not_exact": (
+            f"{w} <b>Aucune correspondance exacte n'a été trouvée, le résultat le plus"
+            " proche est donc affiché</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Lien</a> vers</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Fichier</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>en"
+            " réponse à ce message pour l'installer</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Vous devez spécifier des arguments</b>",
     }
 
     strings_uz = {
@@ -137,6 +224,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>O'rnatish muvaffaqiyatsiz bo'ldi</b>",
         "language": "uz",
         "_cls_doc": "@hikkamods_bot bilan bog'liq narsalarni boshqarish",
+        "404": f"{e} <b>Modul topilmadi</b>",
+        "not_exact": (
+            f"{w} <b>To'g'ri mos keladigan natija topilmadi, shuning uchun eng yaqin"
+            " natija ko'rsatiladi</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Havola</a> bo\'yicha</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Fayl</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>bu"
+            " habarga javob qilib, uni o'rnatish uchun</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Siz argumentlarni belgilamadingiz</b>",
     }
 
     strings_tr = {
@@ -154,6 +257,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>Yükleme başarısız oldu</b>",
         "language": "tr",
         "_cls_doc": "@hikkamods_bot ile ilgili şeyleri yönetir",
+        "404": f"{e} <b>Modül bulunamadı</b>",
+        "not_exact": (
+            f"{w} <b>Herhangi bir tam eşleşme bulunamadığından, en yakın sonuç"
+            " gösteriliyor</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Bağlantı</a> için</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Dosya</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>bu"
+            " mesaja yanıt olarak yüklemek için</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Argümanlar belirtmelisiniz</b>",
     }
 
     strings_it = {
@@ -171,6 +290,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>Installazione non riuscita</b>",
         "language": "it",
         "_cls_doc": "Gestisce le cose relative a @hikkamods_bot",
+        "404": f"{e} <b>Modulo non trovato</b>",
+        "not_exact": (
+            f"{w} <b>Nessuna corrispondenza esatta trovata, quindi viene visualizzato"
+            " il risultato più vicino</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Collegamento</a> per</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>File</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code>"
+            " <b>questo messaggio come risposta per installarlo</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>È necessario specificare gli argomenti</b>",
     }
 
     strings_kk = {
@@ -188,6 +323,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>Орнату сәтсіз аяқталды</b>",
         "language": "kk",
         "_cls_doc": "@hikkamods_bot-ға қатысты барлық қызметтерді басқару",
+        "404": f"{e} <b>Модуль табылмады</b>",
+        "not_exact": (
+            f"{w} <b>Толық сәйкес келетін нәтижелер табылмады, сондықтан ең жақын"
+            " нәтиже көрсетіледі</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Сілтеме</a> үшін</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Файл</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>осы"
+            " хабарламаны жауап болар енгізу үшін</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Аргументтерді көрсетуіңіз керек</b>",
     }
 
     strings_tt = {
@@ -205,6 +356,22 @@ class UnitHeta(loader.Module):
         "not_loaded": "❌ <b>Установка үтәлмәде</b>",
         "language": "tt",
         "_cls_doc": "@hikkamods_bot-җә белән үзгәртүләрне башкару",
+        "404": f"{e} <b>Модуль табылмады</b>",
+        "not_exact": (
+            f"{w} <b>Тулы тапкыр килгән нәтиҗәләр табылмады, сондыктан ең яңа нәтиҗә"
+            " күрсәтелә</b>"
+        ),
+        "link": (
+            f'{link} <b><a href="{{url}}">Сылтама</a> өчен</b>'
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}dlm"
+            " {url}</code>\n\n{not_exact}"
+        ),
+        "file": (
+            f"{f} <b>Файл</b>"
+            f" <code>{{class_name}}</code>\n\n{moon} <code>{{prefix}}lm</code> <b>осы"
+            " хәбәрне кабул килгәндә</b>\n\n{not_exact}"
+        ),
+        "args": f"{e} <b>Аргументларны күрсәтмәгәнсез</b>",
     }
 
     def __init__(self):
@@ -297,7 +464,7 @@ class UnitHeta(loader.Module):
 
         commands = "\n".join(
             [
-                f"▫️ <code>{self.get_prefix()}{cmd}</code>:"
+                f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
                 f" <b>{utils.escape_html(cmd_doc)}</b>"
                 for cmd, cmd_doc in result["module"]["commands"].items()
             ]
@@ -310,7 +477,7 @@ class UnitHeta(loader.Module):
             "cls_doc": utils.escape_html(result["module"]["cls_doc"]),
             "link": result["module"]["link"],
             "query": utils.escape_html(query),
-            "prefix": self.get_prefix(),
+            "prefix": utils.escape_html(self.get_prefix()),
         }
 
         strings = (
@@ -450,7 +617,7 @@ class UnitHeta(loader.Module):
         uri = data["file"]
         try:
             rsa.verify(
-                rsa.compute_hash(uri.encode("utf-8"), "SHA-1"),
+                rsa.compute_hash(uri.encode(), "SHA-1"),
                 base64.b64decode(data["sig"]),
                 rsa.PublicKey(
                     7110455561671499155469672749235101198284219627796886527432331759773809536504953770286294224729310191037878347906574131955439231159825047868272932664151403,
@@ -464,4 +631,107 @@ class UnitHeta(loader.Module):
         await self._load_module(
             f"https://heta.hikariatama.ru/{uri}",
             int(data["dl_id"]),
+        )
+
+    @loader.command(
+        ru_doc="<имя модуля> - Отправить ссылку на модуль",
+        de_doc="<Modulname> - Send link to module",
+        es_doc="<nombre del módulo> - Enviar enlace al módulo",
+        uz_doc="<modul nomi> - Modulga havola yuborish",
+        tr_doc="<modül adı> - Modül bağlantısını gönder",
+        fr_doc="<nom du module> - Envoyer le lien vers le module",
+        it_doc="<nome del modulo> - Invia il link al modulo",
+        tt_doc="<модуль исеме> - Модульга сылтама җибәрү",
+        kk_doc="<модуль атауы> - Модульге сілтеме жіберу",
+    )
+    async def mlcmd(self, message: Message):
+        """<module name> - Send link to module"""
+        if not (args := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("args"))
+            return
+
+        exact = True
+        if not (
+            class_name := next(
+                (
+                    module.strings("name")
+                    for module in self.allmodules.modules
+                    if args.lower()
+                    in {
+                        module.strings("name").lower(),
+                        module.__class__.__name__.lower(),
+                    }
+                ),
+                None,
+            )
+        ):
+            if not (
+                class_name := next(
+                    reversed(
+                        sorted(
+                            [
+                                module.strings["name"].lower()
+                                for module in self.allmodules.modules
+                            ]
+                            + [
+                                module.__class__.__name__.lower()
+                                for module in self.allmodules.modules
+                            ],
+                            key=lambda x: difflib.SequenceMatcher(
+                                None,
+                                args.lower(),
+                                x,
+                            ).ratio(),
+                        )
+                    ),
+                    None,
+                )
+            ):
+                await utils.answer(message, self.strings("404"))
+                return
+
+            exact = False
+
+        try:
+            module = self.lookup(class_name)
+            sys_module = inspect.getmodule(module)
+        except Exception:
+            await utils.answer(message, self.strings("404"))
+            return
+
+        link = module.__origin__
+
+        text = (
+            f"<b>🧳 {utils.escape_html(class_name)}</b>"
+            if not utils.check_url(link)
+            else (
+                f'📼 <b><a href="{link}">Link</a> for'
+                f" {utils.escape_html(class_name)}:</b>"
+                f' <code>{link}</code>\n\n{self.strings("not_exact") if not exact else ""}'
+            )
+        )
+
+        text = (
+            self.strings("link").format(
+                class_name=utils.escape_html(class_name),
+                url=link,
+                not_exact=self.strings("not_exact") if not exact else "",
+                prefix=utils.escape_html(self.get_prefix()),
+            )
+            if utils.check_url(link)
+            else self.strings("file").format(
+                class_name=utils.escape_html(class_name),
+                not_exact=self.strings("not_exact") if not exact else "",
+                prefix=utils.escape_html(self.get_prefix()),
+            )
+        )
+
+        file = io.BytesIO(sys_module.__loader__.data)
+        file.name = f"{class_name}.py"
+        file.seek(0)
+
+        await utils.answer_file(
+            message,
+            file,
+            caption=text,
         )

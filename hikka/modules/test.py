@@ -589,6 +589,73 @@ class TestMod(loader.Module):
         "logs_cleared": "🗑 <b>Логтар тазартылды</b>",
     }
 
+    strings_tt = {
+        "set_loglevel": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Йөрәкләүләр нивесе"
+            " тәрәзәсе</b>"
+        ),
+        "no_logs": (
+            "<emoji document_id=5363948200291998612>🤷‍♀️</emoji> <b>Сезнең</b>"
+            " <code>{}</code><b> йөрәкләүе юк.</b>"
+        ),
+        "logs_caption": (
+            "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka йөрәкләүләре</b>"
+            " <code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji>"
+            " <b>Версия: {}.{}.{}</b>{}"
+        ),
+        "debugging_enabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Көйләүче төзәтелгән"
+            " модуль</b> <code>{0}</code>\n<i>Иди директорияга `debug_modules`, файл"
+            " `{0}.py` үзгәртегез, һәм өзгәртмәләрне реаль вакытта карыйсыз</i>"
+        ),
+        "debugging_disabled": (
+            "<emoji document_id=5332533929020761310>✅</emoji> <b>Көйләүче"
+            " төзәтелмәгән</b>"
+        ),
+        "suspend_invalid_time": (
+            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Дөрес вакыт"
+            " табылмады</b>"
+        ),
+        "suspended": (
+            "<emoji document_id=5452023368054216810>🥶</emoji> <b>Бот {} секунд буенча"
+            " тыелган</b>"
+        ),
+        "results_ping": (
+            "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegram'ның"
+            " админкасе:</b> <code>{}</code> <b>мс</b>\n<emoji"
+            " document_id=5445284980978621387>🚀</emoji> <b>Җөмәтләндәрмәнең соңгы"
+            " үзгәртүеге: {}</b>"
+        ),
+        "ping_hint": (
+            "<emoji document_id=5472146462362048818>💡</emoji> <i>Телеграммның қайта"
+            " жауап беру тезлігі Telegram серверлерінің жұмысы мен басқа сыртқы"
+            " факторларының қатынасымен байланыстырылған және серверде орнатылған"
+            " юзерботтың параметрлерімен байланыстырылған жоқ</i>"
+        ),
+        "confidential": (
+            "⚠️ <b>Журналдардың деңгейі</b> <code>{}</code> <b>жеке "
+            "мағлұматтың бар болуы мүмкін, құдайлы болыңыз</b>"
+        ),
+        "confidential_text": (
+            "⚠️ <b>Журналдардың деңгейі</b> <code>{0}</code> <b>жеке мағлұматтың бар"
+            " болуы мүмкін, құдайлы болыңыз</b>\n<b>Жазыңыз</b> <code>.logs {0}"
+            " force_insecure</code><b>, журналдарды құлақтық болмаған кезде жіберуге"
+            " болады</b>"
+        ),
+        "choose_loglevel": "💁‍♂️ <b>Журналдардың деңгейін таңдаңыз</b>",
+        "_cmd_doc_dump": "Хабар туралы ақпаратты көрсету",
+        "_cmd_doc_logs": (
+            "<деңгей> - Журнал файлын жіберу. Ескерту: WARNING төмендегі деңгейлерде"
+            " жеке ақпарат бар болуы мүмкін."
+        ),
+        "_cmd_doc_suspend": "<уақыт> - Ботты белгіленген уақытта жабу",
+        "_cmd_doc_ping": "Юзерботтың қайта жауап беру тезлігін тексеру",
+        "_cls_doc": "Операциялар, олардың жеке тесттілігі бойынша",
+        "send_anyway": "📤 Жіберу",
+        "cancel": "🚫 Болдырмау",
+        "logs_cleared": "🗑 <b>Журналдар тазартылды</b>",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -638,6 +705,7 @@ class TestMod(loader.Module):
         uz_doc="Xabarning axlatini ko'rsatish uchun unga javob bering",
         es_doc="Responde a un mensaje para mostrar su volcado",
         kk_doc="Дампын көрсету үшін хабарламаға жауап беріңіз",
+        tt_doc="Дампын көрсетү үчен хәбәрҗә күрсәтү",
     )
     async def dump(self, message: Message):
         """Use in reply to get a dump of a message"""
@@ -660,6 +728,7 @@ class TestMod(loader.Module):
         uz_doc="Jurnalni tozalash",
         es_doc="Limpiar registros",
         kk_doc="Логтарды тазалау",
+        tt_doc="Бүрәнәләрне чистарту",
     )
     async def clearlogs(self, message: Message):
         """Clear logs"""
@@ -769,6 +838,7 @@ class TestMod(loader.Module):
         tr_doc="<seviye> - Günlükleri göster",
         es_doc="<nivel> - Mostrar registros",
         kk_doc="<деңгей> - Логтарды көрсету",
+        tt_doc="<сезем> - Бүрәнәләрне күрсәтү",
     )
     async def logs(
         self,
@@ -912,7 +982,6 @@ class TestMod(loader.Module):
                 reply_to=message.form["top_msg_id"],
             )
 
-    @loader.owner
     @loader.command(
         ru_doc="<время> - Заморозить бота на N секунд",
         fr_doc="<temps> - Congeler le bot pendant N secondes",
@@ -922,6 +991,7 @@ class TestMod(loader.Module):
         uz_doc="<vaqt> - Botni N soniya davomida to'xtatish",
         es_doc="<tiempo> - Congela el bot durante N segundos",
         kk_doc="<уақыт> - Ботты N секунд ұзақтығында тұзатып қой",
+        tt_doc="<вакыт> - Ботны N секунд үзәктәге җиңәләп җиңәй",
     )
     async def suspend(self, message: Message):
         """<time> - Suspends the bot for N seconds"""
@@ -944,6 +1014,7 @@ class TestMod(loader.Module):
         uz_doc="Foydalanuvchi botining javob tezligini tekshiring",
         es_doc="Comprueba la velocidad de respuesta del bot de usuario",
         kk_doc="Қолданушы ботының жауап шығу уақытын тексеру",
+        tt_doc="Кулланучы ботының яуап шигу уақытын тикшерү",
     )
     async def ping(self, message: Message):
         """Test your userbot ping"""

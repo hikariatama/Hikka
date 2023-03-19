@@ -279,20 +279,15 @@ async def get_user(message: Message) -> typing.Optional[User]:
     :return: User who sent message
     """
     try:
-        return await message.client.get_entity(message.sender_id)
+        return await message.get_sender()
     except ValueError:  # Not in database. Lets go looking for them.
         logger.debug("User not in session cache. Searching...")
 
     if isinstance(message.peer_id, PeerUser):
         await message.client.get_dialogs()
-        return await message.client.get_entity(message.sender_id)
+        return await message.get_sender()
 
     if isinstance(message.peer_id, (PeerChannel, PeerChat)):
-        try:
-            return await message.client.get_entity(message.sender_id)
-        except Exception:
-            pass
-
         async for user in message.client.iter_participants(
             message.peer_id,
             aggressive=True,
@@ -908,7 +903,7 @@ def get_named_platform() -> str:
                 return f"🍇 {model}" if "Raspberry" in model else f"❓ {model}"
 
     if main.IS_WSL:
-        return "🍁 WSL"
+        return "🍀 WSL"
 
     if main.IS_GOORM:
         return "🦾 GoormIDE"

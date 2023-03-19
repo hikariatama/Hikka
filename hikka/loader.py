@@ -699,7 +699,7 @@ class Modules:
             )
 
             if origin == "<string>":
-                Path(path).write_text(spec.loader.data.decode("utf-8"))
+                Path(path).write_text(spec.loader.data.decode())
 
                 logger.debug("Saved class %s to path %s", cls_name, path)
 

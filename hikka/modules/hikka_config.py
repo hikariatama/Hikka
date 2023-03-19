@@ -156,7 +156,7 @@ class HikkaConfigMod(loader.Module):
     }
 
     strings_fr = {
-        "choose_core": "⚙️ <b>choisissez la catégorie</b>",
+        "choose_core": "⚙️ <b>Choisissez la catégorie</b>",
         "configure": "⚙️ <b>Choisissez le module à configurer</b>",
         "configure_lib": "📦 <b>Choisissez la bibliothèque à configurer</b>",
         "configuring_mod": (
@@ -1633,6 +1633,7 @@ class HikkaConfigMod(loader.Module):
         uz_doc="Modullarni sozlash",
         es_doc="Configurar módulos",
         kk_doc="Модульдерді конфигурациялау",
+        tt_doc="Модульләрне конфигурациялау",
         alias="cfg",
     )
     async def configcmd(self, message: Message):
@@ -1675,7 +1676,10 @@ class HikkaConfigMod(loader.Module):
         kk_doc=(
             "<модуль> <настройка> <значение> - модуль үшін конфигурация мәнін орнату"
         ),
-        alias="setcfg",
+        tt_doc=(
+            "<модуль> <настройка> <значение> - модуль үчен конфигурация мәнен орнату"
+        ),
+        alias="fcfg",
     )
     async def fconfig(self, message: Message):
         """<module_name> <property_name> <config_value> - set the config value for the module"""
@@ -1687,8 +1691,7 @@ class HikkaConfigMod(loader.Module):
 
         mod, option, value = args
 
-        instance = self.lookup(mod)
-        if not instance:
+        if not (instance := self.lookup(mod)):
             await utils.answer(message, self.strings("no_mod"))
             return
 

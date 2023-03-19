@@ -4,6 +4,7 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
+import string
 import hikkapyro
 import hikkatl
 from hikkatl.extensions.html import CUSTOM_EMOJIS
@@ -867,6 +868,7 @@ class CoreMod(loader.Module):
         uz_doc="Hikka versiyasini ko'rsatish",
         es_doc="Mostrar la versión de Hikka",
         kk_doc="Hikka нұсқасын көрсету",
+        tt_doc="Hikka версиясын күрсәтү",
     )
     async def hikkacmd(self, message: Message):
         """Get Hikka version"""
@@ -905,6 +907,7 @@ class CoreMod(loader.Module):
         uz_doc="[chat] [modul] - Botni hozircha o'chirish",
         es_doc="[chat] [módulo] - Desactivar el bot en cualquier lugar",
         kk_doc="[сөйлесу] [модуль] - Ботты қайда болса болсын өшіру",
+        tt_doc="[сөйләшү] [модуль] - Ботны һәр җирләгәнде өшерергә",
     )
     async def blacklist(self, message: Message):
         """[chat_id] [module] - Blacklist the bot from operating somewhere"""
@@ -927,6 +930,7 @@ class CoreMod(loader.Module):
         uz_doc="[chat] - Botni hozircha yoqish",
         es_doc="[chat] - Activar el bot en cualquier lugar",
         kk_doc="[сөйлесу] - Ботты қайда болса болсын қосу",
+        tt_doc="[сөйләшү] - Ботны һәр җирләгәнде җибәрергә",
     )
     async def unblacklist(self, message: Message):
         """<chat_id> - Unblacklist the bot from operating somewhere"""
@@ -944,9 +948,7 @@ class CoreMod(loader.Module):
         try:
             return int(utils.get_args(message)[0])
         except (ValueError, IndexError):
-            reply = await message.get_reply_message()
-
-            if reply:
+            if reply := await message.get_reply_message():
                 return reply.sender_id
 
             return message.to_id.user_id if message.is_private else False
@@ -960,12 +962,11 @@ class CoreMod(loader.Module):
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
         es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
         kk_doc="[пайдаланушы] - Пайдаланушыға командаларды орындауға рұқсат бермеу",
+        tt_doc="[кулланучы] - Кулланучыга командаларны орындауға рөхсәт бирмәү",
     )
     async def blacklistuser(self, message: Message):
         """[user_id] - Prevent this user from running any commands"""
-        user = await self.getuser(message)
-
-        if not user:
+        if not (user := await self.getuser(message)):
             await utils.answer(message, self.strings("who_to_blacklist"))
             return
 
@@ -986,12 +987,11 @@ class CoreMod(loader.Module):
         uz_doc="[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash",
         es_doc="[usuario] - Prohibir al usuario ejecutar comandos",
         kk_doc="[пайдаланушы] - Пайдаланушыға командаларды орындауға рұқсат бермеу",
+        tt_doc="[кулланучы] - Кулланучыга командаларны орындауға рөхсәт бирмәү",
     )
     async def unblacklistuser(self, message: Message):
         """[user_id] - Allow this user to run permitted commands"""
-        user = await self.getuser(message)
-
-        if not user:
+        if not (user := await self.getuser(message)):
             await utils.answer(message, self.strings("who_to_unblacklist"))
             return
 
@@ -1006,7 +1006,6 @@ class CoreMod(loader.Module):
             self.strings("user_unblacklisted").format(user),
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="[dragon] <префикс> - Установить префикс команд",
         fr_doc="[dragon] <préfixe> - Définir le préfixe des commandes",
@@ -1016,12 +1015,11 @@ class CoreMod(loader.Module):
         uz_doc="[dragon] <avvalgi> - Buyruqlar uchun avvalgi belgilash",
         es_doc="[dragon] <prefijo> - Establecer el prefijo de comandos",
         kk_doc="[dragon] <бастауыш> - Командалардың бастауышын орнату",
+        tt_doc="[dragon] <башкача> - Командаларның башкачасын орнату",
     )
     async def setprefix(self, message: Message):
         """[dragon] <prefix> - Sets command prefix"""
-        args = utils.get_args_raw(message)
-
-        if not args:
+        if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("what_prefix"))
             return
 
@@ -1035,6 +1033,10 @@ class CoreMod(loader.Module):
             await utils.answer(message, self.strings("prefix_incorrect"))
             return
 
+        if args == "s":
+            await utils.answer(message, self.strings("prefix_incorrect"))
+            return
+
         if (
             not is_dragon
             and args[0] == self._db.get("dragon.prefix", "command_prefix", ",")
@@ -1045,7 +1047,9 @@ class CoreMod(loader.Module):
             return
 
         oldprefix = (
-            f"dragon {self.get_prefix('dragon')}" if is_dragon else self.get_prefix()
+            f"dragon {utils.escape_html(self.get_prefix('dragon'))}"
+            if is_dragon
+            else utils.escape_html(self.get_prefix())
         )
         self._db.set(
             "dragon.prefix" if is_dragon else main.__name__,
@@ -1067,7 +1071,6 @@ class CoreMod(loader.Module):
             ),
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="Показать список алиасов",
         fr_doc="Afficher la liste des alias",
@@ -1077,19 +1080,21 @@ class CoreMod(loader.Module):
         uz_doc="Aliaslarni ko'rsatish",
         es_doc="Mostrar lista de alias",
         kk_doc="Айланыстарды көрсету",
+        tt_doc="Алиаслар тизмесен күрсәтү",
     )
     async def aliases(self, message: Message):
         """Print all your aliases"""
-        aliases = self.allmodules.aliases
-        string = self.strings("aliases")
-
-        string += "\n".join(
-            [f"▫️ <code>{i}</code> &lt;- {y}" for i, y in aliases.items()]
+        await utils.answer(
+            message,
+            self.strings("aliases")
+            + "\n".join(
+                [
+                    f"▫️ <code>{i}</code> &lt;- {y}"
+                    for i, y in self.allmodules.aliases.items()
+                ]
+            ),
         )
 
-        await utils.answer(message, string)
-
-    @loader.owner
     @loader.command(
         ru_doc="Установить алиас для команды",
         fr_doc="Définir un alias pour la commande",
@@ -1099,6 +1104,7 @@ class CoreMod(loader.Module):
         uz_doc="Buyrug' uchun alias belgilash",
         es_doc="Establecer alias para el comando",
         kk_doc="Команда үшін айланыс орнату",
+        tt_doc="Команда үчен алиас күрсәтү",
     )
     async def addalias(self, message: Message):
         """Set an alias for a command"""
@@ -1127,7 +1133,6 @@ class CoreMod(loader.Module):
                 self.strings("no_command").format(utils.escape_html(cmd)),
             )
 
-    @loader.owner
     @loader.command(
         ru_doc="Удалить алиас для команды",
         fr_doc="Supprimer un alias pour la commande",
@@ -1137,6 +1142,7 @@ class CoreMod(loader.Module):
         uz_doc="Buyrug' uchun aliasni o'chirish",
         es_doc="Eliminar alias para el comando",
         kk_doc="Команда үшін айланысты жою",
+        tt_doc="Команда үчен алиасны юйү",
     )
     async def delalias(self, message: Message):
         """Remove an alias for a command"""
@@ -1147,9 +1153,8 @@ class CoreMod(loader.Module):
             return
 
         alias = args[0]
-        removed = self.allmodules.remove_alias(alias)
 
-        if not removed:
+        if not self.allmodules.remove_alias(alias):
             await utils.answer(
                 message,
                 self.strings("no_alias").format(utils.escape_html(alias)),
@@ -1164,7 +1169,6 @@ class CoreMod(loader.Module):
             self.strings("alias_removed").format(utils.escape_html(alias)),
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="Очистить базу данных",
         fr_doc="Vider la base de données",
@@ -1174,6 +1178,7 @@ class CoreMod(loader.Module):
         uz_doc="Ma'lumotlar bazasini tozalash",
         es_doc="Limpiar la base de datos",
         kk_doc="Деректер базасын тазалау",
+        tt_doc="Мәгълүмат базасын тазалау",
     )
     async def cleardb(self, message: Message):
         """Clear the entire database, effectively performing a factory reset"""

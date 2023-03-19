@@ -123,12 +123,6 @@ class Brainfuck:
                 self.data[ptr] -= 1
             elif source[current] == ".":
                 self.out += chr(self.data[ptr])
-            elif source[current] == ",":
-                value = input()
-                if not value.isdigit():
-                    self._report_error("invalid input")
-
-                self.data[ptr] = value
             elif source[current] == "[":
                 if self.data[ptr] == 0:
                     while source[current] != "]":
@@ -376,7 +370,6 @@ class Evaluator(loader.Module):
         ),
     }
 
-    @loader.owner
     @loader.command(
         ru_doc="Выполняет Python код",
         fr_doc="Évalue du code Python",
@@ -386,6 +379,7 @@ class Evaluator(loader.Module):
         uz_doc="Python kodini ishga tushiradi",
         es_doc="Ejecuta código Python",
         kk_doc="Python кодын орындау",
+        tt_doc="Python кодын үзгәртү",
         alias="eval",
     )
     async def e(self, message: Message):
@@ -440,6 +434,7 @@ class Evaluator(loader.Module):
         uz_doc="C++ kodini ishga tushiradi",
         es_doc="Ejecuta código C++",
         kk_doc="C++ кодын орындау",
+        tt_doc="C++ кодын үзгәртү",
     )
     async def ecpp(self, message: Message, c: bool = False):
         """Evaluates C++ code"""
@@ -506,6 +501,7 @@ class Evaluator(loader.Module):
         uz_doc="C kodini ishga tushiradi",
         es_doc="Ejecuta código C",
         kk_doc="C кодын орындау",
+        tt_doc="C кодын үзгәртү",
     )
     async def ec(self, message: Message):
         """Evaluates C code"""
@@ -520,6 +516,7 @@ class Evaluator(loader.Module):
         uz_doc="Node.js kodini ishga tushiradi",
         es_doc="Ejecuta código Node.js",
         kk_doc="Node.js кодын орындау",
+        tt_doc="Node.js кодын үзгәртү",
     )
     async def enode(self, message: Message):
         """Evaluates Node.js code"""
@@ -574,6 +571,7 @@ class Evaluator(loader.Module):
         uz_doc="PHP kodini ishga tushiradi",
         es_doc="Ejecuta código PHP",
         kk_doc="PHP кодын орындау",
+        tt_doc="PHP кодын үзгәртү",
     )
     async def ephp(self, message: Message):
         """Evaluates PHP code"""
@@ -628,6 +626,7 @@ class Evaluator(loader.Module):
         uz_doc="Ruby kodini ishga tushiradi",
         es_doc="Ejecuta código Ruby",
         kk_doc="Ruby кодын орындау",
+        tt_doc="Ruby кодын үзгәртү",
     )
     async def eruby(self, message: Message):
         """Evaluates Ruby code"""
@@ -682,6 +681,7 @@ class Evaluator(loader.Module):
         uz_doc="Brainf*ck kodini ishga tushiradi",
         es_doc="Ejecuta código Brainf*ck",
         kk_doc="Brainf*ck кодын орындау",
+        tt_doc="Brainf*ck кодын үзгәртү",
     )
     async def ebf(self, message: Message):
         """Evaluates Brainf*ck code"""

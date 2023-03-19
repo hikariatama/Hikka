@@ -327,12 +327,6 @@ class HelpMod(loader.Module):
                 validator=loader.validators.Emoji(length=1),
             ),
             loader.ConfigValue(
-                "hikka_emoji",
-                "🌘",
-                lambda: "Hikka-only module bullet",
-                validator=loader.validators.Emoji(length=1),
-            ),
-            loader.ConfigValue(
                 "plain_emoji",
                 "▫️",
                 lambda: "Plain module bullet",
@@ -379,21 +373,23 @@ class HelpMod(loader.Module):
             "<модуль немесе модульдер> - Анықтамадан модульді (-дерді)"
             " жасыру\n*Модульдерді бос қойып айыр"
         ),
+        tt_doc=(
+            "<модуль яки модульләр> - Ярдәмдә модуль (-ләр) яшерергә\n*Модульләрне"
+            " буш җәйел белән айыр"
+        ),
     )
     async def helphide(self, message: Message):
         """<module or modules> - Hide module(-s) from help
-        *Split modules by spaces"""
-        modules = utils.get_args(message)
-        if not modules:
+        *Split modules using spaces"""
+        if not (modules := utils.get_args(message)):
             await utils.answer(message, self.strings("no_mod"))
             return
 
-        modules = list(
-            filter(lambda module: self.lookup(module, include_dragon=True), modules)
-        )
         currently_hidden = self.get("hide", [])
         hidden, shown = [], []
-        for module in modules:
+        for module in filter(
+            lambda module: self.lookup(module, include_dragon=True), modules
+        ):
             module = self.lookup(module, include_dragon=True)
             module = (
                 module.name
@@ -432,14 +428,11 @@ class HelpMod(loader.Module):
 
     async def modhelp(self, message: Message, args: str):
         exact = True
-        module = self.lookup(args, include_dragon=True)
-
-        if not module:
-            cmd = args.lower().strip(self.get_prefix())
-            if method := self.allmodules.dispatch(cmd)[1]:
-                module = method.__self__
-
-        if not module:
+        if not (module := self.lookup(args, include_dragon=True)) and (
+            method := self.allmodules.dispatch(args.lower().strip(self.get_prefix()))[1]
+        ):
+            module = method.__self__
+        else:
             module = self.lookup(
                 next(
                     (
@@ -524,13 +517,15 @@ class HelpMod(loader.Module):
             reply += (
                 "\n<emoji document_id=4971987363145188045>▫️</emoji>"
                 " <code>{}{}</code>{} {}".format(
-                    self.get_prefix("dragon" if is_dragon else None),
+                    utils.escape_html(self.get_prefix("dragon" if is_dragon else None)),
                     name,
                     (
                         " ({})".format(
                             ", ".join(
                                 "<code>{}{}</code>".format(
-                                    self.get_prefix("dragon" if is_dragon else None),
+                                    utils.escape_html(
+                                        self.get_prefix("dragon" if is_dragon else None)
+                                    ),
                                     alias,
                                 )
                                 for alias in self.find_aliases(name)
@@ -571,6 +566,7 @@ class HelpMod(loader.Module):
         uz_doc="[modul] [-f] - Yordamni ko'rsatish",
         es_doc="[módulo] [-f] - Mostrar ayuda",
         kk_doc="[модуль] [-f] - Анықтама көрсету",
+        tt_doc="[модуль] [-f] - Йордам күрсәтү",
     )
     async def help(self, message: Message):
         """[module] [-f] - Show help"""
@@ -604,7 +600,6 @@ class HelpMod(loader.Module):
 
         plain_ = []
         core_ = []
-        inline_ = []
         no_commands_ = []
         dragon_ = []
 
@@ -640,31 +635,6 @@ class HelpMod(loader.Module):
             except KeyError:
                 name = getattr(mod, "name", "ERROR")
 
-            inline = (
-                hasattr(mod, "callback_handlers")
-                and mod.callback_handlers
-                or hasattr(mod, "inline_handlers")
-                and mod.inline_handlers
-            )
-
-            if not inline:
-                for cmd_ in mod.commands.values():
-                    try:
-                        inline = "await self.inline.form(" in inspect.getsource(
-                            cmd_.__code__
-                        )
-                    except Exception:
-                        pass
-
-            core = mod.__origin__.startswith("<core")
-
-            if core:
-                emoji = self.config["core_emoji"]
-            elif inline:
-                emoji = self.config["hikka_emoji"]
-            else:
-                emoji = self.config["plain_emoji"]
-
             if (
                 not getattr(mod, "commands", None)
                 and not getattr(mod, "inline_handlers", None)
@@ -675,7 +645,10 @@ class HelpMod(loader.Module):
                 ]
                 continue
 
-            tmp += "\n{} <code>{}</code>".format(emoji, name)
+            core = mod.__origin__.startswith("<core")
+            tmp += "\n{} <code>{}</code>".format(
+                self.config["core_emoji"] if core else self.config["plain_emoji"], name
+            )
             first = True
 
             commands = [
@@ -712,8 +685,6 @@ class HelpMod(loader.Module):
                 tmp += " )"
                 if core:
                     core_ += [tmp]
-                elif inline:
-                    inline_ += [tmp]
                 else:
                     plain_ += [tmp]
             elif not shown_warn and (mod.commands or mod.inline_handlers):
@@ -725,27 +696,19 @@ class HelpMod(loader.Module):
 
         plain_.sort(key=lambda x: x.split()[1])
         core_.sort(key=lambda x: x.split()[1])
-        inline_.sort(key=lambda x: x.split()[1])
         no_commands_.sort(key=lambda x: x.split()[1])
-        no_commands_ = "".join(no_commands_) if force else ""
         dragon_.sort()
-
-        partial_load = (
-            ""
-            if self.lookup("Loader").fully_loaded
-            else f"\n\n{self.strings('partial_load')}"
-        )
 
         await utils.answer(
             message,
-            "{}\n{}{}{}{}{}{}".format(
+            "{}\n{}{}".format(
                 reply,
-                "".join(core_),
-                "".join(plain_),
-                "".join(inline_),
-                "".join(dragon_),
-                no_commands_,
-                partial_load,
+                "".join(core_ + plain_ + dragon_ + (no_commands_ if force else [])),
+                (
+                    ""
+                    if self.lookup("Loader").fully_loaded
+                    else f"\n\n{self.strings('partial_load')}"
+                ),
             ),
         )
 
@@ -758,6 +721,7 @@ class HelpMod(loader.Module):
         uz_doc="Hikka yordam sohbatining havolasini ko'rsatish",
         es_doc="Mostrar enlace al chat de ayuda de Hikka",
         kk_doc="Hikka анықтама сөйлесушісінің сілтемесін көрсету",
+        tt_doc="Hikka ярдәм чатын күрсәтү",
     )
     async def support(self, message):
         """Get link of Hikka support chat"""

@@ -603,7 +603,7 @@ class HikkaInfoMod(loader.Module):
             "🍊": "<emoji document_id=5449599833973203438>🧡</emoji>",
             "🍇": "<emoji document_id=5449468596952507859>💜</emoji>",
             "❓": "<emoji document_id=5407025283456835913>📱</emoji>",
-            "🍁": "<emoji document_id=6332120630099445554>🍁</emoji>",
+            "🍀": "<emoji document_id=5395325195542078574>🍀</emoji>",
             "🦾": "<emoji document_id=5386766919154016047>🦾</emoji>",
             "🚂": "<emoji document_id=5359595190807962128>🚂</emoji>",
             "🐳": "<emoji document_id=5431815452437257407>🐳</emoji>",
@@ -611,7 +611,6 @@ class HikkaInfoMod(loader.Module):
             "🐈‍⬛": "<emoji document_id=6334750507294262724>🐈‍⬛</emoji>",
             "✌️": "<emoji document_id=5469986291380657759>✌️</emoji>",
             "📻": "<emoji document_id=5471952986970267163>💎</emoji>",
-            "🎃": "<emoji document_id=5370610867094166617>🎃</emoji>",
         }.items():
             platform = platform.replace(emoji, icon)
 
@@ -708,6 +707,7 @@ class HikkaInfoMod(loader.Module):
         uz_doc="Bot haqida ma'lumot yuboradi",
         es_doc="Envía información sobre el bot",
         kk_doc="Бот туралы ақпарат жібереді",
+        tt_doc="Бот турында мәгълүмат җибәрергә",
     )
     async def infocmd(self, message: Message):
         """Send userbot info"""
@@ -739,6 +739,7 @@ class HikkaInfoMod(loader.Module):
         uz_doc="Bot haqida ma'lumot yuborish",
         es_doc="Enviar información sobre el bot",
         kk_doc="Бот туралы ақпарат жіберу",
+        tt_doc="Бот турында мәгълүмат җибәрү",
     )
     async def hikkainfo(self, message: Message):
         """Send info aka 'What is Hikka?'"""
@@ -753,11 +754,11 @@ class HikkaInfoMod(loader.Module):
         uz_doc="<matn> - .info'dagi matnni o'zgartirish",
         es_doc="<texto> - Cambiar el texto en .info",
         kk_doc="<мәтін> - .info мәтінін өзгерту",
+        tt_doc="<мәтин> - .info мәтинен үзгәртү",
     )
     async def setinfo(self, message: Message):
         """<text> - Change text in .info"""
-        args = utils.get_args_html(message)
-        if not args:
+        if not (args := utils.get_args_html(message)):
             return await utils.answer(message, self.strings("setinfo_no_args"))
 
         self.config["custom_message"] = args

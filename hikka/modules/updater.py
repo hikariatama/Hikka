@@ -570,7 +570,6 @@ class UpdaterMod(loader.Module):
             )
         )
 
-    @loader.owner
     @loader.command(
         ru_doc="Перезагружает юзербот",
         fr_doc="Redémarre le bot",
@@ -720,7 +719,6 @@ class UpdaterMod(loader.Module):
         except subprocess.CalledProcessError:
             logger.exception("Req install failed")
 
-    @loader.owner
     @loader.command(
         ru_doc="Скачивает обновления юзербота",
         fr_doc="Télécharge les mises à jour du bot",

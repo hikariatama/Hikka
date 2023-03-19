@@ -60,7 +60,7 @@ else:
         try:
             import hikkatl  # noqa: F811
 
-            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 2):
+            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 3):
                 raise ImportError
 
             import hikkapyro
