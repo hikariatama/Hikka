@@ -428,33 +428,32 @@ class HelpMod(loader.Module):
 
     async def modhelp(self, message: Message, args: str):
         exact = True
-        if not (module := self.lookup(args, include_dragon=True)) and (
-            method := self.allmodules.dispatch(args.lower().strip(self.get_prefix()))[1]
-        ):
-            module = method.__self__
-        else:
-            module = self.lookup(
-                next(
-                    (
-                        reversed(
-                            sorted(
-                                [
-                                    module.strings["name"]
-                                    for module in self.allmodules.modules
-                                ],
-                                key=lambda x: difflib.SequenceMatcher(
-                                    None,
-                                    args.lower(),
-                                    x,
-                                ).ratio(),
+        if not (module := self.lookup(args, include_dragon=True)):
+            if method := self.allmodules.dispatch(args.lower().strip(self.get_prefix()))[1]:
+                module = method.__self__
+            else:
+                module = self.lookup(
+                    next(
+                        (
+                            reversed(
+                                sorted(
+                                    [
+                                        module.strings["name"]
+                                        for module in self.allmodules.modules
+                                    ],
+                                    key=lambda x: difflib.SequenceMatcher(
+                                        None,
+                                        args.lower(),
+                                        x,
+                                    ).ratio(),
+                                )
                             )
-                        )
-                    ),
-                    None,
+                        ),
+                        None,
+                    )
                 )
-            )
 
-            exact = False
+                exact = False
 
         is_dragon = isinstance(module, DragonModule)
 
