@@ -9,12 +9,13 @@ ENV PIP_NO_CACHE_DIR=1 \
 RUN apt update && apt install libcairo2 git build-essential -y --no-install-recommends
 RUN rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp/*
 
-COPY . /Hikka
-WORKDIR /Hikka
+RUN mkdir /data
+
+COPY . /data/Hikka
+WORKDIR /data/Hikka
 
 RUN pip install --no-warn-script-location --no-cache-dir -U -r requirements.txt
 
 EXPOSE 8080
-RUN mkdir /data
 
 CMD python -m hikka

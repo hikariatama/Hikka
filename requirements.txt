@@ -14,5 +14,6 @@ werkzeug==2.2.2
 psutil==5.9.4
 tgcrypto==1.2.5
 rsa==4.9
+pyyaml
 
 # Python 3.8+

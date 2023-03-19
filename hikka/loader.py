@@ -1005,9 +1005,10 @@ class Modules:
         if skip_hook:
             return
 
-        if hasattr(mod, "strings"):
-            mod.strings = Strings(mod, self._translator)
+        if not hasattr(mod, "strings"):
+            mod.strings = {}
 
+        mod.strings = Strings(mod, self._translator)
         mod.translator = self._translator
 
         try:

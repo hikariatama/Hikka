@@ -6,11 +6,12 @@
 
 import json
 import logging
-import os
 import typing
+from io import BytesIO
 from pathlib import Path
 
 import requests
+import yaml
 
 from . import utils
 from .database import Database
@@ -20,51 +21,98 @@ from .types import Module
 logger = logging.getLogger(__name__)
 
 
-class Translator:
-    def __init__(self, client: CustomTelegramClient, db: Database):
-        self._client = client
-        self.db = db
+PACKS = Path(__file__).parent / "langpacks"
 
-    async def init(self) -> bool:
-        self._data = {}
-        if not (lang := self.db.get(__name__, "lang", False)):
-            return False
 
-        for language in lang.split(" "):
-            if utils.check_url(language):
-                try:
-                    ndata = (await utils.run_sync(requests.get, lang)).json()
-                except Exception:
-                    logger.exception("Unable to decode %s", lang)
-                    continue
+def fmt(text: str, kwargs: dict) -> str:
+    for key, value in kwargs.items():
+        if f"{{{key}}}" in text:
+            text = text.replace(f"{{{key}}}", str(value))
 
-                data = ndata.get("data", ndata)
+    return text
 
-                if any(not isinstance(i, str) for i in data.values()):
-                    logger.exception(
-                        "Translation pack format is not valid (typecheck failed)"
-                    )
-                    continue
 
-                self._data.update(data)
-                continue
+class BaseTranslator:
+    def _get_pack_content(
+        self,
+        pack: Path,
+        prefix: str = "hikka.modules.",
+    ) -> typing.Optional[dict]:
+        return self._get_pack_raw(pack.read_text(), pack.suffix, prefix)
 
-            possible_pack_path = os.path.join(
-                utils.get_base_dir(),
-                f"langpacks/{language}.json",
-            )
+    def _get_pack_raw(
+        self,
+        content: str,
+        suffix: str,
+        prefix: str = "hikka.modules.",
+    ) -> typing.Optional[dict]:
+        if suffix == ".json":
+            return json.loads(content)
 
-            if os.path.isfile(possible_pack_path):
-                self._data.update(json.loads(Path(possible_pack_path).read_text()))
-                return True
-
-        return True
+        return {
+            f"{prefix}{module}.{key}": value
+            for module, strings in yaml.safe_load(BytesIO(content.encode())).items()
+            for key, value in strings.items()
+        }
 
     def getkey(self, key: str) -> typing.Any:
         return self._data.get(key, False)
 
     def gettext(self, text: str) -> typing.Any:
         return self.getkey(text) or text
+
+
+class Translator(BaseTranslator):
+    def __init__(self, client: CustomTelegramClient, db: Database):
+        self._client = client
+        self.db = db
+
+    async def init(self) -> bool:
+        self._data = self._get_pack_content(PACKS / "en.yml")
+        if not (lang := self.db.get(__name__, "lang", False)):
+            return False
+
+        any_ = False
+        for language in lang.split():
+            if utils.check_url(language):
+                try:
+                    data = self._get_pack_raw(
+                        (await utils.run_sync(requests.get, language)).text,
+                        language.split(".")[-1],
+                    )
+                except Exception:
+                    logger.exception("Unable to decode %s", language)
+                    continue
+
+                self._data.update(data)
+                any_ = True
+                continue
+
+            for possible_path in [
+                PACKS / f"{language}.json",
+                PACKS / f"{language}.yml",
+            ]:
+                if possible_path.exists():
+                    self._data.update(self._get_pack_content(possible_path))
+                    any_ = True
+
+        return any_
+
+
+class ExternalTranslator(BaseTranslator):
+    def __init__(self):
+        self.data = {}
+        for lang in ["en", "ru", "fr", "it", "de", "uz", "tr", "es", "kk", "tt"]:
+            self.data[lang] = self._get_pack_content(PACKS / f"{lang}.yml", prefix="")
+
+    def get(self, key: str, lang: str) -> str:
+        return self.data[lang].get(key, False) or key
+
+    def getdict(self, key: str, **kwargs) -> dict:
+        return {
+            lang: fmt(self.data[lang].get(key, False) or key, kwargs)
+            for lang in self.data
+        }
 
 
 class Strings:

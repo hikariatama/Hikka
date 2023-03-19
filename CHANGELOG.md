@@ -31,6 +31,7 @@
 - Update and extend Tatar translation pack
 - Restrict setting `s` as command prefix, since it will break command `setprefix`
 - Transfer all previously non-essential modules to core ones
+- Add alternative translation mechanism using YAML
 
 ## 🌑 Hikka 1.6.1
 

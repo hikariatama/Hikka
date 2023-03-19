@@ -33,7 +33,7 @@ from hikkatl.tl.types import (
     UserFull,
 )
 
-from . import validators, version
+from . import version
 from ._reference_finder import replace_all_refs
 from .inline.types import (
     BotInlineCall,
@@ -65,7 +65,6 @@ __all__ = [
     "BotInlineMessage",
     "PointerDict",
     "PointerList",
-    "validators",
 ]
 
 logger = logging.getLogger(__name__)
@@ -953,6 +952,8 @@ class ConfigValue:
 
             if self.validator is not None:
                 if value is not None:
+                    from . import validators
+
                     try:
                         value = self.validator.validate(value)
                     except validators.ValidationError as e:
