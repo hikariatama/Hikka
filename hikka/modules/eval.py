@@ -156,7 +156,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Error:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Error:</b>\n{}"
         ),
         "compiling": (
             "<emoji document_id=5325787248363314644>🫥</emoji> <b>Compiling code...</b>"
@@ -177,7 +177,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Ошибка:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Ошибка:</b>\n{}"
         ),
         "_cls_doc": "Выполняет код на различных языках программирования",
         "compiling": (
@@ -199,7 +199,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Erreur:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Erreur:</b>\n{}"
         ),
         "_cls_doc": "Exécute du code sur différents langages de programmation",
         "compiling": (
@@ -222,7 +222,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Codice:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Errore:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Errore:</b>\n{}"
         ),
         "_cls_doc": "Esegue il codice su diversi linguaggi di programmazione",
         "compiling": (
@@ -245,7 +245,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Code:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Fehler:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Fehler:</b>\n{}"
         ),
         "_cls_doc": "Führt Code auf verschiedenen Programmiersprachen aus",
         "compiling": (
@@ -268,7 +268,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Hata:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Hata:</b>\n{}"
         ),
         "_cls_doc": "Çeşitli programlama dillerinde kodu çalıştırır",
         "compiling": (
@@ -290,7 +290,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Kod:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Xato:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Xato:</b>\n{}"
         ),
         "_cls_doc": "Dasturlash tillarida kodni bajaradi",
         "compiling": (
@@ -311,7 +311,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Código:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Error:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Error:</b>\n{}"
         ),
         "_cls_doc": "Ejecuta código en diferentes lenguajes de programación",
         "compiling": (
@@ -334,7 +334,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Қате:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Қате:</b>\n{}"
         ),
         "_cls_doc": "Басқа тілдерде кодты орындайды",
         "compiling": (
@@ -357,7 +357,7 @@ class Evaluator(loader.Module):
         "err": (
             "<emoji document_id={}>💻</emoji><b>"
             " Код:</b>\n<code>{}</code>\n\n<emoji"
-            " document_id=5312526098750252863>🚫</emoji> <b>Хата:</b>\n{}"
+            " document_id=5210952531676504517>🚫</emoji> <b>Хата:</b>\n{}"
         ),
         "_cls_doc": "Башка тилләрдә кодты үзгәртә алмый",
         "compiling": (

@@ -22,12 +22,12 @@ class InlineStuffMod(loader.Module):
     strings = {
         "name": "InlineStuff",
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specified bot"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Specified bot"
             " username is invalid. It must end with</b> <code>bot</code> <b>and contain"
             " at least 4 symbols</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>This username is"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>This username is"
             " already occupied</b>"
         ),
         "bot_updated": (
@@ -44,12 +44,12 @@ class InlineStuffMod(loader.Module):
 
     strings_ru = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неправильный ник"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Неправильный ник"
             " бота. Он должен заканчиваться на</b> <code>bot</code> <b>и быть не короче"
             " чем 5 символов</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Такой ник бота уже"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Такой ник бота уже"
             " занят</b>"
         ),
         "bot_updated": (
@@ -66,12 +66,12 @@ class InlineStuffMod(loader.Module):
 
     strings_fr = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Nom d'utilisateur du"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Nom d'utilisateur du"
             " bot incorrect. Il doit être de plus de 5 caractères et se terminer par"
             " </b> <code>bot</code>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Nom d'utilisateur du"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Nom d'utilisateur du"
             " bot déjà occupé</b>"
         ),
         "bot_updated": (
@@ -88,12 +88,12 @@ class InlineStuffMod(loader.Module):
 
     strings_it = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il nome utente del"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Il nome utente del"
             " bot non è valido. Deve terminare con</b> <code>bot</code> <b>e contenere"
             " almeno 4 caratteri</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Questo nome utente è"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Questo nome utente è"
             " già occupato</b>"
         ),
         "bot_updated": (
@@ -110,12 +110,12 @@ class InlineStuffMod(loader.Module):
 
     strings_de = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Der angegebene"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Der angegebene"
             " Benutzername ist ungültig. Er muss mit</b> <code>bot</code> <b>enden und"
             " mindestens 4 Zeichen lang sein</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Dieser Benutzername"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Dieser Benutzername"
             " ist bereits vergeben</b>"
         ),
         "bot_updated": (
@@ -132,12 +132,12 @@ class InlineStuffMod(loader.Module):
 
     strings_tr = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Belirtilen bot"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Belirtilen bot"
             " kullanıcı adı geçersiz. Botun adı</b> <code>bot</code> <b>ile bitmeli ve"
             " en az 4 karakter içermelidir</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu kullanıcı adı"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bu kullanıcı adı"
             " zaten alınmış</b>"
         ),
         "bot_updated": (
@@ -154,12 +154,12 @@ class InlineStuffMod(loader.Module):
 
     strings_uz = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bot foydalanuvchi"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bot foydalanuvchi"
             " nomi noto'g'ri. U</b> <code>bot</code> <b>bilan tugashi kerak va kamida 4"
             " belgidan iborat bo'lishi kerak</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ushbu foydalanuvchi"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Ushbu foydalanuvchi"
             " nomi allaqachon band</b>"
         ),
         "bot_updated": (
@@ -177,12 +177,12 @@ class InlineStuffMod(loader.Module):
 
     strings_es = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El nombre de usuario"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>El nombre de usuario"
             " del bot no es válido. Debe terminar con</b> <code>bot</code> <b>y"
             " tener al menos 4 caracteres</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El nombre de usuario"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>El nombre de usuario"
             " ya está en uso</b>"
         ),
         "bot_updated": (
@@ -200,12 +200,12 @@ class InlineStuffMod(loader.Module):
     strings_kk = {
         "name": "InlineStuff",
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Көрсетілген бот"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Көрсетілген бот"
             " аты жарамсыз. Оның соңында</b> <code>bot</code> <b>қосып, 4 символдан"
             " кем болмауы керек</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бұл ат бос емес</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Бұл ат бос емес</b>"
         ),
         "bot_updated": (
             "<emoji document_id=6318792204118656433>🎉</emoji> <b>Баптаулар сақталды."
@@ -221,12 +221,12 @@ class InlineStuffMod(loader.Module):
 
     strings_tt = {
         "bot_username_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ботын нике дөрес түгел"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Ботын нике дөрес түгел"
             " булуы керек. Оны <code>bot</code> <b>белән ачып, 5 символдан аз булмаска"
             " тиеш</b>"
         ),
         "bot_username_occupied": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Бу ник боты бар</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Бу ник боты бар</b>"
         ),
         "bot_updated": (
             "<emoji document_id=6318792204118656433>🎉</emoji> <b>Көйләүләр сакланды."

@@ -78,7 +78,7 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;time in seconds&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Invalid arguments</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Invalid arguments</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>API Flood Protection"
@@ -112,7 +112,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Local URL",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web debugger is"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Web debugger is"
             " disabled, url is not available</b>"
         ),
     }
@@ -130,7 +130,7 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;время в секундах&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неверные аргументы</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Неверные аргументы</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>Защита API отключена"
@@ -161,7 +161,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 Проксированная ссылка",
         "local_url": "🏠 Локальная ссылка",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Веб-отладчик отключен,"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Веб-отладчик отключен,"
             " ссылка недоступна</b>"
         ),
     }
@@ -181,7 +181,7 @@ class APIRatelimiterMod(loader.Module):
             " secondes&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Arguments"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Arguments"
             " invalides</b>"
         ),
         "suspended_for": (
@@ -220,7 +220,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 Lien de proxification",
         "local_url": "🏠 Lien local",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le débogueur Web est"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Le débogueur Web est"
             " désactivé, le lien n'est pas disponible</b>"
         ),
     }
@@ -239,7 +239,7 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;tempo in secondi&gt;"
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Argomenti non"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Argomenti non"
             " validi</b>"
         ),
         "suspended_for": (
@@ -281,7 +281,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 URL del proxy",
         "local_url": "🏠 URL locale",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il debugger web è"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Il debugger web è"
             " disabilitato, l'URL non è disponibile</b>"
         ),
     }
@@ -300,7 +300,7 @@ class APIRatelimiterMod(loader.Module):
             " &lt;Zeit in Sekunden&gt; zu planen."
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ungültige"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Ungültige"
             " Argumente</b>"
         ),
         "suspended_for": (
@@ -335,7 +335,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Lokale URL",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Web-Debugger"
             " deaktiviert, Link nicht verfügbar</b>"
         ),
     }
@@ -353,7 +353,7 @@ class APIRatelimiterMod(loader.Module):
             " gibi kaynak tüketen bir işlemi planladığınızda yeniden deneyin."
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Geçersiz"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Geçersiz"
             " argümanlar</b>"
         ),
         "suspended_for": (
@@ -389,7 +389,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Lokal URL",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger devre"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Web-Debugger devre"
             " dışı, bağlantı kullanılamaz</b>"
         ),
     }
@@ -406,7 +406,7 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;sekund&gt; dan foydalaning."
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Noto'g'ri argument</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Noto'g'ri argument</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>API Flood"
@@ -437,7 +437,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 Proxied URL",
         "local_url": "🏠 Lokal URL",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Web-Debugger"
             " o'chirilgan, ulanish mavjud emas</b>"
         ),
     }
@@ -453,7 +453,7 @@ class APIRatelimiterMod(loader.Module):
             " use <code>{prefix}suspend_api_protect</code> para desbloquear."
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Argumentos"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Argumentos"
             " inválidos</b>"
         ),
         "suspended_for": (
@@ -491,7 +491,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 URL de proxy",
         "local_url": "🏠 URL local",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Web-Debugger"
             " desactivado, conexión no disponible</b>"
         ),
     }
@@ -507,7 +507,7 @@ class APIRatelimiterMod(loader.Module):
             " <code>{prefix}suspend_api_protect</code> &lt;секунд&gt; пайдаланыңыз."
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Жарамсыз"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Жарамсыз"
             " аргументтер</b>"
         ),
         "suspended_for": (
@@ -537,7 +537,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "🌐 Прокси URL",
         "local_url": "🏠 Жергілікті URL",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Web-Debugger"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Web-Debugger"
             " өшірілген, байланыс жоқ</b>"
         ),
     }
@@ -554,7 +554,7 @@ class APIRatelimiterMod(loader.Module):
             " кулланыгыз!"
         ),
         "args_invalid": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Хаталы аргументлар</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Хаталы аргументлар</b>"
         ),
         "suspended_for": (
             "<emoji document_id=5458450833857322148>👌</emoji> <b>API тышкылауы"
@@ -591,7 +591,7 @@ class APIRatelimiterMod(loader.Module):
         "proxied_url": "⚜️ Проксиленнә URL",
         "local_url": "🏠 Локальнә URL",
         "debugger_disabled": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Веб төзәтүче инвалид,"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Веб төзәтүче инвалид,"
             " сылтама мөмкин түгел</b>"
         ),
     }
@@ -783,6 +783,10 @@ class APIRatelimiterMod(loader.Module):
     )
     async def debugger(self, message: Message):
         """Show the Werkzeug PIN"""
+        if not self._debugger:
+            await utils.answer(message, self.strings("debugger_disabled"))
+            return
+
         await self.inline.form(
             message=message,
             text=self.strings("web_pin"),

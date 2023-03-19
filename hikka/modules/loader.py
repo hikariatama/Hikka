@@ -65,22 +65,22 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "URL to a module repo",
         "avail_header": "🎢 <b>Modules from repo</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module not available"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Module not available"
             " in repo.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>File not found</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>File not found</b>"
         ),
         "provide_module": (
             "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Provide a module to"
             " load</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Invalid Unicode"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Invalid Unicode"
             " formatting in module</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Loading failed. See"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Loading failed. See"
             " logs for details</b>"
         ),
         "loaded": (
@@ -90,11 +90,11 @@ class LoaderMod(loader.Module):
         "no_class": "<b>What class needs to be unloaded?</b>",
         "unloaded": "{} <b>Module {} unloaded.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module not"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Module not"
             " unloaded.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Requirements"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Requirements"
             " installation failed</b>"
         ),
         "requirements_failed_termux": (
@@ -211,7 +211,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>is already added</b>"
         ),
         "repo_added": (
@@ -219,11 +219,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>added</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You need to specify"
             " repo to add</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>is not added</b>"
         ),
         "repo_deleted": (
@@ -237,22 +237,22 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Дополнительные репозитории",
         "avail_header": "🎢 <b>Официальные модули из репозитория</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль недоступен в"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модуль недоступен в"
             " репозитории.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Файл не найден</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Файл не найден</b>"
         ),
         "provide_module": (
             "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Укажи модуль для"
             " загрузки</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неверная кодировка"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Неверная кодировка"
             " модуля</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Загрузка не"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Загрузка не"
             " увенчалась успехом. Смотри логи.</b>"
         ),
         "loaded": (
@@ -262,11 +262,11 @@ class LoaderMod(loader.Module):
         "no_class": "<b>А что выгружать то?</b>",
         "unloaded": "{} <b>Модуль {} выгружен.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль не"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модуль не"
             " выгружен.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ошибка установки"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Ошибка установки"
             " зависимостей</b>"
         ),
         "requirements_failed_termux": (
@@ -393,7 +393,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторий</b>"
             " <code>{}</code> <b>уже добавлен</b>"
         ),
         "repo_added": (
@@ -401,11 +401,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>добавлен</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Вы должны указать"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Вы должны указать"
             " репозиторий для добавления</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторий</b>"
             " <code>{}</code> <b>не добавлен</b>"
         ),
         "repo_deleted": (
@@ -419,11 +419,11 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Dépôts supplémentaires",
         "avail_header": "🎢 <b>Modules officiels du dépôt</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module non disponible"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Module non disponible"
             " dans le dépôt.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Fichier"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Fichier"
             " introuvable</b>"
         ),
         "provide_module": (
@@ -431,11 +431,11 @@ class LoaderMod(loader.Module):
             " charger</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Encodage de module"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Encodage de module"
             " invalide</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le chargement a"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Le chargement a"
             " échoué. Vérifiez les journaux.</b>"
         ),
         "loaded": (
@@ -445,11 +445,11 @@ class LoaderMod(loader.Module):
         "no_class": "<b>Qu'est-ce qu'il faut décharger?</b>",
         "unloaded": "{} <b>Module {} déchargé.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le module n'a pas"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Le module n'a pas"
             " été déchargé.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Échec de"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Échec de"
             " l'installation des dépendances</b>"
         ),
         "requirements_failed_termux": (
@@ -585,7 +585,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le dépôt</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Le dépôt</b>"
             " <code>{}</code> <b>est déjà ajouté</b>"
         ),
         "repo_added": (
@@ -593,11 +593,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>ajouté</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez spécifier"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Vous devez spécifier"
             " le dépôt à ajouter</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le dépôt</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Le dépôt</b>"
             " <code>{}</code> <b>n'est pas ajouté</b>"
         ),
         "repo_deleted": (
@@ -611,22 +611,22 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Repository aggiuntivi",
         "avail_header": "🎢 <b>Moduli ufficiali dal repository</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il modulo non è"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Il modulo non è"
             " disponibile nel repository.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>File non trovato</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>File non trovato</b>"
         ),
         "provide_module": (
             "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Specifica il modulo"
             " da caricare</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Codifica modulo"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Codifica modulo"
             " errata</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Caricamento non"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Caricamento non"
             " riuscito. Vedi i log.</b>"
         ),
         "loaded": (
@@ -636,11 +636,11 @@ class LoaderMod(loader.Module):
         "no_class": "<b>Cosa devo scaricare?</b>",
         "unloaded": "{} <b>Modulo {} scaricato.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modulo non"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modulo non"
             " scaricato.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Errore di"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Errore di"
             " installazione dei requisiti</b>"
         ),
         "requirements_failed_termux": (
@@ -776,7 +776,7 @@ class LoaderMod(loader.Module):
             " modulo</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Il repo</b>"
             " <code>{}</code> <b>è già stato aggiunto</b>"
         ),
         "repo_added": (
@@ -784,11 +784,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>è stato aggiunto</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Devi specificare il"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Devi specificare il"
             " repo da aggiungere</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Il repo</b>"
             " <code>{}</code> <b>non è stato aggiunto</b>"
         ),
         "repo_deleted": (
@@ -802,11 +802,11 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Zusätzliche Repositorys",
         "avail_header": "🎢 <b>Offizielle Moduleaus Repository</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modul nicht verfügbar"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modul nicht verfügbar"
             " in Repositorys.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji><b>Datei nicht"
+            "<emoji document_id=5210952531676504517>🚫</emoji><b>Datei nicht"
             " gefunden</b>"
         ),
         "provide_module": (
@@ -814,11 +814,11 @@ class LoaderMod(loader.Module):
             " ladendes Modul an</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ungültige Codierung"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Ungültige Codierung"
             "Modul</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lädt nicht"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Lädt nicht"
             " war erfolgreich. Sehen Sie sich die Protokolle an.</b>"
         ),
         "loaded": (
@@ -828,11 +828,11 @@ class LoaderMod(loader.Module):
         "no_class": "<b>Was soll dann hochgeladen werden?</b>",
         "unloaded": "{} <b>{} Modul entladen.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modul nicht"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modul nicht"
             " entladen.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Installation"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Installation"
             " fehlgeschlagen Abhängigkeiten</b>"
         ),
         "requirements_failed_termux": (
@@ -968,7 +968,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>wurde bereits hinzugefügt</b>"
         ),
         "repo_added": (
@@ -976,11 +976,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>wurde hinzugefügt</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Du musst ein Repo"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Du musst ein Repo"
             " angeben um es hinzuzufügen</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>wurde nicht hinzugefügt</b>"
         ),
         "repo_deleted": (
@@ -1004,7 +1004,7 @@ class LoaderMod(loader.Module):
             " sağlayın</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modülde geçersiz"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modülde geçersiz"
             " Unicode biçimlendirmesi</b>"
         ),
         "load_failed": (
@@ -1022,7 +1022,7 @@ class LoaderMod(loader.Module):
             " kaldırılamadı.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Gereksinimlerin"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Gereksinimlerin"
             " yüklemesi başarısız oldu</b>"
         ),
         "requirements_failed_termux": (
@@ -1144,7 +1144,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>zaten eklenmiş</b>"
         ),
         "repo_added": (
@@ -1152,11 +1152,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>eklendi</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Eklemek için repo"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Eklemek için repo"
             " belirtmeniz gerekli</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>eklenmemiş</b>"
         ),
         "repo_deleted": (
@@ -1170,22 +1170,22 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Qo'shimcha omborlar",
         "avail_header": "🎢 <b>Rasmiy modullarombordan</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>modul mavjud emas"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>modul mavjud emas"
             " omborlar</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Fayl topilmadi</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Fayl topilmadi</b>"
         ),
         "provide_module": (
             "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Yuklanadigan modulni"
             " belgilang</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>yaroqsiz kodlash"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>yaroqsiz kodlash"
             "modul</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Yuklanmayapti"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Yuklanmayapti"
             " Muvaffaqiyatli. Jurnallarga qarang.</b>"
         ),
         "loaded": (
@@ -1195,11 +1195,11 @@ class LoaderMod(loader.Module):
         "no_class": "<b>Unda nima yuklash kerak?</b>",
         "unloaded": "{} <b>{} moduli tushirildi.</b>",
         "not_loaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modul emas"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modul emas"
             " tushirildi.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>O'rnatish amalga"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>O'rnatish amalga"
             " oshmadi bog'liqliklar</b>"
         ),
         "requirements_failed_termux": (
@@ -1332,7 +1332,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>aldaqqa qo'shilgan</b>"
         ),
         "repo_added": (
@@ -1340,11 +1340,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>qo'shildi</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo qo'shish uchun"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo qo'shish uchun"
             " sizga kerak</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Repo</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Repo</b>"
             " <code>{}</code> <b>qo'shilmagan</b>"
         ),
         "repo_deleted": (
@@ -1357,11 +1357,11 @@ class LoaderMod(loader.Module):
         "repo_config_doc": "Enlace al repositorio de módulos",
         "avail_header": "🎢 <b>Módulos del repositorio</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontró el"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>No se encontró el"
             " módulo en el repositorio.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se encontró el"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>No se encontró el"
             " archivo</b>"
         ),
         "provide_module": (
@@ -1369,11 +1369,11 @@ class LoaderMod(loader.Module):
             " para cargarlo</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Formato de módulo"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Formato de módulo"
             " unicode inválido</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Falló la carga. Revise"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Falló la carga. Revise"
             " el registro para obtener más detalles.</b>"
         ),
         "loaded": (
@@ -1383,15 +1383,15 @@ class LoaderMod(loader.Module):
         "no_class": "<b>¿Qué clase desea deshabilitar?</b>",
         "unloaded": "{} <b>Módulo {} descargado.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El módulo no se"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>El módulo no se"
             " descargó.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Falló la instalación"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Falló la instalación"
             " de requisitos</b>"
         ),
         "requirements_failed_termux": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Falló la instalación"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Falló la instalación"
             " de requisitos</b>\n<b>El motivo más común es que Termux no esté"
             " instalado, que es el que soporta la mayoría de las bibliotecas. No lo"
             " informe como un error, no se puede resolver.</b>"
@@ -1513,7 +1513,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El repositorio</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>El repositorio</b>"
             " <code>{}</code> <b>ya ha sido añadido</b>"
         ),
         "repo_added": (
@@ -1521,11 +1521,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>ha sido añadido</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Necesitas especificar"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Necesitas especificar"
             " el repositorio a añadir</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El repositorio</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>El repositorio</b>"
             " <code>{}</code> <b>no ha sido añadido</b>"
         ),
         "repo_deleted": (
@@ -1539,22 +1539,22 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Қосымша қоры",
         "avail_header": "🎢 <b>Репозиториядан қолданылатын официалды модульдер</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторияда модуль"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторияда модуль"
             " жоқ.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Файл табылмады</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Файл табылмады</b>"
         ),
         "provide_module": (
             "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Жүктелетін модульді"
             " көрсет</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модульдің"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модульдің"
             " кодировкасы дұрыс емес</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Жүктелу сәтсіз"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Жүктелу сәтсіз"
             " аяқталды. Журналдарды қараңыз.</b>"
         ),
         "loaded": (
@@ -1563,11 +1563,11 @@ class LoaderMod(loader.Module):
         ),
         "unloaded": "{} <b>Модуль {} аяқталды.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль аяқталған"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модуль аяқталған"
             " жоқ.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Талаптарды орнату"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Талаптарды орнату"
             " сәтсіз аяқталды</b>"
         ),
         "requirements_failed_termux": (
@@ -1699,7 +1699,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b>...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторий</b>"
             " <code>{}</code> <b>іске қосылған</b>"
         ),
         "repo_added": (
@@ -1707,11 +1707,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>қосылды</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Қосу үшін repo"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Қосу үшін repo"
             " белгілеуіңіз керек</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторий</b>"
             " <code>{}</code> <b>қосылмаған</b>"
         ),
         "repo_deleted": (
@@ -1725,22 +1725,22 @@ class LoaderMod(loader.Module):
         "add_repo_config_doc": "Өстәмә репозитори",
         "avail_header": "🎢 <b>Репозиториядан булган модульләр</b>",
         "no_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторияда бу"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторияда бу"
             " модуль табылмады.</b>"
         ),
         "no_file": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Файл табылмады.</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Файл табылмады.</b>"
         ),
         "provide_module": (
             "<emoji document_id=5312383351217201533>⚠️</emoji> <b>Күчерер өчен модульне"
             " күрсәтергә кирәк.</b>"
         ),
         "bad_unicode": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модульне күчерүдә"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модульне күчерүдә"
             " хата бар.</b>"
         ),
         "load_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модульне күчерү"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модульне күчерү"
             " хата бар. Хаталарны карагыз.</b>"
         ),
         "loaded": (
@@ -1750,11 +1750,11 @@ class LoaderMod(loader.Module):
         "no_class": "<b>Чыгарырга модуль табылмады.</b>",
         "unloaded": "{} <b>Модуль {} чыгарылды.</b>",
         "not_unloaded": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модуль"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модуль"
             " чыгарылмады.</b>"
         ),
         "requirements_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Таләпләрне күчерү"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Таләпләрне күчерү"
             " хата бар.</b>"
         ),
         "requirements_failed_termux": (
@@ -1881,7 +1881,7 @@ class LoaderMod(loader.Module):
             "</b> <code>{}</code><b> өстәү...</b>"
         ),
         "repo_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторий</b>"
             " <code>{}</code> <b>артык добавлен</b>"
         ),
         "repo_added": (
@@ -1889,11 +1889,11 @@ class LoaderMod(loader.Module):
             " <code>{}</code> <b>добавлен</b>"
         ),
         "no_repo": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторий"
             " добавланы тапкыр</b>"
         ),
         "repo_not_exists": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Репозиторий</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Репозиторий</b>"
             " <code>{}</code> <b>не добавлен</b>"
         ),
         "repo_deleted": (

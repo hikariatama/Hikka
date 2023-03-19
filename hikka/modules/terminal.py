@@ -298,7 +298,7 @@ class RawMessageEditor(SudoMessageEditor):
 class TerminalMod(loader.Module):
     """Runs commands"""
 
-    e = "<emoji document_id=5312526098750252863>🚫</emoji>"
+    e = "<emoji document_id=5210952531676504517>🚫</emoji>"
     c = "<emoji document_id=5472111548572900003>⌨️</emoji>"
     s = "<emoji document_id=5472308992514464048>🔐</emoji>"
     d = "<emoji document_id=5314250708508220914>✅</emoji>"

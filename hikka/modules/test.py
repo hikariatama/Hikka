@@ -37,7 +37,7 @@ class TestMod(loader.Module):
     strings = {
         "name": "Tester",
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Please specify"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Please specify"
             " verbosity as an integer or string</b>"
         ),
         "no_logs": (
@@ -51,7 +51,7 @@ class TestMod(loader.Module):
             " {}.{}.{}</b>{}"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Invalid time to"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Invalid time to"
             " suspend</b>"
         ),
         "suspended": (
@@ -80,7 +80,7 @@ class TestMod(loader.Module):
         ),
         "choose_loglevel": "💁‍♂️ <b>Choose log level</b>",
         "bad_module": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Module not found</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Module not found</b>"
         ),
         "debugging_enabled": (
             "<emoji document_id=5332533929020761310>✅</emoji> <b>Debugging mode enabled"
@@ -98,7 +98,7 @@ class TestMod(loader.Module):
 
     strings_ru = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Укажи уровень логов"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Укажи уровень логов"
             " числом или строкой</b>"
         ),
         "no_logs": (
@@ -121,7 +121,7 @@ class TestMod(loader.Module):
             " выключен</b>"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неверное время"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Неверное время"
             " заморозки</b>"
         ),
         "suspended": (
@@ -166,7 +166,7 @@ class TestMod(loader.Module):
 
     strings_fr = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Spécifiez le niveau de"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Spécifiez le niveau de"
             " journalisation en nombre ou en chaîne</b>"
         ),
         "no_logs": (
@@ -189,7 +189,7 @@ class TestMod(loader.Module):
             " désactivé</b>"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Temps de suspension"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Temps de suspension"
             " invalide</b>"
         ),
         "suspended": (
@@ -236,7 +236,7 @@ class TestMod(loader.Module):
 
     strings_it = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specifica il livello"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Specifica il livello"
             " dei log</b>"
         ),
         "no_logs": (
@@ -259,7 +259,7 @@ class TestMod(loader.Module):
             " disabilitata</b>"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Tempo di sospensione"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Tempo di sospensione"
             " non valido</b>"
         ),
         "suspended": (
@@ -315,7 +315,7 @@ class TestMod(loader.Module):
             " <b>Version: {}.{}.{}</b>{}"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Falsche Zeit"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Falsche Zeit"
             "einfrieren</b>"
         ),
         "suspended": (
@@ -360,7 +360,7 @@ class TestMod(loader.Module):
 
     strings_uz = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Log darajasini raqam"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Log darajasini raqam"
             " yoki satr sifatida ko'rsating</b>"
         ),
         "no_logs": (
@@ -373,7 +373,7 @@ class TestMod(loader.Module):
             " <b>Versiyasi: {}.{}.{}</b>{}"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Noto'g'ri vaqt"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Noto'g'ri vaqt"
             "qo'ymoq</b>"
         ),
         "suspended": (
@@ -416,7 +416,7 @@ class TestMod(loader.Module):
 
     strings_tr = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lütfen kayıt"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Lütfen kayıt"
             " seviyesini sayı veya metin olarak belirtin</b>"
         ),
         "no_logs": (
@@ -480,7 +480,7 @@ class TestMod(loader.Module):
             " <b>Versión: {}.{}.{}</b>{}"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Has introducido un"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Has introducido un"
             " tiempo no válido</b>"
         ),
         "suspended": (
@@ -525,7 +525,7 @@ class TestMod(loader.Module):
 
     strings_kk = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Лог түрін сан немесе"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Лог түрін сан немесе"
             " жолмен енгізіңіз</b>"
         ),
         "no_logs": (
@@ -548,7 +548,7 @@ class TestMod(loader.Module):
             " өшірілді</b>"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Жарамсыз уақыт</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Жарамсыз уақыт</b>"
         ),
         "suspended": (
             "<emoji document_id=5452023368054216810>🥶</emoji> <b>Бот"
@@ -591,7 +591,7 @@ class TestMod(loader.Module):
 
     strings_tt = {
         "set_loglevel": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Йөрәкләүләр нивесе"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Йөрәкләүләр нивесе"
             " тәрәзәсе</b>"
         ),
         "no_logs": (
@@ -613,7 +613,7 @@ class TestMod(loader.Module):
             " төзәтелмәгән</b>"
         ),
         "suspend_invalid_time": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Дөрес вакыт"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Дөрес вакыт"
             " табылмады</b>"
         ),
         "suspended": (

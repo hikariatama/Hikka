@@ -39,7 +39,7 @@ class Translations(loader.Module):
             " saved!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Incorrect language"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Incorrect language"
             " specified</b>"
         ),
         "lang_removed": (
@@ -47,11 +47,11 @@ class Translations(loader.Module):
             " to default ones</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Invalid pack format"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Invalid pack format"
             " in url</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You need to specify"
             " valid url containing a langpack</b>"
         ),
         "too_long": (
@@ -62,7 +62,7 @@ class Translations(loader.Module):
         "opening_gallery": " <b>Opening gallery...</b>",
         "opening_list": " <b>Opening list...</b>",
         "inline403": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You can't send inline"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You can't send inline"
             " units in this chat</b>"
         ),
         "invoke_failed": "<b>🚫 Unit invoke failed! More info in logs</b>",
@@ -106,7 +106,7 @@ class Translations(loader.Module):
             " сохранён!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Указан неверный"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Указан неверный"
             " язык</b>"
         ),
         "lang_removed": (
@@ -114,11 +114,11 @@ class Translations(loader.Module):
             " на стандартные</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Неверный формат"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Неверный формат"
             " пакета переводов в ссылке</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Вы должны указать"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Вы должны указать"
             " ссылку, содержащую пакет переводов</b>"
         ),
         "too_long": (
@@ -129,7 +129,7 @@ class Translations(loader.Module):
         "opening_gallery": " <b>Открываю галерею...</b>",
         "opening_list": " <b>Открываю список...</b>",
         "inline403": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Вы не можете"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Вы не можете"
             " отправлять встроенные элементы в этом чате</b>"
         ),
         "invoke_failed": "<b>🚫 Вызов модуля не удался! Подробнее в логах</b>",
@@ -172,18 +172,18 @@ class Translations(loader.Module):
             " enregistré!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Langue incorrecte</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Langue incorrecte</b>"
         ),
         "lang_removed": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Traductions"
             " réinitialisées à celles par défaut</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Format de paquet de"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Format de paquet de"
             " traduction invalide dans le lien</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez fournir un"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Vous devez fournir un"
             " lien contenant un paquet de traduction</b>"
         ),
         "too_long": (
@@ -194,7 +194,7 @@ class Translations(loader.Module):
         "opening_gallery": " <b>Ouverture de la galerie...</b>",
         "opening_list": " <b>Ouverture de la liste...</b>",
         "inline403": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous ne pouvez pas"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Vous ne pouvez pas"
             " envoyer d'éléments intégrés dans ce chat</b>"
         ),
         "invoke_failed": (
@@ -242,7 +242,7 @@ class Translations(loader.Module):
             " traduzione salvato!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lingua specificata"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Lingua specificata"
             " non corretta</b>"
         ),
         "lang_removed": (
@@ -250,11 +250,11 @@ class Translations(loader.Module):
             " ripristinate</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Formato pacchetto di"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Formato pacchetto di"
             " traduzione specificato errato</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Deve essere"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Deve essere"
             " specificata un url contenente il pacchetto di traduzione</b>"
         ),
         "too_long": (
@@ -265,7 +265,7 @@ class Translations(loader.Module):
         "opening_gallery": " <b>Apertura galleria...</b>",
         "opening_list": " <b>Apertura lista...</b>",
         "inline403": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non puoi"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Non puoi"
             " inviare inline in questo chat</b>"
         ),
         "invoke_failed": "<b>🚫 Invocazione modulo fallita! controlla i log</b>",
@@ -309,7 +309,7 @@ class Translations(loader.Module):
             " Paket gespeichert!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Falsche Sprache"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Falsche Sprache"
             " angegeben</b>"
         ),
         "lang_removed": (
@@ -317,11 +317,11 @@ class Translations(loader.Module):
             " auf Standard zurückgesetzt</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ungültiges"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Ungültiges"
             " Übersetzungs Paket in der URL</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sie müssen eine"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Sie müssen eine"
             " gültige URL angeben, die ein Übersetzungs Paket enthält</b>"
         ),
         "too_long": (
@@ -332,11 +332,11 @@ class Translations(loader.Module):
         "opening_gallery": " <b>Galerie wird geöffnet...</b>",
         "opening_list": " <b>Liste wird geöffnet...</b>",
         "inline403": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sie können"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Sie können"
             " Inline-Einheiten in diesem Chat nicht senden</b>"
         ),
         "invoke_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modulaufruf"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modulaufruf"
             " fehlgeschlagen! Weitere Informationen in den Protokollen</b>"
         ),
         "show_inline_cmds": "📄 Zeige alle verfügbaren Inline-Befehle",
@@ -381,7 +381,7 @@ class Translations(loader.Module):
             " kaydedildi!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Yanlış dil"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Yanlış dil"
             " belirtildi</b>"
         ),
         "lang_removed": (
@@ -389,11 +389,11 @@ class Translations(loader.Module):
             " hale getirildi</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>URL'deki çeviri"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>URL'deki çeviri"
             " paketi geçersiz</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Geçerli bir dil paketi"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Geçerli bir dil paketi"
             " içeren URL belirtmelisiniz</b>"
         ),
         "too_long": (
@@ -404,11 +404,11 @@ class Translations(loader.Module):
         "opening_gallery": " <b>Galeri açılıyor...</b>",
         "opening_list": " <b>Liste açılıyor...</b>",
         "inline403": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bu sohbete satır içi"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bu sohbete satır içi"
             " birimler gönderemezsin</b>"
         ),
         "invoke_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modül çağrısı"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modül çağrısı"
             " başarısız! Kayıtlardan daha fazla bilgiye erişebilirsin</b>"
         ),
         "show_inline_cmds": "📄 Tüm kullanılabilir satır içi komutlarını göster",
@@ -451,7 +451,7 @@ class Translations(loader.Module):
             " saqlandi!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Noto'g'ri til"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Noto'g'ri til"
             " belgilandi</b>"
         ),
         "lang_removed": (
@@ -459,11 +459,11 @@ class Translations(loader.Module):
             " standart holatga qaytarildi</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>URL'dagi tarjima"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>URL'dagi tarjima"
             " paketi noto'g'ri</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Siz noto'g'ri URL"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Siz noto'g'ri URL"
             " belirtdingiz</b>"
         ),
         "too_long": (
@@ -477,7 +477,7 @@ class Translations(loader.Module):
             "🚫 <b>Siz bu guruhda inline obyektlarni yuborishingiz mumkin emas</b>"
         ),
         "invoke_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Modulni chaqirish"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modulni chaqirish"
             " muvaffaqiyatsiz! Batafsil ma'lumotlar jurnallarda</b>"
         ),
         "show_inline_cmds": "📄 Barcha mavjud inline buyruqlarini ko'rsatish",
@@ -521,7 +521,7 @@ class Translations(loader.Module):
             " traducción guardado!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Idioma"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Idioma"
             " incorrecto seleccionado</b>"
         ),
         "lang_removed": (
@@ -529,11 +529,11 @@ class Translations(loader.Module):
             " traducción a los valores predeterminados</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Paquete de"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Paquete de"
             " traducción seleccionado incorrecto</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>URL incorrecta"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>URL incorrecta"
             " seleccionada</b>"
         ),
         "too_long": (
@@ -547,7 +547,7 @@ class Translations(loader.Module):
             "🚫 <b>No se permiten elementos de interfaz de usuario en este grupo</b>"
         ),
         "invoke_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>¡Error al invocar la"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>¡Error al invocar la"
             " unidad! Consulte el registro para obtener más detalles</b>"
         ),
         "show_inline_cmds": "📄 Mostrar todos los comandos disponibles",
@@ -591,7 +591,7 @@ class Translations(loader.Module):
             " сақталды!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Жарамсыз тіл"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Жарамсыз тіл"
             " белгіленді</b>"
         ),
         "lang_removed": (
@@ -599,11 +599,11 @@ class Translations(loader.Module):
             " өшірілді</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Аударма пакеті"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Аударма пакеті"
             " сілтемесінің пішімі жарамсыз</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сіз аударма пакеті"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Сіз аударма пакеті"
             " бар сілтемені көрсетуіңіз керек</b>"
         ),
         "too_long": (
@@ -617,7 +617,7 @@ class Translations(loader.Module):
             "🚫 <b>Сіз бұл сөйлесуде кірістірілген элементтерді жібере алмайсыз</b>"
         ),
         "invoke_failed": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Модульді іске қосу"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Модульді іске қосу"
             " сәтсіз аяқталды! Толығырақ құжаттың журналында</b>"
         ),
         "show_inline_cmds": "📄 Барлық қол жетімді кірістірілген командаларды көрсету",
@@ -660,7 +660,7 @@ class Translations(loader.Module):
             " сакланган!</b>"
         ),
         "incorrect_language": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Дөрес булмаган тел"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Дөрес булмаган тел"
             " күрсәтелгән</b>"
         ),
         "lang_removed": (
@@ -668,11 +668,11 @@ class Translations(loader.Module):
             " ташланган</b>"
         ),
         "check_pack": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сылтамада тәрҗемә"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Сылтамада тәрҗемә"
             " пакетларының дөрес булмаган форматы</b>"
         ),
         "check_url": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сез тәрҗемә пакеты"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Сез тәрҗемә пакеты"
             " булган сылтаманы кертергә тиеш/b>"
         ),
         "too_long": (
@@ -683,7 +683,7 @@ class Translations(loader.Module):
         "opening_gallery": " <b>Мин галереяны ачам...</b>",
         "opening_list": " <b>Исемлекне ачу...</b>",
         "inline403": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сез бу чатта"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Сез бу чатта"
             " урнаштырылган элементларны җибәрә алмыйсыз</b>"
         ),
         "invoke_failed": "<b>🚫 Модуль проблемасы уңышлы булмады! Логларда тулырак</b>",

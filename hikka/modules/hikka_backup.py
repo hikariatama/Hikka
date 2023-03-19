@@ -28,7 +28,7 @@ class HikkaBackupMod(loader.Module):
     """Handles database and modules backups"""
 
     p = "<emoji document_id=5469718869536940860>👆</emoji>"
-    e = "<emoji document_id=5312526098750252863>🚫</emoji>"
+    e = "<emoji document_id=5210952531676504517>🚫</emoji>"
     r = "<emoji document_id=5774134533590880843>🔄</emoji>"
     m = "<emoji document_id=5431736674147114227>🗂</emoji>"
 

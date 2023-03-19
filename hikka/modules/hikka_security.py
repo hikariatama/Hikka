@@ -254,7 +254,7 @@ class HikkaSecurityMod(loader.Module):
             ' href="tg://user?id={}">{}</a> removed from group</b> <code>owner</code>'
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specify user to"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Specify user to"
             " permit</b>"
         ),
         "not_a_user": (
@@ -281,16 +281,16 @@ class HikkaSecurityMod(loader.Module):
         "suggest_nonick": "🔰 <i>Do you want to enable NoNick for this user?</i>",
         "user_nn": '🔰 <b>NoNick for <a href="tg://user?id={}">{}</a> enabled</b>',
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You need to specify"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You need to specify"
             " the type of target as first argument (</b><code>user</code> <b>or"
             "</b> <code>chat</code><b>)</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You didn't specify"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You didn't specify"
             " the target of security rule</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You didn't specify"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You didn't specify"
             " the rule (module or command)</b>"
         ),
         "confirm_rule": (
@@ -312,7 +312,7 @@ class HikkaSecurityMod(loader.Module):
             " rules:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No targeted security"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>No targeted security"
             " rules</b>"
         ),
         "owner_target": (
@@ -333,7 +333,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_ru = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Команда"
             "</b> <code>{}</code> <b>не найдена!</b>"
         ),
         "permissions": (
@@ -364,7 +364,7 @@ class HikkaSecurityMod(loader.Module):
             " группе</b> <code>owner</code>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Укажи, кому выдавать"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Укажи, кому выдавать"
             " права</b>"
         ),
         "not_a_user": (
@@ -397,16 +397,16 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Управление настройками безопасности",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Вам нужно указать"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Вам нужно указать"
             " тип цели первым аргументов (</b><code>user</code> <b>or"
             "</b> <code>chat</code><b>)</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Не указана цель"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Не указана цель"
             " правила безопасности</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Не указано правило"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Не указано правило"
             " безопасности (модуль или команда)</b>"
         ),
         "confirm_rule": (
@@ -426,7 +426,7 @@ class HikkaSecurityMod(loader.Module):
             " правила безопасности:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Нет таргетированных"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Нет таргетированных"
             " правил безопасности</b>"
         ),
         "owner_target": (
@@ -450,7 +450,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_fr = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La commande</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>La commande</b>"
             " <code>{}</code> <b>est introuvable !</b>"
         ),
         "permissions": (
@@ -482,7 +482,7 @@ class HikkaSecurityMod(loader.Module):
             " le groupe</b> <code>owner</code>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Spécifiez à qui"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Spécifiez à qui"
             " accorder les droits</b>"
         ),
         "not_a_user": (
@@ -513,16 +513,16 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Gérer les paramètres de sécurité",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez spécifier"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Vous devez spécifier"
             " le type de cible en premier argument (</b><code>user</code> <b>ou"
             "</b> <code>chat</code><b>)</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune cible"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Aucune cible"
             " spécifiée pour la règle de sécurité</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune règle de"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Aucune règle de"
             " sécurité n'a été spécifiée (module ou commande)</b>"
         ),
         "confirm_rule": (
@@ -542,7 +542,7 @@ class HikkaSecurityMod(loader.Module):
             " ciblées:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Aucune règle de"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Aucune règle de"
             " sécurité ciblée</b>"
         ),
         "owner_target": (
@@ -567,7 +567,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_it = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Comando non"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Comando non"
             " trovato</b> <code>{}</code> <b>!</b>"
         ),
         "permissions": (
@@ -598,7 +598,7 @@ class HikkaSecurityMod(loader.Module):
             " gruppo</b> <code>owner</code>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Specifica a chi dare i"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Specifica a chi dare i"
             " permessi</b>"
         ),
         "not_a_user": (
@@ -629,16 +629,16 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Gestisci le impostazioni di sicurezza",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Devi specificare il"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Devi specificare il"
             " tipo di destinatario come primo argomento (</b><code>user</code> <b>o"
             "</b> <code>chat</code><b>)</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non hai specificato"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Non hai specificato"
             " il destinatario delle impostazioni di sicurezza</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Non hai specificato"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Non hai specificato"
             " la regola di sicurezza (modulo o comando)</b>"
         ),
         "confirm_rule": (
@@ -658,7 +658,7 @@ class HikkaSecurityMod(loader.Module):
             " specifiche:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Nessuna regola di"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Nessuna regola di"
             " sicurezza specifica</b>"
         ),
         "owner_target": (
@@ -680,7 +680,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_de = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Befehl"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Befehl"
             "</b> <code>{}</code> <b>nicht gefunden!</b>"
         ),
         "permissions": (
@@ -712,7 +712,7 @@ class HikkaSecurityMod(loader.Module):
             " Gruppenbesitzer</b><code>owner</code>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bitte gib an, wem du"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bitte gib an, wem du"
             " Rechte geben willst</b>"
         ),
         "not_a_user": (
@@ -746,20 +746,20 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Verwalten Sie die Sicherheitseinstellungen",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Erstes Argument"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Erstes Argument"
             " (</b><code>user</code> <b>or</b> <code>chat</code><b>)"
             " fehlt</b>"
         ),
         "no_chat": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Chat nicht"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Chat nicht"
             " gefunden</b>"
         ),
         "what_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Keine Regel"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Keine Regel"
             " angegeben (Modul oder Kommando)</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Keine Regel"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Keine Regel"
             " angegeben (Modul oder Kommando)</b>"
         ),
         "confirm_rule": (
@@ -779,7 +779,7 @@ class HikkaSecurityMod(loader.Module):
             " Sicherheit:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Keine Regeln für die"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Keine Regeln für die"
             " Sicherheit</b>"
         ),
         "owner_target": (
@@ -803,7 +803,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_tr = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Komut"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Komut"
             "</b> <code>{}</code> <b>bulunamadı!</b>"
         ),
         "permissions": (
@@ -835,7 +835,7 @@ class HikkaSecurityMod(loader.Module):
             " yok</b><code>owner</code>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Lütfen hangi"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Lütfen hangi"
             " kullanıcıya izin vereceğinizi belirtin</b>"
         ),
         "not_a_user": (
@@ -872,18 +872,18 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Güvenlik ayarlarını yönet",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>İlk argüman"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>İlk argüman"
             " (</b><code>user</code> <b>veya</b> <code>chat</code><b>) bulunamadı</b>"
         ),
         "no_chat": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Sohbet bulunamadı</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Sohbet bulunamadı</b>"
         ),
         "what_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hiçbir kural"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Hiçbir kural"
             " belirtilmedi (modül veya komut)</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Hiçbir kural"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Hiçbir kural"
             " belirtilmedi (modül veya komut)</b>"
         ),
         "confirm_rule": (
@@ -903,7 +903,7 @@ class HikkaSecurityMod(loader.Module):
             " kuralları:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Güvenlik kuralları"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Güvenlik kuralları"
             " yok</b>"
         ),
         "owner_target": (
@@ -926,7 +926,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_uz = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bunday"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bunday"
             " buyruq</b> <code>{}</code> <b>topilmadi!</b>"
         ),
         "permissions": (
@@ -959,7 +959,7 @@ class HikkaSecurityMod(loader.Module):
             "</b> <code>sahib</code> <b>foydalanuvchilar yo'q</b>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Qaysi foydalanuvchiga"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Qaysi foydalanuvchiga"
             " huquqlarni berishni xohlaysiz</b>"
         ),
         "not_a_user": (
@@ -994,15 +994,15 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Xavfsizlik sozlamalarini boshqarish",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Siz boshqarish"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Siz boshqarish"
             " uchun biror narsani ko'rsatmadingiz</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Siz boshqarish"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Siz boshqarish"
             " uchun biror narsani ko'rsatmadingiz</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Xavfsizlik"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Xavfsizlik"
             " qoidasi (modul yoki buyruq) ko'rsatilmagan</b>"
         ),
         "confirm_rule": (
@@ -1022,7 +1022,7 @@ class HikkaSecurityMod(loader.Module):
             " xavfsizlik qoidalari:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Targ'etlangan"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Targ'etlangan"
             " xavfsizlik qoidalari yo'q</b>"
         ),
         "owner_target": (
@@ -1046,7 +1046,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_es = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Comando"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Comando"
             "</b> <code>{}</code> <b>no encontrado!</b>"
         ),
         "permissions": (
@@ -1078,7 +1078,7 @@ class HikkaSecurityMod(loader.Module):
             " grupo</b> <code>owner</code>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Indica a quien"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Indica a quien"
             " otorgarle permisos</b>"
         ),
         "not_a_user": (
@@ -1109,16 +1109,16 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Administrar configuraciones de seguridad",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Necesitas especificar"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Necesitas especificar"
             " el tipo de objetivo como primer argumento (</b><code>user</code> <b>o"
             "</b> <code>chat</code><b>)</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se ha especificado"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>No se ha especificado"
             " el objetivo de la regla de seguridad</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No se ha especificado"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>No se ha especificado"
             " la regla de seguridad (módulo o comando)</b>"
         ),
         "confirm_rule": (
@@ -1138,7 +1138,7 @@ class HikkaSecurityMod(loader.Module):
             " dirigidas:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>No hay reglas de"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>No hay reglas de"
             " seguridad dirigidas</b>"
         ),
         "owner_target": (
@@ -1162,7 +1162,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_kk = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Команда"
             "</b> <code>{}</code> <b>табылмады!</b>"
         ),
         "permissions": (
@@ -1194,7 +1194,7 @@ class HikkaSecurityMod(loader.Module):
             "</b> <code>owner</code><b>дегендері жоқ</b>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Құқықтарды беру үшін"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Құқықтарды беру үшін"
             " қатысушыны көрсет</b>"
         ),
         "not_a_user": (
@@ -1224,16 +1224,16 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Безпеке баптауларын басқару",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Басқауыңызға бұрын"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Басқауыңызға бұрын"
             " баптау түрін (</b><code>user</code> <b>немесе</b> <code>chat</code><b>)"
             " көрсетіңіз</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Безпекаға қатысу"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Безпекаға қатысу"
             " үшін құжаттама берілмейді</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Безпекаға қатысу"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Безпекаға қатысу"
             " үшін модуль немесе команда белгіленмейді</b>"
         ),
         "confirm_rule": (
@@ -1254,7 +1254,7 @@ class HikkaSecurityMod(loader.Module):
             " қатысу үшін белгіленген баптаулар:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Құжаттамаға"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Құжаттамаға"
             " қатысу үшін белгіленген баптаулар жоқ</b>"
         ),
         "owner_target": (
@@ -1280,7 +1280,7 @@ class HikkaSecurityMod(loader.Module):
 
     strings_tt = {
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Команда"
             "</b> <code>{}</code> <b>табылмады!</b>"
         ),
         "permissions": (
@@ -1312,7 +1312,7 @@ class HikkaSecurityMod(loader.Module):
             " табылмады</b> <code>owner</code>"
         ),
         "no_user": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Эшкәреләрне күчерү"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Эшкәреләрне күчерү"
             " өчен кулланучыны күрсәтергә кәрәк</b>"
         ),
         "not_a_user": (
@@ -1348,16 +1348,16 @@ class HikkaSecurityMod(loader.Module):
         ),
         "_cls_doc": "Җибәрү хокукларын башкару",
         "what": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Сез башкаруу"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Сез башкаруу"
             " хокукларының цельларын (</b><code>user</code> <b>яки</b>"
             " <code>chat</code><b>) башта күрсәтеп була</b>"
         ),
         "no_target": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Җибәрү хокукларының"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Җибәрү хокукларының"
             " цельлары күрсәтелмәгән</b>"
         ),
         "no_rule": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Җибәрү хокукларының"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Җибәрү хокукларының"
             " башкаруу модулы яки командасе күрсәтелмәгән</b>"
         ),
         "confirm_rule": (
@@ -1377,7 +1377,7 @@ class HikkaSecurityMod(loader.Module):
             " қауллар:</b>\n\n{}"
         ),
         "no_rules": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Үзлекле қауллар юк</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Үзлекле қауллар юк</b>"
         ),
         "owner_target": (
             "<emoji document_id=5447644880824181073>⚠️</emoji> <b>Бу кулланучы аның"

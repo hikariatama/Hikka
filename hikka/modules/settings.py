@@ -22,7 +22,7 @@ class CoreMod(loader.Module):
     strings = {
         "name": "Settings",
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Too many args</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Too many args</b>"
         ),
         "blacklisted": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} blacklisted"
@@ -45,7 +45,7 @@ class CoreMod(loader.Module):
             " be set to?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Prefix must be one"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Prefix must be one"
             " symbol in length</b>"
         ),
         "prefix_set": (
@@ -59,15 +59,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Aliases:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Command</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Command</b>"
             " <code>{}</code> <b>does not exist</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You must provide a"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You must provide a"
             " command and the alias for it</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>You must provide the"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>You must provide the"
             " alias name</b>"
         ),
         "alias_removed": (
@@ -75,7 +75,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>removed</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Alias</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Alias</b>"
             " <code>{}</code> <b>does not exist</b>"
         ),
         "db_cleared": (
@@ -111,7 +111,7 @@ class CoreMod(loader.Module):
 
     strings_ru = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Слишком много"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Слишком много"
             " аргументов</b>"
         ),
         "blacklisted": (
@@ -135,7 +135,7 @@ class CoreMod(loader.Module):
             " ставить то?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Префикс должен"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Префикс должен"
             " состоять только из одного символа</b>"
         ),
         "prefix_set": (
@@ -149,15 +149,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Алиасы:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Команда</b>"
             " <code>{}</code> <b>не существует</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Требуется ввести"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Требуется ввести"
             " команду и алиас для нее</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Требуется имя"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Требуется имя"
             " алиаса</b>"
         ),
         "alias_removed": (
@@ -165,7 +165,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>удален</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Алиас</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Алиас</b>"
             " <code>{}</code> <b>не существует</b>"
         ),
         "db_cleared": (
@@ -203,7 +203,7 @@ class CoreMod(loader.Module):
 
     strings_fr = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Trop d'arguments </b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Trop d'arguments </b>"
         ),
         "blacklisted": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Le chat {} a été"
@@ -226,7 +226,7 @@ class CoreMod(loader.Module):
             " mettre alors ?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Le préfixe doit"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Le préfixe doit"
             " être composé d'un seul caractère</b>"
         ),
         "prefix_set": (
@@ -240,15 +240,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Alias:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>La commande</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>La commande</b>"
             " <code>{}</code> <b>n'existe pas</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez entrer"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Vous devez entrer"
             " une commande et un alias pour elle</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Vous devez entrer"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Vous devez entrer"
             " un alias</b>"
         ),
         "alias_removed": (
@@ -256,7 +256,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>supprimé</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Alias</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Alias</b>"
             " <code>{}</code> <b>n'existe pas</b>"
         ),
         "db_cleared": (
@@ -295,7 +295,7 @@ class CoreMod(loader.Module):
 
     strings_it = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Troppi argomenti</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Troppi argomenti</b>"
         ),
         "blacklisted": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Il gruppo {} è stato"
@@ -318,7 +318,7 @@ class CoreMod(loader.Module):
             " usare?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il prefisso deve"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Il prefisso deve"
             " essere di un solo carattere</b>"
         ),
         "prefix_set": (
@@ -332,15 +332,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Alias:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Il comando</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Il comando</b>"
             " <code>{}</code> <b>non esiste</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>È necessario"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>È necessario"
             " specificare un comando e un alias per questo</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Nome alias"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Nome alias"
             " richiesto</b>"
         ),
         "alias_removed": (
@@ -348,7 +348,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>rimosso</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Alias</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Alias</b>"
             " <code>{}</code> <b>non esiste</b>"
         ),
         "db_cleared": (
@@ -387,7 +387,7 @@ class CoreMod(loader.Module):
 
     strings_de = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Zu vieleArgumente</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Zu vieleArgumente</b>"
         ),
         "blacklisted": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} hinzugefügt"
@@ -410,7 +410,7 @@ class CoreMod(loader.Module):
             " ich setzen?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Präfix muss"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Präfix muss"
             "bestehen nur aus einem Zeichen</b>"
         ),
         "prefix_set": (
@@ -424,15 +424,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Aliasse:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Befehl</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Befehl</b>"
             " <code>{}</code> <b>existiert nicht</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Eingabe erforderlich"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Eingabe erforderlich"
             "Befehl und Alias ​​dafür</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Name erforderlich"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Name erforderlich"
             "alias</b>"
         ),
         "alias_removed": (
@@ -440,7 +440,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>gelöscht</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji><b>Alias</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji><b>Alias</b>"
             " <code>{}</code> <b>existiert nicht</b>"
         ),
         "db_cleared": (
@@ -479,7 +479,7 @@ class CoreMod(loader.Module):
 
     strings_tr = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Çok fazla"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Çok fazla"
             " argüman var</b>"
         ),
         "blacklisted": (
@@ -503,7 +503,7 @@ class CoreMod(loader.Module):
             " ayarlamalıyım?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Önek sadece"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Önek sadece"
             " bir karakterden oluşabilir</b>"
         ),
         "prefix_set": (
@@ -517,15 +517,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Takma adlar:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Komut</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Komut</b>"
             " <code>{}</code> <b>mevcut değil</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bunun için bir komut"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bunun için bir komut"
             " ve takma ad girmeniz gerekmektedir</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Bunun için bir takma "
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bunun için bir takma "
             " ad girmeniz gerekmektedir</b>"
         ),
         "alias_removed": (
@@ -533,7 +533,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>kaldırıldı</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Takma Ad</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Takma Ad</b>"
             " <code>{}</code> <b>mevcut değil</b>"
         ),
         "db_cleared": (
@@ -573,7 +573,7 @@ class CoreMod(loader.Module):
 
     strings_uz = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Juda ko'p"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Juda ko'p"
             " argumentlar</b>"
         ),
         "blacklisted": (
@@ -597,7 +597,7 @@ class CoreMod(loader.Module):
             " o'rnatishim kerak?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Prefiks kerak"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Prefiks kerak"
             "faqat bitta belgidan iborat</b>"
         ),
         "prefix_set": (
@@ -611,22 +611,22 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Taxalluslar:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Buyruq</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Buyruq</b>"
             " <code>{}</code> <b>mavjud</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Kirish kerak"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Kirish kerak"
             "buyruq va uning taxallusi</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Ism keraktaxallus</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Ism keraktaxallus</b>"
         ),
         "alias_removed": (
             "<emoji document_id=5197474765387864959>👍</emoji> <b>Taxallus</b>"
             " <code>{}</code> <b>o'chirildi</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Taxallus</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Taxallus</b>"
             " <code>{}</code> <b>mavjud</b>"
         ),
         "db_cleared": (
@@ -686,7 +686,7 @@ class CoreMod(loader.Module):
             " que quieres establecer?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>El prefijo debe ser"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>El prefijo debe ser"
             " un solo carácter</b>"
         ),
         "prefix_set": (
@@ -703,7 +703,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>ha sido eliminado</b>"
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Alias</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Alias</b>"
             " <code>{}</code> <b>no existe</b>"
         ),
         "db_cleared": (
@@ -742,7 +742,7 @@ class CoreMod(loader.Module):
 
     strings_kk = {
         "too_many_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Тым көп"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Тым көп"
             " аргументтер</b>"
         ),
         "blacklisted": (
@@ -766,7 +766,7 @@ class CoreMod(loader.Module):
             " қандай әліпби беремін?</b>"
         ),
         "prefix_incorrect": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Әліпби тек"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Әліпби тек"
             " бір таңбадан тұруы керек</b>"
         ),
         "prefix_set": (
@@ -780,15 +780,15 @@ class CoreMod(loader.Module):
         ),
         "aliases": "<b>🔗 Алиастар:</b>\n",
         "no_command": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Команда</b>"
             " <code>{}</code> <b>жоқ</b>"
         ),
         "alias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Команда мен"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Команда мен"
             " оның алиасын енгізуіңіз керек</b>"
         ),
         "delalias_args": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Алиас атауы"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Алиас атауы"
             " енгізуіңіз керек</b>"
         ),
         "alias_removed": (
@@ -796,7 +796,7 @@ class CoreMod(loader.Module):
             " <code>{}</code> <b>жойылды</b>."
         ),
         "no_alias": (
-            "<emoji document_id=5312526098750252863>🚫</emoji> <b>Алиас</b>"
+            "<emoji document_id=5210952531676504517>🚫</emoji> <b>Алиас</b>"
             " <code>{}</code> <b>жоқ</b>"
         ),
         "db_cleared": (
