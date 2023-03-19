@@ -56,8 +56,8 @@ class UnitHeta(loader.Module):
             " {link}</code>"
         ),
         "install": "🪄 Install",
-        "loaded": "✅ <b>Sucessfully installed</b>",
-        "not_loaded": "❌ <b>Installation failed</b>",
+        "loaded": "✅ Sucessfully installed",
+        "not_loaded": "❌ Installation failed",
         "language": "en",
         "404": f"{e} <b>Module not found</b>",
         "not_exact": (
@@ -88,8 +88,8 @@ class UnitHeta(loader.Module):
             " <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Установить",
-        "loaded": "✅ <b>Успешно установлено</b>",
-        "not_loaded": "❌ <b>Установка не удалась</b>",
+        "loaded": "✅ Успешно установлено",
+        "not_loaded": "❌ Установка не удалась",
         "language": "ru",
         "_cls_doc": "Управляет вещами, связанными с @hikkamods_bot",
         "404": f"{e} <b>Модуль не найден</b>",
@@ -121,8 +121,8 @@ class UnitHeta(loader.Module):
             " <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Instalar",
-        "loaded": "✅ <b>Instalado con éxito</b>",
-        "not_loaded": "❌ <b>La instalación falló</b>",
+        "loaded": "✅ Instalado con éxito",
+        "not_loaded": "❌ La instalación falló",
         "language": "es",
         "_cls_doc": "Administra cosas relacionadas con @hikkamods_bot",
         "404": f"{e} <b>Módulo no encontrado</b>",
@@ -154,8 +154,8 @@ class UnitHeta(loader.Module):
             " <b>Installieren:</b> <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Installieren",
-        "loaded": "✅ <b>Erfolgreich installiert</b>",
-        "not_loaded": "❌ <b>Die Installation ist fehlgeschlagen</b>",
+        "loaded": "✅ Erfolgreich installiert",
+        "not_loaded": "❌ Die Installation ist fehlgeschlagen",
         "language": "de",
         "_cls_doc": "Verwaltet Dinge, die mit @hikkamods_bot zu tun haben",
         "404": f"{e} <b>Modul nicht gefunden</b>",
@@ -187,8 +187,8 @@ class UnitHeta(loader.Module):
             " <b>Installer:</b> <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Installer",
-        "loaded": "✅ <b>Installation réussie</b>",
-        "not_loaded": "❌ <b>Installation échouée</b>",
+        "loaded": "✅ Installation réussie",
+        "not_loaded": "❌ Installation échouée",
         "language": "fr",
         "_cls_doc": "Gère les choses liées à @hikkamods_bot",
         "404": f"{e} <b>Module introuvable</b>",
@@ -220,8 +220,8 @@ class UnitHeta(loader.Module):
             " <b>O'rnatish:</b> <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 O'rnatish",
-        "loaded": "✅ <b>Muvaffaqiyatli o'rnatildi</b>",
-        "not_loaded": "❌ <b>O'rnatish muvaffaqiyatsiz bo'ldi</b>",
+        "loaded": "✅ Muvaffaqiyatli o'rnatildi",
+        "not_loaded": "❌ O'rnatish muvaffaqiyatsiz bo'ldi",
         "language": "uz",
         "_cls_doc": "@hikkamods_bot bilan bog'liq narsalarni boshqarish",
         "404": f"{e} <b>Modul topilmadi</b>",
@@ -253,8 +253,8 @@ class UnitHeta(loader.Module):
             " <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Yükle",
-        "loaded": "✅ <b>Başarıyla yüklendi</b>",
-        "not_loaded": "❌ <b>Yükleme başarısız oldu</b>",
+        "loaded": "✅ Başarıyla yüklendi",
+        "not_loaded": "❌ Yükleme başarısız oldu",
         "language": "tr",
         "_cls_doc": "@hikkamods_bot ile ilgili şeyleri yönetir",
         "404": f"{e} <b>Modül bulunamadı</b>",
@@ -286,8 +286,8 @@ class UnitHeta(loader.Module):
             " <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Installare",
-        "loaded": "✅ <b>Installazione riuscita</b>",
-        "not_loaded": "❌ <b>Installazione non riuscita</b>",
+        "loaded": "✅ Installazione riuscita",
+        "not_loaded": "❌ Installazione non riuscita",
         "language": "it",
         "_cls_doc": "Gestisce le cose relative a @hikkamods_bot",
         "404": f"{e} <b>Modulo non trovato</b>",
@@ -319,8 +319,8 @@ class UnitHeta(loader.Module):
             " <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Орнату",
-        "loaded": "✅ <b>Орнату сәтті аяқталды</b>",
-        "not_loaded": "❌ <b>Орнату сәтсіз аяқталды</b>",
+        "loaded": "✅ Орнату сәтті аяқталды",
+        "not_loaded": "❌ Орнату сәтсіз аяқталды",
         "language": "kk",
         "_cls_doc": "@hikkamods_bot-ға қатысты барлық қызметтерді басқару",
         "404": f"{e} <b>Модуль табылмады</b>",
@@ -352,8 +352,8 @@ class UnitHeta(loader.Module):
             " <b>Установить:</b> <code>{prefix}dlm {link}</code>"
         ),
         "install": "🪄 Установить",
-        "loaded": "✅ <b>Установка уңышлы тамамланды</b>",
-        "not_loaded": "❌ <b>Установка үтәлмәде</b>",
+        "loaded": "✅ Установка уңышлы тамамланды",
+        "not_loaded": "❌ Установка үтәлмәде",
         "language": "tt",
         "_cls_doc": "@hikkamods_bot-җә белән үзгәртүләрне башкару",
         "404": f"{e} <b>Модуль табылмады</b>",
@@ -604,7 +604,7 @@ class UnitHeta(loader.Module):
         "in",
         "only_messages",
         from_id=5519484330,
-        regex="^#install:.*?\/.*?\/.*?\n.*?\n\d+\n\n.*$",
+        regex=r"^#install:.*?\/.*?\/.*?\n.*?\n\d+\n\n.*$",
     )
     async def watcher(self, message: Message):
         await message.delete()

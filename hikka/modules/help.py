@@ -429,7 +429,9 @@ class HelpMod(loader.Module):
     async def modhelp(self, message: Message, args: str):
         exact = True
         if not (module := self.lookup(args, include_dragon=True)):
-            if method := self.allmodules.dispatch(args.lower().strip(self.get_prefix()))[1]:
+            if method := self.allmodules.dispatch(
+                args.lower().strip(self.get_prefix())
+            )[1]:
                 module = method.__self__
             else:
                 module = self.lookup(
