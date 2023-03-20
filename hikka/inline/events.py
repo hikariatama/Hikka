@@ -49,16 +49,11 @@ class Events(InlineUnit):
 
     async def _inline_handler(self, inline_query: AiogramInlineQuery):
         """Inline query handler (forms' calls)"""
-        # Retrieve query from passed object
-        query = inline_query.query
-
-        # If we didn't get any query, return help
-        if not query:
+        if not (query := inline_query.query):
             await self._query_help(inline_query)
             return
 
-        # First, dispatch all registered inline handlers
-        cmd = inline_query.query.split()[0].lower()
+        cmd = query.split()[0].lower()
         if (
             cmd in self._allmodules.inline_handlers
             and await self.check_inline_security(
@@ -69,12 +64,12 @@ class Events(InlineUnit):
             instance = InlineQuery(inline_query)
 
             try:
-                result = await self._allmodules.inline_handlers[cmd](instance)
+                if not (
+                    result := await self._allmodules.inline_handlers[cmd](instance)
+                ):
+                    return
             except Exception:
                 logger.exception("Error on running inline watcher!")
-                return
-
-            if not result:
                 return
 
             if isinstance(result, dict):
@@ -89,7 +84,7 @@ class Events(InlineUnit):
                 return
 
             for res in result:
-                mandatory = {"message", "photo", "gif", "video", "file"}
+                mandatory = ["message", "photo", "gif", "video", "file"]
                 if all(item not in res for item in mandatory):
                     logger.error(
                         (
@@ -107,82 +102,100 @@ class Events(InlineUnit):
                         " `file`, so it must contain `mime_type` as well"
                     )
 
-            inline_result = []
-
-            for res in result:
-                if "message" in res:
-                    inline_result += [
-                        InlineQueryResultArticle(
-                            id=utils.rand(20),
-                            title=self.sanitise_text(res["title"]),
-                            description=self.sanitise_text(res.get("description")),
-                            input_message_content=InputTextMessageContent(
-                                self.sanitise_text(res["message"]),
-                                "HTML",
-                                disable_web_page_preview=True,
-                            ),
-                            thumb_url=res.get("thumb"),
-                            thumb_width=128,
-                            thumb_height=128,
-                            reply_markup=self.generate_markup(res.get("reply_markup")),
-                        )
-                    ]
-                elif "photo" in res:
-                    inline_result += [
-                        InlineQueryResultPhoto(
-                            id=utils.rand(20),
-                            title=self.sanitise_text(res.get("title")),
-                            description=self.sanitise_text(res.get("description")),
-                            caption=self.sanitise_text(res.get("caption")),
-                            parse_mode="HTML",
-                            thumb_url=res.get("thumb", res["photo"]),
-                            photo_url=res["photo"],
-                            reply_markup=self.generate_markup(res.get("reply_markup")),
-                        )
-                    ]
-                elif "gif" in res:
-                    inline_result += [
-                        InlineQueryResultGif(
-                            id=utils.rand(20),
-                            title=self.sanitise_text(res.get("title")),
-                            caption=self.sanitise_text(res.get("caption")),
-                            parse_mode="HTML",
-                            thumb_url=res.get("thumb", res["gif"]),
-                            gif_url=res["gif"],
-                            reply_markup=self.generate_markup(res.get("reply_markup")),
-                        )
-                    ]
-                elif "video" in res:
-                    inline_result += [
-                        InlineQueryResultVideo(
-                            id=utils.rand(20),
-                            title=self.sanitise_text(res.get("title")),
-                            description=self.sanitise_text(res.get("description")),
-                            caption=self.sanitise_text(res.get("caption")),
-                            parse_mode="HTML",
-                            thumb_url=res.get("thumb", res["video"]),
-                            video_url=res["video"],
-                            mime_type="video/mp4",
-                            reply_markup=self.generate_markup(res.get("reply_markup")),
-                        )
-                    ]
-                elif "file" in res:
-                    inline_result += [
-                        InlineQueryResultDocument(
-                            id=utils.rand(20),
-                            title=self.sanitise_text(res.get("title")),
-                            description=self.sanitise_text(res.get("description")),
-                            caption=self.sanitise_text(res.get("caption")),
-                            parse_mode="HTML",
-                            thumb_url=res.get("thumb", res["file"]),
-                            document_url=res["file"],
-                            mime_type=res["mime_type"],
-                            reply_markup=self.generate_markup(res.get("reply_markup")),
-                        )
-                    ]
-
             try:
-                await inline_query.answer(inline_result, cache_time=0)
+                await inline_query.answer(
+                    [
+                        (
+                            InlineQueryResultArticle(
+                                id=utils.rand(20),
+                                title=self.sanitise_text(res["title"]),
+                                description=self.sanitise_text(res.get("description")),
+                                input_message_content=InputTextMessageContent(
+                                    self.sanitise_text(res["message"]),
+                                    "HTML",
+                                    disable_web_page_preview=True,
+                                ),
+                                thumb_url=res.get("thumb"),
+                                thumb_width=128,
+                                thumb_height=128,
+                                reply_markup=self.generate_markup(
+                                    res.get("reply_markup")
+                                ),
+                            )
+                            if "message" in res
+                            else (
+                                InlineQueryResultPhoto(
+                                    id=utils.rand(20),
+                                    title=self.sanitise_text(res.get("title")),
+                                    description=self.sanitise_text(
+                                        res.get("description")
+                                    ),
+                                    caption=self.sanitise_text(res.get("caption")),
+                                    parse_mode="HTML",
+                                    thumb_url=res.get("thumb", res["photo"]),
+                                    photo_url=res["photo"],
+                                    reply_markup=self.generate_markup(
+                                        res.get("reply_markup")
+                                    ),
+                                )
+                                if "photo" in res
+                                else (
+                                    InlineQueryResultGif(
+                                        id=utils.rand(20),
+                                        title=self.sanitise_text(res.get("title")),
+                                        caption=self.sanitise_text(res.get("caption")),
+                                        parse_mode="HTML",
+                                        thumb_url=res.get("thumb", res["gif"]),
+                                        gif_url=res["gif"],
+                                        reply_markup=self.generate_markup(
+                                            res.get("reply_markup")
+                                        ),
+                                    )
+                                    if "gif" in res
+                                    else (
+                                        InlineQueryResultVideo(
+                                            id=utils.rand(20),
+                                            title=self.sanitise_text(res.get("title")),
+                                            description=self.sanitise_text(
+                                                res.get("description")
+                                            ),
+                                            caption=self.sanitise_text(
+                                                res.get("caption")
+                                            ),
+                                            parse_mode="HTML",
+                                            thumb_url=res.get("thumb", res["video"]),
+                                            video_url=res["video"],
+                                            mime_type="video/mp4",
+                                            reply_markup=self.generate_markup(
+                                                res.get("reply_markup")
+                                            ),
+                                        )
+                                        if "video" in res
+                                        else InlineQueryResultDocument(
+                                            id=utils.rand(20),
+                                            title=self.sanitise_text(res.get("title")),
+                                            description=self.sanitise_text(
+                                                res.get("description")
+                                            ),
+                                            caption=self.sanitise_text(
+                                                res.get("caption")
+                                            ),
+                                            parse_mode="HTML",
+                                            thumb_url=res.get("thumb", res["file"]),
+                                            document_url=res["file"],
+                                            mime_type=res["mime_type"],
+                                            reply_markup=self.generate_markup(
+                                                res.get("reply_markup")
+                                            ),
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                        for res in result
+                    ],
+                    cache_time=0,
+                )
             except Exception:
                 logger.exception(
                     "Exception when answering inline query with result from %s",
@@ -209,7 +222,6 @@ class Events(InlineUnit):
             self._web_auth_tokens += [re.search(r"authorize_web_(.{8})", call.data)[1]]
             return
 
-        # First, dispatch all registered callback handlers
         for func in self._allmodules.callback_handlers.values():
             if await self.check_inline_security(func=func, user=call.from_user.id):
                 try:
@@ -264,11 +276,7 @@ class Events(InlineUnit):
                         + unit.get("always_allow", [])
                         + button.get("always_allow", [])
                     ):
-                        await call.answer(
-                            self._client.loader.lookup("translations").strings(
-                                "button403"
-                            )
-                        )
+                        await call.answer(self.translator.getkey("inline.button403"))
                         return
 
                     try:
@@ -320,9 +328,7 @@ class Events(InlineUnit):
                 and call.from_user.id
                 not in self._custom_map[call.data].get("always_allow", [])
             ):
-                await call.answer(
-                    self._client.loader.lookup("translations").strings("button403")
-                )
+                await call.answer(self.translator.getkey("inline.button403"))
                 return
 
             await self._custom_map[call.data]["handler"](
@@ -384,16 +390,12 @@ class Events(InlineUnit):
     async def _query_help(self, inline_query: InlineQuery):
         _help = []
         for name, fun in self._allmodules.inline_handlers.items():
-            # If user doesn't have enough permissions
-            # to run this inline command, do not show it
-            # in help
             if not await self.check_inline_security(
                 func=fun,
                 user=inline_query.from_user.id,
             ):
                 continue
 
-            # Retrieve docs from func
             try:
                 doc = inspect.getdoc(fun)
             except Exception:
@@ -410,17 +412,11 @@ class Events(InlineUnit):
                 (
                     InlineQueryResultArticle(
                         id=utils.rand(20),
-                        title=(
-                            self._client.loader.lookup("translations")
-                            .strings("command")
-                            .format(name)
-                        ),
+                        title=self.translator.getkey("inline.command").format(name),
                         description=doc,
                         input_message_content=InputTextMessageContent(
                             (
-                                self._client.loader.lookup("translations")
-                                .strings("command_msg")
-                                .format(
+                                self.translator.getkey("inline.command_msg").format(
                                     utils.escape_html(name),
                                     utils.escape_html(doc),
                                 )
@@ -433,9 +429,7 @@ class Events(InlineUnit):
                         thumb_height=128,
                         reply_markup=self.generate_markup(
                             {
-                                "text": self._client.loader.lookup(
-                                    "translations"
-                                ).strings("run_command"),
+                                "text": self.translator.getkey("inline.run_command"),
                                 "switch_inline_query_current_chat": f"{name} ",
                             }
                         ),
@@ -452,16 +446,10 @@ class Events(InlineUnit):
                 [
                     InlineQueryResultArticle(
                         id=utils.rand(20),
-                        title=self._client.loader.lookup("translations").strings(
-                            "show_inline_cmds"
-                        ),
-                        description=self._client.loader.lookup("translations").strings(
-                            "no_inline_cmds"
-                        ),
+                        title=self.translator.getkey("inline.show_inline_cmds"),
+                        description=self.translator.getkey("inline.no_inline_cmds"),
                         input_message_content=InputTextMessageContent(
-                            self._client.loader.lookup("translations").strings(
-                                "no_inline_cmds_msg"
-                            ),
+                            self.translator.getkey("inline.no_inline_cmds_msg"),
                             "HTML",
                             disable_web_page_preview=True,
                         ),
@@ -480,19 +468,15 @@ class Events(InlineUnit):
             [
                 InlineQueryResultArticle(
                     id=utils.rand(20),
-                    title=self._client.loader.lookup("translations").strings(
-                        "show_inline_cmds"
-                    ),
+                    title=self.translator.getkey("inline.show_inline_cmds"),
                     description=(
-                        self._client.loader.lookup("translations")
-                        .strings("inline_cmds")
-                        .format(len(_help))
+                        self.translator.getkey("inline.inline_cmds").format(len(_help))
                     ),
                     input_message_content=InputTextMessageContent(
                         (
-                            self._client.loader.lookup("translations")
-                            .strings("inline_cmds_msg")
-                            .format("\n".join(i[1] for i in _help))
+                            self.translator.getkey("inline.inline_cmds_msg").format(
+                                "\n".join(map(lambda x: x[1], _help))
+                            )
                         ),
                         "HTML",
                         disable_web_page_preview=True,

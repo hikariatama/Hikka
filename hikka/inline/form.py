@@ -275,9 +275,7 @@ class Form(InlineUnit):
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + self._client.loader.lookup("translations").strings(
-                        "opening_form"
-                    ),
+                    + self.translator.getkey("inline.opening_form"),
                     **({"reply_to": utils.get_topic(message)} if message.out else {}),
                 )
             except Exception:
@@ -353,16 +351,12 @@ class Form(InlineUnit):
                 ),
             )
         except ChatSendInlineForbiddenError:
-            await answer(
-                self._client.loader.lookup("translations").strings("inline403")
-            )
+            await answer(self.translator.getkey("inline.inline403"))
         except Exception:
             logger.exception("Can't send form")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = self._client.loader.lookup("translations").strings(
-                    "invoke_failed"
-                )
+                msg = self.translator.getkey("inline.invoke_failed")
             else:
                 exc = traceback.format_exc()
                 # Remove `Traceback (most recent call last):`
@@ -421,9 +415,9 @@ class Form(InlineUnit):
                                 id=utils.rand(20),
                                 title=button["input"],
                                 description=(
-                                    self._client.loader.lookup("translations")
-                                    .strings("keep_id")
-                                    .format(random.choice(VERIFICATION_EMOJIES))
+                                    self.translator.getkey("inline.keep_id").format(
+                                        random.choice(VERIFICATION_EMOJIES)
+                                    )
                                 ),
                                 input_message_content=InputTextMessageContent(
                                     (
@@ -448,7 +442,6 @@ class Form(InlineUnit):
         ):
             return
 
-        # Otherwise, answer it with templated form
         form = self._units[inline_query.query]
         if "photo" in form:
             await inline_query.answer(

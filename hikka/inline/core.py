@@ -9,6 +9,7 @@
 import asyncio
 import logging
 import time
+import typing
 
 from aiogram import Bot, Dispatcher
 from aiogram.types import ParseMode
@@ -19,6 +20,7 @@ from hikkatl.utils import get_display_name
 
 from ..database import Database
 from ..tl_cache import CustomTelegramClient
+from ..translations import Translator
 from .bot_pm import BotPM
 from .events import Events
 from .form import Form
@@ -61,16 +63,26 @@ class InlineManager(
         self._client = client
         self._db = db
         self._allmodules = allmodules
+        self.translator: Translator = allmodules.translator
 
-        self._units = {}
-        self._custom_map = {}
-        self.fsm = {}
-        self._web_auth_tokens = []
+        self._units: typing.Dict[str, dict] = {}
+        self._custom_map: typing.Dict[str, callable] = {}
+        self.fsm: typing.Dict[str, str] = {}
+        self._web_auth_tokens: typing.List[str] = []
 
         self._markup_ttl = 60 * 60 * 24
         self.init_complete = False
 
         self._token = db.get("hikka.inline", "bot_token", False)
+
+        self._me: int = None
+        self._name: str = None
+        self._dp: Dispatcher = None
+        self._task: asyncio.Future = None
+        self._cleaner_task: asyncio.Future = None
+        self.bot: Bot = None
+        self.bot_id: int = None
+        self.bot_username: str = None
 
     async def _cleaner(self):
         """Cleans outdated inline units"""
@@ -95,29 +107,22 @@ class InlineManager(
         :return: None
         :rtype: None
         """
-        # Get info about user to use it in this class
         self._me = self._client.tg_id
         self._name = get_display_name(self._client.hikka_me)
 
         if not ignore_token_checks:
-            # Assert that token is set to valid, and if not,
-            # set `init_complete` to `False` and return
             is_token_asserted = await self._assert_token()
             if not is_token_asserted:
                 self.init_complete = False
                 return
 
-        # We successfully asserted token, so set `init_complete` to `True`
         self.init_complete = True
 
-        # Create bot instance and dispatcher
         self.bot = Bot(token=self._token, parse_mode=ParseMode.HTML)
         Bot.set_current(self.bot)
-        self._bot = self.bot  # This is a temporary alias so the
-        # developers can adapt their code
+        self._bot = self.bot
         self._dp = Dispatcher(self.bot)
 
-        # Get bot username to call inline queries
         try:
             bot_me = await self.bot.get_me()
             self.bot_username = bot_me.username
@@ -126,7 +131,6 @@ class InlineManager(
             logger.critical("Token expired, revoking...")
             return await self._dp_revoke_token(False)
 
-        # Start the bot in case it can send you messages
         try:
             m = await self._client.send_message(self.bot_username, "/start hikka init")
         except (InputUserDeactivatedError, ValueError):
@@ -154,7 +158,6 @@ class InlineManager(
 
         await self._client.delete_messages(self.bot_username, m)
 
-        # Register required event handlers inside aiogram
         self._dp.register_inline_handler(
             self._inline_handler,
             lambda _: True,
@@ -191,9 +194,6 @@ class InlineManager(
 
         self.bot.get_updates = new
 
-        # Start polling as the separate task, just in case we will need
-        # to force stop this coro. It should be cancelled only by `stop`
-        # because it stops the bot from getting updates
         self._task = asyncio.ensure_future(self._dp.start_polling())
         self._cleaner_task = asyncio.ensure_future(self._cleaner())
 

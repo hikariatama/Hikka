@@ -7,6 +7,7 @@
 <a href="#"><img src="https://img.shields.io/github/commit-activity/m/hikariatama/Hikka"/></a><br>
 <a href="#"><img src="https://img.shields.io/github/forks/hikariatama/Hikka?style=flat"/></a>
 <a href="#"><img src="https://img.shields.io/github/stars/hikariatama/Hikka"/></a>&nbsp;<a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a><br>
+
 <hr>
 <h2><img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="54" align="middle"> Installation</h2>
 
@@ -73,6 +74,7 @@ Simply run this command out of <b>root</b> and follow the instructions of instal
 </details>
 
 <b>Some further details:</b>
+
 <details>
  <summary>Pre-installed automatic database backuper</summary>
  <img src="https://user-images.githubusercontent.com/36935426/202905566-964d2904-f3ce-4a14-8f05-0e7840e1b306.png" width="300">
@@ -106,6 +108,7 @@ Simply run this command out of <b>root</b> and follow the instructions of instal
 
 Check out <a href="https://github.com/hikariatama/Hikka/wiki">Wiki</a> for developers' documentation<br>
 User docs will be available soon
+
 <hr>
 <h2 border="none"><img src="https://github.com/hikariatama/assets/raw/master/981-consultation-flat.webp" height="54" align="middle"> <a href="https://t.me/hikka_talks">Support</a></h2>
 <hr>
@@ -172,6 +175,7 @@ User docs will be available soon
 <i>⚠️ This project is provided as-is. Developer doesn't take ANY responsibility over any problems, caused by userbot. By installing Hikka you take all risks on you. This is but not limited to account bans, deleted (by Telegram algorithms) messages, SCAM-modules, leaked sessions (due to SCAM-modules). It is <b>highly</b> recommended to enable the API Flood protection (.api_fw_protection) and not to install many modules at once. By using Hikka you give your consent to any actions made by your account in background in purposes of automatization. Please, consider reading https://core.telegram.org/api/terms for more information.</i>
 
 <b>Special thanks to:</b>
+
 <ul>
     <li><a href="https://gitlab.com/hackintosh5">Hackintosh5</a> for FTG, which is the base of project</li>
     <li><a href="https://t.me/kazunimo">Kazunimo</a> for Turkish translation pack</li>

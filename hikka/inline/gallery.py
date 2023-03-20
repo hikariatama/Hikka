@@ -263,9 +263,7 @@ class Gallery(InlineUnit):
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + self._client.loader.lookup("translations").strings(
-                        "opening_gallery"
-                    ),
+                    + self.translator.getkey("inline.opening_gallery"),
                     **({"reply_to": utils.get_topic(message)} if message.out else {}),
                 )
             except Exception:
@@ -292,9 +290,7 @@ class Gallery(InlineUnit):
                 ),
             )
         except ChatSendInlineForbiddenError:
-            await answer(
-                self._client.loader.lookup("translations").strings("inline403")
-            )
+            await answer(self.translator.getkey("inline.inline403"))
         except Exception:
             logger.exception("Error sending inline gallery")
 
@@ -304,9 +300,7 @@ class Gallery(InlineUnit):
                 logger.exception("Can't send gallery")
 
                 if not self._db.get(main.__name__, "inlinelogs", True):
-                    msg = self._client.loader.lookup("translations").strings(
-                        "invoke_failed"
-                    )
+                    msg = self.translator.getkey("inline.invoke_failed")
                 else:
                     exc = traceback.format_exc()
                     # Remove `Traceback (most recent call last):`
@@ -394,11 +388,9 @@ class Gallery(InlineUnit):
 
         unit = self._units[unit_id]
 
-        # If only one preload was insufficient to load needed amount of photos
         if unit.get("preload", False) and len(unit["photos"]) - unit[
             "current_index"
         ] < unit.get("preload", False):
-            # Start load again
             asyncio.ensure_future(self._load_gallery_photos(unit_id))
 
     async def _gallery_slideshow_loop(
@@ -546,13 +538,11 @@ class Gallery(InlineUnit):
 
         self._units[unit_id]["current_index"] = page
         if not isinstance(self._units[unit_id]["next_handler"], ListGalleryHelper):
-            # If we exceeded photos limit in gallery and need to preload more
             if self._units[unit_id]["current_index"] >= len(
                 self._units[unit_id]["photos"]
             ):
                 await self._load_gallery_photos(unit_id)
 
-            # If we still didn't get needed photo index
             if self._units[unit_id]["current_index"] >= len(
                 self._units[unit_id]["photos"]
             ):

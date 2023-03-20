@@ -506,15 +506,15 @@
 ## 🌑 Hikka 1.1.26
 
 - Hopefully finally fix aliases being reset after restart
-- Remove redundant internal hook \_client\_ready2
+- Remove redundant internal hook \_client_ready2
 - Show user evaluated version of config value instead of pre-comp one
 - Add validator for each item to Series, remove separator
 - Add new validator: TelegramID
 
 ## 🌑 Hikka 1.1.25
 
-- Add separate messages on restart and full\_restart. Second one is shown, when all modules are loaded
-- Replace .uninstall\_hikka with full uninstallation (remove bot, asset chats and folder)
+- Add separate messages on restart and full_restart. Second one is shown, when all modules are loaded
+- Replace .uninstall_hikka with full uninstallation (remove bot, asset chats and folder)
 - Suggest update if it is required by module
 - New validator: Float
 - Buttons in .config of option is a boolean value
@@ -532,7 +532,7 @@
 
 - Add config validators (loader.validators, Boolean, Integer, Choice, Series)
 - Change info layout
-- Add .uninstall\_hikka
+- Add .uninstall_hikka
 - Add .clearlogs
 - Refactor code
 - Fix minor bugs
@@ -545,7 +545,7 @@
 - Add uvloop so the asyncio runs faster
 - Add Docker badge to info
 - Improve Okteto performance by adjusting settings in okteto-stack.yml
-- New ascii\_faces in utils
+- New ascii_faces in utils
 - Typehints update
 - Fix Okteto pinger messages removal
 
@@ -575,7 +575,7 @@
 ## 🌑 Hikka 1.1.18
 
 - Add notification about not exact match in help
-- Add automatic progress bar generation to self.fast\_upload and self.fast\_download
+- Add automatic progress bar generation to self.fast_upload and self.fast_download
 - Make Mod ending in modules class name not mandatory
 
 ## 🌑 Hikka 1.1.17
@@ -583,7 +583,7 @@
 - Fix some weird looking code
 - Fix some emojies and translation issues
 - Add native lavHost support (.restart, .update) via internal API
-- Add utils.get\_lang\_flag()
+- Add utils.get_lang_flag()
 
 ## 🌑 Hikka 1.1.16
 
@@ -602,15 +602,15 @@
 - Add automatic database autofix and rollback if database was broken by module
 - Fix translation issues
 - Warn user, if he tries to view .help when userbot is not yet fully loaded
-- Create alias for \_generate\_markup (generate\_markup)
+- Create alias for \_generate_markup (generate_markup)
 - Fix modules which are deleting from helphide
 - Automatically save db if it was edited via classic dictionary methods
 
 ## 🌑 Hikka 1.1.14
 
-- Fix utils.asset\_channel()'s archive param
+- Fix utils.asset_channel()'s archive param
 - Fix defect, which forced installation from additional trusted repo, rather than from primary one if the file names are matched
-- Add avatar to utils.asset\_channel() which automatically sets chat pic on creation (be careful, bc it leads to floodwaits, if you do it often)
+- Add avatar to utils.asset_channel() which automatically sets chat pic on creation (be careful, bc it leads to floodwaits, if you do it often)
 - Add automatic hikka folder processing
 - Add avatars to all official repo modules, which require asset chats (and add them to hikka folder)
 - Rework database assets chat processing
@@ -619,7 +619,7 @@
 - Add .fconfig command to forcefully set known config value if it doesn't fit in Telegram query
 - Add dataclasses for module config (read the docs for more info), bc old way is blasphemy
 - Automatically save config value if it was set to module self.config\[option\] = value
-- Add utils.is\_serializable(), utils.set\_avatar()
+- Add utils.is_serializable(), utils.set_avatar()
 - Send very large (over 4096\*10 symbols) output in a file rather than in an inline list
 
 ## 🌑 Hikka 1.1.13
@@ -630,15 +630,15 @@
 - Add --force restart
 - Add ability to customize .info (this is only your problem, if you break something)
 - Properly censor known tokens in logs
-- Replace regex check in utils.check\_url() with urllib parser
+- Replace regex check in utils.check_url() with urllib parser
 
 ## 🌑 Hikka 1.1.12
 
-- Consider avoiding redundant requests to TG API in order to get the client id and rather using self.\_tg\_id, which is now available for all modules
+- Consider avoiding redundant requests to TG API in order to get the client id and rather using self.\_tg_id, which is now available for all modules
 
 ## 🌑 Hikka 1.1.11
 
-- Add fast uploader (self.fast\_upload, self.fast\_download)
+- Add fast uploader (self.fast_upload, self.fast_download)
 - Fix translations
 
 ## 🌑 Hikka 1.1.10
@@ -647,16 +647,16 @@
 
 ## 🌑 Hikka 1.1.9
 
-- Fix \_generate\_markup in order that it automatically sets up callback hooks to \_custom\_map if callback was passed in buttons
-- Add switch\_inline\_query and switch\_inline\_query\_current\_chat parsers
+- Fix \_generate_markup in order that it automatically sets up callback hooks to \_custom_map if callback was passed in buttons
+- Add switch_inline_query and switch_inline_query_current_chat parsers
 - Fix minor issues
 
 ## 🌑 Hikka 1.1.8
 
 - Stuff, related to translation issues
-- Add self.get\_prefix() to all modules, which returns current command prefix
+- Add self.get_prefix() to all modules, which returns current command prefix
 - Add possibility to silently self-unload mod, e.g if some condition is not matched. Usecase can be found in modules/okteto.py
-- Add async def on\_dlmod(self, client: "TelegramClient", db: "database.Database") handling. This can be e.g. used to subscribe to module's author's channel
+- Add async def on_dlmod(self, client: "TelegramClient", db: "database.Database") handling. This can be e.g. used to subscribe to module's author's channel
 - Rework Okteto Pinger, so it removes messages, if userbot is installed on other platform and so it even works
 - Add trusted developers to quickstart message
 - Automatically switch language via quickstart message button
@@ -667,12 +667,12 @@
 
 ## 🌑 Hikka 1.1.6
 
-- Allow and process callback field in result of inline query answer. You can also use this in your own functions. Simply pass prepare\_callbacks=True to \_generate\_markup
-- Generate InlineCall object on \_custom\_map handlers
+- Allow and process callback field in result of inline query answer. You can also use this in your own functions. Simply pass prepare_callbacks=True to \_generate_markup
+- Generate InlineCall object on \_custom_map handlers
 
 ## 🌑 Hikka 1.1.5
 
-- Minor update: Allow passing disable\_security and always\_allow to buttons directly
+- Minor update: Allow passing disable_security and always_allow to buttons directly
 
 ## 🌑 Hikka 1.1.4
 
@@ -683,7 +683,7 @@
 - Fix HikkaDL link parsing
 - Suggest enabling value in bounding mask if it is not
 - Mask tokens in logs
-- Add utils.get\_git\_hash()
+- Add utils.get_git_hash()
 - Add debugging mode for developers
 
 ## 🌑 Hikka 1.1.3
@@ -705,7 +705,7 @@
 - Make inline commands' docstrings translatable
 - Introducing HikkaDynamicTranslate - the possibility for developers to translate their own modules to other language without usage of native translates
 - Rework translates system, because «translate channels wut¿». Now translate pack can be loaded from disk or from web
-- Add utils.check\_url
+- Add utils.check_url
 - Get rid of babel
 - Add IP address and possible cities to web auth popup
 - Add web auth popup ratelimit
@@ -723,28 +723,28 @@
 
 ## 🌑 Hikka 1.0.29
 
-- Add option to control inline and callback handlers' security via loader decorators, including brand new @loader.inline\_everyone
+- Add option to control inline and callback handlers' security via loader decorators, including brand new @loader.inline_everyone
 - Refactor HikkaSecurity, especially the bounding mask control
 
 ## 🌑 Hikka 1.0.28
 
 - Add silent param to inline.form, inline.gallery, inline.list
 - Add photo param to inline.form
-- Add URL validator to inline.\_generate\_markup
+- Add URL validator to inline.\_generate_markup
 - Ignore MessageIdInvalidError in .e
 
 ## 🌑 Hikka 1.0.27
 
-Thankfully to @bsolute, now we have a cool smart\_split in utils. The messages are split without loosing formatting and emojies, preferably on line breakes / spaces.
+Thankfully to @bsolute, now we have a cool smart_split in utils. The messages are split without loosing formatting and emojies, preferably on line breakes / spaces.
 
 ## 🌑 Hikka 1.0.26
 
-- Add utils.smart\_split which splits message in chunks of chunk\_size, keeping parse\_mode and entities in a right way (relocates 'em)
+- Add utils.smart_split which splits message in chunks of chunk_size, keeping parse_mode and entities in a right way (relocates 'em)
 - If response of utils.answer is too big to be sent in one particular message, it will be split in chunks of 4096 and sent via inline.list
 
 ## 🌑 Hikka 1.0.25
 
-- Add disable\_security to inline forms, lists and galleries
+- Add disable_security to inline forms, lists and galleries
 
 ## 🌑 Hikka 1.0.24
 
@@ -768,17 +768,17 @@ A lot of stuff: web fixes, bug fixes, automatic seamless userbot restart when ad
 
 ## 🌑 Hikka 1.0.20
 
-- Allow passing reply\_markup field to InlineQuery's result
+- Allow passing reply_markup field to InlineQuery's result
 - Refactor reply markup parser so it accepts more formats of inline markup
 
 ## 🌑 Hikka 1.0.19
 
 - Allow developers to pass InlineQuery result via return operator in inline handlers. Read the docs for more info
-- Move query\_gallery to a separate module
+- Move query_gallery to a separate module
 
 ## 🌑 Hikka 1.0.18
 
-- Add silent and archive params to utils.asset\_channel.
+- Add silent and archive params to utils.asset_channel.
 - Remake logging so it become native with `BotLogger`.
 - Inject `BotLogger` analog directly
 
@@ -809,13 +809,13 @@ A lot of stuff: web fixes, bug fixes, automatic seamless userbot restart when ad
 
 ## 🌑 Hikka 1.0.12
 
-- Optimize forms, galleries and custom\_map storage by ommiting keys with default values and dynamically generate them.
+- Optimize forms, galleries and custom_map storage by ommiting keys with default values and dynamically generate them.
 - Add feature to inherit command-caller permissions on form and gallery (crutchy).
 - Minor improvements and bug fixes
 
 ## 🌑 Hikka 1.0.11
 
-- Add inline.query\_gallery to add ability to call inline gallery via inline query.
+- Add inline.query_gallery to add ability to call inline gallery via inline query.
 - Add `e404` attribute to `InlineQuery`, which should be shown, that no results were found
 
 ## 🌑 Hikka 1.0.10
@@ -856,7 +856,7 @@ A lot of stuff: web fixes, bug fixes, automatic seamless userbot restart when ad
 
 - Fix a lot of stuff in web
 - Add new features to web
-- Merge root and initial\_root
+- Merge root and initial_root
 - Remove trailing whitespaces
 
 ## 🌑 Hikka 1.0.2

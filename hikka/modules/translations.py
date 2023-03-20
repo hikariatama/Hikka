@@ -13,19 +13,6 @@ from ..inline.types import InlineCall
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_LANGUAGES = {
-    "en": "🇬🇧 English",
-    "ru": "🇷🇺 Русский",
-    "fr": "🇫🇷 Français",
-    "it": "🇮🇹 Italiano",
-    "de": "🇩🇪 Deutsch",
-    "tr": "🇹🇷 Türkçe",
-    "uz": "🇺🇿 O'zbekcha",
-    "es": "🇪🇸 Español",
-    "kk": "🇰🇿 Қазақша",
-    "tt": "🥟 Татарча",
-}
-
 
 @loader.tds
 class Translations(loader.Module):
@@ -71,7 +58,7 @@ class Translations(loader.Module):
                             "callback": self._change_language,
                             "args": (lang,),
                         }
-                        for lang, text in SUPPORTED_LANGUAGES.items()
+                        for lang, text in translations.SUPPORTED_LANGUAGES.items()
                     ],
                     2,
                 ),
@@ -92,7 +79,10 @@ class Translations(loader.Module):
             )
             + (
                 ("\n\n" + self.strings("not_official"))
-                if any(lang not in SUPPORTED_LANGUAGES for lang in args.lower().split())
+                if any(
+                    lang not in translations.SUPPORTED_LANGUAGES
+                    for lang in args.lower().split()
+                )
                 else ""
             ),
         )

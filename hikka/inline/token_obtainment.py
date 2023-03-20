@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 
 class TokenObtainment(InlineUnit):
     async def _create_bot(self):
-        # This is called outside of conversation, so we can start the new one
-        # We create new bot
         logger.info("User doesn't have bot, attempting creating new one")
         async with self._client.conversation("@BotFather", exclusive=False) as conv:
             await fw_protect()
@@ -47,11 +45,9 @@ class TokenObtainment(InlineUnit):
                 except ValueError:
                     pass
                 else:
-                    # Generate and set random username for bot
                     uid = utils.rand(6)
                     username = f"@hikka_{uid}_bot"
             else:
-                # Generate and set random username for bot
                 uid = utils.rand(6)
                 username = f"@hikka_{uid}_bot"
 
@@ -82,9 +78,6 @@ class TokenObtainment(InlineUnit):
                 logger.debug(">> <Photo>")
                 logger.debug("<< %s", r.raw_text)
             except Exception:
-                # In case user was not able to send photo to
-                # BotFather, it is not a critical issue, so
-                # just ignore it
                 await fw_protect()
                 m = await conv.send_message("/cancel")
                 r = await conv.get_response()
@@ -97,8 +90,6 @@ class TokenObtainment(InlineUnit):
             await m.delete()
             await r.delete()
 
-        # Re-attempt search. If it won't find newly created (or not created?) bot
-        # it will return `False`, that's why `init_complete` will be `False`
         return await self._assert_token(False)
 
     async def _assert_token(
@@ -106,9 +97,7 @@ class TokenObtainment(InlineUnit):
         create_new_if_needed: bool = True,
         revoke_token: bool = False,
     ) -> bool:
-        # If the token is set in db
         if self._token:
-            # Just return `True`
             return True
 
         logger.info("Bot token not found in db, attempting search in BotFather")
@@ -121,17 +110,12 @@ class TokenObtainment(InlineUnit):
             )
             self._db.set(__name__, "no_mute", True)
 
-        # Start conversation with BotFather to attempt search
         async with self._client.conversation("@BotFather", exclusive=False) as conv:
-            # Wrap it in try-except in case user banned BotFather
             try:
-                # Try sending command
                 await fw_protect()
                 m = await conv.send_message("/token")
             except YouBlockedUserError:
-                # If user banned BotFather, unban him
                 await self._client(UnblockRequest(id="@BotFather"))
-                # And resend message
                 await fw_protect()
                 m = await conv.send_message("/token")
 
@@ -145,10 +129,7 @@ class TokenObtainment(InlineUnit):
             await m.delete()
             await r.delete()
 
-            # User do not have any bots yet, so just create new one
             if not hasattr(r, "reply_markup") or not hasattr(r.reply_markup, "rows"):
-                # Cancel current conversation (search)
-                # bc we don't need it anymore
                 await conv.cancel_all()
 
                 return await self._create_bot() if create_new_if_needed else False
@@ -207,7 +188,6 @@ class TokenObtainment(InlineUnit):
 
                     token = r.raw_text.splitlines()[1]
 
-                    # Save token to database, now this bot is ready-to-use
                     self._db.set("hikka.inline", "bot_token", token)
                     self._token = token
 
@@ -215,9 +195,6 @@ class TokenObtainment(InlineUnit):
 
                     await m.delete()
                     await r.delete()
-
-                    # Enable inline mode or change its
-                    # placeholder in case it is not set
 
                     for msg in [
                         "/setinline",
@@ -253,9 +230,6 @@ class TokenObtainment(InlineUnit):
                         logger.debug(">> <Photo>")
                         logger.debug("<< %s", r.raw_text)
                     except Exception:
-                        # In case user was not able to send photo to
-                        # BotFather, it is not a critical issue, so
-                        # just ignore it
                         await fw_protect()
                         m = await conv.send_message("/cancel")
                         r = await conv.get_response()
@@ -268,10 +242,8 @@ class TokenObtainment(InlineUnit):
                     await m.delete()
                     await r.delete()
 
-                    # Return `True` to say, that everything is okay
                     return True
 
-        # And we are not returned after creation
         return await self._create_bot() if create_new_if_needed else False
 
     async def _reassert_token(self):

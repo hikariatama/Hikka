@@ -11,13 +11,12 @@ import typing
 import grapheme
 from emoji import get_emoji_unicode_dict
 
-from . import translations, utils
+from . import utils
+from .translations import SUPPORTED_LANGUAGES, translator
 
 ConfigAllowedTypes = typing.Union[tuple, list, str, int, bool, None]
 
 ALLOWED_EMOJIS = set(get_emoji_unicode_dict("en").values())
-
-translator = translations.ExternalTranslator()
 
 
 class ValidationError(Exception):
@@ -60,15 +59,7 @@ class Validator:
         self.validate = validator
 
         if isinstance(doc, str):
-            doc = {
-                "en": doc,
-                "ru": doc,
-                "fr": doc,
-                "it": doc,
-                "de": doc,
-                "tr": doc,
-                "uz": doc,
-            }
+            doc = {lang: doc for lang in SUPPORTED_LANGUAGES}
 
         self.doc = doc
         self.internal_id = _internal_id

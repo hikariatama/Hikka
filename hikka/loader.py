@@ -495,7 +495,7 @@ class Modules:
         self.client = client
         self._db = db
         self.db = db
-        self._translator = translator
+        self.translator = translator
         self.secure_boot = False
         asyncio.ensure_future(self._junk_collector())
         self.inline = InlineManager(self.client, self._db, self)
@@ -1008,8 +1008,8 @@ class Modules:
         if not hasattr(mod, "strings"):
             mod.strings = {}
 
-        mod.strings = Strings(mod, self._translator)
-        mod.translator = self._translator
+        mod.strings = Strings(mod, self.translator)
+        mod.translator = self.translator
 
         try:
             mod.config_complete()
@@ -1209,7 +1209,7 @@ class Modules:
         """Unnecessary placeholder for logging"""
 
     async def reload_translations(self) -> bool:
-        if not await self._translator.init():
+        if not await self.translator.init():
             return False
 
         for module in self.modules:

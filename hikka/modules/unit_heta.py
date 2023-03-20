@@ -137,7 +137,7 @@ class UnitHeta(loader.Module):
         }
 
         strings = (
-            self.strings._base_strings["result"]
+            self.strings.get("result", "en")
             if self.config["translate"]
             else self.strings("result")
         )
@@ -148,7 +148,7 @@ class UnitHeta(loader.Module):
             kwargs["commands"] = "..."
             text = strings.format(**kwargs)
 
-        mark = lambda text: {
+        mark = lambda text: {  # noqa: E731
             "text": self.strings("install"),
             "callback": self._install,
             "args": (result["module"]["link"], text),

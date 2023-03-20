@@ -22,6 +22,18 @@ logger = logging.getLogger(__name__)
 
 
 PACKS = Path(__file__).parent / "langpacks"
+SUPPORTED_LANGUAGES = {
+    "en": "🇬🇧 English",
+    "ru": "🇷🇺 Русский",
+    "fr": "🇫🇷 Français",
+    "it": "🇮🇹 Italiano",
+    "de": "🇩🇪 Deutsch",
+    "tr": "🇹🇷 Türkçe",
+    "uz": "🇺🇿 O'zbekcha",
+    "es": "🇪🇸 Español",
+    "kk": "🇰🇿 Қазақша",
+    "tt": "🥟 Татарча",
+}
 
 
 def fmt(text: str, kwargs: dict) -> str:
@@ -50,7 +62,11 @@ class BaseTranslator:
             return json.loads(content)
 
         return {
-            f"{prefix}{module}.{key}": value
+            (
+                f"{module.strip('$')}.{key}"
+                if module.startswith("$")
+                else f"{prefix}{module}.{key}"
+            ): value
             for module, strings in yaml.safe_load(BytesIO(content.encode())).items()
             for key, value in strings.items()
         }
@@ -66,9 +82,12 @@ class Translator(BaseTranslator):
     def __init__(self, client: CustomTelegramClient, db: Database):
         self._client = client
         self.db = db
+        self._data = {}
+        self.raw_data = {}
 
     async def init(self) -> bool:
         self._data = self._get_pack_content(PACKS / "en.yml")
+        self.raw_data["en"] = self._data
         if not (lang := self.db.get(__name__, "lang", False)):
             return False
 
@@ -85,6 +104,7 @@ class Translator(BaseTranslator):
                     continue
 
                 self._data.update(data)
+                self.raw_data[language] = data
                 any_ = True
                 continue
 
@@ -93,7 +113,9 @@ class Translator(BaseTranslator):
                 PACKS / f"{language}.yml",
             ]:
                 if possible_path.exists():
-                    self._data.update(self._get_pack_content(possible_path))
+                    data = self._get_pack_content(possible_path)
+                    self._data.update(data)
+                    self.raw_data[language] = data
                     any_ = True
 
         return any_
@@ -102,7 +124,7 @@ class Translator(BaseTranslator):
 class ExternalTranslator(BaseTranslator):
     def __init__(self):
         self.data = {}
-        for lang in ["en", "ru", "fr", "it", "de", "uz", "tr", "es", "kk", "tt"]:
+        for lang in SUPPORTED_LANGUAGES:
             self.data[lang] = self._get_pack_content(PACKS / f"{lang}.yml", prefix="")
 
     def get(self, key: str, lang: str) -> str:
@@ -124,6 +146,12 @@ class Strings:
             logger.debug("Module %s got empty translator %s", mod, translator)
 
         self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
+
+    def get(self, key: str, lang: typing.Optional[str] = None) -> str:
+        try:
+            return self._translator.raw_data[lang][f"{self._mod.__module__}.{key}"]
+        except KeyError:
+            return self[key]
 
     def __getitem__(self, key: str) -> str:
         return (
@@ -165,3 +193,6 @@ class Strings:
 
     def __iter__(self):
         return self._base_strings.__iter__()
+
+
+translator = ExternalTranslator()

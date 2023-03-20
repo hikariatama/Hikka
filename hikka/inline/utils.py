@@ -388,7 +388,6 @@ class Utils(InlineUnit):
             )
             return False
 
-        # If passed `photo` is gif
         try:
             path = urlparse(photo).path
             ext = os.path.splitext(path)[1]
