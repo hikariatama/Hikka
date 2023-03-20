@@ -11,7 +11,7 @@ from io import BytesIO
 from pathlib import Path
 
 import requests
-import yaml
+from ruamel.yaml import YAML
 
 from . import utils
 from .database import Database
@@ -19,7 +19,7 @@ from .tl_cache import CustomTelegramClient
 from .types import Module
 
 logger = logging.getLogger(__name__)
-
+yaml = YAML(typ="safe")
 
 PACKS = Path(__file__).parent / "langpacks"
 SUPPORTED_LANGUAGES = {
@@ -67,7 +67,7 @@ class BaseTranslator:
                 if module.startswith("$")
                 else f"{prefix}{module}.{key}"
             ): value
-            for module, strings in yaml.safe_load(BytesIO(content.encode())).items()
+            for module, strings in yaml.load(content).items()
             for key, value in strings.items()
         }
 
