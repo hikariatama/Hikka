@@ -348,26 +348,22 @@ class UnitHeta(loader.Module):
         link = module.__origin__
 
         text = (
-            f"<b>🧳 {utils.escape_html(class_name)}</b>"
-            if not utils.check_url(link)
-            else (
-                f'📼 <b><a href="{link}">Link</a> for'
-                f" {utils.escape_html(class_name)}:</b>"
-                f' <code>{link}</code>\n\n{self.strings("not_exact") if not exact else ""}'
-            )
+            f'📼 <b><a href="{link}">Link</a> for {utils.escape_html(class_name)}:</b> <code>{link}</code>\n\n{"" if exact else self.strings("not_exact")}'
+            if utils.check_url(link)
+            else f"<b>🧳 {utils.escape_html(class_name)}</b>"
         )
 
         text = (
             self.strings("link").format(
                 class_name=utils.escape_html(class_name),
                 url=link,
-                not_exact=self.strings("not_exact") if not exact else "",
+                not_exact="" if exact else self.strings("not_exact"),
                 prefix=utils.escape_html(self.get_prefix()),
             )
             if utils.check_url(link)
             else self.strings("file").format(
                 class_name=utils.escape_html(class_name),
-                not_exact=self.strings("not_exact") if not exact else "",
+                not_exact="" if exact else self.strings("not_exact"),
                 prefix=utils.escape_html(self.get_prefix()),
             )
         )

@@ -55,22 +55,19 @@ def api_config(tty: typing.Optional[bool] = None):
         tty,
     )
 
-    while api_id := tty_input("\033[0;95mEnter API ID: \033[0m", tty):
-        if api_id.isdigit():
-            break
-
+    while (
+        api_id := tty_input("\033[0;95mEnter API ID: \033[0m", tty)
+    ) and not api_id.isdigit():
         tty_print("\033[0;91mInvalid ID\033[0m", tty)
 
     if not api_id:
         tty_print("\033[0;91mCancelled\033[0m", tty)
         exit(0)
 
-    while api_hash := tty_input("\033[0;95mEnter API hash: \033[0m", tty):
-        if len(api_hash) == 32 and all(
-            symbol in string.hexdigits for symbol in api_hash
-        ):
-            break
-
+    while (api_hash := tty_input("\033[0;95mEnter API hash: \033[0m", tty)) and (
+        len(api_hash) != 32
+        or any(symbol not in string.hexdigits for symbol in api_hash)
+    ):
         tty_print("\033[0;91mInvalid hash\033[0m", tty)
 
     if not api_hash:

@@ -122,8 +122,8 @@ class Notifier:
     def commands(self):
         return {
             key.split()[0]: (
-                (key.split()[1] + " - ") if len(key.split()) > 1 else ""
-            ) + value
+                (f"{key.split()[1]} - " if len(key.split()) > 1 else "") + value
+            )
             for key, value in self.cache[self.modname].items()
         }
 
@@ -191,7 +191,7 @@ class DragonScripts:
 
     @staticmethod
     def text(message: types.Message):
-        return message.text if message.text else message.caption
+        return message.text or message.caption
 
     @staticmethod
     def restart():
@@ -208,7 +208,7 @@ class DragonScripts:
 
         hint_text = f"\n\n<b>Hint: {hint}</b>" if hint else ""
 
-        return f"<b>Error!</b>\n<code>{e.__class__.__name__}: {e}</code>" + hint_text
+        return f"<b>Error!</b>\n<code>{e.__class__.__name__}: {e}</code>{hint_text}"
 
     @staticmethod
     def with_reply(func):
@@ -259,7 +259,7 @@ class DragonScripts:
 
         for command, desc in commands.items():
             cmd = command.split(maxsplit=1)
-            args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
+            args = f" <code>{cmd[1]}</code>" if len(cmd) > 1 else ""
             help_text += (
                 f"<code>{self.misc.prefix}{cmd[0]}</code>{args} — <i>{desc}</i>\n"
             )
@@ -276,7 +276,7 @@ class DragonScripts:
 
         for command, desc in commands.items():
             cmd = command.split(maxsplit=1)
-            args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
+            args = f" <code>{cmd[1]}</code>" if len(cmd) > 1 else ""
             help_text += f"<code>{self.misc.prefix}{cmd[0]}</code>{args}\n"
 
         help_text += (
@@ -387,10 +387,10 @@ def patched_import(name: str, *args, **kwargs):
         raise ImportError(f"Unknown module {name}")
 
     if name.startswith("telethon"):
-        return native_import("hikkatl" + name[8:], *args, **kwargs)
+        return native_import(f"hikkatl{name[8:]}", *args, **kwargs)
 
     if name.startswith("pyrogram"):
-        return native_import("hikkapyro" + name[8:], *args, **kwargs)
+        return native_import(f"hikkapyro{name[8:]}", *args, **kwargs)
 
     return native_import(name, *args, **kwargs)
 

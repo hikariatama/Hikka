@@ -153,12 +153,10 @@ def get_app_name() -> str:
     return app_name
 
 
-try:
+with contextlib.suppress(Exception):
     import uvloop
 
     uvloop.install()
-except Exception:
-    pass
 
 
 def run_config():
@@ -220,12 +218,10 @@ def gen_port(cfg: str = "port", no8080: bool = False) -> int:
 
     # If we didn't get port from config, generate new one
     # First, try to randomly get port
-    while port := random.randint(1024, 65536):
-        if socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect_ex(
-            ("localhost", port)
-        ):
-            break
-
+    while (port := random.randint(1024, 65536)) and not socket.socket(
+        socket.AF_INET, socket.SOCK_STREAM
+    ).connect_ex(("localhost", port)):
+        pass
     return port
 
 

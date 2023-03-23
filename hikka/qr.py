@@ -31,8 +31,7 @@ for i in range(255):
 def rs_blocks(version, error_correction):
     if error_correction not in RS_BLOCK_OFFSET:  # pragma: no cover
         raise Exception(
-            "bad rs block @ version: %s / error_correction: %s"
-            % (version, error_correction)
+            f"bad rs block @ version: {version} / error_correction: {error_correction}"
         )
     offset = RS_BLOCK_OFFSET[error_correction]
     rs_block = RS_BLOCK_TABLE[(version - 1) * 4 + offset]
@@ -41,9 +40,7 @@ def rs_blocks(version, error_correction):
 
     for i in range(0, len(rs_block), 3):
         count, total_count, data_count = rs_block[i : i + 3]
-        for _ in range(count):
-            blocks.append(RSBlock(total_count, data_count))
-
+        blocks.extend(RSBlock(total_count, data_count) for _ in range(count))
     return blocks
 
 
@@ -678,7 +675,7 @@ def mask_func(pattern):
         return lambda i, j: ((i * j) % 2 + (i * j) % 3) % 2 == 0
     if pattern == 7:  # 111
         return lambda i, j: ((i * j) % 3 + (i + j) % 2) % 2 == 0
-    raise TypeError("Bad mask pattern: " + pattern)  # pragma: no cover
+    raise TypeError(f"Bad mask pattern: {pattern}")
 
 
 def mode_sizes_for_version(version):
@@ -777,9 +774,7 @@ def _lost_point_level2(modules, modules_count):
                 # reduce 33.3% of runtime via next().
                 # None: raise nothing if there is no next item.
                 next(modules_range_iter, None)
-            elif top_right != this_row[col]:
-                continue
-            elif top_right != next_row[col]:
+            elif top_right != this_row[col] or top_right != next_row[col]:
                 continue
             else:
                 lost_point += 3
@@ -927,9 +922,7 @@ def optimal_mode(data):
     """
     if data.isdigit():
         return MODE_NUMBER
-    if RE_ALPHA_NUM.match(data):
-        return MODE_ALPHA_NUM
-    return MODE_8BIT_BYTE
+    return MODE_ALPHA_NUM if RE_ALPHA_NUM.match(data) else MODE_8BIT_BYTE
 
 
 class QRData:
@@ -1056,14 +1049,9 @@ def create_bytes(buffer: BitBuffer, rs_blocks: List[RSBlock]):
 
     data = []
     for i in range(maxDcCount):
-        for dc in dcdata:
-            if i < len(dc):
-                data.append(dc[i])
+        data.extend(dc[i] for dc in dcdata if i < len(dc))
     for i in range(maxEcCount):
-        for ec in ecdata:
-            if i < len(ec):
-                data.append(ec[i])
-
+        data.extend(ec[i] for ec in ecdata if i < len(ec))
     return data
 
 
@@ -1079,17 +1067,14 @@ def create_data(version, error_correction, data_list):
     bit_limit = sum(block.data_count * 8 for block in rs_blocks_)
     if len(buffer) > bit_limit:
         raise DataOverflowError(
-            "Code length overflow. Data size (%s) > size available (%s)"
-            % (len(buffer), bit_limit)
+            f"Code length overflow. Data size ({len(buffer)}) > size available ({bit_limit})"
         )
 
     # Terminate the bits (add up to four 0s).
     for _ in range(min(bit_limit - len(buffer), 4)):
         buffer.put_bit(False)
 
-    # Delimit the string into 8-bit words, padding with 0s if necessary.
-    delimit = len(buffer) % 8
-    if delimit:
+    if delimit := len(buffer) % 8:
         for _ in range(8 - delimit):
             buffer.put_bit(False)
 
@@ -1121,7 +1106,7 @@ def _check_box_size(size):
 def _check_border(size):
     if int(size) < 0:
         raise ValueError(
-            "Invalid border value (was %s, expected 0 or larger than that)" % size
+            f"Invalid border value (was {size}, expected 0 or larger than that)"
         )
 
 
@@ -1244,9 +1229,7 @@ class QRCode:
         if self.version in precomputed_qr_blanks:
             self.modules = copy_2d_array(precomputed_qr_blanks[self.version])
         else:
-            self.modules = [
-                [None] * self.modules_count for i in range(self.modules_count)
-            ]
+            self.modules = [[None] * self.modules_count for _ in range(self.modules_count)]
             self.setup_position_probe_pattern(0, 0)
             self.setup_position_probe_pattern(self.modules_count - 7, 0)
             self.setup_position_probe_pattern(0, self.modules_count - 7)
@@ -1275,14 +1258,11 @@ class QRCode:
                 if col + c <= -1 or self.modules_count <= col + c:
                     continue
 
-                if (
+                self.modules[row + r][col + c] = (
                     (0 <= r <= 6 and c in {0, 6})
                     or (0 <= c <= 6 and r in {0, 6})
                     or (2 <= r <= 4 and 2 <= c <= 4)
-                ):
-                    self.modules[row + r][col + c] = True
-                else:
-                    self.modules[row + r][col + c] = False
+                )
 
     def best_fit(self, start=None):
         """
@@ -1438,16 +1418,13 @@ class QRCode:
 
                 for r in range(-2, 3):
                     for c in range(-2, 3):
-                        if (
+                        self.modules[row + r][col + c] = (
                             r == -2
                             or r == 2
                             or c == -2
                             or c == 2
                             or (r == 0 and c == 0)
-                        ):
-                            self.modules[row + r][col + c] = True
-                        else:
-                            self.modules[row + r][col + c] = False
+                        )
 
     def setup_type_number(self, test):
         bits = BCH_type_number(self.version)
@@ -1554,6 +1531,8 @@ class QRCode:
     def active_with_neighbors(self, row: int, col: int) -> ActiveWithNeighbors:
         context: List[bool] = []
         for r in range(row - 1, row + 2):
-            for c in range(col - 1, col + 2):
-                context.append(self.is_constrained(r, c) and bool(self.modules[r][c]))
+            context.extend(
+                (self.is_constrained(r, c) and bool(self.modules[r][c]))
+                for c in range(col - 1, col + 2)
+            )
         return ActiveWithNeighbors(*context)

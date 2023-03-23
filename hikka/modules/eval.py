@@ -38,9 +38,7 @@ class Brainfuck:
 
     def run(self, code: str) -> str:
         self.out = ""
-        had_error = self._eval(code)
-
-        if had_error:
+        if had_error := self._eval(code):
             return
 
         self._interpret(code)
@@ -53,7 +51,7 @@ class Brainfuck:
         column: typing.Optional[int] = None,
     ):
         self.error = (
-            message + f" at line {line}, column {column}"
+            f"{message} at line {line}, column {column}"
             if line is not None and column is not None
             else ""
         )
@@ -73,20 +71,20 @@ class Brainfuck:
 
                 loop_open = True
                 stk.append("[")
-            elif c == "]":
-                loop_open = False
-                if len(stk) == 0:
-                    self._report_error("unexpected token ']'", line, col)
-                    return True
-
-                stk.pop()
             elif c == "\n":
                 line += 1
                 col = -1
 
+            elif c == "]":
+                loop_open = False
+                if not stk:
+                    self._report_error("unexpected token ']'", line, col)
+                    return True
+
+                stk.pop()
             col += 1
 
-        if len(stk) != 0:
+        if stk:
             self._report_error("unmatched brackets")
             return True
 
@@ -441,12 +439,10 @@ class Evaluator(loader.Module):
         if htoken := self.lookup("loader").get("token", False):
             ret = ret.replace(htoken, f'eugeo_{"*" * 26}')
 
-        ret = ret.replace(
+        return ret.replace(
             StringSession.save(self._client.session),
             "StringSession(**************************)",
         )
-
-        return ret
 
     async def getattrs(self, message: Message) -> dict:
         reply = await message.get_reply_message()

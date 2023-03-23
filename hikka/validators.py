@@ -417,20 +417,20 @@ class String(Validator):
     ):
         if length is not None:
             doc = translator.getdict("validators.string_fixed_len", length=length)
-        else:
-            if min_len is None:
-                if max_len is None:
-                    doc = translator.getdict("validators.string")
-                else:
-                    doc = translator.getdict(
-                        "validators.string_max_len", max_len=max_len
-                    )
-            elif max_len is not None:
-                doc = translator.getdict(
-                    "validators.string_len_range", min_len=min_len, max_len=max_len
+        elif min_len is None:
+            doc = (
+                translator.getdict("validators.string")
+                if max_len is None
+                else translator.getdict(
+                    "validators.string_max_len", max_len=max_len
                 )
-            else:
-                doc = translator.getdict("validators.string_min_len", min_len=min_len)
+            )
+        elif max_len is not None:
+            doc = translator.getdict(
+                "validators.string_len_range", min_len=min_len, max_len=max_len
+            )
+        else:
+            doc = translator.getdict("validators.string_min_len", min_len=min_len)
 
         super().__init__(
             functools.partial(
@@ -504,11 +504,7 @@ class RegExp(Validator):
         if description is None:
             doc = translator.getdict("validators.regex", regex=regex)
         else:
-            if isinstance(description, str):
-                doc = {"en": description}
-            else:
-                doc = description
-
+            doc = {"en": description} if isinstance(description, str) else description
         super().__init__(
             functools.partial(self._validate, regex=regex, flags=flags),
             doc,

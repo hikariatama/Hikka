@@ -330,8 +330,8 @@ class CommandDispatcher:
             or event.mentioned
             and event.message is not None
             and event.message.message is not None
-            and not any(
-                f"@{username}" not in command.lower()
+            and all(
+                f"@{username}" in command.lower()
                 for username in self._cached_usernames
             )
         ):
@@ -362,12 +362,11 @@ class CommandDispatcher:
                 edit=True,
             ):
                 if event.action.prev_message.id == message.id:
-                    if event.user_id != self._client.tg_id:
-                        logger.debug("Ignoring edit in channel")
-                        return False
-                    else:
+                    if event.user_id == self._client.tg_id:
                         break
 
+                    logger.debug("Ignoring edit in channel")
+                    return False
         if (
             message.is_channel
             and message.is_group
@@ -462,22 +461,21 @@ class CommandDispatcher:
                         utils.escape_html(str(exc)),
                     )
                 )
-        else:
-            if not self._db.get(main.__name__, "inlinelogs", True):
-                txt = (
-                    "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
-                    f" <code>{utils.escape_html(message.message)}</code><b>"
-                    " failed!</b>"
-                )
-            else:
-                exc = "\n".join(traceback.format_exc().splitlines()[1:])
-                txt = (
-                    "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
-                    f" <code>{utils.escape_html(message.message)}</code><b>"
-                    " failed!</b>\n\n<b>🧾"
-                    f" Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
-                )
+        elif self._db.get(main.__name__, "inlinelogs", True):
+            exc = "\n".join(traceback.format_exc().splitlines()[1:])
+            txt = (
+                "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
+                f" <code>{utils.escape_html(message.message)}</code><b>"
+                " failed!</b>\n\n<b>🧾"
+                f" Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
+            )
 
+        else:
+            txt = (
+                "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
+                f" <code>{utils.escape_html(message.message)}</code><b>"
+                " failed!</b>"
+            )
         with contextlib.suppress(Exception):
             await (message.edit if message.out else message.reply)(txt)
 
@@ -569,7 +567,10 @@ class CommandDispatcher:
                 getattr(func, "no_groups", False)
                 and getattr(message, "is_group", False)
             )
-            or (getattr(func, "no_pm", False) and getattr(message, "is_private", False))
+            or (
+                getattr(func, "no_pm", False)
+                and getattr(message, "is_private", False)
+            )
             or (
                 getattr(func, "no_inline", False)
                 and getattr(message, "via_bot_id", False)
@@ -578,7 +579,10 @@ class CommandDispatcher:
                 getattr(func, "no_stickers", False)
                 and getattr(message, "sticker", False)
             )
-            or (getattr(func, "no_docs", False) and getattr(message, "document", False))
+            or (
+                getattr(func, "no_docs", False)
+                and getattr(message, "document", False)
+            )
             or (
                 getattr(func, "no_audios", False)
                 and utils.mime_type(message).startswith("audio/")
@@ -656,14 +660,12 @@ class CommandDispatcher:
                 getattr(func, "from_id", False)
                 and getattr(message, "sender_id", None) != func.from_id
             )
-            or (
-                getattr(func, "chat_id", False)
-                and utils.get_chat_id(message)
-                != (
-                    func.chat_id
-                    if not str(func.chat_id).startswith("-100")
-                    else int(str(func.chat_id)[4:])
-                )
+            or getattr(func, "chat_id", False)
+            and utils.get_chat_id(message)
+            != (
+                int(str(func.chat_id)[4:])
+                if str(func.chat_id).startswith("-100")
+                else func.chat_id
             )
             or (
                 getattr(func, "regex", False)
@@ -723,12 +725,9 @@ class CommandDispatcher:
             # Avoid weird AttributeErrors in weird dochub modules by settings placeholder
             # of attributes
             for placeholder in {"text", "raw_text", "out"}:
-                try:
+                with contextlib.suppress(UnicodeDecodeError):
                     if not hasattr(message, placeholder):
                         setattr(message, placeholder, "")
-                except UnicodeDecodeError:
-                    pass
-
             # Run watcher via ensure_future so in case user has a lot
             # of watchers with long actions, they can run simultaneously
             asyncio.ensure_future(

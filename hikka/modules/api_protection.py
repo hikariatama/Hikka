@@ -121,13 +121,13 @@ class APIRatelimiterMod(loader.Module):
         old_call = self._client._call
 
         async def new_call(
-            sender: "MTProtoSender",  # type: ignore  # noqa: F821
-            request: TLRequest,
-            ordered: bool = False,
-            flood_sleep_threshold: int = None,
-        ):
+                sender: "MTProtoSender",  # type: ignore  # noqa: F821
+                request: TLRequest,
+                ordered: bool = False,
+                flood_sleep_threshold: int = None,
+            ):
             await asyncio.sleep(random.randint(1, 5) / 100)
-            req = (request,) if not is_list_like(request) else request
+            req = request if is_list_like(request) else (request, )
             for r in req:
                 if (
                     time.perf_counter() > self._suspend_until

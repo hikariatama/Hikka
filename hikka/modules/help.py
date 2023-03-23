@@ -134,12 +134,7 @@ class HelpMod(loader.Module):
             name = getattr(module, "name", "ERROR")
 
         _name = (
-            "{} (v{}.{}.{})".format(
-                utils.escape_html(name),
-                module.__version__[0],
-                module.__version__[1],
-                module.__version__[2],
-            )
+            f"{utils.escape_html(name)} (v{module.__version__[0]}.{module.__version__[1]}.{module.__version__[2]})"
             if hasattr(module, "__version__")
             else utils.escape_html(name)
         )
@@ -218,8 +213,7 @@ class HelpMod(loader.Module):
 
         await utils.answer(
             message,
-            reply
-            + (f"\n\n{self.strings('not_exact')}" if not exact else "")
+            (reply + ("" if exact else f"\n\n{self.strings('not_exact')}"))
             + (
                 f"\n\n{self.strings('core_notice')}"
                 if module.__origin__.startswith("<core")
@@ -267,7 +261,7 @@ class HelpMod(loader.Module):
             if mod.name in self.get("hide", []) and not force:
                 continue
 
-            tmp = "\n{} <code>{}</code>".format(DRAGON_EMOJI, mod.name)
+            tmp = f"\n{DRAGON_EMOJI} <code>{mod.name}</code>"
             first = True
 
             for cmd in mod.commands:
@@ -278,7 +272,7 @@ class HelpMod(loader.Module):
                 else:
                     tmp += f" | {cmd}"
 
-            dragon_ += [tmp + " )"]
+            dragon_ += [f"{tmp} )"]
 
         for mod in self.allmodules.modules:
             if not hasattr(mod, "commands"):
@@ -300,15 +294,11 @@ class HelpMod(loader.Module):
                 and not getattr(mod, "inline_handlers", None)
                 and not getattr(mod, "callback_handlers", None)
             ):
-                no_commands_ += [
-                    "\n{} <code>{}</code>".format(self.config["empty_emoji"], name)
-                ]
+                no_commands_ += [f'\n{self.config["empty_emoji"]} <code>{name}</code>']
                 continue
 
             core = mod.__origin__.startswith("<core")
-            tmp += "\n{} <code>{}</code>".format(
-                self.config["core_emoji"] if core else self.config["plain_emoji"], name
-            )
+            tmp += f'\n{self.config["core_emoji"] if core else self.config["plain_emoji"]} <code>{name}</code>'
             first = True
 
             commands = [

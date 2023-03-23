@@ -141,7 +141,7 @@ class SudoMessageEditor(MessageEditor):
         self.process = process
 
     async def update_stderr(self, stderr):
-        logger.debug("stderr update " + stderr)
+        logger.debug(f"stderr update {stderr}")
         self.stderr = stderr
         lines = stderr.strip().split("\n")
         lastline = lines[-1]
@@ -171,7 +171,7 @@ class SudoMessageEditor(MessageEditor):
                 logger.debug(e)
 
             logger.debug("edited message with link to self")
-            command = "<code>" + utils.escape_html(self.command) + "</code>"
+            command = f"<code>{utils.escape_html(self.command)}</code>"
             user = utils.escape_html(lastlines[1][:-1])
 
             self.authmsg = await self.message[0].client.send_message(
@@ -189,9 +189,10 @@ class SudoMessageEditor(MessageEditor):
             logger.debug("registered handler")
             handled = True
 
-        if len(lines) > 1 and (
-            re.fullmatch(self.TOO_MANY_TRIES, lastline)
-            and (self.state == 1 or self.state == 3 or self.state == 4)
+        if (
+            len(lines) > 1
+            and re.fullmatch(self.TOO_MANY_TRIES, lastline)
+            and self.state in [1, 3, 4]
         ):
             logger.debug("password wrong lots of times")
             await utils.answer(self.message, self.strings("auth_locked"))

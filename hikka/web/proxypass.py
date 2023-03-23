@@ -33,9 +33,11 @@ class ProxyPasser:
         for getline in iter(stream.readline, ""):
             await asyncio.sleep(delay)
             data_chunk = await getline
-            if await callback(data_chunk.decode("utf-8")):
-                if not self._url_available.is_set():
-                    self._url_available.set()
+            if (
+                await callback(data_chunk.decode("utf-8"))
+                and not self._url_available.is_set()
+            ):
+                self._url_available.set()
 
     def kill(self):
         try:
@@ -100,11 +102,7 @@ class ProxyPasser:
             except asyncio.TimeoutError:
                 self.kill()
                 self._tunnel_url = None
-                if no_retry:
-                    return None
-
-                return await self.get_url(port, no_retry=True)
-
+                return None if no_retry else await self.get_url(port, no_retry=True)
             logger.debug("Proxy pass tunnel url to port %d: %s", port, self._tunnel_url)
 
             return self._tunnel_url

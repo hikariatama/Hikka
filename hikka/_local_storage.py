@@ -41,7 +41,7 @@ class LocalStorage:
     def _get_path(self, repo: str, module_name: str) -> str:
         return os.path.join(
             self._path,
-            hashlib.sha256(f"{repo}_{module_name}".encode()).hexdigest() + ".py",
+            f'{hashlib.sha256(f"{repo}_{module_name}".encode()).hexdigest()}.py',
         )
 
     def save(self, repo: str, module_name: str, module_code: str):

@@ -471,14 +471,12 @@ async def answer(
                 return
 
             reply_markup = message.client.loader.inline._normalize_markup(reply_markup)
-            result = await message.client.loader.inline.form(
+            return await message.client.loader.inline.form(
                 response,
                 message=message if message.out else get_chat_id(message),
                 reply_markup=reply_markup,
                 **kwargs,
             )
-            return result
-
     if isinstance(message, (InlineMessage, InlineCall)):
         await message.edit(response)
         return message
@@ -670,7 +668,7 @@ async def set_avatar(
 
     await fw_protect()
 
-    try:
+    with contextlib.suppress(Exception):
         await client.delete_messages(
             peer,
             message_ids=[
@@ -681,9 +679,6 @@ async def set_avatar(
                 ).message.id
             ],
         )
-    except Exception:
-        pass
-
     return True
 
 
@@ -755,15 +750,14 @@ async def asset_channel(
     async for d in client.iter_dialogs():
         if d.title == title:
             client._channels_cache[title] = {"peer": d.entity, "exp": int(time.time())}
-            if invite_bot:
-                if all(
-                    participant.id != client.loader.inline.bot_id
-                    for participant in (
-                        await client.get_participants(d.entity, limit=100)
-                    )
-                ):
-                    await fw_protect()
-                    await invite_inline_bot(client, d.entity)
+            if invite_bot and all(
+                participant.id != client.loader.inline.bot_id
+                for participant in (
+                    await client.get_participants(d.entity, limit=100)
+                )
+            ):
+                await fw_protect()
+                await invite_inline_bot(client, d.entity)
 
             return d.entity, False
 
@@ -809,8 +803,8 @@ async def asset_channel(
         except Exception:
             folder = None
 
-        if folder is not None and not any(
-            peer.id == getattr(folder_peer, "channel_id", None)
+        if folder is not None and all(
+            peer.id != getattr(folder_peer, "channel_id", None)
             for folder_peer in folder.include_peers
         ):
             folder.include_peers += [await client.get_input_entity(peer)]
@@ -1421,8 +1415,17 @@ def find_caller(
         None,
     )
 
-    if not caller:
-        return next(
+    return (
+        next(
+            (
+                getattr(cls_, caller.function, None)
+                for cls_ in caller.frame.f_globals.values()
+                if inspect.isclass(cls_) and issubclass(cls_, Module)
+            ),
+            None,
+        )
+        if caller
+        else next(
             (
                 frame_info.frame.f_locals["func"]
                 for frame_info in stack or inspect.stack()
@@ -1430,19 +1433,13 @@ def find_caller(
                 and frame_info.function == "future_dispatcher"
                 and (
                     "CommandDispatcher"
-                    in getattr(getattr(frame_info, "frame", None), "f_globals", {})
+                    in getattr(
+                        getattr(frame_info, "frame", None), "f_globals", {}
+                    )
                 )
             ),
             None,
         )
-
-    return next(
-        (
-            getattr(cls_, caller.function, None)
-            for cls_ in caller.frame.f_globals.values()
-            if inspect.isclass(cls_) and issubclass(cls_, Module)
-        ),
-        None,
     )
 
 
