@@ -6,10 +6,11 @@
 
 import json
 import logging
-import os
 import typing
+from pathlib import Path
 
 import requests
+from ruamel.yaml import YAML
 
 from . import utils
 from .database import Database
@@ -17,49 +18,57 @@ from .tl_cache import CustomTelegramClient
 from .types import Module
 
 logger = logging.getLogger(__name__)
+yaml = YAML(typ="safe")
+
+PACKS = Path(__file__).parent / "langpacks"
+SUPPORTED_LANGUAGES = {
+    "en": "🇬🇧 English",
+    "ru": "🇷🇺 Русский",
+    "fr": "🇫🇷 Français",
+    "it": "🇮🇹 Italiano",
+    "de": "🇩🇪 Deutsch",
+    "tr": "🇹🇷 Türkçe",
+    "uz": "🇺🇿 O'zbekcha",
+    "es": "🇪🇸 Español",
+    "kk": "🇰🇿 Қазақша",
+    "tt": "🥟 Татарча",
+}
 
 
-class Translator:
-    def __init__(self, client: CustomTelegramClient, db: Database):
-        self._client = client
-        self.db = db
+def fmt(text: str, kwargs: dict) -> str:
+    for key, value in kwargs.items():
+        if f"{{{key}}}" in text:
+            text = text.replace(f"{{{key}}}", str(value))
 
-    async def init(self) -> bool:
-        self._data = {}
-        if not (lang := self.db.get(__name__, "lang", False)):
-            return False
+    return text
 
-        for language in lang.split(" "):
-            if utils.check_url(language):
-                try:
-                    ndata = (await utils.run_sync(requests.get, lang)).json()
-                except Exception:
-                    logger.exception("Unable to decode %s", lang)
-                    continue
 
-                data = ndata.get("data", ndata)
+class BaseTranslator:
+    def _get_pack_content(
+        self,
+        pack: Path,
+        prefix: str = "hikka.modules.",
+    ) -> typing.Optional[dict]:
+        return self._get_pack_raw(pack.read_text(), pack.suffix, prefix)
 
-                if any(not isinstance(i, str) for i in data.values()):
-                    logger.exception(
-                        "Translation pack format is not valid (typecheck failed)"
-                    )
-                    continue
+    def _get_pack_raw(
+        self,
+        content: str,
+        suffix: str,
+        prefix: str = "hikka.modules.",
+    ) -> typing.Optional[dict]:
+        if suffix == ".json":
+            return json.loads(content)
 
-                self._data.update(data)
-                continue
-
-            possible_pack_path = os.path.join(
-                utils.get_base_dir(),
-                f"langpacks/{language}.json",
-            )
-
-            if os.path.isfile(possible_pack_path):
-                with open(possible_pack_path, "r") as f:
-                    self._data.update(json.load(f))
-
-                return True
-
-        return True
+        return {
+            (
+                f"{module.strip('$')}.{key}"
+                if module.startswith("$")
+                else f"{prefix}{module}.{key}"
+            ): value
+            for module, strings in yaml.load(content).items()
+            for key, value in strings.items()
+        }
 
     def getkey(self, key: str) -> typing.Any:
         return self._data.get(key, False)
@@ -68,8 +77,67 @@ class Translator:
         return self.getkey(text) or text
 
 
+class Translator(BaseTranslator):
+    def __init__(self, client: CustomTelegramClient, db: Database):
+        self._client = client
+        self.db = db
+        self._data = {}
+        self.raw_data = {}
+
+    async def init(self) -> bool:
+        self._data = self._get_pack_content(PACKS / "en.yml")
+        self.raw_data["en"] = self._data
+        if not (lang := self.db.get(__name__, "lang", False)):
+            return False
+
+        any_ = False
+        for language in lang.split():
+            if utils.check_url(language):
+                try:
+                    data = self._get_pack_raw(
+                        (await utils.run_sync(requests.get, language)).text,
+                        language.split(".")[-1],
+                    )
+                except Exception:
+                    logger.exception("Unable to decode %s", language)
+                    continue
+
+                self._data.update(data)
+                self.raw_data[language] = data
+                any_ = True
+                continue
+
+            for possible_path in [
+                PACKS / f"{language}.json",
+                PACKS / f"{language}.yml",
+            ]:
+                if possible_path.exists():
+                    data = self._get_pack_content(possible_path)
+                    self._data.update(data)
+                    self.raw_data[language] = data
+                    any_ = True
+
+        return any_
+
+
+class ExternalTranslator(BaseTranslator):
+    def __init__(self):
+        self.data = {}
+        for lang in SUPPORTED_LANGUAGES:
+            self.data[lang] = self._get_pack_content(PACKS / f"{lang}.yml", prefix="")
+
+    def get(self, key: str, lang: str) -> str:
+        return self.data[lang].get(key, False) or key
+
+    def getdict(self, key: str, **kwargs) -> dict:
+        return {
+            lang: fmt(self.data[lang].get(key, False) or key, kwargs)
+            for lang in self.data
+        }
+
+
 class Strings:
-    def __init__(self, mod: Module, translator: Translator):
+    def __init__(self, mod: Module, translator: Translator):  # skipcq: PYL-W0621
         self._mod = mod
         self._translator = translator
 
@@ -77,6 +145,12 @@ class Strings:
             logger.debug("Module %s got empty translator %s", mod, translator)
 
         self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
+
+    def get(self, key: str, lang: typing.Optional[str] = None) -> str:
+        try:
+            return self._translator.raw_data[lang][f"{self._mod.__module__}.{key}"]
+        except KeyError:
+            return self[key]
 
     def __getitem__(self, key: str) -> str:
         return (
@@ -118,3 +192,6 @@ class Strings:
 
     def __iter__(self):
         return self._base_strings.__iter__()
+
+
+translator = ExternalTranslator()

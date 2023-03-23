@@ -20,19 +20,13 @@ except ImportError as e:
 
 import typing
 
-from telethon.errors.rpcerrorlist import ChannelsTooMuchError
-from telethon.tl.types import Message
+from hikkatl.errors.rpcerrorlist import ChannelsTooMuchError
+from hikkatl.tl.types import Message, User
 
 from . import main, utils
 from .pointers import PointerDict, PointerList
 from .tl_cache import CustomTelegramClient
 from .types import JSONSerializable
-
-DATA_DIR = (
-    os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
-    if "DOCKER" not in os.environ
-    else "/data"
-)
 
 logger = logging.getLogger(__name__)
 
@@ -42,16 +36,15 @@ class NoAssetsChannel(Exception):
 
 
 class Database(dict):
-    _next_revision_call = 0
-    _revisions = []
-    _assets = None
-    _me = None
-    _redis = None
-    _saving_task = None
-
     def __init__(self, client: CustomTelegramClient):
         super().__init__()
-        self._client = client
+        self._client: CustomTelegramClient = client
+        self._next_revision_call: int = 0
+        self._revisions: typing.List[dict] = []
+        self._assets: int = None
+        self._me: User = None
+        self._redis: redis.Redis = None
+        self._saving_task: asyncio.Future = None
 
     def __repr__(self):
         return object.__repr__(self)
@@ -79,17 +72,16 @@ class Database(dict):
             return False
 
         await asyncio.sleep(5)
-
         await utils.run_sync(self._redis_save_sync)
-
         logger.debug("Published db to Redis")
-
         self._saving_task = None
         return True
 
     async def redis_init(self) -> bool:
         """Init redis database"""
-        if REDIS_URI := os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
+        if REDIS_URI := (
+            os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")
+        ):
             self._redis = redis.Redis.from_url(REDIS_URI)
         else:
             return False
@@ -99,7 +91,7 @@ class Database(dict):
         if os.environ.get("REDIS_URL") or main.get_config_key("redis_uri"):
             await self.redis_init()
 
-        self._db_path = os.path.join(DATA_DIR, f"config-{self._client.tg_id}.json")
+        self._db_file = main.BASE_PATH / f"config-{self._client.tg_id}.json"
         self.read()
 
         try:
@@ -136,10 +128,11 @@ class Database(dict):
             return
 
         try:
-            with open(self._db_path, "r", encoding="utf-8") as f:
-                self.update(**json.load(f))
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
+            self.update(**json.loads(self._db_file.read_text()))
+        except json.decoder.JSONDecodeError:
             logger.warning("Database read failed! Creating new one...")
+        except FileNotFoundError:
+            logger.debug("Database file not found, creating new one...")
 
     def process_db_autofix(self, db: dict) -> bool:
         if not utils.is_serializable(db):
@@ -168,8 +161,10 @@ class Database(dict):
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
                     logger.warning(
-                        "DbAutoFix: Dropped subkey %s of db key %s, because it is not"
-                        " string or int",
+                        (
+                            "DbAutoFix: Dropped subkey %s of db key %s, because it is"
+                            " not string or int"
+                        ),
                         subkey,
                         key,
                     )
@@ -211,8 +206,7 @@ class Database(dict):
             return True
 
         try:
-            with open(self._db_path, "w", encoding="utf-8") as f:
-                json.dump(self, f, indent=4)
+            self._db_file.write_text(json.dumps(self, indent=4))
         except Exception:
             logger.exception("Database save failed!")
             return False

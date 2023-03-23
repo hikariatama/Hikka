@@ -19,19 +19,19 @@ import re
 import sys
 import typing
 from functools import wraps
+from pathlib import Path
 from types import FunctionType, ModuleType
 from uuid import uuid4
 
-from telethon.tl.tlobject import TLObject
+from hikkatl.tl.tlobject import TLObject
 
-from . import security, utils, validators, version  # skipcq
+from . import security, utils, validators
 from .database import Database
 from .inline.core import InlineManager
 from .translations import Strings, Translator
-from .types import ConfigValue  # skipcq
-from .types import ModuleConfig  # skipcq
 from .types import (
     Command,
+    ConfigValue,
     CoreOverwriteError,
     CoreUnloadError,
     DragonModule,
@@ -41,19 +41,68 @@ from .types import (
     LibraryConfig,
     LoadError,
     Module,
+    ModuleConfig,
     SelfSuspend,
     SelfUnload,
     StopLoop,
     StringLoader,
+    get_callback_handlers,
     get_commands,
     get_inline_handlers,
 )
 
+__all__ = [
+    "Modules",
+    "InfiniteLoop",
+    "Command",
+    "CoreOverwriteError",
+    "CoreUnloadError",
+    "DragonModule",
+    "InlineMessage",
+    "JSONSerializable",
+    "Library",
+    "LibraryConfig",
+    "LoadError",
+    "Module",
+    "SelfSuspend",
+    "SelfUnload",
+    "StopLoop",
+    "StringLoader",
+    "get_commands",
+    "get_inline_handlers",
+    "get_callback_handlers",
+    "validators",
+    "Database",
+    "InlineManager",
+    "Strings",
+    "Translator",
+    "ConfigValue",
+    "ModuleConfig",
+    "owner",
+    "group_owner",
+    "group_admin_add_admins",
+    "group_admin_change_info",
+    "group_admin_ban_users",
+    "group_admin_delete_messages",
+    "group_admin_pin_messages",
+    "group_admin_invite_users",
+    "group_admin",
+    "group_member",
+    "pm",
+    "unrestricted",
+    "inline_everyone",
+    "loop",
+]
+
 logger = logging.getLogger(__name__)
 
 owner = security.owner
+
+# deprecated
 sudo = security.sudo
 support = security.support
+# /deprecated
+
 group_owner = security.group_owner
 group_admin_add_admins = security.group_admin_add_admins
 group_admin_change_info = security.group_admin_change_info
@@ -110,7 +159,7 @@ class InfiniteLoop:
 
     def stop(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(
+            _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -127,7 +176,7 @@ class InfiniteLoop:
 
     def start(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(
+            _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -210,9 +259,8 @@ BASE_DIR = (
 )
 
 LOADED_MODULES_DIR = os.path.join(BASE_DIR, "loaded_modules")
-
-if not os.path.isdir(LOADED_MODULES_DIR):
-    os.mkdir(LOADED_MODULES_DIR, mode=0o755)
+LOADED_MODULES_PATH = Path(LOADED_MODULES_DIR)
+LOADED_MODULES_PATH.mkdir(parents=True, exist_ok=True)
 
 
 def translatable_docstring(cls):
@@ -274,8 +322,7 @@ tds = translatable_docstring  # Shorter name for modules to use
 
 
 def ratelimit(func: Command) -> Command:
-    """Decorator that causes ratelimiting for this command to be enforced more strictly
-    """
+    """Decorator that causes ratelimiting for this command to be enforced more strictly"""
     func.ratelimit = True
     return func
 
@@ -301,6 +348,21 @@ def tag(*tags, **kwarg_tags):
         • `only_channels` - Capture only messages with channels
         • `only_groups` - Capture only messages with groups
         • `only_pm` - Capture only messages with private chats
+        • `no_pm` - Exclude messages with private chats
+        • `no_channels` - Exclude messages with channels
+        • `no_groups` - Exclude messages with groups
+        • `no_inline` - Exclude messages with inline queries
+        • `no_stickers` - Exclude messages with stickers
+        • `no_docs` - Exclude messages with documents
+        • `no_audios` - Exclude messages with audios
+        • `no_videos` - Exclude messages with videos
+        • `no_photos` - Exclude messages with photos
+        • `no_forwards` - Exclude forwarded messages
+        • `no_reply` - Exclude messages with replies
+        • `no_mention` - Exclude messages with mentions
+        • `mention` - Capture only messages with mentions
+        • `only_reply` - Capture only messages with replies
+        • `only_forwards` - Capture only forwarded messages
         • `startswith` - Capture only messages that start with given text
         • `endswith` - Capture only messages that end with given text
         • `contains` - Capture only messages that contain given text
@@ -412,7 +474,7 @@ class Modules:
 
     def __init__(
         self,
-        client: "CustomTelegramClient",  # type: ignore
+        client: "CustomTelegramClient",  # type: ignore  # noqa: F821
         db: Database,
         allclients: list,
         translator: Translator,
@@ -433,7 +495,7 @@ class Modules:
         self.client = client
         self._db = db
         self.db = db
-        self._translator = translator
+        self.translator = translator
         self.secure_boot = False
         asyncio.ensure_future(self._junk_collector())
         self.inline = InlineManager(self.client, self._db, self)
@@ -461,10 +523,12 @@ class Modules:
             self.watchers = watchers
 
             logger.debug(
-                "Reloaded %s commands,"
-                " %s inline handlers,"
-                " %s callback handlers and"
-                " %s watchers",
+                (
+                    "Reloaded %s commands,"
+                    " %s inline handlers,"
+                    " %s callback handlers and"
+                    " %s watchers"
+                ),
                 len(self.commands),
                 len(self.inline_handlers),
                 len(self.callback_handlers),
@@ -494,7 +558,7 @@ class Modules:
                 []
                 if self.secure_boot
                 else [
-                    os.path.join(LOADED_MODULES_DIR, mod)
+                    (LOADED_MODULES_PATH / mod).resolve()
                     for mod in filter(
                         lambda x: (
                             x.endswith(f"{self.client.tg_id}.py")
@@ -519,7 +583,7 @@ class Modules:
         origin: str = "<core>",
     ) -> typing.List[Module]:
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         loaded = []
 
@@ -533,12 +597,11 @@ class Modules:
 
                 logger.debug("Loading %s from filesystem", module_name)
 
-                with open(mod, "r") as file:
-                    spec = importlib.machinery.ModuleSpec(
-                        module_name,
-                        StringLoader(file.read(), user_friendly_origin),
-                        origin=user_friendly_origin,
-                    )
+                spec = importlib.machinery.ModuleSpec(
+                    module_name,
+                    StringLoader(Path(mod).read_text(), user_friendly_origin),
+                    origin=user_friendly_origin,
+                )
 
                 loaded += [await self.register_module(spec, module_name, origin)]
             except Exception as e:
@@ -596,7 +659,7 @@ class Modules:
     ) -> typing.Union[Module, typing.Tuple[ModuleType, DragonModule]]:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
@@ -636,8 +699,7 @@ class Modules:
             )
 
             if origin == "<string>":
-                with open(path, "w") as f:
-                    f.write(spec.loader.data.decode("utf-8"))
+                Path(path).write_text(spec.loader.data.decode())
 
                 logger.debug("Saved class %s to path %s", cls_name, path)
 
@@ -664,7 +726,7 @@ class Modules:
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if instance.__origin__.startswith("<core"):
             self._core_commands += list(
@@ -764,7 +826,7 @@ class Modules:
     def register_watchers(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         for _watcher in self.watchers:
             if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
@@ -825,7 +887,7 @@ class Modules:
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         instance.allmodules = self
         instance.internal_init()
@@ -834,9 +896,11 @@ class Modules:
             if module.__class__.__name__ == instance.__class__.__name__:
                 if module.__origin__.startswith("<core"):
                     raise CoreOverwriteError(
-                        module=module.__class__.__name__[:-3]
-                        if module.__class__.__name__.endswith("Mod")
-                        else module.__class__.__name__
+                        module=(
+                            module.__class__.__name__[:-3]
+                            if module.__class__.__name__.endswith("Mod")
+                            else module.__class__.__name__
+                        )
                     )
 
                 logger.debug("Removing module %s for update", module)
@@ -908,7 +972,7 @@ class Modules:
     def send_config_one(self, mod: Module, skip_hook: bool = False):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if hasattr(mod, "config"):
             modcfg = self._db.get(
@@ -941,10 +1005,11 @@ class Modules:
         if skip_hook:
             return
 
-        if hasattr(mod, "strings"):
-            mod.strings = Strings(mod, self._translator)
+        if not hasattr(mod, "strings"):
+            mod.strings = {}
 
-        mod.translator = self._translator
+        mod.strings = Strings(mod, self.translator)
+        mod.translator = self.translator
 
         try:
             mod.config_complete()
@@ -952,14 +1017,19 @@ class Modules:
             logger.exception("Failed to send mod config complete signal due to %s", e)
             raise
 
+    async def send_ready_one_wrapper(self, *args, **kwargs):
+        """Wrapper for send_ready_one"""
+        try:
+            await self.send_ready_one(*args, **kwargs)
+        except Exception as e:
+            logger.exception("Failed to send mod init complete signal due to %s", e)
+
     async def send_ready(self):
         """Send all data to all modules"""
         await self.inline.register_manager()
-
-        try:
-            await asyncio.gather(*[self.send_ready_one(mod) for mod in self.modules])
-        except Exception as e:
-            logger.exception("Failed to send mod init complete signal due to %s", e)
+        await asyncio.gather(
+            *[self.send_ready_one_wrapper(mod) for mod in self.modules]
+        )
 
     async def send_ready_one(
         self,
@@ -968,7 +1038,7 @@ class Modules:
         from_dlmod: bool = False,
     ):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if from_dlmod:
             try:
@@ -998,8 +1068,10 @@ class Modules:
             return
         except Exception as e:
             logger.exception(
-                "Failed to send mod init complete signal for %s due to %s,"
-                " attempting unload",
+                (
+                    "Failed to send mod init complete signal for %s due to %s,"
+                    " attempting unload"
+                ),
                 mod,
                 e,
             )
@@ -1037,7 +1109,7 @@ class Modules:
         worked = []
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         for module in self.modules:
             if classname.lower() in (
@@ -1137,7 +1209,7 @@ class Modules:
         """Unnecessary placeholder for logging"""
 
     async def reload_translations(self) -> bool:
-        if not await self._translator.init():
+        if not await self.translator.init():
             return False
 
         for module in self.modules:

@@ -41,7 +41,7 @@ class LocalStorage:
     def _get_path(self, repo: str, module_name: str) -> str:
         return os.path.join(
             self._path,
-            hashlib.sha256(f"{repo}_{module_name}".encode("utf-8")).hexdigest() + ".py",
+            hashlib.sha256(f"{repo}_{module_name}".encode()).hexdigest() + ".py",
         )
 
     def save(self, repo: str, module_name: str, module_code: str):
@@ -104,7 +104,7 @@ class RemoteStorage:
             code = self._local_storage.fetch(repo, module_name)
 
             if code:
-                sha = hashlib.sha256(code.encode("utf-8")).hexdigest()
+                sha = hashlib.sha256(code.encode()).hexdigest()
                 if sha != info["sha"]:
                     logger.debug("Module %s from main repo is outdated.", name)
                     code = None

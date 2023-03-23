@@ -27,6 +27,7 @@
 import argparse
 import asyncio
 import collections
+import contextlib
 import importlib
 import json
 import logging
@@ -36,23 +37,33 @@ import socket
 import sqlite3
 import sys
 import typing
+from getpass import getpass
 from math import ceil
+from pathlib import Path
 
-import telethon
-from telethon import events
-from telethon.errors.rpcerrorlist import (
+import hikkatl
+from hikkatl import events
+from hikkatl.errors import (
     ApiIdInvalidError,
     AuthKeyDuplicatedError,
+    FloodWaitError,
+    PasswordHashInvalidError,
     PhoneNumberInvalidError,
+    SessionPasswordNeededError,
 )
-from telethon.network.connection import (
+from hikkatl.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from telethon.sessions import MemorySession, SQLiteSession
+from hikkatl.password import compute_check
+from hikkatl.sessions import MemorySession, SQLiteSession
+from hikkatl.tl.functions.account import GetPasswordRequest
+from hikkatl.tl.functions.auth import CheckPasswordRequest
 
 from . import database, loader, utils, version
+from ._internal import print_banner
 from .dispatcher import CommandDispatcher
+from .qr import QRCode
 from .tl_cache import CustomTelegramClient
 from .translations import Translator
 from .version import __version__
@@ -68,10 +79,79 @@ else:
 BASE_DIR = (
     "/data"
     if "DOCKER" in os.environ
-    else os.path.normpath(os.path.join(utils.get_base_dir(), ".."))
+    else os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 )
 
-CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
+BASE_PATH = Path(BASE_DIR)
+CONFIG_PATH = BASE_PATH / "config.json"
+
+IS_TERMUX = "com.termux" in os.environ.get("PREFIX", "")
+IS_CODESPACES = "CODESPACES" in os.environ
+IS_DOCKER = "DOCKER" in os.environ
+IS_RAILWAY = "RAILWAY" in os.environ
+IS_GOORM = "GOORM" in os.environ
+IS_LAVHOST = "LAVHOST" in os.environ
+IS_WSL = False
+with contextlib.suppress(Exception):
+    from platform import uname
+
+    if "microsoft-standard" in uname().release:
+        IS_WSL = True
+
+# fmt: off
+LATIN_MOCK = [
+    "Amor", "Arbor", "Astra", "Aurum", "Bellum", "Caelum",
+    "Calor", "Candor", "Carpe", "Celer", "Certo", "Cibus",
+    "Civis", "Clemens", "Coetus", "Cogito", "Conexus",
+    "Consilium", "Cresco", "Cura", "Cursus", "Decus",
+    "Deus", "Dies", "Digitus", "Discipulus", "Dominus",
+    "Donum", "Dulcis", "Durus", "Elementum", "Emendo",
+    "Ensis", "Equus", "Espero", "Fidelis", "Fides",
+    "Finis", "Flamma", "Flos", "Fortis", "Frater", "Fuga",
+    "Fulgeo", "Genius", "Gloria", "Gratia", "Gravis",
+    "Habitus", "Honor", "Hora", "Ignis", "Imago",
+    "Imperium", "Inceptum", "Infinitus", "Ingenium",
+    "Initium", "Intra", "Iunctus", "Iustitia", "Labor",
+    "Laurus", "Lectus", "Legio", "Liberi", "Libertas",
+    "Lumen", "Lux", "Magister", "Magnus", "Manus",
+    "Memoria", "Mens", "Mors", "Mundo", "Natura",
+    "Nexus", "Nobilis", "Nomen", "Novus", "Nox",
+    "Oculus", "Omnis", "Opus", "Orbis", "Ordo", "Os",
+    "Pax", "Perpetuus", "Persona", "Petra", "Pietas",
+    "Pons", "Populus", "Potentia", "Primus", "Proelium",
+    "Pulcher", "Purus", "Quaero", "Quies", "Ratio",
+    "Regnum", "Sanguis", "Sapientia", "Sensus", "Serenus",
+    "Sermo", "Signum", "Sol", "Solus", "Sors", "Spes",
+    "Spiritus", "Stella", "Summus", "Teneo", "Terra",
+    "Tigris", "Trans", "Tribuo", "Tristis", "Ultimus",
+    "Unitas", "Universus", "Uterque", "Valde", "Vates",
+    "Veritas", "Verus", "Vester", "Via", "Victoria",
+    "Vita", "Vox", "Vultus", "Zephyrus"
+]
+# fmt: on
+
+
+def generate_app_name() -> str:
+    """
+    Generate random app name
+    :return: Random app name
+    :example: "Cresco Cibus Consilium"
+    """
+    return " ".join(random.choices(LATIN_MOCK, k=3))
+
+
+def get_app_name() -> str:
+    """
+    Generates random app name or gets the saved one of present
+    :return: App name
+    :example: "Cresco Cibus Consilium"
+    """
+    if not (app_name := get_config_key("app_name")):
+        app_name = generate_app_name()
+        save_config_key("app_name", app_name)
+
+    return app_name
+
 
 try:
     import uvloop
@@ -81,11 +161,11 @@ except Exception:
     pass
 
 
-def run_config(data_root: str):
+def run_config():
     """Load configurator.py"""
     from . import configurator
 
-    return configurator.api_config(data_root)
+    return configurator.api_config(IS_TERMUX or None)
 
 
 def get_config_key(key: str) -> typing.Union[str, bool]:
@@ -95,10 +175,7 @@ def get_config_key(key: str) -> typing.Union[str, bool]:
     :return: Value of config key or `False`, if it doesn't exist
     """
     try:
-        with open(CONFIG_PATH, "r") as f:
-            config = json.load(f)
-
-        return config.get(key, False)
+        return json.loads(CONFIG_PATH.read_text()).get(key, False)
     except FileNotFoundError:
         return False
 
@@ -112,8 +189,7 @@ def save_config_key(key: str, value: str) -> bool:
     """
     try:
         # Try to open our newly created json config
-        with open(CONFIG_PATH, "r") as f:
-            config = json.load(f)
+        config = json.loads(CONFIG_PATH.read_text())
     except FileNotFoundError:
         # If it doesn't exist, just default config to none
         # It won't cause problems, bc after new save
@@ -122,11 +198,8 @@ def save_config_key(key: str, value: str) -> bool:
 
     # Assign config value
     config[key] = value
-
     # And save config
-    with open(CONFIG_PATH, "w") as f:
-        json.dump(config, f, indent=4)
-
+    CONFIG_PATH.write_text(json.dumps(config, indent=4))
     return True
 
 
@@ -142,22 +215,16 @@ def gen_port(cfg: str = "port", no8080: bool = False) -> int:
         return 8080
 
     # But for own server we generate new free port, and assign to it
-
-    port = get_config_key(cfg)
-    if port:
+    if port := get_config_key(cfg):
         return port
 
     # If we didn't get port from config, generate new one
     # First, try to randomly get port
-    port = random.randint(1024, 65536)
-
-    # Then ensure it's free
-    while not socket.socket(
-        socket.AF_INET,
-        socket.SOCK_STREAM,
-    ).connect_ex(("localhost", port)):
-        # Until we find the free port, generate new one
-        port = random.randint(1024, 65536)
+    while port := random.randint(1024, 65536):
+        if socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect_ex(
+            ("localhost", port)
+        ):
+            break
 
     return port
 
@@ -177,6 +244,15 @@ def parse_arguments() -> dict:
     )
     parser.add_argument("--phone", "-p", action="append")
     parser.add_argument("--no-web", dest="disable_web", action="store_true")
+    parser.add_argument(
+        "--qr-login",
+        dest="qr_login",
+        action="store_true",
+        help=(
+            "Use QR code login instead of phone number (will only work if scanned from"
+            " another device)"
+        ),
+    )
     parser.add_argument(
         "--data-root",
         dest="data_root",
@@ -238,7 +314,7 @@ class SuperList(list):
         if hasattr(list, attr):
             return list.__getattribute__(self, attr)
 
-        for obj in self:  # TODO: find other way
+        for obj in self:
             attribute = getattr(obj, attr)
             if callable(attribute):
                 if asyncio.iscoroutinefunction(attribute):
@@ -269,7 +345,12 @@ class Hikka:
     omit_log = False
 
     def __init__(self):
+        global BASE_DIR, BASE_PATH, CONFIG_PATH
         self.arguments = parse_arguments()
+        if self.arguments.data_root:
+            BASE_DIR = self.arguments.data_root
+            BASE_PATH = Path(BASE_DIR)
+            CONFIG_PATH = BASE_PATH / "config.json"
         self.loop = asyncio.get_event_loop()
 
         self.clients = SuperList()
@@ -311,13 +392,13 @@ class Hikka:
         self.sessions += [
             SQLiteSession(
                 os.path.join(
-                    self.arguments.data_root or BASE_DIR,
+                    BASE_DIR,
                     session.rsplit(".session", maxsplit=1)[0],
                 )
             )
             for session in filter(
                 lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                os.listdir(self.arguments.data_root or BASE_DIR),
+                os.listdir(BASE_DIR),
             )
         ]
 
@@ -325,15 +406,25 @@ class Hikka:
         """Get API Token from disk or environment"""
         api_token_type = collections.namedtuple("api_token", ("ID", "HASH"))
 
-        # Try to retrieve credintials from file, or from env vars
+        # Try to retrieve credintials from config, or from env vars
         try:
-            with open(
-                os.path.join(
-                    self.arguments.data_root or BASE_DIR,
-                    "api_token.txt",
+            # Legacy migration
+            if not get_config_key("api_id"):
+                api_id, api_hash = (
+                    line.strip()
+                    for line in (Path(BASE_DIR) / "api_token.txt")
+                    .read_text()
+                    .splitlines()
                 )
-            ) as f:
-                api_token = api_token_type(*[line.strip() for line in f.readlines()])
+                save_config_key("api_id", int(api_id))
+                save_config_key("api_hash", api_hash)
+                (Path(BASE_DIR) / "api_token.txt").unlink()
+                logging.debug("Migrated api_token.txt to config.json")
+
+            api_token = api_token_type(
+                get_config_key("api_id"),
+                get_config_key("api_hash"),
+            )
         except FileNotFoundError:
             try:
                 from . import api_token
@@ -350,34 +441,33 @@ class Hikka:
 
     def _init_web(self):
         """Initialize web"""
-        if not web_available or getattr(self.arguments, "disable_web", False):
+        if (
+            not web_available
+            or getattr(self.arguments, "disable_web", False)
+            or IS_TERMUX
+        ):
             self.web = None
             return
 
         self.web = core.Web(
-            data_root=self.arguments.data_root,
+            data_root=BASE_DIR,
             api_token=self.api_token,
             proxy=self.proxy,
             connection=self.conn,
         )
 
-    def _get_token(self):
+    async def _get_token(self):
         """Reads or waits for user to enter API credentials"""
         while self.api_token is None:
             if self.arguments.no_auth:
                 return
             if self.web:
-                self.loop.run_until_complete(
-                    self.web.start(
-                        self.arguments.port,
-                        proxy_pass=True,
-                    )
-                )
-                self.loop.run_until_complete(self._web_banner())
-                self.loop.run_until_complete(self.web.wait_for_api_token_setup())
+                await self.web.start(self.arguments.port, proxy_pass=True)
+                await self._web_banner()
+                await self.web.wait_for_api_token_setup()
                 self.api_token = self.web.api_token
             else:
-                run_config(self.arguments.data_root)
+                run_config()
                 importlib.invalidate_caches()
                 self._get_api_token()
 
@@ -385,7 +475,9 @@ class Hikka:
         if hasattr(client, "_tg_id"):
             telegram_id = client._tg_id
         else:
-            me = await client.get_me()
+            if not (me := await client.get_me()):
+                raise RuntimeError("Attempted to save non-inited session")
+
             telegram_id = me.id
             client._tg_id = telegram_id
             client.tg_id = telegram_id
@@ -393,7 +485,7 @@ class Hikka:
 
         session = SQLiteSession(
             os.path.join(
-                self.arguments.data_root or BASE_DIR,
+                BASE_DIR,
                 f"hikka-{telegram_id}",
             )
         )
@@ -435,53 +527,136 @@ class Hikka:
 
         return False
 
-    def _initial_setup(self) -> bool:
+    async def _initial_setup(self) -> bool:
         """Responsible for first start"""
         if self.arguments.no_auth:
             return False
 
         if not self.web:
-            try:
-                phone = input("Phone: ")
-                client = CustomTelegramClient(
-                    MemorySession(),
-                    self.api_token.ID,
-                    self.api_token.HASH,
-                    connection=self.conn,
-                    proxy=self.proxy,
-                    connection_retries=None,
-                    device_model=(
-                        f"Hikka on {utils.get_named_platform().split(maxsplit=1)[1]}"
-                    ),
-                    app_version=(
-                        f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}"
-                    ),
+            client = CustomTelegramClient(
+                MemorySession(),
+                self.api_token.ID,
+                self.api_token.HASH,
+                connection=self.conn,
+                proxy=self.proxy,
+                connection_retries=None,
+                device_model=get_app_name(),
+                system_version="Windows 10",
+                app_version=".".join(map(str, __version__)) + " x64",
+                lang_code="en",
+                system_lang_code="en-US",
+            )
+            await client.connect()
+
+            print(
+                ("\033[0;96m{}\033[0m" if IS_TERMUX else "{}").format(
+                    "You can use QR-code to login from another device (your friend's"
+                    " phone, for example)."
+                )
+            )
+
+            if (
+                input(
+                    "\033[0;96mUse QR code? [y/N]: \033[0m"
+                    if IS_TERMUX
+                    else "Use QR code? [y/N]: "
+                ).lower()
+                != "y"
+            ):
+                phone = input(
+                    "\033[0;96mEnter phone: \033[0m" if IS_TERMUX else "Enter phone: "
                 )
 
-                client.start(phone)
+                await client.start(phone)
 
-                asyncio.ensure_future(self.save_client_session(client))
-
+                await self.save_client_session(client)
                 self.clients += [client]
-            except (EOFError, OSError):
-                raise
+                return True
 
+            print("\033[0;96mLoading QR code...\033[0m")
+            qr_login = await client.qr_login()
+
+            def print_qr():
+                qr = QRCode()
+                qr.add_data(qr_login.url)
+                print("\033[2J\033[3;1f")
+                qr.print_ascii(invert=True)
+                print("\033[0;96mScan the QR code above to log in.\033[0m")
+
+            async def qr_login_poll() -> bool:
+                logged_in = False
+                while not logged_in:
+                    try:
+                        logged_in = await qr_login.wait(10)
+                    except asyncio.TimeoutError:
+                        try:
+                            await qr_login.recreate()
+                            print_qr()
+                        except SessionPasswordNeededError:
+                            return True
+                    except SessionPasswordNeededError:
+                        return True
+
+                return False
+
+            if await qr_login_poll():
+                print_banner("2fa.txt")
+                password = await client(GetPasswordRequest())
+                while True:
+                    _2fa = getpass(
+                        f"\033[0;96mEnter 2FA password ({password.hint}): \033[0m"
+                        if IS_TERMUX
+                        else f"Enter 2FA password ({password.hint}): "
+                    )
+                    try:
+                        await client._on_login(
+                            (
+                                await client(
+                                    CheckPasswordRequest(
+                                        compute_check(password, _2fa.strip())
+                                    )
+                                )
+                            ).user
+                        )
+                    except PasswordHashInvalidError:
+                        print("\033[0;91mInvalid 2FA password!\033[0m")
+                    except FloodWaitError as e:
+                        seconds, minutes, hours = (
+                            e.seconds % 3600 % 60,
+                            e.seconds % 3600 // 60,
+                            e.seconds // 3600,
+                        )
+                        seconds, minutes, hours = (
+                            f"{seconds} second(-s)",
+                            f"{minutes} minute(-s) " if minutes else "",
+                            f"{hours} hour(-s) " if hours else "",
+                        )
+                        print(
+                            "\033[0;91mYou got FloodWait error! Please wait"
+                            f" {hours}{minutes}{seconds}\033[0m"
+                        )
+                        return False
+                    else:
+                        break
+
+            print_banner("success.txt")
+            print("\033[0;92mLogged in successfully!\033[0m")
+            await self.save_client_session(client)
+            self.clients += [client]
             return True
 
         if not self.web.running.is_set():
-            self.loop.run_until_complete(
-                self.web.start(
-                    self.arguments.port,
-                    proxy_pass=True,
-                )
+            await self.web.start(
+                self.arguments.port,
+                proxy_pass=True,
             )
-            asyncio.ensure_future(self._web_banner())
+            await self._web_banner()
 
-        self.loop.run_until_complete(self.web.wait_for_clients_setup())
+        await self.web.wait_for_clients_setup()
 
         return True
 
-    def _init_clients(self) -> bool:
+    async def _init_clients(self) -> bool:
         """
         Reads session from disk and inits them
         :returns: `True` if at least one client started successfully
@@ -495,27 +670,42 @@ class Hikka:
                     connection=self.conn,
                     proxy=self.proxy,
                     connection_retries=None,
-                    device_model="Hikka",
+                    device_model=get_app_name(),
+                    system_version="Windows 10",
+                    app_version=".".join(map(str, __version__)) + " x64",
+                    lang_code="en",
+                    system_lang_code="en-US",
                 )
 
-                client.start(phone=raise_auth if self.web else lambda: input("Phone: "))
-
+                await client.start(
+                    phone=(
+                        raise_auth
+                        if self.web
+                        else lambda: input(
+                            "\033[0;96mEnter phone: \033[0m"
+                            if IS_TERMUX
+                            else "Enter phone: "
+                        )
+                    )
+                )
                 client.phone = "never gonna give you up"
 
                 self.clients += [client]
             except sqlite3.OperationalError:
                 logging.error(
-                    "Check that this is the only instance running. "
-                    "If that doesn't help, delete the file '%s'",
+                    (
+                        "Check that this is the only instance running. "
+                        "If that doesn't help, delete the file '%s'"
+                    ),
                     session.filename,
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
-                os.remove(os.path.join(BASE_DIR, session.filename))
+                Path(session.filename).unlink(missing_ok=True)
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
                 # Bad API hash/ID
-                run_config(self.arguments.data_root)
+                run_config()
                 return False
             except PhoneNumberInvalidError:
                 logging.error(
@@ -531,11 +721,6 @@ class Hikka:
                 self.sessions.remove(session)
 
         return bool(self.sessions)
-
-    def _init_loop(self):
-        """Initializes main event loop and starts handler for each client"""
-        loops = [self.amain_wrapper(client) for client in self.clients]
-        self.loop.run_until_complete(asyncio.gather(*loops))
 
     async def amain_wrapper(self, client: CustomTelegramClient):
         """Wrapper around amain"""
@@ -667,17 +852,15 @@ class Hikka:
 
         await client.run_until_disconnected()
 
-    def main(self):
+    async def _main(self):
         """Main entrypoint"""
         self._init_web()
         save_config_key("port", self.arguments.port)
-        self._get_token()
+        await self._get_token()
 
         if (
-            not self.clients  # Search for already inited clients
-            and not self.sessions  # Search for already added sessions
-            or not self._init_clients()  # Attempt to read sessions from env
-        ) and not self._initial_setup():  # Otherwise attempt to run setup
+            not self.clients and not self.sessions or not await self._init_clients()
+        ) and not await self._initial_setup():
             return
 
         self.loop.set_exception_handler(
@@ -688,9 +871,14 @@ class Hikka:
             )
         )
 
-        self._init_loop()
+        await asyncio.gather(*[self.amain_wrapper(client) for client in self.clients])
+
+    def main(self):
+        """Main entrypoint"""
+        self.loop.run_until_complete(self._main())
+        self.loop.close()
 
 
-telethon.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
+hikkatl.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
 
 hikka = Hikka()

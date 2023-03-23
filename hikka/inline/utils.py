@@ -8,6 +8,7 @@ import asyncio
 import contextlib
 import functools
 import io
+import itertools
 import logging
 import os
 import re
@@ -32,7 +33,7 @@ from aiogram.utils.exceptions import (
     MessageNotModified,
     RetryAfter,
 )
-from telethon.utils import resolve_inline_message_id
+from hikkatl.utils import resolve_inline_message_id
 
 from .. import utils
 from ..types import HikkaReplyMarkup
@@ -192,9 +193,11 @@ class Utils(InlineUnit):
                         ]
                     else:
                         logger.warning(
-                            "Button have not been added to "
-                            "form, because it is not structured "
-                            "properly. %s",
+                            (
+                                "Button have not been added to "
+                                "form, because it is not structured "
+                                "properly. %s"
+                            ),
                             button,
                         )
                 except KeyError:
@@ -220,12 +223,26 @@ class Utils(InlineUnit):
     async def _answer_unit_handler(self, call: InlineCall, text: str, show_alert: bool):
         await call.answer(text, show_alert=show_alert)
 
+    def _reverse_method_lookup(self, needle: callable, /) -> typing.Optional[str]:
+        return next(
+            (
+                name
+                for name, method in itertools.chain(
+                    self._allmodules.inline_handlers.items(),
+                    self._allmodules.callback_handlers.items(),
+                )
+                if method == needle
+            ),
+            None,
+        )
+
     async def check_inline_security(self, *, func: typing.Callable, user: int) -> bool:
         """Checks if user with id `user` is allowed to run function `func`"""
         return await self._client.dispatcher.security.check(
             message=None,
             func=func,
             user_id=user,
+            inline_cmd=self._reverse_method_lookup(func),
         )
 
     def _find_caller_sec_map(self) -> typing.Optional[typing.Callable[[], int]]:
@@ -371,7 +388,6 @@ class Utils(InlineUnit):
             )
             return False
 
-        # If passed `photo` is gif
         try:
             path = urlparse(photo).path
             ext = os.path.splitext(path)[1]
@@ -529,8 +545,7 @@ class Utils(InlineUnit):
         chat_id: typing.Optional[int] = None,
         message_id: typing.Optional[int] = None,
     ) -> bool:
-        """Params `self`, `unit_id` are for internal use only, do not try to pass them
-        """
+        """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
         if getattr(getattr(call, "message", None), "chat", None):
             try:
                 await self.bot.delete_message(
@@ -566,8 +581,7 @@ class Utils(InlineUnit):
         return True
 
     async def _unload_unit(self, unit_id: str) -> bool:
-        """Params `self`, `unit_id` are for internal use only, do not try to pass them
-        """
+        """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
         try:
             if "on_unload" in self._units[unit_id] and callable(
                 self._units[unit_id]["on_unload"]
@@ -597,13 +611,15 @@ class Utils(InlineUnit):
         if total_pages <= 5:
             return [
                 [
-                    {"text": number, "args": (number - 1,), "callback": callback}
-                    if number != current_page
-                    else {
-                        "text": f"· {number} ·",
-                        "args": (number - 1,),
-                        "callback": callback,
-                    }
+                    (
+                        {"text": number, "args": (number - 1,), "callback": callback}
+                        if number != current_page
+                        else {
+                            "text": f"· {number} ·",
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                    )
                     for number in range(1, total_pages + 1)
                 ]
             ]
@@ -611,29 +627,35 @@ class Utils(InlineUnit):
         if current_page <= 3:
             return [
                 [
-                    {
-                        "text": f"· {number} ·",
-                        "args": (number - 1,),
-                        "callback": callback,
-                    }
-                    if number == current_page
-                    else {
-                        "text": f"{number} ›",
-                        "args": (number - 1,),
-                        "callback": callback,
-                    }
-                    if number == 4
-                    else {
-                        "text": f"{total_pages} »",
-                        "args": (total_pages - 1,),
-                        "callback": callback,
-                    }
-                    if number == 5
-                    else {
-                        "text": number,
-                        "args": (number - 1,),
-                        "callback": callback,
-                    }
+                    (
+                        {
+                            "text": f"· {number} ·",
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                        if number == current_page
+                        else (
+                            {
+                                "text": f"{number} ›",
+                                "args": (number - 1,),
+                                "callback": callback,
+                            }
+                            if number == 4
+                            else (
+                                {
+                                    "text": f"{total_pages} »",
+                                    "args": (total_pages - 1,),
+                                    "callback": callback,
+                                }
+                                if number == 5
+                                else {
+                                    "text": number,
+                                    "args": (number - 1,),
+                                    "callback": callback,
+                                }
+                            )
+                        )
+                    )
                     for number in range(1, 6)
                 ]
             ]
@@ -649,17 +671,19 @@ class Utils(InlineUnit):
                     },
                 ]
                 + [
-                    {
-                        "text": f"· {number} ·",
-                        "args": (number - 1,),
-                        "callback": callback,
-                    }
-                    if number == current_page
-                    else {
-                        "text": number,
-                        "args": (number - 1,),
-                        "callback": callback,
-                    }
+                    (
+                        {
+                            "text": f"· {number} ·",
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                        if number == current_page
+                        else {
+                            "text": number,
+                            "args": (number - 1,),
+                            "callback": callback,
+                        }
+                    )
                     for number in range(total_pages - 2, total_pages + 1)
                 ]
             ]

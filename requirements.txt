@@ -1,7 +1,6 @@
-hikka-tl==1.24.14
-hikka-pyro==2.0.66
+hikka-tl-new==2.0.3
+hikka-pyro-new==2.0.102
 aiofile==3.8.1
-pythondialog==3.5.3
 gitpython==3.1.27
 meval==2.5
 aiohttp_jinja2==1.5
@@ -13,5 +12,8 @@ grapheme==0.6.0
 emoji==2.1.0
 werkzeug==2.2.2
 psutil==5.9.4
+tgcrypto==1.2.5
+rsa==4.9
+ruamel.yaml==0.17.21
 
 # Python 3.8+

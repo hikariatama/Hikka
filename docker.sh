@@ -3,9 +3,12 @@
 PORT=3429 # Port to run the server on
 echo "EXTERNAL_PORT=$PORT" >.env
 
+eval "mkdir Hikka"
+cd Hikka
+
 touch hikka-install.log
 
-if ! [ -x "$(command -v docker)" ]; then
+if ! [ -x "$(command -v docker-compose)" ]; then
     printf "\033[0;34mInstalling docker...\e[0m"
     if [ -f /etc/debian_version ]; then
         sudo apt-get install \

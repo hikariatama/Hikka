@@ -21,9 +21,9 @@ from aiogram.types import (
     InputTextMessageContent,
 )
 from aiogram.utils.exceptions import RetryAfter
-from telethon.errors.rpcerrorlist import ChatSendInlineForbiddenError
-from telethon.extensions.html import CUSTOM_EMOJIS
-from telethon.tl.types import Message
+from hikkatl.errors.rpcerrorlist import ChatSendInlineForbiddenError
+from hikkatl.extensions.html import CUSTOM_EMOJIS
+from hikkatl.tl.types import Message
 
 from .. import main, utils
 from ..types import HikkaReplyMarkup
@@ -67,7 +67,7 @@ class List(InlineUnit):
         :return: If list is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)
+            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)  # noqa: F841
 
         custom_buttons = self._validate_markup(custom_buttons)
 
@@ -108,8 +108,10 @@ class List(InlineUnit):
 
         if not isinstance(strings, list) or not strings:
             logger.error(
-                "Invalid type for `strings`. Expected `list` with at least one element,"
-                " got `%s`",
+                (
+                    "Invalid type for `strings`. Expected `list` with at least one"
+                    " element, got `%s`"
+                ),
                 type(strings),
             )
             return False
@@ -188,9 +190,7 @@ class List(InlineUnit):
                         if self._client.hikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
-                    + self._client.loader.lookup("translations").strings(
-                        "opening_list"
-                    ),
+                    + self.translator.getkey("inline.opening_list"),
                     **({"reply_to": utils.get_topic(message)} if message.out else {}),
                 )
             except Exception:
@@ -212,21 +212,17 @@ class List(InlineUnit):
             q = await self._client.inline_query(self.bot_username, unit_id)
             m = await q[0].click(
                 utils.get_chat_id(message) if isinstance(message, Message) else message,
-                reply_to=message.reply_to_msg_id
-                if isinstance(message, Message)
-                else None,
+                reply_to=(
+                    message.reply_to_msg_id if isinstance(message, Message) else None
+                ),
             )
         except ChatSendInlineForbiddenError:
-            await answer(
-                self._client.loader.lookup("translations").strings("inline403")
-            )
+            await answer(self.translator.getkey("inline.inline403"))
         except Exception:
             logger.exception("Can't send list")
 
             if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = self._client.loader.lookup("translations").strings(
-                    "invoke_failed"
-                )
+                msg = self.translator.getkey("inline.invoke_failed")
             else:
                 exc = traceback.format_exc()
                 # Remove `Traceback (most recent call last):`

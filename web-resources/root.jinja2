@@ -11,13 +11,14 @@
 {% block head %}
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bodymovin/5.8.1/lottie.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/Snowstorm/20131208/snowstorm-min.js" async></script>
+<script src="{{ static("sakura.min.js") }}"></script>
 <script src="//unpkg.com/@dotlottie/player-component@1.0.0/dist/dotlottie-player.js"></script>
 <script src="//unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
 
-<link href="//cdn.jsdelivr.net/npm/css.gg/icons/all.css" rel="stylesheet">
+<link href="{{ static("sakura.min.css") }}" rel="stylesheet">
+<link href="https://css.gg/css?=arrow-right-r|add|brackets|chevron-right-o|smartphone" rel="stylesheet">
 
-<link rel="stylesheet" href="{{ static("base.css") }}">
+<link rel="stylesheet" href="{{ static("base.min.css") }}">
 {% endblock %}
 
 {% block content %}
@@ -123,10 +124,6 @@
         <label class="phone" for="phone">Phone: </label>
         <input class="phone" id="phone" placeholder="••••••••••••" style="width: 12em;">
       </span>
-      <span id="block_2fa">
-        <label class="_2fa" for="_2fa">2FA Password: </label>
-        <input class="_2fa" id="_2fa" placeholder="password" style="width: 12em;" type="password">
-      </span>
       <span id="block_custom_bot">
         <label class="custom_bot" for="custom_bot">Inline bot username (E.g. @username_bot): </label>
         <input class="custom_bot" id="custom_bot" placeholder="Leave empty to generate automatically"
@@ -213,5 +210,5 @@
       auth_required = response != "1";
     })
 </script>
-<script src="{{ static("root.js") }}"></script>
+<script src="{{ static("root.min.js") }}"></script>
 {% endblock %}

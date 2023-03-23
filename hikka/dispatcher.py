@@ -33,9 +33,9 @@ import sys
 import traceback
 import typing
 
-from telethon import events
-from telethon.errors import FloodWaitError, RPCError
-from telethon.tl.types import Message
+from hikkatl import events
+from hikkatl.errors import FloodWaitError, RPCError
+from hikkatl.tl.types import Message
 
 from . import main, security, utils
 from .database import Database
@@ -59,19 +59,37 @@ ALL_TAGS = [
     "only_photos",
     "only_videos",
     "only_audios",
-    "only_stickers",
     "only_docs",
+    "only_stickers",
     "only_inline",
     "only_channels",
     "only_groups",
     "only_pm",
+    "no_pm",
+    "no_channels",
+    "no_groups",
+    "no_inline",
+    "no_stickers",
+    "no_docs",
+    "no_audios",
+    "no_videos",
+    "no_photos",
+    "no_forwards",
+    "no_reply",
+    "no_mention",
+    "mention",
+    "only_reply",
+    "only_forwards",
     "startswith",
     "endswith",
     "contains",
+    "regex",
     "filter",
     "from_id",
     "chat_id",
-    "regex",
+    "thumb_url",
+    "alias",
+    "aliases",
 ]
 
 
@@ -118,10 +136,7 @@ class CommandDispatcher:
         self.raw_handlers = []
 
     async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
-        if await self.security.check(
-            message,
-            security.OWNER | security.SUDO | security.SUPPORT,
-        ):
+        if await self.security.check(message, security.OWNER):
             return True
 
         func = getattr(func, "__func__", func)
@@ -358,6 +373,19 @@ class CommandDispatcher:
         ):
             return False
 
+        if message.is_channel and message.edit_date and not message.is_group:
+            async for event in self._client.iter_admin_log(
+                utils.get_chat_id(message),
+                limit=10,
+                edit=True,
+            ):
+                if event.action.prev_message.id == message.id:
+                    if event.user_id != self._client.tg_id:
+                        logger.debug("Ignoring edit in channel")
+                        return False
+
+                    break
+
         if (
             message.is_channel
             and message.is_group
@@ -549,6 +577,63 @@ class CommandDispatcher:
                 )
             )
             or (
+                getattr(func, "no_channels", False)
+                and (
+                    getattr(message, "is_channel", False)
+                    or not getattr(message, "is_group", False)
+                )
+            )
+            or (
+                getattr(func, "no_groups", False)
+                and getattr(message, "is_group", False)
+            )
+            or (getattr(func, "no_pm", False) and getattr(message, "is_private", False))
+            or (
+                getattr(func, "no_inline", False)
+                and getattr(message, "via_bot_id", False)
+            )
+            or (
+                getattr(func, "no_stickers", False)
+                and getattr(message, "sticker", False)
+            )
+            or (getattr(func, "no_docs", False) and getattr(message, "document", False))
+            or (
+                getattr(func, "no_audios", False)
+                and utils.mime_type(message).startswith("audio/")
+            )
+            or (
+                getattr(func, "no_photos", False)
+                and utils.mime_type(message).startswith("image/")
+            )
+            or (
+                getattr(func, "no_videos", False)
+                and utils.mime_type(message).startswith("video/")
+            )
+            or (
+                getattr(func, "no_forwards", False)
+                and getattr(message, "fwd_from", False)
+            )
+            or (
+                getattr(func, "no_reply", False)
+                and getattr(message, "reply_to_msg_id", False)
+            )
+            or (
+                getattr(func, "only_forwards", False)
+                and not getattr(message, "fwd_from", False)
+            )
+            or (
+                getattr(func, "only_reply", False)
+                and not getattr(message, "reply_to_msg_id", False)
+            )
+            or (
+                getattr(func, "mention", False)
+                and not getattr(message, "mentioned", False)
+            )
+            or (
+                getattr(func, "no_mention", False)
+                and getattr(message, "mentioned", False)
+            )
+            or (
                 getattr(func, "only_groups", False)
                 and not getattr(message, "is_group", False)
             )
@@ -681,7 +766,7 @@ class CommandDispatcher:
     ):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # skipcq
+        _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
         try:
             await func(message)
         except Exception as e:

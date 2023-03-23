@@ -64,3 +64,19 @@ def restart():
         signal.signal(signal.SIGTERM, get_startup_callback())
 
     die()
+
+
+def print_banner(banner: str):
+    print("\033[2J\033[3;1f")
+    with open(
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "assets",
+                banner,
+            )
+        ),
+        "r",
+    ) as f:
+        print(f.read())

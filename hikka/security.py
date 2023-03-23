@@ -26,10 +26,10 @@ import logging
 import time
 import typing
 
-from telethon.hints import EntityLike
-from telethon.tl.functions.messages import GetFullChatRequest
-from telethon.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
-from telethon.utils import get_display_name
+from hikkatl.hints import EntityLike
+from hikkatl.tl.functions.messages import GetFullChatRequest
+from hikkatl.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
+from hikkatl.utils import get_display_name
 
 from . import main, utils
 from .database import Database
@@ -39,8 +39,6 @@ from .types import Command
 logger = logging.getLogger(__name__)
 
 OWNER = 1 << 0
-SUDO = 1 << 1
-SUPPORT = 1 << 2
 GROUP_OWNER = 1 << 3
 GROUP_ADMIN_ADD_ADMINS = 1 << 4
 GROUP_ADMIN_CHANGE_INFO = 1 << 5
@@ -55,8 +53,6 @@ EVERYONE = 1 << 13
 
 BITMAP = {
     "OWNER": OWNER,
-    "SUDO": SUDO,
-    "SUPPORT": SUPPORT,
     "GROUP_OWNER": GROUP_OWNER,
     "GROUP_ADMIN_ADD_ADMINS": GROUP_ADMIN_ADD_ADMINS,
     "GROUP_ADMIN_CHANGE_INFO": GROUP_ADMIN_CHANGE_INFO,
@@ -80,8 +76,7 @@ GROUP_ADMIN_ANY = (
     | GROUP_ADMIN
 )
 
-DEFAULT_PERMISSIONS = OWNER | SUDO
-
+DEFAULT_PERMISSIONS = OWNER
 PUBLIC_PERMISSIONS = GROUP_OWNER | GROUP_ADMIN_ANY | GROUP_MEMBER | PM
 
 ALL = (1 << 13) - 1
@@ -91,52 +86,56 @@ def owner(func: Command) -> Command:
     return _sec(func, OWNER)
 
 
-def sudo(func: Command) -> Command:
-    return _sec(func, SUDO)
+def _deprecated(name: str) -> callable:
+    def decorator(func: Command) -> Command:
+        logger.debug("Using deprecated decorator `%s`, which will have no effect", name)
+        return func
+
+    return decorator
 
 
-def support(func: Command) -> Command:
-    return _sec(func, SUDO | SUPPORT)
+sudo = _deprecated("sudo")
+support = _deprecated("support")
 
 
 def group_owner(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_OWNER)
+    return _sec(func, GROUP_OWNER)
 
 
 def group_admin_add_admins(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_ADMIN_ADD_ADMINS)
+    return _sec(func, GROUP_ADMIN_ADD_ADMINS)
 
 
 def group_admin_change_info(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_ADMIN_CHANGE_INFO)
+    return _sec(func, GROUP_ADMIN_CHANGE_INFO)
 
 
 def group_admin_ban_users(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_ADMIN_BAN_USERS)
+    return _sec(func, GROUP_ADMIN_BAN_USERS)
 
 
 def group_admin_delete_messages(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_ADMIN_DELETE_MESSAGES)
+    return _sec(func, GROUP_ADMIN_DELETE_MESSAGES)
 
 
 def group_admin_pin_messages(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_ADMIN_PIN_MESSAGES)
+    return _sec(func, GROUP_ADMIN_PIN_MESSAGES)
 
 
 def group_admin_invite_users(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_ADMIN_INVITE_USERS)
+    return _sec(func, GROUP_ADMIN_INVITE_USERS)
 
 
 def group_admin(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_ADMIN)
+    return _sec(func, GROUP_ADMIN)
 
 
 def group_member(func: Command) -> Command:
-    return _sec(func, SUDO | GROUP_MEMBER)
+    return _sec(func, GROUP_MEMBER)
 
 
 def pm(func: Command) -> Command:
-    return _sec(func, SUDO | PM)
+    return _sec(func, PM)
 
 
 def unrestricted(func: Command) -> Command:
@@ -166,8 +165,6 @@ class SecurityManager:
         self._tsec_chat = db.pointer(__name__, "tsec_chat", [])
         self._tsec_user = db.pointer(__name__, "tsec_user", [])
         self._owner = db.pointer(__name__, "owner", [])
-        self._sudo = db.pointer(__name__, "sudo", [])
-        self._support = db.pointer(__name__, "support", [])
 
         self._reload_rights()
 
@@ -176,8 +173,6 @@ class SecurityManager:
         self.tsec_chat = self._tsec_chat
         self.tsec_user = self._tsec_user
         self.owner = self._owner
-        self.sudo = self._sudo
-        self.support = self._support
 
     def _reload_rights(self):
         """
@@ -216,7 +211,10 @@ class SecurityManager:
         if target_type not in {"chat", "user"}:
             raise ValueError(f"Invalid target_type: {target_type}")
 
-        if not rule.startswith("command") and not rule.startswith("module"):
+        if all(
+            not rule.startswith(rule_type)
+            for rule_type in {"command", "module", "inline"}
+        ):
             raise ValueError(f"Invalid rule: {rule}")
 
         if duration < 0:
@@ -257,6 +255,31 @@ class SecurityManager:
 
         return any_
 
+    def remove_rule(self, target_type: str, target_id: int, rule_cont: str) -> bool:
+        """
+        Removes targeted security rules for the given target
+
+        :param target_type: "user" or "chat"
+        :param target_id: target entity ID
+        :param rule_cont: rule name (module or command)
+        :return: True if any rules were removed
+        """
+
+        any_ = False
+
+        if target_type == "user":
+            for rule in self.tsec_user.copy():
+                if rule["target"] == target_id and rule["rule"] == rule_cont:
+                    self.tsec_user.remove(rule)
+                    any_ = True
+        elif target_type == "chat":
+            for rule in self.tsec_chat.copy():
+                if rule["target"] == target_id and rule["rule"] == rule_cont:
+                    self.tsec_chat.remove(rule)
+                    any_ = True
+
+        return any_
+
     def get_flags(self, func: typing.Union[Command, int]) -> int:
         """
         Gets the security flags for the given function
@@ -283,11 +306,30 @@ class SecurityManager:
 
         return config & self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS)
 
+    def _check_tsec_inline(self, user_id: int, command: str) -> bool:
+        """
+        Checks if user is permitted to execute certain inline command
+
+        :param user_id: user ID
+        :param command: command name
+        :return: True if permitted, False otherwise
+        """
+
+        return command and any(
+            (
+                rule["target"] == user_id
+                and rule["rule_type"] == "inline"
+                and rule["rule"] == command
+            )
+            for rule in self._tsec_user
+        )
+
     async def check(
         self,
         message: typing.Optional[Message],
         func: typing.Union[Command, int],
         user_id: typing.Optional[int] = None,
+        inline_cmd: typing.Optional[str] = None,
     ) -> bool:
         """
         Checks if message sender is permitted to execute certain function
@@ -295,6 +337,7 @@ class SecurityManager:
         :param message: Message to check or None if you manually pass user_id
         :param func: function or flags
         :param user_id: user ID
+        :param inline_cmd: Inline command name if it's inline query
         :return: True if permitted, False otherwise
         """
 
@@ -306,14 +349,32 @@ class SecurityManager:
         if not user_id:
             user_id = message.sender_id
 
-        if user_id == self._client.tg_id or getattr(message, "out", False):
+        is_channel = False
+
+        if (
+            message
+            and message.is_channel
+            and not message.is_group
+            and message.edit_date
+        ):
+            async for event in self._client.iter_admin_log(
+                utils.get_chat_id(message),
+                limit=10,
+                edit=True,
+            ):
+                if event.action.prev_message.id == message.id:
+                    user_id = event.user_id
+                    is_channel = True
+
+        if (
+            user_id == self._client.tg_id
+            or getattr(message, "out", False)
+            and not is_channel
+        ):
             return True
 
         logger.debug("Checking security match for %s", config)
 
-        f_owner = config & OWNER
-        f_sudo = config & SUDO
-        f_support = config & SUPPORT
         f_group_owner = config & GROUP_OWNER
         f_group_admin_add_admins = config & GROUP_ADMIN_ADD_ADMINS
         f_group_admin_change_info = config & GROUP_ADMIN_CHANGE_INFO
@@ -335,21 +396,16 @@ class SecurityManager:
             or f_group_admin
         )
 
-        if (
-            f_owner
-            and user_id in self._owner
-            or f_sudo
-            and user_id in self._sudo
-            or f_support
-            and user_id in self._support
-        ):
+        if user_id in self._owner:
             return True
 
         if user_id in self._db.get(main.__name__, "blacklist_users", []):
             return False
 
         if message is None:  # In case of checking inline query security map
-            return bool(config & EVERYONE)
+            return self._check_tsec_inline(user_id, inline_cmd) or bool(
+                config & EVERYONE
+            )
 
         try:
             chat = utils.get_chat_id(message)
@@ -401,9 +457,6 @@ class SecurityManager:
 
         if message.is_channel:
             if not message.is_group:
-                if message.edit_date:
-                    return False
-
                 chat_id = utils.get_chat_id(message)
                 if (
                     chat_id in self._cache

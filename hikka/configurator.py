@@ -1,99 +1,83 @@
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 # ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-import locale
-import os
+import re
 import string
 import sys
 import typing
 
-from dialog import Dialog, ExecutableNotFound
 
-from . import utils
-
-
-def _safe_input(*args, **kwargs):
-    """Try to invoke input(*), print an error message if an EOFError or OSError occurs)
+def tty_print(text: str, tty: bool):
     """
-    try:
-        return input(*args, **kwargs)
-    except (EOFError, OSError):
-        raise
-    except KeyboardInterrupt:
-        print()
-        return None
+    Print text to terminal if tty is True,
+    otherwise removes all ANSI escape sequences
+    """
+    print(text if tty else re.sub(r"\033\[[0-9;]*m", "", text))
 
 
-class TDialog:
-    """Reimplementation of dialog.Dialog without external dependencies"""
-
-    def inputbox(self, query: str) -> typing.Tuple[bool, str]:
-        """Get a text input of the query"""
-        print(query)
-        print()
-        inp = _safe_input("Please enter your response, or type nothing to cancel: ")
-        return (False, "Cancelled") if not inp else (True, inp)
-
-    def msgbox(self, msg: str) -> bool:
-        """Print some info"""
-        print(msg)
-        return True
+def tty_input(text: str, tty: bool) -> str:
+    """
+    Print text to terminal if tty is True,
+    otherwise removes all ANSI escape sequences
+    """
+    return input(text if tty else re.sub(r"\033\[[0-9;]*m", "", text))
 
 
-TITLE = ""
-
-if sys.stdout.isatty():
-    try:
-        DIALOG = Dialog(dialog="dialog", autowidgetsize=True)
-        locale.setlocale(locale.LC_ALL, "")
-    except (ExecutableNotFound, locale.Error):
-        # Fall back to a terminal based configurator.
-        DIALOG = TDialog()
-else:
-    DIALOG = TDialog()
-
-
-def api_config(data_root: str):
+def api_config(tty: typing.Optional[bool] = None):
     """Request API config from user and set"""
-    code, hash_value = DIALOG.inputbox("Enter your API Hash")
-    if not code:
-        return
+    from . import main
+    from ._internal import print_banner
 
-    if len(hash_value) != 32 or any(it not in string.hexdigits for it in hash_value):
-        DIALOG.msgbox("Invalid hash")
-        return
+    if tty is None:
+        print("\033[0;91mThe quick brown fox jumps over the lazy dog\033[0m")
+        tty = input("Is the text above colored? [y/N]").lower() == "y"
 
-    code, id_value = DIALOG.inputbox("Enter your API ID")
+    if tty:
+        print_banner("banner.txt")
 
-    if not id_value or any(it not in string.digits for it in id_value):
-        DIALOG.msgbox("Invalid ID")
-        return
-
-    with open(
-        os.path.join(
-            data_root or os.path.dirname(utils.get_base_dir()), "api_token.txt"
+    tty_print("\033[0;95mWelcome to Hikka Userbot!\033[0m", tty)
+    tty_print("\033[0;96m1. Go to https://my.telegram.org and login\033[0m", tty)
+    tty_print("\033[0;96m2. Click on \033[1;96mAPI development tools\033[0m", tty)
+    tty_print(
+        (
+            "\033[0;96m3. Create a new application, by entering the required"
+            " details\033[0m"
         ),
-        "w",
-    ) as file:
-        file.write(id_value + "\n" + hash_value)
+        tty,
+    )
+    tty_print(
+        (
+            "\033[0;96m4. Copy your \033[1;96mAPI ID\033[0;96m and \033[1;96mAPI"
+            " hash\033[0m"
+        ),
+        tty,
+    )
 
-    DIALOG.msgbox("API Token and ID set.")
+    while api_id := tty_input("\033[0;95mEnter API ID: \033[0m", tty):
+        if api_id.isdigit():
+            break
+
+        tty_print("\033[0;91mInvalid ID\033[0m", tty)
+
+    if not api_id:
+        tty_print("\033[0;91mCancelled\033[0m", tty)
+        sys.exit(0)
+
+    while api_hash := tty_input("\033[0;95mEnter API hash: \033[0m", tty):
+        if len(api_hash) == 32 and all(
+            symbol in string.hexdigits for symbol in api_hash
+        ):
+            break
+
+        tty_print("\033[0;91mInvalid hash\033[0m", tty)
+
+    if not api_hash:
+        tty_print("\033[0;91mCancelled\033[0m", tty)
+        sys.exit(0)
+
+    main.save_config_key("api_id", int(api_id))
+    main.save_config_key("api_hash", api_hash)
+    tty_print("\033[0;92mAPI config saved\033[0m", tty)

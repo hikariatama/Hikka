@@ -29,66 +29,47 @@ if (
         sys.exit(1)
 
 
+def deps():
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "-q",
+            "--disable-pip-version-check",
+            "--no-warn-script-location",
+            "-r",
+            "requirements.txt",
+        ],
+        check=True,
+    )
+
+
 if sys.version_info < (3, 8, 0):
     print("🚫 Error: you must use at least Python version 3.8.0")
 elif __package__ != "hikka":  # In case they did python __main__.py
     print("🚫 Error: you cannot run this as a script; you must execute as a package")
 else:
     try:
-        # If telethon is not installed, just skip to a part of main startup
-        # then main.py will through an error and re-install all deps
-        import telethon
+        import hikkatl
     except Exception:
         pass
     else:
         try:
-            import telethon
+            import hikkatl  # noqa: F811
 
-            if tuple(map(int, telethon.__version__.split("."))) < (1, 24, 14):
+            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 3):
+                raise ImportError
+
+            import hikkapyro
+
+            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 102):
                 raise ImportError
         except ImportError:
-            print("🔄 Installing Hikka-TL...")
-
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--force-reinstall",
-                    "-q",
-                    "--disable-pip-version-check",
-                    "--no-warn-script-location",
-                    "hikka-tl",
-                ],
-                check=True,
-            )
-
-            restart()
-
-        try:
-            import pyrogram
-
-            if tuple(map(int, pyrogram.__version__.split("."))) < (2, 0, 66):
-                raise ImportError
-        except ImportError:
-            print("🔄 Installing Hikka-Pyro...")
-
-            subprocess.run(
-                [
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--force-reinstall",
-                    "-q",
-                    "--disable-pip-version-check",
-                    "--no-warn-script-location",
-                    "hikka-pyro",
-                ],
-                check=True,
-            )
-
+            print("🔄 Installing dependencies...")
+            deps()
             restart()
 
     try:
@@ -99,27 +80,10 @@ else:
         from . import main
     except ImportError as e:
         print(f"{str(e)}\n🔄 Attempting dependencies installation... Just wait ⏱")
-
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--upgrade",
-                "-q",
-                "--disable-pip-version-check",
-                "--no-warn-script-location",
-                "-r",
-                "requirements.txt",
-            ],
-            check=True,
-        )
-
+        deps()
         restart()
 
-    if __name__ == "__main__":
-        if "HIKKA_DO_NOT_RESTART" in os.environ:
-            del os.environ["HIKKA_DO_NOT_RESTART"]
+    if "HIKKA_DO_NOT_RESTART" in os.environ:
+        del os.environ["HIKKA_DO_NOT_RESTART"]
 
-        main.hikka.main()  # Execute main function
+    main.hikka.main()  # Execute main function

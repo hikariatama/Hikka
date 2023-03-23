@@ -12,6 +12,17 @@ def compat(code: str) -> str:
     Reformats modules, built for GeekTG to work with Hikka
     :param code: code to reformat
     :return: reformatted code
+    :rtype: str
+    :example:
+    ```python
+        code = '''
+            from ..inline import GeekInlineQuery, rand
+            from ..inline import rand, InlineQueryResultArticle
+            from ..inline import InlineQueryResultArticle, rand
+            from ..inline import rand, InlineQueryResultArticle, InputTextMessageContent
+        '''
+        print(compat(code))
+    ```
     """
     return "\n".join(
         [
