@@ -78,5 +78,5 @@ def print_banner(banner: str):
             )
         ),
         "r",
-    ) as banner:
-        print(banner.read())
+    ) as f:
+        print(f.read())

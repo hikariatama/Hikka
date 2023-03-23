@@ -6,6 +6,7 @@
 
 import re
 import string
+import sys
 import typing
 
 
@@ -63,7 +64,7 @@ def api_config(tty: typing.Optional[bool] = None):
 
     if not api_id:
         tty_print("\033[0;91mCancelled\033[0m", tty)
-        exit(0)
+        sys.exit(0)
 
     while api_hash := tty_input("\033[0;95mEnter API hash: \033[0m", tty):
         if len(api_hash) == 32 and all(
@@ -75,7 +76,7 @@ def api_config(tty: typing.Optional[bool] = None):
 
     if not api_hash:
         tty_print("\033[0;91mCancelled\033[0m", tty)
-        exit(0)
+        sys.exit(0)
 
     main.save_config_key("api_id", int(api_id))
     main.save_config_key("api_hash", api_hash)

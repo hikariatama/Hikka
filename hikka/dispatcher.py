@@ -59,19 +59,37 @@ ALL_TAGS = [
     "only_photos",
     "only_videos",
     "only_audios",
-    "only_stickers",
     "only_docs",
+    "only_stickers",
     "only_inline",
     "only_channels",
     "only_groups",
     "only_pm",
+    "no_pm",
+    "no_channels",
+    "no_groups",
+    "no_inline",
+    "no_stickers",
+    "no_docs",
+    "no_audios",
+    "no_videos",
+    "no_photos",
+    "no_forwards",
+    "no_reply",
+    "no_mention",
+    "mention",
+    "only_reply",
+    "only_forwards",
     "startswith",
     "endswith",
     "contains",
+    "regex",
     "filter",
     "from_id",
     "chat_id",
-    "regex",
+    "thumb_url",
+    "alias",
+    "aliases",
 ]
 
 
@@ -365,8 +383,8 @@ class CommandDispatcher:
                     if event.user_id != self._client.tg_id:
                         logger.debug("Ignoring edit in channel")
                         return False
-                    else:
-                        break
+
+                    break
 
         if (
             message.is_channel

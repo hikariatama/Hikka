@@ -190,22 +190,22 @@ class HikkaSecurityMod(loader.Module):
     @staticmethod
     def _perms_map(perms: int, is_inline: bool) -> dict:
         return (
-            {"everyone": not not (perms & EVERYONE)}
+            {"everyone": bool(perms & EVERYONE)}
             if is_inline
             else {
-                "group_owner": not not (perms & GROUP_OWNER),
-                "group_admin_add_admins": not not (perms & GROUP_ADMIN_ADD_ADMINS),
-                "group_admin_change_info": not not (perms & GROUP_ADMIN_CHANGE_INFO),
-                "group_admin_ban_users": not not (perms & GROUP_ADMIN_BAN_USERS),
-                "group_admin_delete_messages": not not (
+                "group_owner": bool(perms & GROUP_OWNER),
+                "group_admin_add_admins": bool(perms & GROUP_ADMIN_ADD_ADMINS),
+                "group_admin_change_info": bool(perms & GROUP_ADMIN_CHANGE_INFO),
+                "group_admin_ban_users": bool(perms & GROUP_ADMIN_BAN_USERS),
+                "group_admin_delete_messages": bool(
                     perms & GROUP_ADMIN_DELETE_MESSAGES
                 ),
-                "group_admin_pin_messages": not not (perms & GROUP_ADMIN_PIN_MESSAGES),
-                "group_admin_invite_users": not not (perms & GROUP_ADMIN_INVITE_USERS),
-                "group_admin": not not (perms & GROUP_ADMIN),
-                "group_member": not not (perms & GROUP_MEMBER),
-                "pm": not not (perms & PM),
-                "everyone": not not (perms & EVERYONE),
+                "group_admin_pin_messages": bool(perms & GROUP_ADMIN_PIN_MESSAGES),
+                "group_admin_invite_users": bool(perms & GROUP_ADMIN_INVITE_USERS),
+                "group_admin": bool(perms & GROUP_ADMIN),
+                "group_member": bool(perms & GROUP_MEMBER),
+                "pm": bool(perms & PM),
+                "everyone": bool(perms & EVERYONE),
             }
         )
 
@@ -393,8 +393,8 @@ class HikkaSecurityMod(loader.Module):
         if not (user := await self._resolve_user(message)):
             return
 
-        if user.id in getattr(self._client.dispatcher.security, "owner"):
-            getattr(self._client.dispatcher.security, "owner").remove(user.id)
+        if user.id in self._client.dispatcher.security.owner:
+            self._client.dispatcher.security.owner.remove(user.id)
 
         await utils.answer(
             message,
@@ -408,9 +408,7 @@ class HikkaSecurityMod(loader.Module):
     async def ownerlist(self, message: Message):
         """List users in `owner`"""
         _resolved_users = []
-        for user in set(
-            getattr(self._client.dispatcher.security, "owner") + [self.tg_id]
-        ):
+        for user in set(self._client.dispatcher.security.owner + [self.tg_id]):
             with contextlib.suppress(Exception):
                 _resolved_users += [await self._client.get_entity(user, exp=0)]
 

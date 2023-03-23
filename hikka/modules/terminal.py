@@ -190,8 +190,7 @@ class SudoMessageEditor(MessageEditor):
             handled = True
 
         if len(lines) > 1 and (
-            re.fullmatch(self.TOO_MANY_TRIES, lastline)
-            and (self.state == 1 or self.state == 3 or self.state == 4)
+            re.fullmatch(self.TOO_MANY_TRIES, lastline) and self.state in {1, 3, 4}
         ):
             logger.debug("password wrong lots of times")
             await utils.answer(self.message, self.strings("auth_locked"))

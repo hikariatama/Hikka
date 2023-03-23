@@ -1,5 +1,7 @@
 version = 1
 
+exclude_patterns = ["hikka/qr.py"]
+
 [[analyzers]]
 name = "shell"
 enabled = true

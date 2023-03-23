@@ -246,8 +246,8 @@ class UnitHeta(loader.Module):
             link = getattr(module, "__origin__", "").lower().strip("/")
             for regex in REGEXES:
                 if regex.search(link):
-                    dev, repo, mod = regex.search(link).groups()
-                    if dev == dev and repo == repo and mod == mod:
+                    ldev, lrepo, lmod = regex.search(link).groups()
+                    if ldev == dev and lrepo == repo and lmod == mod:
                         await self._load_module(link)
                         await asyncio.sleep(random.randint(1, 10))
                         await self._client.inline_query(

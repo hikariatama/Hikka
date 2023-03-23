@@ -137,7 +137,7 @@ class ExternalTranslator(BaseTranslator):
 
 
 class Strings:
-    def __init__(self, mod: Module, translator: Translator):
+    def __init__(self, mod: Module, translator: Translator):  # skipcq: PYL-W0621
         self._mod = mod
         self._translator = translator
 
