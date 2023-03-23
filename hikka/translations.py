@@ -7,7 +7,6 @@
 import json
 import logging
 import typing
-from io import BytesIO
 from pathlib import Path
 
 import requests
