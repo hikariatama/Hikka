@@ -75,8 +75,8 @@ class QuickstartMod(loader.Module):
             + (
                 "\n"
                 + (
-                    self.strings("railway")
-                    if "RAILWAY" in os.environ
+                    self.strings("FalconHost")
+                    if "FALCON" in os.environ
                     else (self.strings("lavhost") if "LAVHOST" in os.environ else "")
                 )
             ).rstrip()
