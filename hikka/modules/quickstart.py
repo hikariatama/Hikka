@@ -56,11 +56,7 @@ class QuickstartMod(loader.Module):
             + utils.chunks(
                 [
                     {
-                        "text": (
-                            getattr(self, f"strings_{lang}")
-                            if lang != "en"
-                            else self.strings._base_strings
-                        )["language"],
+                        "text": self.strings.get("language", lang),
                         "callback": self._change_lang,
                         "args": (lang,),
                     }

@@ -3,7 +3,7 @@
 PORT=3429 # Port to run the server on
 echo "EXTERNAL_PORT=$PORT" >.env
 
-eval "mkdir Hikka"
+eval "git clone https://github.com/hikariatama/Hikka"
 cd Hikka
 
 touch hikka-install.log
@@ -43,17 +43,6 @@ if ! [ -x "$(command -v docker-compose)" ]; then
 else
     printf "\033[0;32mDocker is already installed\e[0m\n"
 fi
-
-printf "\033[0;34mDownloading configuration files...\e[0m"
-if [ -f "Dockerfile" ]; then
-    rm Dockerfile
-fi
-wget -q https://github.com/hikariatama/Hikka/raw/master/Dockerfile
-if [ -f "docker-compose.yml" ]; then
-    rm docker-compose.yml
-fi
-wget -q https://github.com/hikariatama/Hikka/raw/master/docker-compose.yml
-printf "\033[0;32m - success\e[0m\n"
 
 printf "\033[0;34mBuilding docker image...\e[0m"
 sudo docker-compose up -d --build 1>hikka-install.log 2>&1

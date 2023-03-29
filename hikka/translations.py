@@ -117,6 +117,12 @@ class Translator(BaseTranslator):
                     self.raw_data[language] = data
                     any_ = True
 
+        for language in SUPPORTED_LANGUAGES:
+            if language not in self.raw_data and (PACKS / f"{language}.yml").exists():
+                self.raw_data[language] = self._get_pack_content(
+                    PACKS / f"{language}.yml"
+                )
+
         return any_
 
 

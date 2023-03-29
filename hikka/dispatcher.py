@@ -507,187 +507,105 @@ class CommandDispatcher:
         event: typing.Union[events.NewMessage, events.MessageDeleted],
         func: callable,
     ) -> bool:
-        message = getattr(event, "message", event)
+        return bool(await self._handle_tags_ext(event, func))
+
+    async def _handle_tags_ext(
+        self,
+        event: typing.Union[events.NewMessage, events.MessageDeleted],
+        func: callable,
+    ) -> str:
+        """
+        Handle tags.
+        :param event: The event to handle.
+        :param func: The function to handle.
+        :return: The reason for the tag to fail.
+        """
+        m = event if isinstance(event, Message) else getattr(event, "message", event)
+
+        reverse_mapping = {
+            "out": lambda: getattr(m, "out", True),
+            "in": lambda: not getattr(m, "out", True),
+            "only_messages": lambda: isinstance(m, Message),
+            "editable": (
+                lambda: not getattr(m, "out", False)
+                and not getattr(m, "fwd_from", False)
+                and not getattr(m, "sticker", False)
+                and not getattr(m, "via_bot_id", False)
+            ),
+            "no_media": lambda: (
+                not isinstance(m, Message) or not getattr(m, "media", False)
+            ),
+            "only_media": lambda: isinstance(m, Message) and getattr(m, "media", False),
+            "only_photos": lambda: utils.mime_type(m).startswith("image/"),
+            "only_videos": lambda: utils.mime_type(m).startswith("video/"),
+            "only_audios": lambda: utils.mime_type(m).startswith("audio/"),
+            "only_stickers": lambda: getattr(m, "sticker", False),
+            "only_docs": lambda: getattr(m, "document", False),
+            "only_inline": lambda: getattr(m, "via_bot_id", False),
+            "only_channels": lambda: (
+                getattr(m, "is_channel", False) and not getattr(m, "is_group", False)
+            ),
+            "no_channels": lambda: not getattr(m, "is_channel", False),
+            "no_groups": (
+                lambda: not getattr(m, "is_group", False)
+                or getattr(m, "private", False)
+                or getattr(m, "is_channel", False)
+            ),
+            "only_groups": (
+                lambda: getattr(m, "is_group", False)
+                or not getattr(m, "private", False)
+                and not getattr(m, "is_channel", False)
+            ),
+            "no_pm": lambda: not getattr(m, "private", False),
+            "only_pm": lambda: getattr(m, "private", False),
+            "no_inline": lambda: not getattr(m, "via_bot_id", False),
+            "no_stickers": lambda: not getattr(m, "sticker", False),
+            "no_docs": lambda: not getattr(m, "document", False),
+            "no_audios": lambda: not utils.mime_type(m).startswith("audio/"),
+            "no_videos": lambda: not utils.mime_type(m).startswith("video/"),
+            "no_photos": lambda: not utils.mime_type(m).startswith("image/"),
+            "no_forwards": lambda: not getattr(m, "fwd_from", False),
+            "no_reply": lambda: not getattr(m, "reply_to_msg_id", False),
+            "only_forwards": lambda: getattr(m, "fwd_from", False),
+            "only_reply": lambda: getattr(m, "reply_to_msg_id", False),
+            "mention": lambda: getattr(m, "mentioned", False),
+            "no_mention": lambda: not getattr(m, "mentioned", False),
+            "startswith": lambda: (
+                isinstance(m, Message) and m.raw_text.startswith(func.startswith)
+            ),
+            "endswith": lambda: (
+                isinstance(m, Message) and m.raw_text.endswith(func.endswith)
+            ),
+            "contains": lambda: isinstance(m, Message) and func.contains in m.raw_text,
+            "filter": lambda: callable(func.filter) and func.filter(m),
+            "from_id": lambda: getattr(m, "sender_id", None) == func.from_id,
+            "chat_id": lambda: utils.get_chat_id(m) == (
+                func.chat_id
+                if not str(func.chat_id).startswith("-100")
+                else int(str(func.chat_id)[4:])
+            ),
+            "regex": lambda: (
+                isinstance(m, Message) and re.search(func.regex, m.raw_text)
+            ),
+        }
+
         return (
-            (
-                getattr(func, "no_commands", False)
-                and await self._handle_command(event, watcher=True)
-            )
-            or (
-                getattr(func, "only_commands", False)
+            "no_commands"
+            if getattr(func, "no_commands", False)
+            and await self._handle_command(event, watcher=True)
+            else (
+                "only_commands"
+                if getattr(func, "only_commands", False)
                 and not await self._handle_command(event, watcher=True)
-            )
-            or (getattr(func, "out", False) and not getattr(message, "out", True))
-            or (getattr(func, "in", False) and getattr(message, "out", True))
-            or (
-                getattr(func, "only_messages", False)
-                and not isinstance(message, Message)
-            )
-            or (
-                getattr(func, "editable", False)
-                and (
-                    getattr(message, "fwd_from", False)
-                    or not getattr(message, "out", False)
-                    or getattr(message, "sticker", False)
-                    or getattr(message, "via_bot_id", False)
-                )
-            )
-            or (
-                getattr(func, "no_media", False)
-                and isinstance(message, Message)
-                and getattr(message, "media", False)
-            )
-            or (
-                getattr(func, "only_media", False)
-                and (
-                    not isinstance(message, Message)
-                    or not getattr(message, "media", False)
-                )
-            )
-            or (
-                getattr(func, "only_photos", False)
-                and not utils.mime_type(message).startswith("image/")
-            )
-            or (
-                getattr(func, "only_videos", False)
-                and not utils.mime_type(message).startswith("video/")
-            )
-            or (
-                getattr(func, "only_audios", False)
-                and not utils.mime_type(message).startswith("audio/")
-            )
-            or (
-                getattr(func, "only_stickers", False)
-                and not getattr(message, "sticker", False)
-            )
-            or (
-                getattr(func, "only_docs", False)
-                and not getattr(message, "document", False)
-            )
-            or (
-                getattr(func, "only_inline", False)
-                and not getattr(message, "via_bot_id", False)
-            )
-            or (
-                getattr(func, "only_channels", False)
-                and (
-                    not getattr(message, "is_channel", False)
-                    and getattr(message, "is_group", False)
-                    or getattr(message, "is_private", False)
-                )
-            )
-            or (
-                getattr(func, "no_channels", False)
-                and (
-                    getattr(message, "is_channel", False)
-                    or not getattr(message, "is_group", False)
-                )
-            )
-            or (
-                getattr(func, "no_groups", False)
-                and getattr(message, "is_group", False)
-            )
-            or (getattr(func, "no_pm", False) and getattr(message, "is_private", False))
-            or (
-                getattr(func, "no_inline", False)
-                and getattr(message, "via_bot_id", False)
-            )
-            or (
-                getattr(func, "no_stickers", False)
-                and getattr(message, "sticker", False)
-            )
-            or (getattr(func, "no_docs", False) and getattr(message, "document", False))
-            or (
-                getattr(func, "no_audios", False)
-                and utils.mime_type(message).startswith("audio/")
-            )
-            or (
-                getattr(func, "no_photos", False)
-                and utils.mime_type(message).startswith("image/")
-            )
-            or (
-                getattr(func, "no_videos", False)
-                and utils.mime_type(message).startswith("video/")
-            )
-            or (
-                getattr(func, "no_forwards", False)
-                and getattr(message, "fwd_from", False)
-            )
-            or (
-                getattr(func, "no_reply", False)
-                and getattr(message, "reply_to_msg_id", False)
-            )
-            or (
-                getattr(func, "only_forwards", False)
-                and not getattr(message, "fwd_from", False)
-            )
-            or (
-                getattr(func, "only_reply", False)
-                and not getattr(message, "reply_to_msg_id", False)
-            )
-            or (
-                getattr(func, "mention", False)
-                and not getattr(message, "mentioned", False)
-            )
-            or (
-                getattr(func, "no_mention", False)
-                and getattr(message, "mentioned", False)
-            )
-            or (
-                getattr(func, "only_groups", False)
-                and not getattr(message, "is_group", False)
-            )
-            or (
-                getattr(func, "only_pm", False)
-                and not getattr(message, "is_private", False)
-            )
-            or (
-                getattr(func, "startswith", False)
-                and (
-                    not isinstance(message, Message)
-                    or isinstance(func.startswith, str)
-                    and not message.raw_text.startswith(func.startswith)
-                )
-            )
-            or (
-                getattr(func, "endswith", False)
-                and (
-                    not isinstance(message, Message)
-                    or isinstance(func.endswith, str)
-                    and not message.raw_text.endswith(func.endswith)
-                )
-            )
-            or (
-                getattr(func, "contains", False)
-                and (
-                    not isinstance(message, Message)
-                    or isinstance(func.contains, str)
-                    and func.contains not in message.raw_text
-                )
-            )
-            or (
-                getattr(func, "filter", False)
-                and callable(func.filter)
-                and not func.filter(message)
-            )
-            or (
-                getattr(func, "from_id", False)
-                and getattr(message, "sender_id", None) != func.from_id
-            )
-            or (
-                getattr(func, "chat_id", False)
-                and utils.get_chat_id(message)
-                != (
-                    func.chat_id
-                    if not str(func.chat_id).startswith("-100")
-                    else int(str(func.chat_id)[4:])
-                )
-            )
-            or (
-                getattr(func, "regex", False)
-                and (
-                    not isinstance(message, Message)
-                    or not re.search(func.regex, message.raw_text)
+                else next(
+                    (
+                        tag
+                        for tag in ALL_TAGS
+                        if getattr(func, tag, False)
+                        and tag in reverse_mapping
+                        and not reverse_mapping[tag]()
+                    ),
+                    None,
                 )
             )
         )
@@ -735,7 +653,11 @@ class CommandDispatcher:
                 not in whitelist_modules
                 or await self._handle_tags(event, func)
             ):
-                logger.debug("Ignored watcher of module %s", modname)
+                logger.debug(
+                    "Ignored watcher of module %s because of %s",
+                    modname,
+                    await self._handle_tags_ext(event, func),
+                )
                 continue
 
             # Avoid weird AttributeErrors in weird dochub modules by settings placeholder
