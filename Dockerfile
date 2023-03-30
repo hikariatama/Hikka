@@ -1,5 +1,6 @@
 FROM python:3.8-slim as python-base
 ENV DOCKER=true
+ENV FLY=true
 ENV GIT_PYTHON_REFRESH=quiet
 
 ENV PIP_NO_CACHE_DIR=1 \
@@ -18,4 +19,4 @@ RUN pip install --no-warn-script-location --no-cache-dir -U -r requirements.txt
 
 EXPOSE 8080
 
-CMD python -m hikka
+CMD python -m hikka --proxy-pass
