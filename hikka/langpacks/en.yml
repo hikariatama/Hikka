@@ -484,6 +484,7 @@ loader:
     _cmd_doc_loadmod: "Loads the module file"
     _cmd_doc_unloadmod: "Unload module by class name"
     _cls_doc: "Loads modules"
+    basic_auth_doc: "Basic auth for module repo"
 
 translations:
     name: "Translations"

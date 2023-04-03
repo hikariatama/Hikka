@@ -459,6 +459,7 @@ loader:
     repo_deleted: "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b> <code>{}</code> <b>o'chirildi</b>"
     _cmd_doc_addrepo: "Qo'shimcha repozitoriyani qo'shish"
     _cmd_doc_delrepo: "Qo'shimcha repozitoriyani o'chirish"
+    basic_auth_doc: "Repo moduli uchun asosiy auth"
 
 translations:
     lang_saved: "{} <b>Til saqlandi!</b>"

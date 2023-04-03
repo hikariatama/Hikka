@@ -885,6 +885,13 @@ class ModuleConfig(dict):
         for key in self._config:
             super().__setitem__(key, self._config[key].value)
 
+    def change_validator(
+        self,
+        key: str,
+        validator: typing.Callable[[JSONSerializable], JSONSerializable],
+    ):
+        self._config[key].validator = validator
+
 
 LibraryConfig = ModuleConfig
 

@@ -461,6 +461,7 @@ loader:
     repo_deleted: "<emoji document_id=5784993237412351403>✅</emoji> <b>Le dépôt</b> <code>{}</code> <b>supprimé</b>"
     _cmd_doc_addrepo: "Ajouter un dépôt supplémentaire"
     _cmd_doc_delrepo: "Supprimer un dépôt supplémentaire"
+    basic_auth_doc: "Authentification basique pour le dépôt de modules"
 
 translations:
     lang_saved: "{} <b>Langue enregistrée!</b>"

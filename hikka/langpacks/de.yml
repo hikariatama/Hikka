@@ -459,6 +459,7 @@ loader:
     repo_deleted: "<emoji document_id=5784993237412351403>✅</emoji> <b>Repo</b> <code>{}</code> <b>wurde gelöscht</b>"
     _cmd_doc_addrepo: "Fügt ein zusätzliches Repository hinzu"
     _cmd_doc_delrepo: "Entfernt ein zusätzliches Repository"
+    basic_auth_doc: "Authentifizierung für das Repository"
 
 translations:
     lang_saved: "{} <b>Sprache gespeichert!</b>"

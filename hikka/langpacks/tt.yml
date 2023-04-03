@@ -433,6 +433,7 @@ loader:
     repo_deleted: "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b> <code>{}</code> <b>бетерелде</b>"
     _cmd_doc_addrepo: "Кушымталган репозиторийны өстәү"
     _cmd_doc_delrepo: "Кушымталган репозиторийне юкләү"
+    basic_auth_doc: "Модульләр репозиторие өчен төп аутентификация"
 
 translations:
     lang_saved: "{} <b>Тел сакланган!</b>"

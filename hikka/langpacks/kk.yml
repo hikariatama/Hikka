@@ -462,6 +462,7 @@ loader:
     repo_deleted: "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b> <code>{}</code> <b>удален</b>"
     _cmd_doc_addrepo: "Қосымша қойымдық қосу"
     _cmd_doc_delrepo: "Қосымша қойымдықты жою"
+    basic_auth_doc: "Модуль Repo-ға қолданбаулық және түпнұсқаулық"
 
 translations:
     lang_saved: "{} <b>Тіл сақталды!</b>"

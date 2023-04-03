@@ -451,6 +451,7 @@ loader:
     _cmd_doc_dlmod: "Resmi depodan bir modül yükler"
     _cmd_doc_loadmod: "Dosyadan modül yükle"
     _cmd_doc_unloadmod: "Bir modülü kaldırır"
+    basic_auth_doc: "Modül deposu için temel kimlik doğrulama"
 
 translations:
     lang_saved: "{} <b>Dil kaydedildi!</b>"

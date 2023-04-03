@@ -457,6 +457,7 @@ loader:
     repo_deleted: "<emoji document_id=5784993237412351403>✅</emoji> <b>Il repo</b> <code>{}</code> <b>è stato rimosso</b>"
     _cmd_doc_addrepo: "Aggiungi un repository aggiuntivo"
     _cmd_doc_delrepo: "Rimuovi un repository aggiuntivo"
+    basic_auth_doc: "Autenticazione basica per il repository dei moduli"
 
 translations:
     lang_saved: "{} <b>Lingua salvata!</b>"

@@ -90,6 +90,14 @@ class LoaderMod(loader.Module):
                 doc=lambda: self.strings("share_link_doc"),
                 validator=loader.validators.Boolean(),
             ),
+            loader.ConfigValue(
+                "basic_auth",
+                None,
+                lambda: self.strings("basic_auth_doc"),
+                validator=loader.validators.Hidden(
+                    loader.validators.RegExp(r"^.*:.*$")
+                ),
+            ),
         )
 
     async def _async_init(self):
@@ -173,9 +181,7 @@ class LoaderMod(loader.Module):
             },
         )
 
-    @loader.command(
-        alias="dlm",
-    )
+    @loader.command(alias="dlm")
     async def dlmod(self, message: Message):
         """Install a module from the official module repo"""
         if args := utils.get_args(message):
@@ -227,6 +233,11 @@ class LoaderMod(loader.Module):
         res = await utils.run_sync(
             requests.get,
             f"{repo}/full.txt",
+            auth=(
+                tuple(self.config["basic_auth"].split(":", 1))
+                if self.config["basic_auth"]
+                else None
+            ),
         )
 
         if not str(res.status_code).startswith("2"):
@@ -307,7 +318,7 @@ class LoaderMod(loader.Module):
                 )
 
             try:
-                r = await self._storage.fetch(url)
+                r = await self._storage.fetch(url, auth=self.config["basic_auth"])
             except requests.exceptions.HTTPError:
                 if message is not None:
                     await utils.answer(message, self.strings("no_module"))
@@ -1096,24 +1107,22 @@ class LoaderMod(loader.Module):
     @loader.command()
     async def addrepo(self, message: Message):
         """Add a repository to the list of repositories"""
-        args = utils.get_args_raw(message)
-        if not args:
+        if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
             await utils.answer(message, self.strings("no_repo"))
             return
 
         if args in self.config["ADDITIONAL_REPOS"]:
-            await utils.answer(message, self.strings("repo_exists"))
+            await utils.answer(message, self.strings("repo_exists").format(args))
             return
 
-        self.config["ADDITIONAL_REPOS"].value = self.config["ADDITIONAL_REPOS"] + [args]
+        self.config["ADDITIONAL_REPOS"] += [args]
 
         await utils.answer(message, self.strings("repo_added").format(args))
 
     @loader.command()
     async def delrepo(self, message: Message):
         """Remove a repository from the list of repositories"""
-        args = utils.get_args_raw(message)
-        if not args:
+        if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
             await utils.answer(message, self.strings("no_repo"))
             return
 
@@ -1121,9 +1130,7 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("repo_not_exists"))
             return
 
-        self.config["ADDITIONAL_REPOS"].value = [
-            repo for repo in self.config["ADDITIONAL_REPOS"] if repo != args
-        ]
+        self.config["ADDITIONAL_REPOS"].remove(args)
 
         await utils.answer(message, self.strings("repo_deleted").format(args))
 

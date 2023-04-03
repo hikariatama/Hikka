@@ -461,6 +461,7 @@ loader:
     repo_deleted: "<emoji document_id=5784993237412351403>✅</emoji> <b>Репозиторий</b> <code>{}</code> <b>удален</b>"
     _cmd_doc_addrepo: "Добавить дополнительный репозиторий"
     _cmd_doc_delrepo: "Удалить дополнительный репозиторий"
+    basic_auth_doc: "Авторизация для доступа к репозиторию"
 
 translations:
     lang_saved: "{} <b>Язык сохранён!</b>"

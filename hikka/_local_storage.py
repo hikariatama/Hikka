@@ -139,14 +139,18 @@ class RemoteStorage:
 
         return url, repo, module_name
 
-    async def fetch(self, url: str) -> str:
+    async def fetch(self, url: str, auth: typing.Optional[str] = None) -> str:
         """
         Fetches the module from the remote storage.
         :param ref: The module reference. Can be url, or a reference to official repo module.
         """
         url, repo, module_name = self._parse_url(url)
         try:
-            r = await utils.run_sync(requests.get, url)
+            r = await utils.run_sync(
+                requests.get,
+                url,
+                auth=(tuple(auth.split(":", 1)) if auth else None),
+            )
             r.raise_for_status()
         except Exception:
             logger.debug(

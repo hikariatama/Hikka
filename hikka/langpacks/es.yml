@@ -452,6 +452,7 @@ loader:
     _cmd_doc_dlmod: "Cargar un módulo desde el repositorio oficial"
     _cmd_doc_loadmod: "Cargar módulo desde archivo"
     _cmd_doc_unloadmod: "Descargar el módulo"
+    basic_auth_doc: "Autenticación básica para repositorio de módulos"
 
 translations:
     lang_saved: "{} <b>¡Idioma guardado!</b>"
