@@ -87,8 +87,8 @@ class Translator(BaseTranslator):
     async def init(self) -> bool:
         self._data = self._get_pack_content(PACKS / "en.yml")
         self.raw_data["en"] = self._data.copy()
+        any_ = False
         if lang := self.db.get(__name__, "lang", False):
-            any_ = False
             for language in lang.split():
                 if utils.check_url(language):
                     try:
