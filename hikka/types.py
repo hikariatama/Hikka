@@ -306,8 +306,9 @@ class Module:
         self,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
+        item_type: typing.Optional[typing.Any] = None,
     ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
-        return self._db.pointer(self.__class__.__name__, key, default)
+        return self._db.pointer(self.__class__.__name__, key, default, item_type)
 
     async def _approve(
         self,

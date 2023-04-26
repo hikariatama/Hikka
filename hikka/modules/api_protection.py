@@ -194,7 +194,6 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command()
     async def suspend_api_protect(self, message: Message):
-        """<time in seconds> - Suspend API Ratelimiter for n seconds"""
         if not (args := utils.get_args_raw(message)) or not args.isdigit():
             await utils.answer(message, self.strings("args_invalid"))
             return
@@ -204,7 +203,6 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command()
     async def api_fw_protection(self, message: Message):
-        """Toggle API Ratelimiter"""
         await self.inline.form(
             message=message,
             text=self.strings("u_sure"),
@@ -223,7 +221,6 @@ class APIRatelimiterMod(loader.Module):
 
     @loader.command()
     async def debugger(self, message: Message):
-        """Show the Werkzeug PIN"""
         if not self._debugger:
             await utils.answer(message, self.strings("debugger_disabled"))
             return

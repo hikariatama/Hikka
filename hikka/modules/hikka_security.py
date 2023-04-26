@@ -224,7 +224,6 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command()
     async def security(self, message: Message):
-        """[command] - Configure command's security settings"""
         if (
             args := utils.get_args_raw(message).lower().strip()
         ) and args not in self.allmodules.commands:
@@ -249,7 +248,6 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command()
     async def inlinesec(self, message: Message):
-        """[command] - Configure inline command's security settings"""
         if not (args := utils.get_args_raw(message).lower().strip()):
             await self.inline.form(
                 self.strings("global"),
@@ -384,12 +382,10 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command()
     async def owneradd(self, message: Message):
-        """<user> - Add user to `owner`"""
         await self._add_to_group(message, "owner")
 
     @loader.command()
     async def ownerrm(self, message: Message):
-        """<user> - Remove user from `owner`"""
         if not (user := await self._resolve_user(message)):
             return
 
@@ -406,7 +402,6 @@ class HikkaSecurityMod(loader.Module):
 
     @loader.command()
     async def ownerlist(self, message: Message):
-        """List users in `owner`"""
         _resolved_users = []
         for user in set(self._client.dispatcher.security.owner + [self.tg_id]):
             with contextlib.suppress(Exception):
@@ -455,12 +450,12 @@ class HikkaSecurityMod(loader.Module):
 
     @staticmethod
     def _extract_time(args: list) -> int:
-        for suffix, quantifier in {
-            "d": 24 * 60 * 60,
-            "h": 60 * 60,
-            "m": 60,
-            "s": 1,
-        }.items():
+        for suffix, quantifier in [
+            ("d", 24 * 60 * 60),
+            ("h", 60 * 60),
+            ("m", 60),
+            ("s", 1),
+        ]:
             duration = next(
                 (
                     int(arg.rsplit(suffix, maxsplit=1)[0])
@@ -723,53 +718,8 @@ class HikkaSecurityMod(loader.Module):
 
         await self._confirm(message, "user", target, possible_rules[0], duration)
 
-    @loader.command(
-        ru_doc=(
-            '<"user"/"chat"> <правило - модуль или команда> - Удалить правило'
-            " таргетированной безопасности\nНапример: .tsecrm user ban, .tsecrm chat"
-            " HikariChat"
-        ),
-        fr_doc=(
-            '<"user"/"chat"> <règle - module ou commande> - Supprimer la règle de'
-            " sécurité ciblée\nPar exemple: .tsecrm user ban, .tsecrm chat HikariChat"
-        ),
-        es_doc=(
-            '<"user"/"chat"> <regla - módulo o comando> - Eliminar la regla de'
-            " seguridad dirigida\nPor ejemplo: .tsecrm user ban, .tsecrm chat"
-            " HikariChat"
-        ),
-        de_doc=(
-            '<"user"/"chat"> <Regel - Modul oder Befehl> - Entferne die Regel der'
-            " zielgerichteten Sicherheit\nBeispiel: .tsecrm user ban, .tsecrm chat"
-            " HikariChat"
-        ),
-        it_doc=(
-            '<"user"/"chat"> <regola - modulo o comando> - Rimuovi la regola di'
-            " sicurezza mirata\nEsempio: .tsecrm user ban, .tsecrm chat HikariChat"
-        ),
-        tr_doc=(
-            '<"user"/"chat"> <kural - modül veya komut> - Hedefli güvenlik kuralını'
-            " kaldır\nÖrnek: .tsecrm user ban, .tsecrm chat HikariChat"
-        ),
-        uz_doc=(
-            '<"user"/"chat"> <qoida - modul yoki buyruq> - Maqsadli xavfsizlik'
-            " qoidasini olib tashlang\nMasalan: .tsecrm user ban, .tsecrm chat"
-            " HikariChat"
-        ),
-        kk_doc=(
-            '<"user"/"chat"> <құқық - модуль немесе команда> - Мақсатты қауіпсіздік'
-            " құқығын өшіріңіз\nМысалы: .tsecrm user ban, .tsecrm chat HikariChat"
-        ),
-        tt_doc=(
-            '<"user"/"chat"> <көйләү - модуль немесе команда> - Мақсатлы қауіпсіздік'
-            " көйләүен өшерү\nМисаллы: .tsecrm user ban, .tsecrm chat HikariChat"
-        ),
-    )
+    @loader.command()
     async def tsecrm(self, message: Message):
-        """
-        <"user"/"chat"> <rule - command or module> - Remove targeted security rule
-        For example: .tsecrm user ban, .tsecrm chat HikariChat
-        """
         if (
             not self._client.dispatcher.security.tsec_chat
             and not self._client.dispatcher.security.tsec_user
@@ -831,49 +781,8 @@ class HikkaSecurityMod(loader.Module):
             ),
         )
 
-    @loader.command(
-        ru_doc=(
-            '<"user"/"chat"> - Очистить правила таргетированной безопасности\nНапример:'
-            " .tsecclr user, .tsecclr chat"
-        ),
-        fr_doc=(
-            '<"user"/"chat"> - Supprimer les règles de sécurité ciblées\nPar exemple:'
-            " .tsecclr user, .tsecclr chat"
-        ),
-        es_doc=(
-            '<"user"/"chat"> - Eliminar las reglas de seguridad dirigidas\nPor ejemplo:'
-            " .tsecclr user, .tsecclr chat"
-        ),
-        de_doc=(
-            '<"user"/"chat"> - Entferne die Regeln der zielgerichteten'
-            " Sicherheit\nBeispiel: .tsecclr user, .tsecclr chat"
-        ),
-        it_doc=(
-            '<"user"/"chat"> - Rimuovi le regole di sicurezza mirate\nEsempio: .tsecclr'
-            " user, .tsecclr chat"
-        ),
-        tr_doc=(
-            '<"user"/"chat"> - Hedefli güvenlik kurallarını temizle\nÖrnek: .tsecclr'
-            " user, .tsecclr chat"
-        ),
-        uz_doc=(
-            '<"user"/"chat"> - Maqsadli xavfsizlik qoidalarini tozalash\nMasalan:'
-            " .tsecclr user, .tsecclr chat"
-        ),
-        kk_doc=(
-            '<"user"/"chat"> - Мақсатты қауіпсіздік құқығын тазалаңыз\nМысалы: .tsecclr'
-            " user, .tsecclr chat"
-        ),
-        tt_doc=(
-            '<"user"/"chat"> - Мақсатлы қауіпсіздік көйләүен тазалаңыз\nМисаллы:'
-            " .tsecclr user, .tsecclr chat"
-        ),
-    )
+    @loader.command()
     async def tsecclr(self, message: Message):
-        """
-        <"user"/"chat"> - Clear targeted security rules
-        For example: .tsecclr user, .tsecclr chat
-        """
         if (
             not self._client.dispatcher.security.tsec_chat
             and not self._client.dispatcher.security.tsec_user
@@ -929,59 +838,8 @@ class HikkaSecurityMod(loader.Module):
             ),
         )
 
-    @loader.command(
-        ru_doc=(
-            '<"user"/"chat"> [цель пользователя или чата] [правило (команда/модуль)]'
-            " [время] - Добавить новое правило таргетированной безопасности\nНапример:"
-            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-        fr_doc=(
-            '<"user"/"chat"> [cible utilisateur ou chat] [règle (commande/module)]'
-            " [temps] - Ajouter une nouvelle règle de sécurité ciblée\nPar exemple:"
-            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-        es_doc=(
-            '<"user"/"chat"> [objetivo de usuario o chat] [regla (comando/módulo)]'
-            " [tiempo] - Agregar una nueva regla de seguridad dirigida\nPor ejemplo:"
-            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-        de_doc=(
-            '<"user"/"chat"> [Zielbenutzer oder Chat] [Regel (Befehl/Modul)] [Zeit] -'
-            " Füge eine neue zielgerichtete Sicherheitsregel hinzu\nBeispiel: .tsec"
-            " user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-        it_doc=(
-            '<"user"/"chat"> [utente o chat di destinazione] [regola (comando/modulo)]'
-            " [tempo] - Aggiungi una nuova regola di sicurezza mirata\nEsempio: .tsec"
-            " user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-        tr_doc=(
-            '<"user"/"chat"> [hedef kullanıcı veya sohbet] [kural (komut/modül)]'
-            " [zaman] - Yeni hedefli güvenlik kuralı ekleyin\nÖrnek: .tsec user ban 1d,"
-            " .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-        uz_doc=(
-            '<"user"/"chat"> [maqsadli foydalanuvchi yoki chat] [qoida (buyruq/modul)]'
-            " [vaqt] - Yangi maqsadli xavfsizlik qoidasini qo`shing\nMasalan: .tsec"
-            " user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-        kk_doc=(
-            '<"user"/"chat"> [мақсатты пайдаланушы немесе сөйлесу] [құқық'
-            " (команда/модуль)] [уақыт] - Жаңа мақсатты қауіпсіздік құқығын"
-            " қосыңыз\nМысалы: .tsec user ban 1d, .tsec chat weather 1h, .tsec user"
-            " HikariChat"
-        ),
-        tt_doc=(
-            '<"user"/"chat"> [мәҗбүри кулланучы немесе сөйләшү] [җөйләү'
-            " (команда/модуль)] [вакыт] - Яңа мәҗбүри һаҡлылык җөйләүен өстәү\nМисалы:"
-            " .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat"
-        ),
-    )
+    @loader.command()
     async def tsec(self, message: Message):
-        """
-        <"user"/"chat"> [target user or chat] [rule (command/module)] [time] - Add new targeted security rule
-        For example: .tsec user ban 1d, .tsec chat weather 1h, .tsec user HikariChat
-        """
         if not (args := utils.get_args(message)):
             if (
                 not self._client.dispatcher.security.tsec_chat

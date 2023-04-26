@@ -86,36 +86,34 @@ class Translator(BaseTranslator):
 
     async def init(self) -> bool:
         self._data = self._get_pack_content(PACKS / "en.yml")
-        self.raw_data["en"] = self._data
-        if not (lang := self.db.get(__name__, "lang", False)):
-            return False
+        self.raw_data["en"] = self._data.copy()
+        if lang := self.db.get(__name__, "lang", False):
+            any_ = False
+            for language in lang.split():
+                if utils.check_url(language):
+                    try:
+                        data = self._get_pack_raw(
+                            (await utils.run_sync(requests.get, language)).text,
+                            language.split(".")[-1],
+                        )
+                    except Exception:
+                        logger.exception("Unable to decode %s", language)
+                        continue
 
-        any_ = False
-        for language in lang.split():
-            if utils.check_url(language):
-                try:
-                    data = self._get_pack_raw(
-                        (await utils.run_sync(requests.get, language)).text,
-                        language.split(".")[-1],
-                    )
-                except Exception:
-                    logger.exception("Unable to decode %s", language)
-                    continue
-
-                self._data.update(data)
-                self.raw_data[language] = data
-                any_ = True
-                continue
-
-            for possible_path in [
-                PACKS / f"{language}.json",
-                PACKS / f"{language}.yml",
-            ]:
-                if possible_path.exists():
-                    data = self._get_pack_content(possible_path)
                     self._data.update(data)
                     self.raw_data[language] = data
                     any_ = True
+                    continue
+
+                for possible_path in [
+                    PACKS / f"{language}.json",
+                    PACKS / f"{language}.yml",
+                ]:
+                    if possible_path.exists():
+                        data = self._get_pack_content(possible_path)
+                        self._data.update(data)
+                        self.raw_data[language] = data
+                        any_ = True
 
         for language in SUPPORTED_LANGUAGES:
             if language not in self.raw_data and (PACKS / f"{language}.yml").exists():

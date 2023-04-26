@@ -48,8 +48,6 @@ class HelpMod(loader.Module):
 
     @loader.command()
     async def helphide(self, message: Message):
-        """<module or modules> - Hide module(-s) from help
-        *Split modules using spaces"""
         if not (modules := utils.get_args(message)):
             await utils.answer(message, self.strings("no_mod"))
             return
@@ -229,7 +227,6 @@ class HelpMod(loader.Module):
 
     @loader.command()
     async def help(self, message: Message):
-        """[module] [-f] - Show help"""
         args = utils.get_args_raw(message)
         force = False
         if "-f" in args:
@@ -374,7 +371,6 @@ class HelpMod(loader.Module):
 
     @loader.command()
     async def support(self, message):
-        """Get link of Hikka support chat"""
         if message.out:
             await self.request_join("@hikka_talks", self.strings("request_join"))
 

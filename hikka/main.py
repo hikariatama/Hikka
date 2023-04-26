@@ -527,6 +527,17 @@ class Hikka:
 
         return False
 
+    async def _phone_login(self, client: CustomTelegramClient) -> bool:
+        phone = input(
+            "\033[0;96mEnter phone: \033[0m" if IS_TERMUX else "Enter phone: "
+        )
+
+        await client.start(phone)
+
+        await self.save_client_session(client)
+        self.clients += [client]
+        return True
+
     async def _initial_setup(self) -> bool:
         """Responsible for first start"""
         if self.arguments.no_auth:
@@ -563,15 +574,7 @@ class Hikka:
                 ).lower()
                 != "y"
             ):
-                phone = input(
-                    "\033[0;96mEnter phone: \033[0m" if IS_TERMUX else "Enter phone: "
-                )
-
-                await client.start(phone)
-
-                await self.save_client_session(client)
-                self.clients += [client]
-                return True
+                return await self._phone_login(client)
 
             print("\033[0;96mLoading QR code...\033[0m")
             qr_login = await client.qr_login()
@@ -582,6 +585,7 @@ class Hikka:
                 print("\033[2J\033[3;1f")
                 qr.print_ascii(invert=True)
                 print("\033[0;96mScan the QR code above to log in.\033[0m")
+                print("\033[0;96mPress Ctrl+C to cancel.\033[0m")
 
             async def qr_login_poll() -> bool:
                 logged_in = False
@@ -596,10 +600,16 @@ class Hikka:
                             return True
                     except SessionPasswordNeededError:
                         return True
+                    except KeyboardInterrupt:
+                        print("\033[2J\033[3;1f")
+                        return None
 
                 return False
 
-            if await qr_login_poll():
+            if (qr_logined := await qr_login_poll()) is None:
+                return await self._phone_login(client)
+
+            if qr_logined:
                 print_banner("2fa.txt")
                 password = await client(GetPasswordRequest())
                 while True:

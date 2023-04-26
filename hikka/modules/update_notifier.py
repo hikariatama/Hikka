@@ -14,7 +14,7 @@ from ..inline.types import InlineCall
 
 
 @loader.tds
-class UpdateNotifierMod(loader.Module):
+class UpdateNotifier(loader.Module):
     """Tracks latest Hikka releases, and notifies you, if update is required"""
 
     strings = {"name": "UpdateNotifier"}
@@ -70,14 +70,12 @@ class UpdateNotifierMod(loader.Module):
 
         self._markup = lambda: self.inline.generate_markup(
             [
-                {"text": self.strings("update"), "data": "hikka_update"},
-                {"text": self.strings("ignore"), "data": "hikka_upd_ignore"},
+                {"text": self.strings("update"), "data": "hikka/update"},
+                {"text": self.strings("ignore"), "data": "hikka/ignore_upd"},
             ]
         )
 
-        self.poller.start()
-
-    @loader.loop(interval=60)
+    @loader.loop(interval=60, autostart=True)
     async def poller(self):
         if self.config["disable_notifications"] or not self.get_changelog():
             return
@@ -120,16 +118,16 @@ class UpdateNotifierMod(loader.Module):
             with contextlib.suppress(Exception):
                 await client.loader.inline.bot.delete_message(
                     client.tg_id,
-                    client.loader.db.get("UpdateNotifierMod", "upd_msg"),
+                    client.loader.db.get("UpdateNotifier", "upd_msg"),
                 )
 
     @loader.callback_handler()
     async def update(self, call: InlineCall):
         """Process update buttons clicks"""
-        if call.data not in {"hikka_update", "hikka_upd_ignore"}:
+        if call.data not in {"hikka/update", "hikka/ignore_upd"}:
             return
 
-        if call.data == "hikka_upd_ignore":
+        if call.data == "hikka/ignore_upd":
             self.set("ignore_permanent", self.get_latest())
             await call.answer(self.strings("latest_disabled"))
             return

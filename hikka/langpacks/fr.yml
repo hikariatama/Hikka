@@ -307,6 +307,9 @@ unit_heta:
     args: "<emoji document_id=5210952531676504517>❌</emoji> <b>Vous devez spécifier des arguments</b>"
     _cmd_doc_heta: "<requête> - Recherche des modules dans le référentiel Heta"
     _cmd_doc_ml: "<nom du module> - Envoyer le lien vers le module"
+    enter_search_query: "🔎 Entrez la requête de recherche"
+    search_query_desc: "Commande, nom de module, description, etc."
+    _ihandle_doc_heta: "Recherche des modules dans le référentiel Heta"
 
 update_notifier:
     update_required: "🆕 <b>Mise à jour Hikka disponible!</b>\n\nNouvelle version de Hikka publiée.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
@@ -549,7 +552,8 @@ $inline:
     opening_gallery: " <b>Ouverture de la galerie...</b>"
     opening_list: " <b>Ouverture de la liste...</b>"
     inline403: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Vous ne pouvez pas envoyer d'éléments intégrés dans ce chat</b>"
-    invoke_failed: "<b>🚫 L'appel du module a échoué! Voir les journaux pour plus de détails</b>"
+    invoke_failed: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Unité invoquer échoué! Plus d'informations dans les journaux</b>"
+    invoke_failed_logs: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Unité invoquer échoué!</b>\n\n<emoji document_id=5226512880362332956>📖</emoji> <b>Les journaux:</b>\n\n<code>{}</code>"
     show_inline_cmds: "📄 Afficher toutes les commandes intégrées disponibles"
     no_inline_cmds: "Vous n'avez aucune commande inline disponible"
     no_inline_cmds_msg: "<b>😔 Vous n'avez aucune commande inline disponible ou vous n'avez pas accès à celles-ci</b>"

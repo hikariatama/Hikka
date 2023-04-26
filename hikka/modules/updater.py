@@ -47,7 +47,6 @@ class UpdaterMod(loader.Module):
 
     @loader.command()
     async def restart(self, message: Message):
-        """Restarts the userbot"""
         args = utils.get_args_raw(message)
         secure_boot = any(trigger in args for trigger in {"--secure-boot", "-sb"})
         try:
@@ -187,7 +186,6 @@ class UpdaterMod(loader.Module):
 
     @loader.command()
     async def update(self, message: Message):
-        """Downloads userbot updates"""
         try:
             args = utils.get_args_raw(message)
             current = utils.get_git_hash()
@@ -268,7 +266,6 @@ class UpdaterMod(loader.Module):
 
     @loader.command()
     async def source(self, message: Message):
-        """Links the source code of this project"""
         await utils.answer(
             message,
             self.strings("source").format(self.config["GIT_ORIGIN_URL"]),

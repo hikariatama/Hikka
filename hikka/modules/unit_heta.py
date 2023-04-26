@@ -6,6 +6,7 @@
 
 import asyncio
 import base64
+import contextlib
 import difflib
 import inspect
 import io
@@ -20,7 +21,7 @@ from hikkatl.tl.types import Message
 from hikkatl.utils import resolve_inline_message_id
 
 from .. import loader, utils
-from ..types import InlineCall
+from ..types import InlineCall, InlineQuery
 
 logger = logging.getLogger(__name__)
 
@@ -90,8 +91,7 @@ class UnitHeta(loader.Module):
         )
 
     @loader.command()
-    async def heta(self, message: Message):
-        """<query> - Searches Heta repository for modules"""
+    async def hetacmd(self, message: Message):
         if not (query := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("no_query"))
             return
@@ -117,36 +117,7 @@ class UnitHeta(loader.Module):
             return
 
         result = result[0]
-
-        commands = "\n".join(
-            [
-                f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
-                f" <b>{utils.escape_html(cmd_doc)}</b>"
-                for cmd, cmd_doc in result["module"]["commands"].items()
-            ]
-        )
-
-        kwargs = {
-            "name": utils.escape_html(result["module"]["name"]),
-            "dev": utils.escape_html(result["module"]["dev"]),
-            "commands": commands,
-            "cls_doc": utils.escape_html(result["module"]["cls_doc"]),
-            "link": result["module"]["link"],
-            "query": utils.escape_html(query),
-            "prefix": utils.escape_html(self.get_prefix()),
-        }
-
-        strings = (
-            self.strings.get("result", "en")
-            if self.config["translate"]
-            else self.strings("result")
-        )
-
-        text = strings.format(**kwargs)
-
-        if len(text) > 2048:
-            kwargs["commands"] = "..."
-            text = strings.format(**kwargs)
+        text = self._format_result(result, query)
 
         mark = lambda text: {  # noqa: E731
             "text": self.strings("install"),
@@ -170,15 +141,12 @@ class UnitHeta(loader.Module):
 
         message_id, peer, _, _ = resolve_inline_message_id(form.inline_message_id)
 
-        try:
+        with contextlib.suppress(Exception):
             text = await self._client.translate(
                 peer,
                 message_id,
                 self.strings("language"),
             )
-            await form.edit(text=text, reply_markup=mark(text))
-        except Exception:
-            text = self.strings("result").format(**kwargs)
             await form.edit(text=text, reply_markup=mark(text))
 
     async def _load_module(
@@ -291,7 +259,6 @@ class UnitHeta(loader.Module):
 
     @loader.command()
     async def mlcmd(self, message: Message):
-        """<module name> - Send link to module"""
         if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("args"))
             return
@@ -381,3 +348,81 @@ class UnitHeta(loader.Module):
             file,
             caption=text,
         )
+
+    def _format_result(
+        self, result: dict, query: str, no_translate: bool = False
+    ) -> str:
+        commands = "\n".join(
+            [
+                f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
+                f" <b>{utils.escape_html(cmd_doc)}</b>"
+                for cmd, cmd_doc in result["module"]["commands"].items()
+            ]
+        )
+
+        kwargs = {
+            "name": utils.escape_html(result["module"]["name"]),
+            "dev": utils.escape_html(result["module"]["dev"]),
+            "commands": commands,
+            "cls_doc": utils.escape_html(result["module"]["cls_doc"]),
+            "link": result["module"]["link"],
+            "query": utils.escape_html(query),
+            "prefix": utils.escape_html(self.get_prefix()),
+        }
+
+        strings = (
+            self.strings.get("result", "en")
+            if self.config["translate"] and not no_translate
+            else self.strings("result")
+        )
+
+        text = strings.format(**kwargs)
+
+        if len(text) > 2048:
+            kwargs["commands"] = "..."
+            text = strings.format(**kwargs)
+
+        return text
+
+    @loader.inline_handler(thumb_url="https://img.icons8.com/color/512/hexa.png")
+    async def heta(self, query: InlineQuery) -> typing.List[dict]:
+        if not query.args:
+            return {
+                "title": self.strings("enter_search_query"),
+                "description": self.strings("search_query_desc"),
+                "message": self.strings("enter_search_query"),
+                "thumb": "https://img.icons8.com/color/512/hexa.png",
+            }
+
+        if not (
+            response := await utils.run_sync(
+                requests.get,
+                "https://heta.hikariatama.ru/search",
+                params={"q": query.args, "limit": 30},
+            )
+        ) or not (response := response.json()):
+            return {
+                "title": utils.remove_html(self.strings("no_results")),
+                "message": self.inline.sanitise_text(self.strings("no_results")),
+                "thumb": "https://img.icons8.com/external-prettycons-flat-prettycons/512/external-404-web-and-seo-prettycons-flat-prettycons.png",
+            }
+
+        return [
+            {
+                "title": utils.escape_html(module["module"]["name"]),
+                "description": utils.escape_html(module["module"]["cls_doc"]),
+                "message": self.inline.sanitise_text(
+                    self._format_result(module, query.args, True)
+                ),
+                "thumb": module["module"]["pic"],
+                "reply_markup": {
+                    "text": self.strings("install"),
+                    "callback": self._install,
+                    "args": (
+                        module["module"]["link"],
+                        self._format_result(module, query.args, True),
+                    ),
+                },
+            }
+            for module in response
+        ]

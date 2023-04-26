@@ -56,12 +56,49 @@ def hashable(value: typing.Any) -> bool:
 class CustomTelegramClient(TelegramClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._hikka_entity_cache = {}
-        self._hikka_perms_cache = {}
-        self._hikka_fullchannel_cache = {}
-        self._hikka_fulluser_cache = {}
-        self.__forbidden_constructors = []
-        self.raw_updates_processor = None  # Will be monkeypatched by pyro proxy
+
+        self._hikka_entity_cache: typing.Dict[
+            typing.Union[str, int],
+            CacheRecordEntity,
+        ] = {}
+
+        self._hikka_perms_cache: typing.Dict[
+            typing.Union[str, int],
+            CacheRecordPerms,
+        ] = {}
+
+        self._hikka_fullchannel_cache: typing.Dict[
+            typing.Union[str, int],
+            CacheRecordFullChannel,
+        ] = {}
+
+        self._hikka_fulluser_cache: typing.Dict[
+            typing.Union[str, int],
+            CacheRecordFullUser,
+        ] = {}
+
+        self._forbidden_constructors: typing.List[int] = []
+
+        self._raw_updates_processor: typing.Optional[
+            typing.Callable[
+                [typing.Union[Updates, UpdatesCombined, UpdateShort]],
+                typing.Any,
+            ]
+        ] = None
+
+    @property
+    def raw_updates_processor(self) -> typing.Optional[callable]:
+        return self._raw_updates_processor
+
+    @raw_updates_processor.setter
+    def raw_updates_processor(self, value: callable):
+        if self._raw_updates_processor is not None:
+            raise ValueError("raw_updates_processor is already set")
+
+        if not callable(value):
+            raise ValueError("raw_updates_processor must be callable")
+
+        self._raw_updates_processor = value
 
     @property
     def hikka_entity_cache(self) -> typing.Dict[int, CacheRecordEntity]:
@@ -81,7 +118,7 @@ class CustomTelegramClient(TelegramClient):
 
     @property
     def forbidden_constructors(self) -> typing.List[str]:
-        return self.__forbidden_constructors
+        return self._forbidden_constructors
 
     async def force_get_entity(self, *args, **kwargs):
         """Forcefully makes a request to Telegram to get the entity."""
@@ -514,7 +551,7 @@ class CustomTelegramClient(TelegramClient):
         new_request = []
 
         for item in request:
-            if item.CONSTRUCTOR_ID in self.__forbidden_constructors and next(
+            if item.CONSTRUCTOR_ID in self._forbidden_constructors and next(
                 (
                     frame_info.frame.f_locals["self"]
                     for frame_info in inspect.stack()
@@ -555,8 +592,8 @@ class CustomTelegramClient(TelegramClient):
 
         :param constructor: Constructor id to forbid
         """
-        self.__forbidden_constructors.extend([constructor])
-        self.__forbidden_constructors = list(set(self.__forbidden_constructors))
+        self._forbidden_constructors.extend([constructor])
+        self._forbidden_constructors = list(set(self._forbidden_constructors))
 
     def forbid_constructors(self, constructors: list):
         """
@@ -565,13 +602,13 @@ class CustomTelegramClient(TelegramClient):
 
         :param constructors: Constructor ids to forbid
         """
-        self.__forbidden_constructors = list(set(constructors))
+        self._forbidden_constructors = list(set(constructors))
 
     def _handle_update(
         self: "CustomTelegramClient",
         update: typing.Union[Updates, UpdatesCombined, UpdateShort],
     ):
-        if self.raw_updates_processor is not None:
-            self.raw_updates_processor(update)
+        if self._raw_updates_processor is not None:
+            self._raw_updates_processor(update)
 
         super()._handle_update(update)

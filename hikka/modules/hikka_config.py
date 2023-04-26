@@ -21,14 +21,15 @@ from ..inline.types import InlineCall
 # `obj_type` of library = "library"
 
 
+ROW_SIZE = 3
+NUM_ROWS = 5
+
+
 @loader.tds
 class HikkaConfigMod(loader.Module):
     """Interactive configurator for Hikka Userbot"""
 
     strings = {"name": "HikkaConfig"}
-
-    _row_size = 3
-    _num_rows = 5
 
     @staticmethod
     def prep_value(value: typing.Any) -> typing.Any:
@@ -923,13 +924,7 @@ class HikkaConfigMod(loader.Module):
 
         kb = []
         for mod_row in utils.chunks(
-            to_config[
-                page
-                * self._num_rows
-                * self._row_size : (page + 1)
-                * self._num_rows
-                * self._row_size
-            ],
+            to_config[page * NUM_ROWS * ROW_SIZE : (page + 1) * NUM_ROWS * ROW_SIZE],
             3,
         ):
             row = [
@@ -943,12 +938,12 @@ class HikkaConfigMod(loader.Module):
             ]
             kb += [row]
 
-        if len(to_config) > self._num_rows * self._row_size:
+        if len(to_config) > NUM_ROWS * ROW_SIZE:
             kb += self.inline.build_pagination(
                 callback=functools.partial(
                     self.inline__global_config, obj_type=obj_type
                 ),
-                total_pages=ceil(len(to_config) / (self._num_rows * self._row_size)),
+                total_pages=ceil(len(to_config) / (NUM_ROWS * ROW_SIZE)),
                 current_page=page + 1,
             )
 
@@ -971,7 +966,6 @@ class HikkaConfigMod(loader.Module):
 
     @loader.command(alias="cfg")
     async def configcmd(self, message: Message):
-        """Configure modules"""
         args = utils.get_args_raw(message)
         if self.lookup(args) and hasattr(self.lookup(args), "config"):
             form = await self.inline.form("🌘", message, silent=True)
@@ -988,7 +982,6 @@ class HikkaConfigMod(loader.Module):
 
     @loader.command(alias="fcfg")
     async def fconfig(self, message: Message):
-        """<module_name> <property_name> <config_value> - set the config value for the module"""
         args = utils.get_args_raw(message).split(maxsplit=2)
 
         if len(args) < 3:

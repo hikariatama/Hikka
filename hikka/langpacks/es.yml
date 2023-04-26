@@ -300,6 +300,9 @@ unit_heta:
     args: "<emoji document_id=5210952531676504517>❌</emoji> <b>Debes especificar argumentos</b>"
     _cmd_doc_heta: "<consulta> - Busca módulos en el repositorio Heta"
     _cmd_doc_ml: "<nombre del módulo> - Enviar enlace al módulo"
+    enter_search_query: "🔎 Ingrese la consulta de búsqueda"
+    search_query_desc: "Comando, nombre del módulo, descripción, etc."
+    _ihandle_doc_heta: "Busca módulos en el repositorio de Heta"
 
 update_notifier:
     update_required: "🆕 <b>¡Actualización de Hikka disponible!</b>\n\nSe ha publicado una nueva versión de Hikka.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
@@ -540,7 +543,8 @@ $inline:
     opening_gallery: " <b>Abriendo galería...</b>"
     opening_list: " <b>Abriendo lista...</b>"
     inline403: "🚫 <b>No se permiten elementos de interfaz de usuario en este grupo</b>"
-    invoke_failed: "<emoji document_id=5210952531676504517>🚫</emoji> <b>¡Error al invocar la unidad! Consulte el registro para obtener más detalles</b>"
+    invoke_failed: "<emoji document_id=5210952531676504517>🚫</emoji> <b>¡La unidad no se pudo invocar! Más información en los registros</b>"
+    invoke_failed_logs: "<emoji document_id=5210952531676504517>🚫</emoji> <b>¡La unidad no se pudo invocar!</b>\n\n<emoji document_id=5226512880362332956>📖</emoji> <b>Registros:</b>\n\n<code>{}</code>"
     show_inline_cmds: "📄 Mostrar todos los comandos disponibles"
     no_inline_cmds: "No hay comandos disponibles"
     no_inline_cmds_msg: "<b>😔 No hay comandos disponibles o no tienes permiso para acceder a los comandos</b>"

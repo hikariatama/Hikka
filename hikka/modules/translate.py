@@ -21,7 +21,6 @@ class Translator(loader.Module):
 
     @loader.command()
     async def tr(self, message: Message):
-        """[language] [text] - Translate text"""
         if not (args := utils.get_args_raw(message)):
             text = None
             lang = self.strings("language")

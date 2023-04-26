@@ -299,6 +299,9 @@ unit_heta:
     args: "<emoji document_id=5210952531676504517>❌</emoji> <b>Argümanlar belirtmelisiniz</b>"
     _cmd_doc_heta: "<sorgu> - Heta deposunda modülleri arar"
     _cmd_doc_ml: "<modül adı> - Modül bağlantısını gönder"
+    enter_search_query: "🔎 Arama sorgusunu girin"
+    search_query_desc: "Komut, modül adı, açıklama, vs."
+    _ihandle_doc_heta: "Heta deposunda modüller arar"
 
 update_notifier:
     update_required: "🆕 <b>Hikka güncellemesi mevcut!</b>\n\nYeni bir Hikka sürümü yayınlandı.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
@@ -539,7 +542,8 @@ $inline:
     opening_gallery: " <b>Galeri açılıyor...</b>"
     opening_list: " <b>Liste açılıyor...</b>"
     inline403: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bu sohbete satır içi birimler gönderemezsin</b>"
-    invoke_failed: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modül çağrısı başarısız! Kayıtlardan daha fazla bilgiye erişebilirsin</b>"
+    invoke_failed: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Birim çağrısı başarısız! Günlüklerde daha fazla bilgi</b>"
+    invoke_failed_logs: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Birim çağrısı başarısız!</b>\n\n<emoji document_id=5226512880362332956>📖</emoji> <b>Günlükler:</b>\n\n<code>{}</code>"
     show_inline_cmds: "📄 Tüm kullanılabilir satır içi komutlarını göster"
     no_inline_cmds: "Kullanılabilir satır içi komutunuz yok"
     no_inline_cmds_msg: "<b>😔 Kullanılabilir satır içi komutunuz yok veya erişiminiz yok</b>"

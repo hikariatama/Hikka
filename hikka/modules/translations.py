@@ -46,7 +46,6 @@ class Translations(loader.Module):
 
     @loader.command()
     async def setlang(self, message: Message):
-        """[languages in the order of priority] - Change default language"""
         if not (args := utils.get_args_raw(message)):
             await self.inline.form(
                 message=message,
@@ -89,7 +88,6 @@ class Translations(loader.Module):
 
     @loader.command()
     async def dllangpackcmd(self, message: Message):
-        """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""
         if not (args := utils.get_args_raw(message)):
             self._db.set(translations.__name__, "pack", False)
             await self.translator.init()

@@ -183,7 +183,6 @@ class LoaderMod(loader.Module):
 
     @loader.command(alias="dlm")
     async def dlmod(self, message: Message):
-        """Install a module from the official module repo"""
         if args := utils.get_args(message):
             args = args[0]
 
@@ -356,11 +355,15 @@ class LoaderMod(loader.Module):
 
         await self.load_module(doc, call, origin=path_ or "<string>", save_fs=save)
 
-    @loader.command(
-        alias="lm",
-    )
+    @loader.command(alias="lm")
     async def loadmod(self, message: Message):
-        """Loads the module file"""
+        args = utils.get_args_raw(message)
+        if "-fs" in args:
+            force_save = True
+            args = args.replace("-fs", "").strip()
+        else:
+            force_save = False
+
         msg = message if message.file else (await message.get_reply_message())
 
         if msg is None or msg.media is None:
@@ -378,11 +381,15 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("bad_unicode"))
             return
 
-        if not self._db.get(
-            main.__name__,
-            "disable_modules_fs",
-            False,
-        ) and not self._db.get(main.__name__, "permanent_modules_fs", False):
+        if (
+            not self._db.get(
+                main.__name__,
+                "disable_modules_fs",
+                False,
+            )
+            and not self._db.get(main.__name__, "permanent_modules_fs", False)
+            and not force_save
+        ):
             if message.file:
                 await message.edit("")
                 message = await message.respond("🌘", reply_to=utils.get_topic(message))
@@ -426,15 +433,21 @@ class LoaderMod(loader.Module):
                 doc,
                 message,
                 origin=path_,
-                save_fs=self._db.get(main.__name__, "permanent_modules_fs", False)
-                and not self._db.get(main.__name__, "disable_modules_fs", False),
+                save_fs=(
+                    force_save
+                    or self._db.get(main.__name__, "permanent_modules_fs", False)
+                    and not self._db.get(main.__name__, "disable_modules_fs", False)
+                ),
             )
         else:
             await self.load_module(
                 doc,
                 message,
-                save_fs=self._db.get(main.__name__, "permanent_modules_fs", False)
-                and not self._db.get(main.__name__, "disable_modules_fs", False),
+                save_fs=(
+                    force_save
+                    or self._db.get(main.__name__, "permanent_modules_fs", False)
+                    and not self._db.get(main.__name__, "disable_modules_fs", False)
+                ),
             )
 
     async def load_module(
@@ -1028,14 +1041,9 @@ class LoaderMod(loader.Module):
         await utils.answer(call, msg())
         await call.answer(self.strings("subscribed"))
 
-    @loader.command(
-        alias="ulm",
-    )
+    @loader.command(alias="ulm")
     async def unloadmod(self, message: Message):
-        """Unload module by class name"""
-        args = utils.get_args_raw(message)
-
-        if not args:
+        if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("no_class"))
             return
 
@@ -1088,7 +1096,6 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def clearmodules(self, message: Message):
-        """Delete all installed modules"""
         await self.inline.form(
             self.strings("confirm_clearmodules"),
             message,
@@ -1106,8 +1113,24 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def addrepo(self, message: Message):
-        """Add a repository to the list of repositories"""
-        if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
+        if not (args := utils.get_args_raw(message)) or (
+            not utils.check_url(args) and not utils.check_url(f"https://{args}")
+        ):
+            await utils.answer(message, self.strings("no_repo"))
+            return
+
+        if args.endswith("/"):
+            args = args[:-1]
+
+        if not args.startswith("https://") and not args.startswith("http://"):
+            args = f"https://{args}"
+
+        try:
+            r = await utils.run_sync(requests.get, f"{args}/full.txt")
+            r.raise_for_status()
+            if not r.text.strip():
+                raise ValueError
+        except Exception:
             await utils.answer(message, self.strings("no_repo"))
             return
 
@@ -1121,10 +1144,12 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def delrepo(self, message: Message):
-        """Remove a repository from the list of repositories"""
         if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
             await utils.answer(message, self.strings("no_repo"))
             return
+
+        if args.endswith("/"):
+            args = args[:-1]
 
         if args not in self.config["ADDITIONAL_REPOS"]:
             await utils.answer(message, self.strings("repo_not_exists"))
@@ -1172,6 +1197,16 @@ class LoaderMod(loader.Module):
 
         with contextlib.suppress(AttributeError):
             await self.lookup("Updater").full_restart_complete(self._secure_boot)
+
+    def flush_cache(self) -> int:
+        """Flush the cache of links to modules"""
+        count = len(self._links_cache)
+        self._links_cache = {}
+        return count
+
+    def inspect_cache(self) -> int:
+        """Inspect the cache of links to modules"""
+        return len(self._links_cache)
 
     async def reload_core(self) -> int:
         """Forcefully reload all core modules"""

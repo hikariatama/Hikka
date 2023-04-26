@@ -160,3 +160,131 @@ class PointerDict(dict):
 
     def _save(self):
         self._db.set(self._module, self._key, dict(self))
+
+
+class BaseSerializingMiddlewareDict:
+    def __init__(self, pointer: PointerDict):
+        self._pointer = pointer
+
+    def serialize(self, item: typing.Any) -> "JSONSerializable":  # type: ignore  # noqa: F821
+        raise NotImplementedError
+
+    def deserialize(self, item: "JSONSerializable") -> typing.Any:  # type: ignore  # noqa: F821
+        raise NotImplementedError
+
+    def __getitem__(self, key: typing.Any) -> typing.Any:
+        return self.deserialize(self._pointer[key])
+
+    def __setitem__(self, key: typing.Any, value: typing.Any) -> None:
+        self._pointer[key] = self.serialize(value)
+
+    def __delitem__(self, key: typing.Any) -> None:
+        del self._pointer[key]
+
+    def __iter__(self) -> typing.Iterator[typing.Any]:
+        for item in self._pointer:
+            yield self.deserialize(item)
+
+    def __len__(self) -> int:
+        return len(self._pointer)
+
+    def __contains__(self, item: typing.Any) -> bool:
+        return self.serialize(item) in self._pointer
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}({self._pointer})"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self._pointer})"
+
+    def pop(self, key: typing.Any) -> typing.Any:
+        return self.deserialize(self._pointer.pop(key))
+
+    def popitem(self) -> typing.Any:
+        return self.deserialize(self._pointer.popitem())
+
+    def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+        return self.deserialize(self._pointer.get(key, default))
+
+    def setdefault(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
+        return self.deserialize(self._pointer.setdefault(key, default))
+
+    def clear(self) -> None:
+        self._pointer.clear()
+
+
+class BaseSerializingMiddlewareList:
+    def __init__(self, pointer: PointerList):
+        self._pointer = pointer
+
+    def serialize(self, item: typing.Any) -> "JSONSerializable":  # type: ignore  # noqa: F821
+        raise NotImplementedError
+
+    def deserialize(self, item: "JSONSerializable") -> typing.Any:  # type: ignore  # noqa: F821
+        raise NotImplementedError
+
+    def remove(self, item: typing.Any) -> None:
+        self._pointer.remove(self.serialize(item))
+
+    def pop(self, index: int) -> typing.Any:
+        return self.deserialize(self._pointer.pop(index))
+
+    def insert(self, index: int, item: typing.Any) -> None:
+        self._pointer.insert(index, self.serialize(item))
+
+    def append(self, item: typing.Any) -> None:
+        self._pointer.append(self.serialize(item))
+
+    def extend(self, items: typing.Iterable[typing.Any]) -> None:
+        self._pointer.extend([self.serialize(item) for item in items])
+
+    def __getitem__(self, key: typing.Any) -> typing.Any:
+        return self.deserialize(self._pointer[key])
+
+    def __setitem__(self, key: typing.Any, value: typing.Any) -> None:
+        self._pointer[key] = self.serialize(value)
+
+    def __delitem__(self, key: typing.Any) -> None:
+        del self._pointer[key]
+
+    def __iter__(self) -> typing.Iterator[typing.Any]:
+        return (self.deserialize(item) for item in self._pointer)
+
+    def __len__(self) -> int:
+        return len(self._pointer)
+
+    def __contains__(self, item: typing.Any) -> bool:
+        return self.serialize(item) in self._pointer
+
+    def __reversed__(self) -> typing.Iterator[typing.Any]:
+        return (self.deserialize(item) for item in reversed(self._pointer))
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}({self._pointer})"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self._pointer})"
+
+
+class NamedTupleMiddlewareList(BaseSerializingMiddlewareList):
+    def __init__(self, pointer: PointerList, item_type: typing.Type[typing.Any]):
+        super().__init__(pointer)
+        self._item_type = item_type
+
+    def serialize(self, item: typing.Any) -> "JSONSerializable":  # type: ignore  # noqa: F821
+        return item._asdict()
+
+    def deserialize(self, item: "JSONSerializable") -> typing.Any:  # type: ignore  # noqa: F821
+        return self._item_type(**item)
+
+
+class NamedTupleMiddlewareDict(BaseSerializingMiddlewareDict):
+    def __init__(self, pointer: PointerList, item_type: typing.Type[typing.Any]):
+        super().__init__(pointer)
+        self._item_type = item_type
+
+    def serialize(self, item: typing.Any) -> "JSONSerializable":  # type: ignore  # noqa: F821
+        return item._asdict()
+
+    def deserialize(self, item: "JSONSerializable") -> typing.Any:  # type: ignore  # noqa: F821
+        return self._item_type(**item)

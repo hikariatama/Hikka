@@ -39,6 +39,8 @@ from .types import Command
 logger = logging.getLogger(__name__)
 
 OWNER = 1 << 0
+SUDO = 1 << 1
+SUPPORT = 1 << 2
 GROUP_OWNER = 1 << 3
 GROUP_ADMIN_ADD_ADMINS = 1 << 4
 GROUP_ADMIN_CHANGE_INFO = 1 << 5
@@ -173,6 +175,8 @@ class SecurityManager:
         self.tsec_chat = self._tsec_chat
         self.tsec_user = self._tsec_user
         self.owner = self._owner
+
+        self._last_warning: int = 0
 
     def _reload_rights(self):
         """
@@ -374,6 +378,19 @@ class SecurityManager:
             return True
 
         logger.debug("Checking security match for %s", config)
+
+        if config & SUDO or config & SUPPORT:
+            if not self._last_warning or time.time() - self._last_warning > 60 * 60:
+                import warnings
+
+                warnings.warn(
+                    (
+                        "You are using module containing SUDO or SUPPORT security"
+                        " groups, which are deprecated. It might behave strangely"
+                    ),
+                    DeprecationWarning,
+                )
+                self._last_warning = time.time()
 
         f_group_owner = config & GROUP_OWNER
         f_group_admin_add_admins = config & GROUP_ADMIN_ADD_ADMINS

@@ -326,6 +326,9 @@ unit_heta:
     _cmd_doc_heta: "<query> - Searches Heta repository for modules"
     _cmd_doc_ml: "<module name> - Send link to module"
     _cls_doc: "Manages stuff with @hikkamods_bot"
+    enter_search_query: "🔎 Enter search query"
+    search_query_desc: "Command, module name, description, etc."
+    _ihandle_doc_heta: "Searches Heta repository for modules"
 
 update_notifier:
     name: "UpdateNotifier"
@@ -578,7 +581,8 @@ $inline:
     opening_gallery: " <b>Opening gallery...</b>"
     opening_list: " <b>Opening list...</b>"
     inline403: "<emoji document_id=5210952531676504517>🚫</emoji> <b>You can't send inline units in this chat</b>"
-    invoke_failed: "<b>🚫 Unit invoke failed! More info in logs</b>"
+    invoke_failed: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Unit invoke failed! More info in logs</b>"
+    invoke_failed_logs: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Unit invoke failed!</b>\n\n<emoji document_id=5226512880362332956>📖</emoji> <b>Logs:</b>\n\n<code>{}</code>"
     show_inline_cmds: "📄 Show all available inline commands"
     no_inline_cmds: "You have no available commands"
     no_inline_cmds_msg: "<b>😔 There are no available inline commands or you lack access to them</b>"

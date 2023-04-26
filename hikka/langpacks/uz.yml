@@ -305,6 +305,9 @@ unit_heta:
     args: "<emoji document_id=5210952531676504517>❌</emoji> <b>Siz argumentlarni belgilamadingiz</b>"
     _cmd_doc_heta: "<so'rov> - Heta ombori uchun modullarni qidiradi"
     _cmd_doc_ml: "<modul nomi> - Modulga havola yuborish"
+    enter_search_query: "🔎 Qidiruv so'rovini kiriting"
+    search_query_desc: "Buyruq, modul nomi, ta'rif, va h.k."
+    _ihandle_doc_heta: "Heta saqifasi uchun modullarni qidirish"
 
 update_notifier:
     update_required: "🆕 <b>Hikka yangilash mavjud!</b>\n\nYangi Hikka versiyasi chiqdi.\n🔮 <b>Hikka <s>{}</s> -> {}</b>\n\n{}"
@@ -547,7 +550,8 @@ $inline:
     opening_gallery: " <b>Galeriyani ochish...</b>"
     opening_list: " <b>Ro'yxatni ochish...</b>"
     inline403: "🚫 <b>Siz bu guruhda inline obyektlarni yuborishingiz mumkin emas</b>"
-    invoke_failed: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modulni chaqirish muvaffaqiyatsiz! Batafsil ma'lumotlar jurnallarda</b>"
+    invoke_failed: "<emoji documentid=5210952531676504517>🚫</emoji> <b>Birlikni yangilash muvaffaqiyatsiz tugadi! Ko'p ma'lumotlar uchun yuklarni ko'ring</b>"
+    invoke_failed_logs: "<emoji documentid=5210952531676504517>🚫</emoji> <b>Birlikni yangilash muvaffaqiyatsiz tugadi!</b>\n\n<emoji documentid=5226512880362332956>📖</emoji> <b>Yuklar:</b>\n\n<code>{}</code>"
     show_inline_cmds: "📄 Barcha mavjud inline buyruqlarini ko'rsatish"
     no_inline_cmds: "Sizda mavjud inline buyruqlar yo'q"
     no_inline_cmds_msg: "<b>😔 Sizda mavjud inline buyruqlar yo'q yoki ularga kirish huquqingiz yo'q</b>"

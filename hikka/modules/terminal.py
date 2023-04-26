@@ -312,12 +312,10 @@ class TerminalMod(loader.Module):
 
     @loader.command()
     async def terminalcmd(self, message):
-        """<command> - Execute bash command"""
         await self.run_command(message, utils.get_args_raw(message))
 
     @loader.command()
     async def aptcmd(self, message):
-        """Shorthand for '.terminal apt'"""
         await self.run_command(
             message,
             ("apt " if os.geteuid() == 0 else "sudo -S apt ")
@@ -387,7 +385,6 @@ class TerminalMod(loader.Module):
 
     @loader.command()
     async def terminatecmd(self, message):
-        """[-f to force kill] - Use in reply to send SIGTERM to a process"""
         if not message.is_reply:
             await utils.answer(message, self.strings("what_to_kill"))
             return
