@@ -84,6 +84,14 @@ PUBLIC_PERMISSIONS = GROUP_OWNER | GROUP_ADMIN_ANY | GROUP_MEMBER | PM
 ALL = (1 << 13) - 1
 
 
+class SecurityGroup(typing.NamedTuple):
+    """Represents a security group"""
+
+    name: str
+    users: typing.List[int]
+    permissions: typing.List[dict]
+
+
 def owner(func: Command) -> Command:
     return _sec(func, OWNER)
 
@@ -160,23 +168,21 @@ class SecurityManager:
     def __init__(self, client: CustomTelegramClient, db: Database):
         self._client = client
         self._db = db
-        self._cache = {}
+        self._cache: typing.Dict[int, dict] = {}
+        self._last_warning: int = 0
+        self._sgroups: typing.Dict[str, SecurityGroup] = {}
 
-        self._any_admin = db.get(__name__, "any_admin", False)
-        self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
-        self._tsec_chat = db.pointer(__name__, "tsec_chat", [])
-        self._tsec_user = db.pointer(__name__, "tsec_user", [])
-        self._owner = db.pointer(__name__, "owner", [])
+        self._any_admin = self.any_admin = db.get(__name__, "any_admin", False)
+        self._default = self.default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
+        self._tsec_chat = self.tsec_chat = db.pointer(__name__, "tsec_chat", [])
+        self._tsec_user = self.tsec_user = db.pointer(__name__, "tsec_user", [])
+        self._owner = self.owner = db.pointer(__name__, "owner", [])
 
         self._reload_rights()
 
-        self.any_admin = self._any_admin
-        self.default = self._default
-        self.tsec_chat = self._tsec_chat
-        self.tsec_user = self._tsec_user
-        self.owner = self._owner
-
-        self._last_warning: int = 0
+    def apply_sgroups(self, sgroups: typing.Dict[str, SecurityGroup]):
+        """Apply security groups"""
+        self._sgroups = sgroups
 
     def _reload_rights(self):
         """
@@ -334,6 +340,8 @@ class SecurityManager:
         func: typing.Union[Command, int],
         user_id: typing.Optional[int] = None,
         inline_cmd: typing.Optional[str] = None,
+        *,
+        usernames: typing.Optional[typing.List[str]] = None,
     ) -> bool:
         """
         Checks if message sender is permitted to execute certain function
@@ -431,11 +439,34 @@ class SecurityManager:
 
         try:
             cmd = message.raw_text[1:].split()[0].strip()
+            if usernames:
+                for username in usernames:
+                    cmd = cmd.replace(f"@{username}", "")
         except Exception:
             cmd = None
 
         if callable(func):
             command = self._client.loader.find_alias(cmd, include_legacy=True) or cmd
+
+            for info in self._sgroups.copy().values():
+                if user_id in info.users:
+                    for permission in info.permissions:
+                        if (
+                            permission["rule_type"] == "command"
+                            and permission["rule"] == command
+                        ):
+                            logger.debug("sgroup match for %s", command)
+                            return True
+
+                        if (
+                            permission["rule_type"] == "module"
+                            and permission["rule"] == func.__self__.__class__.__name__
+                        ):
+                            logger.debug(
+                                "sgroup match for %s", func.__self__.__class__.__name__
+                            )
+                            return True
+
             for info in self._tsec_user.copy():
                 if info["target"] == user_id:
                     if info["rule_type"] == "command" and info["rule"] == command:

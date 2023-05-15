@@ -624,7 +624,9 @@ class Gallery(InlineUnit):
                                 [
                                     {
                                         "text": (
-                                            "🛑" if unit.get("slideshow", False) else "⏱"
+                                            "🛑"
+                                            if unit.get("slideshow", False)
+                                            else "⏱"
                                         ),
                                         "callback": callback,
                                         "args": ("slideshow",),

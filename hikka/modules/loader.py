@@ -1200,13 +1200,13 @@ class LoaderMod(loader.Module):
 
     def flush_cache(self) -> int:
         """Flush the cache of links to modules"""
-        count = len(self._links_cache)
+        count = sum(map(len, self._links_cache.values()))
         self._links_cache = {}
         return count
 
     def inspect_cache(self) -> int:
         """Inspect the cache of links to modules"""
-        return len(self._links_cache)
+        return sum(map(len, self._links_cache.values()))
 
     async def reload_core(self) -> int:
         """Forcefully reload all core modules"""

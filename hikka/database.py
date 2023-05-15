@@ -326,11 +326,25 @@ class Database(dict):
 
         if item_type is not None:
             if isinstance(value, list):
+                for item in self.get(owner, key, default):
+                    if not isinstance(item, dict):
+                        raise ValueError(
+                            "Item type can only be specified for dedicated keys and"
+                            " can't be mixed with other ones"
+                        )
+
                 return NamedTupleMiddlewareList(
                     pointer_constructor(self, owner, key, default),
                     item_type,
                 )
             if isinstance(value, dict):
+                for key, item in self.get(owner, key, default).items():
+                    if not isinstance(item, dict):
+                        raise ValueError(
+                            "Item type can only be specified for dedicated keys and"
+                            " can't be mixed with other ones"
+                        )
+
                 return NamedTupleMiddlewareDict(
                     pointer_constructor(self, owner, key, default),
                     item_type,

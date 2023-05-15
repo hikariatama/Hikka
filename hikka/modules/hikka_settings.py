@@ -893,7 +893,7 @@ class HikkaSettingsMod(loader.Module):
                     f" {len(self._client._hikka_entity_cache)} records\nFulluser cache:"
                     f" {len(self._client._hikka_fulluser_cache)} records\nFullchannel"
                     f" cache: {len(self._client._hikka_fullchannel_cache)} records\n"
-                    f"Loader links cache: {await self.lookup('loader').inspect_cache()}"
+                    f"Loader links cache: {self.lookup('loader').inspect_cache()} records"
                 )
             elif method == "inspect_modules":
                 result = (

@@ -5,6 +5,7 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import contextlib
+import datetime
 import time
 import typing
 
@@ -27,6 +28,7 @@ from ..security import (
     GROUP_MEMBER,
     GROUP_OWNER,
     PM,
+    SecurityGroup,
 )
 
 
@@ -35,6 +37,15 @@ class HikkaSecurityMod(loader.Module):
     """Control security settings"""
 
     strings = {"name": "HikkaSecurity"}
+
+    async def client_ready(self):
+        self._sgroups: typing.Iterable[str, SecurityGroup] = self.pointer(
+            "sgroups", {}, item_type=SecurityGroup
+        )
+        self._reload_sgroups()
+
+    def _reload_sgroups(self):
+        self._client.dispatcher.security.apply_sgroups(self._sgroups.todict())
 
     async def inline__switch_perm(
         self,
@@ -220,6 +231,213 @@ class HikkaSecurityMod(loader.Module):
                 getattr(command, "security", self._client.dispatcher.security.default),
             ),
             is_inline,
+        )
+
+    @loader.command()
+    async def newsgroup(self, message: Message):
+        if not (args := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("no_args"))
+            return
+
+        if args in self._sgroups:
+            await utils.answer(
+                message, self.strings("sgroup_already_exists").format(args)
+            )
+            return
+
+        self._sgroups[args] = SecurityGroup(args, [], [])
+        self._reload_sgroups()
+
+        await utils.answer(message, self.strings("created_sgroup").format(args))
+
+    @loader.command()
+    async def sgroups(self, message: Message):
+        await utils.answer(
+            message,
+            self.strings("sgroups_list").format(
+                "\n".join(
+                    self.strings("sgroup_li").format(
+                        group.name, len(group.users), len(group.permissions)
+                    )
+                    for group in self._sgroups.values()
+                )
+            ),
+        )
+
+    @loader.command()
+    async def sgroup(self, message: Message):
+        if not (args := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("no_args"))
+            return
+
+        if not (group := self._sgroups.get(args)):
+            await utils.answer(message, self.strings("sgroup_not_found").format(args))
+            return
+
+        await utils.answer(
+            message,
+            self.strings("sgroup_info").format(
+                group.name,
+                (
+                    self.strings("users_list").format(
+                        "\n".join(
+                            [
+                                self.strings("li").format(
+                                    utils.get_entity_url(
+                                        await self._client.get_entity(user, exp=0)
+                                    ),
+                                    utils.escape_html(
+                                        get_display_name(
+                                            await self._client.get_entity(user, exp=0)
+                                        )
+                                    ),
+                                )
+                                for user in group.users
+                            ]
+                        )
+                    )
+                    if group.users
+                    else self.strings("no_users")
+                ),
+                (
+                    self.strings("permissions_list").format(
+                        "\n".join(
+                            "<emoji document_id=4974307891025543730>▫️</emoji>"
+                            " <b>{}</b> <code>{}</code> <b>{}</b>".format(
+                                self.strings(rule["rule_type"]),
+                                rule["rule"],
+                                (
+                                    (
+                                        self.strings("until")
+                                        + " "
+                                        + self._convert_time_abs(rule["expires"])
+                                    )
+                                    if rule["expires"]
+                                    else self.strings("forever")
+                                ),
+                            )
+                            for rule in group.permissions
+                        )
+                    )
+                    if group.permissions
+                    else self.strings("no_permissions")
+                ),
+            ),
+        )
+
+    @loader.command()
+    async def delsgroup(self, message: Message):
+        if not (args := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("no_args"))
+            return
+
+        if not (group := self._sgroups.get(args)):
+            await utils.answer(message, self.strings("sgroup_not_found").format(args))
+            return
+
+        del self._sgroups[args]
+        self._reload_sgroups()
+
+        await utils.answer(message, self.strings("deleted_sgroup").format(args))
+
+    @loader.command()
+    async def sgroupadd(self, message: Message):
+        if not (args := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("no_args"))
+            return
+
+        if len(args.split()) >= 2:
+            group, user = args.split()
+
+            if user.isdigit():
+                user = int(user)
+
+            try:
+                user = await self._client.get_entity(user, exp=0)
+            except ValueError:
+                await utils.answer(message, self.strings("no_args"))
+                return
+        else:
+            if not message.is_reply:
+                await utils.answer(message, self.strings("no_args"))
+                return
+
+            group, user = args, await (await message.get_reply_message()).get_sender()
+
+        if not (group := self._sgroups.get(group)):
+            await utils.answer(message, self.strings("sgroup_not_found").format(group))
+            return
+
+        if user.id in group.users:
+            await utils.answer(
+                message,
+                self.strings("user_already_in_sgroup").format(
+                    utils.escape_html(get_display_name(user)),
+                    group.name,
+                ),
+            )
+            return
+
+        group.users.append(user.id)
+        self._sgroups[group.name] = group
+        self._reload_sgroups()
+
+        await utils.answer(
+            message,
+            self.strings("user_added_to_sgroup").format(
+                utils.escape_html(get_display_name(user)),
+                group.name,
+            ),
+        )
+
+    @loader.command()
+    async def sgroupdel(self, message: Message):
+        if not (args := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("no_args"))
+            return
+
+        if len(args.split()) >= 2:
+            group, user = args.split()
+
+            if user.isdigit():
+                user = int(user)
+
+            try:
+                user = await self._client.get_entity(user, exp=0)
+            except ValueError:
+                await utils.answer(message, self.strings("no_args"))
+                return
+        else:
+            if not message.is_reply:
+                await utils.answer(message, self.strings("no_args"))
+                return
+
+            group, user = args, await (await message.get_reply_message()).get_sender()
+
+        if not (group := self._sgroups.get(group)):
+            await utils.answer(message, self.strings("sgroup_not_found").format(group))
+            return
+
+        if user.id not in group.users:
+            await utils.answer(
+                message,
+                self.strings("user_not_in_sgroup").format(
+                    utils.escape_html(get_display_name(user)),
+                    group.name,
+                ),
+            )
+            return
+
+        group.users.remove(user.id)
+        self._sgroups[group.name] = group
+        self._reload_sgroups()
+
+        await utils.answer(
+            message,
+            self.strings("user_removed_from_sgroup").format(
+                utils.escape_html(get_display_name(user)),
+                group.name,
+            ),
         )
 
     @loader.command()
@@ -470,6 +688,15 @@ class HikkaSecurityMod(loader.Module):
 
         return 0
 
+    def _convert_time_abs(self, timestamp: int) -> str:
+        return (
+            self.strings("forever")
+            if not timestamp
+            else datetime.datetime.fromtimestamp(timestamp).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        )
+
     def _convert_time(self, duration: int) -> str:
         return (
             self.strings("forever")
@@ -509,7 +736,7 @@ class HikkaSecurityMod(loader.Module):
         self,
         call: InlineCall,
         target_type: str,
-        target: EntityLike,
+        target: typing.Union[EntityLike, str],
         rule: str,
         duration: int,
     ):
@@ -517,18 +744,34 @@ class HikkaSecurityMod(loader.Module):
             await call.edit(self.strings("chat_inline"))
             return
 
-        self._client.dispatcher.security.add_rule(
-            target_type,
-            target,
-            rule,
-            duration,
-        )
+        if target_type == "sgroup":
+            group = self._sgroups[target]
+            group.permissions.append(
+                {
+                    "target": target,
+                    "rule_type": rule.split("/")[0],
+                    "rule": rule.split("/", maxsplit=1)[1],
+                    "expires": int(time.time() + duration) if duration else 0,
+                    "entity_name": group.name,
+                    "entity_url": "",
+                }
+            )
+            self._reload_sgroups()
+        else:
+            self._client.dispatcher.security.add_rule(
+                target_type,
+                target,
+                rule,
+                duration,
+            )
 
         await call.edit(
             self.strings("rule_added").format(
                 self.strings(target_type),
-                utils.get_entity_url(target),
-                utils.escape_html(get_display_name(target)),
+                utils.get_entity_url(target) if not isinstance(target, str) else "",
+                utils.escape_html(
+                    get_display_name(target) if not isinstance(target, str) else target
+                ),
                 self.strings(rule.split("/", maxsplit=1)[0]),
                 (
                     (
@@ -550,7 +793,7 @@ class HikkaSecurityMod(loader.Module):
         self,
         obj: typing.Union[Message, InlineMessage],
         target_type: str,
-        target: EntityLike,
+        target: typing.Union[EntityLike, str],
         rule: str,
         duration: int,
     ):
@@ -558,8 +801,10 @@ class HikkaSecurityMod(loader.Module):
             obj,
             self.strings("confirm_rule").format(
                 self.strings(target_type),
-                utils.get_entity_url(target),
-                utils.escape_html(get_display_name(target)),
+                utils.get_entity_url(target) if not isinstance(target, str) else "",
+                utils.escape_html(
+                    get_display_name(target) if not isinstance(target, str) else target
+                ),
                 self.strings(rule.split("/", maxsplit=1)[0]),
                 (
                     (
@@ -606,23 +851,21 @@ class HikkaSecurityMod(loader.Module):
                     await utils.answer(message, self.strings("no_target"))
                     return
 
-        if not (possible_rules := utils.array_sum([self._lookup(arg) for arg in args])):
+        if not (
+            possible_rules := utils.array_sum([self._lookup(arg) for arg in args[1:]])
+        ):
             await utils.answer(message, self.strings("no_rule"))
             return
 
         duration = self._extract_time(args)
 
         if len(possible_rules) > 1:
-
-            def case(text: str) -> str:
-                return text.upper()[0] + text[1:]
-
             await self.inline.form(
                 message=message,
                 text=self.strings("multiple_rules").format(
                     "\n".join(
                         "🛡 <b>{}</b> <code>{}</code>".format(
-                            case(self.strings(rule.split("/")[0])),
+                            self.strings(rule.split("/")[0]).capitalize(),
                             rule.split("/", maxsplit=1)[1],
                         )
                         for rule in possible_rules
@@ -632,7 +875,7 @@ class HikkaSecurityMod(loader.Module):
                     [
                         {
                             "text": "🛡 {} {}".format(
-                                case(self.strings(rule.split("/")[0])),
+                                self.strings(rule.split("/")[0]).capitalize(),
                                 rule.split("/", maxsplit=1)[1],
                             ),
                             "callback": self._confirm,
@@ -646,6 +889,54 @@ class HikkaSecurityMod(loader.Module):
             return
 
         await self._confirm(message, "chat", target, possible_rules[0], duration)
+
+    async def _tsec_sgroup(self, message: Message, args: list):
+        if len(args) <= 1:
+            await utils.answer(message, self.strings("no_target"))
+            return
+
+        if (target := args[1]) not in self._sgroups:
+            await utils.answer(message, self.strings("sgroup_not_found").format(target))
+            return
+
+        if not (
+            possible_rules := utils.array_sum([self._lookup(arg) for arg in args[1:]])
+        ):
+            await utils.answer(message, self.strings("no_rule"))
+            return
+
+        duration = self._extract_time(args)
+
+        if len(possible_rules) > 1:
+            await self.inline.form(
+                message=message,
+                text=self.strings("multiple_rules").format(
+                    "\n".join(
+                        "🛡 <b>{}</b> <code>{}</code>".format(
+                            self.strings(rule.split("/")[0]).capitalize(),
+                            rule.split("/", maxsplit=1)[1],
+                        )
+                        for rule in possible_rules
+                    )
+                ),
+                reply_markup=utils.chunks(
+                    [
+                        {
+                            "text": "🛡 {} {}".format(
+                                self.strings(rule.split("/")[0]).capitalize(),
+                                rule.split("/", maxsplit=1)[1],
+                            ),
+                            "callback": self._confirm,
+                            "args": ("sgroup", target, rule, duration),
+                        }
+                        for rule in possible_rules
+                    ],
+                    3,
+                ),
+            )
+            return
+
+        await self._confirm(message, "sgroup", target, possible_rules[0], duration)
 
     async def _tsec_user(self, message: Message, args: list):
         if len(args) == 1 and not message.is_private and not message.is_reply:
@@ -679,21 +970,19 @@ class HikkaSecurityMod(loader.Module):
 
         duration = self._extract_time(args)
 
-        if not (possible_rules := utils.array_sum([self._lookup(arg) for arg in args])):
+        if not (
+            possible_rules := utils.array_sum([self._lookup(arg) for arg in args[1:]])
+        ):
             await utils.answer(message, self.strings("no_rule"))
             return
 
         if len(possible_rules) > 1:
-
-            def case(text: str) -> str:
-                return text.upper()[0] + text[1:]
-
             await self.inline.form(
                 message=message,
                 text=self.strings("multiple_rules").format(
                     "\n".join(
                         "🛡 <b>{}</b> <code>{}</code>".format(
-                            case(self.strings(rule.split("/")[0])),
+                            self.strings(rule.split("/")[0]).capitalize(),
                             rule.split("/", maxsplit=1)[1],
                         )
                         for rule in possible_rules
@@ -703,7 +992,7 @@ class HikkaSecurityMod(loader.Module):
                     [
                         {
                             "text": "🛡 {} {}".format(
-                                case(self.strings(rule.split("/")[0])),
+                                self.strings(rule.split("/")[0]).capitalize(),
                                 rule.split("/", maxsplit=1)[1],
                             ),
                             "callback": self._confirm,
@@ -727,7 +1016,11 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_rules"))
             return
 
-        if not (args := utils.get_args(message)) or args[0] not in {"user", "chat"}:
+        if not (args := utils.get_args(message)) or args[0] not in {
+            "user",
+            "chat",
+            "sgroup",
+        }:
             await utils.answer(message, self.strings("no_target"))
             return
 
@@ -762,6 +1055,34 @@ class HikkaSecurityMod(loader.Module):
             )
             return
 
+        if args[0] == "sgroup":
+            if len(args) < 3 or args[1] not in self._sgroups:
+                await utils.answer(message, self.strings("no_target"))
+                return
+
+            group = self._sgroups[args[1]]
+            _any = False
+            for rule in group.permissions:
+                if rule["rule"] == args[2]:
+                    group.permissions.remove(rule)
+                    _any = True
+
+            if not _any:
+                await utils.answer(message, self.strings("no_rules"))
+                return
+
+            self._reload_sgroups()
+
+            await utils.answer(
+                message,
+                self.strings("rule_removed").format(
+                    "",
+                    utils.escape_html(group.name),
+                    utils.escape_html(args[2]),
+                ),
+            )
+            return
+
         if message.is_private:
             await utils.answer(message, self.strings("no_target"))
             return
@@ -790,7 +1111,11 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_rules"))
             return
 
-        if not (args := utils.get_args_raw(message)) or args not in {"user", "chat"}:
+        if (
+            not (args := utils.get_args(message))
+            or not (args := args[0])
+            or args not in {"user", "chat", "sgroup"}
+        ):
             await utils.answer(message, self.strings("no_target"))
             return
 
@@ -816,6 +1141,25 @@ class HikkaSecurityMod(loader.Module):
                 self.strings("rules_removed").format(
                     utils.get_entity_url(target),
                     utils.escape_html(get_display_name(target)),
+                ),
+            )
+            return
+
+        if args == "sgroup":
+            group = utils.get_args(message)[1]
+            if not (group := self._sgroups.get(group)):
+                await utils.answer(message, self.strings("no_target"))
+                return
+
+            group.permissions.clear()
+            self._sgroups[group.name] = group
+            self._reload_sgroups()
+
+            await utils.answer(
+                message,
+                self.strings("rules_removed").format(
+                    "",
+                    utils.escape_html(group.name),
                 ),
             )
             return
@@ -876,12 +1220,31 @@ class HikkaSecurityMod(loader.Module):
                             )
                             for rule in self._client.dispatcher.security.tsec_user
                         ]
+                        + [
+                            "\n".join(
+                                [
+                                    "<emoji document_id=5870704313440932932>🔒</emoji>"
+                                    " <code>{}</code> <b>{} {} {}</b> <code>{}</code>"
+                                    .format(
+                                        utils.escape_html(group.name),
+                                        self._convert_time(
+                                            int(rule["expires"] - time.time())
+                                        ),
+                                        self.strings("for"),
+                                        self.strings(rule["rule_type"]),
+                                        rule["rule"],
+                                    )
+                                    for rule in group.permissions
+                                ]
+                            )
+                            for group in self._sgroups.values()
+                        ]
                     )
                 ),
             )
             return
 
-        if args[0] not in {"user", "chat"}:
+        if args[0] not in {"user", "chat", "sgroup"}:
             await utils.answer(message, self.strings("what"))
             return
 

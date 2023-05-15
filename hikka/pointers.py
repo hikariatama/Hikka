@@ -91,6 +91,9 @@ class PointerList(list):
     def _save(self):
         self._db.set(self._module, self._key, list(self))
 
+    def tolist(self):
+        return self._db.get(self._module, self._key, self._default)
+
 
 class PointerDict(dict):
     """Pointer to dict saved in database"""
@@ -161,6 +164,9 @@ class PointerDict(dict):
     def _save(self):
         self._db.set(self._module, self._key, dict(self))
 
+    def todict(self):
+        return self._db.get(self._module, self._key, self._default)
+
 
 class BaseSerializingMiddlewareDict:
     def __init__(self, pointer: PointerDict):
@@ -182,14 +188,14 @@ class BaseSerializingMiddlewareDict:
         del self._pointer[key]
 
     def __iter__(self) -> typing.Iterator[typing.Any]:
-        for item in self._pointer:
-            yield self.deserialize(item)
+        for key, value in self._pointer.items():
+            yield (key, self.deserialize(value))
 
     def __len__(self) -> int:
         return len(self._pointer)
 
     def __contains__(self, item: typing.Any) -> bool:
-        return self.serialize(item) in self._pointer
+        return item in self._pointer
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self._pointer})"
@@ -204,13 +210,24 @@ class BaseSerializingMiddlewareDict:
         return self.deserialize(self._pointer.popitem())
 
     def get(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
-        return self.deserialize(self._pointer.get(key, default))
+        return self.deserialize(self._pointer[key]) if key in self._pointer else default
 
     def setdefault(self, key: typing.Any, default: typing.Any = None) -> typing.Any:
-        return self.deserialize(self._pointer.setdefault(key, default))
+        return self.deserialize(self._pointer.setdefault(key, self.serialize(default)))
 
     def clear(self) -> None:
         self._pointer.clear()
+
+    def todict(self) -> dict:
+        return {
+            key: self.deserialize(value) for key, value in self._pointer.data.items()
+        }
+
+    def keys(self) -> typing.KeysView:
+        return self._pointer.keys()
+
+    def values(self) -> typing.Iterable[typing.Any]:
+        return (self.deserialize(value) for value in self._pointer.values())
 
 
 class BaseSerializingMiddlewareList:
@@ -264,6 +281,9 @@ class BaseSerializingMiddlewareList:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self._pointer})"
+
+    def tolist(self) -> list:
+        return [self.deserialize(item) for item in self._pointer.data]
 
 
 class NamedTupleMiddlewareList(BaseSerializingMiddlewareList):

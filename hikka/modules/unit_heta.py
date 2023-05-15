@@ -350,7 +350,10 @@ class UnitHeta(loader.Module):
         )
 
     def _format_result(
-        self, result: dict, query: str, no_translate: bool = False
+        self,
+        result: dict,
+        query: str,
+        no_translate: bool = False,
     ) -> str:
         commands = "\n".join(
             [
@@ -365,7 +368,7 @@ class UnitHeta(loader.Module):
             "dev": utils.escape_html(result["module"]["dev"]),
             "commands": commands,
             "cls_doc": utils.escape_html(result["module"]["cls_doc"]),
-            "link": result["module"]["link"],
+            "mhash": result["module"]["hash"],
             "query": utils.escape_html(query),
             "prefix": utils.escape_html(self.get_prefix()),
         }
@@ -426,3 +429,35 @@ class UnitHeta(loader.Module):
             }
             for module in response
         ]
+
+    @loader.command()
+    async def dlh(self, message: Message):
+        if not (mhash := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("enter_hash"))
+            return
+
+        message = await utils.answer(message, self.strings("resolving_hash"))
+
+        ans = await utils.run_sync(
+            requests.get,
+            "https://heta.hikariatama.ru/resolve_hash",
+            params={"hash": mhash},
+        )
+        if ans.status_code != 200:
+            await utils.answer(message, self.strings("404"))
+            return
+
+        message = await utils.answer(
+            message,
+            self.strings("installing_from_hash").format(
+                utils.escape_html(ans.json()["name"])
+            ),
+        )
+
+        if await self._load_module(ans.json()["link"]):
+            await utils.answer(
+                message,
+                self.strings("installed").format(utils.escape_html(ans.json()["name"])),
+            )
+        else:
+            await utils.answer(message, self.strings("error"))

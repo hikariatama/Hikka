@@ -7,6 +7,8 @@
 - Add `-fs` arg to `.lm` command
 - Add IDM `flush_loader_cache`
 - Add ability to cancel QR login using keyboard interrupt
+- Add custom security groups
+- Add automatic NoNick for tsec methods
 - Fix form invoke error message
 - Fix `Backuper`
 - Fix backward compatiblity with security groups `SUDO` (0x2) and `SUPPORT` (0x4)
