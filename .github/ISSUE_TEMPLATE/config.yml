@@ -1,0 +1,16 @@
+version: "3"
+services:
+    worker:
+        container_name: "hikka-worker"
+        build:
+            context: .
+        volumes:
+            - worker:/data
+        stop_signal: SIGINT
+        restart: unless-stopped
+        command: "python -m hikka"
+        ports:
+            - "${EXTERNAL_PORT:-8080}:8080"
+
+volumes:
+    worker:
