@@ -65,7 +65,7 @@ class LoaderMod(loader.Module):
     def __init__(self):
         self.fully_loaded = False
         self._links_cache = {}
-        self._storage = RemoteStorage()
+        self._storage: RemoteStorage = None
 
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -119,6 +119,8 @@ class LoaderMod(loader.Module):
     async def client_ready(self):
         while not (settings := self.lookup("settings")):
             await asyncio.sleep(0.5)
+
+        self._storage = RemoteStorage(self._client)
 
         self.allmodules.add_aliases(settings.get("aliases", {}))
 

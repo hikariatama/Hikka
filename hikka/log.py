@@ -80,14 +80,12 @@ class HikkaException:
     def __init__(
         self,
         message: str,
-        local_vars: str,
         full_stack: str,
         sysinfo: typing.Optional[
             typing.Tuple[object, Exception, traceback.TracebackException]
         ] = None,
     ):
         self.message = message
-        self.local_vars = local_vars
         self.full_stack = full_stack
         self.sysinfo = sysinfo
         self.debug_url = None
@@ -162,28 +160,25 @@ class HikkaException:
             ]
         )
 
-        with contextlib.suppress(Exception):
-            filename = os.path.basename(filename)
-
         caller = utils.find_caller(stack or inspect.stack())
         cause_mod = (
-            "🪬 <b>Possible cause: method"
+            "🔮 <b>Cause: method"
             f" </b><code>{utils.escape_html(caller.__name__)}</code><b> of module"
             f" </b><code>{utils.escape_html(caller.__self__.__class__.__name__)}</code>\n"
             if caller and hasattr(caller, "__self__") and hasattr(caller, "__name__")
             else ""
         )
 
-        return HikkaException(
+        # extract comment from trace (e.g. logging.exception("COMMENT HERE"))
+        record_comment = ()
+
+        return cls(
             message=override_text(exc_value)
             or (
-                f"<b>🚫 Error!</b>\n{cause_mod}\n<b>🗄 Where:</b>"
+                f"{cause_mod}\n<b>🪵 Source:</b>"
                 f" <code>{utils.escape_html(filename)}:{lineno}</code><b>"
-                f" in </b><code>{utils.escape_html(name)}</code>\n<b>❓ What:</b>"
+                f" in </b><code>{utils.escape_html(name)}</code>\n<b>❓ Error:</b>"
                 f" <code>{utils.escape_html(''.join(traceback.format_exception_only(exc_type, exc_value)).strip())}</code>"
-            ),
-            local_vars=(
-                f"<code>{utils.escape_html(json.dumps(to_hashable(tb.tb_frame.f_locals), indent=4))}</code>"
             ),
             full_stack=full_stack,
             sysinfo=(exc_type, exc_value, tb),
@@ -209,6 +204,7 @@ class TelegramLogsHandler(logging.Handler):
         self.tg_buff = []
         self.force_send_all = False
         self.tg_level = 20
+        self.ignore_common = False
         self.web_debugger = None
         self.targets = targets
         self.capacity = capacity
@@ -257,14 +253,7 @@ class TelegramLogsHandler(logging.Handler):
         bot: "aiogram.Bot",  # type: ignore  # noqa: F821
         item: HikkaException,
     ):
-        chunks = (
-            item.message
-            + "\n\n<b>🦝 Locals:</b>\n"
-            + item.local_vars
-            + "\n\n"
-            + "<b>🪐 Full trace:</b>\n"
-            + item.full_stack
-        )
+        chunks = item.message + "\n\n<b>🪐 Full traceback:</b>\n" + item.full_stack
 
         chunks = list(utils.smart_split(*hikkatl.extensions.html.parse(chunks), 4096))
 
@@ -328,6 +317,9 @@ class TelegramLogsHandler(logging.Handler):
             show_alert=True,
         )
 
+    def get_logid_by_client(self, client_id: int) -> int:
+        return self._mods[client_id].logchat
+
     async def sender(self):
         async with self._send_lock:
             self._queue = {
@@ -354,12 +346,12 @@ class TelegramLogsHandler(logging.Handler):
             self._exc_queue = {
                 client_id: [
                     self._mods[client_id].inline.bot.send_message(
-                        self._mods[client_id]._logchat,
+                        self._mods[client_id].logchat,
                         item[0].message,
                         reply_markup=self._mods[client_id].inline.generate_markup(
                             [
                                 {
-                                    "text": "🪐 Full trace",
+                                    "text": "🪐 Full traceback",
                                     "callback": self._show_full_trace,
                                     "args": (
                                         self._mods[client_id].inline.bot,
@@ -395,7 +387,7 @@ class TelegramLogsHandler(logging.Handler):
                     logfile.name = "hikka-logs.txt"
                     logfile.seek(0)
                     await self._mods[client_id].inline.bot.send_document(
-                        self._mods[client_id]._logchat,
+                        self._mods[client_id].logchat,
                         logfile,
                         caption=(
                             "<b>🧳 Journals are too big to be sent as separate"
@@ -410,7 +402,7 @@ class TelegramLogsHandler(logging.Handler):
                     if chunk := self._queue[client_id].pop(0):
                         asyncio.ensure_future(
                             self._mods[client_id].inline.bot.send_message(
-                                self._mods[client_id]._logchat,
+                                self._mods[client_id].logchat,
                                 f"<code>{chunk}</code>",
                                 disable_notification=True,
                             )
@@ -441,15 +433,19 @@ class TelegramLogsHandler(logging.Handler):
 
         if record.levelno >= self.tg_level:
             if record.exc_info:
-                self.tg_buff += [
-                    (
-                        HikkaException.from_exc_info(
-                            *record.exc_info,
-                            stack=record.__dict__.get("stack", None),
-                        ),
-                        caller,
-                    )
-                ]
+                exc = HikkaException.from_exc_info(
+                    *record.exc_info,
+                    stack=record.__dict__.get("stack", None),
+                )
+
+                if not self.ignore_common or all(
+                    field not in exc.message
+                    for field in [
+                        "InputPeerEmpty() does not have any entity type",
+                        "https://docs.telethon.dev/en/stable/concepts/entities.html",
+                    ]
+                ):
+                    self.tg_buff += [(exc, caller)]
             else:
                 self.tg_buff += [
                     (

@@ -15,6 +15,8 @@ import typing
 import requests
 
 from . import utils
+from .tl_cache import CustomTelegramClient
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,12 @@ class LocalStorage:
         )
 
     def save(self, repo: str, module_name: str, module_code: str):
-        """Saves module to disk."""
+        """
+        Saves module to disk.
+        :param repo: Repository name.
+        :param module_name: Module name.
+        :param module_code: Module source code.
+        """
         size = len(module_code)
         if size > MAX_FILESIZE:
             logger.warning(
@@ -70,7 +77,12 @@ class LocalStorage:
         logger.debug("Saved module %s from %s to local cache.", module_name, repo)
 
     def fetch(self, repo: str, module_name: str) -> typing.Optional[str]:
-        """Fetches module from disk."""
+        """
+        Fetches module from disk.
+        :param repo: Repository name.
+        :param module_name: Module name.
+        :return: Module source code or None.
+        """
         path = self._get_path(repo, module_name)
         if os.path.isfile(path):
             with open(path, "r") as f:
@@ -80,8 +92,9 @@ class LocalStorage:
 
 
 class RemoteStorage:
-    def __init__(self):
+    def __init__(self, client: CustomTelegramClient):
         self._local_storage = LocalStorage()
+        self._client = client
 
     async def preload(self, urls: typing.List[str]):
         """Preloads modules from remote storage."""
@@ -122,7 +135,11 @@ class RemoteStorage:
 
     @staticmethod
     def _parse_url(url: str) -> typing.Tuple[str, str, str]:
-        """Parses a URL into a repository and module name."""
+        """
+        Parses a URL into a repository and module name.
+        :param url: URL to parse.
+        :return: Tuple of (url, repo, module_name).
+        """
         domain_name = url.split("/")[2]
 
         if domain_name == "raw.githubusercontent.com":
@@ -142,7 +159,9 @@ class RemoteStorage:
     async def fetch(self, url: str, auth: typing.Optional[str] = None) -> str:
         """
         Fetches the module from the remote storage.
-        :param ref: The module reference. Can be url, or a reference to official repo module.
+        :param url: URL to the module.
+        :param auth: Optional authentication string in the format "username:password".
+        :return: Module source code.
         """
         url, repo, module_name = self._parse_url(url)
         try:
@@ -150,6 +169,12 @@ class RemoteStorage:
                 requests.get,
                 url,
                 auth=(tuple(auth.split(":", 1)) if auth else None),
+                headers={
+                    "User-Agent": "Hikka Userbot",
+                    "X-Hikka-Version": ".".join(map(str, __version__)),
+                    "X-Hikka-Commit-SHA": utils.get_git_hash(),
+                    "X-Hikka-User": str(self._client.tg_id),
+                },
             )
             r.raise_for_status()
         except Exception:

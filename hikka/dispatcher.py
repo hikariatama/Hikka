@@ -369,7 +369,9 @@ class CommandDispatcher:
         if (
             not func
             or not await self._handle_ratelimit(message, func)
-            or not await self.security.check(message, func, usernames=self._cached_usernames)
+            or not await self.security.check(
+                message, func, usernames=self._cached_usernames
+            )
         ):
             return False
 

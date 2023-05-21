@@ -750,41 +750,55 @@ class Hikka:
 
             repo = git.Repo()
 
-            build = repo.heads[0].commit.hexsha
+            build = utils.get_git_hash()
             diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
-            upd = r"Update required" if diff else r"Up-to-date"
+            upd = "Update required" if diff else "Up-to-date"
 
-            _platform = utils.get_named_platform()
-
-            logo1 = f"""
-
-                        █ █ █ █▄▀ █▄▀ ▄▀█
-                        █▀█ █ █ █ █ █ █▀█
-
-                     • Build: {build[:7]}
-                     • Version: {'.'.join(list(map(str, list(__version__))))}
-                     • {upd}
-                     • Platform: {_platform}
-                     """
+            logo = (
+                "█ █ █ █▄▀ █▄▀ ▄▀█\n"
+                "█▀█ █ █ █ █ █ █▀█\n\n"
+                f"• Build: {build[:7]}\n"
+                f"• Version: {'.'.join(list(map(str, list(__version__))))}\n"
+                f"• {upd}\n"
+            )
 
             if not self.omit_log:
-                print(logo1)
+                print(logo)
                 web_url = (
-                    f"🌐 Web url: {self.web.url}\n"
+                    f"🌐 Web url: {self.web.url}"
                     if self.web and hasattr(self.web, "url")
                     else ""
                 )
-                logging.info(
-                    "🌘 Hikka %s started\n🔏 GitHub commit SHA: %s (%s)\n%s%s",
+                logging.debug(
+                    "\n🌘 Hikka %s #%s (%s) started\n%s",
                     ".".join(list(map(str, list(__version__)))),
                     build[:7],
                     upd,
                     web_url,
-                    _platform,
                 )
                 self.omit_log = True
 
-            logging.info("- Started for %s -", client._tg_id)
+            await client.hikka_inline.bot.send_animation(
+                logging.getLogger().handlers[0].get_logid_by_client(client.tg_id),
+                "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
+                caption=(
+                    "🌘 <b>Hikka {} started!</b>\n\n🌳 <b>GitHub commit SHA: <a"
+                    ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>\n✊'
+                    " <b>Update status: {}</b>\n<b>{}</b>".format(
+                        ".".join(list(map(str, list(__version__)))),
+                        build,
+                        build[:7],
+                        upd,
+                        web_url,
+                    )
+                ),
+            )
+
+            logging.debug(
+                "· Started for %s · Prefix: «%s» ·",
+                client.tg_id,
+                client.hikka_db.get(__name__, "command_prefix", False) or ".",
+            )
         except Exception:
             logging.exception("Badge error")
 
@@ -830,6 +844,7 @@ class Hikka:
         await client.start()
 
         db = database.Database(client)
+        client.hikka_db = db
         await db.init()
 
         logging.debug("Got DB")

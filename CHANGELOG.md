@@ -15,6 +15,7 @@
 - Fix quickstart language buttons translations
 - Fix language buttons disabling on restart
 - Migrate inline heta search to userbot instead of centralized service
+- Cosmetical changes
 
 ## 🌑 Hikka 1.6.2
 

@@ -499,6 +499,7 @@ class Modules:
         self.secure_boot = False
         asyncio.ensure_future(self._junk_collector())
         self.inline = InlineManager(self.client, self._db, self)
+        self.client.hikka_inline = self.inline
 
     async def _junk_collector(self):
         """

@@ -64,6 +64,13 @@ class TestMod(loader.Module):
                 ),
                 on_change=self._pass_config_to_logger,
             ),
+            loader.ConfigValue(
+                "ignore_common",
+                True,
+                "Ignore common errors (e.g. 'TypeError' in telethon)",
+                validator=loader.validators.Boolean(),
+                on_change=self._pass_config_to_logger,
+            ),
         )
 
     def _pass_config_to_logger(self):
@@ -74,6 +81,7 @@ class TestMod(loader.Module):
             "ERROR": 40,
             "CRITICAL": 50,
         }[self.config["tglog_level"]]
+        logging.getLogger().handlers[0].ignore_common = self.config["ignore_common"]
 
     @loader.command()
     async def dump(self, message: Message):
@@ -366,9 +374,9 @@ class TestMod(loader.Module):
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-logs.png",
         )
 
-        self._logchat = int(f"-100{chat.id}")
+        self.logchat = int(f"-100{chat.id}")
 
         logging.getLogger().handlers[0].install_tg_log(self)
-        logger.debug("Bot logging installed for %s", self._logchat)
+        logger.debug("Bot logging installed for %s", self.logchat)
 
         self._pass_config_to_logger()

@@ -22,6 +22,7 @@ from hikkatl.utils import resolve_inline_message_id
 
 from .. import loader, utils
 from ..types import InlineCall, InlineQuery
+from ..version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,13 @@ REGEXES = [
         r"https:\/\/raw\.githubusercontent\.com\/([^\/]+?)\/([^\/]+?)\/(?:main|master)\/([^\/]+\.py)"
     ),
 ]
+
+PUBKEY = rsa.PublicKey.load_pkcs1(
+    b"-----BEGIN RSA PUBLIC KEY-----\n"
+    b"MEgCQQCHwy7MptZG0qTLJhlFhFjl+aKvzIimYreEBsVlCc2eG0wP2pxISucCM2Xr\n"
+    b"ghnx+ZIkMhR3c3wWq3jXAQYLhI1rAgMBAAE=\n"
+    b"-----END RSA PUBLIC KEY-----\n"
+)
 
 
 @loader.tds
@@ -65,11 +73,13 @@ class UnitHeta(loader.Module):
         )
 
     async def client_ready(self):
-        if self.config["autoupdate"]:
-            await self.request_join(
-                "@heta_updates",
-                "This channel is the source of update notifications",
-            )
+        await self.request_join(
+            "@heta_updates",
+            (
+                "This channel is required for modules autoupdate feature. You can"
+                " configure it in '.cfg UnitHeta'"
+            ),
+        )
 
         if self.get("nomute"):
             return
@@ -101,6 +111,12 @@ class UnitHeta(loader.Module):
                 requests.get,
                 "https://heta.hikariatama.ru/search",
                 params={"q": query, "limit": 1},
+                headers={
+                    "User-Agent": "Hikka Userbot",
+                    "X-Hikka-Version": ".".join(map(str, __version__)),
+                    "X-Hikka-Commit-SHA": utils.get_git_hash(),
+                    "X-Hikka-User": str(self._client.tg_id),
+                },
             )
         ):
             await utils.answer(message, self.strings("no_results"))
@@ -160,9 +176,7 @@ class UnitHeta(loader.Module):
         if getattr(loader_m, "fully_loaded", False):
             loader_m.update_modules_in_db()
 
-        loaded = any(
-            link == url for link in loader_m.get("loaded_modules", {}).values()
-        )
+        loaded = any(mod.__origin__ == url for mod in self.allmodules.modules)
 
         if dl_id:
             if loaded:
@@ -243,10 +257,7 @@ class UnitHeta(loader.Module):
             rsa.verify(
                 rsa.compute_hash(uri.encode(), "SHA-1"),
                 base64.b64decode(data["sig"]),
-                rsa.PublicKey(
-                    7110455561671499155469672749235101198284219627796886527432331759773809536504953770286294224729310191037878347906574131955439231159825047868272932664151403,
-                    65537,
-                ),
+                PUBKEY,
             )
         except rsa.pkcs1.VerificationError:
             logger.error("Got message with non-verified signature %s", uri)
@@ -442,6 +453,12 @@ class UnitHeta(loader.Module):
             requests.get,
             "https://heta.hikariatama.ru/resolve_hash",
             params={"hash": mhash},
+            headers={
+                "User-Agent": "Hikka Userbot",
+                "X-Hikka-Version": ".".join(map(str, __version__)),
+                "X-Hikka-Commit-SHA": utils.get_git_hash(),
+                "X-Hikka-User": self._client.tg_id,
+            },
         )
         if ans.status_code != 200:
             await utils.answer(message, self.strings("404"))
