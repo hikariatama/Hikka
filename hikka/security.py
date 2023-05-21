@@ -334,6 +334,29 @@ class SecurityManager:
             for rule in self._tsec_user
         )
 
+    def check_tsec(self, user_id: int, command: str) -> bool:
+        for info in self._sgroups.copy().values():
+            if user_id in info.users:
+                for permission in info.permissions:
+                    if (
+                        permission["rule_type"] == "command"
+                        and permission["rule"] == command
+                        or permission["rule_type"] == "module"
+                        and permission["rule"] == command
+                    ):
+                        return True
+
+        for info in self._tsec_user.copy():
+            if info["target"] == user_id and (
+                info["rule_type"] == "command"
+                and info["rule"] == command
+                or info["rule_type"] == "module"
+                and command in self._client.loader.commands
+                and info["rule"]
+                == self._client.loader.commands[command].__qualname__.split(".")[0]
+            ):
+                return True
+
     async def check(
         self,
         message: typing.Optional[Message],
