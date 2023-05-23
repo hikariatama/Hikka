@@ -87,6 +87,7 @@ hikka_security:
     _cmd_doc_sgroups: "Güvenlik gruplarını listele"
     _cmd_doc_newsgroup: "<name> - Yeni güvenlik grubu oluştur"
     _cmd_doc_sgroupadd: "<name> [user or reply] - Kullanıcıyı güvenlik grubuna ekle"
+    _cmd_doc_sgroupdel: "<name> [user or reply] - Kullanıcıyı güvenlik grubundan kaldır"
 
 hikka_settings:
     watchers: "<emoji document_id=5424885441100782420>👀</emoji> <b>İzleyiciler:</b>\n\n<b>{}</b>"

@@ -91,6 +91,7 @@ hikka_security:
     _cmd_doc_sgroups: "List security groups"
     _cmd_doc_newsgroup: "<name> - Create new security group"
     _cmd_doc_sgroupadd: "<name> [user or reply] - Add user to security group"
+    _cmd_doc_sgroupdel: "<name> [user or reply] - Remove user from security group"
 
 hikka_settings:
     name: "HikkaSettings"

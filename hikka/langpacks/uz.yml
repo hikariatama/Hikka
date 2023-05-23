@@ -86,6 +86,7 @@ hikka_security:
     _cmd_doc_sgroups: "Maxfiy guruhlarni ro'yhatdan o'tkazish"
     _cmd_doc_newsgroup: "<name> - Yangi maxfiy guruh yaratish"
     _cmd_doc_sgroupadd: "<name> [user or reply] - Foydalanuvchini maxfiy guruhga qo'shing"
+    _cmd_doc_sgroupdel: "<name> [user or reply] - Foydalanuvchini maxfiy guruhdan olib tashlang"
 
 hikka_settings:
     watchers: "<emoji document_id=5424885441100782420>👀</emoji> <b>Kuzatuvchilar:</b>\n\n<b>{}</b>"

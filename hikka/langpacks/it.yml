@@ -86,6 +86,7 @@ hikka_security:
     _cmd_doc_sgroups: "Lista dei gruppi"
     _cmd_doc_newsgroup: "<name> - Crea un nuovo gruppo"
     _cmd_doc_sgroupadd: "<name> [utente o rispondi] - Aggiunge un utente al gruppo"
+    _cmd_doc_sgroupdel: "<name> [utente o rispondi] - Rimuove un utente dal gruppo"
 
 hikka_settings:
     watchers: "<emoji document_id=5424885441100782420>👀</emoji> <b>Guardiani:</b>\n\n<b>{}</b>"

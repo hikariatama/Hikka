@@ -21,9 +21,7 @@ from hikkatl.tl.types import Message
 from hikkatl.utils import resolve_inline_message_id
 from meval import meval
 
-from hikka import main
-
-from .. import loader, utils
+from .. import loader, utils, main
 from ..types import InlineCall, InlineQuery
 from ..version import __version__
 
