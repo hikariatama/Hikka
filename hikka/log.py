@@ -97,6 +97,7 @@ class HikkaException:
         exc_value: Exception,
         tb: traceback.TracebackException,
         stack: typing.Optional[typing.List[inspect.FrameInfo]] = None,
+        comment: typing.Optional[typing.Any] = None,
     ) -> "HikkaException":
         def to_hashable(dictionary: dict) -> dict:
             dictionary = dictionary.copy()
@@ -124,16 +125,15 @@ class HikkaException:
 
             return dictionary
 
-        full_stack = traceback.format_exc().replace(
-            "Traceback (most recent call last):\n", ""
+        full_traceback = traceback.format_exc().replace(
+            "Traceback (most recent call last):\n",
+            "",
         )
 
-        line_regex = r'  File "(.*?)", line ([0-9]+), in (.+)'
+        line_regex = re.compile(r'  File "(.*?)", line ([0-9]+), in (.+)')
 
         def format_line(line: str) -> str:
-            filename_, lineno_, name_ = re.search(line_regex, line).groups()
-            with contextlib.suppress(Exception):
-                filename_ = os.path.basename(filename_)
+            filename_, lineno_, name_ = line_regex.search(line).groups()
 
             return (
                 f"👉 <code>{utils.escape_html(filename_)}:{lineno_}</code> <b>in</b>"
@@ -142,45 +142,63 @@ class HikkaException:
 
         filename, lineno, name = next(
             (
-                re.search(line_regex, line).groups()
-                for line in reversed(full_stack.splitlines())
-                if re.search(line_regex, line)
+                line_regex.search(line).groups()
+                for line in reversed(full_traceback.splitlines())
+                if line_regex.search(line)
             ),
             (None, None, None),
         )
 
-        full_stack = "\n".join(
+        full_traceback = "\n".join(
             [
                 (
                     format_line(line)
-                    if re.search(line_regex, line)
+                    if line_regex.search(line)
                     else f"<code>{utils.escape_html(line)}</code>"
                 )
-                for line in full_stack.splitlines()
+                for line in full_traceback.splitlines()
             ]
         )
 
         caller = utils.find_caller(stack or inspect.stack())
-        cause_mod = (
-            "🔮 <b>Cause: method"
-            f" </b><code>{utils.escape_html(caller.__name__)}</code><b> of module"
-            f" </b><code>{utils.escape_html(caller.__self__.__class__.__name__)}</code>\n"
-            if caller and hasattr(caller, "__self__") and hasattr(caller, "__name__")
-            else ""
-        )
-
-        # extract comment from trace (e.g. logging.exception("COMMENT HERE"))
-        record_comment = ()
 
         return cls(
             message=override_text(exc_value)
             or (
-                f"{cause_mod}\n<b>🪵 Source:</b>"
-                f" <code>{utils.escape_html(filename)}:{lineno}</code><b>"
-                f" in </b><code>{utils.escape_html(name)}</code>\n<b>❓ Error:</b>"
-                f" <code>{utils.escape_html(''.join(traceback.format_exception_only(exc_type, exc_value)).strip())}</code>"
+                "{}<b>🎯 Source:</b> <code>{}:{}</code><b> in"
+                " </b><code>{}</code>\n<b>❓ Error:</b> <code>{}</code>{}"
+            ).format(
+                (
+                    (
+                        "🔮 <b>Cause: method </b><code>{}</code><b> of"
+                        " </b><code>{}</code>\n\n"
+                    ).format(
+                        utils.escape_html(caller.__name__),
+                        utils.escape_html(caller.__self__.__class__.__name__),
+                    )
+                    if (
+                        caller
+                        and hasattr(caller, "__self__")
+                        and hasattr(caller, "__name__")
+                    )
+                    else ""
+                ),
+                utils.escape_html(filename),
+                lineno,
+                utils.escape_html(name),
+                utils.escape_html(
+                    "".join(
+                        traceback.format_exception_only(exc_type, exc_value)
+                    ).strip()
+                ),
+                (
+                    "\n💭 <b>Message:</b>"
+                    f" <code>{utils.escape_html(str(comment))}</code>"
+                    if comment
+                    else ""
+                ),
             ),
-            full_stack=full_stack,
+            full_stack=full_traceback,
             sysinfo=(exc_type, exc_value, tb),
         )
 
@@ -436,6 +454,7 @@ class TelegramLogsHandler(logging.Handler):
                 exc = HikkaException.from_exc_info(
                     *record.exc_info,
                     stack=record.__dict__.get("stack", None),
+                    comment=record.msg % record.args,
                 )
 
                 if not self.ignore_common or all(

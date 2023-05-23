@@ -9,6 +9,7 @@
 - Add ability to cancel QR login using keyboard interrupt
 - Add custom security groups
 - Add automatic NoNick for tsec methods
+- Add external debugging feature (off by default)
 - Fix form invoke error message
 - Fix `Backuper`
 - Fix backward compatiblity with security groups `SUDO` (0x2) and `SUPPORT` (0x4)

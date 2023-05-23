@@ -68,6 +68,7 @@ class BaseTranslator:
             ): value
             for module, strings in yaml.load(content).items()
             for key, value in strings.items()
+            if key != "name"
         }
 
     def getkey(self, key: str) -> typing.Any:

