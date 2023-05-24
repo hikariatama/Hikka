@@ -331,7 +331,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_args"))
             return
 
-        if not (group := self._sgroups.get(args)):
+        if self._sgroups.get(args):
             await utils.answer(message, self.strings("sgroup_not_found").format(args))
             return
 

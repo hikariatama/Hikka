@@ -253,7 +253,7 @@ class InlineManager(
         self._error_events.pop(unit_id, None)
 
         if exception:
-            raise exception
+            raise exception  # skipcq: PYL-E0702
 
         if not q:
             raise Exception("No query results")

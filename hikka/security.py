@@ -357,6 +357,8 @@ class SecurityManager:
             ):
                 return True
 
+        return False
+
     async def check(
         self,
         message: typing.Optional[Message],

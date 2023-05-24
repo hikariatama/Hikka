@@ -225,7 +225,7 @@ class SudoMessageEditor(MessageEditor):
         if self.authmsg is None:
             return
 
-        logger.debug(f"got message edit update in self {str(message.id)}")
+        logger.debug("got message edit update in self %s", str(message.id))
 
         if hash_msg(message) == hash_msg(self.authmsg):
             # The user has provided interactive authentication. Send password to stdin for sudo.

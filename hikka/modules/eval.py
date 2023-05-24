@@ -41,7 +41,7 @@ class Brainfuck:
         had_error = self._eval(code)
 
         if had_error:
-            return
+            return ""
 
         self._interpret(code)
         return self.out

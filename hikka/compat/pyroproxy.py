@@ -17,7 +17,7 @@ from hikkapyro import Client as PyroClient
 from hikkapyro import errors as pyro_errors
 from hikkapyro import raw
 
-from .. import translations, utils
+from .. import utils
 from ..tl_cache import CustomTelegramClient
 from ..version import __version__
 

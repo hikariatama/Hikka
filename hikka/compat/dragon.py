@@ -274,7 +274,7 @@ class DragonScripts:
             " list:</b>\n"
         )
 
-        for command, desc in commands.items():
+        for command in commands:
             cmd = command.split(maxsplit=1)
             args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
             help_text += f"<code>{self.misc.prefix}{cmd[0]}</code>{args}\n"

@@ -338,7 +338,7 @@ class Database(dict):
                     item_type,
                 )
             if isinstance(value, dict):
-                for key, item in self.get(owner, key, default).items():
+                for item in self.get(owner, key, default).values():
                     if not isinstance(item, dict):
                         raise ValueError(
                             "Item type can only be specified for dedicated keys and"
