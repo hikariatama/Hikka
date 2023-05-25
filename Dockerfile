@@ -27,6 +27,10 @@ RUN pip install --no-warn-script-location --no-cache-dir -U -r requirements.txt
 
 EXPOSE 8080
 
+RUN groupadd -g 10001 user && \
+   useradd -u 10000 -g user user \
+   && chown -R user:user /data/Hikka
+
 USER user
 
 CMD python -m hikka
