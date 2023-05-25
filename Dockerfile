@@ -1,4 +1,5 @@
 FROM python:3.8-slim as python-base
+
 #ENV DOCKER=true
 ENV GIT_PYTHON_REFRESH=quiet
 
@@ -17,20 +18,20 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     neofetch \
     && rm -rf /var/lib/apt/lists/*
-
+    
 RUN mkdir /data
 
 COPY . /data/Hikka
 WORKDIR /data/Hikka
 
+RUN groupadd -g 10001 user && \
+   useradd -u 10000 -g user user \
+   && chown -R user:user /data
+
+USER user
+
 RUN pip install --no-warn-script-location --no-cache-dir -U -r requirements.txt
 
 EXPOSE 8080
-
-RUN groupadd -g 10001 user && \
-   useradd -u 10000 -g user user \
-   && chown -R user:user /data/Hikka
-
-USER user
 
 CMD python -m hikka --port 8080
