@@ -33,4 +33,4 @@ RUN groupadd -g 10001 user && \
 
 USER user
 
-CMD python -m hikka
+CMD python -m hikka --port 8080
