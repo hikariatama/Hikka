@@ -1,5 +1,5 @@
 FROM python:3.8-slim as python-base
-ENV DOCKER=true
+#ENV DOCKER=true
 ENV GIT_PYTHON_REFRESH=quiet
 
 ENV PIP_NO_CACHE_DIR=1 \
