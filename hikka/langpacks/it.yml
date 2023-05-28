@@ -152,6 +152,10 @@ hikka_settings:
     _cmd_doc_watcher: "<module> - Gestisci le regole globali del guardatore\nArgomenti:\n[-c - solo nei gruppi]\n[-p - solo nei messaggi privati]\n[-o - solo in uscita]\n[-i - solo in entrata]"
     _cmd_doc_watchers: "Mostra i guardatori attivi"
     _cmd_doc_weburl: "Apri il tunnel al web interface di Hikka"
+    core_protection_already_removed: "<emoji document_id=6003424016977628379>🔒</emoji> <b>Protezione core già rimossa</b>"
+    core_protection_confirm: "⚠️ <b>LEGGERE ATTENTAMENTE!</b>\n\nRimuovendo la protezione principale confermi di sapere cos'è e a cosa serve. Nello scenario della vita comune non ne hai <b> bisogno </b>. Se non sei un sviluppatore, non ne hai <b> bisogno </b>. Se non sei sicuro, non ne hai <b> bisogno </b>.\n\n<b> Sei sicuro di voler rimuovere la protezione principale? </b>"
+    core_protection_btn: "🔓 Rimuovi la protezione principale"
+    core_protection_removed: "🔓 <b> Protezione principale rimossa con successo </b>"
 
 terminal:
     fw_protect: "Ritardo tra le modifiche"
@@ -182,7 +186,7 @@ hikka_backup:
     backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>Questo è il tuo backup del database. Non condividerlo con nessuno, contiene informazioni personali. Se hai bisogno di ripristinarlo, puoi usare</b> <code>{prefix}restoredb</code> <b>in risposta a questo file.</b>"
     reply_to_file: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Rispondi a un file .json o .zip</b>"
     db_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Database aggiornato, riavvio...</b>"
-    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup dei moduli ({})</b>"
+    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup dei moduli ({})</b>\n\n<b>Puoi ripristinarlo usando</b> <code>{}restoremods</code>"
     mods_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Moduli ripristinati, riavvio</b>"
     backup_sent: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup inviato ai messaggi salvati</b>"
     _cls_doc: "Gestisce i backup del database e dei moduli"

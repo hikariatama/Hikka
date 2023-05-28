@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class HelpMod(loader.Module):
+class Help(loader.Module):
     """Shows help for modules and commands"""
 
     strings = {"name": "Help"}

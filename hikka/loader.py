@@ -724,6 +724,12 @@ class Modules:
                     handler.id,
                 )
 
+    @property
+    def _remove_core_protection(self) -> bool:
+        from . import main
+
+        return self._db.get(main.__name__, "remove_core_protection", False)
+
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
@@ -737,7 +743,8 @@ class Modules:
         for _command, cmd in instance.hikka_commands.items():
             # Restrict overwriting core modules' commands
             if (
-                _command.lower() in self._core_commands
+                not self._remove_core_protection
+                and _command.lower() in self._core_commands
                 and not instance.__origin__.startswith("<core")
             ):
                 with contextlib.suppress(Exception):
@@ -880,7 +887,9 @@ class Modules:
             key = "dragon.prefix"
             default = ","
         else:
-            key = "hikka.main"
+            from . import main
+
+            key = main.__name__
             default = "."
 
         return self._db.get(key, "command_prefix", default)
@@ -895,7 +904,9 @@ class Modules:
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
-                if module.__origin__.startswith("<core"):
+                if not self._remove_core_protection and module.__origin__.startswith(
+                    "<core"
+                ):
                     raise CoreOverwriteError(
                         module=(
                             module.__class__.__name__[:-3]
@@ -1117,7 +1128,9 @@ class Modules:
                 module.name.lower(),
                 module.__class__.__name__.lower(),
             ):
-                if module.__origin__.startswith("<core"):
+                if not self._remove_core_protection and module.__origin__.startswith(
+                    "<core"
+                ):
                     raise CoreUnloadError(module.__class__.__name__)
 
                 worked += [module.__class__.__name__]

@@ -147,6 +147,10 @@ hikka_settings:
     _cmd_doc_watcher: "<module> - Genel gözlemci kurallarını yönetin\nArgümanlar:\n[-c - Yalnızca sohbetlerde]\n[-p - Yalnızca özel sohbetlerde]\n[-o - Yalnızca giden mesajlar]\n[-i - Yalnızca gelen mesajlar]"
     _cmd_doc_watchers: "Etkin gözlemcileri göster"
     _cmd_doc_weburl: "Hikka Web Arayüzüne bir tünel aç"
+    core_protection_already_removed: "<emoji document_id=6003424016977628379>🔒</emoji> <b>Çekirdek koruması zaten kaldırıldı</b>"
+    core_protection_confirm: "⚠️ <b>DİKKATLİ OKUYUN!</b>\n\nÇekirdek korumasını kaldırarak bunun ne olduğunu ve ne için olduğunu bildiğinizi onaylıyorsunuz. Genel hayat senaryosunda <b>ihtiyacınız yoktur</b>. Bir geliştirici değilseniz, <b>ihtiyacınız yoktur</b>. Emin değilseniz, <b>ihtiyacınız yoktur</b>.\n\n<b>Çekirdek korumasını kaldırmak istediğinizden emin misiniz?</b>"
+    core_protection_btn: "🔓 Çekirdek korumasını kaldır"
+    core_protection_removed: "🔓 <b>Çekirdek koruması başarıyla kaldırıldı</b>"
 
 terminal:
     fw_protect: "Bir komut arasındaki düzenleme süresi"
@@ -177,7 +181,7 @@ hikka_backup:
     backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>Bu, veritabanının yedeğidir. Kimseyle paylaşmayın, kişisel bilgiler içerir. Geri yüklemek istediğinizde</b> <code>{prefix}restoredb</code> <b>komutunu bu dosyaya yanıt olarak kullanabilirsiniz.</b>"
     reply_to_file: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bir .json veya .zip dosyasına yanıt verin</b>"
     db_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Veritabanı güncellendi, yeniden başlatılıyor...</b>"
-    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Modül yedeği ({})</b>"
+    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Modüllerin yedeği ({})</b>\n\n<b>Şu komutla geri yükleyebilirsin</b> <code>{}restoremods</code>"
     mods_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Modüller geri yüklendi, yeniden başlatılıyor</b>"
     backup_sent: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Yedek kaydedilen mesajlara gönderildi</b>"
     _cls_doc: "Veritabanı ve modüllerin yedeklerini yönetir"

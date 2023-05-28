@@ -197,7 +197,10 @@ class HikkaBackupMod(loader.Module):
         await utils.answer_file(
             message,
             archive,
-            caption=self.strings("modules_backup").format(mods_quantity),
+            caption=self.strings("modules_backup").format(
+                mods_quantity,
+                utils.escape_html(self.get_prefix()),
+            ),
         )
 
     @loader.command()
@@ -248,4 +251,4 @@ class HikkaBackupMod(loader.Module):
             self.lookup("Loader").set("loaded_modules", decoded_text)
 
         await utils.answer(message, self.strings("mods_restored"))
-        # await self.invoke("restart", "-f", peer=message.peer_id)
+        await self.invoke("restart", "-f", peer=message.peer_id)

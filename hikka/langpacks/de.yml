@@ -88,6 +88,10 @@ hikka_security:
     _cmd_doc_newsgroup: "<name> - Neue Sicherheitsgruppe anlegen"
     _cmd_doc_sgroupadd: "<name> [user or reply] - Benutzer zur Sicherheitsgruppe hinzufügen"
     _cmd_doc_sgroupdel: "<name> [user or reply] - Benutzer aus der Sicherheitsgruppe entfernen"
+    core_protection_already_removed: "<emoji document_id=6003424016977628379>🔒</emoji> <b>Kernschutz wurde bereits entfernt</b>"
+    core_protection_confirm: "⚠️ <b>LESEN SIE AUFMERKSAM!</b>\n\nDurch das Entfernen des Kernschutzes bestätigen Sie, dass Sie wissen, was es ist und wofür es ist. Im allgemeinen Lebensszenario benötigen Sie es nicht. Wenn Sie kein Entwickler sind, benötigen Sie es nicht. Wenn Sie sich nicht sicher sind, benötigen Sie es nicht.\n\n<b>Sind Sie sicher, dass Sie den Kernschutz entfernen möchten?</b>"
+    core_protection_btn: "🔓 Kernschutz entfernen"
+    core_protection_removed: "🔓 <b>Kernschutz erfolgreich entfernt</b>"
 
 hikka_settings:
     watchers: "<emoji document_id=5424885441100782420>👀</emoji> <b>Beobachter:</b>\n\n<b>{}</b>"
@@ -183,7 +187,7 @@ hikka_backup:
     backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>Dies ist dein Backup der Datenbank. Teile es niemandem mit, es enthält persönliche Informationen. Wenn du es wiederherstellen musst, kannst du</b> <code>{prefix}restoredb</code> <b>in Antwort auf diese Datei verwenden.</b>"
     reply_to_file: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Antworte auf eine .json oder .zip Datei</b>"
     db_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Datenbank aktualisiert, Neustart...</b>"
-    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Modul-Backup ({})</b>"
+    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Sicherung der Module ({})</b>\n\n<b>Wiederherstellen mit</b> <code>{}restoremods</code>"
     mods_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Module wiederhergestellt, Neustart</b>"
     backup_sent: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup an gespeicherte Nachrichten gesendet</b>"
     _cls_doc: "Verwaltet Backups der Datenbank und Module"

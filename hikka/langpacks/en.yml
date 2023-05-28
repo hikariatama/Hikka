@@ -164,6 +164,10 @@ hikka_settings:
     _cmd_doc_watchers: "List current watchers"
     _cmd_doc_weburl: "Opens web tunnel to your Hikka web interface"
     _cls_doc: "Advanced settings for Hikka Userbot"
+    core_protection_already_removed: "<emoji document_id=6003424016977628379>🔒</emoji> <b>Core protection is already removed</b>"
+    core_protection_confirm: "⚠️ <b>READ CAREFULLY!</b>\n\nBy removing core protection you confirm, that you know what is it and what is it for. In common life scenario you <b>don't need it</b>. If you're not a developer, you <b>don't need it</b>. If you're not sure, you <b>don't need it</b>.\n\n<b>Are you sure you want to remove core protection?</b>"
+    core_protection_btn: "🔓 Remove core protection"
+    core_protection_removed: "🔓 <b>Core protection removed successfully</b>"
 
 terminal:
     name: "Terminal"
@@ -197,7 +201,7 @@ hikka_backup:
     backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>This is your database backup. Do not give it to anyone, it contains personal info. If you need to restore it, you can use</b> <code>{prefix}restoredb</code> <b>in reply to this file.</b>"
     reply_to_file: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Reply to .json or .zip file</b>"
     db_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Database updated, restarting...</b>"
-    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup of modules ({})</b>"
+    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup of modules ({})</b>\n\n<b>You can restore it using</b> <code>{}restoremods</code>"
     mods_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Mods restored, restarting</b>"
     backup_sent: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup has been sent to saved messages</b>"
 

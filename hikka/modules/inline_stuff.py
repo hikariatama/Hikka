@@ -16,7 +16,7 @@ from ..inline.types import BotInlineMessage
 
 
 @loader.tds
-class InlineStuffMod(loader.Module):
+class InlineStuff(loader.Module):
     """Provides support for inline stuff"""
 
     strings = {"name": "InlineStuff"}

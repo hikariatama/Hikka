@@ -152,6 +152,10 @@ hikka_settings:
     _cmd_doc_watcher: "<module> - Gérer les règles globales de l'observateur\nArguments:\n[-c - uniquement dans les chats]\n[-p - uniquement dans les messages privés]\n[-o - uniquement sortant]\n[-i - uniquement entrant]"
     _cmd_doc_watchers: "Afficher les observateurs actifs"
     _cmd_doc_weburl: "Ouvrir un tunnel vers l'interface web de Hikka"
+    core_protection_already_removed: "<emoji document_id=6003424016977628379>🔒</emoji> <b>La protection du noyau est déjà supprimée</b>"
+    core_protection_confirm: "⚠️ <b>LISEZ ATTENTIVEMENT!</b>\n\nEn supprimant la protection du noyau, vous confirmez que vous savez ce que c'est et à quoi ça sert. Dans le scénario de la vie courante, vous <b>n'en avez pas besoin</b>. Si vous n'êtes pas développeur, vous <b>n'en avez pas besoin</b>. Si vous n'êtes pas sûr, vous <b>n'en avez pas besoin</b>.\n\n<b>Êtes-vous sûr de vouloir supprimer la protection du noyau?</b>"
+    core_protection_btn: "🔓 Supprimer la protection du noyau"
+    core_protection_removed: "🔓 <b>Protection du noyau supprimée avec succès</b>"
 
 terminal:
     fw_protect: "Délai entre les modifications"
@@ -182,7 +186,7 @@ hikka_backup:
     backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>Ceci est votre sauvegarde de la base de données. Ne le donnez à personne, il contient des informations personnelles. Si vous avez besoin de le restaurer, vous pouvez utiliser</b> <code>{prefix}restoredb</code> <b>en réponse à ce fichier.</b>"
     reply_to_file: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Répondre à un fichier .json ou .zip</b>"
     db_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Base de données mise à jour, redémarrage...</b>"
-    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Sauvegarde des modules ({})</b>"
+    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Backup des modules ({})</b>\n\n<b>Vous pouvez le restaurer en utilisant</b> <code>{}restoremods</code>"
     mods_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Modules restaurés, redémarrage</b>"
     backup_sent: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Sauvegarde envoyée aux messages enregistrés</b>"
     _cls_doc: "Gère les sauvegardes de la base de données et des modules"

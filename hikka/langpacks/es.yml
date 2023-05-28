@@ -152,6 +152,10 @@ hikka_settings:
     _cmd_doc_watcher: "<module> - Administre las reglas del observador global\nArgumentos:\n[-c - Solo en chats]\n[-p - Solo en chats privados]\n[-o - Solo mensajes salientes]\n[-i - Solo mensajes entrantes]"
     _cmd_doc_watchers: "Mostrar observadores activos"
     _cmd_doc_weburl: "Abrir un túnel al interfaz web de Hikka"
+    core_protection_already_removed: "<emoji document_id=6003424016977628379>🔒</emoji> <b>La protección principal ya se ha eliminado</b>"
+    core_protection_confirm: "⚠️ <b>¡LEA CON ATENCIÓN!</b>\n\nAl eliminar la protección principal, confirma que sabe qué es y para qué es. En el escenario de la vida común, <b>no lo necesita</b>. Si no eres un desarrollador, <b>no lo necesitas</b>. Si no está seguro, <b>no lo necesita</b>.\n\n<b>¿Estás seguro de que quieres eliminar la protección principal?</b>"
+    core_protection_btn: "🔓 Eliminar la protección principal"
+    core_protection_removed: "🔓 <b>Protección principal eliminada con éxito</b>"
 
 terminal:
     fw_protect: "Retraso entre ediciones"
@@ -182,7 +186,7 @@ hikka_backup:
     backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>Esto es una copia de seguridad de su base de datos. No lo comparta con nadie, contiene información personal. Puede usar el comando</b> <code>{prefix}restoredb</code> <b>en respuesta a este archivo para restaurarlo.</b>"
     reply_to_file: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Responda a un archivo .json o .zip</b>"
     db_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>La base de datos se ha actualizado, reiniciando...</b>"
-    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Copia de seguridad de los módulos ({})</b>"
+    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Copia de seguridad de módulos ({})</b>\n\n<b>Puede restaurarlo usando</b> <code>{}restoremods</code>"
     mods_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Módulos restaurados, reiniciando</b>"
     backup_sent: "<emoji document_id=5431736674147114227>🗂</emoji> <b>La copia de seguridad se ha enviado a los mensajes guardados</b>"
     _cls_doc: "Administra las copias de seguridad de la base de datos y los"

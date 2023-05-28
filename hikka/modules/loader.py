@@ -846,9 +846,25 @@ class LoaderMod(loader.Module):
                     None,
                 )
 
+                pack_url = next(
+                    (
+                        line.replace(" ", "").split("#packurl:", maxsplit=1)[1]
+                        for line in doc.splitlines()
+                        if line.replace(" ", "").startswith("#packurl:")
+                    ),
+                    None,
+                )
+
+                if pack_url and (
+                    transations := self.allmodules.translator.load_module_translations(
+                        pack_url
+                    )
+                ):
+                    instance.strings.external_strings = transations
+
                 if is_dragon:
                     instance.name = (
-                        "Dragon" + notifier.modname[0].upper() + notifier.modname[1:]
+                        f"Dragon{notifier.modname[0].upper()}{notifier.modname[1:]}"
                     )
                     instance.commands = notifier.commands
                     self.allmodules.register_dragon(dragon_module, instance)
@@ -862,15 +878,17 @@ class LoaderMod(loader.Module):
             try:
                 modname = instance.strings("name")
             except (KeyError, AttributeError):
-                modname = getattr(instance, "name", "ERROR")
+                modname = getattr(instance, "name", instance.__class__.__name__)
 
             try:
                 developer_entity = await (
                     self._client.force_get_entity
                     if (
-                        developer in self._client._hikka_entity_cache
+                        developer in self._client.hikka_entity_cache
                         and getattr(
-                            await self._client.get_entity(developer), "left", True
+                            await self._client.get_entity(developer),
+                            "left",
+                            True,
                         )
                     )
                     else self._client.get_entity
@@ -1128,7 +1146,15 @@ class LoaderMod(loader.Module):
             args = f"https://{args}"
 
         try:
-            r = await utils.run_sync(requests.get, f"{args}/full.txt")
+            r = await utils.run_sync(
+                requests.get,
+                f"{args}/full.txt",
+                auth=(
+                    tuple(self.config["basic_auth"].split(":", 1))
+                    if self.config["basic_auth"]
+                    else None
+                ),
+            )
             r.raise_for_status()
             if not r.text.strip():
                 raise ValueError
@@ -1217,9 +1243,10 @@ class LoaderMod(loader.Module):
         if self._secure_boot:
             self._db.set(loader.__name__, "secure_boot", True)
 
-        for module in self.allmodules.modules:
-            if module.__origin__.startswith("<core"):
-                module.__origin__ = "<reload-core>"
+        if not self._db.get(main.__name__, "remove_core_protection", False):
+            for module in self.allmodules.modules:
+                if module.__origin__.startswith("<core"):
+                    module.__origin__ = "<reload-core>"
 
         loaded = await self.allmodules.register_all(no_external=True)
         for instance in loaded:
