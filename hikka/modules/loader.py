@@ -856,7 +856,7 @@ class LoaderMod(loader.Module):
                 )
 
                 if pack_url and (
-                    transations := self.allmodules.translator.load_module_translations(
+                    transations := await self.allmodules.translator.load_module_translations(
                         pack_url
                     )
                 ):

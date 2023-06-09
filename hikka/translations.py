@@ -97,10 +97,7 @@ class BaseTranslator:
 
     async def load_module_translations(self, pack_url: str) -> typing.Union[bool, dict]:
         try:
-            data = self._get_pack_raw(
-                (await utils.run_sync(requests.get, pack_url)).text,
-                pack_url.split(".")[-1],
-            )
+            data = yaml.load((await utils.run_sync(requests.get, pack_url)).text)
         except Exception:
             logger.exception("Unable to decode %s", pack_url)
             return False
