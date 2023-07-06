@@ -276,7 +276,7 @@ class Gallery(InlineUnit):
             if isinstance(message, Message):
                 await (message.edit if message.out else message.respond)(
                     msg,
-                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                    **({} if message.out else {"reply_to": utils.get_topic(message)}),
                 )
             else:
                 await self._client.send_message(message, msg)
