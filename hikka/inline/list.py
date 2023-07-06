@@ -203,37 +203,28 @@ class List(InlineUnit):
             if isinstance(message, Message):
                 await (message.edit if message.out else message.respond)(
                     msg,
-                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                    **({} if message.out else {"reply_to": utils.get_topic(message)}),
                 )
             else:
                 await self._client.send_message(message, msg)
 
         try:
-            q = await self._client.inline_query(self.bot_username, unit_id)
-            m = await q[0].click(
-                utils.get_chat_id(message) if isinstance(message, Message) else message,
-                reply_to=(
-                    message.reply_to_msg_id if isinstance(message, Message) else None
-                ),
-            )
+            m = await self._invoke_unit(unit_id, message)
         except ChatSendInlineForbiddenError:
             await answer(self.translator.getkey("inline.inline403"))
         except Exception:
             logger.exception("Can't send list")
 
-            if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = self.translator.getkey("inline.invoke_failed")
-            else:
-                exc = traceback.format_exc()
-                # Remove `Traceback (most recent call last):`
-                exc = "\n".join(exc.splitlines()[1:])
-                msg = (
-                    "<b>🚫 List invoke failed!</b>\n\n"
-                    f"<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
-                )
-
             del self._units[unit_id]
-            await answer(msg)
+            await answer(
+                self.translator.getkey("inline.invoke_failed_logs").format(
+                    utils.escape_html(
+                        "\n".join(traceback.format_exc().splitlines()[1:])
+                    )
+                )
+                if self._db.get(main.__name__, "inlinelogs", True)
+                else self.translator.getkey("inline.invoke_failed")
+            )
 
             return False
 
@@ -310,18 +301,23 @@ class List(InlineUnit):
                 and inline_query.query == unit["uid"]
                 and unit["type"] == "list"
             ):
-                await inline_query.answer(
-                    [
-                        InlineQueryResultArticle(
-                            id=utils.rand(20),
-                            title="Hikka",
-                            input_message_content=InputTextMessageContent(
-                                self.sanitise_text(unit["strings"][0]),
-                                "HTML",
-                                disable_web_page_preview=True,
-                            ),
-                            reply_markup=self._list_markup(inline_query.query),
-                        )
-                    ],
-                    cache_time=60,
-                )
+                try:
+                    await inline_query.answer(
+                        [
+                            InlineQueryResultArticle(
+                                id=utils.rand(20),
+                                title="Hikka",
+                                input_message_content=InputTextMessageContent(
+                                    self.sanitise_text(unit["strings"][0]),
+                                    "HTML",
+                                    disable_web_page_preview=True,
+                                ),
+                                reply_markup=self._list_markup(inline_query.query),
+                            )
+                        ],
+                        cache_time=60,
+                    )
+                except Exception as e:
+                    if unit["uid"] in self._error_events:
+                        self._error_events[unit["uid"]].set()
+                        self._error_events[unit["uid"]] = e

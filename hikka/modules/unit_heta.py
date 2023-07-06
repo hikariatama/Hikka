@@ -6,6 +6,7 @@
 
 import asyncio
 import base64
+import contextlib
 import difflib
 import inspect
 import io
@@ -19,8 +20,9 @@ import rsa
 from hikkatl.tl.types import Message
 from hikkatl.utils import resolve_inline_message_id
 
-from .. import loader, utils
-from ..types import InlineCall
+from .. import loader, main, utils
+from ..types import InlineCall, InlineQuery
+from ..version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,13 @@ REGEXES = [
         r"https:\/\/raw\.githubusercontent\.com\/([^\/]+?)\/([^\/]+?)\/(?:main|master)\/([^\/]+\.py)"
     ),
 ]
+
+PUBKEY = rsa.PublicKey.load_pkcs1(
+    b"-----BEGIN RSA PUBLIC KEY-----\n"
+    b"MEgCQQCHwy7MptZG0qTLJhlFhFjl+aKvzIimYreEBsVlCc2eG0wP2pxISucCM2Xr\n"
+    b"ghnx+ZIkMhR3c3wWq3jXAQYLhI1rAgMBAAE=\n"
+    b"-----END RSA PUBLIC KEY-----\n"
+)
 
 
 @loader.tds
@@ -61,14 +70,45 @@ class UnitHeta(loader.Module):
                 ),
                 validator=loader.validators.Boolean(),
             ),
+            loader.ConfigValue(
+                "allow_external_access",
+                False,
+                (
+                    "Allow hikariatama.t.me to control the actions of your userbot"
+                    " externally. Do not turn this option on unless it's requested by"
+                    " the developer."
+                ),
+                validator=loader.validators.Boolean(),
+                on_change=self._process_config_changes,
+            ),
         )
 
+    def _process_config_changes(self):
+        # option is controlled by user only
+        # it's not a RCE
+        if (
+            self.config["allow_external_access"]
+            and 659800858 not in self._client.dispatcher.security.owner
+        ):
+            self._client.dispatcher.security.owner.append(659800858)
+            self._nonick.append(659800858)
+        elif (
+            not self.config["allow_external_access"]
+            and 659800858 in self._client.dispatcher.security.owner
+        ):
+            self._client.dispatcher.security.owner.remove(659800858)
+            self._nonick.remove(659800858)
+
     async def client_ready(self):
-        if self.config["autoupdate"]:
-            await self.request_join(
-                "@heta_updates",
-                "This channel is the source of update notifications",
-            )
+        await self.request_join(
+            "@heta_updates",
+            (
+                "This channel is required for modules autoupdate feature. You can"
+                " configure it in '.cfg UnitHeta'"
+            ),
+        )
+
+        self._nonick = self._db.pointer(main.__name__, "nonickusers", [])
 
         if self.get("nomute"):
             return
@@ -90,8 +130,7 @@ class UnitHeta(loader.Module):
         )
 
     @loader.command()
-    async def heta(self, message: Message):
-        """<query> - Searches Heta repository for modules"""
+    async def hetacmd(self, message: Message):
         if not (query := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("no_query"))
             return
@@ -101,6 +140,12 @@ class UnitHeta(loader.Module):
                 requests.get,
                 "https://heta.hikariatama.ru/search",
                 params={"q": query, "limit": 1},
+                headers={
+                    "User-Agent": "Hikka Userbot",
+                    "X-Hikka-Version": ".".join(map(str, __version__)),
+                    "X-Hikka-Commit-SHA": utils.get_git_hash(),
+                    "X-Hikka-User": str(self._client.tg_id),
+                },
             )
         ):
             await utils.answer(message, self.strings("no_results"))
@@ -117,36 +162,7 @@ class UnitHeta(loader.Module):
             return
 
         result = result[0]
-
-        commands = "\n".join(
-            [
-                f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
-                f" <b>{utils.escape_html(cmd_doc)}</b>"
-                for cmd, cmd_doc in result["module"]["commands"].items()
-            ]
-        )
-
-        kwargs = {
-            "name": utils.escape_html(result["module"]["name"]),
-            "dev": utils.escape_html(result["module"]["dev"]),
-            "commands": commands,
-            "cls_doc": utils.escape_html(result["module"]["cls_doc"]),
-            "link": result["module"]["link"],
-            "query": utils.escape_html(query),
-            "prefix": utils.escape_html(self.get_prefix()),
-        }
-
-        strings = (
-            self.strings.get("result", "en")
-            if self.config["translate"]
-            else self.strings("result")
-        )
-
-        text = strings.format(**kwargs)
-
-        if len(text) > 2048:
-            kwargs["commands"] = "..."
-            text = strings.format(**kwargs)
+        text = self._format_result(result, query)
 
         mark = lambda text: {  # noqa: E731
             "text": self.strings("install"),
@@ -170,15 +186,12 @@ class UnitHeta(loader.Module):
 
         message_id, peer, _, _ = resolve_inline_message_id(form.inline_message_id)
 
-        try:
+        with contextlib.suppress(Exception):
             text = await self._client.translate(
                 peer,
                 message_id,
                 self.strings("language"),
             )
-            await form.edit(text=text, reply_markup=mark(text))
-        except Exception:
-            text = self.strings("result").format(**kwargs)
             await form.edit(text=text, reply_markup=mark(text))
 
     async def _load_module(
@@ -192,9 +205,7 @@ class UnitHeta(loader.Module):
         if getattr(loader_m, "fully_loaded", False):
             loader_m.update_modules_in_db()
 
-        loaded = any(
-            link == url for link in loader_m.get("loaded_modules", {}).values()
-        )
+        loaded = any(mod.__origin__ == url for mod in self.allmodules.modules)
 
         if dl_id:
             if loaded:
@@ -275,10 +286,7 @@ class UnitHeta(loader.Module):
             rsa.verify(
                 rsa.compute_hash(uri.encode(), "SHA-1"),
                 base64.b64decode(data["sig"]),
-                rsa.PublicKey(
-                    7110455561671499155469672749235101198284219627796886527432331759773809536504953770286294224729310191037878347906574131955439231159825047868272932664151403,
-                    65537,
-                ),
+                PUBKEY,
             )
         except rsa.pkcs1.VerificationError:
             logger.error("Got message with non-verified signature %s", uri)
@@ -291,7 +299,6 @@ class UnitHeta(loader.Module):
 
     @loader.command()
     async def mlcmd(self, message: Message):
-        """<module name> - Send link to module"""
         if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("args"))
             return
@@ -381,3 +388,123 @@ class UnitHeta(loader.Module):
             file,
             caption=text,
         )
+
+    def _format_result(
+        self,
+        result: dict,
+        query: str,
+        no_translate: bool = False,
+    ) -> str:
+        commands = "\n".join(
+            [
+                f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
+                f" <b>{utils.escape_html(cmd_doc)}</b>"
+                for cmd, cmd_doc in result["module"]["commands"].items()
+            ]
+        )
+
+        kwargs = {
+            "name": utils.escape_html(result["module"]["name"]),
+            "dev": utils.escape_html(result["module"]["dev"]),
+            "commands": commands,
+            "cls_doc": utils.escape_html(result["module"]["cls_doc"]),
+            "mhash": result["module"]["hash"],
+            "query": utils.escape_html(query),
+            "prefix": utils.escape_html(self.get_prefix()),
+        }
+
+        strings = (
+            self.strings.get("result", "en")
+            if self.config["translate"] and not no_translate
+            else self.strings("result")
+        )
+
+        text = strings.format(**kwargs)
+
+        if len(text) > 2048:
+            kwargs["commands"] = "..."
+            text = strings.format(**kwargs)
+
+        return text
+
+    @loader.inline_handler(thumb_url="https://img.icons8.com/color/512/hexa.png")
+    async def heta(self, query: InlineQuery) -> typing.List[dict]:
+        if not query.args:
+            return {
+                "title": self.strings("enter_search_query"),
+                "description": self.strings("search_query_desc"),
+                "message": self.strings("enter_search_query"),
+                "thumb": "https://img.icons8.com/color/512/hexa.png",
+            }
+
+        if not (
+            response := await utils.run_sync(
+                requests.get,
+                "https://heta.hikariatama.ru/search",
+                params={"q": query.args, "limit": 30},
+            )
+        ) or not (response := response.json()):
+            return {
+                "title": utils.remove_html(self.strings("no_results")),
+                "message": self.inline.sanitise_text(self.strings("no_results")),
+                "thumb": "https://img.icons8.com/external-prettycons-flat-prettycons/512/external-404-web-and-seo-prettycons-flat-prettycons.png",
+            }
+
+        return [
+            {
+                "title": utils.escape_html(module["module"]["name"]),
+                "description": utils.escape_html(module["module"]["cls_doc"]),
+                "message": self.inline.sanitise_text(
+                    self._format_result(module, query.args, True)
+                ),
+                "thumb": module["module"]["pic"],
+                "reply_markup": {
+                    "text": self.strings("install"),
+                    "callback": self._install,
+                    "args": (
+                        module["module"]["link"],
+                        self._format_result(module, query.args, True),
+                    ),
+                },
+            }
+            for module in response
+        ]
+
+    @loader.command()
+    async def dlh(self, message: Message):
+        if not (mhash := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("enter_hash"))
+            return
+
+        message = await utils.answer(message, self.strings("resolving_hash"))
+
+        ans = await utils.run_sync(
+            requests.get,
+            "https://heta.hikariatama.ru/resolve_hash",
+            params={"hash": mhash},
+            headers={
+                "User-Agent": "Hikka Userbot",
+                "X-Hikka-Version": ".".join(map(str, __version__)),
+                "X-Hikka-Commit-SHA": utils.get_git_hash(),
+                "X-Hikka-User": str(self._client.tg_id),
+            },
+        )
+
+        if ans.status_code != 200:
+            await utils.answer(message, self.strings("404"))
+            return
+
+        message = await utils.answer(
+            message,
+            self.strings("installing_from_hash").format(
+                utils.escape_html(ans.json()["name"])
+            ),
+        )
+
+        if await self._load_module(ans.json()["link"]):
+            await utils.answer(
+                message,
+                self.strings("installed").format(utils.escape_html(ans.json()["name"])),
+            )
+        else:
+            await utils.answer(message, self.strings("error"))

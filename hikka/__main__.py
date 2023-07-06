@@ -60,12 +60,12 @@ else:
         try:
             import hikkatl  # noqa: F811
 
-            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 3):
+            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 4):
                 raise ImportError
 
             import hikkapyro
 
-            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 102):
+            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 103):
                 raise ImportError
         except ImportError:
             print("🔄 Installing dependencies...")

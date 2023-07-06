@@ -25,45 +25,26 @@ imgs = [
 
 
 @loader.tds
-class QuickstartMod(loader.Module):
+class Quickstart(loader.Module):
     """Notifies user about userbot installation"""
 
     async def client_ready(self):
-        if self.get("disable_quickstart"):
-            raise loader.SelfUnload
-
-        self.mark = (
-            lambda: [
-                [
-                    {
-                        "text": self.strings("btn_support"),
-                        "url": "https://t.me/hikka_talks",
-                    }
-                ],
-            ]
-            + [
-                [
-                    {
-                        "text": "👩‍⚖️ Privacy Policy",
-                        "url": "https://docs.google.com/document/d/15m6-pb1Eya8Zn4y0_7JEdvMLAo_v050rFMaWrjDjvMs/edit?usp=sharing",
-                    },
-                    {
-                        "text": "📜 EULA",
-                        "url": "https://docs.google.com/document/d/1sZBk24SWLBLoGxcsZHW8yP7yLncToPGUP1FJ4dS6z5I/edit?usp=sharing",
-                    },
-                ]
-            ]
-            + utils.chunks(
-                [
-                    {
-                        "text": self.strings.get("language", lang),
-                        "callback": self._change_lang,
-                        "args": (lang,),
-                    }
-                    for lang in translations.SUPPORTED_LANGUAGES
-                ],
-                3,
-            )
+        self.mark = lambda: [
+            [
+                {
+                    "text": self.strings("btn_support"),
+                    "url": "https://t.me/hikka_talks",
+                }
+            ],
+        ] + utils.chunks(
+            [
+                {
+                    "text": self.strings.get("language", lang),
+                    "data": f"hikka/lang/{lang}",
+                }
+                for lang in translations.SUPPORTED_LANGUAGES
+            ],
+            3,
         )
 
         self.text = (
@@ -78,6 +59,9 @@ class QuickstartMod(loader.Module):
             ).rstrip()
         )
 
+        if self.get("no_msg"):
+            return
+
         await self.inline.bot.send_animation(self._client.tg_id, animation=choice(imgs))
         await self.inline.bot.send_message(
             self._client.tg_id,
@@ -86,9 +70,15 @@ class QuickstartMod(loader.Module):
             disable_web_page_preview=True,
         )
 
-        self.set("disable_quickstart", True)
+        self.set("no_msg", True)
 
-    async def _change_lang(self, call: BotInlineCall, lang: str):
+    @loader.callback_handler()
+    async def lang(self, call: BotInlineCall):
+        if not call.data.startswith("hikka/lang/"):
+            return
+
+        lang = call.data.split("/")[2]
+
         self._db.set(translations.__name__, "lang", lang)
         await self.allmodules.reload_translations()
 

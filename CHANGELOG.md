@@ -1,5 +1,23 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.6.3
+
+- Add argument `item_type` to `db.pointer` to provide interface for NamedTuple objects
+- Add correct exception propagation to inline units
+- Add `-fs` arg to `.lm` command
+- Add IDM `flush_loader_cache`
+- Add ability to cancel QR login using keyboard interrupt
+- Add custom security groups
+- Add automatic NoNick for tsec methods
+- Add external debugging feature (off by default)
+- Fix form invoke error message
+- Fix `Backuper`
+- Fix backward compatiblity with security groups `SUDO` (0x2) and `SUPPORT` (0x4)
+- Fix quickstart language buttons translations
+- Fix language buttons disabling on restart
+- Migrate inline heta search to userbot instead of centralized service
+- Cosmetical changes
+
 ## 🌑 Hikka 1.6.2
 
 - Fix security issue with edited channel messages

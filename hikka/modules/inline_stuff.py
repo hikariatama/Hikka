@@ -16,7 +16,7 @@ from ..inline.types import BotInlineMessage
 
 
 @loader.tds
-class InlineStuffMod(loader.Module):
+class InlineStuff(loader.Module):
     """Provides support for inline stuff"""
 
     strings = {"name": "InlineStuff"}
@@ -83,7 +83,6 @@ class InlineStuffMod(loader.Module):
 
     @loader.command()
     async def ch_hikka_bot(self, message: Message):
-        """<username> - Change your Hikka inline bot username"""
         args = utils.get_args_raw(message).strip("@")
         if (
             not args

@@ -359,6 +359,7 @@ class CommandDispatcher:
             and not self._db.get(main.__name__, "no_nickname", False)
             and command not in self._db.get(main.__name__, "nonickcmds", [])
             and initiator not in self._db.get(main.__name__, "nonickusers", [])
+            and not self.security.check_tsec(initiator, command)
             and utils.get_chat_id(event)
             not in self._db.get(main.__name__, "nonickchats", [])
         ):
@@ -369,7 +370,11 @@ class CommandDispatcher:
         if (
             not func
             or not await self._handle_ratelimit(message, func)
-            or not await self.security.check(message, func)
+            or not await self.security.check(
+                message,
+                func,
+                usernames=self._cached_usernames,
+            )
         ):
             return False
 

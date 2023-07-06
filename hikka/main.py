@@ -35,10 +35,8 @@ import os
 import random
 import socket
 import sqlite3
-import sys
 import typing
 from getpass import getpass
-from math import ceil
 from pathlib import Path
 
 import hikkatl
@@ -205,10 +203,8 @@ def save_config_key(key: str, value: str) -> bool:
 
 def gen_port(cfg: str = "port", no8080: bool = False) -> int:
     """
-    Generates random free port in case of VDS, and
-    8080 in case of Okteto
-    In case of Docker, also return 8080, as it's already
-    exposed by default
+    Generates random free port in case of VDS.
+    In case of Docker, also return 8080, as it's already exposed by default.
     :returns: Integer value of generated port
     """
     if "DOCKER" in os.environ and not no8080:
@@ -296,12 +292,15 @@ def parse_arguments() -> dict:
         action="store_true",
         help="Open proxy pass tunnel on start (not needed on setup)",
     )
+    parser.add_argument(
+        "--no-tty",
+        dest="tty",
+        action="store_false",
+        default=True,
+        help="Do not print colorful output using ANSI escapes",
+    )
     arguments = parser.parse_args()
     logging.debug(arguments)
-    if sys.platform == "win32":
-        # Subprocess support; not needed in 3.8 but not harmful
-        asyncio.set_event_loop(asyncio.ProactorEventLoop())
-
     return arguments
 
 
@@ -342,10 +341,9 @@ def raise_auth():
 class Hikka:
     """Main userbot instance, which can handle multiple clients"""
 
-    omit_log = False
-
     def __init__(self):
         global BASE_DIR, BASE_PATH, CONFIG_PATH
+        self.omit_log = False
         self.arguments = parse_arguments()
         if self.arguments.data_root:
             BASE_DIR = self.arguments.data_root
@@ -472,8 +470,8 @@ class Hikka:
                 self._get_api_token()
 
     async def save_client_session(self, client: CustomTelegramClient):
-        if hasattr(client, "_tg_id"):
-            telegram_id = client._tg_id
+        if hasattr(client, "tg_id"):
+            telegram_id = client.tg_id
         else:
             if not (me := await client.get_me()):
                 raise RuntimeError("Attempted to save non-inited session")
@@ -518,7 +516,7 @@ class Hikka:
         """
         timeout = 5 * 60
         polling_interval = 1
-        for _ in range(ceil(timeout * polling_interval)):
+        for _ in range(timeout * polling_interval):
             await asyncio.sleep(polling_interval)
 
             for client in self.clients:
@@ -526,6 +524,19 @@ class Hikka:
                     return True
 
         return False
+
+    async def _phone_login(self, client: CustomTelegramClient) -> bool:
+        phone = input(
+            "\033[0;96mEnter phone: \033[0m"
+            if IS_TERMUX or self.arguments.tty
+            else "Enter phone: "
+        )
+
+        await client.start(phone)
+
+        await self.save_client_session(client)
+        self.clients += [client]
+        return True
 
     async def _initial_setup(self) -> bool:
         """Responsible for first start"""
@@ -549,7 +560,9 @@ class Hikka:
             await client.connect()
 
             print(
-                ("\033[0;96m{}\033[0m" if IS_TERMUX else "{}").format(
+                (
+                    "\033[0;96m{}\033[0m" if IS_TERMUX or self.arguments.tty else "{}"
+                ).format(
                     "You can use QR-code to login from another device (your friend's"
                     " phone, for example)."
                 )
@@ -558,20 +571,12 @@ class Hikka:
             if (
                 input(
                     "\033[0;96mUse QR code? [y/N]: \033[0m"
-                    if IS_TERMUX
+                    if IS_TERMUX or self.arguments.tty
                     else "Use QR code? [y/N]: "
                 ).lower()
                 != "y"
             ):
-                phone = input(
-                    "\033[0;96mEnter phone: \033[0m" if IS_TERMUX else "Enter phone: "
-                )
-
-                await client.start(phone)
-
-                await self.save_client_session(client)
-                self.clients += [client]
-                return True
+                return await self._phone_login(client)
 
             print("\033[0;96mLoading QR code...\033[0m")
             qr_login = await client.qr_login()
@@ -582,6 +587,7 @@ class Hikka:
                 print("\033[2J\033[3;1f")
                 qr.print_ascii(invert=True)
                 print("\033[0;96mScan the QR code above to log in.\033[0m")
+                print("\033[0;96mPress Ctrl+C to cancel.\033[0m")
 
             async def qr_login_poll() -> bool:
                 logged_in = False
@@ -596,16 +602,22 @@ class Hikka:
                             return True
                     except SessionPasswordNeededError:
                         return True
+                    except KeyboardInterrupt:
+                        print("\033[2J\033[3;1f")
+                        return None
 
                 return False
 
-            if await qr_login_poll():
+            if (qr_logined := await qr_login_poll()) is None:
+                return await self._phone_login(client)
+
+            if qr_logined:
                 print_banner("2fa.txt")
                 password = await client(GetPasswordRequest())
                 while True:
                     _2fa = getpass(
                         f"\033[0;96mEnter 2FA password ({password.hint}): \033[0m"
-                        if IS_TERMUX
+                        if IS_TERMUX or self.arguments.tty
                         else f"Enter 2FA password ({password.hint}): "
                     )
                     try:
@@ -683,7 +695,7 @@ class Hikka:
                         if self.web
                         else lambda: input(
                             "\033[0;96mEnter phone: \033[0m"
-                            if IS_TERMUX
+                            if IS_TERMUX or self.arguments.tty
                             else "Enter phone: "
                         )
                     )
@@ -740,41 +752,55 @@ class Hikka:
 
             repo = git.Repo()
 
-            build = repo.heads[0].commit.hexsha
+            build = utils.get_git_hash()
             diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
-            upd = r"Update required" if diff else r"Up-to-date"
+            upd = "Update required" if diff else "Up-to-date"
 
-            _platform = utils.get_named_platform()
-
-            logo1 = f"""
-
-                        █ █ █ █▄▀ █▄▀ ▄▀█
-                        █▀█ █ █ █ █ █ █▀█
-
-                     • Build: {build[:7]}
-                     • Version: {'.'.join(list(map(str, list(__version__))))}
-                     • {upd}
-                     • Platform: {_platform}
-                     """
+            logo = (
+                "█ █ █ █▄▀ █▄▀ ▄▀█\n"
+                "█▀█ █ █ █ █ █ █▀█\n\n"
+                f"• Build: {build[:7]}\n"
+                f"• Version: {'.'.join(list(map(str, list(__version__))))}\n"
+                f"• {upd}\n"
+            )
 
             if not self.omit_log:
-                print(logo1)
+                print(logo)
                 web_url = (
-                    f"🌐 Web url: {self.web.url}\n"
+                    f"🌐 Web url: {self.web.url}"
                     if self.web and hasattr(self.web, "url")
                     else ""
                 )
-                logging.info(
-                    "🌘 Hikka %s started\n🔏 GitHub commit SHA: %s (%s)\n%s%s",
+                logging.debug(
+                    "\n🌘 Hikka %s #%s (%s) started\n%s",
                     ".".join(list(map(str, list(__version__)))),
                     build[:7],
                     upd,
                     web_url,
-                    _platform,
                 )
                 self.omit_log = True
 
-            logging.info("- Started for %s -", client._tg_id)
+            await client.hikka_inline.bot.send_animation(
+                logging.getLogger().handlers[0].get_logid_by_client(client.tg_id),
+                "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
+                caption=(
+                    "🌘 <b>Hikka {} started!</b>\n\n🌳 <b>GitHub commit SHA: <a"
+                    ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>\n✊'
+                    " <b>Update status: {}</b>\n<b>{}</b>".format(
+                        ".".join(list(map(str, list(__version__)))),
+                        build,
+                        build[:7],
+                        upd,
+                        web_url,
+                    )
+                ),
+            )
+
+            logging.debug(
+                "· Started for %s · Prefix: «%s» ·",
+                client.tg_id,
+                client.hikka_db.get(__name__, "command_prefix", False) or ".",
+            )
         except Exception:
             logging.exception("Badge error")
 
@@ -820,6 +846,7 @@ class Hikka:
         await client.start()
 
         db = database.Database(client)
+        client.hikka_db = db
         await db.init()
 
         logging.debug("Got DB")

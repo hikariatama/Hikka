@@ -65,7 +65,7 @@ class LoaderMod(loader.Module):
     def __init__(self):
         self.fully_loaded = False
         self._links_cache = {}
-        self._storage = RemoteStorage()
+        self._storage: RemoteStorage = None
 
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
@@ -119,6 +119,8 @@ class LoaderMod(loader.Module):
     async def client_ready(self):
         while not (settings := self.lookup("settings")):
             await asyncio.sleep(0.5)
+
+        self._storage = RemoteStorage(self._client)
 
         self.allmodules.add_aliases(settings.get("aliases", {}))
 
@@ -183,7 +185,6 @@ class LoaderMod(loader.Module):
 
     @loader.command(alias="dlm")
     async def dlmod(self, message: Message):
-        """Install a module from the official module repo"""
         if args := utils.get_args(message):
             args = args[0]
 
@@ -356,11 +357,15 @@ class LoaderMod(loader.Module):
 
         await self.load_module(doc, call, origin=path_ or "<string>", save_fs=save)
 
-    @loader.command(
-        alias="lm",
-    )
+    @loader.command(alias="lm")
     async def loadmod(self, message: Message):
-        """Loads the module file"""
+        args = utils.get_args_raw(message)
+        if "-fs" in args:
+            force_save = True
+            args = args.replace("-fs", "").strip()
+        else:
+            force_save = False
+
         msg = message if message.file else (await message.get_reply_message())
 
         if msg is None or msg.media is None:
@@ -378,11 +383,15 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("bad_unicode"))
             return
 
-        if not self._db.get(
-            main.__name__,
-            "disable_modules_fs",
-            False,
-        ) and not self._db.get(main.__name__, "permanent_modules_fs", False):
+        if (
+            not self._db.get(
+                main.__name__,
+                "disable_modules_fs",
+                False,
+            )
+            and not self._db.get(main.__name__, "permanent_modules_fs", False)
+            and not force_save
+        ):
             if message.file:
                 await message.edit("")
                 message = await message.respond("🌘", reply_to=utils.get_topic(message))
@@ -426,15 +435,21 @@ class LoaderMod(loader.Module):
                 doc,
                 message,
                 origin=path_,
-                save_fs=self._db.get(main.__name__, "permanent_modules_fs", False)
-                and not self._db.get(main.__name__, "disable_modules_fs", False),
+                save_fs=(
+                    force_save
+                    or self._db.get(main.__name__, "permanent_modules_fs", False)
+                    and not self._db.get(main.__name__, "disable_modules_fs", False)
+                ),
             )
         else:
             await self.load_module(
                 doc,
                 message,
-                save_fs=self._db.get(main.__name__, "permanent_modules_fs", False)
-                and not self._db.get(main.__name__, "disable_modules_fs", False),
+                save_fs=(
+                    force_save
+                    or self._db.get(main.__name__, "permanent_modules_fs", False)
+                    and not self._db.get(main.__name__, "disable_modules_fs", False)
+                ),
             )
 
     async def load_module(
@@ -831,9 +846,25 @@ class LoaderMod(loader.Module):
                     None,
                 )
 
+                pack_url = next(
+                    (
+                        line.replace(" ", "").split("#packurl:", maxsplit=1)[1]
+                        for line in doc.splitlines()
+                        if line.replace(" ", "").startswith("#packurl:")
+                    ),
+                    None,
+                )
+
+                if pack_url and (
+                    transations := await self.allmodules.translator.load_module_translations(
+                        pack_url
+                    )
+                ):
+                    instance.strings.external_strings = transations
+
                 if is_dragon:
                     instance.name = (
-                        "Dragon" + notifier.modname[0].upper() + notifier.modname[1:]
+                        f"Dragon{notifier.modname[0].upper()}{notifier.modname[1:]}"
                     )
                     instance.commands = notifier.commands
                     self.allmodules.register_dragon(dragon_module, instance)
@@ -847,15 +878,17 @@ class LoaderMod(loader.Module):
             try:
                 modname = instance.strings("name")
             except (KeyError, AttributeError):
-                modname = getattr(instance, "name", "ERROR")
+                modname = getattr(instance, "name", instance.__class__.__name__)
 
             try:
                 developer_entity = await (
                     self._client.force_get_entity
                     if (
-                        developer in self._client._hikka_entity_cache
+                        developer in self._client.hikka_entity_cache
                         and getattr(
-                            await self._client.get_entity(developer), "left", True
+                            await self._client.get_entity(developer),
+                            "left",
+                            True,
                         )
                     )
                     else self._client.get_entity
@@ -1028,14 +1061,9 @@ class LoaderMod(loader.Module):
         await utils.answer(call, msg())
         await call.answer(self.strings("subscribed"))
 
-    @loader.command(
-        alias="ulm",
-    )
+    @loader.command(alias="ulm")
     async def unloadmod(self, message: Message):
-        """Unload module by class name"""
-        args = utils.get_args_raw(message)
-
-        if not args:
+        if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("no_class"))
             return
 
@@ -1088,7 +1116,6 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def clearmodules(self, message: Message):
-        """Delete all installed modules"""
         await self.inline.form(
             self.strings("confirm_clearmodules"),
             message,
@@ -1106,8 +1133,32 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def addrepo(self, message: Message):
-        """Add a repository to the list of repositories"""
-        if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
+        if not (args := utils.get_args_raw(message)) or (
+            not utils.check_url(args) and not utils.check_url(f"https://{args}")
+        ):
+            await utils.answer(message, self.strings("no_repo"))
+            return
+
+        if args.endswith("/"):
+            args = args[:-1]
+
+        if not args.startswith("https://") and not args.startswith("http://"):
+            args = f"https://{args}"
+
+        try:
+            r = await utils.run_sync(
+                requests.get,
+                f"{args}/full.txt",
+                auth=(
+                    tuple(self.config["basic_auth"].split(":", 1))
+                    if self.config["basic_auth"]
+                    else None
+                ),
+            )
+            r.raise_for_status()
+            if not r.text.strip():
+                raise ValueError
+        except Exception:
             await utils.answer(message, self.strings("no_repo"))
             return
 
@@ -1121,10 +1172,12 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def delrepo(self, message: Message):
-        """Remove a repository from the list of repositories"""
         if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
             await utils.answer(message, self.strings("no_repo"))
             return
+
+        if args.endswith("/"):
+            args = args[:-1]
 
         if args not in self.config["ADDITIONAL_REPOS"]:
             await utils.answer(message, self.strings("repo_not_exists"))
@@ -1173,6 +1226,16 @@ class LoaderMod(loader.Module):
         with contextlib.suppress(AttributeError):
             await self.lookup("Updater").full_restart_complete(self._secure_boot)
 
+    def flush_cache(self) -> int:
+        """Flush the cache of links to modules"""
+        count = sum(map(len, self._links_cache.values()))
+        self._links_cache = {}
+        return count
+
+    def inspect_cache(self) -> int:
+        """Inspect the cache of links to modules"""
+        return sum(map(len, self._links_cache.values()))
+
     async def reload_core(self) -> int:
         """Forcefully reload all core modules"""
         self.fully_loaded = False
@@ -1180,9 +1243,10 @@ class LoaderMod(loader.Module):
         if self._secure_boot:
             self._db.set(loader.__name__, "secure_boot", True)
 
-        for module in self.allmodules.modules:
-            if module.__origin__.startswith("<core"):
-                module.__origin__ = "<reload-core>"
+        if not self._db.get(main.__name__, "remove_core_protection", False):
+            for module in self.allmodules.modules:
+                if module.__origin__.startswith("<core"):
+                    module.__origin__ = "<reload-core>"
 
         loaded = await self.allmodules.register_all(no_external=True)
         for instance in loaded:

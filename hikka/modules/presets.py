@@ -125,7 +125,10 @@ class Presets(loader.Module):
         for i, module in enumerate(PRESETS[preset]):
             await m.edit(
                 self.strings("installing_module").format(
-                    preset, i, len(PRESETS[preset]), module
+                    preset,
+                    i,
+                    len(PRESETS[preset]),
+                    module,
                 )
             )
             try:

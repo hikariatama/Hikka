@@ -25,11 +25,12 @@ from ..web import core
 logger = logging.getLogger(__name__)
 
 ALL_INVOKES = [
-    "clear_entity_cache",
-    "clear_fulluser_cache",
-    "clear_fullchannel_cache",
-    "clear_perms_cache",
-    "clear_cache",
+    "flush_entity_cache",
+    "flush_fulluser_cache",
+    "flush_fullchannel_cache",
+    "flush_perms_cache",
+    "flush_loader_cache",
+    "flush_cache",
     "reload_core",
     "inspect_cache",
     "inspect_modules",
@@ -155,7 +156,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def uninstall_hikka(self, message: Message):
-        """Uninstall Hikka"""
         await self.inline.form(
             self.strings("deauth_confirm"),
             message,
@@ -170,7 +170,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def watchers(self, message: Message):
-        """List current watchers"""
         watchers, disabled_watchers = self.get_watchers()
         watchers = [
             f"♻️ {watcher}"
@@ -184,7 +183,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def watcherbl(self, message: Message):
-        """<module> - Toggle watcher in current chat"""
         if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("args"))
             return
@@ -233,12 +231,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def watchercmd(self, message: Message):
-        """<module> - Toggle global watcher rules
-        Args:
-        [-c - only in chats]
-        [-p - only in pm]
-        [-o - only out]
-        [-i - only incoming]"""
         if not (args := utils.get_args_raw(message)):
             return await utils.answer(message, self.strings("args"))
 
@@ -299,7 +291,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def nonickuser(self, message: Message):
-        """Allow no nickname for certain user"""
         if not (reply := await message.get_reply_message()):
             await utils.answer(message, self.strings("reply_required"))
             return
@@ -321,7 +312,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def nonickchat(self, message: Message):
-        """Allow no nickname in certain chat"""
         if message.is_private:
             await utils.answer(message, self.strings("private_not_allowed"))
             return
@@ -353,7 +343,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def nonickcmdcmd(self, message: Message):
-        """<command> - Allow certain command to be executed without nickname"""
         if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("no_cmd"))
             return
@@ -387,7 +376,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def nonickcmds(self, message: Message):
-        """Returns the list of NoNick commands"""
         if not self._db.get(main.__name__, "nonickcmds", []):
             await utils.answer(message, self.strings("nothing"))
             return
@@ -406,7 +394,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def nonickusers(self, message: Message):
-        """Returns the list of NoNick users"""
         users = []
         for user_id in self._db.get(main.__name__, "nonickusers", []).copy():
             try:
@@ -444,7 +431,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def nonickchats(self, message: Message):
-        """Returns the list of NoNick chats"""
         chats = []
         for chat in self._db.get(main.__name__, "nonickchats", []):
             try:
@@ -517,6 +503,31 @@ class HikkaSettingsMod(loader.Module):
         await call.answer("You userbot is being updated...", show_alert=True)
         await call.delete()
         await self.invoke("update", "-f", peer="me")
+
+    async def _remove_core_protection(self, call: InlineCall):
+        self._db.set(main.__name__, "remove_core_protection", True)
+        await call.edit(self.strings("core_protection_removed"))
+
+    @loader.command()
+    async def remove_core_protection(self, message: Message):
+        if self._db.get(main.__name__, "remove_core_protection", False):
+            await utils.answer(message, self.strings("core_protection_already_removed"))
+            return
+
+        await self.inline.form(
+            message=message,
+            text=self.strings("core_protection_confirm"),
+            reply_markup=[
+                {
+                    "text": self.strings("core_protection_btn"),
+                    "callback": self._remove_core_protection,
+                },
+                {
+                    "text": self.strings("btn_no"),
+                    "action": "close",
+                },
+            ],
+        )
 
     async def inline__restart(
         self,
@@ -714,7 +725,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def settings(self, message: Message):
-        """Show settings menu"""
         await self.inline.form(
             self.strings("inline_settings"),
             message=message,
@@ -723,7 +733,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def weburl(self, message: Message, force: bool = False):
-        """Opens web tunnel to your Hikka web interface"""
         if "LAVHOST" in os.environ:
             form = await self.inline.form(
                 self.strings("lavhost_web"),
@@ -836,7 +845,6 @@ class HikkaSettingsMod(loader.Module):
 
     @loader.command()
     async def invokecmd(self, message: Message):
-        """<module or `core` for built-in methods> <method> - Only for debugging purposes. DO NOT USE IF YOU'RE NOT A DEVELOPER"""
         if not (args := utils.get_args_raw(message)) or len(args.split()) < 2:
             await utils.answer(message, self.strings("no_args"))
             return
@@ -863,33 +871,39 @@ class HikkaSettingsMod(loader.Module):
         result = ""
 
         if module == "core":
-            if method == "clear_entity_cache":
+            if method == "flush_entity_cache":
                 result = (
                     f"Dropped {len(self._client._hikka_entity_cache)} cache records"
                 )
                 self._client._hikka_entity_cache = {}
-            elif method == "clear_fulluser_cache":
+            elif method == "flush_fulluser_cache":
                 result = (
                     f"Dropped {len(self._client._hikka_fulluser_cache)} cache records"
                 )
                 self._client._hikka_fulluser_cache = {}
-            elif method == "clear_fullchannel_cache":
+            elif method == "flush_fullchannel_cache":
                 result = (
                     f"Dropped {len(self._client._hikka_fullchannel_cache)} cache"
                     " records"
                 )
                 self._client._hikka_fullchannel_cache = {}
-            elif method == "clear_perms_cache":
+            elif method == "flush_perms_cache":
                 result = f"Dropped {len(self._client._hikka_perms_cache)} cache records"
                 self._client._hikka_perms_cache = {}
-            elif method == "clear_cache":
+            elif method == "flush_loader_cache":
+                result = (
+                    f"Dropped {await self.lookup('loader').flush_cache()} cache records"
+                )
+            elif method == "flush_cache":
+                count = self.lookup("loader").flush_cache()
                 result = (
                     f"Dropped {len(self._client._hikka_entity_cache)} entity cache"
                     " records\nDropped"
                     f" {len(self._client._hikka_fulluser_cache)} fulluser cache"
                     " records\nDropped"
                     f" {len(self._client._hikka_fullchannel_cache)} fullchannel cache"
-                    " records"
+                    " records\nDropped"
+                    f" {count} loader links cache records"
                 )
                 self._client._hikka_entity_cache = {}
                 self._client._hikka_fulluser_cache = {}
@@ -903,7 +917,9 @@ class HikkaSettingsMod(loader.Module):
                     "Entity cache:"
                     f" {len(self._client._hikka_entity_cache)} records\nFulluser cache:"
                     f" {len(self._client._hikka_fulluser_cache)} records\nFullchannel"
-                    f" cache: {len(self._client._hikka_fullchannel_cache)} records"
+                    " cache:"
+                    f" {len(self._client._hikka_fullchannel_cache)} records\nLoader"
+                    f" links cache: {self.lookup('loader').inspect_cache()} records"
                 )
             elif method == "inspect_modules":
                 result = (

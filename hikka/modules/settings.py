@@ -47,7 +47,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def hikkacmd(self, message: Message):
-        """Get Hikka version"""
         await utils.answer_file(
             message,
             "https://github.com/hikariatama/assets/raw/master/hikka_cat_banner.mp4",
@@ -76,7 +75,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def blacklist(self, message: Message):
-        """[chat_id] [module] - Blacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
         self._db.set(
@@ -89,7 +87,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def unblacklist(self, message: Message):
-        """<chat_id> - Unblacklist the bot from operating somewhere"""
         chatid = await self.blacklistcommon(message)
 
         self._db.set(
@@ -111,7 +108,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def blacklistuser(self, message: Message):
-        """[user_id] - Prevent this user from running any commands"""
         if not (user := await self.getuser(message)):
             await utils.answer(message, self.strings("who_to_blacklist"))
             return
@@ -126,7 +122,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def unblacklistuser(self, message: Message):
-        """[user_id] - Allow this user to run permitted commands"""
         if not (user := await self.getuser(message)):
             await utils.answer(message, self.strings("who_to_unblacklist"))
             return
@@ -144,7 +139,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def setprefix(self, message: Message):
-        """[dragon] <prefix> - Sets command prefix"""
         if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("what_prefix"))
             return
@@ -199,7 +193,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def aliases(self, message: Message):
-        """Print all your aliases"""
         await utils.answer(
             message,
             self.strings("aliases")
@@ -213,10 +206,7 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def addalias(self, message: Message):
-        """Set an alias for a command"""
-        args = utils.get_args(message)
-
-        if len(args) != 2:
+        if len(args := utils.get_args(message)) != 2:
             await utils.answer(message, self.strings("alias_args"))
             return
 
@@ -241,7 +231,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def delalias(self, message: Message):
-        """Remove an alias for a command"""
         args = utils.get_args(message)
 
         if len(args) != 1:
@@ -267,7 +256,6 @@ class CoreMod(loader.Module):
 
     @loader.command()
     async def cleardb(self, message: Message):
-        """Clear the entire database, effectively performing a factory reset"""
         await self.inline.form(
             self.strings("confirm_cleardb"),
             message,

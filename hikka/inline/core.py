@@ -7,6 +7,7 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import contextlib
 import logging
 import time
 import typing
@@ -16,8 +17,10 @@ from aiogram.types import ParseMode
 from aiogram.utils.exceptions import TerminatedByOtherGetUpdates, Unauthorized
 from hikkatl.errors.rpcerrorlist import InputUserDeactivatedError, YouBlockedUserError
 from hikkatl.tl.functions.contacts import UnblockRequest
+from hikkatl.tl.types import Message
 from hikkatl.utils import get_display_name
 
+from .. import utils
 from ..database import Database
 from ..tl_cache import CustomTelegramClient
 from ..translations import Translator
@@ -69,6 +72,7 @@ class InlineManager(
         self._custom_map: typing.Dict[str, callable] = {}
         self.fsm: typing.Dict[str, str] = {}
         self._web_auth_tokens: typing.List[str] = []
+        self._error_events: typing.Dict[str, asyncio.Event] = {}
 
         self._markup_ttl = 60 * 60 * 24
         self.init_complete = False
@@ -216,3 +220,47 @@ class InlineManager(
 
         self._web_auth_tokens.remove(token)
         return True
+
+    async def _invoke_unit(self, unit_id: str, message: Message) -> Message:
+        event = asyncio.Event()
+        self._error_events[unit_id] = event
+
+        q: "InlineResults" = None  # type: ignore  # noqa: F821
+        exception: Exception = None
+
+        async def result_getter():
+            nonlocal unit_id, q
+            with contextlib.suppress(Exception):
+                q = await self._client.inline_query(self.bot_username, unit_id)
+
+        async def event_poller():
+            nonlocal exception
+            await asyncio.wait_for(event.wait(), timeout=10)
+            if self._error_events.get(unit_id):
+                exception = self._error_events[unit_id]
+
+        result_getter_task = asyncio.ensure_future(result_getter())
+        event_poller_task = asyncio.ensure_future(event_poller())
+
+        _, pending = await asyncio.wait(
+            [result_getter_task, event_poller_task],
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+
+        for task in pending:
+            task.cancel()
+
+        self._error_events.pop(unit_id, None)
+
+        if exception:
+            raise exception  # skipcq: PYL-E0702
+
+        if not q:
+            raise Exception("No query results")
+
+        return await q[0].click(
+            utils.get_chat_id(message) if isinstance(message, Message) else message,
+            reply_to=(
+                message.reply_to_msg_id if isinstance(message, Message) else None
+            ),
+        )

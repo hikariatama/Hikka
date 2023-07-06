@@ -39,6 +39,8 @@ from .types import Command
 logger = logging.getLogger(__name__)
 
 OWNER = 1 << 0
+SUDO = 1 << 1
+SUPPORT = 1 << 2
 GROUP_OWNER = 1 << 3
 GROUP_ADMIN_ADD_ADMINS = 1 << 4
 GROUP_ADMIN_CHANGE_INFO = 1 << 5
@@ -80,6 +82,14 @@ DEFAULT_PERMISSIONS = OWNER
 PUBLIC_PERMISSIONS = GROUP_OWNER | GROUP_ADMIN_ANY | GROUP_MEMBER | PM
 
 ALL = (1 << 13) - 1
+
+
+class SecurityGroup(typing.NamedTuple):
+    """Represents a security group"""
+
+    name: str
+    users: typing.List[int]
+    permissions: typing.List[dict]
 
 
 def owner(func: Command) -> Command:
@@ -158,21 +168,21 @@ class SecurityManager:
     def __init__(self, client: CustomTelegramClient, db: Database):
         self._client = client
         self._db = db
-        self._cache = {}
+        self._cache: typing.Dict[int, dict] = {}
+        self._last_warning: int = 0
+        self._sgroups: typing.Dict[str, SecurityGroup] = {}
 
-        self._any_admin = db.get(__name__, "any_admin", False)
-        self._default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
-        self._tsec_chat = db.pointer(__name__, "tsec_chat", [])
-        self._tsec_user = db.pointer(__name__, "tsec_user", [])
-        self._owner = db.pointer(__name__, "owner", [])
+        self._any_admin = self.any_admin = db.get(__name__, "any_admin", False)
+        self._default = self.default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
+        self._tsec_chat = self.tsec_chat = db.pointer(__name__, "tsec_chat", [])
+        self._tsec_user = self.tsec_user = db.pointer(__name__, "tsec_user", [])
+        self._owner = self.owner = db.pointer(__name__, "owner", [])
 
         self._reload_rights()
 
-        self.any_admin = self._any_admin
-        self.default = self._default
-        self.tsec_chat = self._tsec_chat
-        self.tsec_user = self._tsec_user
-        self.owner = self._owner
+    def apply_sgroups(self, sgroups: typing.Dict[str, SecurityGroup]):
+        """Apply security groups"""
+        self._sgroups = sgroups
 
     def _reload_rights(self):
         """
@@ -324,12 +334,39 @@ class SecurityManager:
             for rule in self._tsec_user
         )
 
+    def check_tsec(self, user_id: int, command: str) -> bool:
+        for info in self._sgroups.copy().values():
+            if user_id in info.users:
+                for permission in info.permissions:
+                    if (
+                        permission["rule_type"] == "command"
+                        and permission["rule"] == command
+                        or permission["rule_type"] == "module"
+                        and permission["rule"] == command
+                    ):
+                        return True
+
+        for info in self._tsec_user.copy():
+            if info["target"] == user_id and (
+                info["rule_type"] == "command"
+                and info["rule"] == command
+                or info["rule_type"] == "module"
+                and command in self._client.loader.commands
+                and info["rule"]
+                == self._client.loader.commands[command].__qualname__.split(".")[0]
+            ):
+                return True
+
+        return False
+
     async def check(
         self,
         message: typing.Optional[Message],
         func: typing.Union[Command, int],
         user_id: typing.Optional[int] = None,
         inline_cmd: typing.Optional[str] = None,
+        *,
+        usernames: typing.Optional[typing.List[str]] = None,
     ) -> bool:
         """
         Checks if message sender is permitted to execute certain function
@@ -375,6 +412,19 @@ class SecurityManager:
 
         logger.debug("Checking security match for %s", config)
 
+        if config & SUDO or config & SUPPORT:
+            if not self._last_warning or time.time() - self._last_warning > 60 * 60:
+                import warnings
+
+                warnings.warn(
+                    (
+                        "You are using module containing SUDO or SUPPORT security"
+                        " groups, which are deprecated. It might behave strangely"
+                    ),
+                    DeprecationWarning,
+                )
+                self._last_warning = time.time()
+
         f_group_owner = config & GROUP_OWNER
         f_group_admin_add_admins = config & GROUP_ADMIN_ADD_ADMINS
         f_group_admin_change_info = config & GROUP_ADMIN_CHANGE_INFO
@@ -414,11 +464,34 @@ class SecurityManager:
 
         try:
             cmd = message.raw_text[1:].split()[0].strip()
+            if usernames:
+                for username in usernames:
+                    cmd = cmd.replace(f"@{username}", "")
         except Exception:
             cmd = None
 
         if callable(func):
             command = self._client.loader.find_alias(cmd, include_legacy=True) or cmd
+
+            for info in self._sgroups.copy().values():
+                if user_id in info.users:
+                    for permission in info.permissions:
+                        if (
+                            permission["rule_type"] == "command"
+                            and permission["rule"] == command
+                        ):
+                            logger.debug("sgroup match for %s", command)
+                            return True
+
+                        if (
+                            permission["rule_type"] == "module"
+                            and permission["rule"] == func.__self__.__class__.__name__
+                        ):
+                            logger.debug(
+                                "sgroup match for %s", func.__self__.__class__.__name__
+                            )
+                            return True
+
             for info in self._tsec_user.copy():
                 if info["target"] == user_id:
                     if info["rule_type"] == "command" and info["rule"] == command:

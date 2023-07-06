@@ -46,7 +46,6 @@ class Translations(loader.Module):
 
     @loader.command()
     async def setlang(self, message: Message):
-        """[languages in the order of priority] - Change default language"""
         if not (args := utils.get_args_raw(message)):
             await self.inline.form(
                 message=message,
@@ -65,23 +64,36 @@ class Translations(loader.Module):
             )
             return
 
-        if any(len(i) != 2 for i in args.split()):
+        if any(len(i) != 2 and not utils.check_url(i) for i in args.split()):
             await utils.answer(message, self.strings("incorrect_language"))
             return
 
-        self._db.set(translations.__name__, "lang", args.lower())
+        seen = set()
+        seen_add = seen.add
+        args = " ".join(x for x in args.split() if not (x in seen or seen_add(x)))
+
+        self._db.set(translations.__name__, "lang", args)
         await self.allmodules.reload_translations()
 
         await utils.answer(
             message,
             self.strings("lang_saved").format(
-                "".join([self._get_flag(lang) for lang in args.lower().split()])
+                "".join(
+                    [
+                        (
+                            self._get_flag(lang)
+                            if not utils.check_url(lang)
+                            else "<emoji document_id=5433653135799228968>📁</emoji>"
+                        )
+                        for lang in args.split()
+                    ]
+                )
             )
             + (
                 ("\n\n" + self.strings("not_official"))
                 if any(
                     lang not in translations.SUPPORTED_LANGUAGES
-                    for lang in args.lower().split()
+                    for lang in args.split()
                 )
                 else ""
             ),
@@ -89,18 +101,26 @@ class Translations(loader.Module):
 
     @loader.command()
     async def dllangpackcmd(self, message: Message):
-        """[link to a langpack | empty to remove] - Change Hikka translate pack (external)"""
-        if not (args := utils.get_args_raw(message)):
-            self._db.set(translations.__name__, "pack", False)
-            await self.translator.init()
-            await utils.answer(message, self.strings("lang_removed"))
-            return
-
-        if not utils.check_url(args):
+        if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
             await utils.answer(message, self.strings("check_url"))
             return
 
-        self._db.set(translations.__name__, "pack", args)
+        current_lang = (
+            " ".join(
+                lang
+                for lang in self._db.get(translations.__name__, "lang", None).split()
+                if not utils.check_url(lang)
+            )
+            if self._db.get(translations.__name__, "lang", None)
+            else None
+        )
+
+        self._db.set(
+            translations.__name__,
+            "lang",
+            f"{current_lang} {args}" if current_lang else args,
+        )
+
         await utils.answer(
             message,
             self.strings(

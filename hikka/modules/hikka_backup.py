@@ -69,8 +69,6 @@ class HikkaBackupMod(loader.Module):
             _folder="hikka",
         )
 
-        self.handler.start()
-
     async def _set_backup_period(self, call: BotInlineCall, value: int):
         if not value:
             self.set("period", "disabled")
@@ -86,7 +84,6 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def set_backup_period(self, message: Message):
-        """<time in hours> - Change backup frequency"""
         if (
             not (args := utils.get_args_raw(message))
             or not args.isdigit()
@@ -105,7 +102,7 @@ class HikkaBackupMod(loader.Module):
         self.set("last_backup", round(time.time()))
         await utils.answer(message, f"<b>{self.strings('saved')}</b>")
 
-    @loader.loop(interval=1)
+    @loader.loop(interval=1, autostart=True)
     async def handler(self):
         try:
             if self.get("period") == "disabled":
@@ -139,7 +136,6 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def backupdb(self, message: Message):
-        """Create database backup [will be sent in pm]"""
         txt = io.BytesIO(json.dumps(self._db).encode())
         txt.name = f"db-backup-{datetime.datetime.now():%d-%m-%Y-%H-%M}.json"
         await self._client.send_file(
@@ -153,7 +149,6 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def restoredb(self, message: Message):
-        """Restore database from file"""
         if not (reply := await message.get_reply_message()) or not reply.media:
             await utils.answer(
                 message,
@@ -179,7 +174,6 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def backupmods(self, message: Message):
-        """Create backup of modules"""
         mods_quantity = len(self.lookup("Loader").get("loaded_modules", {}))
 
         result = io.BytesIO()
@@ -190,9 +184,10 @@ class HikkaBackupMod(loader.Module):
         with zipfile.ZipFile(result, "w", zipfile.ZIP_DEFLATED) as zipf:
             for root, _, files in os.walk(loader.LOADED_MODULES_DIR):
                 for file in files:
-                    with open(os.path.join(root, file), "rb") as f:
-                        zipf.writestr(file, f.read())
-                        mods_quantity += 1
+                    if file.endswith(f"{self.tg_id}.py"):
+                        with open(os.path.join(root, file), "rb") as f:
+                            zipf.writestr(file, f.read())
+                            mods_quantity += 1
 
             zipf.writestr("db_mods.json", db_mods)
 
@@ -202,12 +197,14 @@ class HikkaBackupMod(loader.Module):
         await utils.answer_file(
             message,
             archive,
-            caption=self.strings("modules_backup").format(mods_quantity),
+            caption=self.strings("modules_backup").format(
+                mods_quantity,
+                utils.escape_html(self.get_prefix()),
+            ),
         )
 
     @loader.command()
     async def restoremods(self, message: Message):
-        """<reply to file> - Restore modules from backup"""
         if not (reply := await message.get_reply_message()) or not reply.media:
             await utils.answer(message, self.strings("reply_to_file"))
             return
@@ -221,22 +218,25 @@ class HikkaBackupMod(loader.Module):
                 file.name = "mods.zip"
 
                 with zipfile.ZipFile(file) as zf:
-                    for name in zf.namelist():
-                        with zf.open(name, "r") as module:
-                            content = module.read()
-
-                        if name != "db_mods.json":
-                            (
-                                loader.LOADED_MODULES_DIR_PATH / Path(name).name
-                            ).write_bytes(content)
-                            continue
-
-                        db_mods = json.loads(content.decode())
+                    with zf.open("db_mods.json", "r") as modules:
+                        db_mods = json.loads(modules.read().decode())
                         if isinstance(db_mods, dict) and all(
-                            isinstance(key, str) and isinstance(value, str)
+                            (
+                                isinstance(key, str)
+                                and isinstance(value, str)
+                                and utils.check_url(value)
+                            )
                             for key, value in db_mods.items()
                         ):
                             self.lookup("Loader").set("loaded_modules", db_mods)
+
+                    for name in zf.namelist():
+                        if name == "db_mods.json":
+                            continue
+
+                        path = loader.LOADED_MODULES_PATH / Path(name).name
+                        with zf.open(name, "r") as module:
+                            path.write_bytes(module.read())
             except Exception:
                 logger.exception("Unable to restore modules")
                 await utils.answer(message, self.strings("reply_to_file"))

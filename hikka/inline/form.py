@@ -337,37 +337,28 @@ class Form(InlineUnit):
             if isinstance(message, Message):
                 await (message.edit if message.out else message.respond)(
                     msg,
-                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                    **({} if message.out else {"reply_to": utils.get_topic(message)}),
                 )
             else:
                 await self._client.send_message(message, msg)
 
         try:
-            q = await self._client.inline_query(self.bot_username, unit_id)
-            m = await q[0].click(
-                utils.get_chat_id(message) if isinstance(message, Message) else message,
-                reply_to=(
-                    message.reply_to_msg_id if isinstance(message, Message) else None
-                ),
-            )
+            m = await self._invoke_unit(unit_id, message)
         except ChatSendInlineForbiddenError:
             await answer(self.translator.getkey("inline.inline403"))
         except Exception:
             logger.exception("Can't send form")
 
-            if not self._db.get(main.__name__, "inlinelogs", True):
-                msg = self.translator.getkey("inline.invoke_failed")
-            else:
-                exc = traceback.format_exc()
-                # Remove `Traceback (most recent call last):`
-                exc = "\n".join(exc.splitlines()[1:])
-                msg = (
-                    "<b>🚫 Form invoke failed!</b>\n\n"
-                    f"<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
-                )
-
             del self._units[unit_id]
-            await answer(msg)
+            await answer(
+                self.translator.getkey("inline.invoke_failed_logs").format(
+                    utils.escape_html(
+                        "\n".join(traceback.format_exc().splitlines()[1:])
+                    )
+                )
+                if self._db.get(main.__name__, "inlinelogs", True)
+                else self.translator.getkey("inline.invoke_failed")
+            )
 
             return False
 
@@ -443,130 +434,135 @@ class Form(InlineUnit):
             return
 
         form = self._units[inline_query.query]
-        if "photo" in form:
-            await inline_query.answer(
-                [
-                    InlineQueryResultPhoto(
-                        id=utils.rand(20),
-                        title="Hikka",
-                        description="Hikka",
-                        caption=form.get("text"),
-                        parse_mode="HTML",
-                        photo_url=form["photo"],
-                        thumb_url=(
-                            "https://img.icons8.com/cotton/452/moon-satellite.png"
-                        ),
-                        reply_markup=self.generate_markup(
-                            form["uid"],
-                        ),
-                    )
-                ],
-                cache_time=0,
-            )
-        elif "gif" in form:
-            await inline_query.answer(
-                [
-                    InlineQueryResultGif(
-                        id=utils.rand(20),
-                        title="Hikka",
-                        caption=form.get("text"),
-                        parse_mode="HTML",
-                        gif_url=form["gif"],
-                        thumb_url=(
-                            "https://img.icons8.com/cotton/452/moon-satellite.png"
-                        ),
-                        reply_markup=self.generate_markup(
-                            form["uid"],
-                        ),
-                    )
-                ],
-                cache_time=0,
-            )
-        elif "video" in form:
-            await inline_query.answer(
-                [
-                    InlineQueryResultVideo(
-                        id=utils.rand(20),
-                        title="Hikka",
-                        description="Hikka",
-                        caption=form.get("text"),
-                        parse_mode="HTML",
-                        video_url=form["video"],
-                        thumb_url=(
-                            "https://img.icons8.com/cotton/452/moon-satellite.png"
-                        ),
-                        mime_type="video/mp4",
-                        reply_markup=self.generate_markup(
-                            form["uid"],
-                        ),
-                    )
-                ],
-                cache_time=0,
-            )
-        elif "file" in form:
-            await inline_query.answer(
-                [
-                    InlineQueryResultDocument(
-                        id=utils.rand(20),
-                        title="Hikka",
-                        description="Hikka",
-                        caption=form.get("text"),
-                        parse_mode="HTML",
-                        document_url=form["file"],
-                        mime_type=form["mime_type"],
-                        reply_markup=self.generate_markup(
-                            form["uid"],
-                        ),
-                    )
-                ],
-                cache_time=0,
-            )
-        elif "location" in form:
-            await inline_query.answer(
-                [
-                    InlineQueryResultLocation(
-                        id=utils.rand(20),
-                        latitude=form["location"][0],
-                        longitude=form["location"][1],
-                        title="Hikka",
-                        reply_markup=self.generate_markup(
-                            form["uid"],
-                        ),
-                    )
-                ],
-                cache_time=0,
-            )
-        elif "audio" in form:
-            await inline_query.answer(
-                [
-                    InlineQueryResultAudio(
-                        id=utils.rand(20),
-                        audio_url=form["audio"]["url"],
-                        caption=form.get("text"),
-                        parse_mode="HTML",
-                        title=form["audio"].get("title", "Hikka"),
-                        performer=form["audio"].get("performer"),
-                        audio_duration=form["audio"].get("duration"),
-                        reply_markup=self.generate_markup(
-                            form["uid"],
-                        ),
-                    )
-                ],
-                cache_time=0,
-            )
-        else:
-            await inline_query.answer(
-                [
-                    InlineQueryResultArticle(
-                        id=utils.rand(20),
-                        title="Hikka",
-                        input_message_content=InputTextMessageContent(
-                            form["text"],
-                            "HTML",
-                            disable_web_page_preview=True,
-                        ),
-                        reply_markup=self.generate_markup(inline_query.query),
-                    )
-                ],
-                cache_time=0,
-            )
+        try:
+            if "photo" in form:
+                await inline_query.answer(
+                    [
+                        InlineQueryResultPhoto(
+                            id=utils.rand(20),
+                            title="Hikka",
+                            description="Hikka",
+                            caption=form.get("text"),
+                            parse_mode="HTML",
+                            photo_url=form["photo"],
+                            thumb_url=(
+                                "https://img.icons8.com/cotton/452/moon-satellite.png"
+                            ),
+                            reply_markup=self.generate_markup(
+                                form["uid"],
+                            ),
+                        )
+                    ],
+                    cache_time=0,
+                )
+            elif "gif" in form:
+                await inline_query.answer(
+                    [
+                        InlineQueryResultGif(
+                            id=utils.rand(20),
+                            title="Hikka",
+                            caption=form.get("text"),
+                            parse_mode="HTML",
+                            gif_url=form["gif"],
+                            thumb_url=(
+                                "https://img.icons8.com/cotton/452/moon-satellite.png"
+                            ),
+                            reply_markup=self.generate_markup(
+                                form["uid"],
+                            ),
+                        )
+                    ],
+                    cache_time=0,
+                )
+            elif "video" in form:
+                await inline_query.answer(
+                    [
+                        InlineQueryResultVideo(
+                            id=utils.rand(20),
+                            title="Hikka",
+                            description="Hikka",
+                            caption=form.get("text"),
+                            parse_mode="HTML",
+                            video_url=form["video"],
+                            thumb_url=(
+                                "https://img.icons8.com/cotton/452/moon-satellite.png"
+                            ),
+                            mime_type="video/mp4",
+                            reply_markup=self.generate_markup(
+                                form["uid"],
+                            ),
+                        )
+                    ],
+                    cache_time=0,
+                )
+            elif "file" in form:
+                await inline_query.answer(
+                    [
+                        InlineQueryResultDocument(
+                            id=utils.rand(20),
+                            title="Hikka",
+                            description="Hikka",
+                            caption=form.get("text"),
+                            parse_mode="HTML",
+                            document_url=form["file"],
+                            mime_type=form["mime_type"],
+                            reply_markup=self.generate_markup(
+                                form["uid"],
+                            ),
+                        )
+                    ],
+                    cache_time=0,
+                )
+            elif "location" in form:
+                await inline_query.answer(
+                    [
+                        InlineQueryResultLocation(
+                            id=utils.rand(20),
+                            latitude=form["location"][0],
+                            longitude=form["location"][1],
+                            title="Hikka",
+                            reply_markup=self.generate_markup(
+                                form["uid"],
+                            ),
+                        )
+                    ],
+                    cache_time=0,
+                )
+            elif "audio" in form:
+                await inline_query.answer(
+                    [
+                        InlineQueryResultAudio(
+                            id=utils.rand(20),
+                            audio_url=form["audio"]["url"],
+                            caption=form.get("text"),
+                            parse_mode="HTML",
+                            title=form["audio"].get("title", "Hikka"),
+                            performer=form["audio"].get("performer"),
+                            audio_duration=form["audio"].get("duration"),
+                            reply_markup=self.generate_markup(
+                                form["uid"],
+                            ),
+                        )
+                    ],
+                    cache_time=0,
+                )
+            else:
+                await inline_query.answer(
+                    [
+                        InlineQueryResultArticle(
+                            id=utils.rand(20),
+                            title="Hikka",
+                            input_message_content=InputTextMessageContent(
+                                form["text"],
+                                "HTML",
+                                disable_web_page_preview=True,
+                            ),
+                            reply_markup=self.generate_markup(inline_query.query),
+                        )
+                    ],
+                    cache_time=0,
+                )
+        except Exception as e:
+            if form["uid"] in self._error_events:
+                self._error_events[form["uid"]].set()
+                self._error_events[form["uid"]] = e

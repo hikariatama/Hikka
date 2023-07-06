@@ -60,14 +60,33 @@ class BaseTranslator:
         if suffix == ".json":
             return json.loads(content)
 
+        content = yaml.load(content)
+        if all(len(key) == 2 for key in content):
+            return {
+                language: {
+                    {
+                        (
+                            f"{module.strip('$')}.{key}"
+                            if module.startswith("$")
+                            else f"{prefix}{module}.{key}"
+                        ): value
+                        for module, strings in pack.items()
+                        for key, value in strings.items()
+                        if key != "name"
+                    }
+                }
+                for language, pack in content.items()
+            }
+
         return {
             (
                 f"{module.strip('$')}.{key}"
                 if module.startswith("$")
                 else f"{prefix}{module}.{key}"
             ): value
-            for module, strings in yaml.load(content).items()
+            for module, strings in content.items()
             for key, value in strings.items()
+            if key != "name"
         }
 
     def getkey(self, key: str) -> typing.Any:
@@ -75,6 +94,24 @@ class BaseTranslator:
 
     def gettext(self, text: str) -> typing.Any:
         return self.getkey(text) or text
+
+    async def load_module_translations(self, pack_url: str) -> typing.Union[bool, dict]:
+        try:
+            data = yaml.load((await utils.run_sync(requests.get, pack_url)).text)
+        except Exception:
+            logger.exception("Unable to decode %s", pack_url)
+            return False
+
+        if any(len(key) != 2 for key in data):
+            return data
+
+        if lang := self.db.get(__name__, "lang", False):
+            return next(
+                (data[language] for language in lang.split() if language in data),
+                data.get("en", {}),
+            )
+
+        return data.get("en", {})
 
 
 class Translator(BaseTranslator):
@@ -86,36 +123,34 @@ class Translator(BaseTranslator):
 
     async def init(self) -> bool:
         self._data = self._get_pack_content(PACKS / "en.yml")
-        self.raw_data["en"] = self._data
-        if not (lang := self.db.get(__name__, "lang", False)):
-            return False
-
+        self.raw_data["en"] = self._data.copy()
         any_ = False
-        for language in lang.split():
-            if utils.check_url(language):
-                try:
-                    data = self._get_pack_raw(
-                        (await utils.run_sync(requests.get, language)).text,
-                        language.split(".")[-1],
-                    )
-                except Exception:
-                    logger.exception("Unable to decode %s", language)
-                    continue
+        if lang := self.db.get(__name__, "lang", False):
+            for language in lang.split():
+                if utils.check_url(language):
+                    try:
+                        data = self._get_pack_raw(
+                            (await utils.run_sync(requests.get, language)).text,
+                            language.split(".")[-1],
+                        )
+                    except Exception:
+                        logger.exception("Unable to decode %s", language)
+                        continue
 
-                self._data.update(data)
-                self.raw_data[language] = data
-                any_ = True
-                continue
-
-            for possible_path in [
-                PACKS / f"{language}.json",
-                PACKS / f"{language}.yml",
-            ]:
-                if possible_path.exists():
-                    data = self._get_pack_content(possible_path)
                     self._data.update(data)
                     self.raw_data[language] = data
                     any_ = True
+                    continue
+
+                for possible_path in [
+                    PACKS / f"{language}.json",
+                    PACKS / f"{language}.yml",
+                ]:
+                    if possible_path.exists():
+                        data = self._get_pack_content(possible_path)
+                        self._data.update(data)
+                        self.raw_data[language] = data
+                        any_ = True
 
         for language in SUPPORTED_LANGUAGES:
             if language not in self.raw_data and (PACKS / f"{language}.yml").exists():
@@ -151,6 +186,7 @@ class Strings:
             logger.debug("Module %s got empty translator %s", mod, translator)
 
         self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
+        self.external_strings = {}
 
     def get(self, key: str, lang: typing.Optional[str] = None) -> str:
         try:
@@ -160,33 +196,37 @@ class Strings:
 
     def __getitem__(self, key: str) -> str:
         return (
-            self._translator.getkey(f"{self._mod.__module__}.{key}")
-            if self._translator is not None
-            else False
-        ) or (
-            getattr(
-                self._mod,
-                next(
-                    (
-                        f"strings_{lang}"
-                        for lang in self._translator.db.get(
-                            __name__,
-                            "lang",
-                            "en",
-                        ).split(" ")
-                        if hasattr(self._mod, f"strings_{lang}")
-                        and isinstance(getattr(self._mod, f"strings_{lang}"), dict)
-                        and key in getattr(self._mod, f"strings_{lang}")
-                    ),
-                    utils.rand(32),
-                ),
-                self._base_strings,
+            self.external_strings.get(key, None)
+            or (
+                self._translator.getkey(f"{self._mod.__module__}.{key}")
+                if self._translator is not None
+                else False
             )
-            if self._translator is not None
-            else self._base_strings
-        ).get(
-            key,
-            self._base_strings.get(key, "Unknown strings"),
+            or (
+                getattr(
+                    self._mod,
+                    next(
+                        (
+                            f"strings_{lang}"
+                            for lang in self._translator.db.get(
+                                __name__,
+                                "lang",
+                                "en",
+                            ).split(" ")
+                            if hasattr(self._mod, f"strings_{lang}")
+                            and isinstance(getattr(self._mod, f"strings_{lang}"), dict)
+                            and key in getattr(self._mod, f"strings_{lang}")
+                        ),
+                        utils.rand(32),
+                    ),
+                    self._base_strings,
+                )
+                if self._translator is not None
+                else self._base_strings
+            ).get(
+                key,
+                self._base_strings.get(key, "Unknown strings"),
+            )
         )
 
     def __call__(

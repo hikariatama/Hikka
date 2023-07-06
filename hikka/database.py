@@ -24,9 +24,26 @@ from hikkatl.errors.rpcerrorlist import ChannelsTooMuchError
 from hikkatl.tl.types import Message, User
 
 from . import main, utils
-from .pointers import PointerDict, PointerList
+from .pointers import (
+    BaseSerializingMiddlewareDict,
+    BaseSerializingMiddlewareList,
+    NamedTupleMiddlewareDict,
+    NamedTupleMiddlewareList,
+    PointerDict,
+    PointerList,
+)
 from .tl_cache import CustomTelegramClient
 from .types import JSONSerializable
+
+__all__ = [
+    "Database",
+    "PointerList",
+    "PointerDict",
+    "NamedTupleMiddlewareDict",
+    "NamedTupleMiddlewareList",
+    "BaseSerializingMiddlewareDict",
+    "BaseSerializingMiddlewareList",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -287,6 +304,7 @@ class Database(dict):
         owner: str,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
+        item_type: typing.Optional[typing.Any] = None,
     ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
         """Get a pointer to database key"""
         value = self.get(owner, key, default)
@@ -305,5 +323,31 @@ class Database(dict):
             raise ValueError(
                 f"Pointer for type {type(value).__name__} is not implemented"
             )
+
+        if item_type is not None:
+            if isinstance(value, list):
+                for item in self.get(owner, key, default):
+                    if not isinstance(item, dict):
+                        raise ValueError(
+                            "Item type can only be specified for dedicated keys and"
+                            " can't be mixed with other ones"
+                        )
+
+                return NamedTupleMiddlewareList(
+                    pointer_constructor(self, owner, key, default),
+                    item_type,
+                )
+            if isinstance(value, dict):
+                for item in self.get(owner, key, default).values():
+                    if not isinstance(item, dict):
+                        raise ValueError(
+                            "Item type can only be specified for dedicated keys and"
+                            " can't be mixed with other ones"
+                        )
+
+                return NamedTupleMiddlewareDict(
+                    pointer_constructor(self, owner, key, default),
+                    item_type,
+                )
 
         return pointer_constructor(self, owner, key, default)

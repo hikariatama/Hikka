@@ -64,6 +64,13 @@ class TestMod(loader.Module):
                 ),
                 on_change=self._pass_config_to_logger,
             ),
+            loader.ConfigValue(
+                "ignore_common",
+                True,
+                "Ignore common errors (e.g. 'TypeError' in telethon)",
+                validator=loader.validators.Boolean(),
+                on_change=self._pass_config_to_logger,
+            ),
         )
 
     def _pass_config_to_logger(self):
@@ -74,10 +81,10 @@ class TestMod(loader.Module):
             "ERROR": 40,
             "CRITICAL": 50,
         }[self.config["tglog_level"]]
+        logging.getLogger().handlers[0].ignore_common = self.config["ignore_common"]
 
     @loader.command()
     async def dump(self, message: Message):
-        """Use in reply to get a dump of a message"""
         if not message.is_reply:
             return
 
@@ -90,7 +97,6 @@ class TestMod(loader.Module):
 
     @loader.command()
     async def clearlogs(self, message: Message):
-        """Clear logs"""
         for handler in logging.getLogger().handlers:
             handler.buffer = []
             handler.handledbuffer = []
@@ -136,8 +142,6 @@ class TestMod(loader.Module):
 
     @loader.command()
     async def debugmod(self, message: Message):
-        """[module] - For developers: Open module for debugging
-        You will be able to track changes in real-time"""
         args = utils.get_args_raw(message)
         instance = None
         for module in self.allmodules.modules:
@@ -195,7 +199,6 @@ class TestMod(loader.Module):
         force: bool = False,
         lvl: typing.Union[int, None] = None,
     ):
-        """<level> - Dump logs"""
         if not isinstance(lvl, int):
             args = utils.get_args_raw(message)
             try:
@@ -333,7 +336,6 @@ class TestMod(loader.Module):
 
     @loader.command()
     async def suspend(self, message: Message):
-        """<time> - Suspends the bot for N seconds"""
         try:
             time_sleep = float(utils.get_args_raw(message))
             await utils.answer(
@@ -346,7 +348,6 @@ class TestMod(loader.Module):
 
     @loader.command()
     async def ping(self, message: Message):
-        """Test your userbot ping"""
         start = time.perf_counter_ns()
         message = await utils.answer(message, "🌘")
 
@@ -373,9 +374,9 @@ class TestMod(loader.Module):
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-logs.png",
         )
 
-        self._logchat = int(f"-100{chat.id}")
+        self.logchat = int(f"-100{chat.id}")
 
         logging.getLogger().handlers[0].install_tg_log(self)
-        logger.debug("Bot logging installed for %s", self._logchat)
+        logger.debug("Bot logging installed for %s", self.logchat)
 
         self._pass_config_to_logger()

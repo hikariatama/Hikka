@@ -61,19 +61,19 @@ class HikkaInfoMod(loader.Module):
 
         platform = utils.get_named_platform()
 
-        for emoji, icon in {
-            "🍊": "<emoji document_id=5449599833973203438>🧡</emoji>",
-            "🍇": "<emoji document_id=5449468596952507859>💜</emoji>",
-            "❓": "<emoji document_id=5407025283456835913>📱</emoji>",
-            "🍀": "<emoji document_id=5395325195542078574>🍀</emoji>",
-            "🦾": "<emoji document_id=5386766919154016047>🦾</emoji>",
-            "🚂": "<emoji document_id=5359595190807962128>🚂</emoji>",
-            "🐳": "<emoji document_id=5431815452437257407>🐳</emoji>",
-            "🕶": "<emoji document_id=5407025283456835913>📱</emoji>",
-            "🐈‍⬛": "<emoji document_id=6334750507294262724>🐈‍⬛</emoji>",
-            "✌️": "<emoji document_id=5469986291380657759>✌️</emoji>",
-            "📻": "<emoji document_id=5471952986970267163>💎</emoji>",
-        }.items():
+        for emoji, icon in [
+            ("🍊", "<emoji document_id=5449599833973203438>🧡</emoji>"),
+            ("🍇", "<emoji document_id=5449468596952507859>💜</emoji>"),
+            ("❓", "<emoji document_id=5407025283456835913>📱</emoji>"),
+            ("🍀", "<emoji document_id=5395325195542078574>🍀</emoji>"),
+            ("🦾", "<emoji document_id=5386766919154016047>🦾</emoji>"),
+            ("🚂", "<emoji document_id=5359595190807962128>🚂</emoji>"),
+            ("🐳", "<emoji document_id=5431815452437257407>🐳</emoji>"),
+            ("🕶", "<emoji document_id=5407025283456835913>📱</emoji>"),
+            ("🐈‍⬛", "<emoji document_id=6334750507294262724>🐈‍⬛</emoji>"),
+            ("✌️", "<emoji document_id=5469986291380657759>✌️</emoji>"),
+            ("📻", "<emoji document_id=5471952986970267163>💎</emoji>"),
+        ]:
             platform = platform.replace(emoji, icon)
 
         return (
@@ -162,8 +162,6 @@ class HikkaInfoMod(loader.Module):
 
     @loader.command()
     async def infocmd(self, message: Message):
-        """Send userbot info"""
-
         if self.config["custom_button"]:
             await self.inline.form(
                 message=message,
@@ -184,12 +182,10 @@ class HikkaInfoMod(loader.Module):
 
     @loader.command()
     async def hikkainfo(self, message: Message):
-        """Send info aka 'What is Hikka?'"""
         await utils.answer(message, self.strings("desc"))
 
     @loader.command()
     async def setinfo(self, message: Message):
-        """<text> - Change text in .info"""
         if not (args := utils.get_args_html(message)):
             return await utils.answer(message, self.strings("setinfo_no_args"))
 

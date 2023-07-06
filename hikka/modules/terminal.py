@@ -225,7 +225,7 @@ class SudoMessageEditor(MessageEditor):
         if self.authmsg is None:
             return
 
-        logger.debug(f"got message edit update in self {str(message.id)}")
+        logger.debug("got message edit update in self %s", str(message.id))
 
         if hash_msg(message) == hash_msg(self.authmsg):
             # The user has provided interactive authentication. Send password to stdin for sudo.
@@ -312,12 +312,10 @@ class TerminalMod(loader.Module):
 
     @loader.command()
     async def terminalcmd(self, message):
-        """<command> - Execute bash command"""
         await self.run_command(message, utils.get_args_raw(message))
 
     @loader.command()
     async def aptcmd(self, message):
-        """Shorthand for '.terminal apt'"""
         await self.run_command(
             message,
             ("apt " if os.geteuid() == 0 else "sudo -S apt ")
@@ -387,7 +385,6 @@ class TerminalMod(loader.Module):
 
     @loader.command()
     async def terminatecmd(self, message):
-        """[-f to force kill] - Use in reply to send SIGTERM to a process"""
         if not message.is_reply:
             await utils.answer(message, self.strings("what_to_kill"))
             return

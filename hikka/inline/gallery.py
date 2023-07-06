@@ -276,19 +276,13 @@ class Gallery(InlineUnit):
             if isinstance(message, Message):
                 await (message.edit if message.out else message.respond)(
                     msg,
-                    **({"reply_to": utils.get_topic(message)} if message.out else {}),
+                    **({} if message.out else {"reply_to": utils.get_topic(message)}),
                 )
             else:
                 await self._client.send_message(message, msg)
 
         try:
-            q = await self._client.inline_query(self.bot_username, unit_id)
-            m = await q[0].click(
-                utils.get_chat_id(message) if isinstance(message, Message) else message,
-                reply_to=(
-                    message.reply_to_msg_id if isinstance(message, Message) else None
-                ),
-            )
+            m = await self._invoke_unit(unit_id, message)
         except ChatSendInlineForbiddenError:
             await answer(self.translator.getkey("inline.inline403"))
         except Exception:
@@ -299,19 +293,16 @@ class Gallery(InlineUnit):
             if _reattempt:
                 logger.exception("Can't send gallery")
 
-                if not self._db.get(main.__name__, "inlinelogs", True):
-                    msg = self.translator.getkey("inline.invoke_failed")
-                else:
-                    exc = traceback.format_exc()
-                    # Remove `Traceback (most recent call last):`
-                    exc = "\n".join(exc.splitlines()[1:])
-                    msg = (
-                        "<b>🚫 Gallery invoke failed!</b>\n\n"
-                        f"<b>🧾 Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
-                    )
-
                 del self._units[unit_id]
-                await answer(msg)
+                await answer(
+                    self.translator.getkey("inline.invoke_failed_logs").format(
+                        utils.escape_html(
+                            "\n".join(traceback.format_exc().splitlines()[1:])
+                        )
+                    )
+                    if self._db.get(main.__name__, "inlinelogs", True)
+                    else self.translator.getkey("inline.invoke_failed")
+                )
 
                 return False
 
@@ -633,7 +624,9 @@ class Gallery(InlineUnit):
                                 [
                                     {
                                         "text": (
-                                            "🛑" if unit.get("slideshow", False) else "⏱"
+                                            "🛑"
+                                            if unit.get("slideshow", False)
+                                            else "⏱"
                                         ),
                                         "callback": callback,
                                         "args": ("slideshow",),
@@ -674,27 +667,32 @@ class Gallery(InlineUnit):
                 and unit["type"] == "gallery"
             ):
                 try:
-                    path = urlparse(unit["photo_url"]).path
-                    ext = os.path.splitext(path)[1]
-                except Exception:
-                    ext = None
+                    try:
+                        path = urlparse(unit["photo_url"]).path
+                        ext = os.path.splitext(path)[1]
+                    except Exception:
+                        ext = None
 
-                args = {
-                    "thumb_url": "https://img.icons8.com/fluency/344/loading.png",
-                    "caption": self._get_caption(unit["uid"], index=0),
-                    "parse_mode": "HTML",
-                    "reply_markup": self._gallery_markup(unit["uid"]),
-                    "id": utils.rand(20),
-                    "title": "Processing inline gallery",
-                }
+                    args = {
+                        "thumb_url": "https://img.icons8.com/fluency/344/loading.png",
+                        "caption": self._get_caption(unit["uid"], index=0),
+                        "parse_mode": "HTML",
+                        "reply_markup": self._gallery_markup(unit["uid"]),
+                        "id": utils.rand(20),
+                        "title": "Processing inline gallery",
+                    }
 
-                if unit.get("gif", False) or ext in {".gif", ".mp4"}:
+                    if unit.get("gif", False) or ext in {".gif", ".mp4"}:
+                        await inline_query.answer(
+                            [InlineQueryResultGif(gif_url=unit["photo_url"], **args)]
+                        )
+                        return
+
                     await inline_query.answer(
-                        [InlineQueryResultGif(gif_url=unit["photo_url"], **args)]
+                        [InlineQueryResultPhoto(photo_url=unit["photo_url"], **args)],
+                        cache_time=0,
                     )
-                    return
-
-                await inline_query.answer(
-                    [InlineQueryResultPhoto(photo_url=unit["photo_url"], **args)],
-                    cache_time=0,
-                )
+                except Exception as e:
+                    if unit["uid"] in self._error_events:
+                        self._error_events[unit["uid"]].set()
+                        self._error_events[unit["uid"]] = e

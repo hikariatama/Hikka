@@ -41,7 +41,7 @@ class Brainfuck:
         had_error = self._eval(code)
 
         if had_error:
-            return
+            return ""
 
         self._interpret(code)
         return self.out
@@ -149,7 +149,6 @@ class Evaluator(loader.Module):
 
     @loader.command(alias="eval")
     async def e(self, message: Message):
-        """Evaluates python code"""
         try:
             result = await meval(
                 utils.get_args_raw(message),
@@ -193,7 +192,6 @@ class Evaluator(loader.Module):
 
     @loader.command()
     async def ecpp(self, message: Message, c: bool = False):
-        """Evaluates C++ code"""
         try:
             subprocess.check_output(
                 ["gcc" if c else "g++", "--version"],
@@ -250,12 +248,10 @@ class Evaluator(loader.Module):
 
     @loader.command()
     async def ec(self, message: Message):
-        """Evaluates C code"""
         await self.ecpp(message, c=True)
 
     @loader.command()
     async def enode(self, message: Message):
-        """Evaluates Node.js code"""
         try:
             subprocess.check_output(
                 ["node", "--version"],
@@ -300,7 +296,6 @@ class Evaluator(loader.Module):
 
     @loader.command()
     async def ephp(self, message: Message):
-        """Evaluates PHP code"""
         try:
             subprocess.check_output(
                 ["php", "--version"],
@@ -345,7 +340,6 @@ class Evaluator(loader.Module):
 
     @loader.command()
     async def eruby(self, message: Message):
-        """Evaluates Ruby code"""
         try:
             subprocess.check_output(
                 ["ruby", "--version"],
@@ -390,7 +384,6 @@ class Evaluator(loader.Module):
 
     @loader.command()
     async def ebf(self, message: Message):
-        """Evaluates Brainf*ck code"""
         code = utils.get_args_raw(message)
         if "-debug" in code:
             code = code.replace("-debug", "")
@@ -451,27 +444,25 @@ class Evaluator(loader.Module):
     async def getattrs(self, message: Message) -> dict:
         reply = await message.get_reply_message()
         return {
-            **{
-                "message": message,
-                "client": self._client,
-                "reply": reply,
-                "r": reply,
-                **self.get_sub(hikkatl.tl.types),
-                **self.get_sub(hikkatl.tl.functions),
-                "event": message,
-                "chat": message.to_id,
-                "hikkatl": hikkatl,
-                "telethon": hikkatl,
-                "utils": utils,
-                "main": main,
-                "loader": loader,
-                "f": hikkatl.tl.functions,
-                "c": self._client,
-                "m": message,
-                "lookup": self.lookup,
-                "self": self,
-                "db": self.db,
-            },
+            "message": message,
+            "client": self._client,
+            "reply": reply,
+            "r": reply,
+            **self.get_sub(hikkatl.tl.types),
+            **self.get_sub(hikkatl.tl.functions),
+            "event": message,
+            "chat": message.to_id,
+            "hikkatl": hikkatl,
+            "telethon": hikkatl,
+            "utils": utils,
+            "main": main,
+            "loader": loader,
+            "f": hikkatl.tl.functions,
+            "c": self._client,
+            "m": message,
+            "lookup": self.lookup,
+            "self": self,
+            "db": self.db,
         }
 
     def get_sub(self, obj: typing.Any, _depth: int = 1) -> dict:

@@ -38,7 +38,7 @@ class Events(InlineUnit):
             if (
                 not hasattr(mod, "aiogram_watcher")
                 or message.text == "/start"
-                and mod.__class__.__name__ != "InlineStuffMod"
+                and mod.__class__.__name__ != "InlineStuff"
             ):
                 continue
 

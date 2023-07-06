@@ -17,7 +17,7 @@ from hikkapyro import Client as PyroClient
 from hikkapyro import errors as pyro_errors
 from hikkapyro import raw
 
-from .. import translations, utils
+from .. import utils
 from ..tl_cache import CustomTelegramClient
 from ..version import __version__
 
@@ -56,19 +56,13 @@ class PyroProxyClient(PyroClient):
     def __init__(self, tl_client: CustomTelegramClient):
         self.tl_client = tl_client
         super().__init__(
-            **{
-                "name": "proxied_pyrogram_client",
-                "api_id": tl_client.api_id,
-                "api_hash": tl_client.api_hash,
-                "app_version": (
-                    f"Hikka v{__version__[0]}.{__version__[1]}.{__version__[2]}"
-                ),
-                "lang_code": tl_client.loader.db.get(
-                    translations.__name__, "lang", "en"
-                ).split()[0],
-                "in_memory": True,
-                "phone_number": tl_client.hikka_me.phone,
-            }
+            name="proxied_pyrogram_client",
+            api_id=tl_client.api_id,
+            api_hash=tl_client.api_hash,
+            app_version=".".join(map(str, __version__)) + " x64",
+            lang_code="en",
+            in_memory=True,
+            phone_number=tl_client.hikka_me.phone,
         )
 
         # We need to set this to True so pyro thinks he's connected
