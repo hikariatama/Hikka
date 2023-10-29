@@ -161,9 +161,9 @@ terminal:
     no_cmd: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bu mesajda çalışan bir komut yok</b>"
     running: "<emoji document_id=5472111548572900003>⌨️</emoji><b> Sistem komutu</b> <code>{}</code>"
     finished: "\n<b>Çıkış kodu</b> <code>{}</code>"
-    stdout: "\n<b>📼 Stdout:</b>\n<code>"
-    stderr: "</code>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Stderr:</b>\n<code>"
-    end: "</code>"
+    stdout: "\n<b>📼 Stdout:</b>\n<pre><code class=\"language-stdout\">"
+    stderr: "</code></pre>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Stderr:</b>\n<pre><code class=\"language-stderr\">"
+    end: "</code></pre>"
     auth_fail: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Kimlik doğrulama başarısız, lütfen tekrar deneyin</b>"
     auth_needed: '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}"> Etkileşimli kimlik doğrulaması gerekli</a>'
     auth_msg: "<emoji document_id=5472308992514464048>🔐</emoji> <b>Lütfen bu mesajı</b> <code>{}</code> <b>için</b> <code>{}</code> <b>çalıştırmak için parola olarak düzenleyin</b>"

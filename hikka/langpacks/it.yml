@@ -166,9 +166,9 @@ terminal:
     no_cmd: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Non è in esecuzione alcun comando in questo messaggio</b>"
     running: "<emoji document_id=5472111548572900003>⌨️</emoji><b> Comando di sistema</b> <code>{}</code>"
     finished: "\n<b>codice di uscita</b> <code>{}</code>"
-    stdout: "\n<b>📼 Output:</b>\n<code>"
-    stderr: "</code>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Errori:</b>\n<code>"
-    end: "</code>"
+    stdout: "\n<b>📼 Stdout:</b>\n<pre><code class=\"language-stdout\">"
+    stderr: "</code></pre>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Stderr:</b>\n<pre><code class=\"language-stderr\">"
+    end: "</code></pre>"
     auth_fail: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Autenticazione non riuscita, riprova</b>"
     auth_needed: '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}"> Autenticazione richiesta</a>'
     auth_msg: "<emoji document_id=5472308992514464048>🔐</emoji> <b>Si prega di modificare questo messaggio con la password di root per</b> <code>{}</code> <b>, per eseguire</b> <code>{}</code>"

@@ -167,9 +167,9 @@ terminal:
     no_cmd: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Kein Befehl wird in dieser Nachricht ausgeführt</b>"
     running: "<emoji document_id=5472111548572900003>⌨️</emoji><b> Systemaufruf</b> <code>{}</code>"
     finished: "\n<b>Exit-Code</b> <code>{}</code>"
-    stdout: "\n<b>📼 Stdout:</b>\n<code>"
-    stderr: "</code>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Stderr:</b>\n<code>"
-    end: "</code>"
+    stdout: "\n<b>📼 Stdout:</b>\n<pre><code class=\"language-stdout\">"
+    stderr: "</code></pre>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Stderr:</b>\n<pre><code class=\"language-stderr\">"
+    end: "</code></pre>"
     auth_fail: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Authentifizierung fehlgeschlagen, bitte versuche es erneut</b>"
     auth_needed: '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}"> Interaktive Authentifizierung benötigt</a>'
     auth_msg: "<emoji document_id=5472308992514464048>🔐</emoji> <b>Bitte bearbeite diese Nachricht mit dem Passwort für</b> <code>{}</code> <b>um</b> <code>{}</code> <b>auszuführen</b>"

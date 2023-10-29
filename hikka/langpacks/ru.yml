@@ -166,9 +166,9 @@ terminal:
     no_cmd: "<emoji document_id=5210952531676504517>🚫</emoji> <b>В этом сообщении не выполняется команда</b>"
     running: "<emoji document_id=5472111548572900003>⌨️</emoji><b> Системная команда</b> <code>{}</code>"
     finished: "\n<b>Код выхода </b> <code>{}</code>"
-    stdout: "\n<b>📼 Вывод:</b>\n<code>"
-    stderr: "</code>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Ошибки:</b>\n<code>"
-    end: "</code>"
+    stdout: "\n<b>📼 Stdout:</b>\n<pre><code class=\"language-stdout\">"
+    stderr: "</code></pre>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Stderr:</b>\n<pre><code class=\"language-stderr\">"
+    end: "</code></pre>"
     auth_fail: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Аутентификация неуспешна, попробуй еще раз</b>"
     auth_needed: '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}"> Необходима аутентификация</a>'
     auth_msg: "<emoji document_id=5472308992514464048>🔐</emoji> <b>Пожалуйста, отредактируй это сообщение с паролем от рута для</b> <code>{}</code> <b>, чтобы выполнить</b> <code>{}</code>"

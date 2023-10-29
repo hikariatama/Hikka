@@ -166,9 +166,9 @@ terminal:
     no_cmd: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Бұл жазбада әрекет жоқ</b>"
     running: "<emoji document_id=5472111548572900003>⌨️</emoji><b> Системалық әрекет</b> <code>{}</code>"
     finished: "\n<b>Шығыс коды </b> <code>{}</code>"
-    stdout: "\n<b>📼 Шығыс:</b>\n<code>"
-    stderr: "</code>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Қателер:</b>\n<code>"
-    end: "</code>"
+    stdout: "\n<b>📼 Stdout:</b>\n<pre><code class=\"language-stdout\">"
+    stderr: "</code></pre>\n\n<b><emoji document_id=5210952531676504517>🚫</emoji> Stderr:</b>\n<pre><code class=\"language-stderr\">"
+    end: "</code></pre>"
     auth_fail: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Авторизациясы сәтсіз аяқталды, қайталап көріңіз</b>"
     auth_needed: '<emoji document_id=5472308992514464048>🔐</emoji><a href="tg://user?id={}"> Авторизация керек</a>'
     auth_msg: "<emoji document_id=5472308992514464048>🔐</emoji> <b>Бұл әрекетті өзгерту үшін өзіңіздің рут паролын</b> <code>{}</code> <b>, осы жазбаны түзетіңіз</b> <code>{}</code>"
