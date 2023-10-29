@@ -1,4 +1,5 @@
 hikka_security:
+    invalid_name: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Buyruq nomi noto'g'ri</b>"
     no_command: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bunday buyruq</b> <code>{}</code> <b>topilmadi!</b>"
     permissions: "🔐 <b>Bu yerda</b> <code>{}{}</code> <b>buyrug'i uchun ruxsatlar o'zgartirilishi mumkin</b>"
     close_menu: "🙈 Menuni yopish"
@@ -183,10 +184,10 @@ hikka_backup:
     saved: "✅ E'lon davom ettirish tartibi saqlandi! Uni .set_backup_period orqali o'zgartirishingiz mumkin"
     hech qachon: "✅ Avtomatik zahira nusxasini yaratmayman. Uni .set_backup_period bilan o'zgartirishingiz mumkin"
     invalid_args: '🚫 <b>Yaroqli zaxira muddatini soat yoki "0" bilan belgilang o''chirish</b>'
-    backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>Bu sizning ma'lumotlar bazasining zahira nusxasi. Uni hech qachon boshqa shaxs bilan baham ko'rsatmasangiz, shaxsiy ma'lumotlar mavjud. Siz uni qayta tiklash uchun, uni</b> <code>{prefix}restoredb</code> <b>buyruqini ushbu faylga javob qilib belgilashingiz mumkin.</b>"
+    backup_caption: "<emoji document_id=5469718869536940860>👆</emoji> <b>Bu sizning ma'lumotlar bazasining zahira nusxasi. Uni hech qachon boshqa shaxs bilan baham ko'rsatmasangiz, shaxsiy ma'lumotlar mavjud. Siz uni qayta tiklash uchun, uni</b> <pre><code class=\"language-hikka\">{prefix}restoredb</code></pre> <b>buyruqini ushbu faylga javob qilib belgilashingiz mumkin.</b>"
     reply_to_file: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Bir .json yoki .zip fayliga javob qiling</b>"
     db_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Ma'lumotlar bazasi yangilandi, qayta ishga tushirilmoqda...</b>"
-    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Modullar yedeklemesi ({})</b>\n\n<b>Ushbu yedeklashni quyidagi buyruq orqali tiklash mumkin</b> <code>{}restoremods</code>"
+    modules_backup: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Modullar yedeklemesi ({})</b>\n\n<b>Ushbu yedeklashni quyidagi buyruq orqali tiklash mumkin:</b>\n<pre><code class=\"language-hikka\">{}restoremods</code></pre>"
     mods_restored: "<emoji document_id=5774134533590880843>🔄</emoji> <b>Modullar qayta tiklandi, qayta ishga tushirilmoqda</b>"
     backup_sent: "<emoji document_id=5431736674147114227>🗂</emoji> <b>Zahira nusxasi saqlangan xabarlarga yuborildi</b>"
     _cls_doc: "Ma'lumotlar bazasi va modullar zahira nusxalarini boshqaradi"
@@ -222,7 +223,7 @@ settings:
     user_unblacklisted: "<emoji document_id=5197474765387864959>👍</emoji> <b>Foydalanuvchi {} userbot qora ro'yxatidan olib tashlandi</b>"
     what_prefix: "<emoji document_id=5382187118216879236>❓</emoji> <b>Qaysi prefiksni o'rnatishim kerak?</b>"
     prefix_incorrect: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Prefiks kerakfaqat bitta belgidan iborat</b>"
-    prefix_set: "{} <b>Prefiks yangilandi. Uni qaytarish uchun</b> <code>{newprefix}setprefix dan foydalaning.{oldprefix}</code>"
+    prefix_set: "{} <b>Buyruq prefiksi yangilandi. Uni qayta o'rnatish uchun quyidagi buyruqdan foydalaning:</b>\n<pre><code class=\"language-hikka\">{newprefix}setprefix {oldprefix}</code></pre>"
     alias_created: "<emoji document_id=5197474765387864959>👍</emoji> <b>Taxallus yaratildi.</b> <code>{}</code> <b>orqali foydalaning</b>"
     aliases: "<b>🔗 Taxalluslar:</b>\n"
     no_command: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Buyruq</b> <code>{}</code> <b>mavjud</b>"
@@ -231,7 +232,7 @@ settings:
     alias_removed: "<emoji document_id=5197474765387864959>👍</emoji> <b>Taxallus</b> <code>{}</code> <b>o'chirildi</b>."
     no_alias: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Taxallus</b> <code>{}</code> <b>mavjud</b>"
     db_cleared: "<emoji document_id=5197474765387864959>👍</emoji> <b>Baza tozalandi</b>"
-    hikka: "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:</b> <i>{}</i>\n{} <b>Hikka-Pyro:</b> <i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji> <b>Ishlab chiquvchi: t.me/hikariatama</b>"
+    hikka: "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:</b> <i>{}</i>\n<emoji document_id=5454182070156794055>⌨️</emoji> <b>Ishlab chiquvchi: t.me/hikariatama</b>"
     _cls_doc: "Userbot asosiy sozlamalarini boshqarish"
     confirm_cleardb: "⚠️ <b>Siz maʼlumotlar bazasini qayta o'rnatmoqchimisiz?</b>"
     cleardb_confirm: "🗑 Bazani tozalash"
@@ -239,7 +240,6 @@ settings:
     who_to_blacklist: "<emoji document_id=5382187118216879236>❓</emoji> <b>Kimni bloklash kerakkeyin?</b>"
     who_to_unblacklist: "<emoji document_id=5382187118216879236>❓</emoji> <b>Kimni blokdan chiqarish kerakkeyin?</b>"
     unstable: "\n\n<emoji document_id=5467370583282950466>🙈</emoji> <b>Siz foydalanayotgan versiya</b> <code>{}</code><b>!</b>"
-    prefix_collision: "<emoji document_id=5469654973308476699>💣</emoji> <b>Dragon va Hikka prefikslari boshqacha bo'lishi kerak!</b>"
     _cmd_doc_addalias: "Buyrug' uchun alias belgilash"
     _cmd_doc_aliases: "Aliaslarni ko'rsatish"
     _cmd_doc_blacklist: "[chat] [modul] - Botni hozircha o'chirish"
@@ -247,7 +247,7 @@ settings:
     _cmd_doc_cleardb: "Ma'lumotlar bazasini tozalash"
     _cmd_doc_delalias: "Buyrug' uchun aliasni o'chirish"
     _cmd_doc_hikka: "Hikka versiyasini ko'rsatish"
-    _cmd_doc_setprefix: "[dragon] <avvalgi> - Buyruqlar uchun avvalgi belgilash"
+    _cmd_doc_setprefix: "<avvalgi> - Buyruqlar uchun avvalgi belgilash"
     _cmd_doc_unblacklist: "[chat] - Botni hozircha yoqish"
     _cmd_doc_unblacklistuser: "[foydalanuvchi] - Foydalanuvchiga buyruqlarni bajarishni taqiqlash"
 
@@ -515,8 +515,8 @@ translations:
     _cmd_doc_setlang: "[til] - Standart tili o'zgartirish"
 
 eval:
-    eval: "<emoji document_id={}>💻</emoji><b> Kod:</b>\n<code>{}</code>\n\n<emoji document_id=5197688912457245639>✅</emoji><b> Natija:</b>\n<code>{}</code>"
-    err: "<emoji document_id={}>💻</emoji><b> Kod:</b>\n<code>{}</code>\n\n<emoji document_id=5210952531676504517>🚫</emoji> <b>Xato:</b>\n{}"
+    eval: "<emoji document_id={}>💻</emoji><b> Kod:</b>\n<pre><code class=\"language-{}\">{}</code></pre>\n\n<emoji document_id=5197688912457245639>✅</emoji><b> Natija:</b>\n<pre><code class=\"language-{}\">{}</code></pre>"
+    err: "<emoji document_id={}>💻</emoji><b> Kod:</b>\n<pre><code class=\"language-{}\">{}</code></pre>\n\n<emoji document_id=5210952531676504517>🚫</emoji> <b>Xato:</b>\n<pre><code class=\"language-{}\">{}</code></pre>"
     _cls_doc: "Dasturlash tillarida kodni bajaradi"
     compiling: "<emoji document_id=5325787248363314644>🫥</emoji> <b>Kod derleniyor...</b>"
     no_compiler: "<emoji document_id={}>💻</emoji> <b>Tizimda {} derleyicisi yo'q.</b>"
@@ -536,7 +536,7 @@ translate:
     _cmd_doc_tr: "[til] [matn] - Matnni tarjima qilish"
 
 quickstart:
-    base: "🌘🇺🇿 <b>Salom.</b> <b>Hikka</b> Sizning yuzer botingiz sozlandi.\n\n❓ <b>Yordam kerakmi?</b> Siz bizning qollab quvvatlash guruhimizga qo'shilishingiz mumkin. guruhimzda  <b>barcha savollaringizga javob olasiz</b>.\n\n📼 <b>Modullar @hikkamods_bot ushbu botimiz orqali siz har qanday yuzerbotga tegishli bo'lgan modullarni o'rnatishingiz mumkun botga kalit so'zni yuboring va  ⛩ O'rnatish tugmasini bosing</b>\n\n📣 <b>Homiylar tomonidan yaratilgan modullar kanalini ko'rish: <a href=\"https://t.me/hikka_ub/126\">kanalni ko'rish</a></b>\n\n💁‍♀️ <b>Tez ishga tushurish:</b>\n\n1️⃣ <b>Modullar royhatini ko'rish uchun</b> <code>.help buyrug'ini</code> <b>yozing</b>\n2️⃣ <b>Modul haqida ma'lumot olish uchun</b> <code>.help &lt;Modul nomi/buyruq&gt;</code> <b>yozing</b>\n3️⃣ <b>Modulni havola orqali o'rnatish uchun</b> <code>.dlmod &lt;Link&gt;</code> <b>yozing</b>\n4️⃣ <b>Modulni fayl orqali yuklash uchun</b> <code>.loadmod</code> <b>faylga javoban yozing</b>\n5️⃣ <b>Modulni olib tashlash uchun</b> <code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>\n\n💡 <b>Hikka, Friendly-Telegram, DragonUserbot ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>\n"
+    base: "🌘🇺🇿 <b>Salom.</b> <b>Hikka</b> Sizning yuzer botingiz sozlandi.\n\n❓ <b>Yordam kerakmi?</b> Siz bizning qollab quvvatlash guruhimizga qo'shilishingiz mumkin. guruhimzda  <b>barcha savollaringizga javob olasiz</b>.\n\n📼 <b>Modullar @hikkamods_bot ushbu botimiz orqali siz har qanday yuzerbotga tegishli bo'lgan modullarni o'rnatishingiz mumkun botga kalit so'zni yuboring va  ⛩ O'rnatish tugmasini bosing</b>\n\n📣 <b>Homiylar tomonidan yaratilgan modullar kanalini ko'rish: <a href=\"https://t.me/hikka_ub/126\">kanalni ko'rish</a></b>\n\n💁‍♀️ <b>Tez ishga tushurish:</b>\n\n1️⃣ <b>Modullar royhatini ko'rish uchun</b> <code>.help buyrug'ini</code> <b>yozing</b>\n2️⃣ <b>Modul haqida ma'lumot olish uchun</b> <code>.help &lt;Modul nomi/buyruq&gt;</code> <b>yozing</b>\n3️⃣ <b>Modulni havola orqali o'rnatish uchun</b> <code>.dlmod &lt;Link&gt;</code> <b>yozing</b>\n4️⃣ <b>Modulni fayl orqali yuklash uchun</b> <code>.loadmod</code> <b>faylga javoban yozing</b>\n5️⃣ <b>Modulni olib tashlash uchun</b> <code>.unloadmod &lt;Modul nomi&gt;</code> <b>yozing</b>\n\n💡 <b>Hikka, Friendly-Telegram ve GeekTG O'z Modullarini qollab quvvatlaydi.</b>\n"
     railway: "🚂 <b>Sizning yuzerbotingiz Railwayda o'rnatilgan</b>. Bu platforma, <b>oyiga atigi 500 soat bepul jihati</b> Railway bergan muddat tugagandan so'ng sizning bo'tingiz  <b>to'xtatiladi</b>. Keyingi oy, https://railway.app havolasi orqali yuzerbotingizni qayta ishga tushira olasiz.</b>"
     lavhost: "✌️ <b>Sizning foydalanuvchi botingiz lavHost-da o'rnatildi</b>. Kiritish uchun @lavhost ga a'zo bo'ling, shuningdek muhim xabarlar va yangilanishlar olishingiz mumkin. Platforma haqida savollaringizni @lavhostchat ga yozing."
     language_saved: "🇺🇿 Til saqlandi!"

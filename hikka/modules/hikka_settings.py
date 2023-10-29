@@ -9,7 +9,6 @@ import os
 import random
 
 import hikkatl
-from hikkatl.tl.functions.channels import JoinChannelRequest
 from hikkatl.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
@@ -816,23 +815,6 @@ class HikkaSettingsMod(loader.Module):
             reply_markup={"text": self.strings("web_btn"), "url": url},
             gif="https://t.me/hikari_assets/48",
         )
-
-    @loader.loop(interval=1, autostart=True)
-    async def loop(self):
-        if not (obj := self.allmodules.get_approved_channel):
-            return
-
-        channel, event = obj
-
-        try:
-            await self._client(JoinChannelRequest(channel))
-        except Exception:
-            logger.exception("Failed to join channel")
-            event.status = False
-            event.set()
-        else:
-            event.status = True
-            event.set()
 
     def _get_all_IDM(self, module: str):
         return {

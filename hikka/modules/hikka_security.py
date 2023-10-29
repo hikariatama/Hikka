@@ -239,6 +239,10 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_args"))
             return
 
+        if not all([i.isalnum() for i in args]):
+            await utils.answer(message, self.strings("invalid_name"))
+            return
+
         if args in self._sgroups:
             await utils.answer(
                 message, self.strings("sgroup_already_exists").format(args)
@@ -331,7 +335,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_args"))
             return
 
-        if self._sgroups.get(args):
+        if not self._sgroups.get(args):
             await utils.answer(message, self.strings("sgroup_not_found").format(args))
             return
 

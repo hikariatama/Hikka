@@ -162,7 +162,9 @@ class Evaluator(loader.Module):
                 message,
                 self.strings("err").format(
                     "4985626654563894116",
+                    "python",
                     utils.escape_html(utils.get_args_raw(message)),
+                    "error",
                     self.censor(
                         (
                             "\n".join(item.full_stack.splitlines()[:-1])
@@ -185,7 +187,9 @@ class Evaluator(loader.Module):
                 message,
                 self.strings("eval").format(
                     "4985626654563894116",
+                    "python",
                     utils.escape_html(utils.get_args_raw(message)),
+                    "python",
                     utils.escape_html(self.censor(str(result))),
                 ),
             )
@@ -241,8 +245,10 @@ class Evaluator(loader.Module):
                 message,
                 self.strings("err" if error else "eval").format(
                     "4986046904228905931" if c else "4985844035743646190",
+                    "c" if c else "cpp",
                     utils.escape_html(code),
-                    f"<code>{utils.escape_html(result)}</code>",
+                    "error" if error else "output",
+                    utils.escape_html(result),
                 ),
             )
 
@@ -289,8 +295,10 @@ class Evaluator(loader.Module):
                 message,
                 self.strings("err" if error else "eval").format(
                     "4985643941807260310",
+                    "javascript",
                     utils.escape_html(code),
-                    f"<code>{utils.escape_html(result)}</code>",
+                    "error" if error else "output",
+                    utils.escape_html(result),
                 ),
             )
 
@@ -333,8 +341,10 @@ class Evaluator(loader.Module):
                 message,
                 self.strings("err" if error else "eval").format(
                     "4985815079074136919",
+                    "php",
                     utils.escape_html(code),
-                    f"<code>{utils.escape_html(result)}</code>",
+                    "error" if error else "output",
+                    utils.escape_html(result),
                 ),
             )
 
@@ -377,8 +387,10 @@ class Evaluator(loader.Module):
                 message,
                 self.strings("err" if error else "eval").format(
                     "4985760855112024628",
+                    "ruby",
                     utils.escape_html(code),
-                    f"<code>{utils.escape_html(result)}</code>",
+                    "error" if error else "output",
+                    utils.escape_html(result),
                 ),
             )
 
@@ -411,8 +423,10 @@ class Evaluator(loader.Module):
                 message,
                 self.strings("err" if error else "eval").format(
                     "5474256197542486673",
+                    "brainfuck",
                     utils.escape_html(code),
-                    f"<code>{utils.escape_html(result)}</code>",
+                    "error" if error else "output",
+                    utils.escape_html(result),
                 ),
             )
 

@@ -12,8 +12,6 @@ from hikkatl.extensions.html import CUSTOM_EMOJIS
 from hikkatl.tl.types import Message
 
 from .. import loader, utils
-from ..compat.dragon import DRAGON_EMOJI
-from ..types import DragonModule
 
 logger = logging.getLogger(__name__)
 
@@ -54,15 +52,9 @@ class Help(loader.Module):
 
         currently_hidden = self.get("hide", [])
         hidden, shown = [], []
-        for module in filter(
-            lambda module: self.lookup(module, include_dragon=True), modules
-        ):
-            module = self.lookup(module, include_dragon=True)
-            module = (
-                module.name
-                if isinstance(module, DragonModule)
-                else module.__class__.__name__
-            )
+        for module in filter(lambda module: self.lookup(module), modules):
+            module = self.lookup(module)
+            module = module.__class__.__name__
             if module in currently_hidden:
                 currently_hidden.remove(module)
                 shown += [module]
@@ -95,7 +87,7 @@ class Help(loader.Module):
 
     async def modhelp(self, message: Message, args: str):
         exact = True
-        if not (module := self.lookup(args, include_dragon=True)):
+        if not (module := self.lookup(args)):
             if method := self.allmodules.dispatch(
                 args.lower().strip(self.get_prefix())
             )[1]:
@@ -124,8 +116,6 @@ class Help(loader.Module):
 
                 exact = False
 
-        is_dragon = isinstance(module, DragonModule)
-
         try:
             name = module.strings("name")
         except (KeyError, AttributeError):
@@ -143,11 +133,7 @@ class Help(loader.Module):
         )
 
         reply = "{} <b>{}</b>:".format(
-            (
-                DRAGON_EMOJI
-                if is_dragon
-                else "<emoji document_id=5188377234380954537>🌘</emoji>"
-            ),
+            "<emoji document_id=5188377234380954537>🌘</emoji>",
             _name,
         )
         if module.__doc__:
@@ -157,17 +143,13 @@ class Help(loader.Module):
                 + "\n</i>"
             )
 
-        commands = (
-            module.commands
-            if is_dragon
-            else {
-                name: func
-                for name, func in module.commands.items()
-                if await self.allmodules.check_security(message, func)
-            }
-        )
+        commands = {
+            name: func
+            for name, func in module.commands.items()
+            if await self.allmodules.check_security(message, func)
+        }
 
-        if hasattr(module, "inline_handlers") and not is_dragon:
+        if hasattr(module, "inline_handlers"):
             for name, fun in module.inline_handlers.items():
                 reply += (
                     "\n<emoji document_id=5372981976804366741>🤖</emoji>"
@@ -185,15 +167,13 @@ class Help(loader.Module):
             reply += (
                 "\n<emoji document_id=4971987363145188045>▫️</emoji>"
                 " <code>{}{}</code>{} {}".format(
-                    utils.escape_html(self.get_prefix("dragon" if is_dragon else None)),
+                    utils.escape_html(self.get_prefix()),
                     name,
                     (
                         " ({})".format(
                             ", ".join(
                                 "<code>{}{}</code>".format(
-                                    utils.escape_html(
-                                        self.get_prefix("dragon" if is_dragon else None)
-                                    ),
+                                    utils.escape_html(self.get_prefix()),
                                     alias,
                                 )
                                 for alias in self.find_aliases(name)
@@ -203,13 +183,9 @@ class Help(loader.Module):
                         else ""
                     ),
                     (
-                        utils.escape_html(fun)
-                        if is_dragon
-                        else (
-                            utils.escape_html(inspect.getdoc(fun))
-                            if fun.__doc__
-                            else self.strings("undoc")
-                        )
+                        utils.escape_html(inspect.getdoc(fun))
+                        if fun.__doc__
+                        else self.strings("undoc")
                     ),
                 )
             )
@@ -240,16 +216,13 @@ class Help(loader.Module):
         hidden = self.get("hide", [])
 
         reply = self.strings("all_header").format(
-            len(self.allmodules.modules) + len(self.allmodules.dragon_modules),
+            len(self.allmodules.modules),
             (
                 0
                 if force
                 else sum(
                     module.__class__.__name__ in hidden
                     for module in self.allmodules.modules
-                )
-                + sum(
-                    module.name in hidden for module in self.allmodules.dragon_modules
                 )
             ),
         )
@@ -258,24 +231,6 @@ class Help(loader.Module):
         plain_ = []
         core_ = []
         no_commands_ = []
-        dragon_ = []
-
-        for mod in self.allmodules.dragon_modules:
-            if mod.name in self.get("hide", []) and not force:
-                continue
-
-            tmp = "\n{} <code>{}</code>".format(DRAGON_EMOJI, mod.name)
-            first = True
-
-            for cmd in mod.commands:
-                cmd = cmd.split()[0]
-                if first:
-                    tmp += f": ( {cmd}"
-                    first = False
-                else:
-                    tmp += f" | {cmd}"
-
-            dragon_ += [tmp + " )"]
 
         for mod in self.allmodules.modules:
             if not hasattr(mod, "commands"):
@@ -354,13 +309,12 @@ class Help(loader.Module):
         plain_.sort(key=lambda x: x.split()[1])
         core_.sort(key=lambda x: x.split()[1])
         no_commands_.sort(key=lambda x: x.split()[1])
-        dragon_.sort()
 
         await utils.answer(
             message,
             "{}\n{}{}".format(
                 reply,
-                "".join(core_ + plain_ + dragon_ + (no_commands_ if force else [])),
+                "".join(core_ + plain_ + (no_commands_ if force else [])),
                 (
                     ""
                     if self.lookup("Loader").fully_loaded

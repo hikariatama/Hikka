@@ -60,12 +60,7 @@ else:
         try:
             import hikkatl  # noqa: F811
 
-            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 4):
-                raise ImportError
-
-            import hikkapyro
-
-            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 103):
+            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 6):
                 raise ImportError
         except ImportError:
             print("🔄 Installing dependencies...")
@@ -85,5 +80,8 @@ else:
 
     if "HIKKA_DO_NOT_RESTART" in os.environ:
         del os.environ["HIKKA_DO_NOT_RESTART"]
+
+    if "HIKKA_DO_NOT_RESTART2" in os.environ:
+        del os.environ["HIKKA_DO_NOT_RESTART2"]
 
     main.hikka.main()  # Execute main function

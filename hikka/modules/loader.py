@@ -9,7 +9,6 @@
 import ast
 import asyncio
 import contextlib
-import copy
 import functools
 import importlib
 import inspect
@@ -32,28 +31,11 @@ from hikkatl.tl.types import Channel, Message
 
 from .. import loader, main, utils
 from .._local_storage import RemoteStorage
-from ..compat import dragon, geek
-from ..compat.pyroproxy import PyroProxyClient
+from ..compat import geek
 from ..inline.types import InlineCall
-from ..types import CoreOverwriteError, CoreUnloadError, DragonModule
+from ..types import CoreOverwriteError, CoreUnloadError
 
 logger = logging.getLogger(__name__)
-
-
-class FakeLock:
-    async def __aenter__(self, *args):
-        pass
-
-    async def __aexit__(self, *args):
-        pass
-
-
-class FakeNotifier:
-    def __enter__(self):
-        pass
-
-    def __exit__(self, *args):
-        pass
 
 
 @loader.tds
@@ -76,12 +58,7 @@ class LoaderMod(loader.Module):
             ),
             loader.ConfigValue(
                 "ADDITIONAL_REPOS",
-                # Currenly the trusted developers are specified
-                [
-                    "https://github.com/hikariatama/host/raw/master",
-                    "https://github.com/MoriSummerz/ftg-mods/raw/main",
-                    "https://gitlab.com/CakesTwix/friendly-userbot-modules/-/raw/master",
-                ],
+                [],
                 lambda: self.strings("add_repo_config_doc"),
                 validator=loader.validators.Series(validator=loader.validators.Link()),
             ),
@@ -174,11 +151,6 @@ class LoaderMod(loader.Module):
                     module.__class__.__name__: module.__origin__
                     for module in self.allmodules.modules
                     if module.__origin__.startswith("http")
-                },
-                **{
-                    module.name: module.url
-                    for module in self.allmodules.dragon_modules
-                    if module.url
                 },
             },
         )
@@ -452,6 +424,27 @@ class LoaderMod(loader.Module):
                 ),
             )
 
+    async def approve_internal(
+        self,
+        call: InlineCall,
+        channel: "hints.EntityLike",  # type: ignore  # noqa
+        event: asyncio.Event,
+    ):
+        """
+        Don't you dare call it externally
+        """
+        await self._client(JoinChannelRequest(channel))
+        event.status = True
+        event.set()
+
+        await call.edit(
+            (
+                "💫 <b>Joined <a"
+                f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
+            ),
+            gif="https://data.whicdn.com/images/324445359/original.gif",
+        )
+
     async def load_module(
         self,
         doc: str,
@@ -509,13 +502,6 @@ class LoaderMod(loader.Module):
 
         blob_link = self.strings("blob_link") if blob_link else ""
 
-        if utils.check_url(name):
-            url = copy.deepcopy(name)
-        elif utils.check_url(origin):
-            url = copy.deepcopy(origin)
-        else:
-            url = None
-
         if name is None:
             try:
                 node = ast.parse(doc)
@@ -543,18 +529,8 @@ class LoaderMod(loader.Module):
 
             uid = name.replace("%", "%%").replace(".", "%d")
 
-        is_dragon = "@Client.on_message" in doc
-
-        if is_dragon:
-            module_name = f"dragon.modules.{uid}"
-            if not self._client.pyro_proxy:
-                self._client.pyro_proxy = PyroProxyClient(self._client)
-                await self._client.pyro_proxy.start()
-                await self._client.pyro_proxy.dispatcher.start()
-                dragon.apply_compat(self._client)
-        else:
-            module_name = f"hikka.modules.{uid}"
-            doc = geek.compat(doc)
+        module_name = f"hikka.modules.{uid}"
+        doc = geek.compat(doc)
 
         async def core_overwrite(e: CoreOverwriteError):
             nonlocal message
@@ -576,473 +552,425 @@ class LoaderMod(loader.Module):
                 ),
             )
 
-        async with (dragon.import_lock if is_dragon else lambda _: FakeLock())(
-            self._client
-        ):
-            with (
-                self._client.dragon_compat.misc.modules_help.get_notifier
-                if is_dragon
-                else FakeNotifier
-            )() as notifier:
-                try:
-                    try:
-                        spec = ModuleSpec(
-                            module_name,
-                            loader.StringLoader(doc, f"<external {module_name}>"),
-                            origin=f"<external {module_name}>",
-                        )
-                        instance = await self.allmodules.register_module(
-                            spec,
-                            module_name,
-                            origin,
-                            save_fs=save_fs,
-                            is_dragon=is_dragon,
-                        )
-
-                        if is_dragon:
-                            dragon_module, instance = instance
-                            instance.url = url
-                    except ImportError as e:
-                        logger.info(
-                            (
-                                "Module loading failed, attemping dependency"
-                                " installation (%s)"
-                            ),
-                            e.name,
-                        )
-                        # Let's try to reinstall dependencies
-                        try:
-                            requirements = list(
-                                filter(
-                                    lambda x: not x.startswith(("-", "_", ".")),
-                                    map(
-                                        str.strip,
-                                        loader.VALID_PIP_PACKAGES.search(doc)[
-                                            1
-                                        ].split(),
-                                    ),
-                                )
-                            )
-                        except TypeError:
-                            logger.warning(
-                                "No valid pip packages specified in code, attemping"
-                                " installation from error"
-                            )
-                            requirements = [
-                                {
-                                    "sklearn": "scikit-learn",
-                                    "pil": "Pillow",
-                                    "hikkatl": "Hikka-TL",
-                                    "pyrogram": "Hikka-Pyro",
-                                }.get(e.name.lower(), e.name)
-                            ]
-
-                        if not requirements:
-                            raise Exception("Nothing to install") from e
-
-                        logger.debug("Installing requirements: %s", requirements)
-
-                        if did_requirements:
-                            if message is not None:
-                                await utils.answer(
-                                    message,
-                                    self.strings("requirements_restart").format(e.name),
-                                )
-
-                            return
-
-                        if message is not None:
-                            await utils.answer(
-                                message,
-                                self.strings("requirements_installing").format(
-                                    "\n".join(
-                                        "<emoji"
-                                        " document_id=4971987363145188045>▫️</emoji>"
-                                        f" {req}"
-                                        for req in requirements
-                                    )
-                                ),
-                            )
-
-                        pip = await asyncio.create_subprocess_exec(
-                            sys.executable,
-                            "-m",
-                            "pip",
-                            "install",
-                            "--upgrade",
-                            "-q",
-                            "--disable-pip-version-check",
-                            "--no-warn-script-location",
-                            *["--user"] if loader.USER_INSTALL else [],
-                            *requirements,
-                        )
-
-                        rc = await pip.wait()
-
-                        if rc != 0:
-                            if message is not None:
-                                if "com.termux" in os.environ.get("PREFIX", ""):
-                                    await utils.answer(
-                                        message,
-                                        self.strings("requirements_failed_termux"),
-                                    )
-                                else:
-                                    await utils.answer(
-                                        message,
-                                        self.strings("requirements_failed"),
-                                    )
-
-                            return
-
-                        importlib.invalidate_caches()
-
-                        kwargs = utils.get_kwargs()
-                        kwargs["did_requirements"] = True
-
-                        return await self.load_module(**kwargs)  # Try again
-                    except CoreOverwriteError as e:
-                        await core_overwrite(e)
-                        return
-                    except loader.LoadError as e:
-                        with contextlib.suppress(Exception):
-                            await self.allmodules.unload_module(
-                                instance.__class__.__name__
-                            )
-
-                        with contextlib.suppress(Exception):
-                            self.allmodules.modules.remove(instance)
-
-                        if message:
-                            await utils.answer(
-                                message,
-                                (
-                                    "<emoji document_id=5454225457916420314>😖</emoji>"
-                                    f" <b>{utils.escape_html(str(e))}</b>"
-                                ),
-                            )
-                        return
-                except Exception as e:
-                    logger.exception("Loading external module failed due to %s", e)
-
-                    if message is not None:
-                        await utils.answer(message, self.strings("load_failed"))
-
-                    return
-
-                if hasattr(instance, "__version__") and isinstance(
-                    instance.__version__, tuple
-                ):
-                    version = (
-                        "<b><i>"
-                        f" (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
-                    )
-                else:
-                    version = ""
-
-                try:
-                    try:
-                        self.allmodules.send_config_one(instance)
-
-                        async def inner_proxy():
-                            nonlocal instance, message
-                            while True:
-                                if hasattr(instance, "hikka_wait_channel_approve"):
-                                    if message:
-                                        (
-                                            module,
-                                            channel,
-                                            reason,
-                                        ) = instance.hikka_wait_channel_approve
-                                        message = await utils.answer(
-                                            message,
-                                            self.strings("wait_channel_approve").format(
-                                                module,
-                                                channel.username,
-                                                utils.escape_html(channel.title),
-                                                utils.escape_html(reason),
-                                                self.inline.bot_username,
-                                            ),
-                                        )
-                                        return
-
-                                await asyncio.sleep(0.1)
-
-                        task = asyncio.ensure_future(inner_proxy())
-                        await self.allmodules.send_ready_one(
-                            instance,
-                            no_self_unload=True,
-                            from_dlmod=bool(message),
-                        )
-                        task.cancel()
-                    except CoreOverwriteError as e:
-                        await core_overwrite(e)
-                        return
-                    except loader.LoadError as e:
-                        with contextlib.suppress(Exception):
-                            await self.allmodules.unload_module(
-                                instance.__class__.__name__
-                            )
-
-                        with contextlib.suppress(Exception):
-                            self.allmodules.modules.remove(instance)
-
-                        if message:
-                            await utils.answer(
-                                message,
-                                (
-                                    "<emoji document_id=5454225457916420314>😖</emoji>"
-                                    f" <b>{utils.escape_html(str(e))}</b>"
-                                ),
-                            )
-                        return
-                    except loader.SelfUnload as e:
-                        logger.debug(
-                            "Unloading %s, because it raised `SelfUnload`", instance
-                        )
-                        with contextlib.suppress(Exception):
-                            await self.allmodules.unload_module(
-                                instance.__class__.__name__
-                            )
-
-                        with contextlib.suppress(Exception):
-                            self.allmodules.modules.remove(instance)
-
-                        if message:
-                            await utils.answer(
-                                message,
-                                (
-                                    "<emoji document_id=5454225457916420314>😖</emoji>"
-                                    f" <b>{utils.escape_html(str(e))}</b>"
-                                ),
-                            )
-                        return
-                    except loader.SelfSuspend as e:
-                        logger.debug(
-                            "Suspending %s, because it raised `SelfSuspend`", instance
-                        )
-                        if message:
-                            await utils.answer(
-                                message,
-                                (
-                                    "🥶 <b>Module suspended itself\nReason:"
-                                    f" {utils.escape_html(str(e))}</b>"
-                                ),
-                            )
-                        return
-                except Exception as e:
-                    logger.exception("Module threw because of %s", e)
-
-                    if message is not None:
-                        await utils.answer(message, self.strings("load_failed"))
-
-                    return
-
-                instance.hikka_meta_pic = next(
-                    (
-                        line.replace(" ", "").split("#metapic:", maxsplit=1)[1]
-                        for line in doc.splitlines()
-                        if line.replace(" ", "").startswith("#metapic:")
-                    ),
-                    None,
-                )
-
-                pack_url = next(
-                    (
-                        line.replace(" ", "").split("#packurl:", maxsplit=1)[1]
-                        for line in doc.splitlines()
-                        if line.replace(" ", "").startswith("#packurl:")
-                    ),
-                    None,
-                )
-
-                if pack_url and (
-                    transations := await self.allmodules.translator.load_module_translations(
-                        pack_url
-                    )
-                ):
-                    instance.strings.external_strings = transations
-
-                if is_dragon:
-                    instance.name = (
-                        f"Dragon{notifier.modname[0].upper()}{notifier.modname[1:]}"
-                    )
-                    instance.commands = notifier.commands
-                    self.allmodules.register_dragon(dragon_module, instance)
-                else:
-                    for alias, cmd in (
-                        self.lookup("settings").get("aliases", {}).items()
-                    ):
-                        if cmd in instance.commands:
-                            self.allmodules.add_alias(alias, cmd)
-
+        try:
             try:
-                modname = instance.strings("name")
-            except (KeyError, AttributeError):
-                modname = getattr(instance, "name", instance.__class__.__name__)
-
-            try:
-                developer_entity = await (
-                    self._client.force_get_entity
-                    if (
-                        developer in self._client.hikka_entity_cache
-                        and getattr(
-                            await self._client.get_entity(developer),
-                            "left",
-                            True,
-                        )
-                    )
-                    else self._client.get_entity
-                )(developer)
-            except Exception:
-                developer_entity = None
-
-            if not isinstance(developer_entity, Channel):
-                developer_entity = None
-
-            if message is None:
-                return
-
-            modhelp = ""
-
-            if instance.__doc__:
-                modhelp += (
-                    "<i>\n<emoji document_id=5787544344906959608>ℹ️</emoji>"
-                    f" {utils.escape_html(inspect.getdoc(instance))}</i>\n"
+                spec = ModuleSpec(
+                    module_name,
+                    loader.StringLoader(doc, f"<external {module_name}>"),
+                    origin=f"<external {module_name}>",
                 )
-
-            subscribe = ""
-            subscribe_markup = None
-
-            depends_from = []
-            for key in dir(instance):
-                value = getattr(instance, key)
-                if isinstance(value, loader.Library):
-                    depends_from.append(
-                        "<emoji document_id=4971987363145188045>▫️</emoji>"
-                        " <code>{}</code> <b>{}</b> <code>{}</code>".format(
-                            value.__class__.__name__,
-                            self.strings("by"),
-                            (
-                                value.developer
-                                if isinstance(getattr(value, "developer", None), str)
-                                else "Unknown"
+                instance = await self.allmodules.register_module(
+                    spec,
+                    module_name,
+                    origin,
+                    save_fs=save_fs,
+                )
+            except ImportError as e:
+                logger.info(
+                    "Module loading failed, attemping dependency installation (%s)",
+                    e.name,
+                )
+                # Let's try to reinstall dependencies
+                try:
+                    requirements = list(
+                        filter(
+                            lambda x: not x.startswith(("-", "_", ".")),
+                            map(
+                                str.strip,
+                                loader.VALID_PIP_PACKAGES.search(doc)[1].split(),
                             ),
                         )
                     )
+                except TypeError:
+                    logger.warning(
+                        "No valid pip packages specified in code, attemping"
+                        " installation from error"
+                    )
+                    requirements = [
+                        {
+                            "sklearn": "scikit-learn",
+                            "pil": "Pillow",
+                            "hikkatl": "Hikka-TL-New",
+                        }.get(e.name.lower(), e.name)
+                    ]
 
-            depends_from = (
-                self.strings("depends_from").format("\n".join(depends_from))
-                if depends_from
-                else ""
-            )
+                if not requirements:
+                    raise Exception("Nothing to install") from e
 
-            def loaded_msg(use_subscribe: bool = True):
-                nonlocal modname, version, modhelp, developer, origin, subscribe, blob_link, depends_from
-                return self.strings("loaded").format(
-                    modname.strip(),
-                    version,
-                    utils.ascii_face(),
-                    modhelp,
-                    developer if not subscribe or not use_subscribe else "",
-                    depends_from,
-                    (
-                        self.strings("modlink").format(origin)
-                        if origin != "<string>" and self.config["share_link"]
-                        else ""
-                    ),
-                    blob_link,
-                    subscribe if use_subscribe else "",
-                )
+                logger.debug("Installing requirements: %s", requirements)
 
-            if developer:
-                if developer.startswith("@") and developer not in self.get(
-                    "do_not_subscribe", []
-                ):
-                    if (
-                        developer_entity
-                        and getattr(developer_entity, "left", True)
-                        and self._db.get(main.__name__, "suggest_subscribe", True)
-                    ):
-                        subscribe = self.strings("suggest_subscribe").format(
-                            f"@{utils.escape_html(developer_entity.username)}"
+                if did_requirements:
+                    if message is not None:
+                        await utils.answer(
+                            message,
+                            self.strings("requirements_restart").format(e.name),
                         )
-                        subscribe_markup = [
-                            {
-                                "text": self.strings("subscribe"),
-                                "callback": self._inline__subscribe,
-                                "args": (
-                                    developer_entity.id,
-                                    functools.partial(loaded_msg, use_subscribe=False),
-                                    True,
-                                ),
-                            },
-                            {
-                                "text": self.strings("no_subscribe"),
-                                "callback": self._inline__subscribe,
-                                "args": (
-                                    developer,
-                                    functools.partial(loaded_msg, use_subscribe=False),
-                                    False,
-                                ),
-                            },
-                        ]
 
-                developer = self.strings("developer").format(
-                    utils.escape_html(developer)
-                    if isinstance(developer_entity, Channel)
-                    else f"<code>{utils.escape_html(developer)}</code>"
-                )
-            else:
-                developer = ""
+                    return
 
-            if any(
-                line.replace(" ", "") == "#scope:disable_onload_docs"
-                for line in doc.splitlines()
-            ):
-                await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
-                return
-
-            for _name, fun in sorted(
-                instance.commands.items(),
-                key=lambda x: x[0],
-            ):
-                modhelp += "\n{} <code>{}{}</code> {}".format(
-                    (
-                        dragon.DRAGON_EMOJI
-                        if is_dragon
-                        else "<emoji document_id=4971987363145188045>▫️</emoji>"
-                    ),
-                    utils.escape_html(self.get_prefix("dragon" if is_dragon else None)),
-                    _name,
-                    (
-                        utils.escape_html(fun)
-                        if is_dragon
-                        else (
-                            utils.escape_html(inspect.getdoc(fun))
-                            if fun.__doc__
-                            else self.strings("undoc")
-                        )
-                    ),
-                )
-
-            if self.inline.init_complete and not is_dragon:
-                for _name, fun in sorted(
-                    instance.inline_handlers.items(),
-                    key=lambda x: x[0],
-                ):
-                    modhelp += self.strings("ihandler").format(
-                        f"@{self.inline.bot_username} {_name}",
-                        (
-                            utils.escape_html(inspect.getdoc(fun))
-                            if fun.__doc__
-                            else self.strings("undoc")
+                if message is not None:
+                    await utils.answer(
+                        message,
+                        self.strings("requirements_installing").format(
+                            "\n".join(
+                                "<emoji"
+                                " document_id=4971987363145188045>▫️</emoji>"
+                                f" {req}"
+                                for req in requirements
+                            )
                         ),
                     )
 
+                pip = await asyncio.create_subprocess_exec(
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--upgrade",
+                    "-q",
+                    "--disable-pip-version-check",
+                    "--no-warn-script-location",
+                    *["--user"] if loader.USER_INSTALL else [],
+                    *requirements,
+                )
+
+                rc = await pip.wait()
+
+                if rc != 0:
+                    if message is not None:
+                        if "com.termux" in os.environ.get("PREFIX", ""):
+                            await utils.answer(
+                                message,
+                                self.strings("requirements_failed_termux"),
+                            )
+                        else:
+                            await utils.answer(
+                                message,
+                                self.strings("requirements_failed"),
+                            )
+
+                    return
+
+                importlib.invalidate_caches()
+
+                kwargs = utils.get_kwargs()
+                kwargs["did_requirements"] = True
+
+                return await self.load_module(**kwargs)  # Try again
+            except CoreOverwriteError as e:
+                await core_overwrite(e)
+                return
+            except loader.LoadError as e:
+                with contextlib.suppress(Exception):
+                    await self.allmodules.unload_module(instance.__class__.__name__)
+
+                with contextlib.suppress(Exception):
+                    self.allmodules.modules.remove(instance)
+
+                if message:
+                    await utils.answer(
+                        message,
+                        (
+                            "<emoji document_id=5454225457916420314>😖</emoji>"
+                            f" <b>{utils.escape_html(str(e))}</b>"
+                        ),
+                    )
+                return
+        except Exception as e:
+            logger.exception("Loading external module failed due to %s", e)
+
+            if message is not None:
+                await utils.answer(message, self.strings("load_failed"))
+
+            return
+
+        if hasattr(instance, "__version__") and isinstance(instance.__version__, tuple):
+            version = (
+                "<b><i>"
+                f" (v{'.'.join(list(map(str, list(instance.__version__))))})</i></b>"
+            )
+        else:
+            version = ""
+
+        try:
             try:
-                await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
-            except MediaCaptionTooLongError:
-                await message.reply(loaded_msg(False))
+                self.allmodules.send_config_one(instance)
+
+                async def inner_proxy():
+                    nonlocal instance, message
+                    while True:
+                        if hasattr(instance, "hikka_wait_channel_approve"):
+                            if message:
+                                (
+                                    module,
+                                    channel,
+                                    reason,
+                                ) = instance.hikka_wait_channel_approve
+                                message = await utils.answer(
+                                    message,
+                                    self.strings("wait_channel_approve").format(
+                                        module,
+                                        channel.username,
+                                        utils.escape_html(channel.title),
+                                        utils.escape_html(reason),
+                                        self.inline.bot_username,
+                                    ),
+                                )
+                                return
+
+                        await asyncio.sleep(0.1)
+
+                task = asyncio.ensure_future(inner_proxy())
+                await self.allmodules.send_ready_one(
+                    instance,
+                    no_self_unload=True,
+                    from_dlmod=bool(message),
+                )
+                task.cancel()
+            except CoreOverwriteError as e:
+                await core_overwrite(e)
+                return
+            except loader.LoadError as e:
+                with contextlib.suppress(Exception):
+                    await self.allmodules.unload_module(instance.__class__.__name__)
+
+                with contextlib.suppress(Exception):
+                    self.allmodules.modules.remove(instance)
+
+                if message:
+                    await utils.answer(
+                        message,
+                        (
+                            "<emoji document_id=5454225457916420314>😖</emoji>"
+                            f" <b>{utils.escape_html(str(e))}</b>"
+                        ),
+                    )
+                return
+            except loader.SelfUnload as e:
+                logger.debug("Unloading %s, because it raised `SelfUnload`", instance)
+                with contextlib.suppress(Exception):
+                    await self.allmodules.unload_module(instance.__class__.__name__)
+
+                with contextlib.suppress(Exception):
+                    self.allmodules.modules.remove(instance)
+
+                if message:
+                    await utils.answer(
+                        message,
+                        (
+                            "<emoji document_id=5454225457916420314>😖</emoji>"
+                            f" <b>{utils.escape_html(str(e))}</b>"
+                        ),
+                    )
+                return
+            except loader.SelfSuspend as e:
+                logger.debug("Suspending %s, because it raised `SelfSuspend`", instance)
+                if message:
+                    await utils.answer(
+                        message,
+                        (
+                            "🥶 <b>Module suspended itself\nReason:"
+                            f" {utils.escape_html(str(e))}</b>"
+                        ),
+                    )
+                return
+        except Exception as e:
+            logger.exception("Module threw because of %s", e)
+
+            if message is not None:
+                await utils.answer(message, self.strings("load_failed"))
+
+            return
+
+        instance.hikka_meta_pic = next(
+            (
+                line.replace(" ", "").split("#metapic:", maxsplit=1)[1]
+                for line in doc.splitlines()
+                if line.replace(" ", "").startswith("#metapic:")
+            ),
+            None,
+        )
+
+        pack_url = next(
+            (
+                line.replace(" ", "").split("#packurl:", maxsplit=1)[1]
+                for line in doc.splitlines()
+                if line.replace(" ", "").startswith("#packurl:")
+            ),
+            None,
+        )
+
+        if pack_url and (
+            transations := await self.allmodules.translator.load_module_translations(
+                pack_url
+            )
+        ):
+            instance.strings.external_strings = transations
+
+        for alias, cmd in self.lookup("settings").get("aliases", {}).items():
+            if cmd in instance.commands:
+                self.allmodules.add_alias(alias, cmd)
+
+        try:
+            modname = instance.strings("name")
+        except (KeyError, AttributeError):
+            modname = getattr(instance, "name", instance.__class__.__name__)
+
+        try:
+            developer_entity = await (
+                self._client.force_get_entity
+                if (
+                    developer in self._client.hikka_entity_cache
+                    and getattr(
+                        await self._client.get_entity(developer),
+                        "left",
+                        True,
+                    )
+                )
+                else self._client.get_entity
+            )(developer)
+        except Exception:
+            developer_entity = None
+
+        if not isinstance(developer_entity, Channel):
+            developer_entity = None
+
+        if message is None:
+            return
+
+        modhelp = ""
+
+        if instance.__doc__:
+            modhelp += (
+                "<i>\n<emoji document_id=5787544344906959608>ℹ️</emoji>"
+                f" {utils.escape_html(inspect.getdoc(instance))}</i>\n"
+            )
+
+        subscribe = ""
+        subscribe_markup = None
+
+        depends_from = []
+        for key in dir(instance):
+            value = getattr(instance, key)
+            if isinstance(value, loader.Library):
+                depends_from.append(
+                    "<emoji document_id=4971987363145188045>▫️</emoji>"
+                    " <code>{}</code> <b>{}</b> <code>{}</code>".format(
+                        value.__class__.__name__,
+                        self.strings("by"),
+                        (
+                            value.developer
+                            if isinstance(getattr(value, "developer", None), str)
+                            else "Unknown"
+                        ),
+                    )
+                )
+
+        depends_from = (
+            self.strings("depends_from").format("\n".join(depends_from))
+            if depends_from
+            else ""
+        )
+
+        def loaded_msg(use_subscribe: bool = True):
+            nonlocal modname, version, modhelp, developer, origin, subscribe, blob_link, depends_from
+            return self.strings("loaded").format(
+                modname.strip(),
+                version,
+                utils.ascii_face(),
+                modhelp,
+                developer if not subscribe or not use_subscribe else "",
+                depends_from,
+                (
+                    self.strings("modlink").format(origin)
+                    if origin != "<string>" and self.config["share_link"]
+                    else ""
+                ),
+                blob_link,
+                subscribe if use_subscribe else "",
+            )
+
+        if developer:
+            if developer.startswith("@") and developer not in self.get(
+                "do_not_subscribe", []
+            ):
+                if (
+                    developer_entity
+                    and getattr(developer_entity, "left", True)
+                    and self._db.get(main.__name__, "suggest_subscribe", True)
+                ):
+                    subscribe = self.strings("suggest_subscribe").format(
+                        f"@{utils.escape_html(developer_entity.username)}"
+                    )
+                    subscribe_markup = [
+                        {
+                            "text": self.strings("subscribe"),
+                            "callback": self._inline__subscribe,
+                            "args": (
+                                developer_entity.id,
+                                functools.partial(loaded_msg, use_subscribe=False),
+                                True,
+                            ),
+                        },
+                        {
+                            "text": self.strings("no_subscribe"),
+                            "callback": self._inline__subscribe,
+                            "args": (
+                                developer,
+                                functools.partial(loaded_msg, use_subscribe=False),
+                                False,
+                            ),
+                        },
+                    ]
+
+            developer = self.strings("developer").format(
+                utils.escape_html(developer)
+                if isinstance(developer_entity, Channel)
+                else f"<code>{utils.escape_html(developer)}</code>"
+            )
+        else:
+            developer = ""
+
+        if any(
+            line.replace(" ", "") == "#scope:disable_onload_docs"
+            for line in doc.splitlines()
+        ):
+            await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
+            return
+
+        for _name, fun in sorted(
+            instance.commands.items(),
+            key=lambda x: x[0],
+        ):
+            modhelp += "\n{} <code>{}{}</code> {}".format(
+                "<emoji document_id=4971987363145188045>▫️</emoji>",
+                utils.escape_html(self.get_prefix()),
+                _name,
+                (
+                    utils.escape_html(inspect.getdoc(fun))
+                    if fun.__doc__
+                    else self.strings("undoc")
+                ),
+            )
+
+        if self.inline.init_complete:
+            for _name, fun in sorted(
+                instance.inline_handlers.items(),
+                key=lambda x: x[0],
+            ):
+                modhelp += self.strings("ihandler").format(
+                    f"@{self.inline.bot_username} {_name}",
+                    (
+                        utils.escape_html(inspect.getdoc(fun))
+                        if fun.__doc__
+                        else self.strings("undoc")
+                    ),
+                )
+
+        try:
+            await utils.answer(message, loaded_msg(), reply_markup=subscribe_markup)
+        except MediaCaptionTooLongError:
+            await message.reply(loaded_msg(False))
 
     async def _inline__subscribe(
         self,
@@ -1067,25 +995,20 @@ class LoaderMod(loader.Module):
             await utils.answer(message, self.strings("no_class"))
             return
 
-        instance = self.lookup(args, include_dragon=True)
+        instance = self.lookup(args)
 
         if issubclass(instance.__class__, loader.Library):
             await utils.answer(message, self.strings("cannot_unload_lib"))
             return
 
-        is_dragon = isinstance(instance, DragonModule)
-
-        if is_dragon:
-            worked = [instance.name] if self.allmodules.unload_dragon(instance) else []
-        else:
-            try:
-                worked = await self.allmodules.unload_module(args)
-            except CoreUnloadError as e:
-                await utils.answer(
-                    message,
-                    self.strings("unload_core").format(e.module),
-                )
-                return
+        try:
+            worked = await self.allmodules.unload_module(args)
+        except CoreUnloadError as e:
+            await utils.answer(
+                message,
+                self.strings("unload_core").format(e.module),
+            )
+            return
 
         if not self.allmodules.secure_boot:
             self.set(
@@ -1099,11 +1022,7 @@ class LoaderMod(loader.Module):
 
         msg = (
             self.strings("unloaded").format(
-                (
-                    dragon.DRAGON_EMOJI
-                    if is_dragon
-                    else "<emoji document_id=5784993237412351403>✅</emoji>"
-                ),
+                "<emoji document_id=5784993237412351403>✅</emoji>",
                 ", ".join(
                     [(mod[:-3] if mod.endswith("Mod") else mod) for mod in worked]
                 ),

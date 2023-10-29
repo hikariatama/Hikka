@@ -33,6 +33,7 @@ import sys
 import traceback
 import typing
 
+import requests
 from hikkatl import events
 from hikkatl.errors import FloodWaitError, RPCError
 from hikkatl.tl.types import Message
@@ -134,6 +135,9 @@ class CommandDispatcher:
         )
 
         self.raw_handlers = []
+        self._external_bl: typing.List[int] = []
+
+        asyncio.ensure_future(self._external_bl_reload_loop())
 
     async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
         if await self.security.check(message, security.OWNER):
@@ -324,8 +328,17 @@ class CommandDispatcher:
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        if utils.get_chat_id(message) in blacklist_chats or (
-            whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
+        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+        # It's not recommended to remove the security check below (external_bl)
+        # If you attempt to bypass this protection, you will be banned from the chat
+        # The protection from using userbots is multi-layer and this is one of the layers
+        # If you bypass it, the next (external) layer will trigger and you will be banned
+        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+
+        if (
+            (chat_id := utils.get_chat_id(message)) in self._external_bl
+            or chat_id in blacklist_chats
+            or (whitelist_chats and chat_id not in whitelist_chats)
         ):
             return False
 
@@ -380,7 +393,7 @@ class CommandDispatcher:
 
         if message.is_channel and message.edit_date and not message.is_group:
             async for event in self._client.iter_admin_log(
-                utils.get_chat_id(message),
+                chat_id,
                 limit=10,
                 edit=True,
             ):
@@ -404,11 +417,9 @@ class CommandDispatcher:
         message.message = prefix + txt + message.message[len(prefix + command) :]
 
         if (
-            f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
-            in blacklist_chats
+            f"{str(chat_id)}.{func.__self__.__module__}" in blacklist_chats
             or whitelist_modules
-            and f"{utils.get_chat_id(message)}.{func.__self__.__module__}"
-            not in whitelist_modules
+            and f"{chat_id}.{func.__self__.__module__}" not in whitelist_modules
         ):
             return False
 
@@ -626,8 +637,17 @@ class CommandDispatcher:
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        if utils.get_chat_id(message) in blacklist_chats or (
-            whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
+        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+        # It's not recommended to remove the security check below (external_bl)
+        # If you attempt to bypass this protection, you will be banned from the chat
+        # The protection from using userbots is multi-layer and this is one of the layers
+        # If you bypass it, the next (external) layer will trigger and you will be banned
+        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+
+        if (
+            (chat_id := utils.get_chat_id(message)) in self._external_bl
+            or chat_id in blacklist_chats
+            or (whitelist_chats and chat_id not in whitelist_chats)
         ):
             logger.debug("Message is blacklisted")
             return
@@ -641,7 +661,7 @@ class CommandDispatcher:
                 and isinstance(message, Message)
                 and (
                     "*" in bl[modname]
-                    or utils.get_chat_id(message) in bl[modname]
+                    or chat_id in bl[modname]
                     or "only_chats" in bl[modname]
                     and message.is_private
                     or "only_pm" in bl[modname]
@@ -651,10 +671,9 @@ class CommandDispatcher:
                     or "in" in bl[modname]
                     and message.out
                 )
-                or f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
-                in blacklist_chats
+                or f"{str(chat_id)}.{func.__self__.__module__}" in blacklist_chats
                 or whitelist_modules
-                and f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
+                and f"{str(chat_id)}.{func.__self__.__module__}"
                 not in whitelist_modules
                 or await self._handle_tags(event, func)
             ):
@@ -698,3 +717,15 @@ class CommandDispatcher:
             await func(message)
         except Exception as e:
             await exception_handler(e, message, *args)
+
+    async def _external_bl_reload_loop(self):
+        while True:
+            with contextlib.suppress(Exception):
+                self._external_bl = (
+                    await utils.run_sync(
+                        requests.get,
+                        "https://ubguard.dan.tatar/blacklist.json",
+                    )
+                ).json()["blacklist"]
+
+            await asyncio.sleep(60)

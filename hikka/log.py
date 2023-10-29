@@ -7,6 +7,7 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import contextlib
 import inspect
 import io
 import linecache
@@ -39,17 +40,14 @@ def getlines(filename: str, module_globals=None) -> str:
     Update the cache if it doesn't contain an entry for this file already.
 
     Modified version of original `linecache.getlines`, which returns the
-    source code of Hikka and Dragon modules properly. This is needed for
+    source code of Hikka modules properly. This is needed for
     interactive line debugger in werkzeug web debugger.
     """
 
     try:
         if filename.startswith("<") and filename.endswith(">"):
             module = filename[1:-1].split(maxsplit=1)[-1]
-            if (
-                module.startswith("hikka.modules")
-                or module.startswith("dragon.modules")
-            ) and module in sys.modules:
+            if (module.startswith("hikka.modules")) and module in sys.modules:
                 return list(
                     map(
                         lambda x: f"{x}\n",
@@ -239,7 +237,8 @@ class TelegramLogsHandler(logging.Handler):
 
     async def queue_poller(self):
         while True:
-            await self.sender()
+            with contextlib.suppress(Exception):
+                await self.sender()
             await asyncio.sleep(3)
 
     def setLevel(self, level: int):
@@ -528,7 +527,6 @@ def init():
     )
     logging.getLogger().setLevel(logging.NOTSET)
     logging.getLogger("hikkatl").setLevel(logging.WARNING)
-    logging.getLogger("hikkapyro").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
     logging.getLogger("aiogram").setLevel(logging.WARNING)

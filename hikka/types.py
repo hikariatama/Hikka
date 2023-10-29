@@ -310,27 +310,6 @@ class Module:
     ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
         return self._db.pointer(self.__class__.__name__, key, default, item_type)
 
-    async def _approve(
-        self,
-        call: InlineCall,
-        channel: EntityLike,
-        event: asyncio.Event,
-    ):
-        from . import utils
-
-        local_event = asyncio.Event()
-        self.__approve += [(channel, local_event)]  # skipcq: PTC-W0037
-        await local_event.wait()
-        event.status = local_event.status
-        event.set()
-        await call.edit(
-            (
-                "💫 <b>Joined <a"
-                f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
-            ),
-            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
-        )
-
     async def _decline(
         self,
         call: InlineCall,
@@ -351,7 +330,7 @@ class Module:
                 "✖️ <b>Declined joining <a"
                 f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
             ),
-            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
+            gif="https://data.whicdn.com/images/324445359/original.gif",
         )
 
     async def request_join(
@@ -403,7 +382,7 @@ class Module:
 
         await self.inline.bot.send_animation(
             self.tg_id,
-            "https://static.hikari.gay/ab3adf144c94a0883bfe489f4eebc520.gif",
+            "https://i.gifer.com/SD5S.gif",
             caption=(
                 self._client.loader.lookup("translations")
                 .strings("requested_join")
@@ -418,7 +397,7 @@ class Module:
                 [
                     {
                         "text": "💫 Approve",
-                        "callback": self._approve,
+                        "callback": self.lookup("loader").approve_internal,
                         "args": (channel, event),
                     },
                     {
@@ -435,6 +414,7 @@ class Module:
             channel,
             reason,
         )
+        event.status = False
         await event.wait()
 
         with contextlib.suppress(AttributeError):
@@ -665,53 +645,6 @@ class Module:
 
         self.allmodules.libraries += [lib_obj]
         return lib_obj
-
-
-class DragonModule:
-    """Module is running in compatibility mode with Dragon, so it might be unstable"""
-
-    # fmt: off
-    strings_ru = {"_cls_doc": "Модуль запущен в режиме совместимости с Dragon, поэтому он может быть нестабильным"}
-    strings_de = {"_cls_doc": "Das Modul wird im Dragon-Kompatibilitäts modus ausgeführt, daher kann es instabil sein"}
-    strings_tr = {"_cls_doc": "Modül Dragon uyumluluğu modunda çalıştığı için istikrarsız olabilir"}
-    strings_uz = {"_cls_doc": "Modul Dragon muvofiqligi rejimida ishlamoqda, shuning uchun u beqaror bo'lishi mumkin"}
-    strings_es = {"_cls_doc": "El módulo se ejecuta en modo de compatibilidad con Dragon, por lo que puede ser inestable"}
-    strings_kk = {"_cls_doc": "Модуль Dragon қамтамасыз ету режимінде іске қосылған, сондықтан белсенді емес болуы мүмкін"}
-    strings_tt = {"_clc_doc": "Модуль Dragon белән ярашучанлык режимда эшли башлады, шуңа күрә ул тотрыксыз була ала"}
-    # fmt: on
-
-    def __init__(self):
-        self.name = "Unknown"
-        self.url = None
-        self.commands = {}
-        self.watchers = {}
-        self.hikka_watchers = {}
-        self.inline_handlers = {}
-        self.hikka_inline_handlers = {}
-        self.callback_handlers = {}
-        self.hikka_callback_handlers = {}
-
-    @property
-    def hikka_commands(
-        self,
-    ) -> typing.Dict[str, Command]:
-        return self.commands
-
-    @property
-    def __origin__(self) -> str:
-        return f"<dragon {self.name}>"
-
-    def config_complete(self):
-        pass
-
-    async def client_ready(self):
-        pass
-
-    async def on_unload(self):
-        pass
-
-    async def on_dlmod(self):
-        pass
 
 
 class Library:

@@ -38,11 +38,11 @@ def die():
 
 
 def restart():
-    if "HIKKA_DO_NOT_RESTART" in os.environ:
+    if "HIKKA_DO_NOT_RESTART2" in os.environ:
         print(
             "Got in a loop, exiting\nYou probably need to manually remove existing"
             " packages and then restart Hikka. Run `pip uninstall -y telethon"
-            " telethon-mod hikka-tl pyrogram hikka-pyro`, then restart Hikka."
+            " telethon-mod hikka-tl`, then restart Hikka."
         )
         sys.exit(0)
 
@@ -54,7 +54,10 @@ def restart():
         os.system("lavhost restart")
         return
 
-    os.environ["HIKKA_DO_NOT_RESTART"] = "1"
+    if "HIKKA_DO_NOT_RESTART" not in os.environ:
+        os.environ["HIKKA_DO_NOT_RESTART"] = "1"
+    else:
+        os.environ["HIKKA_DO_NOT_RESTART2"] = "1"
 
     if "DOCKER" in os.environ:
         atexit.register(get_startup_callback())

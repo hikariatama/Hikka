@@ -4,13 +4,11 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-import hikkapyro
 import hikkatl
 from hikkatl.extensions.html import CUSTOM_EMOJIS
 from hikkatl.tl.types import Message
 
 from .. import loader, main, utils, version
-from ..compat.dragon import DRAGON_EMOJI
 from ..inline.types import InlineCall
 
 
@@ -59,12 +57,6 @@ class CoreMod(loader.Module):
                 *version.__version__,
                 utils.get_commit_url(),
                 f"{hikkatl.__version__} #{hikkatl.tl.alltlobjects.LAYER}",
-                (
-                    "<emoji document_id=5377399247589088543>🔥</emoji>"
-                    if self._client.pyro_proxy
-                    else "<emoji document_id=5418308381586759720>📴</emoji>"
-                ),
-                f"{hikkapyro.__version__} #{hikkapyro.raw.all.layer}",
             )
             + (
                 ""
@@ -143,12 +135,6 @@ class CoreMod(loader.Module):
             await utils.answer(message, self.strings("what_prefix"))
             return
 
-        if len(args.split()) == 2 and args.split()[0] == "dragon":
-            args = args.split()[1]
-            is_dragon = True
-        else:
-            is_dragon = False
-
         if len(args) != 1:
             await utils.answer(message, self.strings("prefix_incorrect"))
             return
@@ -157,36 +143,18 @@ class CoreMod(loader.Module):
             await utils.answer(message, self.strings("prefix_incorrect"))
             return
 
-        if (
-            not is_dragon
-            and args[0] == self._db.get("dragon.prefix", "command_prefix", ",")
-            or is_dragon
-            and args[0] == self._db.get(main.__name__, "command_prefix", ".")
-        ):
-            await utils.answer(message, self.strings("prefix_collision"))
-            return
+        oldprefix = utils.escape_html(self.get_prefix())
 
-        oldprefix = (
-            f"dragon {utils.escape_html(self.get_prefix('dragon'))}"
-            if is_dragon
-            else utils.escape_html(self.get_prefix())
-        )
         self._db.set(
-            "dragon.prefix" if is_dragon else main.__name__,
+            main.__name__,
             "command_prefix",
             args,
         )
         await utils.answer(
             message,
             self.strings("prefix_set").format(
-                (
-                    DRAGON_EMOJI
-                    if is_dragon
-                    else "<emoji document_id=5197474765387864959>👍</emoji>"
-                ),
-                newprefix=utils.escape_html(
-                    self.get_prefix() if is_dragon else args[0]
-                ),
+                "<emoji document_id=5197474765387864959>👍</emoji>",
+                newprefix=utils.escape_html(args[0]),
                 oldprefix=utils.escape_html(oldprefix),
             ),
         )

@@ -7,6 +7,7 @@
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import builtins
 import contextlib
 import copy
 import importlib
@@ -20,7 +21,7 @@ import sys
 import typing
 from functools import wraps
 from pathlib import Path
-from types import FunctionType, ModuleType
+from types import FunctionType
 from uuid import uuid4
 
 from hikkatl.tl.tlobject import TLObject
@@ -34,7 +35,6 @@ from .types import (
     ConfigValue,
     CoreOverwriteError,
     CoreUnloadError,
-    DragonModule,
     InlineMessage,
     JSONSerializable,
     Library,
@@ -57,7 +57,6 @@ __all__ = [
     "Command",
     "CoreOverwriteError",
     "CoreUnloadError",
-    "DragonModule",
     "InlineMessage",
     "JSONSerializable",
     "Library",
@@ -133,6 +132,21 @@ VALID_PIP_PACKAGES = re.compile(
 )
 
 USER_INSTALL = "PIP_TARGET" not in os.environ and "VIRTUAL_ENV" not in os.environ
+
+native_import = builtins.__import__
+
+
+def patched_import(name: str, *args, **kwargs):
+    if name.startswith("telethon"):
+        return native_import("hikkatl" + name[8:], *args, **kwargs)
+
+    if name.startswith("pyrogram"):
+        return native_import("hikkapyro" + name[8:], *args, **kwargs)
+
+    return native_import(name, *args, **kwargs)
+
+
+builtins.__import__ = patched_import
 
 
 class InfiniteLoop:
@@ -485,7 +499,6 @@ class Modules:
         self.callback_handlers = {}
         self.aliases = {}
         self.modules = []  # skipcq: PTC-W0052
-        self.dragon_modules = []
         self.libraries = []
         self.watchers = []
         self._log_handlers = []
@@ -610,54 +623,13 @@ class Modules:
 
         return loaded
 
-    def register_dragon(self, module: ModuleType, instance: DragonModule):
-        for mod in self.dragon_modules.copy():
-            if mod.name == instance.name:
-                logger.debug("Removing dragon module %s for reload", mod.name)
-                self.unload_dragon(mod)
-
-        instance.handlers = []
-        for name, obj in vars(module).items():
-            for handler, group in getattr(obj, "handlers", []):
-                try:
-                    handler = self.client.pyro_proxy.add_handler(handler, group)
-                    instance.handlers.append(handler)
-                except Exception as e:
-                    logging.exception(
-                        "Can't add handler %s due to %s: %s",
-                        name,
-                        type(e).__name__,
-                        e,
-                    )
-
-        self.dragon_modules += [instance]
-
-    def unload_dragon(self, instance: DragonModule) -> bool:
-        for handler in instance.handlers:
-            try:
-                self.client.pyro_proxy.remove_handler(*handler)
-            except Exception as e:
-                logging.exception(
-                    "Can't remove handler %s due to %s: %s",
-                    handler,
-                    type(e).__name__,
-                    e,
-                )
-
-        if instance in self.dragon_modules:
-            self.dragon_modules.remove(instance)
-            return True
-
-        return False
-
     async def register_module(
         self,
         spec: importlib.machinery.ModuleSpec,
         module_name: str,
         origin: str = "<core>",
         save_fs: bool = False,
-        is_dragon: bool = False,
-    ) -> typing.Union[Module, typing.Tuple[ModuleType, DragonModule]]:
+    ) -> Module:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
@@ -665,9 +637,6 @@ class Modules:
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
-
-        if is_dragon:
-            return module, DragonModule()
 
         ret = None
 
@@ -847,50 +816,30 @@ class Modules:
     def lookup(
         self,
         modname: str,
-        include_dragon: bool = False,
-    ) -> typing.Union[bool, Module, DragonModule, Library]:
-        return (
-            next(
-                (lib for lib in self.libraries if lib.name.lower() == modname.lower()),
-                False,
-            )
-            or next(
-                (
-                    mod
-                    for mod in self.modules
-                    if mod.__class__.__name__.lower() == modname.lower()
-                    or mod.name.lower() == modname.lower()
-                ),
-                False,
-            )
-            or (
-                next(
-                    (
-                        mod
-                        for mod in self.dragon_modules
-                        if mod.name.lower() == modname.lower()
-                    ),
-                    False,
-                )
-                if include_dragon
-                else False
-            )
+    ) -> typing.Union[bool, Module, Library]:
+        return next(
+            (lib for lib in self.libraries if lib.name.lower() == modname.lower()),
+            False,
+        ) or next(
+            (
+                mod
+                for mod in self.modules
+                if mod.__class__.__name__.lower() == modname.lower()
+                or mod.name.lower() == modname.lower()
+            ),
+            False,
         )
 
     @property
     def get_approved_channel(self):
         return self.__approve.pop(0) if self.__approve else None
 
-    def get_prefix(self, userbot: typing.Optional[str] = None) -> str:
-        """Get prefix for specific userbot. Pass `None` to get Hikka prefix"""
-        if userbot == "dragon":
-            key = "dragon.prefix"
-            default = ","
-        else:
-            from . import main
+    def get_prefix(self) -> str:
+        """Get command prefix"""
+        from . import main
 
-            key = main.__name__
-            default = "."
+        key = main.__name__
+        default = "."
 
         return self._db.get(key, "command_prefix", default)
 

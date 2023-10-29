@@ -52,6 +52,15 @@ class UnitHeta(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
+                "use_mirror",
+                False,
+                (
+                    "Use mirror for modules download. Enable this option if you have"
+                    " issues with .ru domain zone"
+                ),
+                validator=loader.validators.Boolean(),
+            ),
+            loader.ConfigValue(
                 "autoupdate",
                 False,
                 (
@@ -81,6 +90,24 @@ class UnitHeta(loader.Module):
                 validator=loader.validators.Boolean(),
                 on_change=self._process_config_changes,
             ),
+            loader.ConfigValue(
+                "privacy_switch",
+                False,
+                (
+                    "If set to `True`, external Heta integration will be completely"
+                    " disabled. You will lose the ability to download modules using"
+                    " buttons and get essential updates. This option doesn't affect"
+                    " `allow_external_access`."
+                ),
+            ),
+        )
+
+    @property
+    def _api_url(self) -> str:
+        return (
+            "https://heta.dan.tatar"
+            if self.config["use_mirror"]
+            else "https://heta.hikariatama.ru"
         )
 
     def _process_config_changes(self):
@@ -138,7 +165,7 @@ class UnitHeta(loader.Module):
         if not (
             response := await utils.run_sync(
                 requests.get,
-                "https://heta.hikariatama.ru/search",
+                f"{self._api_url}/search",
                 params={"q": query, "limit": 1},
                 headers={
                     "User-Agent": "Hikka Userbot",
@@ -170,16 +197,23 @@ class UnitHeta(loader.Module):
             "args": (result["module"]["link"], text),
         }
 
-        form = await self.inline.form(
-            message=message,
-            text=text,
-            **(
-                {"photo": result["module"]["banner"]}
-                if result["module"].get("banner")
-                else {}
-            ),
-            reply_markup=mark(text),
-        )
+        if not (
+            form := await self.inline.form(
+                message=message,
+                text=text,
+                **(
+                    {"photo": result["module"]["banner"]}
+                    if result["module"].get("banner")
+                    else {}
+                ),
+                reply_markup=mark(text),
+            )
+        ):
+            form = await self.inline.form(
+                message=message,
+                text=text,
+                reply_markup=mark(text),
+            )
 
         if not self.config["translate"]:
             return
@@ -223,6 +257,9 @@ class UnitHeta(loader.Module):
 
     @loader.watcher("in", "only_messages", chat_id=1688624566, contains="Heta url: ")
     async def update_watcher(self, message: Message):
+        if self.config["privacy_switch"]:
+            return
+
         url = message.raw_text.split("Heta url: ")[1].strip()
         dev, repo, mod = url.lower().split("hikariatama.ru/")[1].split("/")
 
@@ -274,6 +311,13 @@ class UnitHeta(loader.Module):
         regex=r"^#install:.*?\/.*?\/.*?\n.*?\n\d+\n\n.*$",
     )
     async def watcher(self, message: Message):
+        if self.config["privacy_switch"]:
+            logger.warning(
+                "You can't download modules using buttons when `privacy_switch` option"
+                " is turned on"
+            )
+            return
+
         await message.delete()
 
         data = re.search(
@@ -293,7 +337,7 @@ class UnitHeta(loader.Module):
             return
 
         await self._load_module(
-            f"https://heta.hikariatama.ru/{uri}",
+            f"{self._api_url}/{uri}",
             int(data["dl_id"]),
         )
 
@@ -421,7 +465,7 @@ class UnitHeta(loader.Module):
 
         text = strings.format(**kwargs)
 
-        if len(text) > 2048:
+        if len(text) > 1980:
             kwargs["commands"] = "..."
             text = strings.format(**kwargs)
 
@@ -440,7 +484,7 @@ class UnitHeta(loader.Module):
         if not (
             response := await utils.run_sync(
                 requests.get,
-                "https://heta.hikariatama.ru/search",
+                f"{self._api_url}/search",
                 params={"q": query.args, "limit": 30},
             )
         ) or not (response := response.json()):
@@ -480,7 +524,7 @@ class UnitHeta(loader.Module):
 
         ans = await utils.run_sync(
             requests.get,
-            "https://heta.hikariatama.ru/resolve_hash",
+            f"{self._api_url}/resolve_hash",
             params={"hash": mhash},
             headers={
                 "User-Agent": "Hikka Userbot",

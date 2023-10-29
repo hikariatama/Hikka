@@ -89,6 +89,7 @@ IS_DOCKER = "DOCKER" in os.environ
 IS_RAILWAY = "RAILWAY" in os.environ
 IS_GOORM = "GOORM" in os.environ
 IS_LAVHOST = "LAVHOST" in os.environ
+IS_HIKKAHOST = "HIKKAHOST" in os.environ
 IS_WSL = False
 with contextlib.suppress(Exception):
     from platform import uname
@@ -857,8 +858,6 @@ class Hikka:
         await translator.init()
         modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
-
-        client.pyro_proxy = None  # Will be set later if needed
 
         if self.web:
             await self.web.add_loader(client, modules, db)
