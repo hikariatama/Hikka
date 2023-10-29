@@ -394,13 +394,13 @@ files = [
 test = ["pytest", "sphinx", "sphinx-autobuild", "twine", "wheel"]
 
 [[package]]
-name = "Hikka-TL-New"
-version = "2.0.6"
+name = "hikka-tl-new"
+version = "2.0.7"
 description = "Full-featured Telegram client library for Python 3"
 optional = false
 python-versions = ">=3.5"
 files = [
-    {file = "Hikka_TL_New-2.0.6-py3-none-any.whl", hash = "sha256:a31b76f852c151f2c350a37a814760524f71b7e36a747e4e413dc0d765c5f1d4"},
+    {file = "Hikka_TL_New-2.0.7-py3-none-any.whl", hash = "sha256:75697eb3e2290b95e13197ba3aa582e2e38bba7a30e0dca90e977d6dd108ca26"},
 ]
 
 [package.dependencies]
@@ -970,4 +970,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "13159d7bbd1d389075092aa4adbe8928564de9a53c92bcc8267bc3090c0d999e"
+content-hash = "cecd869584004acb37411478dcf6c82c1e0c3142f68e0c6d932fc4e2e8551405"

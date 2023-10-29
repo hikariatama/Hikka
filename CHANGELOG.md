@@ -7,7 +7,7 @@
 - Decrease module info length in heta
 - Add privacy switch to `UnitHeta`
 - Add HikkaHost as a platform
-- Update to Hikka-TL 2.0.6
+- Update to Hikka-TL 2.0.7
 - Allow double-restart
 - https://github.com/hikariatama/Hikka/issues/115
 - https://github.com/hikariatama/Hikka/issues/114
