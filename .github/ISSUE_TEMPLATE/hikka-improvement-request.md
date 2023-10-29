@@ -1,14 +1,15 @@
 ---
 name: Hikka improvement request
 about: Suggest an idea for Hikka userbot itself
-title: ''
+title: ""
 labels: enhancement, Hikka
-assignees: ''
-
+assignees: ""
 ---
 
 - [x] My suggestion **is related to Hikka userbot itself**. It's not about illegal stuff, doesn't violate Telegram EULA and human rights and **is not related to modules**.
+
 ---
+
 **Describe the suggestion**
 A clear and concise description of what you want to happen.
 

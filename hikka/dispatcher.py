@@ -508,8 +508,8 @@ class CommandDispatcher:
                 txt = (
                     "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
                     f" <code>{utils.escape_html(message.message)}</code><b>"
-                    " failed!</b>\n\n<b>🧾"
-                    f" Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
+                    " failed!</b>\n\n<b>🧾 Logs:</b>\n<pre><code"
+                    f' class="language-logs">{utils.escape_html(exc)}</code></pre>'
                 )
 
         with contextlib.suppress(Exception):

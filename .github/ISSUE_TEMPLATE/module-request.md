@@ -1,12 +1,13 @@
 ---
 name: Module request
 about: Request a new module
-title: ''
+title: ""
 labels: idea
-assignees: ''
-
+assignees: ""
 ---
+
 - [x] **My suggestion is not about illegal stuff, doesn't violate Telegram EULA and human rights.**
+
 ---
 
 **Short description of idea**:
