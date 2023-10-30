@@ -282,7 +282,7 @@ class Utils(InlineUnit):
         :param text: text to sanitise
         :return: sanitised text
         """
-        return re.sub(r"</?emoji.*?>", "", text)
+        return re.sub(r"</?(?:emoji|blockquote).*?>", "", text)
 
     async def _edit_unit(
         self,
