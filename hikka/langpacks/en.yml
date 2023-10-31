@@ -461,6 +461,13 @@ hikka_info:
 
 loader:
   name: "Loader"
+  loadmod_pm_timeout: "Please, wait for 10 seconds before confirming this action"
+  loadmod_not_allowed_fresh_pm: "<emoji document_id=5447644880824181073>⚠️</emoji> <b><u>Read this carefully!</u></b> <emoji document_id=5447644880824181073>⚠️</emoji>\n\n<b>You are attempting to load a module in personal messages with a user you do not know.</b> Modules, not verified by the developer, might cause a lot of trouble, from <b>messing with your account to account deletion or session comprometation</b>. If you know this user and <b><u>100%</u></b> trust him, wait a few days and try again."
+  loadmod_confirm_pm_message: "<emoji document_id=5451732530048802485>⏳</emoji> <i>Waiting for your confirmation...</i>"
+  loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Module loading cancelled</b>"
+  loadmod_confirm_pm: "⚠️ <b>Warning!</b>\n\nLoading modules from unknown sources is <b><u>very dangerous</u></b> and can lead to <b>account deletion or session comprometation</b>. Make sure that you know this user and <b><u>100%</u></b> trust him.\n\n<b>Do you want to continue with module loading?</b>"
+  loadmod_confirm_pm_yes: "✅ Yes, continue"
+  loadmod_confirm_pm_no: "🚫 No, cancel"
   repo_config_doc: "URL to a module repo"
   avail_header: "🎢 <b>Modules from repo</b>"
   no_module: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Module not available in repo.</b>"

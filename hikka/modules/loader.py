@@ -27,7 +27,7 @@ from urllib.parse import urlparse
 import requests
 from hikkatl.errors.rpcerrorlist import MediaCaptionTooLongError
 from hikkatl.tl.functions.channels import JoinChannelRequest
-from hikkatl.tl.types import Channel, Message
+from hikkatl.tl.types import Channel, Message, PeerUser
 
 from .. import loader, main, utils
 from .._local_storage import RemoteStorage
@@ -36,6 +36,19 @@ from ..inline.types import InlineCall
 from ..types import CoreOverwriteError, CoreUnloadError
 
 logger = logging.getLogger(__name__)
+
+
+class FakeOne:
+    def __eq__(self, other):
+        return other == -1 or isinstance(other, FakeOne)
+
+    def __bool__(self):
+        return False
+
+
+MODULE_LOADING_FORBIDDEN = FakeOne()
+MODULE_LOADING_FAILED = 0
+MODULE_LOADING_SUCCESS = 1
 
 
 @loader.tds
@@ -156,11 +169,16 @@ class LoaderMod(loader.Module):
         )
 
     @loader.command(alias="dlm")
-    async def dlmod(self, message: Message):
+    async def dlmod(self, message: Message, force_pm: bool = False):
         if args := utils.get_args(message):
             args = args[0]
 
-            await self.download_and_install(args, message)
+            if (
+                await self.download_and_install(args, message, force_pm)
+                == MODULE_LOADING_FORBIDDEN
+            ):
+                return
+
             if self.fully_loaded:
                 self.update_modules_in_db()
         else:
@@ -262,7 +280,8 @@ class LoaderMod(loader.Module):
         self,
         module_name: str,
         message: typing.Optional[Message] = None,
-    ):
+        force_pm: bool = False,
+    ) -> int:
         try:
             blob_link = False
             module_name = module_name.strip()
@@ -282,7 +301,27 @@ class LoaderMod(loader.Module):
                     if message is not None:
                         await utils.answer(message, self.strings("no_module"))
 
-                    return False
+                    return MODULE_LOADING_FAILED
+
+            if (
+                not any(
+                    url.startswith(trigger)
+                    for trigger in [
+                        "https://heta.hikariatama.ru/",
+                        "https://mods.hikariatama.ru/",
+                        "https://heta.dan.tatar/",
+                        "https://mods.dan.tatar/",
+                    ]
+                )
+                and message
+                and not await self._verify_lm(
+                    message,
+                    force_pm,
+                    self._inline_dlmod_confirm,
+                    self._inline_load_cancel,
+                )
+            ):
+                return MODULE_LOADING_FORBIDDEN
 
             if message:
                 message = await utils.answer(
@@ -296,17 +335,19 @@ class LoaderMod(loader.Module):
                 if message is not None:
                     await utils.answer(message, self.strings("no_module"))
 
-                return False
+                return MODULE_LOADING_FAILED
 
-            return await self.load_module(
+            await self.load_module(
                 r,
                 message,
                 module_name,
                 url,
                 blob_link=blob_link,
             )
+            return MODULE_LOADING_SUCCESS
         except Exception:
             logger.exception("Failed to load %s", module_name)
+            return MODULE_LOADING_FAILED
 
     async def _inline__load(
         self,
@@ -329,8 +370,98 @@ class LoaderMod(loader.Module):
 
         await self.load_module(doc, call, origin=path_ or "<string>", save_fs=save)
 
+    async def _inline_load_confirm(
+        self,
+        call: InlineCall,
+        message: Message,
+        force_pm: bool,
+        pm_timeout: int,
+        callback: callable,
+    ):
+        if pm_timeout >= time.time():
+            await call.answer(self.strings("loadmod_pm_timeout"))
+            return
+
+        await call.answer("✅")
+        await call.delete()
+        await callback(message, force_pm=force_pm)
+
+    async def _inline_load_cancel(self, call: InlineCall, message: Message):
+        await call.delete()
+        await utils.answer(message, self.strings("loadmod_cancelled"))
+
+    async def _inline_loadmod_confirm(
+        self,
+        call: InlineCall,
+        message: Message,
+        force_pm: bool,
+        pm_timeout: int,
+    ):
+        await self._inline_load_confirm(
+            call,
+            message,
+            force_pm,
+            pm_timeout,
+            self.loadmod,
+        )
+
+    async def _inline_dlmod_confirm(
+        self,
+        call: InlineCall,
+        message: Message,
+        force_pm: bool,
+        pm_timeout: int,
+    ):
+        await self._inline_load_confirm(call, message, force_pm, pm_timeout, self.dlmod)
+
+    async def _verify_lm(
+        self,
+        message: Message,
+        force_pm: bool,
+        successful_callback: callable,
+        cancel_callback: callable,
+    ) -> bool:
+        chat_id = utils.get_chat_id(message)
+        if chat_id == self._tg_id or not isinstance(message.peer_id, PeerUser):
+            return True
+
+        async for msg in self._client.iter_messages(
+            message.peer_id,
+            reverse=True,
+            limit=1,
+        ):
+            THREE_DAYS = 3 * 24 * 60 * 60
+            if (message.date - msg.date).total_seconds() < THREE_DAYS:
+                await utils.answer(
+                    message,
+                    self.strings("loadmod_not_allowed_fresh_pm"),
+                )
+                return False
+
+            if not force_pm:
+                await utils.answer(message, self.strings("loadmod_confirm_pm_message"))
+                await self.inline.form(
+                    message=chat_id,
+                    text=self.strings("loadmod_confirm_pm"),
+                    reply_markup=[
+                        {
+                            "text": self.strings("loadmod_confirm_pm_yes"),
+                            "callback": successful_callback,
+                            "args": (message, True, int(time.time() + 10)),
+                        },
+                        {
+                            "text": self.strings("loadmod_confirm_pm_no"),
+                            "callback": cancel_callback,
+                            "args": (message,),
+                        },
+                    ],
+                )
+                return False
+
+        return True
+
     @loader.command(alias="lm")
-    async def loadmod(self, message: Message):
+    async def loadmod(self, message: Message, force_pm: bool = False):
         args = utils.get_args_raw(message)
         if "-fs" in args:
             force_save = True
@@ -342,6 +473,14 @@ class LoaderMod(loader.Module):
 
         if msg is None or msg.media is None:
             await utils.answer(message, self.strings("provide_module"))
+            return
+
+        if not await self._verify_lm(
+            message,
+            force_pm,
+            self._inline_loadmod_confirm,
+            self._inline_load_cancel,
+        ):
             return
 
         path_ = None

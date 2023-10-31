@@ -437,6 +437,13 @@ hikka_info:
   _cmd_doc_setinfo: "<texte> - Changer le texte dans .info"
 
 loader:
+  loadmod_pm_timeout: "Veuillez patienter 10 secondes avant de confirmer cette action"
+  loadmod_not_allowed_fresh_pm: "<emoji document_id=5447644880824181073>⚠️</emoji> <b><u>Lisez ceci attentivement!</u></b> <emoji document_id=5447644880824181073>⚠️</emoji>\n\n<b>Vous essayez de charger un module dans des messages personnels avec un utilisateur que vous ne connaissez pas.</b> Les modules, non vérifiés par le développeur, peuvent causer beaucoup de problèmes, de <b>problèmes avec votre compte à la suppression du compte ou à la compromission de la session</b>. Si vous connaissez cet utilisateur et <b><u>à 100%</u></b> lui faire confiance, attendez quelques jours et réessayez."
+  loadmod_confirm_pm_message: "<emoji document_id=5451732530048802485>⏳</emoji> <i>En attente de votre confirmation...</i>"
+  loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Chargement du module annulé</b>"
+  loadmod_confirm_pm: "⚠️ <b>Avertissement!</b>\n\nLe chargement de modules provenant de sources inconnues est <b><u>très dangereux</u></b> et peut conduire à une <b>suppression du compte ou à la compromission de la session</b>. Si vous connaissez cet utilisateur et <b><u>à 100%</u></b> lui faire confiance, confirmez le chargement du module en cliquant sur le bouton ci-dessous."
+  loadmod_confirm_pm_yes: "✅ Confirmer"
+  loadmod_confirm_pm_no: "🚫 Annuler"
   repo_config_doc: "Lien de téléchargement des modules"
   add_repo_config_doc: "Dépôts supplémentaires"
   avail_header: "🎢 <b>Modules officiels du dépôt</b>"

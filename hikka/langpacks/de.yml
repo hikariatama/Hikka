@@ -435,6 +435,13 @@ hikka_info:
   _cmd_doc_setinfo: "<text> - Ändere den Text in .info"
 
 loader:
+  loadmod_pm_timeout: "Bitte warte 10 Sekunden, bevor du diese Aktion bestätigst"
+  loadmod_not_allowed_fresh_pm: "<emoji document_id=5447644880824181073>⚠️</emoji> <b><u>Lies dies sorgfältig durch!</u></b> <emoji document_id=5447644880824181073>⚠️</emoji>\n\n<b>Du versuchst, ein Modul in persönlichen Nachrichten mit einem Benutzer zu laden, den Du nicht kennst.</b> Module, die nicht vom Entwickler verifiziert wurden, können viel Ärger verursachen, von <b>Problemen mit Deinem Account bis hin zur Löschung des Accounts oder Kompromittierung der Sitzung</b>. Wenn Du diesen Benutzer kennst und ihm <b><u>100%</u></b> vertraust, warte ein paar Tage und versuche es erneut."
+  loadmod_confirm_pm_message: "<emoji document_id=5451732530048802485>⏳</emoji> <i>Warte auf Deine Bestätigung...</i>"
+  loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Laden des Moduls abgebrochen</b>"
+  loadmod_confirm_pm: "⚠️ <b>Achtung!</b>\n\nDas Laden von Modulen aus unbekannten Quellen ist <b><u>sehr gefährlich</u></b> und kann zu <b>Löschung des Accounts oder Kompromittierung der Sitzung</b> führen. Stelle sicher, dass Du diesen Benutzer kennst und ihm <b><u>100%</u></b> vertraust.\n\n<b>Möchtest Du mit dem Laden des Moduls fortfahren?</b>"
+  loadmod_confirm_pm_yes: "✅ Ja, weiter"
+  loadmod_confirm_pm_no: "🚫 Nein, abbrechen"
   repo_config_doc: "Modul-Download-Link"
   add_repo_config_doc: "Zusätzliche Repositorys"
   avail_header: "🎢 <b>Offizielle Moduleaus Repository</b>"

@@ -430,6 +430,13 @@ hikka_info:
   _cmd_doc_setinfo: "<texto> - Cambiar el texto en .info"
 
 loader:
+  loadmod_pm_timeout: "Por favor, espere 10 segundos antes de confirmar esta acción"
+  loadmod_not_allowed_fresh_pm: "<emoji document_id=5447644880824181073>⚠️</emoji> <b><u>¡Lea esto atentamente!</u></b> <emoji document_id=5447644880824181073>⚠️</emoji>\n\n<b>Está intentando cargar un módulo en mensajes personales con un usuario que no conoce.</b> Los módulos, no verificados por el desarrollador, pueden causar muchos problemas, desde <b>problemas con su cuenta hasta la eliminación de la cuenta o la comprometación de la sesión</b>. Si conoce a este usuario y <b><u>100%</u></b> confía en él, espere unos días y vuelva a intentarlo."
+  loadmod_confirm_pm_message: "<emoji document_id=5451732530048802485>⏳</emoji> <i>Esperando su confirmación...</i>"
+  loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Carga de módulos cancelada</b>"
+  loadmod_confirm_pm: "⚠️ <b>¡Advertencia!</b>\n\nCargar módulos de fuentes desconocidas es <b><u>muy peligroso</u></b> y puede conducir a <b>la eliminación de la cuenta o la comprometación de la sesión</b>. Asegúrese de que conoce a este usuario y <b><u>100%</u></b> confía en él.\n\n<b>¿Quieres continuar con la carga del módulo?</b>"
+  loadmod_confirm_pm_yes: "✅ Sí, continuar"
+  loadmod_confirm_pm_no: "🚫 No, cancelar"
   repo_config_doc: "Enlace al repositorio de módulos"
   avail_header: "🎢 <b>Módulos del repositorio</b>"
   no_module: "<emoji document_id=5210952531676504517>🚫</emoji> <b>No se encontró el módulo en el repositorio.</b>"

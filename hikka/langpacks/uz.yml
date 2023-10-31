@@ -435,6 +435,13 @@ hikka_info:
   _cmd_doc_setinfo: "<matn> - .info'dagi matnni o'zgartirish"
 
 loader:
+  loadmod_pm_timeout: "Iltimos, ushbu amalni tasdiqlashdan oldin 10 soniya kuting"
+  loadmod_not_allowed_fresh_pm: "<emoji document_id=5447644880824181073>⚠️</emoji> <b><u>Shuni diqqat bilan o‘qing!</u></b> <emoji document_id=5447644880824181073>⚠️</emoji>\n\n<b>Siz personal xabarlarda modul yuklashga harakat qilyapsiz, lekin ushbu foydalanuvchi sizni tanimasligi mumkin emas.</b> Modullar, rivojlovchi tomonidan tasdiqlanmagan bo‘lsa, turli xavflarga olib kelishi mumkin, <b>sizning hisobingizni xatolikka uchratishdan, hisobni o‘chirib tashlashdan yoki sessiyani tekshirishdan</b>. Ushbu foydalanuvchini taniyotganingiz va <b><u>100%</u></b> ishonchga ega bo‘lsangiz, bir necha kun o‘tkazib, qayta urinib ko‘ring."
+  loadmod_confirm_pm_message: "<emoji document_id=5451732530048802485>⏳</emoji> <i>Sizning tasdiqingiz kutilyapti...</i>"
+  loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modul yuklash bekor qilindi</b>"
+  loadmod_confirm_pm: "⚠️ <b>Ogohlantirish!</b>\n\nModullarni noma’lum manbalardan yuklash <b><u>judayam xavfli</u></b> va <b>sizning hisobingizni xatolikka uchratishga yoki sessiyani tekshirishga</b> olib kelishi mumkin. Keling, ushbu foydalanuvchini taniyotganingiz va <b><u>100%</u></b> ishonchga ega bo‘lsangiz.\n\n<b>Modul yuklashni davom ettirishni istaysizmi?</b>"
+  loadmod_confirm_pm_yes: "✅ Ha, davom ettirish"
+  loadmod_confirm_pm_no: "🚫 Yo‘q, bekor qilish"
   repo_config_doc: "Modulni yuklab olish havolasi"
   add_repo_config_doc: "Qo'shimcha omborlar"
   avail_header: "🎢 <b>Rasmiy modullarombordan</b>"

@@ -430,6 +430,13 @@ hikka_info:
   _cmd_doc_setinfo: "<metin> - .info'da metni değiştir"
 
 loader:
+  loadmod_pm_timeout: "Lütfen, bu işlemi onaylamadan önce 10 saniye bekleyin"
+  loadmod_not_allowed_fresh_pm: "<emoji document_id=5447644880824181073>⚠️</emoji> <b><u>Bunu dikkatlice okuyun!</u></b> <emoji document_id=5447644880824181073>⚠️</emoji>\n\n<b>Bilmediğiniz bir kullanıcıyla kişisel mesajlarda bir modül yüklemeye çalışıyorsunuz.</b> Geliştirici tarafından doğrulanmayan modüller, <b>hesabınızla uğraşmaktan hesabınızın silinmesine veya oturumunuzun tehlikeye atılmasına kadar birçok soruna neden olabilir.</b> Bu kullanıcıyı tanıyorsanız ve <b><u> %100 </u></b> ona güveniyorsanız, birkaç gün bekleyin ve tekrar deneyin."
+  loadmod_confirm_pm_message: "<emoji document_id=5451732530048802485>⏳</emoji> <i>Onayınızı bekliyorum...</i>"
+  loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Modül yükleme iptal edildi</b>"
+  loadmod_confirm_pm: "⚠️ <b>Uyarı!</b>\n\nBilinmeyen kaynaklardan modül yüklemek, <b><u>çok tehlikeli</u></b> ve <b>hesabınızın silinmesine veya oturumunuzun tehlikeye atılmasına</b> neden olabilir. Bu kullanıcıyı tanıdığınızdan ve <b><u>%100</u></b> ona güvendiğinizden emin olun.\n\n<b>Modül yüklemeye devam etmek istiyor musunuz?</b>"
+  loadmod_confirm_pm_yes: "✅ Evet, devam et"
+  loadmod_confirm_pm_no: "🚫 Hayır, iptal et"
   repo_config_doc: "Bir modül deposunun URL'si"
   avail_header: "🎢 <b>Depodan modüller</b>"
   no_module: "<emoji document_id=53752013968596607943>🚫</emoji> <b>Modül depoda mevcut değil.</b>"

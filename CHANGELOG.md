@@ -9,6 +9,7 @@
 - Add HikkaHost as a platform
 - Update to Hikka-TL 2.0.7
 - Allow double-restart
+- Personal messages scam modules protection
 - https://github.com/hikariatama/Hikka/issues/115
 - https://github.com/hikariatama/Hikka/issues/114
 - https://github.com/hikariatama/Hikka/issues/119

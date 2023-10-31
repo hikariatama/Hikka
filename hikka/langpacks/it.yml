@@ -433,6 +433,13 @@ hikka_info:
   _cmd_doc_setinfo: "<testo> - Cambia il testo in .info"
 
 loader:
+  loadmod_pm_timeout: "Attendi 10 secondi prima di confermare quest'azione"
+  loadmod_not_allowed_fresh_pm: "<emoji document_id=5447644880824181073>⚠️</emoji> <b><u>Leggi attentamente!</u></b> <emoji document_id=5447644880824181073>⚠️</emoji>\n\n<b>Stai provando a caricare un modulo in una conversazione privata con un utente che non conosci.</b> I moduli, non verificati dallo sviluppatore, potrebbero causare molti problemi, dal <b>mettere in disordine il tuo account alla cancellazione dell'account o alla compromissione della sessione</b>. Se conosci questo utente e <b><u>lo 100%</u></b> ti fidi di lui, aspetta qualche giorno e riprova."
+  loadmod_confirm_pm_message: "<emoji document_id=5451732530048802485>⏳</emoji> <i>In attesa della tua conferma...</i>"
+  loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Caricamento modulo cancellato</b>"
+  loadmod_confirm_pm: "⚠️ <b>Attenzione!</b>\n\nCaricare moduli da fonti sconosciute è <b><u>molto pericoloso</u></b> e può portare alla <b>cancellazione dell'account o alla compromissione della sessione</b>. Assicurati di conoscere questo utente e <b><u>lo 100%</u></b> ti fidi di lui.\n\n<b>Vuoi continuare con il caricamento del modulo?</b>"
+  loadmod_confirm_pm_yes: "✅ Sì, continua"
+  loadmod_confirm_pm_no: "🚫 No, cancella"
   repo_config_doc: "Link per il download dei moduli"
   add_repo_config_doc: "Repository aggiuntivi"
   avail_header: "🎢 <b>Moduli ufficiali dal repository</b>"
