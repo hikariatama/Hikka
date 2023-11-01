@@ -99,6 +99,7 @@ class UnitHeta(loader.Module):
                     " buttons and get essential updates. This option doesn't affect"
                     " `allow_external_access`."
                 ),
+                validator=loader.validators.Boolean(),
             ),
         )
 
