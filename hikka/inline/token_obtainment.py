@@ -1,15 +1,9 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import logging
 import re
 
-from hikkatl.errors.rpcerrorlist import YouBlockedUserError
-from hikkatl.tl.functions.contacts import UnblockRequest
+from huikkatl.errors.rpcerrorlist import YouBlockedUserError
+from huikkatl.tl.functions.contacts import UnblockRequest
 
 from .. import utils
 from .._internal import fw_protect
@@ -37,8 +31,8 @@ class TokenObtainment(InlineUnit):
             await m.delete()
             await r.delete()
 
-            if self._db.get("hikka.inline", "custom_bot", False):
-                username = self._db.get("hikka.inline", "custom_bot").strip("@")
+            if self._db.get("huikka.inline", "custom_bot", False):
+                username = self._db.get("huikka.inline", "custom_bot").strip("@")
                 username = f"@{username}"
                 try:
                     await self._client.get_entity(username)
@@ -46,13 +40,13 @@ class TokenObtainment(InlineUnit):
                     pass
                 else:
                     uid = utils.rand(6)
-                    username = f"@hikka_{uid}_bot"
+                    username = f"@huikka_{uid}_bot"
             else:
                 uid = utils.rand(6)
-                username = f"@hikka_{uid}_bot"
+                username = f"@huikka_{uid}_bot"
 
             for msg in [
-                f"🌘 Hikka Userbot of {self._name}"[:64],
+                f"🌘 Huikka Userbot of {self._name}"[:64],
                 username,
                 "/setuserpic",
                 username,
@@ -137,19 +131,19 @@ class TokenObtainment(InlineUnit):
             for row in r.reply_markup.rows:
                 for button in row.buttons:
                     if self._db.get(
-                        "hikka.inline", "custom_bot", False
+                        "huikka.inline", "custom_bot", False
                     ) and self._db.get(
-                        "hikka.inline", "custom_bot", False
+                        "huikka.inline", "custom_bot", False
                     ) != button.text.strip(
                         "@"
                     ):
                         continue
 
                     if not self._db.get(
-                        "hikka.inline",
+                        "huikka.inline",
                         "custom_bot",
                         False,
-                    ) and not re.search(r"@hikka_[0-9a-zA-Z]{6}_bot", button.text):
+                    ) and not re.search(r"@huikka_[0-9a-zA-Z]{6}_bot", button.text):
                         continue
 
                     await fw_protect()
@@ -188,7 +182,7 @@ class TokenObtainment(InlineUnit):
 
                     token = r.raw_text.splitlines()[1]
 
-                    self._db.set("hikka.inline", "bot_token", token)
+                    self._db.set("huikka.inline", "bot_token", token)
                     self._token = token
 
                     await fw_protect()
@@ -199,7 +193,7 @@ class TokenObtainment(InlineUnit):
                     for msg in [
                         "/setinline",
                         button.text,
-                        "user@hikka:~$",
+                        "user@huikka:~$",
                         "/setinlinefeedback",
                         button.text,
                         "Enabled",
@@ -258,7 +252,7 @@ class TokenObtainment(InlineUnit):
             await self._stop()
             logger.error("Got polling conflict. Attempting token revocation...")
 
-        self._db.set("hikka.inline", "bot_token", None)
+        self._db.set("huikka.inline", "bot_token", None)
         self._token = None
         if already_initialised:
             asyncio.ensure_future(self._reassert_token())

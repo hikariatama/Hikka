@@ -1,11 +1,5 @@
 """Inline buttons, galleries and other Telegram-Bot-API stuff"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import contextlib
 import logging
@@ -15,10 +9,10 @@ import typing
 from aiogram import Bot, Dispatcher
 from aiogram.types import ParseMode
 from aiogram.utils.exceptions import TerminatedByOtherGetUpdates, Unauthorized
-from hikkatl.errors.rpcerrorlist import InputUserDeactivatedError, YouBlockedUserError
-from hikkatl.tl.functions.contacts import UnblockRequest
-from hikkatl.tl.types import Message
-from hikkatl.utils import get_display_name
+from huikkatl.errors.rpcerrorlist import InputUserDeactivatedError, YouBlockedUserError
+from huikkatl.tl.functions.contacts import UnblockRequest
+from huikkatl.tl.types import Message
+from huikkatl.utils import get_display_name
 
 from .. import utils
 from ..database import Database
@@ -51,9 +45,9 @@ class InlineManager(
     :param client: Telegram client
     :param db: Database instance
     :param allmodules: All modules
-    :type client: hikka.tl_cache.CustomTelegramClient
-    :type db: hikka.database.Database
-    :type allmodules: hikka.loader.Modules
+    :type client: huikka.tl_cache.CustomTelegramClient
+    :type db: huikka.database.Database
+    :type allmodules: huikka.loader.Modules
     """
 
     def __init__(
@@ -77,7 +71,7 @@ class InlineManager(
         self._markup_ttl = 60 * 60 * 24
         self.init_complete = False
 
-        self._token = db.get("hikka.inline", "bot_token", False)
+        self._token = db.get("huikka.inline", "bot_token", False)
 
         self._me: int = None
         self._name: str = None
@@ -112,7 +106,7 @@ class InlineManager(
         :rtype: None
         """
         self._me = self._client.tg_id
-        self._name = get_display_name(self._client.hikka_me)
+        self._name = get_display_name(self._client.huikka_me)
 
         if not ignore_token_checks:
             is_token_asserted = await self._assert_token()
@@ -136,9 +130,9 @@ class InlineManager(
             return await self._dp_revoke_token(False)
 
         try:
-            m = await self._client.send_message(self.bot_username, "/start hikka init")
+            m = await self._client.send_message(self.bot_username, "/start huikka init")
         except (InputUserDeactivatedError, ValueError):
-            self._db.set("hikka.inline", "bot_token", None)
+            self._db.set("huikka.inline", "bot_token", None)
             self._token = False
 
             if not after_break:
@@ -150,7 +144,7 @@ class InlineManager(
             await self._client(UnblockRequest(id=self.bot_username))
             try:
                 m = await self._client.send_message(
-                    self.bot_username, "/start hikka init"
+                    self.bot_username, "/start huikka init"
                 )
             except Exception:
                 logger.critical("Can't unblock users bot", exc_info=True)

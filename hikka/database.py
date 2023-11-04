@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import collections
 import json
@@ -20,8 +14,8 @@ except ImportError as e:
 
 import typing
 
-from hikkatl.errors.rpcerrorlist import ChannelsTooMuchError
-from hikkatl.tl.types import Message, User
+from huikkatl.errors.rpcerrorlist import ChannelsTooMuchError
+from huikkatl.tl.types import Message, User
 
 from . import main, utils
 from .pointers import (
@@ -114,10 +108,10 @@ class Database(dict):
         try:
             self._assets, _ = await utils.asset_channel(
                 self._client,
-                "hikka-assets",
-                "🌆 Your Hikka assets will be stored here",
+                "huikka-assets",
+                "🌆 Your Huikka assets will be stored here",
                 archive=True,
-                avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-assets.png",
+                avatar="https://raw.githubusercontent.com/hikariatama/assets/master/huikka-assets.png",
             )
         except ChannelsTooMuchError:
             self._assets = None
@@ -178,10 +172,8 @@ class Database(dict):
                 if not isinstance(subkey, (str, int)):
                     del db[key][subkey]
                     logger.warning(
-                        (
-                            "DbAutoFix: Dropped subkey %s of db key %s, because it is"
-                            " not string or int"
-                        ),
+                        "DbAutoFix: Dropped subkey %s of db key %s, because it is"
+                        " not string or int",
                         subkey,
                         key,
                     )

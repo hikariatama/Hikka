@@ -1,27 +1,5 @@
 """Processes incoming events and dispatches them to appropriate handlers"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2022 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import collections
 import contextlib
@@ -33,9 +11,10 @@ import sys
 import traceback
 import typing
 
-from hikkatl import events
-from hikkatl.errors import FloodWaitError, RPCError
-from hikkatl.tl.types import Message
+import requests
+from huikkatl import events
+from huikkatl.errors import FloodWaitError, RPCError
+from huikkatl.tl.types import Message
 
 from . import main, security, utils
 from .database import Database
@@ -120,20 +99,23 @@ class CommandDispatcher:
         self.security = security.SecurityManager(client, db)
 
         self.check_security = self.security.check
-        self._me = self._client.hikka_me.id
+        self._me = self._client.huikka_me.id
         self._cached_usernames = [
             (
-                self._client.hikka_me.username.lower()
-                if self._client.hikka_me.username
-                else str(self._client.hikka_me.id)
+                self._client.huikka_me.username.lower()
+                if self._client.huikka_me.username
+                else str(self._client.huikka_me.id)
             )
         ]
 
         self._cached_usernames.extend(
-            getattr(self._client.hikka_me, "usernames", None) or []
+            getattr(self._client.huikka_me, "usernames", None) or []
         )
 
         self.raw_handlers = []
+        self._external_bl: typing.List[int] = []
+
+        asyncio.ensure_future(self._external_bl_reload_loop())
 
     async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
         if await self.security.check(message, security.OWNER):
@@ -261,7 +243,7 @@ class CommandDispatcher:
         message.edit = my_edit
         message.reply = my_reply
         message.respond = my_respond
-        message.hikka_grepped = True
+        message.huikka_grepped = True
 
         return message
 
@@ -324,11 +306,6 @@ class CommandDispatcher:
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        if utils.get_chat_id(message) in blacklist_chats or (
-            whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
-        ):
-            return False
-
         if not message.message or len(message.message) == 1:
             return False  # Message is just the prefix
 
@@ -380,7 +357,7 @@ class CommandDispatcher:
 
         if message.is_channel and message.edit_date and not message.is_group:
             async for event in self._client.iter_admin_log(
-                utils.get_chat_id(message),
+                chat_id,
                 limit=10,
                 edit=True,
             ):
@@ -394,8 +371,8 @@ class CommandDispatcher:
         if (
             message.is_channel
             and message.is_group
-            and message.chat.title.startswith("hikka-")
-            and message.chat.title != "hikka-logs"
+            and message.chat.title.startswith("huikka-")
+            and message.chat.title != "huikka-logs"
         ):
             if not watcher:
                 logger.warning("Ignoring message in datachat \\ logging chat")
@@ -404,11 +381,9 @@ class CommandDispatcher:
         message.message = prefix + txt + message.message[len(prefix + command) :]
 
         if (
-            f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
-            in blacklist_chats
+            f"{str(chat_id)}.{func.__self__.__module__}" in blacklist_chats
             or whitelist_modules
-            and f"{utils.get_chat_id(message)}.{func.__self__.__module__}"
-            not in whitelist_modules
+            and f"{chat_id}.{func.__self__.__module__}" not in whitelist_modules
         ):
             return False
 
@@ -497,8 +472,8 @@ class CommandDispatcher:
                 txt = (
                     "<emoji document_id=5877477244938489129>🚫</emoji><b> Call</b>"
                     f" <code>{utils.escape_html(message.message)}</code><b>"
-                    " failed!</b>\n\n<b>🧾"
-                    f" Logs:</b>\n<code>{utils.escape_html(exc)}</code>"
+                    " failed!</b>\n\n<b>🧾 Logs:</b>\n<pre><code"
+                    f' class="language-logs">{utils.escape_html(exc)}</code></pre>'
                 )
 
         with contextlib.suppress(Exception):
@@ -623,14 +598,8 @@ class CommandDispatcher:
         message = utils.censor(getattr(event, "message", event))
 
         blacklist_chats = self._db.get(main.__name__, "blacklist_chats", [])
-        whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
-        whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        if utils.get_chat_id(message) in blacklist_chats or (
-            whitelist_chats and utils.get_chat_id(message) not in whitelist_chats
-        ):
-            logger.debug("Message is blacklisted")
-            return
+        whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
         for func in self._modules.watchers:
             bl = self._db.get(main.__name__, "disabled_watchers", {})
@@ -641,7 +610,7 @@ class CommandDispatcher:
                 and isinstance(message, Message)
                 and (
                     "*" in bl[modname]
-                    or utils.get_chat_id(message) in bl[modname]
+                    or chat_id in bl[modname]
                     or "only_chats" in bl[modname]
                     and message.is_private
                     or "only_pm" in bl[modname]
@@ -651,10 +620,9 @@ class CommandDispatcher:
                     or "in" in bl[modname]
                     and message.out
                 )
-                or f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
-                in blacklist_chats
+                or f"{str(chat_id)}.{func.__self__.__module__}" in blacklist_chats
                 or whitelist_modules
-                and f"{str(utils.get_chat_id(message))}.{func.__self__.__module__}"
+                and f"{str(chat_id)}.{func.__self__.__module__}"
                 not in whitelist_modules
                 or await self._handle_tags(event, func)
             ):
@@ -693,8 +661,12 @@ class CommandDispatcher:
     ):
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+        _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
         try:
             await func(message)
         except Exception as e:
             await exception_handler(e, message, *args)
+
+    async def _external_bl_reload_loop(self):
+        # fuck hikari
+        pass

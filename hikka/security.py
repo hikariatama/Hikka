@@ -1,35 +1,13 @@
 """Checks the commands' security"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import logging
 import time
 import typing
 
-from hikkatl.hints import EntityLike
-from hikkatl.tl.functions.messages import GetFullChatRequest
-from hikkatl.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
-from hikkatl.utils import get_display_name
+from huikkatl.hints import EntityLike
+from huikkatl.tl.functions.messages import GetFullChatRequest
+from huikkatl.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Message
+from huikkatl.utils import get_display_name
 
 from . import main, utils
 from .database import Database
@@ -417,10 +395,8 @@ class SecurityManager:
                 import warnings
 
                 warnings.warn(
-                    (
-                        "You are using module containing SUDO or SUPPORT security"
-                        " groups, which are deprecated. It might behave strangely"
-                    ),
+                    "You are using module containing SUDO or SUPPORT security"
+                    " groups, which are deprecated. It might behave strangely",
                     DeprecationWarning,
                 )
                 self._last_warning = time.time()

@@ -1,27 +1,5 @@
 """Utilities"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import atexit as _atexit
 import contextlib
@@ -43,24 +21,24 @@ from urllib.parse import urlparse
 
 import git
 import grapheme
-import hikkatl
+import huikkatl
 import requests
 from aiogram.types import Message as AiogramMessage
-from hikkatl import hints
-from hikkatl.tl.custom.message import Message
-from hikkatl.tl.functions.account import UpdateNotifySettingsRequest
-from hikkatl.tl.functions.channels import (
+from huikkatl import hints
+from huikkatl.tl.custom.message import Message
+from huikkatl.tl.functions.account import UpdateNotifySettingsRequest
+from huikkatl.tl.functions.channels import (
     CreateChannelRequest,
     EditAdminRequest,
     EditPhotoRequest,
     InviteToChannelRequest,
 )
-from hikkatl.tl.functions.messages import (
+from huikkatl.tl.functions.messages import (
     GetDialogFiltersRequest,
     SetHistoryTTLRequest,
     UpdateDialogFilterRequest,
 )
-from hikkatl.tl.types import (
+from huikkatl.tl.types import (
     Channel,
     Chat,
     ChatAdminRights,
@@ -96,7 +74,7 @@ from hikkatl.tl.types import (
 from ._internal import fw_protect
 from .inline.types import InlineCall, InlineMessage
 from .tl_cache import CustomTelegramClient
-from .types import HikkaReplyMarkup, ListLike, Module
+from .types import HuikkaReplyMarkup, ListLike, Module
 
 FormattingEntity = typing.Union[
     MessageEntityUnknown,
@@ -130,7 +108,7 @@ emoji_pattern = re.compile(
     flags=re.UNICODE,
 )
 
-parser = hikkatl.utils.sanitize_parse_mode("html")
+parser = huikkatl.utils.sanitize_parse_mode("html")
 logger = logging.getLogger(__name__)
 
 
@@ -222,7 +200,7 @@ def get_chat_id(message: typing.Union[Message, AiogramMessage]) -> int:
     :param message: Message to get chat ID from
     :return: Chat ID
     """
-    return hikkatl.utils.resolve_id(
+    return huikkatl.utils.resolve_id(
         getattr(message, "chat_id", None)
         or getattr(getattr(message, "chat", None), "id", None)
     )[0]
@@ -234,7 +212,7 @@ def get_entity_id(entity: hints.Entity) -> int:
     :param entity: Entity to get ID from
     :return: Entity ID
     """
-    return hikkatl.utils.get_peer_id(entity)
+    return huikkatl.utils.get_peer_id(entity)
 
 
 def escape_html(text: str, /) -> str:  # sourcery skip
@@ -429,12 +407,12 @@ async def answer(
     message: typing.Union[Message, InlineCall, InlineMessage],
     response: str,
     *,
-    reply_markup: typing.Optional[HikkaReplyMarkup] = None,
+    reply_markup: typing.Optional[HuikkaReplyMarkup] = None,
     **kwargs,
 ) -> typing.Union[InlineCall, InlineMessage, Message]:
     """
     Use this to give the response to a command
-    :param message: Message to answer to. Can be a tl message or hikka inline object
+    :param message: Message to answer to. Can be a tl message or huikka inline object
     :param response: Response to send
     :param reply_markup: Reply markup to send. If specified, inline form will be used
     :return: Message or inline object
@@ -493,7 +471,7 @@ async def answer(
     elif "reply_to" in kwargs:
         kwargs.pop("reply_to")
 
-    parse_mode = hikkatl.utils.sanitize_parse_mode(
+    parse_mode = huikkatl.utils.sanitize_parse_mode(
         kwargs.pop(
             "parse_mode",
             message.client.parse_mode,
@@ -503,7 +481,7 @@ async def answer(
     if isinstance(response, str) and not kwargs.pop("asfile", False):
         text, entities = parse_mode.parse(response)
 
-        if len(text) >= 4096 and not hasattr(message, "hikka_grepped"):
+        if len(text) >= 4096 and not hasattr(message, "huikka_grepped"):
             try:
                 if not message.client.loader.inline.init_complete:
                     raise
@@ -712,7 +690,7 @@ async def invite_inline_bot(
                 channel=peer,
                 user_id=client.loader.inline.bot_username,
                 admin_rights=ChatAdminRights(ban_users=True),
-                rank="Hikka",
+                rank="Huikka",
             )
         )
 
@@ -728,6 +706,7 @@ async def asset_channel(
     invite_bot: bool = False,
     avatar: typing.Optional[str] = None,
     ttl: typing.Optional[int] = None,
+    forum: bool = False,
     _folder: typing.Optional[str] = None,
 ) -> typing.Tuple[Channel, bool]:
     """
@@ -741,6 +720,7 @@ async def asset_channel(
     :param invite_bot: Add inline bot and assure it's in chat
     :param avatar: Url to an avatar to set as pfp of created peer
     :param ttl: Time to live for messages in channel
+    :param forum: Whether to create a forum channel
     :return: Peer and bool: is channel new or pre-existent
     """
     if not hasattr(client, "_channels_cache"):
@@ -775,6 +755,7 @@ async def asset_channel(
                 title,
                 description,
                 megagroup=not channel,
+                forum=forum,
             )
         )
     ).chats[0]
@@ -799,13 +780,13 @@ async def asset_channel(
         await client(SetHistoryTTLRequest(peer=peer, period=ttl))
 
     if _folder:
-        if _folder != "hikka":
+        if _folder != "huikka":
             raise NotImplementedError
 
         folders = await client(GetDialogFiltersRequest())
 
         try:
-            folder = next(folder for folder in folders if folder.title == "hikka")
+            folder = next(folder for folder in folders if folder.title == "huikka")
         except Exception:
             folder = None
 
@@ -920,6 +901,9 @@ def get_named_platform() -> str:
     if main.IS_CODESPACES:
         return "🐈‍⬛ Codespaces"
 
+    if main.IS_HIKKAHOST:
+        return "🌼 HuikkaHost"
+
     return f"✌️ lavHost {os.environ['LAVHOST']}" if main.IS_LAVHOST else "📻 VDS"
 
 
@@ -955,6 +939,9 @@ def get_platform_emoji() -> str:
 
     if main.IS_RAILWAY:
         return BASE.format(5199607521593007466)
+
+    if main.IS_HIKKAHOST:
+        return BASE.format(5370731117588523522)
 
     return BASE.format(5192765204898783881)
 
@@ -1092,7 +1079,7 @@ def smart_split(
 
     :example:
         >>> utils.smart_split(
-            *hikkatl.extensions.html.parse(
+            *huikkatl.extensions.html.parse(
                 "<b>Hello, world!</b>"
             )
         )
@@ -1241,7 +1228,7 @@ def check_url(url: str) -> bool:
 
 def get_git_hash() -> typing.Union[str, bool]:
     """
-    Get current Hikka git hash
+    Get current Huikka git hash
     :return: Git commit hash
     """
     try:
@@ -1252,13 +1239,13 @@ def get_git_hash() -> typing.Union[str, bool]:
 
 def get_commit_url() -> str:
     """
-    Get current Hikka git commit url
+    Get current Huikka git commit url
     :return: Git commit url
     """
     try:
         hash_ = get_git_hash()
         return (
-            f'<a href="https://github.com/hikariatama/Hikka/commit/{hash_}">#{hash_[:7]}</a>'
+            f'<a href="https://github.com/hikariatama/Huikka/commit/{hash_}">#{hash_[:7]}</a>'
         )
     except Exception:
         return "Unknown"
@@ -1452,8 +1439,8 @@ def validate_html(html: str) -> str:
     :param html: HTML to validate
     :return: Valid HTML
     """
-    text, entities = hikkatl.extensions.html.parse(html)
-    return hikkatl.extensions.html.unparse(escape_html(text), entities)
+    text, entities = huikkatl.extensions.html.parse(html)
+    return huikkatl.extensions.html.unparse(escape_html(text), entities)
 
 
 def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]:
@@ -1549,7 +1536,7 @@ def get_git_info() -> typing.Tuple[str, str]:
     hash_ = get_git_hash()
     return (
         hash_,
-        f"https://github.com/hikariatama/Hikka/commit/{hash_}" if hash_ else "",
+        f"https://github.com/hikariatama/Huikka/commit/{hash_}" if hash_ else "",
     )
 
 

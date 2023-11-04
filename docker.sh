@@ -3,10 +3,10 @@
 PORT=3429 # Port to run the server on
 echo "EXTERNAL_PORT=$PORT" >.env
 
-eval "git clone https://github.com/hikariatama/Hikka"
-cd Hikka
+eval "git clone https://github.com/hikariatama/Huikka"
+cd Huikka
 
-touch hikka-install.log
+touch huikka-install.log
 
 if ! [ -x "$(command -v docker-compose)" ]; then
     printf "\033[0;34mInstalling docker...\e[0m"
@@ -16,28 +16,28 @@ if ! [ -x "$(command -v docker-compose)" ]; then
             ca-certificates \
             curl \
             gnupg-agent \
-            software-properties-common -y 1>hikka-install.log 2>&1
+            software-properties-common -y 1>huikka-install.log 2>&1
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg |
-            sudo apt-key add - 1>hikka-install.log 2>&1
+            sudo apt-key add - 1>huikka-install.log 2>&1
         sudo add-apt-repository \
             "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
             $(lsb_release -cs) \
-            stable" 1>hikka-install.log 2>&1
-        sudo apt-get update -y 1>hikka-install.log 2>&1
-        sudo apt-get install docker-ce docker-ce-cli containerd.io -y 1>hikka-install.log 2>&1
+            stable" 1>huikka-install.log 2>&1
+        sudo apt-get update -y 1>huikka-install.log 2>&1
+        sudo apt-get install docker-ce docker-ce-cli containerd.io -y 1>huikka-install.log 2>&1
     elif [ -f /etc/arch-release ]; then
-        sudo pacman -Syu docker --noconfirm 1>hikka-install.log 2>&1
+        sudo pacman -Syu docker --noconfirm 1>huikka-install.log 2>&1
     elif [ -f /etc/redhat-release ]; then
-        sudo yum install -y yum-utils 1>hikka-install.log 2>&1
+        sudo yum install -y yum-utils 1>huikka-install.log 2>&1
         sudo yum-config-manager \
             --add-repo \
             https://download.docker.com/linux/centos/docker-ce.repo
-        sudo yum install docker-ce docker-ce-cli containerd.io -y 1>hikka-install.log 2>&1
+        sudo yum install docker-ce docker-ce-cli containerd.io -y 1>huikka-install.log 2>&1
     fi
     printf "\033[0;32m - success\e[0m\n"
-    # Hikka uses docker-compose so we need to install that too
+    # Huikka uses docker-compose so we need to install that too
     printf "\033[0;34mInstalling docker-compose...\e[0m"
-    pip install -U docker-compose 1>hikka-install.log 2>&1
+    pip install -U docker-compose 1>huikka-install.log 2>&1
     chmod +x /usr/local/bin/docker-compose
     printf "\033[0;32m - success\e[0m\n"
 else
@@ -45,7 +45,7 @@ else
 fi
 
 printf "\033[0;34mBuilding docker image...\e[0m"
-sudo docker-compose up -d --build 1>hikka-install.log 2>&1
+sudo docker-compose up -d --build 1>huikka-install.log 2>&1
 printf "\033[0;32m - success\e[0m\n"
 
 printf "\033[0;32mFollow this url to continue installation:\e[0m\n"

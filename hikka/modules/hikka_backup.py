@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import contextlib
 import datetime
@@ -15,7 +9,7 @@ import time
 import zipfile
 from pathlib import Path
 
-from hikkatl.tl.types import Message
+from huikkatl.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import BotInlineCall
@@ -24,10 +18,10 @@ logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class HikkaBackupMod(loader.Module):
+class HuikkaBackupMod(loader.Module):
     """Handles database and modules backups"""
 
-    strings = {"name": "HikkaBackup"}
+    strings = {"name": "HuikkaBackup"}
 
     async def client_ready(self):
         if not self.get("period"):
@@ -61,12 +55,14 @@ class HikkaBackupMod(loader.Module):
 
         self._backup_channel, _ = await utils.asset_channel(
             self._client,
-            "hikka-backups",
+            "huikka-backups",
             "📼 Your database backups will appear here",
             silent=True,
             archive=True,
-            avatar="https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
-            _folder="hikka",
+            avatar=(
+                "https://github.com/hikariatama/assets/raw/master/huikka-backups.png"
+            ),
+            _folder="huikka",
         )
 
     async def _set_backup_period(self, call: BotInlineCall, value: int):
@@ -123,7 +119,7 @@ class HikkaBackupMod(loader.Module):
 
             backup = io.BytesIO(json.dumps(self._db).encode())
             backup.name = (
-                f"hikka-db-backup-{datetime.datetime.now():%d-%m-%Y-%H-%M}.json"
+                f"huikka-db-backup-{datetime.datetime.now():%d-%m-%Y-%H-%M}.json"
             )
 
             await self._client.send_file(self._backup_channel, backup)
@@ -131,7 +127,7 @@ class HikkaBackupMod(loader.Module):
         except loader.StopLoop:
             raise
         except Exception:
-            logger.exception("HikkaBackup failed")
+            logger.exception("HuikkaBackup failed")
             await asyncio.sleep(60)
 
     @loader.command()
@@ -160,7 +156,7 @@ class HikkaBackupMod(loader.Module):
         decoded_text = json.loads(file.decode())
 
         with contextlib.suppress(KeyError):
-            decoded_text["hikka.inline"].pop("bot_token")
+            decoded_text["huikka.inline"].pop("bot_token")
 
         if not self._db.process_db_autofix(decoded_text):
             raise RuntimeError("Attempted to restore broken database")

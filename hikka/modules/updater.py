@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import contextlib
 import logging
@@ -15,12 +9,12 @@ import typing
 
 import git
 from git import GitCommandError, Repo
-from hikkatl.extensions.html import CUSTOM_EMOJIS
-from hikkatl.tl.functions.messages import (
+from huikkatl.extensions.html import CUSTOM_EMOJIS
+from huikkatl.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
-from hikkatl.tl.types import DialogFilter, Message
+from huikkatl.tl.types import DialogFilter, Message
 
 from .. import loader, main, utils, version
 from .._internal import restart
@@ -39,7 +33,7 @@ class UpdaterMod(loader.Module):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "GIT_ORIGIN_URL",
-                "https://github.com/hikariatama/Hikka",
+                "https://github.com/hikariatama/Huikka",
                 lambda: self.strings("origin_cfg_doc"),
                 validator=loader.validators.Link(),
             )
@@ -108,10 +102,10 @@ class UpdaterMod(loader.Module):
             msg_obj,
             self.strings("restarting_caption").format(
                 utils.get_platform_emoji()
-                if self._client.hikka_me.premium
+                if self._client.huikka_me.premium
                 and CUSTOM_EMOJIS
                 and isinstance(msg_obj, Message)
-                else "Hikka"
+                else "Huikka"
             ),
         )
 
@@ -126,7 +120,7 @@ class UpdaterMod(loader.Module):
             return
 
         with contextlib.suppress(Exception):
-            await main.hikka.web.stop()
+            await main.huikka.web.stop()
 
         handler = logging.getLogger().handlers[0]
         handler.setLevel(logging.CRITICAL)
@@ -235,7 +229,7 @@ class UpdaterMod(loader.Module):
                         " document_id=5193117564015747203>✌️</emoji><emoji"
                         " document_id=5195050806105087456>✌️</emoji><emoji"
                         " document_id=5195457642587233944>✌️</emoji><b>"
-                        if self._client.hikka_me.premium
+                        if self._client.huikka_me.premium
                         and CUSTOM_EMOJIS
                         and isinstance(msg_obj, Message)
                         else "lavHost"
@@ -291,7 +285,7 @@ class UpdaterMod(loader.Module):
     async def _add_folder(self):
         folders = await self._client(GetDialogFiltersRequest())
 
-        if any(getattr(folder, "title", None) == "hikka" for folder in folders):
+        if any(getattr(folder, "title", None) == "huikka" for folder in folders):
             return
 
         try:
@@ -311,7 +305,7 @@ class UpdaterMod(loader.Module):
                     folder_id,
                     DialogFilter(
                         folder_id,
-                        title="hikka",
+                        title="huikka",
                         pinned_peers=(
                             [
                                 await self._client.get_input_entity(
@@ -329,18 +323,18 @@ class UpdaterMod(loader.Module):
                             )
                             if dialog.name
                             in {
-                                "hikka-logs",
-                                "hikka-onload",
-                                "hikka-assets",
-                                "hikka-backups",
-                                "hikka-acc-switcher",
+                                "huikka-logs",
+                                "huikka-onload",
+                                "huikka-assets",
+                                "huikka-backups",
+                                "huikka-acc-switcher",
                                 "silent-tags",
                             }
                             and dialog.is_channel
                             and (
                                 dialog.entity.participants_count == 1
                                 or dialog.entity.participants_count == 2
-                                and dialog.name in {"hikka-logs", "silent-tags"}
+                                and dialog.name in {"huikka-logs", "silent-tags"}
                             )
                             or (
                                 self._client.loader.inline.init_complete
@@ -352,7 +346,7 @@ class UpdaterMod(loader.Module):
                                 1554874075,
                                 1697279580,
                                 1679998924,
-                            ]  # official hikka chats
+                            ]  # official huikka chats
                         ],
                         emoticon="🐱",
                         exclude_peers=[],
@@ -369,7 +363,7 @@ class UpdaterMod(loader.Module):
             )
         except Exception:
             logger.critical(
-                "Can't create Hikka folder. Possible reasons are:\n"
+                "Can't create Huikka folder. Possible reasons are:\n"
                 "- User reached the limit of folders in Telegram\n"
                 "- User got floodwait\n"
                 "Ignoring error and adding folder addition to ignore list"

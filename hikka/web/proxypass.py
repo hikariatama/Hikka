@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import logging
 import os
@@ -74,10 +68,8 @@ class ProxyPasser:
 
             logger.debug("Starting proxy pass shell for port %d", port)
             self._sproc = await asyncio.create_subprocess_shell(
-                (
-                    "ssh -o StrictHostKeyChecking=no -R"
-                    f" 80:127.0.0.1:{port} nokey@localhost.run"
-                ),
+                "ssh -o StrictHostKeyChecking=no -R"
+                f" 80:127.0.0.1:{port} nokey@localhost.run",
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,

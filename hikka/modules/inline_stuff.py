@@ -1,15 +1,9 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import re
 import string
 
-from hikkatl.errors.rpcerrorlist import YouBlockedUserError
-from hikkatl.tl.functions.contacts import UnblockRequest
-from hikkatl.tl.types import Message
+from huikkatl.errors.rpcerrorlist import YouBlockedUserError
+from huikkatl.tl.functions.contacts import UnblockRequest
+from huikkatl.tl.types import Message
 
 from .. import loader, utils
 from ..inline.types import BotInlineMessage
@@ -82,7 +76,7 @@ class InlineStuff(loader.Module):
                     return True
 
     @loader.command()
-    async def ch_hikka_bot(self, message: Message):
+    async def ch_huikka_bot(self, message: Message):
         args = utils.get_args_raw(message).strip("@")
         if (
             not args
@@ -105,8 +99,8 @@ class InlineStuff(loader.Module):
                 await utils.answer(message, self.strings("bot_username_occupied"))
                 return
 
-        self._db.set("hikka.inline", "custom_bot", args)
-        self._db.set("hikka.inline", "bot_token", None)
+        self._db.set("huikka.inline", "custom_bot", args)
+        self._db.set("huikka.inline", "bot_token", None)
         await utils.answer(message, self.strings("bot_updated"))
 
     async def aiogram_watcher(self, message: BotInlineMessage):
@@ -114,6 +108,6 @@ class InlineStuff(loader.Module):
             return
 
         await message.answer_photo(
-            "https://github.com/hikariatama/assets/raw/master/hikka_banner.png",
-            caption=self.strings("this_is_hikka"),
+            "https://github.com/hikariatama/assets/raw/master/huikka_banner.png",
+            caption=self.strings("this_is_huikka"),
         )

@@ -1,6 +1,22 @@
-# Hikka Changelog
+# Huikka Changelog
 
-## 🌑 Hikka 1.6.3
+## 🌑 Huikka 1.6.4
+
+- Completely remove Dragon support as redundant
+- Fix request_join error
+- Decrease module info length in heta
+- Add privacy switch to `UnitHeta`
+- Add HuikkaHost as a platform
+- Update to Huikka-TL 2.0.7
+- Allow double-restart
+- Personal messages scam modules protection
+- https://github.com/hikariatama/Huikka/issues/115
+- https://github.com/hikariatama/Huikka/issues/114
+- https://github.com/hikariatama/Huikka/issues/119
+- https://github.com/hikariatama/Huikka/issues/120
+- Other changes
+
+## 🌑 Huikka 1.6.3
 
 - Add argument `item_type` to `db.pointer` to provide interface for NamedTuple objects
 - Add correct exception propagation to inline units
@@ -18,15 +34,15 @@
 - Migrate inline heta search to userbot instead of centralized service
 - Cosmetical changes
 
-## 🌑 Hikka 1.6.2
+## 🌑 Huikka 1.6.2
 
 - Fix security issue with edited channel messages
 - Add interface to interact with raw pointer data (`.data` attribute)
 - Translation fixes
 - Randomize `device_model` to bypass fraud detection
 - Pass proper device information to Telegram
-- Update `hikka-tl` in accordance to upstream telethon v1
-- Update `hikka-pyro` in accordance to upstream pyrogram
+- Update `huikka-tl` in accordance to upstream telethon v1
+- Update `huikka-pyro` in accordance to upstream pyrogram
 - Rename packages so that they don't conflict with originals
 - Partially migrate to `pathlib`
 - Code cleanup
@@ -51,7 +67,7 @@
 - Transfer all previously non-essential modules to core ones
 - Add alternative translation mechanism using YAML
 
-## 🌑 Hikka 1.6.1
+## 🌑 Huikka 1.6.1
 
 - Remove miyahost from official hosts
 - Fix memory leak when using 1.6.0 inside Docker
@@ -59,7 +75,7 @@
 - Root out stats mechanism
 - Add French translation pack
 
-## 🌑 Hikka 1.6.0
+## 🌑 Huikka 1.6.0
 
 - Bring support for Dragon Userbot modules
 - Make `db` attribute of `Modules` public
@@ -72,7 +88,7 @@
 - Fix command escaping when using layout translated prefix
 - Patch `.info`, `utils.answer` etc to support forums (topics)
 - Drop Okteto support
-- Show Hikka platform and version in Telegram sessions list
+- Show Huikka platform and version in Telegram sessions list
 - New type `DragonModule`
 - New argument of `get_prefix` - `userbot`. Pass in `"dragon"` to get its prefix
 - New attribute of `Modules` - `dragon_modules`
@@ -110,17 +126,17 @@
 - EULA warning for lavHost and MiyaHost
 - Support for Python 3.10
 
-## 🌑 Hikka 1.5.3
+## 🌑 Huikka 1.5.3
 
 - Add Uzbek, Turkish, German and Spanish translation packs
 - Fix module and command docs not being translated on-the-flight
 - Fix `RegExp` validator
 
-## 🌑 Hikka 1.5.2
+## 🌑 Huikka 1.5.2
 
 - Change the behavior of `@loader.raw_handler` decorator to accept starred arguments instead of list-like value
 
-## 🌑 Hikka 1.5.1
+## 🌑 Huikka 1.5.1
 
 - Fix `--no-web` arg
 - Fix `tglog_level` config option of module `Tester`
@@ -134,10 +150,10 @@
 - Add `invite_bot` parameter to `utils.asset_channel`
 - Add support for `String` validator's `min_len` and `max_len` parameters
 
-## 🌑 Hikka 1.5.0
+## 🌑 Huikka 1.5.0
 
 - Fix `on_change` param processing in config
-- Fix `hikka.types.CoreOverwriteError`
+- Fix `huikka.types.CoreOverwriteError`
 - Fix incorrect commit in info for users with multiple origins
 - Fix error with module configs not being updated to values which were set by user
 - Fix core unload and core overwrite errors not being raised correctly
@@ -160,9 +176,9 @@
 - Add fields `min_len` and `max_len` to `String` validator
 - Add `Emoji` validator
 - Add `EntityLike` validator
-- Add `hikka.validators.MultiChoice`
+- Add `huikka.validators.MultiChoice`
 - Add `utils.get_args_html` to get arguments of command with HTML
-- Add switch to mute @BotFather only once in hikka inline
+- Add switch to mute @BotFather only once in huikka inline
 - Add ability to forbid certain tl methods using `.config APIRatelimiter`
 - Add new web interface design
 - Add new code input design
@@ -178,38 +194,38 @@
 - Reformat the whole code to match the desired code style
 - Rename `APIRatelimiter` -> `APILimiter`
 - Enable `joinChannel` and `importChatInvite` calls-by-external-modules blockage for all users by default
-- Change inline query placeholder to `user@hikka:~$` + legacy migration
+- Change inline query placeholder to `user@huikka:~$` + legacy migration
 - Completely drop Heroku support due to legacy code, limits and removing of free tier
 - Allow user to send code only once to prevent FloodWaits
 - Remove junk collector from tl cacher to keep old records so devs can access them w\o making new requests
 - Remove FTG License in fully changed files
 - Add official GoormIDE support
 
-## 🌑 Hikka 1.4.2
+## 🌑 Huikka 1.4.2
 
 - Fix authorization error
 
-## 🌑 Hikka 1.4.1
+## 🌑 Huikka 1.4.1
 
-- Create new type :obj:`hikka.tl_cache.CustomTelegramClient` to avoid monkeypatching
-- Add `ttl` param for :method:`hikka.utils.asset_channel`
+- Create new type :obj:`huikka.tl_cache.CustomTelegramClient` to avoid monkeypatching
+- Add `ttl` param for :method:`huikka.utils.asset_channel`
 - Add support for custom branches (e.g. for beta testers and users, who rolled back)
 - Fix automatic modules reactions
-- Fix :method:`hikka.inline.utils.Utils._find_caller_sec_map`
+- Fix :method:`huikka.inline.utils.Utils._find_caller_sec_map`
 - Fix the targeted security rules without time limit
-- Require Hikka-TL >= 1.24.9
+- Require Huikka-TL >= 1.24.9
 - Refactor `document_id` of custom emojis
 - Refactor validators to be classes, not functions
 - Refactor typehints
 
-## 🌑 Hikka 1.4.0
+## 🌑 Huikka 1.4.0
 
-- Publish hikka telethon fork and migrate to it in requirements, thereby fixing the deployment error on Heroku
+- Publish huikka telethon fork and migrate to it in requirements, thereby fixing the deployment error on Heroku
 - Add custom emojis filter to `utils.remove_html`
 - Fix `client.get_perms_cached`
-- Fix translation flaw in `HikkaSecurity`
-- Fix `.uninstall_hikka` being accessible by sudo
-- Fix `utils.find_caller` for :method:`hikka.inline.utils.Utils._find_caller_sec_map`
+- Fix translation flaw in `HuikkaSecurity`
+- Fix `.uninstall_huikka` being accessible by sudo
+- Fix `utils.find_caller` for :method:`huikka.inline.utils.Utils._find_caller_sec_map`
 - Fix `.eval`
 - Fix: use old lib if its version is higher than new one
 - Fix grep for messages bigger than 4096 UTF-8 characters
@@ -217,7 +233,7 @@
 - Add targeted security for users and chats (`.tsec`)
 - Add support for `tg_level` in `.config Tester`
 - Add `-f` param to `.restart` and `.update`
-- Add platform-specific Hikka emojis to premium users
+- Add platform-specific Huikka emojis to premium users
 - Add codepaces to `utils.get_named_platform`
 - Add `Presets` core module
 - Add handler for `/start` command in inlinebot with userbot info
@@ -226,18 +242,18 @@
 - Internal refactoring and typehints
 - Remove custom :obj:`BotInlineMessage` hook for :method:`answer`
 
-## 🌑 Hikka 1.3.3
+## 🌑 Huikka 1.3.3
 
 - Fix typo, which broke `client.get_fulluser`
 
-## 🌑 Hikka 1.3.2
+## 🌑 Huikka 1.3.2
 
 - Add `on_change` param to `loader.ConfigValue`
 - Rework commands\inline handlers\callback handlers\watchers registration and unload process
 - Rework tags processing
 - Add junk collector aka reloader to `Modules`
 
-## 🌑 Hikka 1.3.1
+## 🌑 Huikka 1.3.1
 
 - Add caching to `utils.asset_channel`
 - Add `channel` param to `utils.asset_channel` to actually create a channel, not supergroup
@@ -267,13 +283,13 @@
 - Remove `heroku3` from classic requirements, along with heroku installation code snippet
 - Remove `termux_requirements.txt`
 - Remove legacy `self.get` migration from strings
-- Move `hikka._types` to `hikka.types` with legacy support
+- Move `huikka._types` to `huikka.types` with legacy support
 - Remake all core modules to decorators
-- Force custom hikka telethon installation with 144 layer support
+- Force custom huikka telethon installation with 144 layer support
 - Add animated emojis to core modules strings
 - Add trigger to toggle the appearence of custom emojis
 
-## 🌑 Hikka 1.3.0
+## 🌑 Huikka 1.3.0
 
 - Patch stats so they correctly recognize links
 - Fix bug when `...` is being replaced with `..` (unnecessary prefix escape)
@@ -292,7 +308,7 @@
 - Remove stupid db lock in `.e`
 - Allow `.security` and `.inlinesec` only to owner by default
 - Add support for `# requires` metatag in libraries
-- Add support for `# scope: hikka_min` metatag in libraries
+- Add support for `# scope: huikka_min` metatag in libraries
 - Send stats of libraries, if enabled in `.settings`
 - Replace library existence check from source url to classname
 - Add `self.inline` to libraries
@@ -304,7 +320,7 @@
 - Replace `print` with `logging.info` in main script to make url visible in logs
 - Automatically react to module post in developer's channel if possible
 
-## 🌑 Hikka 1.2.12
+## 🌑 Huikka 1.2.12
 
 - Automatically patch reply markup in inline form in the way, that edit stays available anyway
 - Do not unload inline form automatically, keep it for 10 minutes instead
@@ -312,7 +328,7 @@
 - Add `self.request_join`
 - Allow developers to declare `client_ready` without arguments
 
-## 🌑 Hikka 1.2.11
+## 🌑 Huikka 1.2.11
 
 - Add support for lib attribute `version` (must be defined BEFORE `init` method)
 - Add `self.lookup` to libs
@@ -328,8 +344,8 @@
 - Reformat code with `black --preview`
 - Automatically send photo as gif if possible in form
 - Update quickstart
-- New fields in HikkaInfo
-- Remove suffix `Hikka` if user specified it somewhere below
+- New fields in HuikkaInfo
+- Remove suffix `Huikka` if user specified it somewhere below
 - New exception handler
 - Fix back button in `.config <lib>`
 - New `.e` error format
@@ -337,7 +353,7 @@
 - Fix unload error in module without commands
 - Rework aiogram media processing on edit
 
-## 🌑 Hikka 1.2.10
+## 🌑 Huikka 1.2.10
 
 - Completely drop fast_uploader support
 - Add :method:`utils.import_lib`
@@ -349,11 +365,11 @@
 - Add migration native modules db storage from `strings["name"]` to classname. ⚠️ Might break some stuff in the beginning in rare cases
 - Fix heroku-specific config error
 
-## 🌑 Hikka 1.2.9
+## 🌑 Huikka 1.2.9
 
 - Small patch which allows developer to specify audio metadata in form and `_edit_unit`
 
-## 🌑 Hikka 1.2.8
+## 🌑 Huikka 1.2.8
 
 - Add automatic webpage bot unblock in heroku waker
 - Add secure boot feature
@@ -368,7 +384,7 @@
 - Deepsource fixes
 - Multiple languages with priority
 
-## 🌑 Hikka 1.2.7
+## 🌑 Huikka 1.2.7
 
 - Add automatic proxy pass
 - Fix --no-web argument parsing
@@ -390,33 +406,33 @@
 - Properly remove items from series options through built-in configurator
 - Remove warning from web by replacing coroutine generation with `functools.partial`
 
-## 🌑 Hikka 1.2.6
+## 🌑 Huikka 1.2.6
 
-- Fix processing of `# scope: hikka_min`
+- Fix processing of `# scope: huikka_min`
 - Add `forbid_joins.py` (to use it, download module from official repo with the same name)
 
-## 🌑 Hikka 1.2.5
+## 🌑 Huikka 1.2.5
 
 - Add additional exit on restart to avoid port block
 - Add unloaded module name on `.unloadmod`
-- Add `banner_url` config var to `HikkaInfo`
+- Add `banner_url` config var to `HuikkaInfo`
 - Add `loader.validators.Hidden`
 - Add `websockets` dependency, so users can load hikarichat on Heroku
 - Add `reply_markup` kwarg to `utils.answer`. This will automatically add buttons to plain message or edit buttons of inline unit
 - Add suggestion to join developer's channel on module load if available
-- Add `client.force_get_entity` to bypass Hikka Cacher
+- Add `client.force_get_entity` to bypass Huikka Cacher
 - Add clickable link to loaded module message if specified meta developer is channel
 - Add support of `action` attributes for buttons ("action": "close", "action": "unload", "action": "answer")
 - Add log splitter between different clients of instance (if possible)
 - Fix inline events `IndexError`
 - Fix text in inline input
-- Fix translation issue in HikkaConfig
+- Fix translation issue in HuikkaConfig
 - Fix `.dump`
 - Fix modules list reset if you perform `.dlmod` when userbot is not yet fully loaded
 - Update links in README
 - Remove nalinor from official repos until new modules appear
 
-## 🌑 Hikka 1.2.4
+## 🌑 Huikka 1.2.4
 
 - Show current options in module config
 - Add new validators: `loader.validators.Union`, `loader.validators.NoneType`
@@ -431,20 +447,20 @@
 - Remove psycopg2 from requirements.txt
 - New installation banner
 - Add automatic blob->raw convertion in loader
-- Add banner with Hikka installation status
+- Add banner with Huikka installation status
 - Reorder config saving in web
 - Fix `Unauthorized` error on Heroku
 
-## 🌑 Hikka 1.2.3
+## 🌑 Huikka 1.2.3
 
 - Add field `action` to inline buttons. You can pass there `close` to close inline form, `unload` to unload it from memory, `answer` & `text` | `show_alert` to answer callback query with message
 - Update docstrings in inline to match unified format
 - Add surrogate error ignorance in dispatcher
 - Fix :obj:`EntityCache` caching username `@None`
-- Return :obj:`InlineMessage` in `hikka.inline.gallery.Gallery.gallery`
+- Return :obj:`InlineMessage` in `huikka.inline.gallery.Gallery.gallery`
 - Fix typo in docstring
 
-## 🌑 Hikka 1.2.2
+## 🌑 Huikka 1.2.2
 
 - Update gitignore so git doesn't count shit on heroku
 - Visual heroku fixes in updater
@@ -460,16 +476,16 @@
 - More meaningful errors in `self.inline.form`, `self.inline.gallery`, `self.inline.list` on user-side
 - Allow editing\adding media to form via `call.edit`. Currently supported: `photo`, `file`, `video`, `audio`, `gif`
 
-## 🌑 Hikka 1.2.1
+## 🌑 Huikka 1.2.1
 
 - Add termux specific requirements
 - Refactor `heroku.py` app searching algorithm
 - Refactor postgresql database saving process
 - Fix heroku restart message not being edited
 - Add heroku waker
-- Make `hikka-` app naming optional
+- Make `huikka-` app naming optional
 
-## 🌑 Hikka 1.2.0
+## 🌑 Huikka 1.2.0
 
 - Add full-featured Heroku support with additional buildpacks
 - Notify which dependencies are being installed in .dlmod
@@ -484,7 +500,7 @@
 - Add `ast.literal_eval` to config
 - Add explicit typecheck for `mod.config`
 
-## 🌑 Hikka 1.1.28
+## 🌑 Huikka 1.1.28
 
 - Fix non-working param `share_link` in loader
 - Assure logging bot is a member of logchat
@@ -494,13 +510,13 @@
 - Fix `Series` not accepting one item
 - Show upcoming commit in update and warn if update is not required
 - Add reset to default button to config
-- Merge `hikka_logger.py` with `test.py`
+- Merge `huikka_logger.py` with `test.py`
 - Localization
 - Allow opening options of specific mod via arguments in `.config`
 - Add `add` and `remove` buttons to `Series` params
 - Do not unload form immediately, if `ttl` param was passed explicitly
 
-## 🌑 Hikka 1.1.27
+## 🌑 Huikka 1.1.27
 
 - Reorder the steps of parsing in `loader.validators.Series`
 - Fix aliases (yet another time)
@@ -521,7 +537,7 @@
 - Add changelog
 - Remove redundant code in `database.py` as it literally does nothing
 
-## 🌑 Hikka 1.1.26
+## 🌑 Huikka 1.1.26
 
 - Hopefully finally fix aliases being reset after restart
 - Remove redundant internal hook \_client_ready2
@@ -529,10 +545,10 @@
 - Add validator for each item to Series, remove separator
 - Add new validator: TelegramID
 
-## 🌑 Hikka 1.1.25
+## 🌑 Huikka 1.1.25
 
 - Add separate messages on restart and full_restart. Second one is shown, when all modules are loaded
-- Replace .uninstall_hikka with full uninstallation (remove bot, asset chats and folder)
+- Replace .uninstall_huikka with full uninstallation (remove bot, asset chats and folder)
 - Suggest update if it is required by module
 - New validator: Float
 - Buttons in .config of option is a boolean value
@@ -540,23 +556,23 @@
 - Update semantic generator in validators
 - Yet another protection from monkey-patching
 
-## 🌑 Hikka 1.1.24
+## 🌑 Huikka 1.1.24
 
 - Add String and Link validators
 - Fix Series validator
 - Reformat core modules to use validators
 
-## 🌑 Hikka 1.1.23
+## 🌑 Huikka 1.1.23
 
 - Add config validators (loader.validators, Boolean, Integer, Choice, Series)
 - Change info layout
-- Add .uninstall_hikka
+- Add .uninstall_huikka
 - Add .clearlogs
 - Refactor code
 - Fix minor bugs
 - Fix aliases being reset after restart (aliases will now be available only when userbot is fully loaded)
 
-## 🌑 Hikka 1.1.22
+## 🌑 Huikka 1.1.22
 
 - Fix bugs related to web, more specifically: Session save timing, adding more than 1 account and proper restart
 - Rework Dockerfiles so they work properly
@@ -567,13 +583,13 @@
 - Typehints update
 - Fix Okteto pinger messages removal
 
-## 🌑 Hikka 1.1.21
+## 🌑 Huikka 1.1.21
 
 - Fix translation typos
 - Add nonick suggestion when adding user to group
 - Add entity caching
 
-## 🌑 Hikka 1.1.20
+## 🌑 Huikka 1.1.20
 
 - Add legacy fs modules migration
 - Add ready asyncio Event to help track userbot loading process from outside
@@ -583,27 +599,27 @@
 - HTML-escape # meta developer:
 - Make self.animate available for core modules and modules, loaded from file
 
-## 🌑 Hikka 1.1.19
+## 🌑 Huikka 1.1.19
 
 - Fix infinite loops
 - Add client-specific check of fs modules
 - Use classname of module, if it is possible to parse it with ast
 - Rework infinite loops stopping and modules instance placement
 
-## 🌑 Hikka 1.1.18
+## 🌑 Huikka 1.1.18
 
 - Add notification about not exact match in help
 - Add automatic progress bar generation to self.fast_upload and self.fast_download
 - Make Mod ending in modules class name not mandatory
 
-## 🌑 Hikka 1.1.17
+## 🌑 Huikka 1.1.17
 
 - Fix some weird looking code
 - Fix some emojies and translation issues
 - Add native lavHost support (.restart, .update) via internal API
 - Add utils.get_lang_flag()
 
-## 🌑 Hikka 1.1.16
+## 🌑 Huikka 1.1.16
 
 - Fix config docstrings and html escaping
 - Fix typehints
@@ -615,7 +631,7 @@
 - Add default aiogram parse mode
 - Rename some core stuff which was not supposed to be used by external developers
 
-## 🌑 Hikka 1.1.15
+## 🌑 Huikka 1.1.15
 
 - Add automatic database autofix and rollback if database was broken by module
 - Fix translation issues
@@ -624,13 +640,13 @@
 - Fix modules which are deleting from helphide
 - Automatically save db if it was edited via classic dictionary methods
 
-## 🌑 Hikka 1.1.14
+## 🌑 Huikka 1.1.14
 
 - Fix utils.asset_channel()'s archive param
 - Fix defect, which forced installation from additional trusted repo, rather than from primary one if the file names are matched
 - Add avatar to utils.asset_channel() which automatically sets chat pic on creation (be careful, bc it leads to floodwaits, if you do it often)
-- Add automatic hikka folder processing
-- Add avatars to all official repo modules, which require asset chats (and add them to hikka folder)
+- Add automatic huikka folder processing
+- Add avatars to all official repo modules, which require asset chats (and add them to huikka folder)
 - Rework database assets chat processing
 - Replace some minor stuff like texts and emojies
 - Force many core modules to use self.get\self.set rather than digging the db
@@ -640,7 +656,7 @@
 - Add utils.is_serializable(), utils.set_avatar()
 - Send very large (over 4096\*10 symbols) output in a file rather than in an inline list
 
-## 🌑 Hikka 1.1.13
+## 🌑 Huikka 1.1.13
 
 - Fix processing commands on behalf of channel
 - Fix .settings Restart and Update
@@ -650,26 +666,26 @@
 - Properly censor known tokens in logs
 - Replace regex check in utils.check_url() with urllib parser
 
-## 🌑 Hikka 1.1.12
+## 🌑 Huikka 1.1.12
 
 - Consider avoiding redundant requests to TG API in order to get the client id and rather using self.\_tg_id, which is now available for all modules
 
-## 🌑 Hikka 1.1.11
+## 🌑 Huikka 1.1.11
 
 - Add fast uploader (self.fast_upload, self.fast_download)
 - Fix translations
 
-## 🌑 Hikka 1.1.10
+## 🌑 Huikka 1.1.10
 
 - Add ability to download modules from many additional repos (e.g. you can download weather by morisummer via just .dlmod weather, and also list all available repos via .dlmod)
 
-## 🌑 Hikka 1.1.9
+## 🌑 Huikka 1.1.9
 
 - Fix \_generate_markup in order that it automatically sets up callback hooks to \_custom_map if callback was passed in buttons
 - Add switch_inline_query and switch_inline_query_current_chat parsers
 - Fix minor issues
 
-## 🌑 Hikka 1.1.8
+## 🌑 Huikka 1.1.8
 
 - Stuff, related to translation issues
 - Add self.get_prefix() to all modules, which returns current command prefix
@@ -679,49 +695,49 @@
 - Add trusted developers to quickstart message
 - Automatically switch language via quickstart message button
 
-## 🌑 Hikka 1.1.7
+## 🌑 Huikka 1.1.7
 
 - Add self.animate function to all modules, which allows you to easily create fancy animations
 
-## 🌑 Hikka 1.1.6
+## 🌑 Huikka 1.1.6
 
 - Allow and process callback field in result of inline query answer. You can also use this in your own functions. Simply pass prepare_callbacks=True to \_generate_markup
 - Generate InlineCall object on \_custom_map handlers
 
-## 🌑 Hikka 1.1.5
+## 🌑 Huikka 1.1.5
 
 - Minor update: Allow passing disable_security and always_allow to buttons directly
 
-## 🌑 Hikka 1.1.4
+## 🌑 Huikka 1.1.4
 
 - Ability to set inline bot username on setup (in web interface)
 - Fix inline help
 - Add more debug info to logs
 - Add attribute status to loops
-- Fix HikkaDL link parsing
+- Fix HuikkaDL link parsing
 - Suggest enabling value in bounding mask if it is not
 - Mask tokens in logs
 - Add utils.get_git_hash()
 - Add debugging mode for developers
 
-## 🌑 Hikka 1.1.3
+## 🌑 Huikka 1.1.3
 
 - Finally (hopefully) fix config
 - Minor bug fixes related to inline form processing
 
-## 🌑 Hikka 1.1.2
+## 🌑 Huikka 1.1.2
 
 - Add @loader.loop, which provides developers access to easy-to-make infinite loops. Wait for developers docs to update for more info
 
-## 🌑 Hikka 1.1.1
+## 🌑 Huikka 1.1.1
 
-- Drop Uniborg and Raphielgang compatibility layer. More info in [2d525ab](https://github.com/hikariatama/Hikka/commit/2d525ab6b0e6b9d7ccd7408bbe175cea24d780a5)
+- Drop Uniborg and Raphielgang compatibility layer. More info in [2d525ab](https://github.com/hikariatama/Huikka/commit/2d525ab6b0e6b9d7ccd7408bbe175cea24d780a5)
 - Minor bug fixes
 
-## 🌑 Hikka 1.1.0
+## 🌑 Huikka 1.1.0
 
 - Make inline commands' docstrings translatable
-- Introducing HikkaDynamicTranslate - the possibility for developers to translate their own modules to other language without usage of native translates
+- Introducing HuikkaDynamicTranslate - the possibility for developers to translate their own modules to other language without usage of native translates
 - Rework translates system, because «translate channels wut¿». Now translate pack can be loaded from disk or from web
 - Add utils.check_url
 - Get rid of babel
@@ -739,151 +755,151 @@
 - Rework slideshow so it runs in the background
 - Fix here, fix there, fix somewhere...
 
-## 🌑 Hikka 1.0.29
+## 🌑 Huikka 1.0.29
 
 - Add option to control inline and callback handlers' security via loader decorators, including brand new @loader.inline_everyone
-- Refactor HikkaSecurity, especially the bounding mask control
+- Refactor HuikkaSecurity, especially the bounding mask control
 
-## 🌑 Hikka 1.0.28
+## 🌑 Huikka 1.0.28
 
 - Add silent param to inline.form, inline.gallery, inline.list
 - Add photo param to inline.form
 - Add URL validator to inline.\_generate_markup
 - Ignore MessageIdInvalidError in .e
 
-## 🌑 Hikka 1.0.27
+## 🌑 Huikka 1.0.27
 
 Thankfully to @bsolute, now we have a cool smart_split in utils. The messages are split without loosing formatting and emojies, preferably on line breakes / spaces.
 
-## 🌑 Hikka 1.0.26
+## 🌑 Huikka 1.0.26
 
 - Add utils.smart_split which splits message in chunks of chunk_size, keeping parse_mode and entities in a right way (relocates 'em)
 - If response of utils.answer is too big to be sent in one particular message, it will be split in chunks of 4096 and sent via inline.list
 
-## 🌑 Hikka 1.0.25
+## 🌑 Huikka 1.0.25
 
 - Add disable_security to inline forms, lists and galleries
 
-## 🌑 Hikka 1.0.24
+## 🌑 Huikka 1.0.24
 
 - Okteto fixes (persistent uri, fix webpage)
 - Add utils.dnd, which allows to mute and archive peer
 - Security fixes for groups (not super\mega groups)
 - Minor bug fixes
 
-## 🌑 Hikka 1.0.23
+## 🌑 Huikka 1.0.23
 
-- Add ability to disable HikkaDL natively
+- Add ability to disable HuikkaDL natively
 - Fix Updater so it works if you have troubles with inline mode
 
-## 🌑 Hikka 1.0.22
+## 🌑 Huikka 1.0.22
 
-Add HikkaDL module to use inline download buttons in verified channels
+Add HuikkaDL module to use inline download buttons in verified channels
 
-## 🌑 Hikka 1.0.21
+## 🌑 Huikka 1.0.21
 
 A lot of stuff: web fixes, bug fixes, automatic seamless userbot restart when adding new account in web, replace emojies, add inline list feature, fix types name conflict and I don't remember other fixes, read code
 
-## 🌑 Hikka 1.0.20
+## 🌑 Huikka 1.0.20
 
 - Allow passing reply_markup field to InlineQuery's result
 - Refactor reply markup parser so it accepts more formats of inline markup
 
-## 🌑 Hikka 1.0.19
+## 🌑 Huikka 1.0.19
 
 - Allow developers to pass InlineQuery result via return operator in inline handlers. Read the docs for more info
 - Move query_gallery to a separate module
 
-## 🌑 Hikka 1.0.18
+## 🌑 Huikka 1.0.18
 
 - Add silent and archive params to utils.asset_channel.
 - Remake logging so it become native with `BotLogger`.
 - Inject `BotLogger` analog directly
 
-## 🌑 Hikka 1.0.17
+## 🌑 Huikka 1.0.17
 
 - Add ability to set up inline commands' security map (only `owner`, `sudo`, `support` and `everyone`, because other permissions are inaccessible when processing inline query).
 - Add database serializeability check to avoid JSON-serialization problems if unserializable object is being stored in db.
 - Minor bugfixes
 
-## 🌑 Hikka 1.0.16
+## 🌑 Huikka 1.0.16
 
 - Full support of Okteto cloud deployment inculding persistent data storage (additional volume is created)
 - Fix automatic waker for container
 
-## 🌑 Hikka 1.0.15
+## 🌑 Huikka 1.0.15
 
 - Add more errors to query aka query.e500()
 
-## 🌑 Hikka 1.0.14
+## 🌑 Huikka 1.0.14
 
 - Add gallery slideshow
 
-## 🌑 Hikka 1.0.13
+## 🌑 Huikka 1.0.13
 
 - Include command prefix in inline info.
 - Fix --no-web.
 - Suggest to save modules to filesystem
 
-## 🌑 Hikka 1.0.12
+## 🌑 Huikka 1.0.12
 
 - Optimize forms, galleries and custom_map storage by ommiting keys with default values and dynamically generate them.
 - Add feature to inherit command-caller permissions on form and gallery (crutchy).
 - Minor improvements and bug fixes
 
-## 🌑 Hikka 1.0.11
+## 🌑 Huikka 1.0.11
 
 - Add inline.query_gallery to add ability to call inline gallery via inline query.
 - Add `e404` attribute to `InlineQuery`, which should be shown, that no results were found
 
-## 🌑 Hikka 1.0.10
+## 🌑 Huikka 1.0.10
 
 - Add feature to send gifs in inline galleries (gif param).
 - Make argument `caption` of inline gallery not mandatory
 
-## 🌑 Hikka 1.0.9
+## 🌑 Huikka 1.0.9
 
 - Full inline structure rework.
 - Split this madness into separate modules (`InlineUnit`s), which extend the main unit - `InlineManager`.
 - Compatibility layer is not main priority.
 
-## 🌑 Hikka 1.0.8
+## 🌑 Huikka 1.0.8
 
 - Code refactoring
 - Minor bug fixes
 - Rewrite security
 
-## 🌑 Hikka 1.0.7
+## 🌑 Huikka 1.0.7
 
 - Massive inline galleries update, memoization, back button, preloading and other features.
 - Fix some minor bugs, add `ascii_face` to utils
 
-## 🌑 Hikka 1.0.6
+## 🌑 Huikka 1.0.6
 
 - Add welcome message, triggered when userbot is installed
 
-## 🌑 Hikka 1.0.5
+## 🌑 Huikka 1.0.5
 
 - Add gallery memoization (ability to close gallery and scroll it back)
 
-## 🌑 Hikka 1.0.4
+## 🌑 Huikka 1.0.4
 
 - Add Okteto pinger, which will wake the pod up, when it goes to sleep
 
-## 🌑 Hikka 1.0.3
+## 🌑 Huikka 1.0.3
 
 - Fix a lot of stuff in web
 - Add new features to web
 - Merge root and initial_root
 - Remove trailing whitespaces
 
-## 🌑 Hikka 1.0.2
+## 🌑 Huikka 1.0.2
 
 - Full restructure of core code
 - Refactor web
 - Create new active bg
 
-## 🌑 Hikka 1.0.1
+## 🌑 Huikka 1.0.1
 
 - Drop heroku support
 - Remove redundant code

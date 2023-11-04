@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import contextlib
 
@@ -15,7 +9,7 @@ from ..inline.types import InlineCall
 
 @loader.tds
 class UpdateNotifier(loader.Module):
-    """Tracks latest Hikka releases, and notifies you, if update is required"""
+    """Tracks latest Huikka releases, and notifies you, if update is required"""
 
     strings = {"name": "UpdateNotifier"}
 
@@ -70,8 +64,8 @@ class UpdateNotifier(loader.Module):
 
         self._markup = lambda: self.inline.generate_markup(
             [
-                {"text": self.strings("update"), "data": "hikka/update"},
-                {"text": self.strings("ignore"), "data": "hikka/ignore_upd"},
+                {"text": self.strings("update"), "data": "huikka/update"},
+                {"text": self.strings("ignore"), "data": "huikka/ignore_upd"},
             ]
         )
 
@@ -95,7 +89,7 @@ class UpdateNotifier(loader.Module):
                 "https://t.me/hikari_assets/71",
                 caption=self.strings("update_required").format(
                     utils.get_git_hash()[:6],
-                    '<a href="https://github.com/hikariatama/Hikka/compare/{}...{}">{}</a>'
+                    '<a href="https://github.com/hikariatama/Huikka/compare/{}...{}">{}</a>'
                     .format(
                         utils.get_git_hash()[:12],
                         self.get_latest()[:12],
@@ -124,10 +118,10 @@ class UpdateNotifier(loader.Module):
     @loader.callback_handler()
     async def update(self, call: InlineCall):
         """Process update buttons clicks"""
-        if call.data not in {"hikka/update", "hikka/ignore_upd"}:
+        if call.data not in {"huikka/update", "huikka/ignore_upd"}:
             return
 
-        if call.data == "hikka/ignore_upd":
+        if call.data == "huikka/ignore_upd":
             self.set("ignore_permanent", self.get_latest())
             await call.answer(self.strings("latest_disabled"))
             return

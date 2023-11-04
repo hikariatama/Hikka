@@ -2,8 +2,8 @@
 
 echo -e "\033[2J\033[3;1f"
 
-eval "cat ~/Hikka/assets/download.txt"
-printf "\n\n\033[1;35mHikka is being installed... ✨\033[0m"
+eval "cat ~/Huikka/assets/download.txt"
+printf "\n\n\033[1;35mHuikka is being installed... ✨\033[0m"
 
 echo -e "\n\n\033[0;96mInstalling base packages...\033[0m"
 
@@ -23,8 +23,8 @@ eval 'export CFLAGS="-I/data/data/com.termux/files/usr/include/" && pip install 
 printf "\r\033[K\033[0;32mPillow installed!\e[0m\n"
 echo -e "\033[0;96mDownloading source code...\033[0m"
 
-eval "rm -rf ~/Hikka 2>/dev/null"
-eval "cd && git clone https://github.com/hikariatama/Hikka && cd Hikka"
+eval "rm -rf ~/Huikka 2>/dev/null"
+eval "cd && git clone https://github.com/hikariatama/Huikka && cd Huikka"
 
 echo -e "\033[0;96mSource code downloaded!...\033[0m\n"
 printf "\r\033[0;34mInstalling requirements...\e[0m"
@@ -37,14 +37,14 @@ if [[ -z "${NO_AUTOSTART}" ]]; then
     printf "\n\r\033[0;34mConfiguring autostart...\e[0m"
 
     eval "echo '' > ~/../usr/etc/motd &&
-    echo 'clear && . <(wget -qO- https://github.com/hikariatama/Hikka/raw/master/banner.sh) && cd ~/Hikka && python3 -m hikka' > ~/.bash_profile"
+    echo 'clear && . <(wget -qO- https://github.com/hikariatama/Huikka/raw/master/banner.sh) && cd ~/Huikka && python3 -m huikka' > ~/.bash_profile"
 
     printf "\r\033[K\033[0;32mAutostart enabled!\e[0m\n"
 fi
 
-echo -e "\033[0;96mStarting Hikka...\033[0m"
+echo -e "\033[0;96mStarting Huikka...\033[0m"
 echo -e "\033[2J\033[3;1f"
 
-printf "\033[1;32mHikka is starting...\033[0m\n"
+printf "\033[1;32mHuikka is starting...\033[0m\n"
 
-eval "python3 -m hikka"
+eval "python3 -m huikka"

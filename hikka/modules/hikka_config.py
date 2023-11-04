@@ -1,16 +1,10 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import ast
 import contextlib
 import functools
 import typing
 from math import ceil
 
-from hikkatl.tl.types import Message
+from huikkatl.tl.types import Message
 
 from .. import loader, translations, utils
 from ..inline.types import InlineCall
@@ -26,10 +20,10 @@ NUM_ROWS = 5
 
 
 @loader.tds
-class HikkaConfigMod(loader.Module):
-    """Interactive configurator for Hikka Userbot"""
+class HuikkaConfigMod(loader.Module):
+    """Interactive configurator for Huikka Userbot"""
 
-    strings = {"name": "HikkaConfig"}
+    strings = {"name": "HuikkaConfig"}
 
     @staticmethod
     def prep_value(value: typing.Any) -> typing.Any:

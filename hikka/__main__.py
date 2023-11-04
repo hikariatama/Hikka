@@ -1,11 +1,5 @@
 """Entry point. Checks for user and starts main script"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import getpass
 import os
 import subprocess
@@ -19,7 +13,7 @@ if (
     and all(trigger not in os.environ for trigger in {"DOCKER", "GOORM"})
 ):
     print("🚫" * 15)
-    print("You attempted to run Hikka on behalf of root user")
+    print("You attempted to run Huikka on behalf of root user")
     print("Please, create a new user and restart script")
     print("If this action was intentional, pass --root argument instead")
     print("🚫" * 15)
@@ -49,23 +43,18 @@ def deps():
 
 if sys.version_info < (3, 8, 0):
     print("🚫 Error: you must use at least Python version 3.8.0")
-elif __package__ != "hikka":  # In case they did python __main__.py
+elif __package__ != "huikka":  # In case they did python __main__.py
     print("🚫 Error: you cannot run this as a script; you must execute as a package")
 else:
     try:
-        import hikkatl
+        import huikkatl
     except Exception:
         pass
     else:
         try:
-            import hikkatl  # noqa: F811
+            import huikkatl  # noqa: F811
 
-            if tuple(map(int, hikkatl.__version__.split("."))) < (2, 0, 4):
-                raise ImportError
-
-            import hikkapyro
-
-            if tuple(map(int, hikkapyro.__version__.split("."))) < (2, 0, 103):
+            if tuple(map(int, huikkatl.__version__.split("."))) < (2, 0, 7):
                 raise ImportError
         except ImportError:
             print("🔄 Installing dependencies...")
@@ -86,4 +75,7 @@ else:
     if "HIKKA_DO_NOT_RESTART" in os.environ:
         del os.environ["HIKKA_DO_NOT_RESTART"]
 
-    main.hikka.main()  # Execute main function
+    if "HIKKA_DO_NOT_RESTART2" in os.environ:
+        del os.environ["HIKKA_DO_NOT_RESTART2"]
+
+    main.huikka.main()  # Execute main function

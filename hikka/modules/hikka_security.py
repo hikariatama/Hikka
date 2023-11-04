@@ -1,17 +1,11 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import contextlib
 import datetime
 import time
 import typing
 
-from hikkatl.hints import EntityLike
-from hikkatl.tl.types import Message, PeerUser, User
-from hikkatl.utils import get_display_name
+from huikkatl.hints import EntityLike
+from huikkatl.tl.types import Message, PeerUser, User
+from huikkatl.utils import get_display_name
 
 from .. import loader, main, security, utils
 from ..inline.types import InlineCall, InlineMessage
@@ -33,10 +27,10 @@ from ..security import (
 
 
 @loader.tds
-class HikkaSecurityMod(loader.Module):
+class HuikkaSecurityMod(loader.Module):
     """Control security settings"""
 
-    strings = {"name": "HikkaSecurity"}
+    strings = {"name": "HuikkaSecurity"}
 
     async def client_ready(self):
         self._sgroups: typing.Iterable[str, SecurityGroup] = self.pointer(
@@ -83,10 +77,8 @@ class HikkaSecurityMod(loader.Module):
             and level
         ):
             await call.answer(
-                (
-                    "Security value set but not applied. Consider enabling this value"
-                    f" in .{'inlinesec' if is_inline else 'security'}"
-                ),
+                "Security value set but not applied. Consider enabling this value"
+                f" in .{'inlinesec' if is_inline else 'security'}",
                 show_alert=True,
             )
         else:
@@ -239,6 +231,10 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_args"))
             return
 
+        if not all([i.isalnum() for i in args]):
+            await utils.answer(message, self.strings("invalid_name"))
+            return
+
         if args in self._sgroups:
             await utils.answer(
                 message, self.strings("sgroup_already_exists").format(args)
@@ -331,7 +327,7 @@ class HikkaSecurityMod(loader.Module):
             await utils.answer(message, self.strings("no_args"))
             return
 
-        if self._sgroups.get(args):
+        if not self._sgroups.get(args):
             await utils.answer(message, self.strings("sgroup_not_found").format(args))
             return
 

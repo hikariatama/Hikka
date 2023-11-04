@@ -132,11 +132,11 @@ dmypy.json
 
 *__pycache__
 *.pyc
-hikka/api_token.py
-hikka/loaded_modules
+huikka/api_token.py
+huikka/loaded_modules
 loaded_modules
-hikka/debug_modules
-hikka*.session*
+huikka/debug_modules
+huikka*.session*
 database-*.json
 *.swp
 .setup_complete
@@ -172,5 +172,5 @@ config.json
 vendor/
 Pipfile.lock
 
-hikka.log.*
+huikka.log.*
 unknown_errors.txt

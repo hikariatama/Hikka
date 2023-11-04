@@ -1,21 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import logging
 import os
 import random
 
-import hikkatl
-from hikkatl.tl.functions.channels import JoinChannelRequest
-from hikkatl.tl.functions.messages import (
+import huikkatl
+from huikkatl.tl.functions.messages import (
     GetDialogFiltersRequest,
     UpdateDialogFilterRequest,
 )
-from hikkatl.tl.types import Message
-from hikkatl.utils import get_display_name
+from huikkatl.tl.types import Message
+from huikkatl.utils import get_display_name
 
 from .. import loader, log, main, utils
 from .._internal import fw_protect, restart
@@ -38,10 +31,10 @@ ALL_INVOKES = [
 
 
 @loader.tds
-class HikkaSettingsMod(loader.Module):
-    """Advanced settings for Hikka Userbot"""
+class HuikkaSettingsMod(loader.Module):
+    """Advanced settings for Huikka Userbot"""
 
-    strings = {"name": "HikkaSettings"}
+    strings = {"name": "HuikkaSettings"}
 
     def get_watchers(self) -> tuple:
         return [
@@ -78,18 +71,18 @@ class HikkaSettingsMod(loader.Module):
             if (
                 dialog.name
                 in {
-                    "hikka-logs",
-                    "hikka-onload",
-                    "hikka-assets",
-                    "hikka-backups",
-                    "hikka-acc-switcher",
+                    "huikka-logs",
+                    "huikka-onload",
+                    "huikka-assets",
+                    "huikka-backups",
+                    "huikka-acc-switcher",
                     "silent-tags",
                 }
                 and dialog.is_channel
                 and (
                     dialog.entity.participants_count == 1
                     or dialog.entity.participants_count == 2
-                    and dialog.name in {"hikka-logs", "silent-tags"}
+                    and dialog.name in {"huikka-logs", "silent-tags"}
                 )
                 or (
                     self._client.loader.inline.init_complete
@@ -103,7 +96,7 @@ class HikkaSettingsMod(loader.Module):
 
         folders = await self._client(GetDialogFiltersRequest())
 
-        if any(folder.title == "hikka" for folder in folders):
+        if any(folder.title == "huikka" for folder in folders):
             folder_id = max(
                 folders,
                 key=lambda x: x.id,
@@ -155,7 +148,7 @@ class HikkaSettingsMod(loader.Module):
         )
 
     @loader.command()
-    async def uninstall_hikka(self, message: Message):
+    async def uninstall_huikka(self, message: Message):
         await self.inline.form(
             self.strings("deauth_confirm"),
             message,
@@ -466,7 +459,7 @@ class HikkaSettingsMod(loader.Module):
     async def inline__setting(self, call: InlineCall, key: str, state: bool = False):
         if callable(key):
             key()
-            hikkatl.extensions.html.CUSTOM_EMOJIS = not main.get_config_key(
+            huikkatl.extensions.html.CUSTOM_EMOJIS = not main.get_config_key(
                 "disable_custom_emojis"
             )
         else:
@@ -739,7 +732,7 @@ class HikkaSettingsMod(loader.Module):
                 message=message,
                 reply_markup={
                     "text": self.strings("web_btn"),
-                    "url": await main.hikka.web.get_url(proxy_pass=False),
+                    "url": await main.huikka.web.get_url(proxy_pass=False),
                 },
                 gif="https://t.me/hikari_assets/28",
             )
@@ -776,18 +769,18 @@ class HikkaSettingsMod(loader.Module):
 
             return
 
-        if not main.hikka.web:
-            main.hikka.web = core.Web(
+        if not main.huikka.web:
+            main.huikka.web = core.Web(
                 data_root=main.BASE_DIR,
-                api_token=main.hikka.api_token,
-                proxy=main.hikka.proxy,
-                connection=main.hikka.conn,
+                api_token=main.huikka.api_token,
+                proxy=main.huikka.proxy,
+                connection=main.huikka.conn,
             )
-            await main.hikka.web.add_loader(self._client, self.allmodules, self._db)
-            await main.hikka.web.start_if_ready(
+            await main.huikka.web.add_loader(self._client, self.allmodules, self._db)
+            await main.huikka.web.start_if_ready(
                 len(self.allclients),
-                main.hikka.arguments.port,
-                proxy_pass=main.hikka.arguments.proxy_pass,
+                main.huikka.arguments.port,
+                proxy_pass=main.huikka.arguments.proxy_pass,
             )
 
         if force:
@@ -809,30 +802,13 @@ class HikkaSettingsMod(loader.Module):
                 ),
             )
 
-        url = await main.hikka.web.get_url(proxy_pass=True)
+        url = await main.huikka.web.get_url(proxy_pass=True)
 
         await form.edit(
             self.strings("tunnel_opened"),
             reply_markup={"text": self.strings("web_btn"), "url": url},
             gif="https://t.me/hikari_assets/48",
         )
-
-    @loader.loop(interval=1, autostart=True)
-    async def loop(self):
-        if not (obj := self.allmodules.get_approved_channel):
-            return
-
-        channel, event = obj
-
-        try:
-            await self._client(JoinChannelRequest(channel))
-        except Exception:
-            logger.exception("Failed to join channel")
-            event.status = False
-            event.set()
-        else:
-            event.status = True
-            event.set()
 
     def _get_all_IDM(self, module: str):
         return {
@@ -873,23 +849,25 @@ class HikkaSettingsMod(loader.Module):
         if module == "core":
             if method == "flush_entity_cache":
                 result = (
-                    f"Dropped {len(self._client._hikka_entity_cache)} cache records"
+                    f"Dropped {len(self._client._huikka_entity_cache)} cache records"
                 )
-                self._client._hikka_entity_cache = {}
+                self._client._huikka_entity_cache = {}
             elif method == "flush_fulluser_cache":
                 result = (
-                    f"Dropped {len(self._client._hikka_fulluser_cache)} cache records"
+                    f"Dropped {len(self._client._huikka_fulluser_cache)} cache records"
                 )
-                self._client._hikka_fulluser_cache = {}
+                self._client._huikka_fulluser_cache = {}
             elif method == "flush_fullchannel_cache":
                 result = (
-                    f"Dropped {len(self._client._hikka_fullchannel_cache)} cache"
+                    f"Dropped {len(self._client._huikka_fullchannel_cache)} cache"
                     " records"
                 )
-                self._client._hikka_fullchannel_cache = {}
+                self._client._huikka_fullchannel_cache = {}
             elif method == "flush_perms_cache":
-                result = f"Dropped {len(self._client._hikka_perms_cache)} cache records"
-                self._client._hikka_perms_cache = {}
+                result = (
+                    f"Dropped {len(self._client._huikka_perms_cache)} cache records"
+                )
+                self._client._huikka_perms_cache = {}
             elif method == "flush_loader_cache":
                 result = (
                     f"Dropped {await self.lookup('loader').flush_cache()} cache records"
@@ -897,28 +875,29 @@ class HikkaSettingsMod(loader.Module):
             elif method == "flush_cache":
                 count = self.lookup("loader").flush_cache()
                 result = (
-                    f"Dropped {len(self._client._hikka_entity_cache)} entity cache"
+                    f"Dropped {len(self._client._huikka_entity_cache)} entity cache"
                     " records\nDropped"
-                    f" {len(self._client._hikka_fulluser_cache)} fulluser cache"
+                    f" {len(self._client._huikka_fulluser_cache)} fulluser cache"
                     " records\nDropped"
-                    f" {len(self._client._hikka_fullchannel_cache)} fullchannel cache"
+                    f" {len(self._client._huikka_fullchannel_cache)} fullchannel cache"
                     " records\nDropped"
                     f" {count} loader links cache records"
                 )
-                self._client._hikka_entity_cache = {}
-                self._client._hikka_fulluser_cache = {}
-                self._client._hikka_fullchannel_cache = {}
-                self._client.hikka_me = await self._client.get_me()
+                self._client._huikka_entity_cache = {}
+                self._client._huikka_fulluser_cache = {}
+                self._client._huikka_fullchannel_cache = {}
+                self._client.huikka_me = await self._client.get_me()
             elif method == "reload_core":
                 core_quantity = await self.lookup("loader").reload_core()
                 result = f"Reloaded {core_quantity} core modules"
             elif method == "inspect_cache":
                 result = (
                     "Entity cache:"
-                    f" {len(self._client._hikka_entity_cache)} records\nFulluser cache:"
-                    f" {len(self._client._hikka_fulluser_cache)} records\nFullchannel"
+                    f" {len(self._client._huikka_entity_cache)} records\nFulluser"
                     " cache:"
-                    f" {len(self._client._hikka_fullchannel_cache)} records\nLoader"
+                    f" {len(self._client._huikka_fulluser_cache)} records\nFullchannel"
+                    " cache:"
+                    f" {len(self._client._huikka_fullchannel_cache)} records\nLoader"
                     f" links cache: {self.lookup('loader').inspect_cache()} records"
                 )
             elif method == "inspect_modules":

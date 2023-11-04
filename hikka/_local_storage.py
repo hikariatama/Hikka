@@ -1,9 +1,4 @@
 """Saves modules to disk and fetches them if remote storage is not available."""
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
 import contextlib
@@ -28,7 +23,7 @@ class LocalStorage:
     """Saves modules to disk and fetches them if remote storage is not available."""
 
     def __init__(self):
-        self._path = os.path.join(os.path.expanduser("~"), ".hikka", "modules_cache")
+        self._path = os.path.join(os.path.expanduser("~"), ".huikka", "modules_cache")
         self._ensure_dirs()
 
     @property
@@ -170,10 +165,10 @@ class RemoteStorage:
                 url,
                 auth=(tuple(auth.split(":", 1)) if auth else None),
                 headers={
-                    "User-Agent": "Hikka Userbot",
-                    "X-Hikka-Version": ".".join(map(str, __version__)),
-                    "X-Hikka-Commit-SHA": utils.get_git_hash(),
-                    "X-Hikka-User": str(self._client.tg_id),
+                    "User-Agent": "Huikka Userbot",
+                    "X-Huikka-Version": ".".join(map(str, __version__)),
+                    "X-Huikka-Commit-SHA": utils.get_git_hash(),
+                    "X-Huikka-User": str(self._client.tg_id),
                 },
             )
             r.raise_for_status()

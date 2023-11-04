@@ -1,12 +1,7 @@
 """Main logging part"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
+import contextlib
 import inspect
 import io
 import linecache
@@ -17,7 +12,7 @@ import traceback
 import typing
 from logging.handlers import RotatingFileHandler
 
-import hikkatl
+import huikkatl
 from aiogram.utils.exceptions import NetworkError
 
 from . import utils
@@ -39,17 +34,14 @@ def getlines(filename: str, module_globals=None) -> str:
     Update the cache if it doesn't contain an entry for this file already.
 
     Modified version of original `linecache.getlines`, which returns the
-    source code of Hikka and Dragon modules properly. This is needed for
+    source code of Huikka modules properly. This is needed for
     interactive line debugger in werkzeug web debugger.
     """
 
     try:
         if filename.startswith("<") and filename.endswith(">"):
             module = filename[1:-1].split(maxsplit=1)[-1]
-            if (
-                module.startswith("hikka.modules")
-                or module.startswith("dragon.modules")
-            ) and module in sys.modules:
+            if (module.startswith("huikka.modules")) and module in sys.modules:
                 return list(
                     map(
                         lambda x: f"{x}\n",
@@ -73,7 +65,7 @@ def override_text(exception: Exception) -> typing.Optional[str]:
     return None
 
 
-class HikkaException:
+class HuikkaException:
     def __init__(
         self,
         message: str,
@@ -95,7 +87,7 @@ class HikkaException:
         tb: traceback.TracebackException,
         stack: typing.Optional[typing.List[inspect.FrameInfo]] = None,
         comment: typing.Optional[typing.Any] = None,
-    ) -> "HikkaException":
+    ) -> "HuikkaException":
         def to_hashable(dictionary: dict) -> dict:
             dictionary = dictionary.copy()
             for key, value in dictionary.items():
@@ -110,7 +102,7 @@ class HikkaException:
                             dictionary[key] = "<Database>"
                         elif isinstance(
                             value,
-                            (hikkatl.TelegramClient, CustomTelegramClient),
+                            (huikkatl.TelegramClient, CustomTelegramClient),
                         ):
                             dictionary[key] = f"<{value.__class__.__name__}>"
                         elif len(str(value)) > 512:
@@ -239,7 +231,8 @@ class TelegramLogsHandler(logging.Handler):
 
     async def queue_poller(self):
         while True:
-            await self.sender()
+            with contextlib.suppress(Exception):
+                await self.sender()
             await asyncio.sleep(3)
 
     def setLevel(self, level: int):
@@ -259,18 +252,18 @@ class TelegramLogsHandler(logging.Handler):
             self.targets[0].format(record)
             for record in (self.buffer + self.handledbuffer)
             if record.levelno >= lvl
-            and (not record.hikka_caller or client_id == record.hikka_caller)
+            and (not record.huikka_caller or client_id == record.huikka_caller)
         ]
 
     async def _show_full_trace(
         self,
         call: BotInlineCall,
         bot: "aiogram.Bot",  # type: ignore  # noqa: F821
-        item: HikkaException,
+        item: HuikkaException,
     ):
         chunks = item.message + "\n\n<b>🪐 Full traceback:</b>\n" + item.full_stack
 
-        chunks = list(utils.smart_split(*hikkatl.extensions.html.parse(chunks), 4096))
+        chunks = list(utils.smart_split(*huikkatl.extensions.html.parse(chunks), 4096))
 
         await call.edit(
             chunks[0],
@@ -280,7 +273,7 @@ class TelegramLogsHandler(logging.Handler):
         for chunk in chunks[1:]:
             await bot.send_message(chat_id=call.chat_id, text=chunk)
 
-    def _gen_web_debug_button(self, item: HikkaException) -> list:
+    def _gen_web_debug_button(self, item: HuikkaException) -> list:
         if not item.sysinfo:
             return []
 
@@ -310,7 +303,7 @@ class TelegramLogsHandler(logging.Handler):
     async def _start_debugger(
         self,
         call: "InlineCall",  # type: ignore  # noqa: F821
-        item: HikkaException,
+        item: HuikkaException,
     ):
         if not self.web_debugger:
             self.web_debugger = WebDebugger()
@@ -325,10 +318,8 @@ class TelegramLogsHandler(logging.Handler):
         )
 
         await call.answer(
-            (
-                "Web debugger started. You can get PIN using .debugger command. \n⚠️"
-                " !DO NOT GIVE IT TO ANYONE! ⚠️"
-            ),
+            "Web debugger started. You can get PIN using .debugger command. \n⚠️"
+            " !DO NOT GIVE IT TO ANYONE! ⚠️",
             show_alert=True,
         )
 
@@ -379,7 +370,7 @@ class TelegramLogsHandler(logging.Handler):
                         ),
                     )
                     for item in self.tg_buff
-                    if isinstance(item[0], HikkaException)
+                    if isinstance(item[0], HuikkaException)
                     and (not item[1] or item[1] == client_id or self.force_send_all)
                 ]
                 for client_id in self._mods
@@ -399,7 +390,7 @@ class TelegramLogsHandler(logging.Handler):
                     logfile = io.BytesIO(
                         "".join(self._queue[client_id]).encode("utf-8")
                     )
-                    logfile.name = "hikka-logs.txt"
+                    logfile.name = "huikka-logs.txt"
                     logfile.seek(0)
                     await self._mods[client_id].inline.bot.send_document(
                         self._mods[client_id].logchat,
@@ -427,11 +418,11 @@ class TelegramLogsHandler(logging.Handler):
         try:
             caller = next(
                 (
-                    frame_info.frame.f_locals["_hikka_client_id_logging_tag"]
+                    frame_info.frame.f_locals["_huikka_client_id_logging_tag"]
                     for frame_info in inspect.stack()
                     if isinstance(
                         getattr(getattr(frame_info, "frame", None), "f_locals", {}).get(
-                            "_hikka_client_id_logging_tag"
+                            "_huikka_client_id_logging_tag"
                         ),
                         int,
                     )
@@ -444,11 +435,11 @@ class TelegramLogsHandler(logging.Handler):
         except Exception:
             caller = None
 
-        record.hikka_caller = caller
+        record.huikka_caller = caller
 
         if record.levelno >= self.tg_level:
             if record.exc_info:
-                exc = HikkaException.from_exc_info(
+                exc = HuikkaException.from_exc_info(
                     *record.exc_info,
                     stack=record.__dict__.get("stack", None),
                     comment=record.msg % record.args,
@@ -507,7 +498,7 @@ _tg_formatter = logging.Formatter(
 )
 
 rotating_handler = RotatingFileHandler(
-    filename="hikka.log",
+    filename="huikka.log",
     mode="a",
     maxBytes=10 * 1024 * 1024,
     backupCount=1,
@@ -527,8 +518,7 @@ def init():
         TelegramLogsHandler((handler, rotating_handler), 7000)
     )
     logging.getLogger().setLevel(logging.NOTSET)
-    logging.getLogger("hikkatl").setLevel(logging.WARNING)
-    logging.getLogger("hikkapyro").setLevel(logging.WARNING)
+    logging.getLogger("huikkatl").setLevel(logging.WARNING)
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
     logging.getLogger("aiogram").setLevel(logging.WARNING)

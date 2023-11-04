@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import inspect
 import logging
 import os
@@ -12,7 +6,7 @@ import time
 import typing
 from io import BytesIO
 
-from hikkatl.tl.types import Message
+from huikkatl.tl.types import Message
 
 from .. import loader, main, utils
 from ..inline.types import InlineCall
@@ -40,25 +34,21 @@ class TestMod(loader.Module):
             loader.ConfigValue(
                 "force_send_all",
                 False,
-                (
-                    "⚠️ Do not touch, if you don't know what it does!\nBy default,"
-                    " Hikka will try to determine, which client caused logs. E.g. there"
-                    " is a module TestModule installed on Client1 and TestModule2 on"
-                    " Client2. By default, Client2 will get logs from TestModule2, and"
-                    " Client1 will get logs from TestModule. If this option is enabled,"
-                    " Hikka will send all logs to Client1 and Client2, even if it is"
-                    " not the one that caused the log."
-                ),
+                "⚠️ Do not touch, if you don't know what it does!\nBy default,"
+                " Huikka will try to determine, which client caused logs. E.g. there"
+                " is a module TestModule installed on Client1 and TestModule2 on"
+                " Client2. By default, Client2 will get logs from TestModule2, and"
+                " Client1 will get logs from TestModule. If this option is enabled,"
+                " Huikka will send all logs to Client1 and Client2, even if it is"
+                " not the one that caused the log.",
                 validator=loader.validators.Boolean(),
                 on_change=self._pass_config_to_logger,
             ),
             loader.ConfigValue(
                 "tglog_level",
                 "INFO",
-                (
-                    "⚠️ Do not touch, if you don't know what it does!\n"
-                    "Minimal loglevel for records to be sent in Telegram."
-                ),
+                "⚠️ Do not touch, if you don't know what it does!\n"
+                "Minimal loglevel for records to be sent in Telegram.",
                 validator=loader.validators.Choice(
                     ["INFO", "WARNING", "ERROR", "CRITICAL"]
                 ),
@@ -163,14 +153,14 @@ class TestMod(loader.Module):
                     )
 
                     try:
-                        delattr(module, "hikka_debug")
+                        delattr(module, "huikka_debug")
                     except AttributeError:
                         pass
 
                     await utils.answer(message, self.strings("debugging_disabled"))
                     return
 
-                module.hikka_debug = True
+                module.huikka_debug = True
                 instance = module
                 break
 
@@ -303,7 +293,7 @@ class TestMod(loader.Module):
         logs = self.lookup("evaluator").censor(logs)
 
         logs = BytesIO(logs.encode("utf-16"))
-        logs.name = "hikka-logs.txt"
+        logs.name = "huikka-logs.txt"
 
         ghash = utils.get_git_hash()
 
@@ -311,7 +301,7 @@ class TestMod(loader.Module):
             *main.__version__,
             (
                 " <a"
-                f' href="https://github.com/hikariatama/Hikka/commit/{ghash}">@{ghash[:8]}</a>'
+                f' href="https://github.com/hikariatama/Huikka/commit/{ghash}">@{ghash[:8]}</a>'
                 if ghash
                 else ""
             ),
@@ -367,11 +357,11 @@ class TestMod(loader.Module):
     async def client_ready(self):
         chat, _ = await utils.asset_channel(
             self._client,
-            "hikka-logs",
-            "🌘 Your Hikka logs will appear in this chat",
+            "huikka-logs",
+            "🌘 Your Huikka logs will appear in this chat",
             silent=True,
             invite_bot=True,
-            avatar="https://github.com/hikariatama/assets/raw/master/hikka-logs.png",
+            avatar="https://github.com/hikariatama/assets/raw/master/huikka-logs.png",
         )
 
         self.logchat = int(f"-100{chat.id}")

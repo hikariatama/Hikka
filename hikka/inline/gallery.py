@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import contextlib
 import copy
@@ -25,12 +19,12 @@ from aiogram.types import (
     InputMediaPhoto,
 )
 from aiogram.utils.exceptions import BadRequest, RetryAfter
-from hikkatl.errors.rpcerrorlist import ChatSendInlineForbiddenError
-from hikkatl.extensions.html import CUSTOM_EMOJIS
-from hikkatl.tl.types import Message
+from huikkatl.errors.rpcerrorlist import ChatSendInlineForbiddenError
+from huikkatl.extensions.html import CUSTOM_EMOJIS
+from huikkatl.tl.types import Message
 
 from .. import main, utils
-from ..types import HikkaReplyMarkup
+from ..types import HuikkaReplyMarkup
 from .types import InlineMessage, InlineUnit
 
 logger = logging.getLogger(__name__)
@@ -56,7 +50,7 @@ class Gallery(InlineUnit):
         next_handler: typing.Union[callable, typing.List[str]],
         caption: typing.Union[typing.List[str], str, callable] = "",
         *,
-        custom_buttons: typing.Optional[HikkaReplyMarkup] = None,
+        custom_buttons: typing.Optional[HuikkaReplyMarkup] = None,
         force_me: bool = False,
         always_allow: typing.Optional[typing.List[int]] = None,
         manual_security: bool = False,
@@ -85,16 +79,16 @@ class Gallery(InlineUnit):
                         be loaded. Toggle this attribute, if your callback is too slow to load photos
                         in real time
         :param gif: Whether the gallery will be filled with gifs. If you omit this argument and specify
-                    gifs in `next_handler`, Hikka will try to determine the filetype of these images
-        :param manual_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+                    gifs in `next_handler`, Huikka will try to determine the filetype of these images
+        :param manual_security: By default, Huikka will try to inherit inline buttons security from the caller (command)
                                 If you want to avoid this, pass `manual_security=True`
-        :param disable_security: By default, Hikka will try to inherit inline buttons security from the caller (command)
+        :param disable_security: By default, Huikka will try to inherit inline buttons security from the caller (command)
                                  If you want to disable all security checks on this gallery in particular, pass `disable_security=True`
         :param silent: Whether the gallery must be sent silently (w/o "Opening gallery..." message)
         :return: If gallery is sent, returns :obj:`InlineMessage`, otherwise returns `False`
         """
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self._client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self._client.tg_id)  # noqa: F841
 
         custom_buttons = self._validate_markup(custom_buttons)
 
@@ -104,10 +98,8 @@ class Gallery(InlineUnit):
             and all(isinstance(item, str) for item in caption)
         ) and not callable(caption):
             logger.error(
-                (
-                    "Invalid type for `caption`. Expected `str` or `list` or"
-                    " `callable`, got `%s`"
-                ),
+                "Invalid type for `caption`. Expected `str` or `list` or"
+                " `callable`, got `%s`",
                 type(caption),
             )
             return False
@@ -184,10 +176,8 @@ class Gallery(InlineUnit):
                 next_handler = ListGalleryHelper(next_handler)
             else:
                 logger.error(
-                    (
-                        "Invalid type for `next_handler`. Expected `callable` or `list`"
-                        " of `str`, got `%s`"
-                    ),
+                    "Invalid type for `next_handler`. Expected `callable` or `list`"
+                    " of `str`, got `%s`",
                     type(next_handler),
                 )
                 return False
@@ -260,7 +250,7 @@ class Gallery(InlineUnit):
                 )(
                     (
                         utils.get_platform_emoji()
-                        if self._client.hikka_me.premium and CUSTOM_EMOJIS
+                        if self._client.huikka_me.premium and CUSTOM_EMOJIS
                         else "🌘"
                     )
                     + self.translator.getkey("inline.opening_gallery"),
@@ -347,20 +337,16 @@ class Gallery(InlineUnit):
             photo_url = callback()
         else:
             logger.error(
-                (
-                    "Invalid type for `next_handler`. Expected `str`, `list` or"
-                    " `callable`, got %s"
-                ),
+                "Invalid type for `next_handler`. Expected `str`, `list` or"
+                " `callable`, got %s",
                 type(callback),
             )
             return False
 
         if not isinstance(photo_url, (str, list)):
             logger.error(
-                (
-                    "Got invalid result from `next_handler`. Expected `str` or `list`,"
-                    " got %s"
-                ),
+                "Got invalid result from `next_handler`. Expected `str` or `list`,"
+                " got %s",
                 type(photo_url),
             )
             return False

@@ -1,12 +1,7 @@
 """Registers modules"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
+import builtins
 import contextlib
 import copy
 import importlib
@@ -20,10 +15,10 @@ import sys
 import typing
 from functools import wraps
 from pathlib import Path
-from types import FunctionType, ModuleType
+from types import FunctionType
 from uuid import uuid4
 
-from hikkatl.tl.tlobject import TLObject
+from huikkatl.tl.tlobject import TLObject
 
 from . import security, utils, validators
 from .database import Database
@@ -34,7 +29,6 @@ from .types import (
     ConfigValue,
     CoreOverwriteError,
     CoreUnloadError,
-    DragonModule,
     InlineMessage,
     JSONSerializable,
     Library,
@@ -57,7 +51,6 @@ __all__ = [
     "Command",
     "CoreOverwriteError",
     "CoreUnloadError",
-    "DragonModule",
     "InlineMessage",
     "JSONSerializable",
     "Library",
@@ -134,6 +127,21 @@ VALID_PIP_PACKAGES = re.compile(
 
 USER_INSTALL = "PIP_TARGET" not in os.environ and "VIRTUAL_ENV" not in os.environ
 
+native_import = builtins.__import__
+
+
+def patched_import(name: str, *args, **kwargs):
+    if name.startswith("telethon"):
+        return native_import("huikkatl" + name[8:], *args, **kwargs)
+
+    if name.startswith("pyrogram"):
+        return native_import("huikkapyro" + name[8:], *args, **kwargs)
+
+    return native_import(name, *args, **kwargs)
+
+
+builtins.__import__ = patched_import
+
 
 class InfiniteLoop:
     _task = None
@@ -159,7 +167,7 @@ class InfiniteLoop:
 
     def stop(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -176,7 +184,7 @@ class InfiniteLoop:
 
     def start(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -379,7 +387,7 @@ def tag(*tags, **kwarg_tags):
     @loader.tag("no_commands", "out")
     @loader.tag("no_commands", out=True)
     @loader.tag(only_messages=True)
-    @loader.tag("only_messages", "only_pm", regex=r"^[.] ?hikka$", from_id=659800858)
+    @loader.tag("only_messages", "only_pm", regex=r"^[.] ?huikka$", from_id=659800858)
 
     💡 These tags can be used directly in `@loader.watcher`:
     @loader.watcher("no_commands", out=True)
@@ -485,7 +493,6 @@ class Modules:
         self.callback_handlers = {}
         self.aliases = {}
         self.modules = []  # skipcq: PTC-W0052
-        self.dragon_modules = []
         self.libraries = []
         self.watchers = []
         self._log_handlers = []
@@ -499,7 +506,7 @@ class Modules:
         self.secure_boot = False
         asyncio.ensure_future(self._junk_collector())
         self.inline = InlineManager(self.client, self._db, self)
-        self.client.hikka_inline = self.inline
+        self.client.huikka_inline = self.inline
 
     async def _junk_collector(self):
         """
@@ -513,10 +520,10 @@ class Modules:
             callback_handlers = {}
             watchers = []
             for module in self.modules:
-                commands.update(module.hikka_commands)
-                inline_handlers.update(module.hikka_inline_handlers)
-                callback_handlers.update(module.hikka_callback_handlers)
-                watchers.extend(module.hikka_watchers.values())
+                commands.update(module.huikka_commands)
+                inline_handlers.update(module.huikka_inline_handlers)
+                callback_handlers.update(module.huikka_callback_handlers)
+                watchers.extend(module.huikka_watchers.values())
 
             self.commands = commands
             self.inline_handlers = inline_handlers
@@ -524,12 +531,10 @@ class Modules:
             self.watchers = watchers
 
             logger.debug(
-                (
-                    "Reloaded %s commands,"
-                    " %s inline handlers,"
-                    " %s callback handlers and"
-                    " %s watchers"
-                ),
+                "Reloaded %s commands,"
+                " %s inline handlers,"
+                " %s callback handlers and"
+                " %s watchers",
                 len(self.commands),
                 len(self.inline_handlers),
                 len(self.callback_handlers),
@@ -584,7 +589,7 @@ class Modules:
         origin: str = "<core>",
     ) -> typing.List[Module]:
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         loaded = []
 
@@ -610,64 +615,20 @@ class Modules:
 
         return loaded
 
-    def register_dragon(self, module: ModuleType, instance: DragonModule):
-        for mod in self.dragon_modules.copy():
-            if mod.name == instance.name:
-                logger.debug("Removing dragon module %s for reload", mod.name)
-                self.unload_dragon(mod)
-
-        instance.handlers = []
-        for name, obj in vars(module).items():
-            for handler, group in getattr(obj, "handlers", []):
-                try:
-                    handler = self.client.pyro_proxy.add_handler(handler, group)
-                    instance.handlers.append(handler)
-                except Exception as e:
-                    logging.exception(
-                        "Can't add handler %s due to %s: %s",
-                        name,
-                        type(e).__name__,
-                        e,
-                    )
-
-        self.dragon_modules += [instance]
-
-    def unload_dragon(self, instance: DragonModule) -> bool:
-        for handler in instance.handlers:
-            try:
-                self.client.pyro_proxy.remove_handler(*handler)
-            except Exception as e:
-                logging.exception(
-                    "Can't remove handler %s due to %s: %s",
-                    handler,
-                    type(e).__name__,
-                    e,
-                )
-
-        if instance in self.dragon_modules:
-            self.dragon_modules.remove(instance)
-            return True
-
-        return False
-
     async def register_module(
         self,
         spec: importlib.machinery.ModuleSpec,
         module_name: str,
         origin: str = "<core>",
         save_fs: bool = False,
-        is_dragon: bool = False,
-    ) -> typing.Union[Module, typing.Tuple[ModuleType, DragonModule]]:
+    ) -> Module:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
-
-        if is_dragon:
-            return module, DragonModule()
 
         ret = None
 
@@ -733,14 +694,14 @@ class Modules:
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if instance.__origin__.startswith("<core"):
             self._core_commands += list(
-                map(lambda x: x.lower(), list(instance.hikka_commands))
+                map(lambda x: x.lower(), list(instance.huikka_commands))
             )
 
-        for _command, cmd in instance.hikka_commands.items():
+        for _command, cmd in instance.huikka_commands.items():
             # Restrict overwriting core modules' commands
             if (
                 not self._remove_core_protection
@@ -755,13 +716,13 @@ class Modules:
             self.commands.update({_command.lower(): cmd})
 
         for alias, cmd in self.aliases.copy().items():
-            if cmd in instance.hikka_commands:
+            if cmd in instance.huikka_commands:
                 self.add_alias(alias, cmd)
 
         self.register_inline_stuff(instance)
 
     def register_inline_stuff(self, instance: Module):
-        for name, func in instance.hikka_inline_handlers.copy().items():
+        for name, func in instance.huikka_inline_handlers.copy().items():
             if name.lower() in self.inline_handlers:
                 if (
                     hasattr(func, "__self__")
@@ -785,7 +746,7 @@ class Modules:
 
             self.inline_handlers.update({name.lower(): func})
 
-        for name, func in instance.hikka_callback_handlers.copy().items():
+        for name, func in instance.huikka_callback_handlers.copy().items():
             if name.lower() in self.callback_handlers and (
                 hasattr(func, "__self__")
                 and hasattr(self.callback_handlers[name], "__self__")
@@ -801,7 +762,7 @@ class Modules:
             self.callback_handlers.update({name.lower(): func})
 
     def unregister_inline_stuff(self, instance: Module, purpose: str):
-        for name, func in instance.hikka_inline_handlers.copy().items():
+        for name, func in instance.huikka_inline_handlers.copy().items():
             if name.lower() in self.inline_handlers and (
                 hasattr(func, "__self__")
                 and hasattr(self.inline_handlers[name], "__self__")
@@ -816,7 +777,7 @@ class Modules:
                     purpose,
                 )
 
-        for name, func in instance.hikka_callback_handlers.copy().items():
+        for name, func in instance.huikka_callback_handlers.copy().items():
             if name.lower() in self.callback_handlers and (
                 hasattr(func, "__self__")
                 and hasattr(self.callback_handlers[name], "__self__")
@@ -834,70 +795,50 @@ class Modules:
     def register_watchers(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         for _watcher in self.watchers:
             if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
                 logger.debug("Removing watcher %s for update", _watcher)
                 self.watchers.remove(_watcher)
 
-        for _watcher in instance.hikka_watchers.values():
+        for _watcher in instance.huikka_watchers.values():
             self.watchers += [_watcher]
 
     def lookup(
         self,
         modname: str,
-        include_dragon: bool = False,
-    ) -> typing.Union[bool, Module, DragonModule, Library]:
-        return (
-            next(
-                (lib for lib in self.libraries if lib.name.lower() == modname.lower()),
-                False,
-            )
-            or next(
-                (
-                    mod
-                    for mod in self.modules
-                    if mod.__class__.__name__.lower() == modname.lower()
-                    or mod.name.lower() == modname.lower()
-                ),
-                False,
-            )
-            or (
-                next(
-                    (
-                        mod
-                        for mod in self.dragon_modules
-                        if mod.name.lower() == modname.lower()
-                    ),
-                    False,
-                )
-                if include_dragon
-                else False
-            )
+    ) -> typing.Union[bool, Module, Library]:
+        return next(
+            (lib for lib in self.libraries if lib.name.lower() == modname.lower()),
+            False,
+        ) or next(
+            (
+                mod
+                for mod in self.modules
+                if mod.__class__.__name__.lower() == modname.lower()
+                or mod.name.lower() == modname.lower()
+            ),
+            False,
         )
 
     @property
     def get_approved_channel(self):
         return self.__approve.pop(0) if self.__approve else None
 
-    def get_prefix(self, userbot: typing.Optional[str] = None) -> str:
-        """Get prefix for specific userbot. Pass `None` to get Hikka prefix"""
-        if userbot == "dragon":
-            key = "dragon.prefix"
-            default = ","
-        else:
-            from . import main
+    def get_prefix(self) -> str:
+        """Get command prefix"""
+        from . import main
 
-            key = main.__name__
-            default = "."
+        key = main.__name__
+        default = "."
 
         return self._db.get(key, "command_prefix", default)
 
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         instance.allmodules = self
         instance.internal_init()
@@ -984,7 +925,7 @@ class Modules:
     def send_config_one(self, mod: Module, skip_hook: bool = False):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if hasattr(mod, "config"):
             modcfg = self._db.get(
@@ -1050,7 +991,7 @@ class Modules:
         from_dlmod: bool = False,
     ):
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if from_dlmod:
             try:
@@ -1080,10 +1021,8 @@ class Modules:
             return
         except Exception as e:
             logger.exception(
-                (
-                    "Failed to send mod init complete signal for %s due to %s,"
-                    " attempting unload"
-                ),
+                "Failed to send mod init complete signal for %s due to %s,"
+                " attempting unload",
                 mod,
                 e,
             )
@@ -1121,7 +1060,7 @@ class Modules:
         worked = []
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         for module in self.modules:
             if classname.lower() in (

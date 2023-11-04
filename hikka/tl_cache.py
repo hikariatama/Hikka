@@ -1,23 +1,17 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import copy
 import inspect
 import logging
 import time
 import typing
 
-from hikkatl import TelegramClient
-from hikkatl.errors.rpcerrorlist import TopicDeletedError
-from hikkatl.hints import EntityLike
-from hikkatl.network import MTProtoSender
-from hikkatl.tl.functions.channels import GetFullChannelRequest
-from hikkatl.tl.functions.users import GetFullUserRequest
-from hikkatl.tl.tlobject import TLRequest
-from hikkatl.tl.types import (
+from huikkatl import TelegramClient
+from huikkatl.errors.rpcerrorlist import TopicDeletedError
+from huikkatl.hints import EntityLike
+from huikkatl.network import MTProtoSender
+from huikkatl.tl.functions.channels import GetFullChannelRequest
+from huikkatl.tl.functions.users import GetFullUserRequest
+from huikkatl.tl.tlobject import TLRequest
+from huikkatl.tl.types import (
     ChannelFull,
     Message,
     Updates,
@@ -25,7 +19,7 @@ from hikkatl.tl.types import (
     UpdateShort,
     UserFull,
 )
-from hikkatl.utils import is_list_like
+from huikkatl.utils import is_list_like
 
 from .types import (
     CacheRecordEntity,
@@ -57,22 +51,22 @@ class CustomTelegramClient(TelegramClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._hikka_entity_cache: typing.Dict[
+        self._huikka_entity_cache: typing.Dict[
             typing.Union[str, int],
             CacheRecordEntity,
         ] = {}
 
-        self._hikka_perms_cache: typing.Dict[
+        self._huikka_perms_cache: typing.Dict[
             typing.Union[str, int],
             CacheRecordPerms,
         ] = {}
 
-        self._hikka_fullchannel_cache: typing.Dict[
+        self._huikka_fullchannel_cache: typing.Dict[
             typing.Union[str, int],
             CacheRecordFullChannel,
         ] = {}
 
-        self._hikka_fulluser_cache: typing.Dict[
+        self._huikka_fulluser_cache: typing.Dict[
             typing.Union[str, int],
             CacheRecordFullUser,
         ] = {}
@@ -101,20 +95,20 @@ class CustomTelegramClient(TelegramClient):
         self._raw_updates_processor = value
 
     @property
-    def hikka_entity_cache(self) -> typing.Dict[int, CacheRecordEntity]:
-        return self._hikka_entity_cache
+    def huikka_entity_cache(self) -> typing.Dict[int, CacheRecordEntity]:
+        return self._huikka_entity_cache
 
     @property
-    def hikka_perms_cache(self) -> typing.Dict[int, CacheRecordPerms]:
-        return self._hikka_perms_cache
+    def huikka_perms_cache(self) -> typing.Dict[int, CacheRecordPerms]:
+        return self._huikka_perms_cache
 
     @property
-    def hikka_fullchannel_cache(self) -> typing.Dict[int, CacheRecordFullChannel]:
-        return self._hikka_fullchannel_cache
+    def huikka_fullchannel_cache(self) -> typing.Dict[int, CacheRecordFullChannel]:
+        return self._huikka_fullchannel_cache
 
     @property
-    def hikka_fulluser_cache(self) -> typing.Dict[int, CacheRecordFullUser]:
-        return self._hikka_fulluser_cache
+    def huikka_fulluser_cache(self) -> typing.Dict[int, CacheRecordFullUser]:
+        return self._huikka_fulluser_cache
 
     @property
     def forbidden_constructors(self) -> typing.List[str]:
@@ -142,7 +136,7 @@ class CustomTelegramClient(TelegramClient):
 
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
+        _huikka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
 
         if not hashable(entity):
             try:
@@ -166,37 +160,37 @@ class CustomTelegramClient(TelegramClient):
         if (
             not force
             and hashable_entity
-            and hashable_entity in self._hikka_entity_cache
+            and hashable_entity in self._huikka_entity_cache
             and (
                 not exp
-                or self._hikka_entity_cache[hashable_entity].ts + exp > time.time()
+                or self._huikka_entity_cache[hashable_entity].ts + exp > time.time()
             )
         ):
             logger.debug(
                 "Using cached entity %s (%s)",
                 entity,
-                type(self._hikka_entity_cache[hashable_entity].entity).__name__,
+                type(self._huikka_entity_cache[hashable_entity].entity).__name__,
             )
-            return copy.deepcopy(self._hikka_entity_cache[hashable_entity].entity)
+            return copy.deepcopy(self._huikka_entity_cache[hashable_entity].entity)
 
         resolved_entity = await TelegramClient.get_entity(self, entity)
 
         if resolved_entity:
             cache_record = CacheRecordEntity(hashable_entity, resolved_entity, exp)
-            self._hikka_entity_cache[hashable_entity] = cache_record
+            self._huikka_entity_cache[hashable_entity] = cache_record
             logger.debug("Saved hashable_entity %s to cache", hashable_entity)
 
             if getattr(resolved_entity, "id", None):
                 logger.debug("Saved resolved_entity id %s to cache", resolved_entity.id)
-                self._hikka_entity_cache[resolved_entity.id] = cache_record
+                self._huikka_entity_cache[resolved_entity.id] = cache_record
 
             if getattr(resolved_entity, "username", None):
                 logger.debug(
                     "Saved resolved_entity username @%s to cache",
                     resolved_entity.username,
                 )
-                self._hikka_entity_cache[f"@{resolved_entity.username}"] = cache_record
-                self._hikka_entity_cache[resolved_entity.username] = cache_record
+                self._huikka_entity_cache[f"@{resolved_entity.username}"] = cache_record
+                self._huikka_entity_cache[resolved_entity.username] = cache_record
 
         return copy.deepcopy(resolved_entity)
 
@@ -219,7 +213,7 @@ class CustomTelegramClient(TelegramClient):
 
         # Will be used to determine, which client caused logging messages
         # parsed via inspect.stack()
-        _hikka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
+        _huikka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
 
         entity = await self.get_entity(entity)
         user = await self.get_entity(user) if user else None
@@ -264,16 +258,16 @@ class CustomTelegramClient(TelegramClient):
             not force
             and hashable_entity
             and hashable_user
-            and hashable_user in self._hikka_perms_cache.get(hashable_entity, {})
+            and hashable_user in self._huikka_perms_cache.get(hashable_entity, {})
             and (
                 not exp
-                or self._hikka_perms_cache[hashable_entity][hashable_user].ts + exp
+                or self._huikka_perms_cache[hashable_entity][hashable_user].ts + exp
                 > time.time()
             )
         ):
             logger.debug("Using cached perms %s (%s)", hashable_entity, hashable_user)
             return copy.deepcopy(
-                self._hikka_perms_cache[hashable_entity][hashable_user].perms
+                self._huikka_perms_cache[hashable_entity][hashable_user].perms
             )
 
         resolved_perms = await self.get_permissions(entity, user)
@@ -285,7 +279,7 @@ class CustomTelegramClient(TelegramClient):
                 resolved_perms,
                 exp,
             )
-            self._hikka_perms_cache.setdefault(hashable_entity, {})[
+            self._huikka_perms_cache.setdefault(hashable_entity, {})[
                 hashable_user
             ] = cache_record
             logger.debug("Saved hashable_entity %s perms to cache", hashable_entity)
@@ -293,13 +287,13 @@ class CustomTelegramClient(TelegramClient):
             def save_user(key: typing.Union[str, int]):
                 nonlocal self, cache_record, user, hashable_user
                 if getattr(user, "id", None):
-                    self._hikka_perms_cache.setdefault(key, {})[user.id] = cache_record
+                    self._huikka_perms_cache.setdefault(key, {})[user.id] = cache_record
 
                 if getattr(user, "username", None):
-                    self._hikka_perms_cache.setdefault(key, {})[
+                    self._huikka_perms_cache.setdefault(key, {})[
                         f"@{user.username}"
                     ] = cache_record
-                    self._hikka_perms_cache.setdefault(key, {})[
+                    self._huikka_perms_cache.setdefault(key, {})[
                         user.username
                     ] = cache_record
 
@@ -340,10 +334,8 @@ class CustomTelegramClient(TelegramClient):
                 )
             except StopIteration:
                 logger.debug(
-                    (
-                        "Can't parse hashable from entity %s, using legacy fullchannel"
-                        " request"
-                    ),
+                    "Can't parse hashable from entity %s, using legacy fullchannel"
+                    " request",
                     entity,
                 )
                 return await self(GetFullChannelRequest(channel=entity))
@@ -355,14 +347,14 @@ class CustomTelegramClient(TelegramClient):
 
         if (
             not force
-            and self._hikka_fullchannel_cache.get(hashable_entity)
-            and not self._hikka_fullchannel_cache[hashable_entity].expired
-            and self._hikka_fullchannel_cache[hashable_entity].ts + exp > time.time()
+            and self._huikka_fullchannel_cache.get(hashable_entity)
+            and not self._huikka_fullchannel_cache[hashable_entity].expired
+            and self._huikka_fullchannel_cache[hashable_entity].ts + exp > time.time()
         ):
-            return self._hikka_fullchannel_cache[hashable_entity].full_channel
+            return self._huikka_fullchannel_cache[hashable_entity].full_channel
 
         result = await self(GetFullChannelRequest(channel=entity))
-        self._hikka_fullchannel_cache[hashable_entity] = CacheRecordFullChannel(
+        self._huikka_fullchannel_cache[hashable_entity] = CacheRecordFullChannel(
             hashable_entity,
             result,
             exp,
@@ -392,10 +384,8 @@ class CustomTelegramClient(TelegramClient):
                 )
             except StopIteration:
                 logger.debug(
-                    (
-                        "Can't parse hashable from entity %s, using legacy fulluser"
-                        " request"
-                    ),
+                    "Can't parse hashable from entity %s, using legacy fulluser"
+                    " request",
                     entity,
                 )
                 return await self(GetFullUserRequest(entity))
@@ -407,14 +397,14 @@ class CustomTelegramClient(TelegramClient):
 
         if (
             not force
-            and self._hikka_fulluser_cache.get(hashable_entity)
-            and not self._hikka_fulluser_cache[hashable_entity].expired
-            and self._hikka_fulluser_cache[hashable_entity].ts + exp > time.time()
+            and self._huikka_fulluser_cache.get(hashable_entity)
+            and not self._huikka_fulluser_cache[hashable_entity].expired
+            and self._huikka_fulluser_cache[hashable_entity].ts + exp > time.time()
         ):
-            return self._hikka_fulluser_cache[hashable_entity].full_user
+            return self._huikka_fulluser_cache[hashable_entity].full_user
 
         result = await self(GetFullUserRequest(entity))
-        self._hikka_fulluser_cache[hashable_entity] = CacheRecordFullUser(
+        self._huikka_fulluser_cache[hashable_entity] = CacheRecordFullUser(
             hashable_entity,
             result,
             exp,
@@ -538,7 +528,7 @@ class CustomTelegramClient(TelegramClient):
         # ⚠️⚠️  WARNING!  ⚠️⚠️
         # If you are a module developer, and you'll try to bypass this protection to
         # force user join your channel, you will be added to SCAM modules
-        # list and you will be banned from Hikka federation.
+        # list and you will be banned from Huikka federation.
         # Let USER decide, which channel he will follow. Do not be so petty
         # I hope, you understood me.
         # Thank you

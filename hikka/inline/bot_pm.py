@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import logging
 import typing
 
@@ -27,20 +21,16 @@ class BotPM(InlineUnit):
         """
         if not isinstance(user, (str, int)):
             logger.error(
-                (
-                    "Invalid type for `user` in `set_fsm_state`. Expected `str` or"
-                    " `int`, got %s"
-                ),
+                "Invalid type for `user` in `set_fsm_state`. Expected `str` or"
+                " `int`, got %s",
                 type(user),
             )
             return False
 
         if not isinstance(state, (str, bool)):
             logger.error(
-                (
-                    "Invalid type for `state` in `set_fsm_state`. Expected `str` or"
-                    " `bool`, got %s"
-                ),
+                "Invalid type for `state` in `set_fsm_state`. Expected `str` or"
+                " `bool`, got %s",
                 type(state),
             )
             return False
@@ -63,10 +53,8 @@ class BotPM(InlineUnit):
         """
         if not isinstance(user, (str, int)):
             logger.error(
-                (
-                    "Invalid type for `user` in `get_fsm_state`. Expected `str` or"
-                    " `int`, got %s"
-                ),
+                "Invalid type for `user` in `get_fsm_state`. Expected `str` or"
+                " `int`, got %s",
                 type(user),
             )
             return False

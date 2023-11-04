@@ -1,6 +1,6 @@
 version = 1
 
-exclude_patterns = ["hikka/qr.py"]
+exclude_patterns = ["huikka/qr.py"]
 
 [[analyzers]]
 name = "shell"

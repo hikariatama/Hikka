@@ -1,29 +1,5 @@
 """Main script, where all the fun starts"""
 
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2021 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
-
 import argparse
 import asyncio
 import collections
@@ -39,9 +15,9 @@ import typing
 from getpass import getpass
 from pathlib import Path
 
-import hikkatl
-from hikkatl import events
-from hikkatl.errors import (
+import huikkatl
+from huikkatl import events
+from huikkatl.errors import (
     ApiIdInvalidError,
     AuthKeyDuplicatedError,
     FloodWaitError,
@@ -49,14 +25,14 @@ from hikkatl.errors import (
     PhoneNumberInvalidError,
     SessionPasswordNeededError,
 )
-from hikkatl.network.connection import (
+from huikkatl.network.connection import (
     ConnectionTcpFull,
     ConnectionTcpMTProxyRandomizedIntermediate,
 )
-from hikkatl.password import compute_check
-from hikkatl.sessions import MemorySession, SQLiteSession
-from hikkatl.tl.functions.account import GetPasswordRequest
-from hikkatl.tl.functions.auth import CheckPasswordRequest
+from huikkatl.password import compute_check
+from huikkatl.sessions import MemorySession, SQLiteSession
+from huikkatl.tl.functions.account import GetPasswordRequest
+from huikkatl.tl.functions.auth import CheckPasswordRequest
 
 from . import database, loader, utils, version
 from ._internal import print_banner
@@ -89,6 +65,7 @@ IS_DOCKER = "DOCKER" in os.environ
 IS_RAILWAY = "RAILWAY" in os.environ
 IS_GOORM = "GOORM" in os.environ
 IS_LAVHOST = "LAVHOST" in os.environ
+IS_HIKKAHOST = "HIKKAHOST" in os.environ
 IS_WSL = False
 with contextlib.suppress(Exception):
     from platform import uname
@@ -338,7 +315,7 @@ def raise_auth():
     raise InteractiveAuthRequired()
 
 
-class Hikka:
+class Huikka:
     """Main userbot instance, which can handle multiple clients"""
 
     def __init__(self):
@@ -395,7 +372,7 @@ class Hikka:
                 )
             )
             for session in filter(
-                lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                lambda f: f.startswith("huikka-") and f.endswith(".session"),
                 os.listdir(BASE_DIR),
             )
         ]
@@ -479,12 +456,12 @@ class Hikka:
             telegram_id = me.id
             client._tg_id = telegram_id
             client.tg_id = telegram_id
-            client.hikka_me = me
+            client.huikka_me = me
 
         session = SQLiteSession(
             os.path.join(
                 BASE_DIR,
-                f"hikka-{telegram_id}",
+                f"huikka-{telegram_id}",
             )
         )
 
@@ -500,8 +477,8 @@ class Hikka:
         client.session = session
         # Set db attribute to this client in order to save
         # custom bot nickname from web
-        client.hikka_db = database.Database(client)
-        await client.hikka_db.init()
+        client.huikka_db = database.Database(client)
+        await client.huikka_db.init()
 
     async def _web_banner(self):
         """Shows web banner"""
@@ -705,10 +682,8 @@ class Hikka:
                 self.clients += [client]
             except sqlite3.OperationalError:
                 logging.error(
-                    (
-                        "Check that this is the only instance running. "
-                        "If that doesn't help, delete the file '%s'"
-                    ),
+                    "Check that this is the only instance running. "
+                    "If that doesn't help, delete the file '%s'",
                     session.filename,
                 )
                 continue
@@ -741,7 +716,7 @@ class Hikka:
             me = await client.get_me()
             client._tg_id = me.id
             client.tg_id = me.id
-            client.hikka_me = me
+            client.huikka_me = me
             while await self.amain(first, client):
                 first = False
 
@@ -772,7 +747,7 @@ class Hikka:
                     else ""
                 )
                 logging.debug(
-                    "\n🌘 Hikka %s #%s (%s) started\n%s",
+                    "\n🌘 Huikka %s #%s (%s) started\n%s",
                     ".".join(list(map(str, list(__version__)))),
                     build[:7],
                     upd,
@@ -780,12 +755,12 @@ class Hikka:
                 )
                 self.omit_log = True
 
-            await client.hikka_inline.bot.send_animation(
+            await client.huikka_inline.bot.send_animation(
                 logging.getLogger().handlers[0].get_logid_by_client(client.tg_id),
-                "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
+                "https://github.com/hikariatama/assets/raw/master/huikka_banner.mp4",
                 caption=(
-                    "🌘 <b>Hikka {} started!</b>\n\n🌳 <b>GitHub commit SHA: <a"
-                    ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>\n✊'
+                    "🌘 <b>Huikka {} started!</b>\n\n🌳 <b>GitHub commit SHA: <a"
+                    ' href="https://github.com/hikariatama/Huikka/commit/{}">{}</a></b>\n✊'
                     " <b>Update status: {}</b>\n<b>{}</b>".format(
                         ".".join(list(map(str, list(__version__)))),
                         build,
@@ -799,7 +774,7 @@ class Hikka:
             logging.debug(
                 "· Started for %s · Prefix: «%s» ·",
                 client.tg_id,
-                client.hikka_db.get(__name__, "command_prefix", False) or ".",
+                client.huikka_db.get(__name__, "command_prefix", False) or ".",
             )
         except Exception:
             logging.exception("Badge error")
@@ -846,7 +821,7 @@ class Hikka:
         await client.start()
 
         db = database.Database(client)
-        client.hikka_db = db
+        client.huikka_db = db
         await db.init()
 
         logging.debug("Got DB")
@@ -857,8 +832,6 @@ class Hikka:
         await translator.init()
         modules = loader.Modules(client, db, self.clients, translator)
         client.loader = modules
-
-        client.pyro_proxy = None  # Will be set later if needed
 
         if self.web:
             await self.web.add_loader(client, modules, db)
@@ -906,6 +879,6 @@ class Hikka:
         self.loop.close()
 
 
-hikkatl.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
+huikkatl.extensions.html.CUSTOM_EMOJIS = not get_config_key("disable_custom_emojis")
 
-hikka = Hikka()
+huikka = Huikka()

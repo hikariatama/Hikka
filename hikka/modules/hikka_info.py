@@ -1,22 +1,16 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import git
-from hikkatl.tl.types import Message
-from hikkatl.utils import get_display_name
+from huikkatl.tl.types import Message
+from huikkatl.utils import get_display_name
 
 from .. import loader, utils, version
 from ..inline.types import InlineQuery
 
 
 @loader.tds
-class HikkaInfoMod(loader.Module):
+class HuikkaInfoMod(loader.Module):
     """Show userbot info"""
 
-    strings = {"name": "HikkaInfo"}
+    strings = {"name": "HuikkaInfo"}
 
     def __init__(self):
         self.config = loader.ModuleConfig(
@@ -26,7 +20,7 @@ class HikkaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "custom_button",
-                ["🌘 Support chat", "https://t.me/hikka_talks"],
+                ["🌘 Support chat", "https://t.me/huikka_talks"],
                 lambda: self.strings("_cfg_cst_btn"),
                 validator=loader.validators.Union(
                     loader.validators.Series(fixed_len=2),
@@ -35,7 +29,7 @@ class HikkaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "banner_url",
-                "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
+                "https://github.com/hikariatama/assets/raw/master/huikka_banner.mp4",
                 lambda: self.strings("_cfg_banner"),
                 validator=loader.validators.Link(),
             ),
@@ -52,8 +46,8 @@ class HikkaInfoMod(loader.Module):
             upd = ""
 
         me = '<b><a href="tg://user?id={}">{}</a></b>'.format(
-            self._client.hikka_me.id,
-            utils.escape_html(get_display_name(self._client.hikka_me)),
+            self._client.huikka_me.id,
+            utils.escape_html(get_display_name(self._client.huikka_me)),
         )
         build = utils.get_commit_url()
         _version = f'<i>{".".join(list(map(str, list(version.__version__))))}</i>'
@@ -78,8 +72,8 @@ class HikkaInfoMod(loader.Module):
 
         return (
             (
-                "<b>🌘 Hikka</b>\n"
-                if "hikka" not in self.config["custom_message"].lower()
+                "<b>🌘 Huikka</b>\n"
+                if "huikka" not in self.config["custom_message"].lower()
                 else ""
             )
             + self.config["custom_message"].format(
@@ -113,8 +107,8 @@ class HikkaInfoMod(loader.Module):
                     (
                         (
                             utils.get_platform_emoji()
-                            if self._client.hikka_me.premium and not inline
-                            else "🌘 Hikka"
+                            if self._client.huikka_me.premium and not inline
+                            else "🌘 Huikka"
                         ),
                         "<emoji document_id=5373141891321699086>😎</emoji>",
                         "<emoji document_id=5469741319330996757>💫</emoji>",
@@ -155,7 +149,7 @@ class HikkaInfoMod(loader.Module):
                 else {"message": self._render_info(True)}
             ),
             "thumb": (
-                "https://github.com/hikariatama/Hikka/raw/master/assets/hikka_pfp.png"
+                "https://github.com/hikariatama/Huikka/raw/master/assets/huikka_pfp.png"
             ),
             "reply_markup": self._get_mark(),
         }
@@ -181,7 +175,7 @@ class HikkaInfoMod(loader.Module):
             )
 
     @loader.command()
-    async def hikkainfo(self, message: Message):
+    async def huikkainfo(self, message: Message):
         await utils.answer(message, self.strings("desc"))
 
     @loader.command()

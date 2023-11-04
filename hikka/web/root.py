@@ -1,8 +1,8 @@
 """Main bot page"""
 
 # ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
+# This file is a part of Huikka Userbot
+# 🌐 https://github.com/hikariatama/Huikka
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
@@ -19,7 +19,7 @@ import aiohttp_jinja2
 import requests
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiohttp import web
-from hikkatl.errors import (
+from huikkatl.errors import (
     FloodWaitError,
     PasswordHashInvalidError,
     PhoneCodeExpiredError,
@@ -27,12 +27,12 @@ from hikkatl.errors import (
     SessionPasswordNeededError,
     YouBlockedUserError,
 )
-from hikkatl.password import compute_check
-from hikkatl.sessions import MemorySession
-from hikkatl.tl.functions.account import GetPasswordRequest
-from hikkatl.tl.functions.auth import CheckPasswordRequest
-from hikkatl.tl.functions.contacts import UnblockRequest
-from hikkatl.utils import parse_phone
+from huikkatl.password import compute_check
+from huikkatl.sessions import MemorySession
+from huikkatl.tl.functions.account import GetPasswordRequest
+from huikkatl.tl.functions.auth import CheckPasswordRequest
+from huikkatl.tl.functions.contacts import UnblockRequest
+from huikkatl.utils import parse_phone
 
 from .. import database, main, utils
 from .._internal import restart
@@ -117,7 +117,7 @@ class Web:
     def _check_session(self, request: web.Request) -> bool:
         return (
             request.cookies.get("session", None) in self._sessions
-            if main.hikka.clients
+            if main.huikka.clients
             else True
         )
 
@@ -179,7 +179,7 @@ class Web:
             if not await self._check_bot(client, text):
                 return web.Response(body="OCCUPIED")
 
-        db.set("hikka.inline", "custom_bot", text)
+        db.set("huikka.inline", "custom_bot", text)
         return web.Response(body="OK")
 
     async def set_tg_api(self, request: web.Request) -> web.Response:
@@ -271,7 +271,7 @@ class Web:
             if self._2fa_needed:
                 return web.Response(status=403, body="2FA")
 
-            await main.hikka.save_client_session(self._pending_client)
+            await main.huikka.save_client_session(self._pending_client)
             return web.Response(status=200, body="SUCCESS")
 
         if self._qr_login is None:
@@ -386,7 +386,7 @@ class Web:
             )
 
         logger.debug("2FA code accepted, logging in")
-        await main.hikka.save_client_session(self._pending_client)
+        await main.huikka.save_client_session(self._pending_client)
         return web.Response()
 
     async def tg_code(self, request: web.Request) -> web.Response:
@@ -445,7 +445,7 @@ class Web:
                     body=(self._render_fw_error(e)),
                 )
 
-        await main.hikka.save_client_session(self._pending_client)
+        await main.huikka.save_client_session(self._pending_client)
         return web.Response()
 
     async def finish_login(self, request: web.Request) -> web.Response:
@@ -455,10 +455,10 @@ class Web:
         if not self._pending_client:
             return web.Response(status=400)
 
-        first_session = not bool(main.hikka.clients)
+        first_session = not bool(main.huikka.clients)
 
         # Client is ready to pass in to dispatcher
-        main.hikka.clients = list(set(main.hikka.clients + [self._pending_client]))
+        main.huikka.clients = list(set(main.huikka.clients + [self._pending_client]))
         self._pending_client = None
 
         self.clients_set.set()
@@ -530,11 +530,9 @@ class Web:
                 bot = user[0].inline.bot
                 msg = await bot.send_message(
                     user[1].tg_id,
-                    (
-                        "🌘🔐 <b>Click button below to confirm web application"
-                        f" ops</b>\n\n<b>Client IP</b>: {ips}\n{cities}\n<i>If you did"
-                        " not request any codes, simply ignore this message</i>"
-                    ),
+                    "🌘🔐 <b>Click button below to confirm web application"
+                    f" ops</b>\n\n<b>Client IP</b>: {ips}\n{cities}\n<i>If you did"
+                    " not request any codes, simply ignore this message</i>",
                     disable_web_page_preview=True,
                     reply_markup=markup,
                 )
@@ -548,7 +546,7 @@ class Web:
             except Exception:
                 pass
 
-        session = f"hikka_{utils.rand(16)}"
+        session = f"huikka_{utils.rand(16)}"
 
         if not ops:
             # If no auth message was sent, just leave it empty
@@ -556,7 +554,7 @@ class Web:
             # inline bot or did not authorize any sessions
             return web.Response(body=session)
 
-        if not await main.hikka.wait_for_web_auth(token):
+        if not await main.huikka.wait_for_web_auth(token):
             for op in ops:
                 await op()
             return web.Response(body="TIMEOUT")

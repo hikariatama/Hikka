@@ -1,10 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
-
 import ast
 import asyncio
 import contextlib
@@ -23,9 +16,9 @@ from dataclasses import dataclass, field
 from importlib.abc import SourceLoader
 
 import requests
-from hikkatl.hints import EntityLike
-from hikkatl.tl.functions.account import UpdateNotifySettingsRequest
-from hikkatl.tl.types import (
+from huikkatl.hints import EntityLike
+from huikkatl.tl.functions.account import UpdateNotifySettingsRequest
+from huikkatl.tl.types import (
     Channel,
     ChannelFull,
     InputPeerNotifySettings,
@@ -48,7 +41,7 @@ from .pointers import PointerDict, PointerList
 
 __all__ = [
     "JSONSerializable",
-    "HikkaReplyMarkup",
+    "HuikkaReplyMarkup",
     "ListLike",
     "Command",
     "StringLoader",
@@ -71,7 +64,9 @@ logger = logging.getLogger(__name__)
 
 
 JSONSerializable = typing.Union[str, int, float, bool, list, dict, None]
-HikkaReplyMarkup = typing.Union[typing.List[typing.List[dict]], typing.List[dict], dict]
+HuikkaReplyMarkup = typing.Union[
+    typing.List[typing.List[dict]], typing.List[dict], dict
+]
 ListLike = typing.Union[list, set, tuple]
 Command = typing.Callable[..., typing.Awaitable[typing.Any]]
 
@@ -178,7 +173,7 @@ class Module:
         return get_commands(self)
 
     @property
-    def hikka_commands(self) -> typing.Dict[str, Command]:
+    def huikka_commands(self) -> typing.Dict[str, Command]:
         """List of commands that module supports"""
         return get_commands(self)
 
@@ -188,7 +183,7 @@ class Module:
         return get_inline_handlers(self)
 
     @property
-    def hikka_inline_handlers(self) -> typing.Dict[str, Command]:
+    def huikka_inline_handlers(self) -> typing.Dict[str, Command]:
         """List of inline handlers that module supports"""
         return get_inline_handlers(self)
 
@@ -198,7 +193,7 @@ class Module:
         return get_callback_handlers(self)
 
     @property
-    def hikka_callback_handlers(self) -> typing.Dict[str, Command]:
+    def huikka_callback_handlers(self) -> typing.Dict[str, Command]:
         """List of callback handlers that module supports"""
         return get_callback_handlers(self)
 
@@ -208,7 +203,7 @@ class Module:
         return get_watchers(self)
 
     @property
-    def hikka_watchers(self) -> typing.Dict[str, Command]:
+    def huikka_watchers(self) -> typing.Dict[str, Command]:
         """List of watchers that module supports"""
         return get_watchers(self)
 
@@ -216,32 +211,32 @@ class Module:
     def commands(self, _):
         pass
 
-    @hikka_commands.setter
-    def hikka_commands(self, _):
+    @huikka_commands.setter
+    def huikka_commands(self, _):
         pass
 
     @inline_handlers.setter
     def inline_handlers(self, _):
         pass
 
-    @hikka_inline_handlers.setter
-    def hikka_inline_handlers(self, _):
+    @huikka_inline_handlers.setter
+    def huikka_inline_handlers(self, _):
         pass
 
     @callback_handlers.setter
     def callback_handlers(self, _):
         pass
 
-    @hikka_callback_handlers.setter
-    def hikka_callback_handlers(self, _):
+    @huikka_callback_handlers.setter
+    def huikka_callback_handlers(self, _):
         pass
 
     @watchers.setter
     def watchers(self, _):
         pass
 
-    @hikka_watchers.setter
-    def hikka_watchers(self, _):
+    @huikka_watchers.setter
+    def huikka_watchers(self, _):
         pass
 
     async def animate(
@@ -266,7 +261,7 @@ class Module:
         from . import utils
 
         with contextlib.suppress(AttributeError):
-            _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _huikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         if interval < 0.1:
             logger.warning(
@@ -310,27 +305,6 @@ class Module:
     ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
         return self._db.pointer(self.__class__.__name__, key, default, item_type)
 
-    async def _approve(
-        self,
-        call: InlineCall,
-        channel: EntityLike,
-        event: asyncio.Event,
-    ):
-        from . import utils
-
-        local_event = asyncio.Event()
-        self.__approve += [(channel, local_event)]  # skipcq: PTC-W0037
-        await local_event.wait()
-        event.status = local_event.status
-        event.set()
-        await call.edit(
-            (
-                "💫 <b>Joined <a"
-                f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
-            ),
-            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
-        )
-
     async def _decline(
         self,
         call: InlineCall,
@@ -340,18 +314,16 @@ class Module:
         from . import utils
 
         self._db.set(
-            "hikka.main",
+            "huikka.main",
             "declined_joins",
-            list(set(self._db.get("hikka.main", "declined_joins", []) + [channel.id])),
+            list(set(self._db.get("huikka.main", "declined_joins", []) + [channel.id])),
         )
         event.status = False
         event.set()
         await call.edit(
-            (
-                "✖️ <b>Declined joining <a"
-                f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
-            ),
-            gif="https://static.hikari.gay/0d32cbaa959e755ac8eef610f01ba0bd.gif",
+            "✖️ <b>Declined joining <a"
+            f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>',
+            gif="https://data.whicdn.com/images/324445359/original.gif",
         )
 
     async def request_join(
@@ -384,7 +356,7 @@ class Module:
         )
 
         channel = await self.client.get_entity(peer)
-        if channel.id in self._db.get("hikka.main", "declined_joins", []):
+        if channel.id in self._db.get("huikka.main", "declined_joins", []):
             if assure_joined:
                 raise LoadError(
                     f"You need to join @{channel.username} in order to use this module"
@@ -403,7 +375,7 @@ class Module:
 
         await self.inline.bot.send_animation(
             self.tg_id,
-            "https://static.hikari.gay/ab3adf144c94a0883bfe489f4eebc520.gif",
+            "https://i.gifer.com/SD5S.gif",
             caption=(
                 self._client.loader.lookup("translations")
                 .strings("requested_join")
@@ -418,7 +390,7 @@ class Module:
                 [
                     {
                         "text": "💫 Approve",
-                        "callback": self._approve,
+                        "callback": self.lookup("loader").approve_internal,
                         "args": (channel, event),
                     },
                     {
@@ -430,15 +402,16 @@ class Module:
             ),
         )
 
-        self.hikka_wait_channel_approve = (
+        self.huikka_wait_channel_approve = (
             self.__class__.__name__,
             channel,
             reason,
         )
+        event.status = False
         await event.wait()
 
         with contextlib.suppress(AttributeError):
-            delattr(self, "hikka_wait_channel_approve")
+            delattr(self, "huikka_wait_channel_approve")
 
         if assure_joined and not event.status:
             raise LoadError(
@@ -484,11 +457,11 @@ class Module:
         code.raise_for_status()
         code = code.text
 
-        if re.search(r"# ?scope: ?hikka_min", code):
+        if re.search(r"# ?scope: ?huikka_min", code):
             ver = tuple(
                 map(
                     int,
-                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)[1].split(
+                    re.search(r"# ?scope: ?huikka_min ((\d+\.){2}\d+)", code)[1].split(
                         "."
                     ),
                 )
@@ -497,11 +470,11 @@ class Module:
             if version.__version__ < ver:
                 _raise(
                     RuntimeError(
-                        f"Library requires Hikka version {'{}.{}.{}'.format(*ver)}+"
+                        f"Library requires Huikka version {'{}.{}.{}'.format(*ver)}+"
                     )
                 )
 
-        module = f"hikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
+        module = f"huikka.libraries.{url.replace('%', '%%').replace('.', '%d')}"
         origin = f"<library {url}>"
 
         spec = importlib.machinery.ModuleSpec(
@@ -591,7 +564,7 @@ class Module:
             all(
                 line.replace(" ", "") != "#scope:no_stats" for line in code.splitlines()
             )
-            and self._db.get("hikka.main", "stats", True)
+            and self._db.get("huikka.main", "stats", True)
             and url is not None
             and utils.check_url(url)
         ):
@@ -665,53 +638,6 @@ class Module:
 
         self.allmodules.libraries += [lib_obj]
         return lib_obj
-
-
-class DragonModule:
-    """Module is running in compatibility mode with Dragon, so it might be unstable"""
-
-    # fmt: off
-    strings_ru = {"_cls_doc": "Модуль запущен в режиме совместимости с Dragon, поэтому он может быть нестабильным"}
-    strings_de = {"_cls_doc": "Das Modul wird im Dragon-Kompatibilitäts modus ausgeführt, daher kann es instabil sein"}
-    strings_tr = {"_cls_doc": "Modül Dragon uyumluluğu modunda çalıştığı için istikrarsız olabilir"}
-    strings_uz = {"_cls_doc": "Modul Dragon muvofiqligi rejimida ishlamoqda, shuning uchun u beqaror bo'lishi mumkin"}
-    strings_es = {"_cls_doc": "El módulo se ejecuta en modo de compatibilidad con Dragon, por lo que puede ser inestable"}
-    strings_kk = {"_cls_doc": "Модуль Dragon қамтамасыз ету режимінде іске қосылған, сондықтан белсенді емес болуы мүмкін"}
-    strings_tt = {"_clc_doc": "Модуль Dragon белән ярашучанлык режимда эшли башлады, шуңа күрә ул тотрыксыз була ала"}
-    # fmt: on
-
-    def __init__(self):
-        self.name = "Unknown"
-        self.url = None
-        self.commands = {}
-        self.watchers = {}
-        self.hikka_watchers = {}
-        self.inline_handlers = {}
-        self.hikka_inline_handlers = {}
-        self.callback_handlers = {}
-        self.hikka_callback_handlers = {}
-
-    @property
-    def hikka_commands(
-        self,
-    ) -> typing.Dict[str, Command]:
-        return self.commands
-
-    @property
-    def __origin__(self) -> str:
-        return f"<dragon {self.name}>"
-
-    def config_complete(self):
-        pass
-
-    async def client_ready(self):
-        pass
-
-    async def on_unload(self):
-        pass
-
-    async def on_dlmod(self):
-        pass
 
 
 class Library:
@@ -857,7 +783,7 @@ class ModuleConfig(dict):
         if callable(ret):
             try:
                 # Compatibility tweak
-                # does nothing in Hikka
+                # does nothing in Huikka
                 ret = ret(message)
             except Exception:
                 ret = ret()

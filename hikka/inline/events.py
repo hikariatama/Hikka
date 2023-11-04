@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import inspect
 import logging
 import re
@@ -31,7 +25,7 @@ logger = logging.getLogger(__name__)
 class Events(InlineUnit):
     async def _message_handler(self, message: AiogramMessage):
         """Processes incoming messages"""
-        if message.chat.type != "private" or message.text == "/start hikka init":
+        if message.chat.type != "private" or message.text == "/start huikka init":
             return
 
         for mod in self._allmodules.modules:
@@ -87,10 +81,8 @@ class Events(InlineUnit):
                 mandatory = ["message", "photo", "gif", "video", "file"]
                 if all(item not in res for item in mandatory):
                     logger.error(
-                        (
-                            "Got invalid type from inline handler. It must contain one"
-                            " of `%s`"
-                        ),
+                        "Got invalid type from inline handler. It must contain one"
+                        " of `%s`",
                         mandatory,
                     )
                     await instance.e500()
@@ -292,10 +284,8 @@ class Events(InlineUnit):
                     except Exception:
                         logger.exception("Error on running callback watcher!")
                         await call.answer(
-                            (
-                                "Error occurred while processing request. More info in"
-                                " logs"
-                            ),
+                            "Error occurred while processing request. More info in"
+                            " logs",
                             show_alert=True,
                         )
                         return
@@ -402,7 +392,7 @@ class Events(InlineUnit):
                 doc = "🦥 No docs"
 
             try:
-                thumb = getattr(fun, "thumb_url", None) or fun.__self__.hikka_meta_pic
+                thumb = getattr(fun, "thumb_url", None) or fun.__self__.huikka_meta_pic
             except Exception:
                 thumb = None
 

@@ -1,25 +1,3 @@
-#    Friendly Telegram (telegram userbot)
-#    Copyright (C) 2018-2019 The Authors
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 # meta developer: @bsolute
 
 import asyncio
@@ -29,7 +7,7 @@ import os
 import re
 import typing
 
-import hikkatl
+import huikkatl
 
 from .. import loader, utils
 
@@ -71,7 +49,7 @@ async def sleep_for_task(func: callable, data: bytes, delay: float):
 class MessageEditor:
     def __init__(
         self,
-        message: hikkatl.tl.types.Message,
+        message: huikkatl.tl.types.Message,
         command: str,
         config,
         strings,
@@ -107,10 +85,10 @@ class MessageEditor:
         text += (self.strings("stderr") + stderr) if stderr else ""
         text += self.strings("end")
 
-        with contextlib.suppress(hikkatl.errors.rpcerrorlist.MessageNotModifiedError):
+        with contextlib.suppress(huikkatl.errors.rpcerrorlist.MessageNotModifiedError):
             try:
                 self.message = await utils.answer(self.message, text)
-            except hikkatl.errors.rpcerrorlist.MessageTooLongError as e:
+            except huikkatl.errors.rpcerrorlist.MessageTooLongError as e:
                 logger.error(e)
                 logger.error(text)
         # The message is never empty due to the template header
@@ -167,7 +145,7 @@ class SudoMessageEditor(MessageEditor):
 
             try:
                 await utils.answer(self.message, text)
-            except hikkatl.errors.rpcerrorlist.MessageNotModifiedError as e:
+            except huikkatl.errors.rpcerrorlist.MessageNotModifiedError as e:
                 logger.debug(e)
 
             logger.debug("edited message with link to self")
@@ -183,7 +161,7 @@ class SudoMessageEditor(MessageEditor):
             self.message[0].client.remove_event_handler(self.on_message_edited)
             self.message[0].client.add_event_handler(
                 self.on_message_edited,
-                hikkatl.events.messageedited.MessageEdited(chats=["me"]),
+                huikkatl.events.messageedited.MessageEdited(chats=["me"]),
             )
 
             logger.debug("registered handler")
@@ -231,7 +209,7 @@ class SudoMessageEditor(MessageEditor):
             # The user has provided interactive authentication. Send password to stdin for sudo.
             try:
                 self.authmsg = await utils.answer(message, self.strings("auth_ongoing"))
-            except hikkatl.errors.rpcerrorlist.MessageNotModifiedError:
+            except huikkatl.errors.rpcerrorlist.MessageNotModifiedError:
                 # Try to clear personal info if the edit fails
                 await message.delete()
 
@@ -282,13 +260,13 @@ class RawMessageEditor(SudoMessageEditor):
         logger.debug(text)
 
         with contextlib.suppress(
-            hikkatl.errors.rpcerrorlist.MessageNotModifiedError,
-            hikkatl.errors.rpcerrorlist.MessageEmptyError,
+            huikkatl.errors.rpcerrorlist.MessageNotModifiedError,
+            huikkatl.errors.rpcerrorlist.MessageEmptyError,
             ValueError,
         ):
             try:
                 await utils.answer(self.message, text)
-            except hikkatl.errors.rpcerrorlist.MessageTooLongError as e:
+            except huikkatl.errors.rpcerrorlist.MessageTooLongError as e:
                 logger.error(e)
                 logger.error(text)
 
@@ -333,7 +311,7 @@ class TerminalMod(loader.Module):
 
     async def run_command(
         self,
-        message: hikkatl.tl.types.Message,
+        message: huikkatl.tl.types.Message,
         cmd: str,
         editor: typing.Optional[MessageEditor] = None,
     ):

@@ -1,11 +1,4 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
-import base64
 import contextlib
 import difflib
 import inspect
@@ -16,9 +9,8 @@ import re
 import typing
 
 import requests
-import rsa
-from hikkatl.tl.types import Message
-from hikkatl.utils import resolve_inline_message_id
+from huikkatl.tl.types import Message
+from huikkatl.utils import resolve_inline_message_id
 
 from .. import loader, main, utils
 from ..types import InlineCall, InlineQuery
@@ -35,52 +27,63 @@ REGEXES = [
     ),
 ]
 
-PUBKEY = rsa.PublicKey.load_pkcs1(
-    b"-----BEGIN RSA PUBLIC KEY-----\n"
-    b"MEgCQQCHwy7MptZG0qTLJhlFhFjl+aKvzIimYreEBsVlCc2eG0wP2pxISucCM2Xr\n"
-    b"ghnx+ZIkMhR3c3wWq3jXAQYLhI1rAgMBAAE=\n"
-    b"-----END RSA PUBLIC KEY-----\n"
-)
-
 
 @loader.tds
 class UnitHeta(loader.Module):
-    """Manages stuff with @hikkamods_bot"""
+    """Manages stuff with @huikkamods_bot"""
 
     strings = {"name": "UnitHeta"}
 
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
+                "use_mirror",
+                False,
+                "Use mirror for modules download. Enable this option if you have"
+                " issues with .ru domain zone",
+                validator=loader.validators.Boolean(),
+            ),
+            loader.ConfigValue(
                 "autoupdate",
                 False,
-                (
-                    "Do you want to autoupdate modules? (Join @heta_updates in order"
-                    " for this option to take effect) ⚠️ Use at your own risk!"
-                ),
+                "Do you want to autoupdate modules? (Join @heta_updates in order"
+                " for this option to take effect) ⚠️ Use at your own risk!",
                 validator=loader.validators.Boolean(),
             ),
             loader.ConfigValue(
                 "translate",
                 True,
-                (
-                    "Do you want to translate module descriptions and command docs to"
-                    " the language, specified in Hikka? (This option is experimental,"
-                    " and might not work properly)"
-                ),
+                "Do you want to translate module descriptions and command docs to"
+                " the language, specified in Huikka? (This option is experimental,"
+                " and might not work properly)",
                 validator=loader.validators.Boolean(),
             ),
             loader.ConfigValue(
                 "allow_external_access",
                 False,
-                (
-                    "Allow hikariatama.t.me to control the actions of your userbot"
-                    " externally. Do not turn this option on unless it's requested by"
-                    " the developer."
-                ),
+                "Allow hikariatama.t.me to control the actions of your userbot"
+                " externally. Do not turn this option on unless it's requested by"
+                " the developer.",
                 validator=loader.validators.Boolean(),
                 on_change=self._process_config_changes,
             ),
+            loader.ConfigValue(
+                "privacy_switch",
+                False,
+                "If set to `True`, external Heta integration will be completely"
+                " disabled. You will lose the ability to download modules using"
+                " buttons and get essential updates. This option doesn't affect"
+                " `allow_external_access`.",
+                validator=loader.validators.Boolean(),
+            ),
+        )
+
+    @property
+    def _api_url(self) -> str:
+        return (
+            "https://heta.dan.tatar"
+            if self.config["use_mirror"]
+            else "https://heta.hikariatama.ru"
         )
 
     def _process_config_changes(self):
@@ -102,10 +105,8 @@ class UnitHeta(loader.Module):
     async def client_ready(self):
         await self.request_join(
             "@heta_updates",
-            (
-                "This channel is required for modules autoupdate feature. You can"
-                " configure it in '.cfg UnitHeta'"
-            ),
+            "This channel is required for modules autoupdate feature. You can"
+            " configure it in '.cfg UnitHeta'",
         )
 
         self._nonick = self._db.pointer(main.__name__, "nonickusers", [])
@@ -113,7 +114,7 @@ class UnitHeta(loader.Module):
         if self.get("nomute"):
             return
 
-        await utils.dnd(self._client, "@hikkamods_bot", archive=False)
+        await utils.dnd(self._client, "@huikkamods_bot", archive=False)
         self.set("nomute", True)
 
     async def _install(self, call: InlineCall, url: str, text: str):
@@ -138,14 +139,14 @@ class UnitHeta(loader.Module):
         if not (
             response := await utils.run_sync(
                 requests.get,
-                "https://heta.hikariatama.ru/search",
+                f"{self._api_url}/search",
                 params={"q": query, "limit": 1},
-                headers={
-                    "User-Agent": "Hikka Userbot",
-                    "X-Hikka-Version": ".".join(map(str, __version__)),
-                    "X-Hikka-Commit-SHA": utils.get_git_hash(),
-                    "X-Hikka-User": str(self._client.tg_id),
-                },
+                # headers={
+                #     "User-Agent": "Huikka Userbot",
+                #     "X-Huikka-Version": ".".join(map(str, __version__)),
+                #     "X-Huikka-Commit-SHA": utils.get_git_hash(),
+                #     "X-Huikka-User": str(self._client.tg_id),
+                # },
             )
         ):
             await utils.answer(message, self.strings("no_results"))
@@ -170,16 +171,23 @@ class UnitHeta(loader.Module):
             "args": (result["module"]["link"], text),
         }
 
-        form = await self.inline.form(
-            message=message,
-            text=text,
-            **(
-                {"photo": result["module"]["banner"]}
-                if result["module"].get("banner")
-                else {}
-            ),
-            reply_markup=mark(text),
-        )
+        if not (
+            form := await self.inline.form(
+                message=message,
+                text=text,
+                **(
+                    {"photo": result["module"]["banner"]}
+                    if result["module"].get("banner")
+                    else {}
+                ),
+                reply_markup=mark(text),
+            )
+        ):
+            form = await self.inline.form(
+                message=message,
+                text=text,
+                reply_markup=mark(text),
+            )
 
         if not self.config["translate"]:
             return
@@ -210,12 +218,12 @@ class UnitHeta(loader.Module):
         if dl_id:
             if loaded:
                 await self._client.inline_query(
-                    "@hikkamods_bot",
+                    "@huikkamods_bot",
                     f"#confirm_load {dl_id}",
                 )
             else:
                 await self._client.inline_query(
-                    "@hikkamods_bot",
+                    "@huikkamods_bot",
                     f"#confirm_fload {dl_id}",
                 )
 
@@ -223,6 +231,9 @@ class UnitHeta(loader.Module):
 
     @loader.watcher("in", "only_messages", chat_id=1688624566, contains="Heta url: ")
     async def update_watcher(self, message: Message):
+        if self.config["privacy_switch"]:
+            return
+
         url = message.raw_text.split("Heta url: ")[1].strip()
         dev, repo, mod = url.lower().split("hikariatama.ru/")[1].split("/")
 
@@ -235,7 +246,7 @@ class UnitHeta(loader.Module):
                 await self._load_module(urls[0])
                 await asyncio.sleep(random.randint(1, 10))
                 await self._client.inline_query(
-                    "@hikkamods_bot",
+                    "@huikkamods_bot",
                     f"#confirm_update_noheta {url.split('hikariatama.ru/')[1]}",
                 )
                 return
@@ -248,7 +259,7 @@ class UnitHeta(loader.Module):
             await self._load_module(url)
             await asyncio.sleep(random.randint(1, 10))
             await self._client.inline_query(
-                "@hikkamods_bot",
+                "@huikkamods_bot",
                 f"#confirm_update {url.split('hikariatama.ru/')[1]}",
             )
             return
@@ -262,7 +273,7 @@ class UnitHeta(loader.Module):
                         await self._load_module(link)
                         await asyncio.sleep(random.randint(1, 10))
                         await self._client.inline_query(
-                            "@hikkamods_bot",
+                            "@huikkamods_bot",
                             f"#confirm_update_noheta {url.split('hikariatama.ru/')[1]}",
                         )
                         return
@@ -274,6 +285,13 @@ class UnitHeta(loader.Module):
         regex=r"^#install:.*?\/.*?\/.*?\n.*?\n\d+\n\n.*$",
     )
     async def watcher(self, message: Message):
+        if self.config["privacy_switch"]:
+            logger.warning(
+                "You can't download modules using buttons when `privacy_switch` option"
+                " is turned on"
+            )
+            return
+
         await message.delete()
 
         data = re.search(
@@ -282,20 +300,6 @@ class UnitHeta(loader.Module):
         )
 
         uri = data["file"]
-        try:
-            rsa.verify(
-                rsa.compute_hash(uri.encode(), "SHA-1"),
-                base64.b64decode(data["sig"]),
-                PUBKEY,
-            )
-        except rsa.pkcs1.VerificationError:
-            logger.error("Got message with non-verified signature %s", uri)
-            return
-
-        await self._load_module(
-            f"https://heta.hikariatama.ru/{uri}",
-            int(data["dl_id"]),
-        )
 
     @loader.command()
     async def mlcmd(self, message: Message):
@@ -421,7 +425,7 @@ class UnitHeta(loader.Module):
 
         text = strings.format(**kwargs)
 
-        if len(text) > 2048:
+        if len(text) > 1980:
             kwargs["commands"] = "..."
             text = strings.format(**kwargs)
 
@@ -440,7 +444,7 @@ class UnitHeta(loader.Module):
         if not (
             response := await utils.run_sync(
                 requests.get,
-                "https://heta.hikariatama.ru/search",
+                f"{self._api_url}/search",
                 params={"q": query.args, "limit": 30},
             )
         ) or not (response := response.json()):
@@ -480,13 +484,13 @@ class UnitHeta(loader.Module):
 
         ans = await utils.run_sync(
             requests.get,
-            "https://heta.hikariatama.ru/resolve_hash",
+            f"{self._api_url}/resolve_hash",
             params={"hash": mhash},
             headers={
-                "User-Agent": "Hikka Userbot",
-                "X-Hikka-Version": ".".join(map(str, __version__)),
-                "X-Hikka-Commit-SHA": utils.get_git_hash(),
-                "X-Hikka-User": str(self._client.tg_id),
+                "User-Agent": "Huikka Userbot",
+                "X-Huikka-Version": ".".join(map(str, __version__)),
+                "X-Huikka-Commit-SHA": utils.get_git_hash(),
+                "X-Huikka-User": str(self._client.tg_id),
             },
         )
 

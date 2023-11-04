@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import json
 import logging
 import typing
@@ -47,7 +41,7 @@ class BaseTranslator:
     def _get_pack_content(
         self,
         pack: Path,
-        prefix: str = "hikka.modules.",
+        prefix: str = "huikka.modules.",
     ) -> typing.Optional[dict]:
         return self._get_pack_raw(pack.read_text(), pack.suffix, prefix)
 
@@ -55,7 +49,7 @@ class BaseTranslator:
         self,
         content: str,
         suffix: str,
-        prefix: str = "hikka.modules.",
+        prefix: str = "huikka.modules.",
     ) -> typing.Optional[dict]:
         if suffix == ".json":
             return json.loads(content)

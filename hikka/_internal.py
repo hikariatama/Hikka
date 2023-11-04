@@ -1,9 +1,3 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
-
 import asyncio
 import atexit
 import logging
@@ -38,11 +32,11 @@ def die():
 
 
 def restart():
-    if "HIKKA_DO_NOT_RESTART" in os.environ:
+    if "HIKKA_DO_NOT_RESTART2" in os.environ:
         print(
             "Got in a loop, exiting\nYou probably need to manually remove existing"
-            " packages and then restart Hikka. Run `pip uninstall -y telethon"
-            " telethon-mod hikka-tl pyrogram hikka-pyro`, then restart Hikka."
+            " packages and then restart Huikka. Run `pip uninstall -y telethon"
+            " telethon-mod huikka-tl`, then restart Huikka."
         )
         sys.exit(0)
 
@@ -54,7 +48,10 @@ def restart():
         os.system("lavhost restart")
         return
 
-    os.environ["HIKKA_DO_NOT_RESTART"] = "1"
+    if "HIKKA_DO_NOT_RESTART" not in os.environ:
+        os.environ["HIKKA_DO_NOT_RESTART"] = "1"
+    else:
+        os.environ["HIKKA_DO_NOT_RESTART2"] = "1"
 
     if "DOCKER" in os.environ:
         atexit.register(get_startup_callback())

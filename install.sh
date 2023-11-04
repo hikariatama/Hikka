@@ -3,23 +3,23 @@
 
 runin() {
 	# Runs the arguments, piping stderr to logfile
-	{ "$@" 2>>../hikka-install.log || return $?; } | while read -r line; do
-		printf "%s\n" "$line" >>../hikka-install.log
+	{ "$@" 2>>../huikka-install.log || return $?; } | while read -r line; do
+		printf "%s\n" "$line" >>../huikka-install.log
 	done
 }
 
 runout() {
 	# Runs the arguments, piping stderr to logfile
-	{ "$@" 2>>hikka-install.log || return $?; } | while read -r line; do
-		printf "%s\n" "$line" >>hikka-install.log
+	{ "$@" 2>>huikka-install.log || return $?; } | while read -r line; do
+		printf "%s\n" "$line" >>huikka-install.log
 	done
 }
 
 errorin() {
-	cat ../hikka-install.log
+	cat ../huikka-install.log
 }
 errorout() {
-	cat hikka-install.log
+	cat huikka-install.log
 }
 
 SUDO_CMD=""
@@ -44,27 +44,27 @@ printf "\n\n\e[3;34;40m Installing...\e[0m\n\n"
 
 printf "\r\033[0;34mPreparing for installation...\e[0m"
 
-touch hikka-install.log
+touch huikka-install.log
 if [ ! x"$SUDO_USER" = x"" ]; then
-	chown "$SUDO_USER:" hikka-install.log
+	chown "$SUDO_USER:" huikka-install.log
 fi
 
-if [ -d "Hikka/hikka" ]; then
-	cd Hikka || {
+if [ -d "Huikka/huikka" ]; then
+	cd Huikka || {
 		printf "\rError: Install git package and re-run installer"
 		exit 6
 	}
 	DIR_CHANGED="yes"
 fi
 if [ -f ".setup_complete" ]; then
-	# If hikka is already installed by this script
+	# If huikka is already installed by this script
 	PYVER=""
 	if echo "$OSTYPE" | grep -qE '^linux-gnu.*'; then
 		PYVER="3"
 	fi
 	printf "\rExisting installation detected"
 	clear
-	"python$PYVER" -m hikka "$@"
+	"python$PYVER" -m huikka "$@"
 	exit $?
 elif [ "$DIR_CHANGED" = "yes" ]; then
 	cd ..
@@ -72,7 +72,7 @@ fi
 
 ##############################################################################
 
-echo "Installing..." >hikka-install.log
+echo "Installing..." >huikka-install.log
 
 if echo "$OSTYPE" | grep -qE '^linux-gnu.*' && [ -f '/etc/debian_version' ]; then
 	PKGMGR="apt install -y"
@@ -93,7 +93,7 @@ elif echo "$OSTYPE" | grep -qE '^darwin.*'; then
 	PKGMGR="brew install"
 	PYVER="3"
 else
-	printf "\r\033[1;31mUnrecognised OS.\e[0m Please follow 'Manual installation' at \033[0;94mhttps://github.com/hikariatama/Hikka/#-installation\e[0m"
+	printf "\r\033[1;31mUnrecognised OS.\e[0m Please follow 'Manual installation' at \033[0;94mhttps://github.com/hikariatama/Huikka/#-installation\e[0m"
 	exit 1
 fi
 
@@ -127,13 +127,13 @@ printf "\n\r\033[0;34mCloning repo...\e[0m"
 ##############################################################################
 
 # shellcheck disable=SC2086
-${SUDO_CMD}rm -rf Hikka
+${SUDO_CMD}rm -rf Huikka
 # shellcheck disable=SC2086
-runout ${SUDO_CMD}git clone https://github.com/hikariatama/Hikka/ || {
+runout ${SUDO_CMD}git clone https://github.com/hikariatama/Huikka/ || {
 	errorout "Clone failed."
 	exit 3
 }
-cd Hikka || {
+cd Huikka || {
 	printf "\r\033[0;33mRun: \033[1;33mpkg install git\033[0;33m and restart installer"
 	exit 7
 }
@@ -148,13 +148,13 @@ runin "$SUDO_CMD python$PYVER" -m pip install -r requirements.txt --upgrade --us
 	errorin "Requirements failed!"
 	exit 4
 }
-rm -f ../hikka-install.log
+rm -f ../huikka-install.log
 touch .setup_complete
 
 printf "\r\033[K\033[0;32mDependencies installed!\e[0m"
 printf "\n\033[0;32mStarting...\e[0m\n\n"
 
-${SUDO_CMD}"python$PYVER" -m hikka "$@" || {
+${SUDO_CMD}"python$PYVER" -m huikka "$@" || {
 	printf "\033[1;31mPython scripts failed\e[0m"
 	exit 5
 }
