@@ -62,6 +62,7 @@ from . import database, loader, utils, version
 from ._internal import print_banner
 from .dispatcher import CommandDispatcher
 from .qr import QRCode
+from .secure import patcher
 from .tl_cache import CustomTelegramClient
 from .translations import Translator
 from .version import __version__
@@ -689,18 +690,10 @@ class Hikka:
                     lang_code="en",
                     system_lang_code="en-US",
                 )
+                if session.server_address == "0.0.0.0":
+                    patcher.patch(client, session)
 
-                await client.start(
-                    phone=(
-                        raise_auth
-                        if self.web
-                        else lambda: input(
-                            "\033[0;96mEnter phone: \033[0m"
-                            if IS_TERMUX or self.arguments.tty
-                            else "Enter phone: "
-                        )
-                    )
-                )
+                await client.connect()
                 client.phone = "never gonna give you up"
 
                 self.clients += [client]
@@ -714,6 +707,7 @@ class Hikka:
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
+                raise
                 Path(session.filename).unlink(missing_ok=True)
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):

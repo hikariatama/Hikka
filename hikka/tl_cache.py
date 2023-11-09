@@ -11,15 +11,22 @@ import time
 import typing
 
 from hikkatl import TelegramClient
+from hikkatl import __name__ as __base_name__
+from hikkatl import helpers
+from hikkatl._updates import ChannelState, Entity, EntityType, SessionState
+from hikkatl.errors import RPCError
 from hikkatl.errors.rpcerrorlist import TopicDeletedError
 from hikkatl.hints import EntityLike
 from hikkatl.network import MTProtoSender
+from hikkatl.tl import functions
+from hikkatl.tl.alltlobjects import LAYER
 from hikkatl.tl.functions.channels import GetFullChannelRequest
 from hikkatl.tl.functions.users import GetFullUserRequest
 from hikkatl.tl.tlobject import TLRequest
 from hikkatl.tl.types import (
     ChannelFull,
     Message,
+    Pong,
     Updates,
     UpdatesCombined,
     UpdateShort,
@@ -85,6 +92,93 @@ class CustomTelegramClient(TelegramClient):
                 typing.Any,
             ]
         ] = None
+
+    async def connect(self, unix_socket_path: typing.Optional[str] = None):
+        if self.session is None:
+            raise ValueError(
+                "TelegramClient instance cannot be reused after logging out"
+            )
+
+        if self._loop is None:
+            self._loop = helpers.get_running_loop()
+        elif self._loop != helpers.get_running_loop():
+            raise RuntimeError(
+                "The asyncio event loop must not change after connection (see the FAQ"
+                " for details)"
+            )
+
+        connection = self._connection(
+            self.session.server_address,
+            self.session.port,
+            self.session.dc_id,
+            loggers=self._log,
+            proxy=self._proxy,
+            local_addr=self._local_addr,
+        )
+
+        if unix_socket_path is not None:
+            connection.set_unix_socket(unix_socket_path)
+
+        if not await self._sender.connect(connection):
+            # We don't want to init or modify anything if we were already connected
+            return
+
+        self.session.auth_key = self._sender.auth_key
+        self.session.save()
+
+        if self._catch_up:
+            ss = SessionState(0, 0, False, 0, 0, 0, 0, None)
+            cs = []
+
+            for entity_id, state in self.session.get_update_states():
+                if entity_id == 0:
+                    # TODO current session doesn't store self-user info but adding that is breaking on downstream session impls
+                    ss = SessionState(
+                        0,
+                        0,
+                        False,
+                        state.pts,
+                        state.qts,
+                        int(state.date.timestamp()),
+                        state.seq,
+                        None,
+                    )
+                else:
+                    cs.append(ChannelState(entity_id, state.pts))
+
+            self._message_box.load(ss, cs)
+            for state in cs:
+                try:
+                    entity = self.session.get_input_entity(state.channel_id)
+                except ValueError:
+                    self._log[__name__].warning(
+                        "No access_hash in cache for channel %s, will not catch up",
+                        state.channel_id,
+                    )
+                else:
+                    self._mb_entity_cache.put(
+                        Entity(
+                            EntityType.CHANNEL, entity.channel_id, entity.access_hash
+                        )
+                    )
+
+        self._init_request.query = functions.help.GetConfigRequest()
+
+        req = self._init_request
+        if self._no_updates:
+            req = functions.InvokeWithoutUpdatesRequest(req)
+
+        await self._sender.send(functions.InvokeWithLayerRequest(LAYER, req))
+
+        if self._message_box.is_empty():
+            me = await self.get_me()
+            if me:
+                await self._on_login(
+                    me
+                )  # also calls GetState to initialize the MessageBox
+
+        self._updates_handle = self.loop.create_task(self._update_loop())
+        self._keepalive_handle = self.loop.create_task(self._keepalive_loop())
 
     @property
     def raw_updates_processor(self) -> typing.Optional[callable]:
@@ -156,7 +250,7 @@ class CustomTelegramClient(TelegramClient):
                     "Can't parse hashable from entity %s, using legacy resolve",
                     entity,
                 )
-                return await TelegramClient.get_entity(self, entity)
+                return await super().get_entity(entity)
         else:
             hashable_entity = entity
 
@@ -179,7 +273,7 @@ class CustomTelegramClient(TelegramClient):
             )
             return copy.deepcopy(self._hikka_entity_cache[hashable_entity].entity)
 
-        resolved_entity = await TelegramClient.get_entity(self, entity)
+        resolved_entity = await super().get_entity(entity)
 
         if resolved_entity:
             cache_record = CacheRecordEntity(hashable_entity, resolved_entity, exp)
@@ -484,7 +578,7 @@ class CustomTelegramClient(TelegramClient):
     ):
         no_retry = kwargs.pop("_topic_no_retry", False)
         try:
-            return await native_method(self, *args, **kwargs)
+            return await native_method(*args, **kwargs)
         except TopicDeletedError:
             if no_retry:
                 raise
@@ -504,7 +598,7 @@ class CustomTelegramClient(TelegramClient):
 
     async def send_file(self, *args, **kwargs) -> Message:
         return await self._topic_guesser(
-            TelegramClient.send_file,
+            super().send_file,
             inspect.stack(),
             *args,
             **kwargs,
@@ -512,7 +606,7 @@ class CustomTelegramClient(TelegramClient):
 
     async def send_message(self, *args, **kwargs) -> Message:
         return await self._topic_guesser(
-            TelegramClient.send_message,
+            super().send_message,
             inspect.stack(),
             *args,
             **kwargs,
@@ -578,8 +672,7 @@ class CustomTelegramClient(TelegramClient):
         if not new_request:
             return
 
-        return await TelegramClient._call(
-            self,
+        return await super()._call(
             sender,
             new_request[0] if not_tuple else tuple(new_request),
             ordered,
