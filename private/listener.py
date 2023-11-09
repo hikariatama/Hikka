@@ -1,4 +1,5 @@
 import asyncio
+import atexit
 import contextlib
 import copy
 import dataclasses
@@ -9,7 +10,9 @@ import json
 import logging
 import os
 import re
+import signal
 import struct
+import sys
 import time
 from hashlib import sha256
 from logging.handlers import RotatingFileHandler
@@ -20,11 +23,11 @@ from zlib import crc32
 from hikkatl.crypto import AES, AuthKey
 from hikkatl.errors import (
     AuthKeyNotFound,
+    BadMessageError,
     InvalidBufferError,
     InvalidChecksumError,
     SecurityError,
     TypeNotFoundError,
-    BadMessageError,
 )
 from hikkatl.extensions.binaryreader import BinaryReader
 from hikkatl.extensions.messagepacker import MessagePacker
@@ -62,20 +65,19 @@ from hikkatl.tl.functions.auth import (
 )
 from hikkatl.tl.functions.help import GetConfigRequest
 from hikkatl.tl.functions.messages import (
-    GetHistoryRequest,
     ForwardMessagesRequest,
+    GetHistoryRequest,
     SearchRequest,
 )
 from hikkatl.tl.types import (
     InputPeerUser,
-    MsgsAck,
-    Updates,
-    UpdateNewMessage,
     Message,
+    MsgsAck,
     PeerUser,
+    UpdateNewMessage,
+    Updates,
     UpdateShortMessage,
 )
-
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -108,6 +110,7 @@ rotating_handler.setFormatter(
     )
 )
 
+logging.getLogger().handlers[0].setLevel(logging.CRITICAL)
 logging.getLogger().addHandler(handler)
 logging.getLogger().addHandler(rotating_handler)
 
@@ -831,15 +834,20 @@ tcp, session_storage, shell = None, None, None
 
 
 async def read_loop(sock: Socket):
-    global tcp, session_storage
+    global tcp, session_storage, shell
     while True:
         try:
             await tcp.read(sock)
         except asyncio.IncompleteReadError:
+            logging.info("Client disconnected, restarting...")
             await session_storage.pop_client(sock.client_id)
-            logging.debug("Client disconnected")
-            tcp.gc(pop_client=sock.client_id, init=False)
-            break
+            if shell:
+                shell.kill()
+                logging.info("Waiting for sandbox to exit...")
+                await shell.wait()
+                logging.info("Sandbox exited")
+
+            exit(1)
         except Exception as e:
             logging.exception(e)
 
@@ -878,13 +886,7 @@ async def main():
         shell=True,
     )
     while True:
-        if not session_storage.clients:
-            logging.info("No client connections left to wait for, exiting...")
-            shell.kill()
-            await shell.wait()
-            break
-
-        await asyncio.sleep(1)
+        await asyncio.sleep(3600)
 
 
 if __name__ == "__main__":
@@ -897,3 +899,5 @@ if __name__ == "__main__":
 
         if tcp:
             tcp.gc(init=False)
+
+        exit(0)

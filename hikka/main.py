@@ -289,6 +289,12 @@ def parse_arguments() -> dict:
         help="Disable `force_insecure` warning",
     )
     parser.add_argument(
+        "--sandbox",
+        dest="sandbox",
+        action="store_true",
+        help="Die instead of restart",
+    )
+    parser.add_argument(
         "--proxy-pass",
         dest="proxy_pass",
         action="store_true",

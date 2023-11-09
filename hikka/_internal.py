@@ -38,6 +38,9 @@ def die():
 
 
 def restart():
+    if "--sandbox" in " ".join(sys.argv):
+        exit(0)
+
     if "HIKKA_DO_NOT_RESTART2" in os.environ:
         print(
             "Got in a loop, exiting\nYou probably need to manually remove existing"
