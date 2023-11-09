@@ -838,7 +838,7 @@ async def read_loop(sock: Socket):
     while True:
         try:
             await tcp.read(sock)
-        except asyncio.IncompleteReadError:
+        except (asyncio.IncompleteReadError, ConnectionResetError):
             logging.info("Client disconnected, restarting...")
             await session_storage.pop_client(sock.client_id)
             if shell:
