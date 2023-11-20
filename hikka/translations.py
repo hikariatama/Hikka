@@ -49,7 +49,7 @@ class BaseTranslator:
         pack: Path,
         prefix: str = "hikka.modules.",
     ) -> typing.Optional[dict]:
-        return self._get_pack_raw(pack.read_text(), pack.suffix, prefix)
+        return self._get_pack_raw(pack.read_text(encoding='utf-8'), pack.suffix, prefix)
 
     def _get_pack_raw(
         self,
