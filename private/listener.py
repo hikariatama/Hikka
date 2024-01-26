@@ -583,13 +583,13 @@ class SessionStorage:
             session.set_dc(0, "0.0.0.0", 11111)
             session.auth_key = AuthKey(
                 data=(
-                    "His name is Nikolai Petrovich Kirsanov. He owns a fine estate,"
-                    " located twelve miles or so from the carriage inn, with two"
-                    " hundred serfs, or, as he describes it, since negotiating the"
-                    ' boundaries with his peasants and establishing a "farm," an estate'
-                    " with"
+                    "Where are you at?\nWhere have you"
+                    " been?\n問いかけに答えはなく\nWhere are we headed?\nWhat did you"
+                    " mean?\n追いかけても 遅く 遠く\nA bird, a butterfly and my red"
+                    " scarf\nDon't make a mess of memories\nJust let me heal your"
+                    " scars\nThe wall, the owl, forgotten wharf\n時が止まることもなく"
                 ).encode()
-                + b"\x00\x00\x00"
+                + b"\x00" * 13
             )
             session.save()
             session.close()
@@ -858,9 +858,7 @@ async def main():
         if session.startswith("hikka-") and session.endswith(".session"):
             session = os.path.abspath(os.path.join("../", session))
             session = SQLiteSession(session)
-            if not session.auth_key.key.startswith(
-                b"His name is Nikolai Petrovich Kirsanov"
-            ):
+            if not session.auth_key.key.startswith(b"Where are you at?"):
                 session.save()
                 session.close()
                 os.rename(
@@ -889,13 +887,19 @@ async def main():
         await asyncio.sleep(3600)
 
 
+async def integrity_checker():
+    while True:
+        await asyncio.sleep(5)
+
+
 if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print("Bye")
         if shell:
-            shell.kill()
+            with contextlib.suppress(ProcessLookupError):
+                shell.kill()
 
         if tcp:
             tcp.gc(init=False)

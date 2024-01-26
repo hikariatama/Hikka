@@ -45,7 +45,8 @@
     <div>
       <div id="law"></div>
       <br><br>
-      <span class="code-caption">You are <span style="color:#c54245">prohibited</span> from adding more than 1 account on the current platform by its EULA.</span>
+      <span class="code-caption">You are <span style="color:#c54245">prohibited</span> from adding more than 1 account
+        on the current platform by its EULA.</span>
     </div>
   </div>
 </div>
@@ -57,6 +58,8 @@
       Hikka is installed. You can close this page now.
       <br>
       <b>It might take a while for installation to fully complete. Please, be patient.</b>
+      <br>
+      <b>Hikka will restart and might send several configuration messages to complete the installation!</b>
       <br>
       <span style="font-size: 24px;">Check <span style="color:#28a0dc">Telegram</span> for a message from your <b>inline
           bot</b></span>
@@ -132,13 +135,8 @@
       <span id="block_qr_login">
         <div class="qr_outer">
           <div class="qr_inner">
-            <dotlottie-player
-              autoplay
-              loop
-              mode="normal"
-              src="https://static.dan.tatar/4T7FajtZbx.lottie"
-              style="width: 100px; height: 100px"
-            >
+            <dotlottie-player autoplay loop mode="normal" src="https://static.dan.tatar/4T7FajtZbx.lottie"
+              style="width: 100px; height: 100px">
             </dotlottie-player>
           </div>
         </div>
@@ -202,9 +200,9 @@
   var skip_creds = "{{ skip_creds }}" == "True";
   var auth_required = true;
   fetch("/check_session", {
-      method: "POST",
-      credentials: "include"
-    })
+    method: "POST",
+    credentials: "include"
+  })
     .then(response => response.text())
     .then((response) => {
       auth_required = response != "1";

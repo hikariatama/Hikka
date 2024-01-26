@@ -59,7 +59,7 @@ from hikkatl.tl.functions.account import GetPasswordRequest
 from hikkatl.tl.functions.auth import CheckPasswordRequest
 
 from . import database, loader, utils, version
-from ._internal import print_banner
+from ._internal import print_banner, restart
 from .dispatcher import CommandDispatcher
 from .qr import QRCode
 from .secure import patcher
@@ -295,6 +295,12 @@ def parse_arguments() -> dict:
         help="Die instead of restart",
     )
     parser.add_argument(
+        "--isolated-env",
+        dest="isolated_env",
+        action="store_true",
+        help="Indicate that Hikka is running under the isolated environment",
+    )
+    parser.add_argument(
         "--proxy-pass",
         dest="proxy_pass",
         action="store_true",
@@ -361,6 +367,7 @@ class Hikka:
 
         self.clients = SuperList()
         self.ready = asyncio.Event()
+        self._check_private_rights()
         self._read_sessions()
         self._get_api_token()
         self._get_proxy()
@@ -407,6 +414,21 @@ class Hikka:
                 os.listdir(BASE_DIR),
             )
         ]
+
+    def _check_private_rights(self):
+        """If the script is running in a non-isolated environment, checks for sessions under `private` folder"""
+        if not self.arguments.isolated_env:
+            if any(
+                filter(
+                    lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                    os.listdir(os.path.join(BASE_DIR, "private")),
+                )
+            ):
+                print("\033[0;96mRestarting under isolated environment...\033[0m")
+                os.execv(
+                    "/bin/bash",
+                    ["/bin/bash", os.path.join(BASE_DIR, "start.sh")],
+                )
 
     def _get_api_token(self):
         """Get API Token from disk or environment"""
@@ -477,7 +499,12 @@ class Hikka:
                 importlib.invalidate_caches()
                 self._get_api_token()
 
-    async def save_client_session(self, client: CustomTelegramClient):
+    async def save_client_session(
+        self,
+        client: CustomTelegramClient,
+        *,
+        delay_restart: bool = False,
+    ):
         if hasattr(client, "tg_id"):
             telegram_id = client.tg_id
         else:
@@ -492,6 +519,7 @@ class Hikka:
         session = SQLiteSession(
             os.path.join(
                 BASE_DIR,
+                "private",
                 f"hikka-{telegram_id}",
             )
         )
@@ -505,11 +533,20 @@ class Hikka:
         session.auth_key = client.session.auth_key
 
         session.save()
+
+        if not delay_restart:
+            client.disconnect()
+            restart()
+
         client.session = session
         # Set db attribute to this client in order to save
         # custom bot nickname from web
         client.hikka_db = database.Database(client)
         await client.hikka_db.init()
+
+        if delay_restart:
+            client.disconnect()
+            await asyncio.sleep(3600)  # Will be restarted from web anyway
 
     async def _web_banner(self):
         """Shows web banner"""
@@ -548,6 +585,13 @@ class Hikka:
 
     async def _initial_setup(self) -> bool:
         """Responsible for first start"""
+        if self.arguments.isolated_env:
+            print(
+                "\033[0;96mPlease, restart Hikka w/o isolated environment to proceed"
+                " with initial setup\033[0m"
+            )
+            return False
+
         if self.arguments.no_auth:
             return False
 

@@ -77,6 +77,11 @@ class Web:
         self.api_set = asyncio.Event()
         self.clients_set = asyncio.Event()
 
+    async def schedule_restart():
+        # Yeah-yeah, ikr, but it's the only way to restart
+        await asyncio.sleep(1)
+        restart()
+
     @property
     def _platform_emoji(self) -> str:
         return {
@@ -271,7 +276,10 @@ class Web:
             if self._2fa_needed:
                 return web.Response(status=403, body="2FA")
 
-            await main.hikka.save_client_session(self._pending_client)
+            await main.hikka.save_client_session(
+                self._pending_client, delay_restart=True
+            )
+            asyncio.ensure_future(self.schedule_restart())
             return web.Response(status=200, body="SUCCESS")
 
         if self._qr_login is None:
@@ -386,7 +394,8 @@ class Web:
             )
 
         logger.debug("2FA code accepted, logging in")
-        await main.hikka.save_client_session(self._pending_client)
+        await main.hikka.save_client_session(self._pending_client, delay_restart=True)
+        asyncio.ensure_future(self.schedule_restart())
         return web.Response()
 
     async def tg_code(self, request: web.Request) -> web.Response:
@@ -445,7 +454,8 @@ class Web:
                     body=(self._render_fw_error(e)),
                 )
 
-        await main.hikka.save_client_session(self._pending_client)
+        await main.hikka.save_client_session(self._pending_client, delay_restart=True)
+        asyncio.ensure_future(self.schedule_restart())
         return web.Response()
 
     async def finish_login(self, request: web.Request) -> web.Response:

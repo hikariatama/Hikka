@@ -141,6 +141,25 @@ class TestMod(loader.Module):
             return
 
     @loader.command()
+    async def pbe(self, message: Message):
+        await utils.answer(
+            message,
+            "<emoji document_id=4929731207144407638>🚫</emoji> <b>READ THIS"
+            " CAREFULLY!</b>\n\nBeta versions (<b>even Public Beta Environment!</b>)"
+            " are highly unstable. You might experience problems with your server,"
+            " account, or Hikka installation. This may cause irreversible damage to"
+            " your server and account, or might just require Hikka re-installation."
+            " Proceed with caution!\n\n<b>By executing any commands below you agree"
+            " with the following:</b>\n· You take full responsibility over your"
+            " actions\n· Any problems, appeared after updating to PBE, you fix"
+            " yourself\n· If you ask for help with PBE, you will be banned in support"
+            " chat\n\n<b>Update to PBE</b>:\n<code>{}terminal git fetch -a && git"
+            " checkout pbe && git pull</code>".format(
+                utils.escape_html(self.get_prefix())
+            ),
+        )
+
+    @loader.command()
     async def debugmod(self, message: Message):
         args = utils.get_args_raw(message)
         instance = None

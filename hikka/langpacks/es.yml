@@ -536,12 +536,13 @@ translate:
   _cmd_doc_tr: "[idioma] [texto] - Traducir texto"
 
 quickstart:
-  base: "\n📼 <b>Para buscar e instalar módulos, vaya a @hikkamods_bot y escriba las palabras clave.</b>\n\n📣 <b>Para ver los canales de la comunidad creados, haga clic aquí: <a href=\"https://t.me/hikka_ub/126\">Ver</a></b>\n\n💁‍♀️ <b>Para comenzar de inmediato:</b>\n\n1️⃣ <b>Para ver la lista de módulos, escriba</b> <code>.help</code> <b>y presione</b>\n2️⃣ <b>Para obtener información sobre el módulo, escriba</b> <code>.help &lt;nombre del módulo/comando&gt;</code> <b>y presione</b>\n3️⃣ <b>Para instalar el módulo desde el enlace, escriba</b> <code>.dlmod &lt;enlace&gt;</code> <b>y presione</b>\n4️⃣ <b>Para cargar el módulo desde el archivo, escriba</b> <code>.loadmod</code> <b>y responda al archivo que desea cargar</b>\n5️⃣ <b>Para eliminar el módulo, escriba</b> <code>.unloadmod &lt;nombre del módulo&gt;</code> <b>y presione</b>\n\n💡 <b>Para admitir módulos, también incluye Hikka, Friendly-Telegram y GeekTG.</b>\n"
-  railway: "🚂 <b>Se ha creado el bot de usuario en Railway</b> esta plataforma ofrece <b>500 horas gratis al mes</b> una vez que llegue al límite, el <b>bot de usuario será bloqueado hasta el próximo mes</b> por favor, reinicie <b>el bot de usuario en https://railway.app</b>"
-  lavhost: "✌️ <b>Tu bot de usuario está instalado en lavHost</b>. Únete a @lavhost para recibir notificaciones y actualizaciones importantes. Todas las preguntas relacionadas con la plataforma deben hacerse en @lavhostchat."
-  language_saved: "🇪🇸 ¡El idioma se ha guardado!"
+  base: "🌘🇪🇸 <b>Hola.</b> Acabas de instalar el userbot <b>Hikka</b>.\n\n❓ <b>¿Necesitas ayuda?</b> No dudes en unirte a nuestro chat de soporte. Ayudamos a <b>todos</b>.\n\n📼 <b>Puedes encontrar e instalar módulos usando </b><code>.heta</code><b>. Simplemente ingresa tu consulta de búsqueda y haz clic en ⛩ Instalar en el módulo necesario</b>\n\n📣 <b>Echa un vistazo a los canales hechos por la comunidad con módulos: <a href=\"https://t.me/hikka_ub/126\">mostrar</a></b>\n\n💁‍♀️ <b>Inicio rápido:</b>\n\n1️⃣ <b>Escribe</b> <code>.help</code> <b>para ver la lista de módulos</b>\n2️⃣ <b>Escribe</b> <code>.help &lt;NombreDelMódulo/comando&gt;</code> <b>para ver la ayuda del módulo NombreDelMódulo</b>\n3️⃣ <b>Escribe</b> <code>.dlmod &lt;enlace&gt;</code> <b>para cargar un módulo desde un enlace</b>\n4️⃣ <b>Escribe</b> <code>.loadmod</code> <b>con respuesta al archivo para instalar un módulo desde él</b>\n5️⃣ <b>Escribe</b> <code>.unloadmod &lt;NombreDelMódulo&gt;</code> <b>para descargar el módulo NombreDelMódulo</b>\n\n💡 <b>Hikka admite módulos de Friendly-Telegram y GeekTG, así como los propios.</b>"
+  railway: "🚂 <b>Tu userbot está instalado en Railway</b>. Esta plataforma solo tiene <b>500 horas gratuitas al mes</b>. Una vez que se alcance este límite, tu <b>Hikka será congelado</b>. El próximo mes <b>necesitarás ir a https://railway.app y reiniciarlo</b>."
+  lavhost: "✌️ <b>Tu userbot está instalado en lavHost</b>. Asegúrate de unirte a @lavhost para recibir notificaciones y actualizaciones importantes. Todas las preguntas sobre la plataforma deben hacerse en @lavhostchat."
+  language_saved: "🇪🇸 ¡Idioma guardado!"
   language: "🇪🇸 Español"
-  btn_support: "🥷 Grupo de soporte"
+  btn_support: "🥷 Chat de soporte"
+  _cls_doc: "Notifica al usuario sobre la instalación del userbot"
 
 $validators:
   boolean: "valor lógico"
