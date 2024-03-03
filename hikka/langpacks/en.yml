@@ -317,7 +317,7 @@ test:
     logs_caption: "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka logs with verbosity</b> <code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji> <b>Version: {}.{}.{}</b>{}"
     suspend_invalid_time: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Invalid time to suspend</b>"
     suspended: "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>"
-    results_ping: "<emoji document_id=5431449001532594346>⚡️</emoji> <b>Telegram ping:</b> <code>{}</code> <b>ms</b>\n<emoji document_id=5445284980978621387>🚀</emoji> <b>Uptime: {}</b>"
+    results_ping: "<emoji document_id=6298356878573307709>❤️</emoji> <b>Telegram ping:</b> <code>{}</code> <b>ms</b>\n<emoji document_id=5445284980978621387>🚀</emoji> <b>Uptime: {}</b>"
     ping_hint: "<emoji document_id=5472146462362048818>💡</emoji> <i>Telegram ping mostly depends on Telegram servers latency and other external factors and has nothing to do with the parameters of server on which userbot is installed</i>"
     confidential: "⚠️ <b>Log level</b> <code>{}</code> <b>may reveal your confidential info, be careful</b>"
     confidential_text: "⚠️ <b>Log level</b> <code>{0}</code> <b>may reveal your confidential info, be careful</b>\n<b>Type</b> <code>.logs {0} force_insecure</code> <b>to ignore this warning</b>"
