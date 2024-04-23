@@ -415,26 +415,24 @@ class CustomMTProtoSender(MTProtoSender):
                 ):
                     to_censor = message.obj.message
                 elif isinstance(message.obj, MessageContainer) and (
-                    any(
-                        (
-                            isinstance(bigmsg.obj, Updates)
-                            and (
-                                malicious := next(
-                                    (
-                                        update
-                                        for update in bigmsg.obj.updates
-                                        if isinstance(update, UpdateNewMessage)
-                                        and isinstance(update.message, Message)
-                                        and isinstance(update.message.peer_id, PeerUser)
-                                        and update.message.peer_id.user_id == 777000
-                                    ),
-                                    None,
-                                )
+                    any((
+                        isinstance(bigmsg.obj, Updates)
+                        and (
+                            malicious := next(
+                                (
+                                    update
+                                    for update in bigmsg.obj.updates
+                                    if isinstance(update, UpdateNewMessage)
+                                    and isinstance(update.message, Message)
+                                    and isinstance(update.message.peer_id, PeerUser)
+                                    and update.message.peer_id.user_id == 777000
+                                ),
+                                None,
                             )
-                            for bigmsg in message.obj.messages
-                            if isinstance(bigmsg, TLMessage)
                         )
-                    )
+                        for bigmsg in message.obj.messages
+                        if isinstance(bigmsg, TLMessage)
+                    ))
                 ):
                     to_censor = malicious.message.message
                 elif isinstance(message.obj, MessageContainer) and (
@@ -892,16 +890,18 @@ async def integrity_checker():
         await asyncio.sleep(5)
 
 
+def shutdown_handler(sig, frame):
+    print("Bye")
+    if shell:
+        with contextlib.suppress(ProcessLookupError):
+            os.kill(shell.pid, signal.SIGINT)
+
+    if tcp:
+        tcp.gc(init=False)
+
+    sys.exit(0)
+
+
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("Bye")
-        if shell:
-            with contextlib.suppress(ProcessLookupError):
-                shell.kill()
-
-        if tcp:
-            tcp.gc(init=False)
-
-        exit(0)
+    signal.signal(signal.SIGINT, shutdown_handler)
+    asyncio.get_event_loop().run_until_complete(main())

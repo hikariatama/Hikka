@@ -33,8 +33,10 @@ import json
 import logging
 import os
 import random
+import signal
 import socket
 import sqlite3
+import sys
 import typing
 from getpass import getpass
 from pathlib import Path
@@ -749,15 +751,12 @@ class Hikka:
                 self.clients += [client]
             except sqlite3.OperationalError:
                 logging.error(
-                    (
-                        "Check that this is the only instance running. "
-                        "If that doesn't help, delete the file '%s'"
-                    ),
+                    "Check that this is the only instance running. "
+                    "If that doesn't help, delete the file '%s'",
                     session.filename,
                 )
                 continue
             except (TypeError, AuthKeyDuplicatedError):
-                raise
                 Path(session.filename).unlink(missing_ok=True)
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
@@ -943,8 +942,17 @@ class Hikka:
 
         await asyncio.gather(*[self.amain_wrapper(client) for client in self.clients])
 
+    def _shutdown_handler(self, signum, frame):
+        """Shutdown handler"""
+        logging.info("Bye")
+        for client in self.clients:
+            client.disconnect()
+
+        sys.exit(0)
+
     def main(self):
         """Main entrypoint"""
+        signal.signal(signal.SIGINT, self._shutdown_handler)
         self.loop.run_until_complete(self._main())
         self.loop.close()
 

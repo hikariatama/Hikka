@@ -48,16 +48,14 @@ CONSTRUCTORS = {
     (lambda x: x[0].lower() + x[1:])(
         method.__class__.__name__.rsplit("Request", 1)[0]
     ): method.CONSTRUCTOR_ID
-    for method in utils.array_sum(
+    for method in utils.array_sum([
         [
-            [
-                method
-                for method in dir(getattr(functions, group))
-                if isinstance(method, TLRequest)
-            ]
-            for group in GROUPS
+            method
+            for method in dir(getattr(functions, group))
+            if isinstance(method, TLRequest)
         ]
-    )
+        for group in GROUPS
+    ])
 }
 
 
@@ -94,13 +92,11 @@ class APIRatelimiterMod(loader.Module):
                 "forbidden_methods",
                 ["joinChannel", "importChatInvite"],
                 lambda: self.strings("_cfg_forbidden_methods"),
-                validator=loader.validators.MultiChoice(
-                    [
-                        "sendReaction",
-                        "joinChannel",
-                        "importChatInvite",
-                    ]
-                ),
+                validator=loader.validators.MultiChoice([
+                    "sendReaction",
+                    "joinChannel",
+                    "importChatInvite",
+                ]),
                 on_change=lambda: self._client.forbid_constructors(
                     map(
                         lambda x: CONSTRUCTORS[x],
@@ -229,12 +225,10 @@ class APIRatelimiterMod(loader.Module):
             message=message,
             text=self.strings("web_pin"),
             reply_markup=[
-                [
-                    {
-                        "text": self.strings("web_pin_btn"),
-                        "callback": self._show_pin,
-                    }
-                ],
+                [{
+                    "text": self.strings("web_pin_btn"),
+                    "callback": self._show_pin,
+                }],
                 [
                     {"text": self.strings("proxied_url"), "url": self._debugger.url},
                     {

@@ -166,14 +166,10 @@ class HikkaSecurityMod(loader.Module):
                 ],
                 2,
             )
-            + [
-                [
-                    {
-                        "text": self.strings("close_menu"),
-                        "action": "close",
-                    }
-                ]
-            ]
+            + [[{
+                "text": self.strings("close_menu"),
+                "action": "close",
+            }]]
         )
 
     def _build_markup_global(
@@ -284,21 +280,19 @@ class HikkaSecurityMod(loader.Module):
                 group.name,
                 (
                     self.strings("users_list").format(
-                        "\n".join(
-                            [
-                                self.strings("li").format(
-                                    utils.get_entity_url(
+                        "\n".join([
+                            self.strings("li").format(
+                                utils.get_entity_url(
+                                    await self._client.get_entity(user, exp=0)
+                                ),
+                                utils.escape_html(
+                                    get_display_name(
                                         await self._client.get_entity(user, exp=0)
-                                    ),
-                                    utils.escape_html(
-                                        get_display_name(
-                                            await self._client.get_entity(user, exp=0)
-                                        )
-                                    ),
-                                )
-                                for user in group.users
-                            ]
-                        )
+                                    )
+                                ),
+                            )
+                            for user in group.users
+                        ])
                     )
                     if group.users
                     else self.strings("no_users")
@@ -636,14 +630,12 @@ class HikkaSecurityMod(loader.Module):
         await utils.answer(
             message,
             self.strings("owner_list").format(
-                "\n".join(
-                    [
-                        self.strings("li").format(
-                            i.id, utils.escape_html(get_display_name(i))
-                        )
-                        for i in _resolved_users
-                    ]
-                )
+                "\n".join([
+                    self.strings("li").format(
+                        i.id, utils.escape_html(get_display_name(i))
+                    )
+                    for i in _resolved_users
+                ])
             ),
         )
 
@@ -750,16 +742,14 @@ class HikkaSecurityMod(loader.Module):
 
         if target_type == "sgroup":
             group = self._sgroups[target]
-            group.permissions.append(
-                {
-                    "target": target,
-                    "rule_type": rule.split("/")[0],
-                    "rule": rule.split("/", maxsplit=1)[1],
-                    "expires": int(time.time() + duration) if duration else 0,
-                    "entity_name": group.name,
-                    "entity_url": "",
-                }
-            )
+            group.permissions.append({
+                "target": target,
+                "rule_type": rule.split("/")[0],
+                "rule": rule.split("/", maxsplit=1)[1],
+                "expires": int(time.time() + duration) if duration else 0,
+                "entity_name": group.name,
+                "entity_url": "",
+            })
             self._reload_sgroups()
         else:
             self._client.dispatcher.security.add_rule(
@@ -1225,22 +1215,19 @@ class HikkaSecurityMod(loader.Module):
                             for rule in self._client.dispatcher.security.tsec_user
                         ]
                         + [
-                            "\n".join(
-                                [
-                                    "<emoji document_id=5870704313440932932>🔒</emoji>"
-                                    " <code>{}</code> <b>{} {} {}</b> <code>{}</code>"
-                                    .format(
-                                        utils.escape_html(group.name),
-                                        self._convert_time(
-                                            int(rule["expires"] - time.time())
-                                        ),
-                                        self.strings("for"),
-                                        self.strings(rule["rule_type"]),
-                                        rule["rule"],
-                                    )
-                                    for rule in group.permissions
-                                ]
-                            )
+                            "\n".join([
+                                "<emoji document_id=5870704313440932932>🔒</emoji>"
+                                " <code>{}</code> <b>{} {} {}</b> <code>{}</code>".format(
+                                    utils.escape_html(group.name),
+                                    self._convert_time(
+                                        int(rule["expires"] - time.time())
+                                    ),
+                                    self.strings("for"),
+                                    self.strings(rule["rule_type"]),
+                                    rule["rule"],
+                                )
+                                for rule in group.permissions
+                            ])
                             for group in self._sgroups.values()
                         ]
                     )

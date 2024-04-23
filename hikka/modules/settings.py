@@ -164,12 +164,10 @@ class CoreMod(loader.Module):
         await utils.answer(
             message,
             self.strings("aliases")
-            + "\n".join(
-                [
-                    f"▫️ <code>{i}</code> &lt;- {y}"
-                    for i, y in self.allmodules.aliases.items()
-                ]
-            ),
+            + "\n".join([
+                f"▫️ <code>{i}</code> &lt;- {y}"
+                for i, y in self.allmodules.aliases.items()
+            ]),
         )
 
     @loader.command()

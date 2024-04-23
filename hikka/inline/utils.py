@@ -609,56 +609,52 @@ class Utils(InlineUnit):
             current_page = self._units[unit_id]["current_index"] + 1
 
         if total_pages <= 5:
-            return [
-                [
-                    (
-                        {"text": number, "args": (number - 1,), "callback": callback}
-                        if number != current_page
-                        else {
-                            "text": f"· {number} ·",
-                            "args": (number - 1,),
-                            "callback": callback,
-                        }
-                    )
-                    for number in range(1, total_pages + 1)
-                ]
-            ]
+            return [[
+                (
+                    {"text": number, "args": (number - 1,), "callback": callback}
+                    if number != current_page
+                    else {
+                        "text": f"· {number} ·",
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                )
+                for number in range(1, total_pages + 1)
+            ]]
 
         if current_page <= 3:
-            return [
-                [
-                    (
+            return [[
+                (
+                    {
+                        "text": f"· {number} ·",
+                        "args": (number - 1,),
+                        "callback": callback,
+                    }
+                    if number == current_page
+                    else (
                         {
-                            "text": f"· {number} ·",
+                            "text": f"{number} ›",
                             "args": (number - 1,),
                             "callback": callback,
                         }
-                        if number == current_page
+                        if number == 4
                         else (
                             {
-                                "text": f"{number} ›",
+                                "text": f"{total_pages} »",
+                                "args": (total_pages - 1,),
+                                "callback": callback,
+                            }
+                            if number == 5
+                            else {
+                                "text": number,
                                 "args": (number - 1,),
                                 "callback": callback,
                             }
-                            if number == 4
-                            else (
-                                {
-                                    "text": f"{total_pages} »",
-                                    "args": (total_pages - 1,),
-                                    "callback": callback,
-                                }
-                                if number == 5
-                                else {
-                                    "text": number,
-                                    "args": (number - 1,),
-                                    "callback": callback,
-                                }
-                            )
                         )
                     )
-                    for number in range(1, 6)
-                ]
-            ]
+                )
+                for number in range(1, 6)
+            ]]
 
         if current_page > total_pages - 3:
             return [
@@ -688,31 +684,29 @@ class Utils(InlineUnit):
                 ]
             ]
 
-        return [
-            [
-                {"text": "« 1", "args": (0,), "callback": callback},
-                {
-                    "text": f"‹ {current_page - 1}",
-                    "args": (current_page - 2,),
-                    "callback": callback,
-                },
-                {
-                    "text": f"· {current_page} ·",
-                    "args": (current_page - 1,),
-                    "callback": callback,
-                },
-                {
-                    "text": f"{current_page + 1} ›",
-                    "args": (current_page,),
-                    "callback": callback,
-                },
-                {
-                    "text": f"{total_pages} »",
-                    "args": (total_pages - 1,),
-                    "callback": callback,
-                },
-            ]
-        ]
+        return [[
+            {"text": "« 1", "args": (0,), "callback": callback},
+            {
+                "text": f"‹ {current_page - 1}",
+                "args": (current_page - 2,),
+                "callback": callback,
+            },
+            {
+                "text": f"· {current_page} ·",
+                "args": (current_page - 1,),
+                "callback": callback,
+            },
+            {
+                "text": f"{current_page + 1} ›",
+                "args": (current_page,),
+                "callback": callback,
+            },
+            {
+                "text": f"{total_pages} »",
+                "args": (total_pages - 1,),
+                "callback": callback,
+            },
+        ]]
 
     def _validate_markup(
         self,

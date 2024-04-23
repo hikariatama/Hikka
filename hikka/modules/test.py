@@ -257,16 +257,14 @@ class TestMod(loader.Module):
 
             return
 
-        logs = "\n\n".join(
-            [
-                "\n".join(
-                    handler.dumps(lvl, client_id=self._client.tg_id)
-                    if "client_id" in inspect.signature(handler.dumps).parameters
-                    else handler.dumps(lvl)
-                )
-                for handler in logging.getLogger().handlers
-            ]
-        )
+        logs = "\n\n".join([
+            "\n".join(
+                handler.dumps(lvl, client_id=self._client.tg_id)
+                if "client_id" in inspect.signature(handler.dumps).parameters
+                else handler.dumps(lvl)
+            )
+            for handler in logging.getLogger().handlers
+        ])
 
         named_lvl = (
             lvl

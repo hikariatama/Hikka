@@ -122,13 +122,11 @@ class CommandDispatcher:
 
         self.check_security = self.security.check
         self._me = self._client.hikka_me.id
-        self._cached_usernames = [
-            (
-                self._client.hikka_me.username.lower()
-                if self._client.hikka_me.username
-                else str(self._client.hikka_me.id)
-            )
-        ]
+        self._cached_usernames = [(
+            self._client.hikka_me.username.lower()
+            if self._client.hikka_me.username
+            else str(self._client.hikka_me.id)
+        )]
 
         self._cached_usernames.extend(
             getattr(self._client.hikka_me, "usernames", None) or []
@@ -595,7 +593,8 @@ class CommandDispatcher:
             "contains": lambda: isinstance(m, Message) and func.contains in m.raw_text,
             "filter": lambda: callable(func.filter) and func.filter(m),
             "from_id": lambda: getattr(m, "sender_id", None) == func.from_id,
-            "chat_id": lambda: utils.get_chat_id(m) == (
+            "chat_id": lambda: utils.get_chat_id(m)
+            == (
                 func.chat_id
                 if not str(func.chat_id).startswith("-100")
                 else int(str(func.chat_id)[4:])

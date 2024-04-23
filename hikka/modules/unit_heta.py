@@ -440,13 +440,11 @@ class UnitHeta(loader.Module):
         query: str,
         no_translate: bool = False,
     ) -> str:
-        commands = "\n".join(
-            [
-                f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
-                f" <b>{utils.escape_html(cmd_doc)}</b>"
-                for cmd, cmd_doc in result["module"]["commands"].items()
-            ]
-        )
+        commands = "\n".join([
+            f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
+            f" <b>{utils.escape_html(cmd_doc)}</b>"
+            for cmd, cmd_doc in result["module"]["commands"].items()
+        ])
 
         kwargs = {
             "name": utils.escape_html(result["module"]["name"]),

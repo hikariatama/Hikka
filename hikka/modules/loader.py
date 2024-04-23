@@ -187,25 +187,19 @@ class LoaderMod(loader.Module):
                 [
                     self.strings("avail_header")
                     + f"\n☁️ {repo.strip('/')}\n\n"
-                    + "\n".join(
-                        [
-                            " | ".join(chunk)
-                            for chunk in utils.chunks(
-                                [
-                                    f"<code>{i}</code>"
-                                    for i in sorted(
-                                        [
-                                            utils.escape_html(
-                                                i.split("/")[-1].split(".")[0]
-                                            )
-                                            for i in mods.values()
-                                        ]
-                                    )
-                                ],
-                                5,
-                            )
-                        ]
-                    )
+                    + "\n".join([
+                        " | ".join(chunk)
+                        for chunk in utils.chunks(
+                            [
+                                f"<code>{i}</code>"
+                                for i in sorted([
+                                    utils.escape_html(i.split("/")[-1].split(".")[0])
+                                    for i in mods.values()
+                                ])
+                            ],
+                            5,
+                        )
+                    ])
                     for repo, mods in (await self.get_repo_list()).items()
                 ],
             )
@@ -523,20 +517,16 @@ class LoaderMod(loader.Module):
                             "args": (doc, path_, "no"),
                         },
                     ],
-                    [
-                        {
-                            "text": self.strings("save_for_all"),
-                            "callback": self._inline__load,
-                            "args": (doc, path_, "all_yes"),
-                        }
-                    ],
-                    [
-                        {
-                            "text": self.strings("never_save"),
-                            "callback": self._inline__load,
-                            "args": (doc, path_, "all_no"),
-                        }
-                    ],
+                    [{
+                        "text": self.strings("save_for_all"),
+                        "callback": self._inline__load,
+                        "args": (doc, path_, "all_yes"),
+                    }],
+                    [{
+                        "text": self.strings("never_save"),
+                        "callback": self._inline__load,
+                        "args": (doc, path_, "all_no"),
+                    }],
                 ],
             ):
                 return
@@ -682,13 +672,11 @@ class LoaderMod(loader.Module):
 
             await utils.answer(
                 message,
-                self.strings(f"overwrite_{e.type}").format(
-                    *(
-                        (e.target,)
-                        if e.type == "module"
-                        else (utils.escape_html(self.get_prefix()), e.target)
-                    )
-                ),
+                self.strings(f"overwrite_{e.type}").format(*(
+                    (e.target,)
+                    if e.type == "module"
+                    else (utils.escape_html(self.get_prefix()), e.target)
+                )),
             )
 
         try:

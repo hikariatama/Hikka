@@ -1,4 +1,5 @@
 """Represents current userbot version"""
+
 # ©️ Dan Gazizullin, 2021-2023
 # This file is a part of Hikka Userbot
 # 🌐 https://github.com/hikariatama/Hikka

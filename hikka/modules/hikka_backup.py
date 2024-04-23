@@ -47,15 +47,11 @@ class HikkaBackupMod(loader.Module):
                         ],
                         3,
                     )
-                    + [
-                        [
-                            {
-                                "text": "🚫 Never",
-                                "callback": self._set_backup_period,
-                                "args": (0,),
-                            }
-                        ]
-                    ]
+                    + [[{
+                        "text": "🚫 Never",
+                        "callback": self._set_backup_period,
+                        "args": (0,),
+                    }]]
                 ),
             )
 
@@ -67,6 +63,7 @@ class HikkaBackupMod(loader.Module):
             archive=True,
             avatar="https://github.com/hikariatama/assets/raw/master/hikka-backups.png",
             _folder="hikka",
+            invite_bot=True,
         )
 
     async def _set_backup_period(self, call: BotInlineCall, value: int):
@@ -126,13 +123,58 @@ class HikkaBackupMod(loader.Module):
                 f"hikka-db-backup-{datetime.datetime.now():%d-%m-%Y-%H-%M}.json"
             )
 
-            await self._client.send_file(self._backup_channel, backup)
+            await self.inline.bot.send_document(
+                int(f"-100{self._backup_channel.id}"),
+                backup,
+                reply_markup=self.inline.generate_markup([[{
+                    "text": "↪️ Restore this",
+                    "data": "hikka/backup/restore/confirm",
+                }]]),
+            )
+
             self.set("last_backup", round(time.time()))
         except loader.StopLoop:
             raise
         except Exception:
             logger.exception("HikkaBackup failed")
             await asyncio.sleep(60)
+
+    @loader.callback_handler()
+    async def restore(self, call: BotInlineCall):
+        if not call.data.startswith("hikka/backup/restore"):
+            return
+
+        if call.data == "hikka/backup/restore/confirm":
+            await utils.answer(
+                call,
+                "❓ <b>Are you sure?</b>",
+                reply_markup={
+                    "text": "✅ Yes",
+                    "data": "hikka/backup/restore",
+                },
+            )
+            return
+
+        file = await (
+            await self._client.get_messages(
+                self._backup_channel, call.message.message_id
+            )
+        )[0].download_media(bytes)
+
+        decoded_text = json.loads(file.decode())
+
+        with contextlib.suppress(KeyError):
+            decoded_text["hikka.inline"].pop("bot_token")
+
+        if not self._db.process_db_autofix(decoded_text):
+            raise RuntimeError("Attempted to restore broken database")
+
+        self._db.clear()
+        self._db.update(**decoded_text)
+        self._db.save()
+
+        await call.answer(self.strings("db_restored"), show_alert=True)
+        await self.invoke("restart", "-f", peer=call.message.peer_id)
 
     @loader.command()
     async def backupdb(self, message: Message):

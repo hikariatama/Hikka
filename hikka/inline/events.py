@@ -408,38 +408,34 @@ class Events(InlineUnit):
 
             thumb = thumb or "https://img.icons8.com/fluency/50/000000/info-squared.png"
 
-            _help += [
+            _help += [(
+                InlineQueryResultArticle(
+                    id=utils.rand(20),
+                    title=self.translator.getkey("inline.command").format(name),
+                    description=doc,
+                    input_message_content=InputTextMessageContent(
+                        (
+                            self.translator.getkey("inline.command_msg").format(
+                                utils.escape_html(name),
+                                utils.escape_html(doc),
+                            )
+                        ),
+                        "HTML",
+                        disable_web_page_preview=True,
+                    ),
+                    thumb_url=thumb,
+                    thumb_width=128,
+                    thumb_height=128,
+                    reply_markup=self.generate_markup({
+                        "text": self.translator.getkey("inline.run_command"),
+                        "switch_inline_query_current_chat": f"{name} ",
+                    }),
+                ),
                 (
-                    InlineQueryResultArticle(
-                        id=utils.rand(20),
-                        title=self.translator.getkey("inline.command").format(name),
-                        description=doc,
-                        input_message_content=InputTextMessageContent(
-                            (
-                                self.translator.getkey("inline.command_msg").format(
-                                    utils.escape_html(name),
-                                    utils.escape_html(doc),
-                                )
-                            ),
-                            "HTML",
-                            disable_web_page_preview=True,
-                        ),
-                        thumb_url=thumb,
-                        thumb_width=128,
-                        thumb_height=128,
-                        reply_markup=self.generate_markup(
-                            {
-                                "text": self.translator.getkey("inline.run_command"),
-                                "switch_inline_query_current_chat": f"{name} ",
-                            }
-                        ),
-                    ),
-                    (
-                        f"🎹 <code>@{self.bot_username} {utils.escape_html(name)}</code>"
-                        f" - {utils.escape_html(doc)}\n"
-                    ),
-                )
-            ]
+                    f"🎹 <code>@{self.bot_username} {utils.escape_html(name)}</code>"
+                    f" - {utils.escape_html(doc)}\n"
+                ),
+            )]
 
         if not _help:
             await inline_query.answer(

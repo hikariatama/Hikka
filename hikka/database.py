@@ -319,6 +319,13 @@ class Database(dict):
             None,
         )
 
+        if (current_value := self.get(owner, key, None)) and type(
+            current_value
+        ) is not type(default):
+            raise ValueError(
+                f"Can't switch the type of pointer in database (current: {type(current_value)}, requested: {type(default)})"
+            )
+
         if pointer_constructor is None:
             raise ValueError(
                 f"Pointer for type {type(value).__name__} is not implemented"

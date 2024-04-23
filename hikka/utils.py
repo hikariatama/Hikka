@@ -94,7 +94,7 @@ from hikkatl.tl.types import (
 )
 
 from ._internal import fw_protect
-from .inline.types import InlineCall, InlineMessage
+from .inline.types import BotInlineCall, InlineCall, InlineMessage
 from .tl_cache import CustomTelegramClient
 from .types import HikkaReplyMarkup, ListLike, Module
 
@@ -466,7 +466,7 @@ async def answer(
 
         if reply_markup:
             kwargs.pop("message", None)
-            if isinstance(message, (InlineMessage, InlineCall)):
+            if isinstance(message, (InlineMessage, InlineCall, BotInlineCall)):
                 await message.edit(response, reply_markup, **kwargs)
                 return
 
@@ -479,7 +479,7 @@ async def answer(
             )
             return result
 
-    if isinstance(message, (InlineMessage, InlineCall)):
+    if isinstance(message, (InlineMessage, InlineCall, BotInlineCall)):
         await message.edit(response)
         return message
 
@@ -914,6 +914,9 @@ def get_named_platform() -> str:
     if main.IS_RAILWAY:
         return "🚂 Railway"
 
+    if main.IS_HIKKAHOST:
+        return "🌼 HikkaHost"
+
     if main.IS_DOCKER:
         return "🐳 Docker"
 
@@ -922,9 +925,6 @@ def get_named_platform() -> str:
 
     if main.IS_CODESPACES:
         return "🐈‍⬛ Codespaces"
-
-    if main.IS_HIKKAHOST:
-        return "🌼 HikkaHost"
 
     return f"✌️ lavHost {os.environ['LAVHOST']}" if main.IS_LAVHOST else "📻 VDS"
 
@@ -936,13 +936,11 @@ def get_platform_emoji() -> str:
     """
     from . import main
 
-    BASE = "".join(
-        (
-            "<emoji document_id={}>🌘</emoji>",
-            "<emoji document_id=5195311729663286630>🌘</emoji>",
-            "<emoji document_id=5195045669324201904>🌘</emoji>",
-        )
-    )
+    BASE = "".join((
+        "<emoji document_id={}>🌘</emoji>",
+        "<emoji document_id=5195311729663286630>🌘</emoji>",
+        "<emoji document_id=5195045669324201904>🌘</emoji>",
+    ))
 
     if main.IS_DOCKER:
         return BASE.format(5298554256603752468)
@@ -990,68 +988,66 @@ def ascii_face() -> str:
     :return: ASCII-art face
     """
     return escape_html(
-        random.choice(
-            [
-                "ヽ(๑◠ܫ◠๑)ﾉ",
-                "(◕ᴥ◕ʋ)",
-                "ᕙ(`▽´)ᕗ",
-                "(✿◠‿◠)",
-                "(▰˘◡˘▰)",
-                "(˵ ͡° ͜ʖ ͡°˵)",
-                "ʕっ•ᴥ•ʔっ",
-                "( ͡° ᴥ ͡°)",
-                "(๑•́ ヮ •̀๑)",
-                "٩(^‿^)۶",
-                "(っˆڡˆς)",
-                "ψ(｀∇´)ψ",
-                "⊙ω⊙",
-                "٩(^ᴗ^)۶",
-                "(´・ω・)っ由",
-                "( ͡~ ͜ʖ ͡°)",
-                "✧♡(◕‿◕✿)",
-                "โ๏௰๏ใ ื",
-                "∩｡• ᵕ •｡∩ ♡",
-                "(♡´౪`♡)",
-                "(◍＞◡＜◍)⋈。✧♡",
-                "╰(✿´⌣`✿)╯♡",
-                "ʕ•ᴥ•ʔ",
-                "ᶘ ◕ᴥ◕ᶅ",
-                "▼・ᴥ・▼",
-                "ฅ^•ﻌ•^ฅ",
-                "(΄◞ิ౪◟ิ‵)",
-                "٩(^ᴗ^)۶",
-                "ᕴｰᴥｰᕵ",
-                "ʕ￫ᴥ￩ʔ",
-                "ʕᵕᴥᵕʔ",
-                "ʕᵒᴥᵒʔ",
-                "ᵔᴥᵔ",
-                "(✿╹◡╹)",
-                "(๑￫ܫ￩)",
-                "ʕ·ᴥ·　ʔ",
-                "(ﾉ≧ڡ≦)",
-                "(≖ᴗ≖✿)",
-                "（〜^∇^ )〜",
-                "( ﾉ･ｪ･ )ﾉ",
-                "~( ˘▾˘~)",
-                "(〜^∇^)〜",
-                "ヽ(^ᴗ^ヽ)",
-                "(´･ω･`)",
-                "₍ᐢ•ﻌ•ᐢ₎*･ﾟ｡",
-                "(。・・)_且",
-                "(=｀ω´=)",
-                "(*•‿•*)",
-                "(*ﾟ∀ﾟ*)",
-                "(☉⋆‿⋆☉)",
-                "ɷ◡ɷ",
-                "ʘ‿ʘ",
-                "(。-ω-)ﾉ",
-                "( ･ω･)ﾉ",
-                "(=ﾟωﾟ)ﾉ",
-                "(・ε・`*) …",
-                "ʕっ•ᴥ•ʔっ",
-                "(*˘︶˘*)",
-            ]
-        )
+        random.choice([
+            "ヽ(๑◠ܫ◠๑)ﾉ",
+            "(◕ᴥ◕ʋ)",
+            "ᕙ(`▽´)ᕗ",
+            "(✿◠‿◠)",
+            "(▰˘◡˘▰)",
+            "(˵ ͡° ͜ʖ ͡°˵)",
+            "ʕっ•ᴥ•ʔっ",
+            "( ͡° ᴥ ͡°)",
+            "(๑•́ ヮ •̀๑)",
+            "٩(^‿^)۶",
+            "(っˆڡˆς)",
+            "ψ(｀∇´)ψ",
+            "⊙ω⊙",
+            "٩(^ᴗ^)۶",
+            "(´・ω・)っ由",
+            "( ͡~ ͜ʖ ͡°)",
+            "✧♡(◕‿◕✿)",
+            "โ๏௰๏ใ ื",
+            "∩｡• ᵕ •｡∩ ♡",
+            "(♡´౪`♡)",
+            "(◍＞◡＜◍)⋈。✧♡",
+            "╰(✿´⌣`✿)╯♡",
+            "ʕ•ᴥ•ʔ",
+            "ᶘ ◕ᴥ◕ᶅ",
+            "▼・ᴥ・▼",
+            "ฅ^•ﻌ•^ฅ",
+            "(΄◞ิ౪◟ิ‵)",
+            "٩(^ᴗ^)۶",
+            "ᕴｰᴥｰᕵ",
+            "ʕ￫ᴥ￩ʔ",
+            "ʕᵕᴥᵕʔ",
+            "ʕᵒᴥᵒʔ",
+            "ᵔᴥᵔ",
+            "(✿╹◡╹)",
+            "(๑￫ܫ￩)",
+            "ʕ·ᴥ·　ʔ",
+            "(ﾉ≧ڡ≦)",
+            "(≖ᴗ≖✿)",
+            "（〜^∇^ )〜",
+            "( ﾉ･ｪ･ )ﾉ",
+            "~( ˘▾˘~)",
+            "(〜^∇^)〜",
+            "ヽ(^ᴗ^ヽ)",
+            "(´･ω･`)",
+            "₍ᐢ•ﻌ•ᐢ₎*･ﾟ｡",
+            "(。・・)_且",
+            "(=｀ω´=)",
+            "(*•‿•*)",
+            "(*ﾟ∀ﾟ*)",
+            "(☉⋆‿⋆☉)",
+            "ɷ◡ɷ",
+            "ʘ‿ʘ",
+            "(。-ω-)ﾉ",
+            "( ･ω･)ﾉ",
+            "(=ﾟωﾟ)ﾉ",
+            "(・ε・`*) …",
+            "ʕっ•ᴥ•ʔっ",
+            "(*˘︶˘*)",
+        ])
     )
 
 
@@ -1266,9 +1262,7 @@ def get_commit_url() -> str:
     """
     try:
         hash_ = get_git_hash()
-        return (
-            f'<a href="https://github.com/hikariatama/Hikka/commit/{hash_}">#{hash_[:7]}</a>'
-        )
+        return f'<a href="https://github.com/hikariatama/Hikka/commit/{hash_}">#{hash_[:7]}</a>'
     except Exception:
         return "Unknown"
 

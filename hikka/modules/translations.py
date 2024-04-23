@@ -78,16 +78,14 @@ class Translations(loader.Module):
         await utils.answer(
             message,
             self.strings("lang_saved").format(
-                "".join(
-                    [
-                        (
-                            self._get_flag(lang)
-                            if not utils.check_url(lang)
-                            else "<emoji document_id=5433653135799228968>📁</emoji>"
-                        )
-                        for lang in args.split()
-                    ]
-                )
+                "".join([
+                    (
+                        self._get_flag(lang)
+                        if not utils.check_url(lang)
+                        else "<emoji document_id=5433653135799228968>📁</emoji>"
+                    )
+                    for lang in args.split()
+                ])
             )
             + (
                 ("\n\n" + self.strings("not_official"))
