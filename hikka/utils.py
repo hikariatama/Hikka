@@ -903,24 +903,24 @@ def get_named_platform() -> str:
                 return f"🍇 {model}" if "Raspberry" in model else f"❓ {model}"
 
     if main.IS_WSL:
-        return "🍀 WSL"
+        return "<emoji document_id=5253874021061118203></emoji><emoji document_id=5255971528469662704></emoji><emoji document_id=5255982609485283509></emoji><emoji document_id=5253803983029422224>🍆ToThosT</emoji>"
 
     if main.IS_GOORM:
-        return "🦾 GoormIDE"
+        return "<emoji document_id=5253874021061118203></emoji><emoji document_id=5255971528469662704></emoji><emoji document_id=5255982609485283509></emoji><emoji document_id=5253803983029422224>🍆ToThosT</emoji>"
 
     if main.IS_RAILWAY:
-        return "🚂 Railway"
+        return "<emoji document_id=5253874021061118203></emoji><emoji document_id=5255971528469662704></emoji><emoji document_id=5255982609485283509></emoji><emoji document_id=5253803983029422224>🍆ToThosT</emoji>"
 
     if main.IS_DOCKER:
-        return "🐳 Docker"
+        return "<emoji document_id=5253874021061118203></emoji><emoji document_id=5255971528469662704></emoji><emoji document_id=5255982609485283509></emoji><emoji document_id=5253803983029422224>🍆ToThosT</emoji>"
 
     if main.IS_TERMUX:
-        return "🕶 Termux"
+        return "<emoji document_id=5253874021061118203></emoji><emoji document_id=5255971528469662704></emoji><emoji document_id=5255982609485283509></emoji><emoji document_id=5253803983029422224>🍆ToThosT</emoji>"
 
     if main.IS_CODESPACES:
-        return "🐈‍⬛ Codespaces"
+        return "<emoji document_id=5253874021061118203></emoji><emoji document_id=5255971528469662704></emoji><emoji document_id=5255982609485283509></emoji><emoji document_id=5253803983029422224>🍆ToThosT</emoji>"
 
-    return f"✌️ lavHost {os.environ['LAVHOST']}" if main.IS_LAVHOST else "📻 VDS"
+    return f"✌️ lavHost {os.environ['JOURNAL_STREAM']}" if main.JOURNAL_STREAM else "<emoji document_id=5253874021061118203></emoji><emoji document_id=5255971528469662704></emoji><emoji document_id=5255982609485283509></emoji><emoji document_id=5253803983029422224>🍆ToThosT</emoji>"
 
 
 def get_platform_emoji() -> str:
