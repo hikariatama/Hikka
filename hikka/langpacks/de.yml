@@ -1,6 +1,6 @@
 hikka_security:
     no_command: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Befehl</b> <code>{}</code> <b>nicht gefunden!</b>"
-    permissions: "🔐 <b>Hier können Sie die Berechtigungen für den Befehl</b> <code>{}{}</code> <b>konfigurieren</b>"
+    permissions: " <b>Hier können Sie die Berechtigungen für den Befehl</b> <code>{}{}</code> <b>konfigurieren</b>"
     close_menu: "🙈 Schließen Sie dieses Menü"
     global: "🔐 <b>Hier können Sie die globale Ausschlussmaske einstellen. Wenn der Schalter hier deaktiviert ist, ist er für alle Befehle deaktiviert</b>"
     owner: "👑 Besitzer"
