@@ -1,3 +1,4 @@
+.ruff_cache
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -135,14 +136,14 @@ hikka/api_token.py
 hikka/loaded_modules
 loaded_modules
 hikka/debug_modules
-hikka*.session*
+*.session
+*.session-journal
 database-*.json
 *.swp
 .setup_complete
 .tox
 .idea/
 venv/
-data/
 api_token.txt
 .coverage
 .vscode/
@@ -164,3 +165,15 @@ config.json
 *.m4a
 *.mp3
 *.avi
+
+# Heroku-specific rules
+.heroku/
+.apt/
+.profile.d/
+vendor/
+Pipfile.lock
+
+hikka.log.*
+unknown_errors.txt
+
+*.sock
