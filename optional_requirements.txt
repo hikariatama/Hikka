@@ -6,3 +6,4 @@ python-ffmpeg
 ffmpeg
 bs4
 uvloop
+websockets
