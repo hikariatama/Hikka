@@ -1,3 +1,0 @@
-[tool.black]
-extend-exclude = "loaded_modules"
-preview = true
