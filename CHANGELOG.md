@@ -1,5 +1,21 @@
 # Hikka Changelog
 
+## 🌑 Hikka 1.6.4
+
+- Completely remove Dragon support as redundant
+- Fix request_join error
+- Decrease module info length in heta
+- Add privacy switch to `UnitHeta`
+- Add HikkaHost as a platform
+- Update to Hikka-TL 2.0.7
+- Allow double-restart
+- Personal messages scam modules protection
+- https://github.com/hikariatama/Hikka/issues/115
+- https://github.com/hikariatama/Hikka/issues/114
+- https://github.com/hikariatama/Hikka/issues/119
+- https://github.com/hikariatama/Hikka/issues/120
+- Other changes
+
 ## 🌑 Hikka 1.6.3
 
 - Add argument `item_type` to `db.pointer` to provide interface for NamedTuple objects
