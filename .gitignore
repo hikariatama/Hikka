@@ -136,7 +136,8 @@ hikka/api_token.py
 hikka/loaded_modules
 loaded_modules
 hikka/debug_modules
-hikka*.session*
+*.session
+*.session-journal
 database-*.json
 *.swp
 .setup_complete
@@ -174,3 +175,5 @@ Pipfile.lock
 
 hikka.log.*
 unknown_errors.txt
+
+*.sock
