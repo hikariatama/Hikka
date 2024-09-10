@@ -1,0 +1,3 @@
+[flake8]
+ignore = E501,E203,E701,ASN001,E231,E503,W503,E225,W504
+exclude = .git,__pycache__,loaded_modules
