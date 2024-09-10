@@ -1,0 +1,35 @@
+[tool.black]
+extend-exclude = "loaded_modules"
+preview = true
+
+[tool.poetry]
+name = "hikka"
+version = "1.6.4"
+description = "Telegram userbot focused on developer convenience"
+authors = ["hikariatama <me@hikariatama.ru>"]
+license = "GNU AGPLv3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiofile = "3.8.1"
+gitpython = "3.1.27"
+meval = "2.5"
+aiohttp-jinja2 = "1.5"
+aiohttp = "3.8.3"
+jinja2 = "3.0.3"
+requests = "2.27.1"
+aiogram = "2.19"
+grapheme = "0.6.0"
+emoji = "2.1.0"
+werkzeug = "2.2.2"
+psutil = "5.9.4"
+tgcrypto = "1.2.5"
+hikka-tl-new = "2.0.8"
+ruamel-yaml = "0.17.21"
+rsa = "4.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

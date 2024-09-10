@@ -1,0 +1,8 @@
+Pillow
+requests
+emoji
+moviepy
+python-ffmpeg
+ffmpeg
+bs4
+uvloop
