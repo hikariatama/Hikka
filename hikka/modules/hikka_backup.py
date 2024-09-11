@@ -81,6 +81,7 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def set_backup_period(self, message: Message):
+        """[time] | set your backup bd period"""
         if (
             not (args := utils.get_args_raw(message))
             or not args.isdigit()
@@ -178,7 +179,7 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def backupdb(self, message: Message):
-        """save backup of your bd"""
+        """| save backup of your bd"""
         txt = io.BytesIO(json.dumps(self._db).encode())
         txt.name = f"db-backup-{datetime.datetime.now():%d-%m-%Y-%H-%M}.json"
         await self._client.send_file(
@@ -192,7 +193,7 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def restoredb(self, message: Message):
-        """restore your bd"""
+        """[reply] | restore your bd"""
         if not (reply := await message.get_reply_message()) or not reply.media:
             await utils.answer(
                 message,
@@ -218,7 +219,7 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def backupmods(self, message: Message):
-        """save backup of mods"""
+        """| save backup of mods"""
         mods_quantity = len(self.lookup("Loader").get("loaded_modules", {}))
 
         result = io.BytesIO()
@@ -250,7 +251,7 @@ class HikkaBackupMod(loader.Module):
 
     @loader.command()
     async def restoremods(self, message: Message):
-        """restore your mods"""
+        """[reply] | restore your mods"""
         if not (reply := await message.get_reply_message()) or not reply.media:
             await utils.answer(message, self.strings("reply_to_file"))
             return
