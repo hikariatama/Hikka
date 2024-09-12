@@ -4,7 +4,7 @@
 <a href="#"><img src="https://img.shields.io/github/languages/code-size/hikariatama/Hikka"/></a>
 <a href="#"><img src="https://img.shields.io/github/issues-raw/hikariatama/Hikka"/></a>
 <a href="#"><img src="https://img.shields.io/github/license/hikariatama/Hikka"/></a>
-<a href="#"><img src="https://img.shields.io/github/commit-activity/m/hikariatama/Hikka"/></a><br>
+<a href="#"><img src="https://img.shields.io/github/commit-activity/m/coddrago/Hikka"/></a><br>
 <a href="#"><img src="https://img.shields.io/github/forks/hikariatama/Hikka?style=flat"/></a>
 <a href="#"><img src="https://img.shields.io/github/stars/hikariatama/Hikka"/></a>&nbsp;<a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a><br>
 
