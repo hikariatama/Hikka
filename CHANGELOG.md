@@ -1,5 +1,11 @@
 # Hikka Changelog
+## 🌑 Hikka 1.6.5
 
+- fixed several links
+- improved desing
+- Update to Hikka-TL 2.0.8
+- other improvements and fixes...
+ 
 ## 🌑 Hikka 1.6.4
 
 - Completely remove Dragon support as redundant
@@ -10,10 +16,10 @@
 - Update to Hikka-TL 2.0.7
 - Allow double-restart
 - Personal messages scam modules protection
-- https://github.com/hikariatama/Hikka/issues/115
-- https://github.com/hikariatama/Hikka/issues/114
-- https://github.com/hikariatama/Hikka/issues/119
-- https://github.com/hikariatama/Hikka/issues/120
+- https://github.com/coddrago/Hikka/issues/115
+- https://github.com/coddrago/Hikka/issues/114
+- https://github.com/coddrago/Hikka/issues/119
+- https://github.com/coddrago/Hikka/issues/120
 - Other changes
 
 ## 🌑 Hikka 1.6.3
