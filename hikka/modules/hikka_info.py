@@ -26,7 +26,7 @@ class HikkaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "custom_button",
-                ["🌘 Support chat", "https://t.me/hikka_talks"],
+                ["🌘 Support chat", "https://t.me/WhoBlogs_chat"],
                 lambda: self.strings("_cfg_cst_btn"),
                 validator=loader.validators.Union(
                     loader.validators.Series(fixed_len=2),
