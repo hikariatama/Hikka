@@ -1185,3 +1185,94 @@ class LoaderMod(loader.Module):
 
         self.fully_loaded = True
         return len(loaded)
+    @loader.command()
+    async def mlcmd(self, message: Message):
+        if not (args := utils.get_args_raw(message)):
+            await utils.answer(message, self.strings("args"))
+            return
+
+        exact = True
+        if not (
+            class_name := next(
+                (
+                    module.strings("name")
+                    for module in self.allmodules.modules
+                    if args.lower()
+                    in {
+                        module.strings("name").lower(),
+                        module.__class__.__name__.lower(),
+                    }
+                ),
+                None,
+            )
+        ):
+            if not (
+                class_name := next(
+                    reversed(
+                        sorted(
+                            [
+                                module.strings["name"].lower()
+                                for module in self.allmodules.modules
+                            ]
+                            + [
+                                module.__class__.__name__.lower()
+                                for module in self.allmodules.modules
+                            ],
+                            key=lambda x: difflib.SequenceMatcher(
+                                None,
+                                args.lower(),
+                                x,
+                            ).ratio(),
+                        )
+                    ),
+                    None,
+                )
+            ):
+                await utils.answer(message, self.strings("404"))
+                return
+
+            exact = False
+
+        try:
+            module = self.lookup(class_name)
+            sys_module = inspect.getmodule(module)
+        except Exception:
+            await utils.answer(message, self.strings("404"))
+            return
+
+        link = module.__origin__
+
+        text = (
+            f"<b>🧳 {utils.escape_html(class_name)}</b>"
+            if not utils.check_url(link)
+            else (
+                f'📼 <b><a href="{link}">Link</a> for'
+                f" {utils.escape_html(class_name)}:</b>"
+                f' <code>{link}</code>\n\n{self.strings("not_exact") if not exact else ""}'
+            )
+        )
+
+        text = (
+            self.strings("link").format(
+                class_name=utils.escape_html(class_name),
+                url=link,
+                not_exact=self.strings("not_exact") if not exact else "",
+                prefix=utils.escape_html(self.get_prefix()),
+            )
+            if utils.check_url(link)
+            else self.strings("file").format(
+                class_name=utils.escape_html(class_name),
+                not_exact=self.strings("not_exact") if not exact else "",
+                prefix=utils.escape_html(self.get_prefix()),
+            )
+        )
+
+        file = io.BytesIO(sys_module.__loader__.data)
+        file.name = f"{class_name}.py"
+        file.seek(0)
+
+        await utils.answer_file(
+            message,
+            file,
+            caption=text,
+        )
