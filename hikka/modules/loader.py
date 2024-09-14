@@ -1190,6 +1190,7 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def mlcmd(self, message: Message):
+        """| send module via file"""
         if not (args := utils.get_args_raw(message)):
             await utils.answer(message, self.strings("args"))
             return
