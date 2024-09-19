@@ -244,7 +244,7 @@ settings:
   alias_removed: "<emoji document_id=5197474765387864959>👍</emoji> <b>Alias</b> <code>{}</code> <b>removed</b>."
   no_alias: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Alias</b> <code>{}</code> <b>does not exist</b>"
   db_cleared: "<emoji document_id=5197474765387864959>👍</emoji> <b>Database cleared</b>"
-  hikka: "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:</b> <i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji> <b>Developer: t.me/hikariatama</b>\n<emoji document_id=5454145670308974586>🔥</emoji> Forked By t.me/codrago"
+  hikka: "{} <b>{}.{}.{}</b> <i>{}</i>\n\n<b><emoji document_id=5377437404078546699>💜</emoji> <b>Hikka-TL:</b> <i>{}</i>\n\n<emoji document_id=5454182070156794055>⌨️</emoji> <b>Developer: t.me/hikariatama</b>\n<emoji document_id=5454145670308974586>🔥</emoji> <b>Forked By t.me/codrago</b>"
   confirm_cleardb: "⚠️ <b>Are you sure, that you want to clear database?</b>"
   cleardb_confirm: "🗑 Clear database"
   cancel: "🚫 Cancel"
@@ -316,8 +316,8 @@ test:
   logs_caption: "<emoji document_id=5188377234380954537>🌘</emoji> <b>Hikka logs with verbosity</b> <code>{}</code>\n\n<emoji document_id=6318902906900711458>⚪️</emoji> <b>Version: {}.{}.{}</b>{}"
   suspend_invalid_time: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Invalid time to suspend</b>"
   suspended: "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>"
-  results_ping: "<emoji document_id=5920515922505765329>⚡️</emoji> <b>𝙿𝚒𝚗𝚐: </b><code>124.086</code><b> 𝚖𝚜
-</b><emoji document_id=6037268453759389862>⏲️</emoji><b> 𝚄𝚙𝚝𝚒𝚖𝚎: </b><code>0:01:07</code>"
+  results_ping: "<emoji document_id=5920515922505765329>⚡️</emoji> <b>𝙿𝚒𝚗𝚐: </b><code>{}</code><b> 𝚖𝚜
+</b>\n<emoji document_id=6037268453759389862>⏲️</emoji><b> 𝚄𝚙𝚝𝚒𝚖𝚎: </b><code>{}</code>"
   ping_hint: "\n"
   confidential: "⚠️ <b>Log level</b> <code>{}</code> <b>may reveal your confidential info, be careful</b>"
   confidential_text: "⚠️ <b>Log level</b> <code>{0}</code> <b>may reveal your confidential info, be careful</b>\n<b>Type</b> <code>.logs {0} force_insecure</code> <b>to ignore this warning</b>"
