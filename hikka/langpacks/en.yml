@@ -337,7 +337,7 @@ test:
 
 unit_heta:
   name: "UnitHeta"
-no_query: "╭╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╮\n╵\n╵    ❌ <b>𝚈𝚘𝚞 𝚖𝚞𝚜𝚝 𝚠𝚛𝚒𝚝𝚎 𝚚𝚞𝚎𝚛𝚢</b>\n╵\n╰╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╯"
+  no_query: "╭╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╮\n╵\n╵    ❌ <b>𝚈𝚘𝚞 𝚖𝚞𝚜𝚝 𝚠𝚛𝚒𝚝𝚎 𝚚𝚞𝚎𝚛𝚢</b>\n╵\n╰╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╯"
     no_results: "╭╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╮\n╵\n╵    ❌<b> 𝙽𝚘 𝚛𝚎𝚜𝚞𝚕𝚝𝚜</b>\n╵\n╰╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╯"
     api_error: "╭╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╮\n╵\n╵   💤 <b>API 𝚒𝚜 𝚜𝚕𝚎𝚎𝚙𝚒𝚗𝚐</b>\n╵\n╰╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╶╯"
     result: "🥰 <b>𝚁𝚎𝚜𝚞𝚕𝚝𝚜 𝚏𝚘𝚛</b> <code>{query}</code><b>:</b>\n\n🧳 <code>{name}</code> <b>от</b> <code>{dev}</code>\n👨‍🏫 <i>{cls_doc}</i>\n\n📚 <b>𝙲𝚘𝚖𝚖𝚊𝚗𝚍𝚜:</b>\n{commands}\n\n🔗 <b>𝙳𝚘𝚠𝚗𝚕𝚘𝚊𝚍:</b> <code>{prefix}dlh {mhash}</code>"
