@@ -1279,6 +1279,7 @@ class LoaderMod(loader.Module):
             message,
             file,
             caption=text,
+            reply_to=getattr(message, "reply_to_msg_id", None),
         )
 
     def _format_result(
