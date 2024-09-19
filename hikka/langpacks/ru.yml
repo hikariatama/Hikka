@@ -303,8 +303,8 @@ test:
   debugging_disabled: "<emoji document_id=5332533929020761310>✅</emoji> <b>Режим разработчика выключен</b>"
   suspend_invalid_time: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Неверное время заморозки</b>"
   suspended: "<emoji document_id=5452023368054216810>🥶</emoji> <b>Бот заморожен на</b> <code>{}</code> <b>секунд</b>"
-  results_ping: "<emoji document_id=5920515922505765329>⚡️</emoji> <b>𝙿𝚒𝚗𝚐: </b><code>124.086</code><b> 𝚖𝚜
-</b><emoji document_id=6037268453759389862>⏲️</emoji><b> 𝚄𝚙𝚝𝚒𝚖𝚎: </b><code>0:01:07</code>"
+  results_ping: "<emoji document_id=5920515922505765329>⚡️</emoji> <b>𝙿𝚒𝚗𝚐: </b><code>{}</code><b> 𝚖𝚜
+</b>\n<emoji document_id=6037268453759389862>⏲️</emoji><b> 𝚄𝚙𝚝𝚒𝚖𝚎: </b><code>{}</code>"
   ping_hint: "\n"
   confidential: "⚠️ <b>Уровень логов</b> <code>{}</code> <b>может содержать личную информацию, будь осторожен</b>"
   confidential_text: "⚠️ <b>Уровень логов</b> <code>{0}</code> <b>может содержать личную информацию, будь осторожен</b>\n<b>Напиши</b> <code>.logs {0} force_insecure</code><b>, чтобы отправить логи игнорируя предупреждение</b>"
