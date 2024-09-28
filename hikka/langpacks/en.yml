@@ -318,7 +318,7 @@ test:
   suspended: "<emoji document_id=5452023368054216810>🥶</emoji> <b>Bot suspended for</b> <code>{}</code> <b>seconds</b>"
   results_ping: "<emoji document_id=5920515922505765329>⚡️</emoji> <b>𝙿𝚒𝚗𝚐: </b><code>{}</code><b> 𝚖𝚜
 </b>\n<emoji document_id=6037268453759389862>⏲️</emoji><b> 𝚄𝚙𝚝𝚒𝚖𝚎: </b><code>{}</code>"
-  noprem_ping: "⚡️ 𝙿𝚒𝚗𝚐: <code>{} 𝚖𝚜 </code>\n🚀 𝚄𝚙𝚝𝚒𝚖𝚎: <code>{}</code>"
+  noprem_ping: "⚡️ 𝙿𝚒𝚗𝚐: <code>{}</code> 𝚖𝚜\n🚀 𝚄𝚙𝚝𝚒𝚖𝚎: <code>{}</code>"
   ping_hint: "\n"
   confidential: "⚠️ <b>Log level</b> <code>{}</code> <b>may reveal your confidential info, be careful</b>"
   confidential_text: "⚠️ <b>Log level</b> <code>{0}</code> <b>may reveal your confidential info, be careful</b>\n<b>Type</b> <code>.logs {0} force_insecure</code> <b>to ignore this warning</b>"
