@@ -338,18 +338,10 @@ class TestMod(loader.Module):
         start = time.perf_counter_ns()
         message = await utils.answer(message, "🌘")
 
-        await utils.answer(
-            message,
-            self.strings("results_ping").format(
-                round((time.perf_counter_ns() - start) / 10**6, 3),
-                utils.formatted_uptime(),
-            )
-            + (
-                ("\n\n" + self.strings("ping_hint"))
-                if random.choice([0, 0, 1]) == 1
-                else ""
-            ),
-        )
+        if message.sender.premium == False:
+            await utils.answer(message, self.strings["noprem_ping"].format(round((time.perf_counter_ns() - start) / 10**6, 3), utils.formatted_uptime(),))
+        else:
+            await utils.answer(message, self.strings("results_ping").format(round((time.perf_counter_ns() - start) / 10**6, 3), utils.formatted_uptime(),))
 
     async def client_ready(self):
         chat, _ = await utils.asset_channel(
