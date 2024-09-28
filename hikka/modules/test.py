@@ -338,8 +338,7 @@ class TestMod(loader.Module):
         start = time.perf_counter_ns()
         message = await utils.answer(message, "🌘")
 
-        if message.sender.premium == True or not message.sender.premium:
-            await utils.answer(message, self.strings["results_ping"].format(round((time.perf_counter_ns() - start) / 10**6, 3), utils.formatted_uptime(),))
+        await utils.answer(message, self.strings["results_ping"].format(round((time.perf_counter_ns() - start) / 10**6, 3), utils.formatted_uptime(),))
         if message.sender.premium == False:
             await utils.answer(message, self.strings("noprem_ping").format(round((time.perf_counter_ns() - start) / 10**6, 3), utils.formatted_uptime(),))
 
