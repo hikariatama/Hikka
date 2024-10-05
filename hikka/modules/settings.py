@@ -59,6 +59,12 @@ class CoreMod(loader.Module):
                 f"{hikkatl.__version__} #{hikkatl.tl.alltlobjects.LAYER}",
             )
         )
+        + (
+            ("\n\n<emoji document_id=5287454910059654880>❤️</emoji> <b>Desinger: t.me/tr4mq")
+            if random.choice([0, 0, 0, 0, 0, 1]) == 1
+            else ""
+        ),
+    )
 
     @loader.command()
     async def blacklist(self, message: Message):
