@@ -180,7 +180,7 @@ def generate_random_system_version():
     ]
     os_name, os_version = random.choice(os_choices)
 
-    version = f"{os_name} {os_version}.{major}.{minor}.{patch}.{build_number}"
+    version = f"{os_name} {os_version}"
     return version
 
 
