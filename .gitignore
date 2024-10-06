@@ -177,3 +177,6 @@ hikka.log.*
 unknown_errors.txt
 
 *.sock
+
+# Ruff Format
+.ruff_cache/

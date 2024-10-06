@@ -122,11 +122,13 @@ class CommandDispatcher:
 
         self.check_security = self.security.check
         self._me = self._client.hikka_me.id
-        self._cached_usernames = [(
-            self._client.hikka_me.username.lower()
-            if self._client.hikka_me.username
-            else str(self._client.hikka_me.id)
-        )]
+        self._cached_usernames = [
+            (
+                self._client.hikka_me.username.lower()
+                if self._client.hikka_me.username
+                else str(self._client.hikka_me.id)
+            )
+        ]
 
         self._cached_usernames.extend(
             getattr(self._client.hikka_me, "usernames", None) or []

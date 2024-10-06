@@ -1,4 +1,12 @@
 # Hikka Changelog
+## 🌑 Hikka 1.6.6 beta
+
+- formatting ruff
+- add webapp support in InlineKeyboardButton
+- add random version name
+- fix UnicodeDecodeError in windows
+- add a new language Ukrainian
+
 ## 🌑 Hikka 1.6.5
 
 - fixed several links

@@ -60,12 +60,13 @@ class CoreMod(loader.Module):
                 f"{hikkatl.__version__} #{hikkatl.tl.alltlobjects.LAYER}",
             )
             + (
-
-                  ("\n\n<emoji document_id=5287454910059654880>❤️</emoji> <b>Designer: t.me/tr4mq</b>")
-                  if random.choice([0, 0, 0, 1]) == 1
-                  else ""
-              ),
-          )
+                (
+                    "\n\n<emoji document_id=5287454910059654880>❤️</emoji> <b>Designer: t.me/tr4mq</b>"
+                )
+                if random.choice([0, 0, 0, 1]) == 1
+                else ""
+            ),
+        )
 
     @loader.command()
     async def blacklist(self, message: Message):
@@ -166,10 +167,12 @@ class CoreMod(loader.Module):
         await utils.answer(
             message,
             self.strings("aliases")
-            + "\n".join([
-                f"<emoji document_id=4974259868996207180>🛑</emoji> <code>{i}</code> &lt;- {y}"
-                for i, y in self.allmodules.aliases.items()
-            ]),
+            + "\n".join(
+                [
+                    f"<emoji document_id=4974259868996207180>🛑</emoji> <code>{i}</code> &lt;- {y}"
+                    for i, y in self.allmodules.aliases.items()
+                ]
+            ),
         )
 
     @loader.command()

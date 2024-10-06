@@ -24,27 +24,30 @@ def compat(code: str) -> str:
         print(compat(code))
     ```
     """
-    return "\n".join([
-        re.sub(
-            r"^( *)from \.\.inline import (.+)$",
-            r"\1from ..inline.types import \2",
+    return "\n".join(
+        [
             re.sub(
-                r"^( *)from \.\.inline import rand[^,]*$",
-                "\1from ..utils import rand",
+                r"^( *)from \.\.inline import (.+)$",
+                r"\1from ..inline.types import \2",
                 re.sub(
-                    r"^( *)from \.\.inline import rand, ?(.+)$",
-                    r"\1from ..inline.types import \2\n\1from ..utils import rand",
+                    r"^( *)from \.\.inline import rand[^,]*$",
+                    r"\1from ..utils import rand",
                     re.sub(
-                        r"^( *)from \.\.inline import (.+), ?rand[^,]*$",
-                        r"\1from ..inline.types import \2\n\1from ..utils import"
-                        r" rand",
+                        r"^( *)from \.\.inline import rand, ?(.+)$",
+                        r"\1from ..inline.types import \2\n\1from ..utils import rand",
                         re.sub(
-                            r"^( *)from \.\.inline import (.+), ?rand, ?(.+)$",
-                            r"\1from ..inline.types import \2, \3\n\1from ..utils"
-                            r" import rand",
-                            line.replace("GeekInlineQuery", "InlineQuery").replace(
-                                "self.inline._bot",
-                                "self.inline.bot",
+                            r"^( *)from \.\.inline import (.+), ?rand[^,]*$",
+                            r"\1from ..inline.types import \2\n\1from ..utils import"
+                            r" rand",
+                            re.sub(
+                                r"^( *)from \.\.inline import (.+), ?rand, ?(.+)$",
+                                r"\1from ..inline.types import \2, \3\n\1from ..utils"
+                                r" import rand",
+                                line.replace("GeekInlineQuery", "InlineQuery").replace(
+                                    "self.inline._bot",
+                                    "self.inline.bot",
+                                ),
+                                flags=re.M,
                             ),
                             flags=re.M,
                         ),
@@ -53,8 +56,7 @@ def compat(code: str) -> str:
                     flags=re.M,
                 ),
                 flags=re.M,
-            ),
-            flags=re.M,
-        )
-        for line in code.splitlines()
-    ])
+            )
+            for line in code.splitlines()
+        ]
+    )

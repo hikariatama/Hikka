@@ -589,55 +589,75 @@ class Gallery(InlineUnit):
         return (
             caption
             if isinstance(caption, str)
-            else caption() if callable(caption) else ""
+            else caption()
+            if callable(caption)
+            else ""
         )
 
     def _gallery_markup(self, unit_id: str) -> InlineKeyboardMarkup:
         """Generates aiogram markup for `gallery`"""
         callback = functools.partial(self._gallery_page, unit_id=unit_id)
         unit = self._units[unit_id]
-        return self.generate_markup((
+        return self.generate_markup(
             (
-                unit.get("custom_buttons", [])
-                + self.build_pagination(
-                    unit_id=unit_id,
-                    callback=callback,
-                    total_pages=len(unit["photos"]),
+                (
+                    unit.get("custom_buttons", [])
+                    + self.build_pagination(
+                        unit_id=unit_id,
+                        callback=callback,
+                        total_pages=len(unit["photos"]),
+                    )
+                    + [
+                        [
+                            *(
+                                [
+                                    {
+                                        "text": "⏪",
+                                        "callback": callback,
+                                        "args": (unit["current_index"] - 1,),
+                                    }
+                                ]
+                                if unit["current_index"] > 0
+                                else []
+                            ),
+                            *(
+                                [
+                                    {
+                                        "text": (
+                                            "🛑"
+                                            if unit.get("slideshow", False)
+                                            else "⏱"
+                                        ),
+                                        "callback": callback,
+                                        "args": ("slideshow",),
+                                    }
+                                ]
+                                if unit["current_index"] < len(unit["photos"]) - 1
+                                or not isinstance(
+                                    unit["next_handler"], ListGalleryHelper
+                                )
+                                else []
+                            ),
+                            *(
+                                [
+                                    {
+                                        "text": "⏩",
+                                        "callback": callback,
+                                        "args": (unit["current_index"] + 1,),
+                                    }
+                                ]
+                                if unit["current_index"] < len(unit["photos"]) - 1
+                                or not isinstance(
+                                    unit["next_handler"], ListGalleryHelper
+                                )
+                                else []
+                            ),
+                        ]
+                    ]
                 )
-                + [[
-                    *(
-                        [{
-                            "text": "⏪",
-                            "callback": callback,
-                            "args": (unit["current_index"] - 1,),
-                        }]
-                        if unit["current_index"] > 0
-                        else []
-                    ),
-                    *(
-                        [{
-                            "text": ("🛑" if unit.get("slideshow", False) else "⏱"),
-                            "callback": callback,
-                            "args": ("slideshow",),
-                        }]
-                        if unit["current_index"] < len(unit["photos"]) - 1
-                        or not isinstance(unit["next_handler"], ListGalleryHelper)
-                        else []
-                    ),
-                    *(
-                        [{
-                            "text": "⏩",
-                            "callback": callback,
-                            "args": (unit["current_index"] + 1,),
-                        }]
-                        if unit["current_index"] < len(unit["photos"]) - 1
-                        or not isinstance(unit["next_handler"], ListGalleryHelper)
-                        else []
-                    ),
-                ]]
+                + [[{"text": "🔻 Close", "callback": callback, "args": ("close",)}]]
             )
-            + [[{"text": "🔻 Close", "callback": callback, "args": ("close",)}]]
-        ))
+        )
 
     async def _gallery_inline_handler(self, inline_query: InlineQuery):
         for unit in self._units.copy().values():

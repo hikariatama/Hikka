@@ -31,6 +31,7 @@ class Translations(loader.Module):
             "🇬🇧": "<emoji document_id=6323589145717376403>🇬🇧</emoji>",
             "🇺🇿": "<emoji document_id=6323430017179059570>🇺🇿</emoji>",
             "🇷🇺": "<emoji document_id=6323139226418284334>🇷🇺</emoji>",
+            "🇺🇦": "<emoji document_id=5276140694891666474>🇺🇦</emoji>",
             "🇮🇹": "<emoji document_id=6323471399188957082>🇮🇹</emoji>",
             "🇩🇪": "<emoji document_id=6320817337033295141>🇩🇪</emoji>",
             "🇪🇸": "<emoji document_id=6323315062379382237>🇪🇸</emoji>",
@@ -39,7 +40,7 @@ class Translations(loader.Module):
             "🥟": "<emoji document_id=5382337996123020810>🥟</emoji>",
         }
 
-        lang2country = {"en": "🇬🇧", "tt": "🥟", "kk": "🇰🇿"}
+        lang2country = {"en": "🇬🇧", "tt": "🥟", "kk": "🇰🇿", "ua": "🇺🇦"}
 
         lang = lang2country.get(lang) or utils.get_lang_flag(lang)
         return emoji_flags.get(lang, lang)
@@ -78,14 +79,16 @@ class Translations(loader.Module):
         await utils.answer(
             message,
             self.strings("lang_saved").format(
-                "".join([
-                    (
-                        self._get_flag(lang)
-                        if not utils.check_url(lang)
-                        else "<emoji document_id=5433653135799228968>📁</emoji>"
-                    )
-                    for lang in args.split()
-                ])
+                "".join(
+                    [
+                        (
+                            self._get_flag(lang)
+                            if not utils.check_url(lang)
+                            else "<emoji document_id=5433653135799228968>📁</emoji>"
+                        )
+                        for lang in args.split()
+                    ]
+                )
             )
             + (
                 ("\n\n" + self.strings("not_official"))

@@ -95,7 +95,9 @@ class LoaderMod(loader.Module):
     async def _async_init(self):
         modules = list(
             filter(
-                lambda x: not x.startswith("https://raw.githubusercontent.com/coddrago/modules/main"),
+                lambda x: not x.startswith(
+                    "https://raw.githubusercontent.com/coddrago/modules/main"
+                ),
                 utils.array_sum(
                     map(
                         lambda x: list(x.values()),
@@ -189,19 +191,25 @@ class LoaderMod(loader.Module):
                 [
                     self.strings("avail_header")
                     + f"\n☁️ {repo.strip('/')}\n\n"
-                    + "\n".join([
-                        " | ".join(chunk)
-                        for chunk in utils.chunks(
-                            [
-                                f"<code>{i}</code>"
-                                for i in sorted([
-                                    utils.escape_html(i.split("/")[-1].split(".")[0])
-                                    for i in mods.values()
-                                ])
-                            ],
-                            5,
-                        )
-                    ])
+                    + "\n".join(
+                        [
+                            " | ".join(chunk)
+                            for chunk in utils.chunks(
+                                [
+                                    f"<code>{i}</code>"
+                                    for i in sorted(
+                                        [
+                                            utils.escape_html(
+                                                i.split("/")[-1].split(".")[0]
+                                            )
+                                            for i in mods.values()
+                                        ]
+                                    )
+                                ],
+                                5,
+                            )
+                        ]
+                    )
                     for repo, mods in (await self.get_repo_list()).items()
                 ],
             )
@@ -399,16 +407,20 @@ class LoaderMod(loader.Module):
                             "args": (doc, path_, "no"),
                         },
                     ],
-                    [{
-                        "text": self.strings("save_for_all"),
-                        "callback": self._inline__load,
-                        "args": (doc, path_, "all_yes"),
-                    }],
-                    [{
-                        "text": self.strings("never_save"),
-                        "callback": self._inline__load,
-                        "args": (doc, path_, "all_no"),
-                    }],
+                    [
+                        {
+                            "text": self.strings("save_for_all"),
+                            "callback": self._inline__load,
+                            "args": (doc, path_, "all_yes"),
+                        }
+                    ],
+                    [
+                        {
+                            "text": self.strings("never_save"),
+                            "callback": self._inline__load,
+                            "args": (doc, path_, "all_no"),
+                        }
+                    ],
                 ],
             ):
                 return
@@ -554,11 +566,13 @@ class LoaderMod(loader.Module):
 
             await utils.answer(
                 message,
-                self.strings(f"overwrite_{e.type}").format(*(
-                    (e.target,)
-                    if e.type == "module"
-                    else (utils.escape_html(self.get_prefix()), e.target)
-                )),
+                self.strings(f"overwrite_{e.type}").format(
+                    *(
+                        (e.target,)
+                        if e.type == "module"
+                        else (utils.escape_html(self.get_prefix()), e.target)
+                    )
+                ),
             )
 
         try:
@@ -882,7 +896,15 @@ class LoaderMod(loader.Module):
         )
 
         def loaded_msg(use_subscribe: bool = True):
-            nonlocal modname, version, modhelp, developer, origin, subscribe, blob_link, depends_from
+            nonlocal \
+                modname, \
+                version, \
+                modhelp, \
+                developer, \
+                origin, \
+                subscribe, \
+                blob_link, \
+                depends_from
             return self.strings("loaded").format(
                 modname.strip(),
                 version,
@@ -1288,11 +1310,13 @@ class LoaderMod(loader.Module):
         query: str,
         no_translate: bool = False,
     ) -> str:
-        commands = "\n".join([
-            f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
-            f" <b>{utils.escape_html(cmd_doc)}</b>"
-            for cmd, cmd_doc in result["module"]["commands"].items()
-        ])
+        commands = "\n".join(
+            [
+                f"▫️ <code>{utils.escape_html(self.get_prefix())}{utils.escape_html(cmd)}</code>:"
+                f" <b>{utils.escape_html(cmd_doc)}</b>"
+                for cmd, cmd_doc in result["module"]["commands"].items()
+            ]
+        )
 
         kwargs = {
             "name": utils.escape_html(result["module"]["name"]),

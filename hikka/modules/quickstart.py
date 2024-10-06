@@ -28,12 +28,16 @@ imgs = [
 class Quickstart(loader.Module):
     """Notifies user about userbot installation"""
 
+    strings = {"name": "Quickstart"}
+
     async def client_ready(self):
         self.mark = lambda: [
-            [{
-                "text": self.strings("btn_support"),
-                "url": "https://t.me/hikka_talks",
-            }],
+            [
+                {
+                    "text": self.strings("btn_support"),
+                    "url": "https://t.me/hikka_talks",
+                }
+            ],
         ] + utils.chunks(
             [
                 {

@@ -95,15 +95,17 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 self._get_value(mod, option),
             ),
-            reply_markup=[[
-                {
-                    "text": self.strings("back_btn"),
-                    "callback": self.inline__configure,
-                    "args": (mod,),
-                    "kwargs": {"obj_type": obj_type},
-                },
-                {"text": self.strings("close_btn"), "action": "close"},
-            ]],
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                        "kwargs": {"obj_type": obj_type},
+                    },
+                    {"text": self.strings("close_btn"), "action": "close"},
+                ]
+            ],
             inline_message_id=inline_message_id,
         )
 
@@ -125,15 +127,17 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 self._get_value(mod, option),
             ),
-            reply_markup=[[
-                {
-                    "text": self.strings("back_btn"),
-                    "callback": self.inline__configure,
-                    "args": (mod,),
-                    "kwargs": {"obj_type": obj_type},
-                },
-                {"text": self.strings("close_btn"), "action": "close"},
-            ]],
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                        "kwargs": {"obj_type": obj_type},
+                    },
+                    {"text": self.strings("close_btn"), "action": "close"},
+                ]
+            ],
         )
 
     async def inline__set_bool(
@@ -208,32 +212,42 @@ class HikkaConfigMod(loader.Module):
         obj_type: typing.Union[bool, str] = False,
     ) -> list:
         return [
-            [*(
-                [{
-                    "text": f"❌ {self.strings('set')} `False`",
-                    "callback": self.inline__set_bool,
-                    "args": (mod, option, False),
-                    "kwargs": {"obj_type": obj_type},
-                }]
-                if self.lookup(mod).config[option]
-                else [{
-                    "text": f"✅ {self.strings('set')} `True`",
-                    "callback": self.inline__set_bool,
-                    "args": (mod, option, True),
-                    "kwargs": {"obj_type": obj_type},
-                }]
-            )],
-            [*(
-                [{
-                    "text": self.strings("set_default_btn"),
-                    "callback": self.inline__reset_default,
-                    "args": (mod, option),
-                    "kwargs": {"obj_type": obj_type},
-                }]
-                if self.lookup(mod).config[option]
-                != self.lookup(mod).config.getdef(option)
-                else []
-            )],
+            [
+                *(
+                    [
+                        {
+                            "text": f"❌ {self.strings('set')} `False`",
+                            "callback": self.inline__set_bool,
+                            "args": (mod, option, False),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    else [
+                        {
+                            "text": f"✅ {self.strings('set')} `True`",
+                            "callback": self.inline__set_bool,
+                            "args": (mod, option, True),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                )
+            ],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
             [
                 {
                     "text": self.strings("back_btn"),
@@ -285,15 +299,17 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 self._get_value(mod, option),
             ),
-            reply_markup=[[
-                {
-                    "text": self.strings("back_btn"),
-                    "callback": self.inline__configure,
-                    "args": (mod,),
-                    "kwargs": {"obj_type": obj_type},
-                },
-                {"text": self.strings("close_btn"), "action": "close"},
-            ]],
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                        "kwargs": {"obj_type": obj_type},
+                    },
+                    {"text": self.strings("close_btn"), "action": "close"},
+                ]
+            ],
             inline_message_id=inline_message_id,
         )
 
@@ -349,15 +365,17 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 self._get_value(mod, option),
             ),
-            reply_markup=[[
-                {
-                    "text": self.strings("back_btn"),
-                    "callback": self.inline__configure,
-                    "args": (mod,),
-                    "kwargs": {"obj_type": obj_type},
-                },
-                {"text": self.strings("close_btn"), "action": "close"},
-            ]],
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                        "kwargs": {"obj_type": obj_type},
+                    },
+                    {"text": self.strings("close_btn"), "action": "close"},
+                ]
+            ],
             inline_message_id=inline_message_id,
         )
 
@@ -369,13 +387,15 @@ class HikkaConfigMod(loader.Module):
         obj_type: typing.Union[bool, str] = False,
     ) -> list:
         return [
-            [{
-                "text": self.strings("enter_value_btn"),
-                "input": self.strings("enter_value_desc"),
-                "handler": self.inline__set_config,
-                "args": (mod, option, call.inline_message_id),
-                "kwargs": {"obj_type": obj_type},
-            }],
+            [
+                {
+                    "text": self.strings("enter_value_btn"),
+                    "input": self.strings("enter_value_desc"),
+                    "handler": self.inline__set_config,
+                    "args": (mod, option, call.inline_message_id),
+                    "kwargs": {"obj_type": obj_type},
+                }
+            ],
             [
                 *(
                     [
@@ -398,17 +418,21 @@ class HikkaConfigMod(loader.Module):
                     else []
                 ),
             ],
-            [*(
-                [{
-                    "text": self.strings("set_default_btn"),
-                    "callback": self.inline__reset_default,
-                    "args": (mod, option),
-                    "kwargs": {"obj_type": obj_type},
-                }]
-                if self.lookup(mod).config[option]
-                != self.lookup(mod).config.getdef(option)
-                else []
-            )],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
             [
                 {
                     "text": self.strings("back_btn"),
@@ -450,15 +474,17 @@ class HikkaConfigMod(loader.Module):
                 utils.escape_html(mod),
                 self._get_value(mod, option),
             ),
-            reply_markup=[[
-                {
-                    "text": self.strings("back_btn"),
-                    "callback": self.inline__configure,
-                    "args": (mod,),
-                    "kwargs": {"obj_type": obj_type},
-                },
-                {"text": self.strings("close_btn"), "action": "close"},
-            ]],
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__configure,
+                        "args": (mod,),
+                        "kwargs": {"obj_type": obj_type},
+                    },
+                    {"text": self.strings("close_btn"), "action": "close"},
+                ]
+            ],
         )
 
         await call.answer("✅")
@@ -506,13 +532,15 @@ class HikkaConfigMod(loader.Module):
             .validator.validate.keywords["possible_values"]
         )
         return [
-            [{
-                "text": self.strings("enter_value_btn"),
-                "input": self.strings("enter_value_desc"),
-                "handler": self.inline__set_config,
-                "args": (mod, option, call.inline_message_id),
-                "kwargs": {"obj_type": obj_type},
-            }],
+            [
+                {
+                    "text": self.strings("enter_value_btn"),
+                    "input": self.strings("enter_value_desc"),
+                    "handler": self.inline__set_config,
+                    "args": (mod, option, call.inline_message_id),
+                    "kwargs": {"obj_type": obj_type},
+                }
+            ],
             *utils.chunks(
                 [
                     {
@@ -534,17 +562,21 @@ class HikkaConfigMod(loader.Module):
                     else 7
                 )
             ],
-            [*(
-                [{
-                    "text": self.strings("set_default_btn"),
-                    "callback": self.inline__reset_default,
-                    "args": (mod, option),
-                    "kwargs": {"obj_type": obj_type},
-                }]
-                if self.lookup(mod).config[option]
-                != self.lookup(mod).config.getdef(option)
-                else []
-            )],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
             [
                 {
                     "text": self.strings("back_btn"),
@@ -569,13 +601,15 @@ class HikkaConfigMod(loader.Module):
             .validator.validate.keywords["possible_values"]
         )
         return [
-            [{
-                "text": self.strings("enter_value_btn"),
-                "input": self.strings("enter_value_desc"),
-                "handler": self.inline__set_config,
-                "args": (mod, option, call.inline_message_id),
-                "kwargs": {"obj_type": obj_type},
-            }],
+            [
+                {
+                    "text": self.strings("enter_value_btn"),
+                    "input": self.strings("enter_value_desc"),
+                    "handler": self.inline__set_config,
+                    "args": (mod, option, call.inline_message_id),
+                    "kwargs": {"obj_type": obj_type},
+                }
+            ],
             *utils.chunks(
                 [
                     {
@@ -597,17 +631,21 @@ class HikkaConfigMod(loader.Module):
                     else 7
                 )
             ],
-            [*(
-                [{
-                    "text": self.strings("set_default_btn"),
-                    "callback": self.inline__reset_default,
-                    "args": (mod, option),
-                    "kwargs": {"obj_type": obj_type},
-                }]
-                if self.lookup(mod).config[option]
-                != self.lookup(mod).config.getdef(option)
-                else []
-            )],
+            [
+                *(
+                    [
+                        {
+                            "text": self.strings("set_default_btn"),
+                            "callback": self.inline__reset_default,
+                            "args": (mod, option),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                    if self.lookup(mod).config[option]
+                    != self.lookup(mod).config.getdef(option)
+                    else []
+                )
+            ],
             [
                 {
                     "text": self.strings("back_btn"),
@@ -647,19 +685,27 @@ class HikkaConfigMod(loader.Module):
             and module.config._config[config_opt].validator.internal_id == "Hidden"
         ):
             additonal_button_row = (
-                [[{
-                    "text": self.strings("hide_value"),
-                    "callback": self.inline__configure_option,
-                    "args": (mod, config_opt, False),
-                    "kwargs": {"obj_type": obj_type},
-                }]]
+                [
+                    [
+                        {
+                            "text": self.strings("hide_value"),
+                            "callback": self.inline__configure_option,
+                            "args": (mod, config_opt, False),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                ]
                 if force_hidden
-                else [[{
-                    "text": self.strings("show_hidden"),
-                    "callback": self.inline__configure_option,
-                    "args": (mod, config_opt, True),
-                    "kwargs": {"obj_type": obj_type},
-                }]]
+                else [
+                    [
+                        {
+                            "text": self.strings("show_hidden"),
+                            "callback": self.inline__configure_option,
+                            "args": (mod, config_opt, True),
+                            "kwargs": {"obj_type": obj_type},
+                        }
+                    ]
+                ]
             )
         else:
             additonal_button_row = []
@@ -747,19 +793,23 @@ class HikkaConfigMod(loader.Module):
             ).format(*args),
             reply_markup=additonal_button_row
             + [
-                [{
-                    "text": self.strings("enter_value_btn"),
-                    "input": self.strings("enter_value_desc"),
-                    "handler": self.inline__set_config,
-                    "args": (mod, config_opt, call.inline_message_id),
-                    "kwargs": {"obj_type": obj_type},
-                }],
-                [{
-                    "text": self.strings("set_default_btn"),
-                    "callback": self.inline__reset_default,
-                    "args": (mod, config_opt),
-                    "kwargs": {"obj_type": obj_type},
-                }],
+                [
+                    {
+                        "text": self.strings("enter_value_btn"),
+                        "input": self.strings("enter_value_desc"),
+                        "handler": self.inline__set_config,
+                        "args": (mod, config_opt, call.inline_message_id),
+                        "kwargs": {"obj_type": obj_type},
+                    }
+                ],
+                [
+                    {
+                        "text": self.strings("set_default_btn"),
+                        "callback": self.inline__reset_default,
+                        "args": (mod, config_opt),
+                        "kwargs": {"obj_type": obj_type},
+                    }
+                ],
                 [
                     {
                         "text": self.strings("back_btn"),
@@ -793,23 +843,27 @@ class HikkaConfigMod(loader.Module):
                 "configuring_mod" if isinstance(obj_type, bool) else "configuring_lib"
             ).format(
                 utils.escape_html(mod),
-                "\n".join([
-                    "▫️ <code>{}</code>: <b>{}</b>".format(
-                        utils.escape_html(key),
-                        self._get_value(mod, key),
-                    )
-                    for key in self.lookup(mod).config
-                ]),
+                "\n".join(
+                    [
+                        "▫️ <code>{}</code>: <b>{}</b>".format(
+                            utils.escape_html(key),
+                            self._get_value(mod, key),
+                        )
+                        for key in self.lookup(mod).config
+                    ]
+                ),
             ),
             reply_markup=list(utils.chunks(btns, 2))
-            + [[
-                {
-                    "text": self.strings("back_btn"),
-                    "callback": self.inline__global_config,
-                    "kwargs": {"obj_type": obj_type},
-                },
-                {"text": self.strings("close_btn"), "action": "close"},
-            ]],
+            + [
+                [
+                    {
+                        "text": self.strings("back_btn"),
+                        "callback": self.inline__global_config,
+                        "kwargs": {"obj_type": obj_type},
+                    },
+                    {"text": self.strings("close_btn"), "action": "close"},
+                ]
+            ],
         )
 
     async def inline__choose_category(self, call: typing.Union[Message, InlineCall]):
@@ -829,11 +883,15 @@ class HikkaConfigMod(loader.Module):
                     },
                 ],
                 *(
-                    [[{
-                        "text": self.strings("libraries"),
-                        "callback": self.inline__global_config,
-                        "kwargs": {"obj_type": "library"},
-                    }]]
+                    [
+                        [
+                            {
+                                "text": self.strings("libraries"),
+                                "callback": self.inline__global_config,
+                                "kwargs": {"obj_type": "library"},
+                            }
+                        ]
+                    ]
                     if self.allmodules.libraries
                     and any(hasattr(lib, "config") for lib in self.allmodules.libraries)
                     else []
@@ -889,13 +947,15 @@ class HikkaConfigMod(loader.Module):
                 current_page=page + 1,
             )
 
-        kb += [[
-            {
-                "text": self.strings("back_btn"),
-                "callback": self.inline__choose_category,
-            },
-            {"text": self.strings("close_btn"), "action": "close"},
-        ]]
+        kb += [
+            [
+                {
+                    "text": self.strings("back_btn"),
+                    "callback": self.inline__choose_category,
+                },
+                {"text": self.strings("close_btn"), "action": "close"},
+            ]
+        ]
 
         await call.edit(
             self.strings(

@@ -38,6 +38,7 @@ class Validator:
                 {
                     "en": "docstring",
                     "ru": "докстрингом",
+                    "ua": "докстрінгом",
                     "fr": "chaîne de documentation",
                     "it": "docstring",
                     "de": "Dokumentation",

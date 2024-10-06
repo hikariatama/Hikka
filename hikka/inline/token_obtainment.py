@@ -140,9 +140,7 @@ class TokenObtainment(InlineUnit):
                         "hikka.inline", "custom_bot", False
                     ) and self._db.get(
                         "hikka.inline", "custom_bot", False
-                    ) != button.text.strip(
-                        "@"
-                    ):
+                    ) != button.text.strip("@"):
                         continue
 
                     if not self._db.get(

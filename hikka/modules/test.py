@@ -227,14 +227,16 @@ class TestMod(loader.Module):
 
             return
 
-        logs = "\n\n".join([
-            "\n".join(
-                handler.dumps(lvl, client_id=self._client.tg_id)
-                if "client_id" in inspect.signature(handler.dumps).parameters
-                else handler.dumps(lvl)
-            )
-            for handler in logging.getLogger().handlers
-        ])
+        logs = "\n\n".join(
+            [
+                "\n".join(
+                    handler.dumps(lvl, client_id=self._client.tg_id)
+                    if "client_id" in inspect.signature(handler.dumps).parameters
+                    else handler.dumps(lvl)
+                )
+                for handler in logging.getLogger().handlers
+            ]
+        )
 
         named_lvl = (
             lvl
@@ -338,7 +340,13 @@ class TestMod(loader.Module):
         start = time.perf_counter_ns()
         message = await utils.answer(message, "🌘")
 
-        await utils.answer(message, self.strings["results_ping"].format(round((time.perf_counter_ns() - start) / 10**6, 3), utils.formatted_uptime(),))
+        await utils.answer(
+            message,
+            self.strings["results_ping"].format(
+                round((time.perf_counter_ns() - start) / 10**6, 3),
+                utils.formatted_uptime(),
+            ),
+        )
 
     async def client_ready(self):
         chat, _ = await utils.asset_channel(
