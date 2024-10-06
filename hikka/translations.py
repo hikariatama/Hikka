@@ -24,6 +24,7 @@ PACKS = Path(__file__).parent / "langpacks"
 SUPPORTED_LANGUAGES = {
     "en": "🇬🇧 English",
     "ru": "🇷🇺 Русский",
+    "ua": "🇺🇦 Український",
     "fr": "🇫🇷 Français",
     "it": "🇮🇹 Italiano",
     "de": "🇩🇪 Deutsch",
@@ -49,7 +50,7 @@ class BaseTranslator:
         pack: Path,
         prefix: str = "hikka.modules.",
     ) -> typing.Optional[dict]:
-        return self._get_pack_raw(pack.read_text(), pack.suffix, prefix)
+        return self._get_pack_raw(pack.read_text(encoding='utf-8'), pack.suffix, prefix)
 
     def _get_pack_raw(
         self,
@@ -63,16 +64,18 @@ class BaseTranslator:
         content = yaml.load(content)
         if all(len(key) == 2 for key in content):
             return {
-                language: {{
-                    (
-                        f"{module.strip('$')}.{key}"
-                        if module.startswith("$")
-                        else f"{prefix}{module}.{key}"
-                    ): value
-                    for module, strings in pack.items()
-                    for key, value in strings.items()
-                    if key != "name"
-                }}
+                language: {
+                    {
+                        (
+                            f"{module.strip('$')}.{key}"
+                            if module.startswith("$")
+                            else f"{prefix}{module}.{key}"
+                        ): value
+                        for module, strings in pack.items()
+                        for key, value in strings.items()
+                        if key != "name"
+                    }
+                }
                 for language, pack in content.items()
             }
 

@@ -47,11 +47,15 @@ class HikkaBackupMod(loader.Module):
                         ],
                         3,
                     )
-                    + [[{
-                        "text": "🚫 Never",
-                        "callback": self._set_backup_period,
-                        "args": (0,),
-                    }]]
+                    + [
+                        [
+                            {
+                                "text": "🚫 Never",
+                                "callback": self._set_backup_period,
+                                "args": (0,),
+                            }
+                        ]
+                    ]
                 ),
             )
 
@@ -127,10 +131,16 @@ class HikkaBackupMod(loader.Module):
             await self.inline.bot.send_document(
                 int(f"-100{self._backup_channel.id}"),
                 backup,
-                reply_markup=self.inline.generate_markup([[{
-                    "text": "↪️ Restore this",
-                    "data": "hikka/backup/restore/confirm",
-                }]]),
+                reply_markup=self.inline.generate_markup(
+                    [
+                        [
+                            {
+                                "text": "↪️ Restore this",
+                                "data": "hikka/backup/restore/confirm",
+                            }
+                        ]
+                    ]
+                ),
             )
 
             self.set("last_backup", round(time.time()))

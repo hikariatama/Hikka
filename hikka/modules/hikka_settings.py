@@ -143,10 +143,14 @@ class HikkaSettingsMod(loader.Module):
                 ),
                 2,
             )
-            + [[{
-                "text": self.strings("deauth_cancel"),
-                "action": "close",
-            }]],
+            + [
+                [
+                    {
+                        "text": self.strings("deauth_cancel"),
+                        "action": "close",
+                    }
+                ]
+            ],
         )
 
     @loader.command()
@@ -378,10 +382,12 @@ class HikkaSettingsMod(loader.Module):
         await utils.answer(
             message,
             self.strings("cmd_nn_list").format(
-                "\n".join([
-                    f"▫️ <code>{utils.escape_html(self.get_prefix() + cmd)}</code>"
-                    for cmd in self._db.get(main.__name__, "nonickcmds", [])
-                ])
+                "\n".join(
+                    [
+                        f"▫️ <code>{utils.escape_html(self.get_prefix() + cmd)}</code>"
+                        for cmd in self._db.get(main.__name__, "nonickcmds", [])
+                    ]
+                )
             ),
         )
 
@@ -395,9 +401,12 @@ class HikkaSettingsMod(loader.Module):
                 self._db.set(
                     main.__name__,
                     "nonickusers",
-                    list((
-                        set(self._db.get(main.__name__, "nonickusers", [])) - {user_id}
-                    )),
+                    list(
+                        (
+                            set(self._db.get(main.__name__, "nonickusers", []))
+                            - {user_id}
+                        )
+                    ),
                 )
 
                 logger.warning("User %s removed from nonickusers list", user_id)
@@ -599,25 +608,27 @@ class HikkaSettingsMod(loader.Module):
                     }
                 ),
             ],
-            [(
-                {
-                    "text": self.strings("do_not_suggest_fs"),
-                    "callback": self.inline__setting,
-                    "args": (
-                        "disable_modules_fs",
-                        False,
-                    ),
-                }
-                if self._db.get(main.__name__, "disable_modules_fs", False)
-                else {
-                    "text": self.strings("suggest_fs"),
-                    "callback": self.inline__setting,
-                    "args": (
-                        "disable_modules_fs",
-                        True,
-                    ),
-                }
-            )],
+            [
+                (
+                    {
+                        "text": self.strings("do_not_suggest_fs"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "disable_modules_fs",
+                            False,
+                        ),
+                    }
+                    if self._db.get(main.__name__, "disable_modules_fs", False)
+                    else {
+                        "text": self.strings("suggest_fs"),
+                        "callback": self.inline__setting,
+                        "args": (
+                            "disable_modules_fs",
+                            True,
+                        ),
+                    }
+                )
+            ],
             [
                 (
                     {

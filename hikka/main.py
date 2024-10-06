@@ -23,7 +23,6 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-
 import argparse
 import asyncio
 import collections
@@ -153,6 +152,36 @@ def get_app_name() -> str:
         save_config_key("app_name", app_name)
 
     return app_name
+
+
+def generate_random_system_version():
+    """
+    Generates a random system version string similar to those used by Windows or Linux.
+
+    This function generates a random version string that follows the format used by operating systems
+    like Windows or Linux. The version string includes the major version, minor version, patch number,
+    and build number, each of which is randomly generated within specified ranges. Additionally, it
+    includes a random operating system name and version.
+
+    :return: A randomly generated system version string.
+    :example: "Windows 10.0.19042.1234" or "Ubuntu 20.04.19042.1234"
+    """
+    os_choices = [
+        ("Windows Vista", "Vista"),
+        ("Windows XP", "XP"),
+        ("Windows 7", "7"),
+        ("Windows 8", "8"),
+        ("Windows 10", "10"),
+        ("Ubuntu", "20.04"),
+        ("Debian", "10"),
+        ("Fedora", "33"),
+        ("Arch Linux", "2021.05"),
+        ("CentOS", "8"),
+    ]
+    os_name, os_version = random.choice(os_choices)
+
+    version = f"{os_name} {os_version}.{major}.{minor}.{patch}.{build_number}"
+    return version
 
 
 try:
@@ -409,6 +438,7 @@ class Hikka:
                 os.listdir(BASE_DIR),
             )
         ]
+
     def _get_api_token(self):
         """Get API Token from disk or environment"""
         api_token_type = collections.namedtuple("api_token", ("ID", "HASH"))
@@ -575,7 +605,7 @@ class Hikka:
                 proxy=self.proxy,
                 connection_retries=None,
                 device_model=get_app_name(),
-                system_version="Windows 10",
+                system_version=generate_random_system_version(),
                 app_version=".".join(map(str, __version__)) + " x64",
                 lang_code="en",
                 system_lang_code="en-US",
@@ -706,7 +736,7 @@ class Hikka:
                     proxy=self.proxy,
                     connection_retries=None,
                     device_model=get_app_name(),
-                    system_version="Windows 10",
+                    system_version=generate_random_system_version(),
                     app_version=".".join(map(str, __version__)) + " x64",
                     lang_code="en",
                     system_lang_code="en-US",

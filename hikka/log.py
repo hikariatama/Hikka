@@ -144,14 +144,16 @@ class HikkaException:
             (None, None, None),
         )
 
-        full_traceback = "\n".join([
-            (
-                format_line(line)
-                if line_regex.search(line)
-                else f"<code>{utils.escape_html(line)}</code>"
-            )
-            for line in full_traceback.splitlines()
-        ])
+        full_traceback = "\n".join(
+            [
+                (
+                    format_line(line)
+                    if line_regex.search(line)
+                    else f"<code>{utils.escape_html(line)}</code>"
+                )
+                for line in full_traceback.splitlines()
+            ]
+        )
 
         caller = utils.find_caller(stack or inspect.stack())
 
@@ -289,18 +291,20 @@ class TelegramLogsHandler(logging.Handler):
 
             item.debug_url = url
 
-        return [(
-            {
-                "text": "🐞 Web debugger",
-                "url": url,
-            }
-            if self.web_debugger
-            else {
-                "text": "🪲 Start debugger",
-                "callback": self._start_debugger,
-                "args": (item,),
-            }
-        )]
+        return [
+            (
+                {
+                    "text": "🐞 Web debugger",
+                    "url": url,
+                }
+                if self.web_debugger
+                else {
+                    "text": "🪲 Start debugger",
+                    "callback": self._start_debugger,
+                    "args": (item,),
+                }
+            )
+        ]
 
     async def _start_debugger(
         self,
@@ -335,16 +339,18 @@ class TelegramLogsHandler(logging.Handler):
             self._queue = {
                 client_id: utils.chunks(
                     utils.escape_html(
-                        "".join([
-                            item[0]
-                            for item in self.tg_buff
-                            if isinstance(item[0], str)
-                            and (
-                                not item[1]
-                                or item[1] == client_id
-                                or self.force_send_all
-                            )
-                        ])
+                        "".join(
+                            [
+                                item[0]
+                                for item in self.tg_buff
+                                if isinstance(item[0], str)
+                                and (
+                                    not item[1]
+                                    or item[1] == client_id
+                                    or self.force_send_all
+                                )
+                            ]
+                        )
                     ),
                     4096,
                 )
@@ -456,10 +462,12 @@ class TelegramLogsHandler(logging.Handler):
                 ):
                     self.tg_buff += [(exc, caller)]
             else:
-                self.tg_buff += [(
-                    _tg_formatter.format(record),
-                    caller,
-                )]
+                self.tg_buff += [
+                    (
+                        _tg_formatter.format(record),
+                        caller,
+                    )
+                ]
 
         if len(self.buffer) + len(self.handledbuffer) >= self.capacity:
             if self.handledbuffer:

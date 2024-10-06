@@ -140,9 +140,6 @@ def patched_import(name: str, *args, **kwargs):
     if name.startswith("telethon"):
         return native_import("hikkatl" + name[8:], *args, **kwargs)
 
-    if name.startswith("pyrogram"):
-        return native_import("hikkapyro" + name[8:], *args, **kwargs)
-
     return native_import(name, *args, **kwargs)
 
 

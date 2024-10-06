@@ -91,7 +91,9 @@ class Web:
                 else (
                     "termux"
                     if "com.termux" in os.environ.get("PREFIX", "")
-                    else "docker" if "DOCKER" in os.environ else "vds"
+                    else "docker"
+                    if "DOCKER" in os.environ
+                    else "vds"
                 )
             )
         ]
@@ -294,7 +296,7 @@ class Web:
             proxy=self.proxy,
             connection_retries=None,
             device_model=main.get_app_name(),
-            system_version="Windows 10",
+            system_version=main.generate_random_system_version(),
             app_version=".".join(map(str, __version__)) + " x64",
             lang_code="en",
             system_lang_code="en-US",

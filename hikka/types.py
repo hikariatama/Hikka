@@ -393,18 +393,20 @@ class Module:
                     utils.escape_html(reason),
                 )
             ),
-            reply_markup=self.inline.generate_markup([
-                {
-                    "text": "💫 Approve",
-                    "callback": self.lookup("loader").approve_internal,
-                    "args": (channel, event),
-                },
-                {
-                    "text": "✖️ Decline",
-                    "callback": self._decline,
-                    "args": (channel, event),
-                },
-            ]),
+            reply_markup=self.inline.generate_markup(
+                [
+                    {
+                        "text": "💫 Approve",
+                        "callback": self.lookup("loader").approve_internal,
+                        "args": (channel, event),
+                    },
+                    {
+                        "text": "✖️ Decline",
+                        "callback": self._decline,
+                        "args": (channel, event),
+                    },
+                ]
+            ),
         )
 
         self.hikka_wait_channel_approve = (

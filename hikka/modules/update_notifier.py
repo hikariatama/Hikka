@@ -68,10 +68,12 @@ class UpdateNotifier(loader.Module):
         except Exception as e:
             raise loader.LoadError("Can't load due to repo init error") from e
 
-        self._markup = lambda: self.inline.generate_markup([
-            {"text": self.strings("update"), "data": "hikka/update"},
-            {"text": self.strings("ignore"), "data": "hikka/ignore_upd"},
-        ])
+        self._markup = lambda: self.inline.generate_markup(
+            [
+                {"text": self.strings("update"), "data": "hikka/update"},
+                {"text": self.strings("ignore"), "data": "hikka/ignore_upd"},
+            ]
+        )
 
     @loader.loop(interval=60, autostart=True)
     async def poller(self):

@@ -165,12 +165,14 @@ class Evaluator(loader.Module):
                     "python",
                     utils.escape_html(utils.get_args_raw(message)),
                     "error",
-                    self.censor((
-                        "\n".join(item.full_stack.splitlines()[:-1])
-                        + "\n\n"
-                        + "🚫 "
-                        + item.full_stack.splitlines()[-1]
-                    )),
+                    self.censor(
+                        (
+                            "\n".join(item.full_stack.splitlines()[:-1])
+                            + "\n\n"
+                            + "🚫 "
+                            + item.full_stack.splitlines()[-1]
+                        )
+                    ),
                 ),
             )
 
@@ -489,15 +491,17 @@ class Evaluator(loader.Module):
                 )
             ),
             **dict(
-                itertools.chain.from_iterable([
-                    self.get_sub(y[1], _depth + 1).items()
-                    for y in filter(
-                        lambda x: x[0][0] != "_"
-                        and isinstance(x[1], ModuleType)
-                        and x[1] != obj
-                        and x[1].__package__.rsplit(".", _depth)[0] == "hikkatl.tl",
-                        obj.__dict__.items(),
-                    )
-                ])
+                itertools.chain.from_iterable(
+                    [
+                        self.get_sub(y[1], _depth + 1).items()
+                        for y in filter(
+                            lambda x: x[0][0] != "_"
+                            and isinstance(x[1], ModuleType)
+                            and x[1] != obj
+                            and x[1].__package__.rsplit(".", _depth)[0] == "hikkatl.tl",
+                            obj.__dict__.items(),
+                        )
+                    ]
+                )
             ),
         }

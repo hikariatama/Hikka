@@ -230,14 +230,16 @@ class SecurityManager:
         if duration < 0:
             raise ValueError(f"Invalid duration: {duration}")
 
-        (self._tsec_chat if target_type == "chat" else self._tsec_user).append({
-            "target": target.id,
-            "rule_type": rule.split("/")[0],
-            "rule": rule.split("/", maxsplit=1)[1],
-            "expires": int(time.time() + duration) if duration else 0,
-            "entity_name": get_display_name(target),
-            "entity_url": utils.get_entity_url(target),
-        })
+        (self._tsec_chat if target_type == "chat" else self._tsec_user).append(
+            {
+                "target": target.id,
+                "rule_type": rule.split("/")[0],
+                "rule": rule.split("/", maxsplit=1)[1],
+                "expires": int(time.time() + duration) if duration else 0,
+                "entity_name": get_display_name(target),
+                "entity_url": utils.get_entity_url(target),
+            }
+        )
 
     def remove_rules(self, target_type: str, target_id: int) -> bool:
         """
