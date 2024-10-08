@@ -38,6 +38,10 @@ PRESETS = {
         "https://heta.hikariatama.ru/SkillsAngels/Modules/Complements.py",
         "https://heta.hikariatama.ru/Den4ikSuperOstryyPer4ik/Astro-modules/Compliments.py",
         "https://heta.hikariatama.ru/vsecoder/hikka_modules/mazemod.py",
+        "https://raw.githubusercontent.com/coddrago/modules/main/dice.py",
+        "https://raw.githubusercontent.com/coddrago/modules/main/loli.py",
+        "https://raw.githubusercontent.com/coddrago/modules/main/DoxTool.py",
+        "https://raw.githubusercontent.com/coddrago/modules/main/randomizer.py",
     ],
     "chat": [
         "https://mods.hikariatama.ru/activists.py",
@@ -51,6 +55,8 @@ PRESETS = {
         "https://heta.hikariatama.ru/SekaiYoneya/Friendly-telegram/BanMedia.py",
         "https://heta.hikariatama.ru/iamnalinor/FTG-modules/swmute.py",
         "https://heta.hikariatama.ru/GeekTG/FTG-Modules/filter.py",
+        "https://raw.githubusercontent.com/coddrago/modules/main/id.py",
+        "https://raw.githubusercontent.com/coddrago/modules/main/clickon.py",
     ],
     "service": [
         "https://mods.hikariatama.ru/account_switcher.py",
@@ -65,6 +71,7 @@ PRESETS = {
         "https://heta.hikariatama.ru/vsecoder/hikka_modules/accounttime.py",
         "https://heta.hikariatama.ru/vsecoder/hikka_modules/searx.py",
         "https://heta.hikariatama.ru/iamnalinor/FTG-modules/swmute.py",
+        "https://raw.githubusercontent.com/coddrago/modules/main/modlist.py",
     ],
     "downloaders": [
         "https://mods.hikariatama.ru/musicdl.py",
