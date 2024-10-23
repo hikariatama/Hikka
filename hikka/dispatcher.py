@@ -403,12 +403,6 @@ class CommandDispatcher:
                         return False
 
                     break
-
-        if (
-            message.is_channel
-            and message.is_group
-            and message.chat.title != "hikka-logs"
-        ):
             if not watcher:
                 logger.warning("Ignoring message in datachat \\ logging chat")
             return False
