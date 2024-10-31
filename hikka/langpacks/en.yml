@@ -465,6 +465,7 @@ loader:
   link: "<emoji document_id=5280658777148760247>🌐</emoji> <b><a href=\"{url}\">Link</a> of</b> <code>{class_name}</code>\n\n<emoji document_id=5188377234380954537>🌘</emoji> <code>{prefix}dlm {url}</code>\n\n{not_exact}"
   file: "<emoji document_id=5433653135799228968>📁</emoji> <b>File of</b> <code>{class_name}</code>\n\n<emoji document_id=5188377234380954537>🌘</emoji> <code>{prefix}lm</code> <b>in reply to this message to install</b>\n\n{not_exact}"
   not_exact: "<emoji document_id=5312383351217201533>⚠️</emoji> <b>No exact match has been found, so the closest result is shown instead</b>"
+  args: "<emoji document_id=5210952531676504517>❌</emoji> <b>You must specify arguments</b>"
   loadmod_cancelled: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Module loading cancelled</b>"
   loadmod_confirm_pm: "⚠️ <b>Warning!</b>\n\nLoading modules from unknown sources is <b><u>very dangerous</u></b> and can lead to <b>account deletion or session comprometation</b>. Make sure that you know this user and <b><u>100%</u></b> trust him.\n\n<b>Do you want to continue with module loading?</b>"
   loadmod_confirm_pm_yes: "✅ Yes, continue"
