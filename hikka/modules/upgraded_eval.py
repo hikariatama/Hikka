@@ -35,7 +35,7 @@ class UpgradedEval(loader.Module):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "text_result",
-                "🐍 <b><i>Code:</i></b>\m<pre><code class='language-python'>{code}</code></pre>\n\n✅ <b><i>Result:</i></b>\n<pre><code class='language-python'>{result}</code></pre>",
+                "🐍 <b><i>Code:</i></b>\n<pre><code class='language-python'>{code}</code></pre>\n\n✅ <b><i>Result:</i></b>\n<pre><code class='language-python'>{result}</code></pre>",
                 lambda: self.strings("_cfg_text_result"),
                 validator=loader.validators.String(),
             ),
