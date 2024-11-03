@@ -216,6 +216,25 @@ presets:
   already_installed: "✅ [Встановлено]"
 
 settings:
+  installation: 'ChatGPT
+
+Вы сказали:
+settings:
+  installation: '<emoji document_id=5363805650327450240>▪️</emoji> Установка дуже легка! Достатньо написати в термінал твого сервера:
+
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y &amp;&amp; sudo apt install git &amp;&amp; sudo apt install python3-pip &amp;&amp; git clone https://github.com/coddrago/Hikka &amp;&amp; cd Hikka &amp;&amp; pip install -r requirements.txt &amp;&amp; python3 -m hikka</code></pre>
+<emoji document_id=5299027123913105700>😐</emoji> Якщо у вас немає доступу до sudo, просто приберіть початкові дії.
+
+<emoji document_id=5300777464820145682>🥳</emoji> Розберемося трохи з аргументами:
+
+<emoji document_id=5787313834012184077>🔐</emoji> Аргумент <code>--root</code> дозволяє запустити Хікку від <b>root користувача</b>.
+
+<emoji document_id=5785209342986817408>🌎</emoji> Аргумент <code>--no-web</code> відкриває процес входу в ваш обліковий запис <b>прямо в терміналі, а не через посилання</b> <code>{}.lhr.life</code>.
+
+<emoji document_id=5471895949804575096>🤲</emoji> Якщо ви хочете перейти з Хікки від hikariatama, виконайте цю команду:
+
+<pre><code class="language-hikka">.terminal git pull https://github.com/coddrago/Hikka master</code></pre>
+І рекомендую одразу скинути всі налаштування вбудованих модулів до значень за замовчуванням, щоб уникнути непередбачених помилок!'
   too_many_args: "<emoji document_id=5210952531676504517>🚫</emoji> <bЗанадто багато аргументів</b>"
   blacklisted: "<emoji document_id=5197474765387864959>👍</emoji> <b>Чат {} додано до чорного списку юзербота</b>"
   unblacklisted: "<emoji document_id=5197474765387864959>👍</emoji> <b>Чат {} видалено з чорного списку юзербота</b>"
