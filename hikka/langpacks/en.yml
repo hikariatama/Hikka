@@ -228,6 +228,21 @@ presets:
 
 settings:
   name: "Settings"
+  installation: '<emoji document_id=5363805650327450240>▪️</emoji> The installation is very easy! Just enter the following in your server's terminal:
+
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y &amp;&amp; sudo apt install git &amp;&amp; sudo apt install python3-pip &amp;&amp; git clone https://github.com/coddrago/Hikka &amp;&amp; cd Hikka &amp;&amp; pip install -r requirements.txt &amp;&amp; python3 -m hikka</code></pre>
+<emoji document_id=5299027123913105700>😐</emoji> If you don't have sudo access, simply remove the initial steps.
+
+<emoji document_id=5300777464820145682>🥳</emoji> Let’s go over a few arguments:
+
+<emoji document_id=5787313834012184077>🔐</emoji> The <code>--root</code> argument allows you to run Hikka as a <b>root user</b>.
+
+<emoji document_id=5785209342986817408>🌎</emoji> The <code>--no-web</code> argument enables login to your account <b>directly in the terminal, rather than through a link</b> <code>{}.lhr.life</code>.
+
+<emoji document_id=5471895949804575096>🤲</emoji> However, if you want to migrate from hikariatama's Hikka, run the following command:
+
+<pre><code class="language-hikka">.terminal git pull https://github.com/coddrago/Hikka master</code></pre>
+I also recommend resetting all built-in module configurations to their default values to avoid any unforeseen errors!'
   too_many_args: "<emoji document_id=5210952531676504517>🚫</emoji> <b>Too many args</b>"
   blacklisted: "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} blacklisted from userbot</b>"
   unblacklisted: "<emoji document_id=5197474765387864959>👍</emoji> <b>Chat {} unblacklisted from userbot</b>"
