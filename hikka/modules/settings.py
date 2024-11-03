@@ -250,4 +250,4 @@ class CoreMod(loader.Module):
     async def installationcmd(self, message: Message):
         """| Guide of installation"""
         
-        await client.send_file(message.peer_id, "https://i.imgur.com/Tfj0Wud.png", caption = self.strings["installation"])
+        await self.client.send_file(message.peer_id, "https://i.imgur.com/Tfj0Wud.png", caption = self.strings["installation"])
