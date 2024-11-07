@@ -912,7 +912,7 @@ def get_named_platform() -> str:
         return "🚂 Railway"
 
     if main.IS_DOCKER:
-        return "🐳 Docker"
+        return "🍬 Devhost"
 
     if main.IS_TERMUX:
         return "🕶 Termux"
