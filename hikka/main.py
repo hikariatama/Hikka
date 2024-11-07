@@ -89,6 +89,7 @@ IS_DOCKER = "DOCKER" in os.environ
 IS_RAILWAY = "RAILWAY" in os.environ
 IS_GOORM = "GOORM" in os.environ
 IS_LAVHOST = "LAVHOST" in os.environ
+IS_DEVHOST = "DEVHOST" in os.environ
 IS_WSL = False
 with contextlib.suppress(Exception):
     from platform import uname
