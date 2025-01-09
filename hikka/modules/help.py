@@ -77,8 +77,8 @@ class Help(loader.Module):
             self.strings("hidden_shown").format(
                 len(hidden),
                 len(shown),
-                "\n".join([f"👁‍🗨 <i>{m}</i>" for m in hidden]),
-                "\n".join([f"👁 <i>{m}</i>" for m in shown]),
+                "\n".join([f"<emoji document_id=5264913427041631157>🦋</emoji> <i>{m}</i>" for m in hidden]),
+                "\n".join([f"<emoji document_id=5265113787265988883>🦋</emoji> <i>{m}</i>" for m in shown]),
             ),
         )
 
@@ -146,13 +146,13 @@ class Help(loader.Module):
             (
                 DRAGON_EMOJI
                 if is_dragon
-                else "<emoji document_id=5188377234380954537>🌘</emoji>"
+                else "<emoji document_id=5264913427041631157>🦋</emoji>"
             ),
             _name,
         )
         if module.__doc__:
             reply += (
-                "<i>\n<emoji document_id=5787544344906959608>ℹ️</emoji> "
+                "<i>\n<emoji document_id=5265113787265988883>🦋</emoji> "
                 + utils.escape_html(inspect.getdoc(module))
                 + "\n</i>"
             )
@@ -170,7 +170,7 @@ class Help(loader.Module):
         if hasattr(module, "inline_handlers") and not is_dragon:
             for name, fun in module.inline_handlers.items():
                 reply += (
-                    "\n<emoji document_id=5372981976804366741>🤖</emoji>"
+                    "\n<emoji document_id=5262584377946159361>📱</emoji>"
                     " <code>{}</code> {}".format(
                         f"@{self.inline.bot_username} {name}",
                         (
@@ -183,8 +183,8 @@ class Help(loader.Module):
 
         for name, fun in commands.items():
             reply += (
-                "\n<emoji document_id=4971987363145188045>▫️</emoji>"
-                " <code>{}{}</code>{} {}".format(
+                "<blockquote>\n<emoji document_id=5265113787265988883>🦋</emoji>"
+                " <code>{}{}</code>{}</blockquote> {}".format(
                     utils.escape_html(self.get_prefix("dragon" if is_dragon else None)),
                     name,
                     (
@@ -358,7 +358,7 @@ class Help(loader.Module):
 
         await utils.answer(
             message,
-            "{}\n{}{}".format(
+            "<emoji document_id=5265113787265988883>🦋</emoji> {}\n{}<blockquote>{}</blockquote>".format(
                 reply,
                 "".join(core_ + plain_ + dragon_ + (no_commands_ if force else [])),
                 (
