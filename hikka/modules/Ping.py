@@ -28,7 +28,7 @@ class PingMod(loader.Module):
         )
 
     @loader.command()
-    async def ping1(self, message):
+    async def ping(self, message):
         """Показать пинг и аптайм юзербота"""
         start = time.perf_counter_ns()
         msg = await message.client.send_message(message.peer_id, '⏳')
