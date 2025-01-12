@@ -346,37 +346,4 @@ class TestMod(loader.Module):
         except ValueError:
             await utils.answer(message, self.strings("suspend_invalid_time"))
 
-    @loader.command()
-    async def ping(self, message: Message):
-        start = time.perf_counter_ns()
-        message = await utils.answer(message, "🌘")
 
-        await utils.answer(
-            message,
-            self.strings("results_ping").format(
-                round((time.perf_counter_ns() - start) / 10**6, 3),
-                utils.formatted_uptime(),
-            )
-            + (
-                ("\n\n" + self.strings("ping_hint"))
-                if random.choice([0, 0, 1]) == 1
-                else ""
-            ),
-        )
-
-    async def client_ready(self):
-        chat, _ = await utils.asset_channel(
-            self._client,
-            "hikka-logs",
-            "🌘 Your Hikka logs will appear in this chat",
-            silent=True,
-            invite_bot=True,
-            avatar="https://github.com/hikariatama/assets/raw/master/hikka-logs.png",
-        )
-
-        self.logchat = int(f"-100{chat.id}")
-
-        logging.getLogger().handlers[0].install_tg_log(self)
-        logger.debug("Bot logging installed for %s", self.logchat)
-
-        self._pass_config_to_logger()
