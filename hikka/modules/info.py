@@ -1,4 +1,3 @@
-import git
 from hikkatl.tl.types import Message
 from hikkatl.utils import get_display_name
 from hikkatl.tl.functions.messages import SendMessage
@@ -9,6 +8,7 @@ from ..inline.types import InlineQuery
 import time
 import functools
 import asyncio
+import git
 
 
 @loader.tds
@@ -57,19 +57,7 @@ class HyekoInfoMod(loader.Module):
             ),
         )
 
-    async def _get_ping(self) -> float:
-            start_time = time.perf_counter_ns()
-            sent_msg = await self._client(SendMessage(
-                peer=self._client.hikka_me.id,
-                message="⏳",
-                random_id=self._client.rnd()
-                ))
-            if isinstance(sent_msg, UpdateNewMessage):
-                end_time = time.perf_counter_ns()
-                return round((end_time - start_time) / 10**6, 3)
-            else:
-                return "N/A"
-
+   
     def _render_info(self, inline: bool) -> str:
         try:
             repo = git.Repo(search_parent_directories=True)
@@ -162,7 +150,7 @@ class HyekoInfoMod(loader.Module):
         }
 
     @loader.command()
-    async def infocmd(self, message: Message):
+    async def info1cmd(self, message: Message):
         kwargs = {"photo": self.config["banner_url"]} if self.config["banner_url"] else {}
         await self.inline.form(
             message=message,
@@ -174,13 +162,14 @@ class HyekoInfoMod(loader.Module):
         )
 
     @loader.command()
-    async def hyekoinfo(self, message: Message):
+    async def hyeko7info(self, message: Message):
         await utils.answer(message, self.strings("desc"))
 
     @loader.command()
-    async def setinfo(self, message: Message):
+    async def setin7fo(self, message: Message):
         if not (args := utils.get_args_html(message)):
             return await utils.answer(message, self.strings("setinfo_no_args"))
 
         self.config["custom_message"] = args
         await utils.answer(message, self.strings("setinfo_success"))
+
