@@ -1,4 +1,3 @@
-
 import git
 from hikkatl.tl.types import Message
 from hikkatl.utils import get_display_name
@@ -6,6 +5,7 @@ from hikkatl.utils import get_display_name
 from .. import loader, utils, version
 from ..inline.types import InlineQuery
 import time
+import functools
 
 
 @loader.tds
@@ -63,9 +63,12 @@ class HyekoInfoMod(loader.Module):
             upd = ""
         
         start = time.perf_counter_ns()
-        ping_msg =  utils.run_sync(self._client.send_message(self._client.hikka_me, '⏳'))
+        
+        # Use a lambda to create a callable that sends the message
+        send_message_func = lambda: self._client.send_message(self._client.hikka_me, '⏳')
+        ping_msg =  utils.run_sync(send_message_func) 
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
-        utils.run_sync(ping_msg.delete())
+        utils.run_sync(lambda: ping_msg.delete())
 
 
         me = f'<b><a href="tg://user?id={self._client.hikka_me.id}">{utils.escape_html(get_display_name(self._client.hikka_me))}</a></b>'
