@@ -24,7 +24,7 @@ printf "\r\033[K\033[0;32mPillow installed!\e[0m\n"
 echo -e "\033[0;96mDownloading source code...\033[0m"
 
 eval "rm -rf ~/Hikka 2>/dev/null"
-eval "cd && git clone https://github.com/hikariatama/Hikka && cd Hikka"
+eval "cd && git clone https://github.com/arion14888/Hyeko && cd Hyeko"
 
 echo -e "\033[0;96mSource code downloaded!...\033[0m\n"
 printf "\r\033[0;34mInstalling requirements...\e[0m"
