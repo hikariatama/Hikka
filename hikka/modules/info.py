@@ -1,11 +1,14 @@
 import git
 from hikkatl.tl.types import Message
 from hikkatl.utils import get_display_name
+from hikkatl.tl.functions.messages import SendMessage
+from hikkatl.tl.types import UpdateNewMessage, PeerUser
 
 from .. import loader, utils, version
 from ..inline.types import InlineQuery
 import time
 import functools
+import asyncio
 
 
 @loader.tds
@@ -54,6 +57,19 @@ class HyekoInfoMod(loader.Module):
             ),
         )
 
+    async def _get_ping(self) -> float:
+            start_time = time.perf_counter_ns()
+            sent_msg = await self._client(SendMessage(
+                peer=self._client.hikka_me.id,
+                message="⏳",
+                random_id=self._client.rnd()
+                ))
+            if isinstance(sent_msg, UpdateNewMessage):
+                end_time = time.perf_counter_ns()
+                return round((end_time - start_time) / 10**6, 3)
+            else:
+                return "N/A"
+
     def _render_info(self, inline: bool) -> str:
         try:
             repo = git.Repo(search_parent_directories=True)
@@ -62,14 +78,7 @@ class HyekoInfoMod(loader.Module):
         except Exception:
             upd = ""
         
-        start = time.perf_counter_ns()
-        
-        # Use a lambda to create a callable that sends the message
-        send_message_func = lambda: self._client.send_message(self._client.hikka_me, '⏳')
-        ping_msg =  utils.run_sync(send_message_func) 
-        ping = round((time.perf_counter_ns() - start) / 10**6, 3)
-        utils.run_sync(lambda: ping_msg.delete())
-
+        ping = utils.run_sync(self._get_ping)
 
         me = f'<b><a href="tg://user?id={self._client.hikka_me.id}">{utils.escape_html(get_display_name(self._client.hikka_me))}</a></b>'
         build = utils.get_commit_url()
