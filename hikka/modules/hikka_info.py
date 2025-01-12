@@ -13,29 +13,45 @@ from ..inline.types import InlineQuery
 
 
 @loader.tds
-class HikkaInfoMod(loader.Module):
+class HyekoInfoMod(loader.Module):
     """Show userbot info"""
 
-    strings = {"name": "HikkaInfo"}
+    strings = {
+        "name": "HikkaInfo",
+        "_cfg_cst_msg": "Custom message",
+        "_cfg_cst_btn": "Custom button",
+        "_cfg_banner": "Custom banner",
+        "update_required": "<b>Update required!</b>",
+        "up-to-date": "<b>Up-to-date</b>",
+        "owner": "Owner",
+        "version": "Version",
+        "branch": "Branch",
+        "prefix": "Prefix",
+        "uptime": "Uptime",
+        "cpu_usage": "CPU",
+        "ram_usage": "RAM",
+        "send_info": "Send info",
+        "description": "Shows bot info",
+        "desc": "Show help",
+        "setinfo_no_args": "No message",
+        "setinfo_success": "Message set",
+    }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
             loader.ConfigValue(
                 "custom_message",
-                doc=lambda: self.strings("_cfg_cst_msg"),
-            ),
-            loader.ConfigValue(
-                "custom_button",
-                ["🌘 Support chat", "https://t.me/hikka_talks"],
-                lambda: self.strings("_cfg_cst_btn"),
-                validator=loader.validators.Union(
-                    loader.validators.Series(fixed_len=2),
-                    loader.validators.NoneType(),
-                ),
+                "<emoji document_id=5879770735999717115>👤</emoji>owner: {me}\n"
+                "<emoji document_id=5877260593903177342>⚙️</emoji>version: {version}\n"
+                "<emoji document_id=5879841310902324730>✏️</emoji>prefix: {prefix}\n"
+                "<emoji document_id=5967816500415827773>💻</emoji>platform: {platform}\n"
+                "<emoji document_id=5775981206319402773>🎞</emoji>uptime: {uptime}\n"
+                "<emoji document_id=5931588842116091655>🗻</emoji>RAM: {ram_usage}",
+                lambda: self.strings("_cfg_cst_msg"),
             ),
             loader.ConfigValue(
                 "banner_url",
-                "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
+                "https://0x0.st/s/ZOADD3_N_FlRRVn8-1uw9g/8-kB.png",
                 lambda: self.strings("_cfg_banner"),
                 validator=loader.validators.Link(),
             ),
@@ -45,44 +61,33 @@ class HikkaInfoMod(loader.Module):
         try:
             repo = git.Repo(search_parent_directories=True)
             diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
-            upd = (
-                self.strings("update_required") if diff else self.strings("up-to-date")
-            )
+            upd = self.strings("update_required") if diff else self.strings("up-to-date")
         except Exception:
             upd = ""
 
-        me = '<b><a href="tg://user?id={}">{}</a></b>'.format(
-            self._client.hikka_me.id,
-            utils.escape_html(get_display_name(self._client.hikka_me)),
-        )
+        me = f'<b><a href="tg://user?id={self._client.hikka_me.id}">{utils.escape_html(get_display_name(self._client.hikka_me))}</a></b>'
         build = utils.get_commit_url()
-        _version = f'<i>{".".join(list(map(str, list(version.__version__))))}</i>'
+        _version = f'<i>{".".join(map(str, version.__version__))}</i>'
         prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"
-
         platform = utils.get_named_platform()
-
-        for emoji, icon in [
-            ("🍊", "<emoji document_id=5449599833973203438>🧡</emoji>"),
-            ("🍇", "<emoji document_id=5449468596952507859>💜</emoji>"),
-            ("❓", "<emoji document_id=5407025283456835913>📱</emoji>"),
-            ("🍀", "<emoji document_id=5395325195542078574>🍀</emoji>"),
-            ("🦾", "<emoji document_id=5386766919154016047>🦾</emoji>"),
-            ("🚂", "<emoji document_id=5359595190807962128>🚂</emoji>"),
-            ("🐳", "<emoji document_id=5431815452437257407>🐳</emoji>"),
-            ("🕶", "<emoji document_id=5407025283456835913>📱</emoji>"),
-            ("🐈‍⬛", "<emoji document_id=6334750507294262724>🐈‍⬛</emoji>"),
-            ("✌️", "<emoji document_id=5469986291380657759>✌️</emoji>"),
-            ("📻", "<emoji document_id=5471952986970267163>💎</emoji>"),
-        ]:
+        icons = {
+            "🍊": "<emoji document_id=5449599833973203438>🧡</emoji>",
+            "🍇": "<emoji document_id=5449468596952507859>💜</emoji>",
+            "❓": "<emoji document_id=5407025283456835913>📱</emoji>",
+            "🍀": "<emoji document_id=5395325195542078574>🍀</emoji>",
+            "🦾": "<emoji document_id=5386766919154016047>🦾</emoji>",
+            "🚂": "<emoji document_id=5359595190807962128>🚂</emoji>",
+            "🐳": "<emoji document_id=5431815452437257407>🐳</emoji>",
+            "🕶": "<emoji document_id=5407025283456835913>📱</emoji>",
+            "🐈‍⬛": "<emoji document_id=6334750507294262724>🐈‍⬛</emoji>",
+            "✌️": "<emoji document_id=5469986291380657759>✌️</emoji>",
+            "📻": "<emoji document_id=5471952986970267163>💎</emoji>",
+        }
+        for emoji, icon in icons.items():
             platform = platform.replace(emoji, icon)
 
-        return (
-            (
-                "<b>🌘 Hikka</b>\n"
-                if "hikka" not in self.config["custom_message"].lower()
-                else ""
-            )
-            + self.config["custom_message"].format(
+        if self.config["custom_message"]:
+            msg = ("<b></b>\n" if "hikka" not in self.config["custom_message"].lower() else "") + self.config["custom_message"].format(
                 me=me,
                 version=_version,
                 build=build,
@@ -94,47 +99,33 @@ class HikkaInfoMod(loader.Module):
                 ram_usage=f"{utils.get_ram_usage()} MB",
                 branch=version.branch,
             )
-            if self.config["custom_message"]
-            else (
-                f'<b>{{}}</b>\n\n<b>{{}} {self.strings("owner")}:</b> {me}\n\n<b>{{}}'
-                f' {self.strings("version")}:</b> {_version} {build}\n<b>{{}}'
-                f' {self.strings("branch")}:'
-                f"</b> <code>{version.branch}</code>\n{upd}\n\n<b>{{}}"
-                f' {self.strings("prefix")}:</b> {prefix}\n<b>{{}}'
-                f' {self.strings("uptime")}:'
-                f"</b> {utils.formatted_uptime()}\n\n<b>{{}}"
-                f' {self.strings("cpu_usage")}:'
-                f"</b> <i>~{utils.get_cpu_usage()} %</i>\n<b>{{}}"
-                f' {self.strings("ram_usage")}:'
-                f"</b> <i>~{utils.get_ram_usage()} MB</i>\n<b>{{}}</b>"
-            ).format(
-                *map(
-                    lambda x: utils.remove_html(x) if inline else x,
-                    (
-                        (
-                            utils.get_platform_emoji()
-                            if self._client.hikka_me.premium and not inline
-                            else "🌘 Hikka"
-                        ),
-                        "<emoji document_id=5373141891321699086>😎</emoji>",
-                        "<emoji document_id=5469741319330996757>💫</emoji>",
-                        "<emoji document_id=5449918202718985124>🌳</emoji>",
-                        "<emoji document_id=5472111548572900003>⌨️</emoji>",
-                        "<emoji document_id=5451646226975955576>⌛️</emoji>",
-                        "<emoji document_id=5431449001532594346>⚡️</emoji>",
-                        "<emoji document_id=5359785904535774578>💼</emoji>",
-                        platform,
-                    ),
-                )
+        else:
+            parts = (
+                (utils.get_platform_emoji() if self._client.hikka_me.premium and not inline else "🌘 Hyeko"),
+                "<emoji document_id=5373141891321699086>😎</emoji>",
+                "<emoji document_id=5469741319330996757>💫</emoji>",
+                "<emoji document_id=5449918202718985124>🌳</emoji>",
+                "<emoji document_id=5472111548572900003>⌨️</emoji>",
+                "<emoji document_id=5451646226975955576>⌛️</emoji>",
+                "<emoji document_id=5431449001532594346>⚡️</emoji>",
+                "<emoji document_id=5359785904535774578>💼</emoji>",
+                 platform,
             )
-        )
+            msg = (
+                 f'<b>{{}}</b>\n\n<b>{{}} {self.strings("owner")}:</b> {me}\n\n<b>{{}}'
+                f' {self.strings("version")}:</b> {_version} {build}\n<b>{{}}'
+                f' {self.strings("branch")}:</b> <code>{version.branch}</code>\n{upd}\n\n<b>{{}}'
+                f' {self.strings("prefix")}:</b> {prefix}\n<b>{{}}'
+                f' {self.strings("uptime")}:</b> {utils.formatted_uptime()}\n\n<b>{{}}'
+                f' {self.strings("cpu_usage")}:</b> <i>~{utils.get_cpu_usage()} %</i>\n<b>{{}}'
+                f' {self.strings("ram_usage")}:</b> <i>~{utils.get_ram_usage()} MB</i>\n<b>{{}}</b>'
+            ).format(*map(lambda x: utils.remove_html(x) if inline else x, parts))
+
+        return msg
 
     def _get_mark(self):
         return (
-            {
-                "text": self.config["custom_button"][0],
-                "url": self.config["custom_button"][1],
-            }
+            {"text": self.config["custom_button"][0], "url": self.config["custom_button"][1]}
             if self.config["custom_button"]
             else None
         )
@@ -144,48 +135,33 @@ class HikkaInfoMod(loader.Module):
     )
     @loader.inline_everyone
     async def info(self, _: InlineQuery) -> dict:
-        """Send userbot info"""
-
         return {
             "title": self.strings("send_info"),
             "description": self.strings("description"),
-            **(
-                {"photo": self.config["banner_url"], "caption": self._render_info(True)}
-                if self.config["banner_url"]
-                else {"message": self._render_info(True)}
-            ),
-            "thumb": (
-                "https://github.com/hikariatama/Hikka/raw/master/assets/hikka_pfp.png"
-            ),
+            **({"photo": self.config["banner_url"], "caption": self._render_info(True)}
+               if self.config["banner_url"] else {"message": self._render_info(True)}),
+            "thumb": "https://github.com/hikariatama/Hikka/raw/master/assets/hikka_pfp.png",
             "reply_markup": self._get_mark(),
         }
 
     @loader.command()
-    async def infocmd(self, message: Message):
-        if self.config["custom_button"]:
-            await self.inline.form(
-                message=message,
-                text=self._render_info(True),
-                reply_markup=self._get_mark(),
-                **(
-                    {"photo": self.config["banner_url"]}
-                    if self.config["banner_url"]
-                    else {}
-                ),
-            )
-        else:
-            await utils.answer_file(
-                message,
-                self.config["banner_url"],
-                self._render_info(False),
-            )
+    async def infqcmd(self, message: Message):
+        kwargs = {"photo": self.config["banner_url"]} if self.config["banner_url"] else {}
+        await self.inline.form(
+            message=message,
+            text=self._render_info(True),
+            reply_markup=self._get_mark(),
+             **kwargs
+        ) if self.config["custom_button"] else await utils.answer_file(
+            message, self.config["banner_url"], self._render_info(False)
+        )
 
     @loader.command()
-    async def hikkainfo(self, message: Message):
+    async def hyekoinfo(self, message: Message):
         await utils.answer(message, self.strings("desc"))
 
     @loader.command()
-    async def setinfo(self, message: Message):
+    async def setinfq(self, message: Message):
         if not (args := utils.get_args_html(message)):
             return await utils.answer(message, self.strings("setinfo_no_args"))
 
