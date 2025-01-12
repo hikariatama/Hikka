@@ -10,7 +10,7 @@ class HelpMod(loader.Module):
     strings = {"name": "Help", "header": "<b>Modules:</b>\n\n"}
 
     @loader.command(alias="modules")
-    async def helpicmd(self, message: Message):
+    async def helpcmd(self, message: Message):
         """Shows available modules and their commands."""
         output = self.strings["header"]
         modules = sorted(
