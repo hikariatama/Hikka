@@ -10,7 +10,7 @@ class HelpMod(loader.Module):
     strings = {"name": "Help", "header": "<b>Modules:</b>\n\n"}
 
     @loader.command(alias="modules")
-    async def helpcmd(self, message: Message):
+    async def helpicmd(self, message: Message):
         """Shows available modules and their commands."""
         output = self.strings["header"]
         modules = sorted(
@@ -19,19 +19,22 @@ class HelpMod(loader.Module):
 
         for module in modules:
             name = module.strings.get("name", "Unknown")
-            emoji = "<emoji document_id=5873022839866527761>⚪️</emoji>"
+            emoji = "<emoji document_id=5893431652578758294>✅</emoji>"
             commands = []
             for cmd_name, cmd_func in module.commands.items():
                 if not cmd_func:
                    continue
+                full_command = f"{self.get_prefix()}{cmd_name}"
                 commands.append(
-                    f"<code>{utils.escape_html(self.get_prefix())}{cmd_name}</code>"
+                    f"{utils.escape_html(full_command)}"
                 )
             if commands:
                 output += f"<b>{emoji} {name}</b>: {', '.join(commands)}\n\n"
             else:
-                 output += f"<b>{emoji} {name}</b>:\n\n"
+                output += f"<b>{emoji} {name}</b>:\n\n"
         await utils.answer(message, output)
+
+
 
 
 
