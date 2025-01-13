@@ -46,34 +46,6 @@ class CoreMod(loader.Module):
         return f"{str(chatid)}.{module}" if module else chatid
 
     @loader.command()
-    async def hikkacmd(self, message: Message):
-        await utils.answer_file(
-            message,
-            "https://github.com/hikariatama/assets/raw/master/hikka_cat_banner.mp4",
-            self.strings("hikka").format(
-                (
-                    utils.get_platform_emoji()
-                    if self._client.hikka_me.premium and CUSTOM_EMOJIS
-                    else "🌘 <b>Hikka userbot</b>"
-                ),
-                *version.__version__,
-                utils.get_commit_url(),
-                f"{hikkatl.__version__} #{hikkatl.tl.alltlobjects.LAYER}",
-                (
-                    "<emoji document_id=5377399247589088543>🔥</emoji>"
-                    if self._client.pyro_proxy
-                    else "<emoji document_id=5418308381586759720>📴</emoji>"
-                ),
-                f"{hikkapyro.__version__} #{hikkapyro.raw.all.layer}",
-            )
-            + (
-                ""
-                if version.branch == "master"
-                else self.strings("unstable").format(version.branch)
-            ),
-        )
-
-    @loader.command()
     async def blacklist(self, message: Message):
         chatid = await self.blacklistcommon(message)
 
