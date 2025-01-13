@@ -346,4 +346,19 @@ class TestMod(loader.Module):
         except ValueError:
             await utils.answer(message, self.strings("suspend_invalid_time"))
 
+    async def client_ready(self):
+        chat, _ = await utils.asset_channel(
+            self._client,
+            "hikka-logs",
+            "🌘 Your Hikka logs will appear in this chat",
+            silent=True,
+            invite_bot=True,
+            avatar="https://0x0.st/s/k4dJYKI9Ih_qSuKzJzIm1w/8oiw.jpg",
+        )
 
+        self.logchat = int(f"-100{chat.id}")
+
+        logging.getLogger().handlers[0].install_tg_log(self)
+        logger.debug("Bot logging installed for %s", self.logchat)
+
+        self._pass_config_to_logger()
