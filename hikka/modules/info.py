@@ -1,175 +1,148 @@
-from hikkatl.tl.types import Message
-from hikkatl.utils import get_display_name
-from hikkatl.tl.functions.messages import SendMessage
-from hikkatl.tl.types import UpdateNewMessage, PeerUser
-
 from .. import loader, utils, version
-from ..inline.types import InlineQuery
-import time
-import functools
-import asyncio
 import git
+import platform
+import psutil
+import time
+import os
+from telethon.tl.types import MessageEntityUrl
+import re
 
+
+# ------------------------------------------------------- #
+
+# meta developer: @kmodules
+__version__ = (1, 0, 0)
+
+# ------------------------------------------------------- #
 
 @loader.tds
-class HyekoInfoMod(loader.Module):
-    """Show userbot info"""
+class KInfoMod(loader.Module):
+    """Инфо для Hikka"""
 
     strings = {
-        "name": "HikkaInfo",
-        "_cfg_cst_msg": "Custom message",
-        "_cfg_cst_btn": "Custom button",
-        "_cfg_banner": "Custom banner",
-        "update_required": "<b>Update required!</b>",
-        "up-to-date": "<b>Up-to-date</b>",
-        "owner": "Owner",
-        "version": "Version",
-        "branch": "Branch",
-        "prefix": "Prefix",
-        "uptime": "Uptime",
-        "cpu_usage": "CPU",
-        "ram_usage": "RAM",
-        "send_info": "Send info",
-        "description": "Shows bot info",
-        "desc": "Show help",
-        "setinfo_no_args": "No message",
-        "setinfo_success": "Message set",
+        "name": "KInfo", 
+        "update_available": "<b>Доступно обновление!</b>",
+        "latest_version": "<b>У вас последняя версия.</b>",
     }
+
+    async def client_ready(self, client, db):
+        self.client = client
+        self.db = db
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            loader.ConfigValue(
-                "custom_message",
-                "<emoji document_id=5879770735999717115>👤</emoji>owner: {me}\n"
-                "<emoji document_id=5877260593903177342>⚙️</emoji>version: {version}\n"
-                "<emoji document_id=5879841310902324730>✏️</emoji>prefix: {prefix}\n"
-                "<emoji document_id=5967816500415827773>💻</emoji>platform: {platform}\n"
-                "<emoji document_id=5775981206319402773>🎞</emoji>uptime: {uptime}\n"
-                "<emoji document_id=5931588842116091655>🗻</emoji>RAM: {ram_usage}\n"
-                 "<emoji document_id=5936130851635990622>⚡️</emoji>ping: {ping}",
-                lambda: self.strings("_cfg_cst_msg"),
-            ),
-            loader.ConfigValue(
-                "banner_url",
-                "https://0x0.st/s/ZOADD3_N_FlRRVn8-1uw9g/8-kB.png",
-                lambda: self.strings("_cfg_banner"),
-                validator=loader.validators.Link(),
-            ),
+            "custom_info_text",
+            "<emoji document_id=5199889902807833553>🕸</emoji><emoji document_id=5199573827574588449>👍</emoji><emoji document_id=5199842529318561842>👍</emoji><emoji document_id=5199585003079493668>😭</emoji>\n"
+            "<emoji document_id=5879770735999717115>👤</emoji>user: {owner}\n"
+            "<emoji document_id=5877410604225924969>🔄</emoji>version: {version}\n"
+            "<emoji document_id=5935989710420709120>🍎</emoji>branch: {branch}\n"
+            "<emoji document_id=5994544674604322765>🤖</emoji>ping: {ping}\n"
+            "<emoji document_id=5776213190387961618>🕓</emoji>uptime: {uptime}\n"
+            "<emoji document_id=5879813604068298387>❗️</emoji>prefix: {prefix}",
+            "{system_info}",
+            """Шаблон для вывода информации
+            
+            {owner} - Вы,
+            {version} - Версия юзербота,
+            {update_status} - Статус версии,        
+            {uptime} - Аптайм,
+            {branch} - Ветка,
+            {ping} - Пинг юзербота
+            {prefix} - Префикс. 
+            """,
+            
+            "banner_url",
+            "https://0x0.st/s/ZOADD3_N_FlRRVn8-1uw9g/8-kB.png",
+            "URL баннера, который будет отправлен с информацией (None чтобы отключить)"
         )
 
-   
-    def _render_info(self, inline: bool) -> str:
+    def get_cpu_info(self):
+        try:
+            with open("/proc/cpuinfo", "r") as f:
+                for line in f:
+                    if "model name" in line:
+                        return line.split(":")[1].strip()
+        except:
+            return platform.processor() or "Unknown"
+
+    def get_ram_info(self):
+        try:
+            ram = psutil.virtual_memory()
+            total = round(ram.total / (1024**3), 2)
+            used = round(ram.used / (1024**3), 2)
+            return used, total
+        except:
+            return 0, 0
+
+    def get_disk_info(self):
+        try:
+            disk = psutil.disk_usage('/')
+            total = round(disk.total / (1024**3), 2)
+            used = round(disk.used / (1024**3), 2)
+            return used, total
+        except:
+            return 0, 0
+            
+    @loader.command()
+    async def info(self, message):
+        """Показать информацию о юзерботе"""
         try:
             repo = git.Repo(search_parent_directories=True)
             diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
-            upd = self.strings("update_required") if diff else self.strings("up-to-date")
-        except Exception:
-            upd = ""
+            update_status = self.strings["update_available"] if diff else self.strings["latest_version"]
+        except:
+            update_status = "Невозможно проверить обновления"
+            
+        start = time.perf_counter_ns()
+        msg = await message.client.send_message(message.peer_id, '⏳')
+        ping = round((time.perf_counter_ns() - start) / 10**6, 3)
+        await msg.delete()
+
+        platform_name = utils.get_platform_name()
+        is_termux = "Termux" in platform_name
         
-        ping = utils.run_sync(self._get_ping)
-
-        me = f'<b><a href="tg://user?id={self._client.hikka_me.id}">{utils.escape_html(get_display_name(self._client.hikka_me))}</a></b>'
-        build = utils.get_commit_url()
-        _version = f'<i>{".".join(map(str, version.__version__))}</i>'
-        prefix = f"«<code>{utils.escape_html(self.get_prefix())}</code>»"
-        platform = utils.get_named_platform()
-        icons = {
-            "🍊": "<emoji document_id=5449599833973203438>🧡</emoji>",
-            "🍇": "<emoji document_id=5449468596952507859>💜</emoji>",
-            "❓": "<emoji document_id=5407025283456835913>📱</emoji>",
-            "🍀": "<emoji document_id=5395325195542078574>🍀</emoji>",
-            "🦾": "<emoji document_id=5386766919154016047>🦾</emoji>",
-            "🚂": "<emoji document_id=5359595190807962128>🚂</emoji>",
-            "🐳": "<emoji document_id=5431815452437257407>🐳</emoji>",
-            "🕶": "<emoji document_id=5407025283456835913>📱</emoji>",
-            "🐈‍⬛": "<emoji document_id=6334750507294262724>🐈‍⬛</emoji>",
-            "✌️": "<emoji document_id=5469986291380657759>✌️</emoji>",
-            "📻": "<emoji document_id=5471952986970267163>💎</emoji>",
-        }
-        for emoji, icon in icons.items():
-            platform = platform.replace(emoji, icon)
-
-        if self.config["custom_message"]:
-            msg = ("<b></b>\n" if "hikka" not in self.config["custom_message"].lower() else "") + self.config["custom_message"].format(
-                me=me,
-                version=_version,
-                build=build,
-                prefix=prefix,
-                platform=platform,
-                upd=upd,
-                uptime=utils.formatted_uptime(),
-                cpu_usage=utils.get_cpu_usage(),
-                ram_usage=f"{utils.get_ram_usage()} MB",
-                branch=version.branch,
-                ping=ping
-            )
+        if is_termux:
+            system_info = ""
         else:
-            parts = (
-                (utils.get_platform_emoji() if self._client.hikka_me.premium and not inline else "🌘 Hyeko"),
-                "<emoji document_id=5373141891321699086>😎</emoji>",
-                "<emoji document_id=5469741319330996757>💫</emoji>",
-                "<emoji document_id=5449918202718985124>🌳</emoji>",
-                "<emoji document_id=5472111548572900003>⌨️</emoji>",
-                "<emoji document_id=5451646226975955576>⌛️</emoji>",
-                "<emoji document_id=5431449001532594346>⚡️</emoji>",
-                "<emoji document_id=5359785904535774578>💼</emoji>",
-                 platform,
+            ram_used, ram_total = self.get_ram_info()
+            disk_used, disk_total = self.get_disk_info()
+            system_info = (
+                f"<emoji document_id=5873146865637133757>🎤</emoji> <b>RAM сервера:</b> <code>{ram_used} GB | {ram_total} GB</code>\n"
+                f"<emoji document_id=5870982283724328568>⚙</emoji> <b>Память:</b> <code>{disk_used} GB | {disk_total} GB</code>\n\n"
+                f"<emoji document_id=5391034312759980875>🥷</emoji><b> OC: {platform.system()} {platform.release()}</b>\n"
+                f"<emoji document_id=5235588635885054955>🎲</emoji> <b>Процессор:</b> <b>{self.get_cpu_info()}</b>"
             )
-            msg = (
-                 f'<b>{{}}</b>\n\n<b>{{}} {self.strings("owner")}:</b> {me}\n\n<b>{{}}'
-                f' {self.strings("version")}:</b> {_version} {build}\n<b>{{}}'
-                f' {self.strings("branch")}:</b> <code>{version.branch}</code>\n{upd}\n\n<b>{{}}'
-                f' {self.strings("prefix")}:</b> {prefix}\n<b>{{}}'
-                f' {self.strings("uptime")}:</b> {utils.formatted_uptime()}\n\n<b>{{}}'
-                f' {self.strings("cpu_usage")}:</b> <i>~{utils.get_cpu_usage()} %</i>\n<b>{{}}'
-                f' {self.strings("ram_usage")}:</b> <i>~{utils.get_ram_usage()} MB</i>\n<b>{{}}'
-                f' {self.strings("ping")}:</b> <i>~{ping} ms</i>\n<b>{{}}</b>'
-            ).format(*map(lambda x: utils.remove_html(x) if inline else x, parts))
 
-        return msg
-
-    def _get_mark(self):
-        return (
-            {"text": self.config["custom_button"][0], "url": self.config["custom_button"][1]}
-            if self.config["custom_button"]
-            else None
+        info = self.config["custom_info_text"].format(
+            owner=self._client.hikka_me.first_name + ' ' + (self._client.hikka_me.last_name or ''),
+            version='.'.join(map(str, list(version.__version__))),
+            branch=version.branch,
+            update_status=update_status,
+            prefix=self.get_prefix(),
+            ping=ping,
+            uptime=utils.formatted_uptime(),
+            system_info=system_info
         )
 
-    @loader.inline_handler(
-        thumb_url="https://img.icons8.com/external-others-inmotus-design/344/external-Moon-round-icons-others-inmotus-design-2.png"
-    )
-    @loader.inline_everyone
-    async def info(self, _: InlineQuery) -> dict:
-        return {
-            "title": self.strings("send_info"),
-            "description": self.strings("description"),
-            **({"photo": self.config["banner_url"], "caption": self._render_info(True)}
-               if self.config["banner_url"] else {"message": self._render_info(True)}),
-            "thumb": "https://github.com/hikariatama/Hikka/raw/master/assets/hikka_pfp.png",
-            "reply_markup": self._get_mark(),
-        }
+        if self.config["banner_url"]:
+            await self.client.send_file(
+                message.peer_id,
+                self.config["banner_url"],
+                caption=info
+            )
+            if message.out:
+                await message.delete()
+        else:
+            await utils.answer(message, info)
 
     @loader.command()
-    async def info1cmd(self, message: Message):
-        kwargs = {"photo": self.config["banner_url"]} if self.config["banner_url"] else {}
-        await self.inline.form(
-            message=message,
-            text=self._render_info(True),
-            reply_markup=self._get_mark(),
-             **kwargs
-        ) if self.config["custom_button"] else await utils.answer_file(
-            message, self.config["banner_url"], self._render_info(False)
-        )
+    async def setinfo(self, message):
+        """Установить кастомный текст информации: .setcinfo <текст>"""
+        args = utils.get_args_raw(message)
+        if not args:
+            await utils.answer(message, "<emoji document_id=5314413943035278948>🧠</emoji><b> Укажите текст для кастомной информации!")
+            return
 
-    @loader.command()
-    async def hyeko7info(self, message: Message):
-        await utils.answer(message, self.strings("desc"))
-
-    @loader.command()
-    async def setin7fo(self, message: Message):
-        if not (args := utils.get_args_html(message)):
-            return await utils.answer(message, self.strings("setinfo_no_args"))
-
-        self.config["custom_message"] = args
-        await utils.answer(message, self.strings("setinfo_success"))
-
+        self.config["custom_info_text"] = args
+        await utils.answer(message, "<emoji document_id=5314413943035278948>🧠</emoji><b> K:CustomInfo - текст поставлен.</b>")
+           
