@@ -3,7 +3,7 @@ import time
 
 @loader.tds
 class PingMod(loader.Module):
-    """Пинг и аптайм для Hikka"""
+    """Пинг"""
 
     strings = {
         "name": "Ping",
@@ -19,17 +19,11 @@ class PingMod(loader.Module):
             "<emoji document_id=5942913498349571809>🙂</emoji><b>user:</b> {me}\n"
             "<emoji document_id=5936130851635990622>⚡️</emoji><b>ping:</b> {ping}\n"
             "<emoji document_id=5988023995125993550>🛠</emoji><b>uptime:</b> {uptime}",
-            """Шаблон для вывода информации
-
-            {me} - Ваше имя
-            {ping} - Пинг юзербота,
-            {uptime} - Аптайм
-            """
         )
 
     @loader.command()
     async def ping(self, message):
-        """Показать пинг и аптайм юзербота"""
+        """пинг"""
         start = time.perf_counter_ns()
         msg = await message.client.send_message(message.peer_id, '⏳')
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
@@ -48,8 +42,8 @@ class PingMod(loader.Module):
         """Установить кастомный текст пинга: .setping <текст>"""
         args = utils.get_args_raw(message)
         if not args:
-            await utils.answer(message, "<emoji document_id=5314413943035278948>🧠</emoji><b> Укажите текст для пинга!")
+            await utils.answer(message, "текст для пинга")
             return
 
         self.config["custom_ping_text"] = args
-        await utils.answer(message, "<emoji document_id=5314413943035278948>🧠</emoji><b> Ping - текст поставлен.</b>")
+        await utils.answer(message, "текст поставлен</b>")
