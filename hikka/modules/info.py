@@ -53,7 +53,7 @@ class KInfoMod(loader.Module):
             
             "banner_url",
             "https://0x0.st/s/ZOADD3_N_FlRRVn8-1uw9g/8-kB.png",
-            "URL баннера, который будет отправлен с информацией (None чтобы отключить)"
+            "URL, который будет отправлен с информацией (None чтобы отключить)"
         )
 
     def get_cpu_info(self):
