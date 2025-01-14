@@ -16,16 +16,23 @@ class PingMod(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             "ping_text",
-            "<emoji document_id=5942913498349571809>🙂</emoji><b>user:</b> {me}\n"
-            "<emoji document_id=5936130851635990622>⚡️</emoji><b>ping:</b> {ping}\n"
-            "<emoji document_id=5988023995125993550>🛠</emoji><b>uptime:</b> {uptime}",
+            "<emoji document_id=5893431652578758294>✅</emoji><b>user:</b> {me}\n"
+
+            "<emoji document_id=5893431652578758294>✅</emoji><b>ping:</b> {ping}\n"
+            "<emoji document_id=5893431652578758294>✅</emoji><b>uptime:</b> {uptime}",
+            """
+
+            {me} - name
+            {ping} - ping
+            {uptime} - uptime
+            """
         )
 
     @loader.command()
     async def ping(self, message):
-        """пинг"""
+        """Показать пинг"""
         start = time.perf_counter_ns()
-        msg = await message.client.send_message(message.peer_id, '⏳')
+        msg = await message.client.send_message(message.peer_id, '<emoji document_id=5893431652578758294>✅</emoji>')
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
         await msg.delete()
 
@@ -39,11 +46,11 @@ class PingMod(loader.Module):
 
     @loader.command()
     async def setping(self, message):
-        """Установить кастомный текст пинга: .setping <текст>"""
+        """кастом текст"""
         args = utils.get_args_raw(message)
         if not args:
-            await utils.answer(message, "текст для пинга")
+            await utils.answer(message, "укажите текст")
             return
 
         self.config["custom_ping_text"] = args
-        await utils.answer(message, "текст поставлен</b>")
+        await utils.answer(message, "Ping - текст поставлен</b>")
