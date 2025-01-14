@@ -757,8 +757,12 @@ class Hikka:
             upd = "Update required" if diff else "Up-to-date"
 
             logo = (
-                "█ █ █ █▄▀ █▄▀ ▄▀█\n"
-                "█▀█ █ █ █ █ █ █▀█\n\n"
+                " _   _            _         \n"
+                "| | | |_   _  ___| | _____  \n"
+                "| |_| | | | |/ _ \ |/ / _ \ \n"
+                "|  _  | |_| |  __/   < (_) |\n"
+                "|_| |_|\__, |\___|_|\_\___/ \n"
+                "       |___/                \n\n"
                 f"• Build: {build[:7]}\n"
                 f"• Version: {'.'.join(list(map(str, list(__version__))))}\n"
                 f"• {upd}\n"
@@ -772,7 +776,7 @@ class Hikka:
                     else ""
                 )
                 logging.debug(
-                    "\n🌘 Hikka %s #%s (%s) started\n%s",
+                    "\nHyeko %s #%s (%s) started\n%s",
                     ".".join(list(map(str, list(__version__)))),
                     build[:7],
                     upd,
@@ -782,9 +786,9 @@ class Hikka:
 
             await client.hikka_inline.bot.send_animation(
                 logging.getLogger().handlers[0].get_logid_by_client(client.tg_id),
-                "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
+                https://0x0.st/s/tZe2xC6doBkhc_qpT-cIqg/8oqa.jpg",
                 caption=(
-                    "🌘 <b>Hikka {} started!</b>\n\n🌳 <b>GitHub commit SHA: <a"
+                    "<b>Hyeko {} started!</b>\n\n🌳 <b>GitHub commit SHA: <a"
                     ' href="https://github.com/hikariatama/Hikka/commit/{}">{}</a></b>\n✊'
                     " <b>Update status: {}</b>\n<b>{}</b>".format(
                         ".".join(list(map(str, list(__version__)))),
