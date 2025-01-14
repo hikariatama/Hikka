@@ -287,7 +287,7 @@ inline_stuff:
     bot_username_invalid: "<emoji document_id=5210952531676504517>🚫</emoji> <b>El nombre de usuario del bot no es válido. Debe terminar con</b> <code>bot</code> <b>y tener al menos 4 caracteres</b>"
     bot_username_occupied: "<emoji document_id=5210952531676504517>🚫</emoji> <b>El nombre de usuario ya está en uso</b>"
     bot_updated: "<emoji document_id=6318792204118656433>🎉</emoji> <b>La configuración se guardó correctamente. Reinicie el bot para aplicar los cambios</b>"
-    this_is_hikka: "🌘 <b>¡Hola! Este es Hyeko - un poderoso bot de usuario modular de Telegram. ¡Puedes instalarlo en tu cuenta!</b>\n\n<b>🌍 <a href=\"https://github.com/hikariatama/Hikka\">GitHub</a></b>\n<b>👥 <a href=\"https://t.me/hikka_talks\">Chat de soporte</a></b>"
+    this_is_hikka: "<b>¡Hola! Este es Hyeko - un poderoso bot de usuario modular de Telegram. ¡Puedes instalarlo en tu cuenta!</b>\n\n<b>🌍 <a href=\"https://github.com/hikariatama/Hikka\">GitHub</a></b>\n<b>👥 <a href=\"https://t.me/hikka_talks\">Chat de soporte</a></b>"
     _cmd_doc_ch_hikka_bot: "<nombre de usuario> - Cambia el nombre de usuario del bot de inline"
 
 test:
