@@ -18,13 +18,14 @@ import logging
 import os
 import re
 import sys
+import types
 import typing
 from functools import wraps
 from pathlib import Path
-from types import FunctionType
 from uuid import uuid4
 
 from hikkatl.tl.tlobject import TLObject
+from hikkatl.tl.types import Message
 
 from . import security, utils, validators
 from .database import Database
@@ -152,11 +153,11 @@ builtins.__import__ = patched_import
 class InfiniteLoop:
     _task = None
     status = False
-    module_instance = None  # Will be passed later
+    module_instance: Module | None = None  # Will be passed later
 
     def __init__(
         self,
-        func: FunctionType,
+        func: typing.Callable[..., typing.Awaitable[None]],
         interval: int,
         autostart: bool,
         wait_before: bool,
@@ -172,6 +173,9 @@ class InfiniteLoop:
         self._wait_for_stop.set()
 
     def stop(self, *args, **kwargs):
+        if not self.module_instance:
+            return asyncio.ensure_future(stop_placeholder())
+
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
@@ -189,6 +193,9 @@ class InfiniteLoop:
         return asyncio.ensure_future(stop_placeholder())
 
     def start(self, *args, **kwargs):
+        if not self.module_instance:
+            return
+
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(  # noqa: F841
                 self.module_instance.allmodules.client.tg_id
@@ -241,10 +248,10 @@ class InfiniteLoop:
 
 def loop(
     interval: int = 5,
-    autostart: typing.Optional[bool] = False,
-    wait_before: typing.Optional[bool] = False,
+    autostart: bool = False,
+    wait_before: bool = False,
     stop_clause: typing.Optional[str] = None,
-) -> FunctionType:
+) -> typing.Callable[..., InfiniteLoop]:
     """
     Create new infinite loop from class method
     :param interval: Loop iterations delay
@@ -318,7 +325,7 @@ def translatable_docstring(cls):
             else True
         )
 
-    config_complete._old_ = cls.config_complete
+    config_complete._old_ = cls.config_complete  # type: ignore
     cls.config_complete = config_complete
 
     for command_, func in get_commands(cls).items():
@@ -337,7 +344,7 @@ tds = translatable_docstring  # Shorter name for modules to use
 
 def ratelimit(func: Command) -> Command:
     """Decorator that causes ratelimiting for this command to be enforced more strictly"""
-    func.ratelimit = True
+    func.ratelimit = True  # type: ignore
     return func
 
 
@@ -475,9 +482,9 @@ def raw_handler(*updates: TLObject):
     """
 
     def inner(func: Command) -> Command:
-        func.is_raw_handler = True
-        func.updates = updates
-        func.id = uuid4().hex
+        func.is_raw_handler = True  # type: ignore
+        func.updates = updates  # type: ignore
+        func.id = uuid4().hex  # type: ignore
         return func
 
     return inner
@@ -636,9 +643,10 @@ class Modules:
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
-        spec.loader.exec_module(module)
+        if not spec.loader:
+            raise LoadError(f"Loader is not set for {module_name}")
 
-        ret = None
+        spec.loader.exec_module(module)
 
         ret = next(
             (
@@ -648,6 +656,9 @@ class Modules:
             ),
             None,
         )
+
+        if not ret:
+            raise LoadError(f"Module {module_name} does not contain a Module subclass")
 
         if hasattr(module, "__version__"):
             ret.__version__ = module.__version__
@@ -669,7 +680,11 @@ class Modules:
             )
 
             if origin == "<string>":
-                Path(path).write_text(spec.loader.data.decode())
+                data = getattr(spec.loader, "data", None)
+                if not isinstance(data, bytes):
+                    raise LoadError("No data in loader")
+
+                Path(path).write_text(data.decode())
 
                 logger.debug("Saved class %s to path %s", cls_name, path)
 
@@ -697,14 +712,14 @@ class Modules:
     def _remove_core_protection(self) -> bool:
         from . import main
 
-        return self._db.get(main.__name__, "remove_core_protection", False)
+        return bool(self._db.get(main.__name__, "remove_core_protection", False))
 
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
-        if instance.__origin__.startswith("<core"):
+        if instance.__origin__ and instance.__origin__.startswith("<core"):
             self._core_commands += list(
                 map(lambda x: x.lower(), list(instance.hikka_commands))
             )
@@ -714,7 +729,9 @@ class Modules:
             if (
                 not self._remove_core_protection
                 and _command.lower() in self._core_commands
-                and not instance.__origin__.startswith("<core")
+                and not (
+                    instance.__origin__ and instance.__origin__.startswith("<core")
+                )
             ):
                 with contextlib.suppress(Exception):
                     self.modules.remove(instance)
@@ -735,6 +752,7 @@ class Modules:
                 if (
                     hasattr(func, "__self__")
                     and hasattr(self.inline_handlers[name], "__self__")
+                    and isinstance(func, types.MethodType)
                     and (
                         func.__self__.__class__.__name__
                         != self.inline_handlers[name].__self__.__class__.__name__
@@ -758,8 +776,11 @@ class Modules:
             if name.lower() in self.callback_handlers and (
                 hasattr(func, "__self__")
                 and hasattr(self.callback_handlers[name], "__self__")
-                and func.__self__.__class__.__name__
-                != self.callback_handlers[name].__self__.__class__.__name__
+                and isinstance(func, types.MethodType)
+                and (
+                    func.__self__.__class__.__name__
+                    != self.callback_handlers[name].__self__.__class__.__name__
+                )
             ):
                 logger.debug(
                     "Duplicate callback_handler %s of %s",
@@ -774,8 +795,11 @@ class Modules:
             if name.lower() in self.inline_handlers and (
                 hasattr(func, "__self__")
                 and hasattr(self.inline_handlers[name], "__self__")
-                and func.__self__.__class__.__name__
-                == self.inline_handlers[name].__self__.__class__.__name__
+                and isinstance(func, types.MethodType)
+                and (
+                    func.__self__.__class__.__name__
+                    == self.inline_handlers[name].__self__.__class__.__name__
+                )
             ):
                 del self.inline_handlers[name.lower()]
                 logger.debug(
@@ -789,8 +813,11 @@ class Modules:
             if name.lower() in self.callback_handlers and (
                 hasattr(func, "__self__")
                 and hasattr(self.callback_handlers[name], "__self__")
-                and func.__self__.__class__.__name__
-                == self.callback_handlers[name].__self__.__class__.__name__
+                and isinstance(func, types.MethodType)
+                and (
+                    func.__self__.__class__.__name__
+                    == self.callback_handlers[name].__self__.__class__.__name__
+                )
             ):
                 del self.callback_handlers[name.lower()]
                 logger.debug(
@@ -841,15 +868,14 @@ class Modules:
         key = main.__name__
         default = "."
 
-        return self._db.get(key, "command_prefix", default)
+        return str(self._db.get(key, "command_prefix", default))
 
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
-        instance.allmodules = self
-        instance.internal_init()
+        instance.internal_init(self)
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
@@ -909,7 +935,7 @@ class Modules:
 
         return None
 
-    def dispatch(self, _command: str) -> typing.Tuple[str, typing.Optional[str]]:
+    def dispatch(self, _command: str) -> typing.Tuple[str, typing.Optional[Command]]:
         """Dispatch command to appropriate module"""
 
         return next(
@@ -935,12 +961,15 @@ class Modules:
         with contextlib.suppress(AttributeError):
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
-        if hasattr(mod, "config"):
+        if getattr(mod, "config", None):
             modcfg = self._db.get(
                 mod.__class__.__name__,
                 "__config__",
                 {},
             )
+            if not isinstance(modcfg, dict):
+                modcfg = {}
+
             try:
                 for conf in mod.config:
                     with contextlib.suppress(validators.ValidationError):
@@ -967,7 +996,7 @@ class Modules:
             return
 
         if not hasattr(mod, "strings"):
-            mod.strings = {}
+            mod.strings = {}  # type: ignore
 
         mod.strings = Strings(mod, self.translator)
         mod.translator = self.translator
@@ -1004,7 +1033,7 @@ class Modules:
         if from_dlmod:
             try:
                 if len(inspect.signature(mod.on_dlmod).parameters) == 2:
-                    await mod.on_dlmod(self.client, self._db)
+                    await mod.on_dlmod(self.client, self._db)  # type: ignore
                 else:
                     await mod.on_dlmod()
             except Exception:
@@ -1012,7 +1041,7 @@ class Modules:
 
         try:
             if len(inspect.signature(mod.client_ready).parameters) == 2:
-                await mod.client_ready(self.client, self._db)
+                await mod.client_ready(self.client, self._db)  # type: ignore
             else:
                 await mod.client_ready()
         except SelfUnload as e:
@@ -1186,3 +1215,13 @@ class Modules:
                 )
 
         return True
+
+    async def check_security(
+        self,
+        message: typing.Optional[Message],
+        func: typing.Union[Command, int],
+        user_id: typing.Optional[int] = None,
+        inline_cmd: typing.Optional[str] = None,
+        *,
+        usernames: typing.Optional[typing.List[str]] = None,
+    ) -> bool: ...

@@ -11,20 +11,26 @@ import os
 import random
 import signal
 import sys
+from typing import Callable
 
 
 async def fw_protect():
     await asyncio.sleep(random.randint(1000, 3000) / 1000)
 
 
-def get_startup_callback() -> callable:
-    return lambda *_: os.execl(
-        sys.executable,
-        sys.executable,
-        "-m",
-        os.path.relpath(os.path.abspath(os.path.dirname(os.path.abspath(__file__)))),
-        *sys.argv[1:],
-    )
+def get_startup_callback() -> Callable:
+    def startup_callback():
+        os.execl(
+            sys.executable,
+            sys.executable,
+            "-m",
+            os.path.relpath(
+                os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+            ),
+            *sys.argv[1:],
+        )
+
+    return startup_callback
 
 
 def die():

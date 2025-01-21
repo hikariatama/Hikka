@@ -7,14 +7,15 @@ import typing
 logger = logging.getLogger(__name__)
 
 
-def proxy0(data):
-    def proxy1():
+T = typing.TypeVar('T')
+
+def proxy0(data: T) -> typing.Callable[[], T]:
+    def proxy1() -> T:
         return data
 
     return proxy1
 
-
-_CELLTYPE = type(proxy0(None).__closure__[0])
+_CELLTYPE = type(proxy0(None).__closure__[0]) # type: ignore
 
 
 def replace_all_refs(replace_from: typing.Any, replace_to: typing.Any) -> typing.Any:
@@ -95,7 +96,7 @@ def replace_all_refs(replace_from: typing.Any, replace_to: typing.Any) -> typing
                 return proxy1
 
             proxy = _proxy0(replace_to)
-            newcell = proxy.__closure__[0]
+            newcell = proxy.__closure__[0] # type: ignore
             replace_all_refs(referrer, newcell)
 
         elif isinstance(referrer, _types.FunctionType):

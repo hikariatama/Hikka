@@ -78,6 +78,6 @@ def api_config(tty: typing.Optional[bool] = None):
         tty_print("\033[0;91mCancelled\033[0m", tty)
         sys.exit(0)
 
-    main.save_config_key("api_id", int(api_id))
+    main.save_config_key("api_id", api_id)
     main.save_config_key("api_hash", api_hash)
     tty_print("\033[0;92mAPI config saved\033[0m", tty)

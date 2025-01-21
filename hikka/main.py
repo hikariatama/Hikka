@@ -23,7 +23,6 @@
 # You can redistribute it and/or modify it under the terms of the GNU AGPLv3
 # 🔑 https://www.gnu.org/licenses/agpl-3.0.html
 
-
 import argparse
 import asyncio
 import collections
@@ -64,7 +63,6 @@ from . import database, loader, utils, version
 from ._internal import print_banner, restart
 from .dispatcher import CommandDispatcher
 from .qr import QRCode
-from .secure import patcher
 from .tl_cache import CustomTelegramClient
 from .translations import Translator
 from .version import __version__
@@ -74,6 +72,7 @@ try:
 except ImportError:
     web_available = False
     logging.exception("Unable to import web")
+    core = None
 else:
     web_available = True
 
@@ -170,7 +169,7 @@ def run_config():
     return configurator.api_config(IS_TERMUX or None)
 
 
-def get_config_key(key: str) -> typing.Union[str, bool]:
+def get_config_key(key: str) -> typing.Union[str, typing.Literal[False]]:
     """
     Parse and return key from config
     :param key: Key name in config
@@ -216,7 +215,7 @@ def gen_port(cfg: str = "port", no8080: bool = False) -> int:
 
     # But for own server we generate new free port, and assign to it
     if port := get_config_key(cfg):
-        return port
+        return int(port)
 
     # If we didn't get port from config, generate new one
     # First, try to randomly get port
@@ -229,7 +228,7 @@ def gen_port(cfg: str = "port", no8080: bool = False) -> int:
     return port
 
 
-def parse_arguments() -> dict:
+def parse_arguments() -> argparse.Namespace:
     """
     Parses the arguments
     :returns: Dictionary with arguments
@@ -295,12 +294,6 @@ def parse_arguments() -> dict:
         dest="sandbox",
         action="store_true",
         help="Die instead of restart",
-    )
-    parser.add_argument(
-        "--isolated-env",
-        dest="isolated_env",
-        action="store_true",
-        help="Indicate that Hikka is running under the isolated environment",
     )
     parser.add_argument(
         "--proxy-pass",
@@ -369,7 +362,6 @@ class Hikka:
 
         self.clients = SuperList()
         self.ready = asyncio.Event()
-        self._check_private_rights()
         self._read_sessions()
         self._get_api_token()
         self._get_proxy()
@@ -412,25 +404,10 @@ class Hikka:
                 )
             )
             for session in filter(
-                lambda f: f.startswith("hikka-") and f.endswith(".session"),
+                lambda f: str(f).startswith("hikka-") and str(f).endswith(".session"),
                 os.listdir(BASE_DIR),
             )
         ]
-
-    def _check_private_rights(self):
-        """If the script is running in a non-isolated environment, checks for sessions under `private` folder"""
-        if not self.arguments.isolated_env:
-            if any(
-                filter(
-                    lambda f: f.startswith("hikka-") and f.endswith(".session"),
-                    os.listdir(os.path.join(BASE_DIR, "private")),
-                )
-            ):
-                print("\033[0;96mRestarting under isolated environment...\033[0m")
-                os.execv(
-                    "/bin/bash",
-                    ["/bin/bash", os.path.join(BASE_DIR, "start.sh")],
-                )
 
     def _get_api_token(self):
         """Get API Token from disk or environment"""
@@ -446,7 +423,7 @@ class Hikka:
                     .read_text()
                     .splitlines()
                 )
-                save_config_key("api_id", int(api_id))
+                save_config_key("api_id", str(api_id))
                 save_config_key("api_hash", api_hash)
                 (Path(BASE_DIR) / "api_token.txt").unlink()
                 logging.debug("Migrated api_token.txt to config.json")
@@ -457,7 +434,7 @@ class Hikka:
             )
         except FileNotFoundError:
             try:
-                from . import api_token
+                from . import api_token  # type: ignore
             except ImportError:
                 try:
                     api_token = api_token_type(
@@ -473,6 +450,7 @@ class Hikka:
         """Initialize web"""
         if (
             not web_available
+            or not core
             or getattr(self.arguments, "disable_web", False)
             or IS_TERMUX
         ):
@@ -521,7 +499,6 @@ class Hikka:
         session = SQLiteSession(
             os.path.join(
                 BASE_DIR,
-                "private",
                 f"hikka-{telegram_id}",
             )
         )
@@ -553,6 +530,9 @@ class Hikka:
     async def _web_banner(self):
         """Shows web banner"""
         logging.info("✅ Web mode ready for configuration")
+        if not self.web:
+            return
+
         logging.info("🌐 Please visit %s", self.web.url)
 
     async def wait_for_web_auth(self, token: str) -> bool:
@@ -587,17 +567,13 @@ class Hikka:
 
     async def _initial_setup(self) -> bool:
         """Responsible for first start"""
-        if self.arguments.isolated_env:
-            print(
-                "\033[0;96mPlease, restart Hikka w/o isolated environment to proceed"
-                " with initial setup\033[0m"
-            )
-            return False
-
         if self.arguments.no_auth:
             return False
 
         if not self.web:
+            if not self.api_token:
+                raise RuntimeError("API Token is not set")
+
             client = CustomTelegramClient(
                 MemorySession(),
                 self.api_token.ID,
@@ -658,7 +634,7 @@ class Hikka:
                         return True
                     except KeyboardInterrupt:
                         print("\033[2J\033[3;1f")
-                        return None
+                        return False
 
                 return False
 
@@ -728,6 +704,9 @@ class Hikka:
         :returns: `True` if at least one client started successfully
         """
         for session in self.sessions.copy():
+            if not self.api_token:
+                raise RuntimeError("API Token is not set")
+
             try:
                 client = CustomTelegramClient(
                     session,
@@ -742,8 +721,6 @@ class Hikka:
                     lang_code="en",
                     system_lang_code="en-US",
                 )
-                if session.server_address == "0.0.0.0":
-                    patcher.patch(client, session)
 
                 await client.connect()
                 client.phone = "never gonna give you up"
@@ -803,10 +780,12 @@ class Hikka:
             logo = (
                 "█ █ █ █▄▀ █▄▀ ▄▀█\n"
                 "█▀█ █ █ █ █ █ █▀█\n\n"
-                f"• Build: {build[:7]}\n"
+                f"• Build: {build[:7] if build else 'n/a'}\n"
                 f"• Version: {'.'.join(list(map(str, list(__version__))))}\n"
                 f"• {upd}\n"
             )
+
+            web_url = None
 
             if not self.omit_log:
                 print(logo)
@@ -818,14 +797,14 @@ class Hikka:
                 logging.debug(
                     "\n🌘 Hikka %s #%s (%s) started\n%s",
                     ".".join(list(map(str, list(__version__)))),
-                    build[:7],
+                    build[:7] if build else "n/a",
                     upd,
                     web_url,
                 )
                 self.omit_log = True
 
             await client.hikka_inline.bot.send_animation(
-                logging.getLogger().handlers[0].get_logid_by_client(client.tg_id),
+                logging.getLogger().handlers[0].get_logid_by_client(client.tg_id),  # type: ignore
                 "https://github.com/hikariatama/assets/raw/master/hikka_banner.mp4",
                 caption=(
                     "🌘 <b>Hikka {} started!</b>\n\n🌳 <b>GitHub commit SHA: <a"
@@ -833,9 +812,9 @@ class Hikka:
                     " <b>Update status: {}</b>\n<b>{}</b>".format(
                         ".".join(list(map(str, list(__version__)))),
                         build,
-                        build[:7],
+                        build[:7] if build else "n/a",
                         upd,
-                        web_url,
+                        web_url or "",
                     )
                 ),
             )
@@ -859,30 +838,14 @@ class Hikka:
         client.dispatcher = dispatcher
         modules.check_security = dispatcher.check_security
 
-        client.add_event_handler(
-            dispatcher.handle_incoming,
-            events.NewMessage,
-        )
-
-        client.add_event_handler(
-            dispatcher.handle_incoming,
-            events.ChatAction,
-        )
-
+        client.add_event_handler(dispatcher.handle_incoming, events.NewMessage)
+        client.add_event_handler(dispatcher.handle_incoming, events.ChatAction)
         client.add_event_handler(
             dispatcher.handle_command,
             events.NewMessage(forwards=False),
         )
-
-        client.add_event_handler(
-            dispatcher.handle_command,
-            events.MessageEdited(),
-        )
-
-        client.add_event_handler(
-            dispatcher.handle_raw,
-            events.Raw(),
-        )
+        client.add_event_handler(dispatcher.handle_command, events.MessageEdited())
+        client.add_event_handler(dispatcher.handle_raw, events.Raw())
 
     async def amain(self, first: bool, client: CustomTelegramClient):
         """Entrypoint for async init, run once for each user"""

@@ -21,6 +21,7 @@ import time
 import typing
 from dataclasses import dataclass, field
 from importlib.abc import SourceLoader
+from types import CodeType
 
 import requests
 from hikkatl.hints import EntityLike
@@ -32,6 +33,7 @@ from hikkatl.tl.types import (
     Message,
     UserFull,
 )
+from hikkatl.utils import get_input_peer
 
 from . import version
 from ._reference_finder import replace_all_refs
@@ -44,7 +46,19 @@ from .inline.types import (
     InlineQuery,
     InlineUnit,
 )
-from .pointers import PointerDict, PointerList
+from .pointers import (
+    NamedTupleMiddlewareDict,
+    NamedTupleMiddlewareList,
+    PointerDict,
+    PointerList,
+)
+
+if typing.TYPE_CHECKING:
+    from .database import Database
+    from .inline.core import InlineManager
+    from .loader import Modules
+    from .tl_cache import CustomTelegramClient
+    from .translations import Strings, Translator
 
 __all__ = [
     "JSONSerializable",
@@ -83,10 +97,10 @@ class StringLoader(SourceLoader):
         self.data = data.encode("utf-8") if isinstance(data, str) else data
         self.origin = origin
 
-    def get_source(self, _=None) -> str:
+    def get_source(self, fullname=None) -> str:
         return self.data.decode("utf-8")
 
-    def get_code(self, fullname: str) -> bytes:
+    def get_code(self, fullname: str) -> CodeType | None:
         return (
             compile(source, self.origin, "exec", dont_inherit=True)
             if (source := self.get_data(fullname))
@@ -101,7 +115,23 @@ class StringLoader(SourceLoader):
 
 
 class Module:
-    strings = {"name": "Unknown"}
+    allmodules: "Modules" = None  # type: ignore
+    db: "Database" = None  # type: ignore
+    _db: "Database" = None  # type: ignore
+    client: "CustomTelegramClient" = None  # type: ignore
+    _client: "CustomTelegramClient" = None  # type: ignore
+    tg_id: int = None  # type: ignore
+    _tg_id: int = None  # type: ignore
+    lookup: typing.Callable = None  # type: ignore
+    get_prefix: typing.Callable = None  # type: ignore
+    inline: "InlineManager" = None  # type: ignore
+    allclients: "list[CustomTelegramClient]" = None  # type: ignore
+    __version__: str | None = None
+    __origin__: str | None = None
+    config: "ModuleConfig" = None  # type: ignore
+    name: str = None  # type: ignore
+    strings: "Strings" = {"name": "Unknown"}  # type: ignore
+    translator: "Translator" = None  # type: ignore
 
     """There is no help for this module"""
 
@@ -111,8 +141,9 @@ class Module:
     async def client_ready(self):
         """Called after client is ready (after config_loaded)"""
 
-    def internal_init(self):
+    def internal_init(self, allmodules: "Modules"):
         """Called after the class is initialized in order to pass the client and db. Do not call it yourself"""
+        self.allmodules = allmodules
         self.db = self.allmodules.db
         self._db = self.allmodules.db
         self.client = self.allmodules.client
@@ -168,6 +199,8 @@ class Module:
             (await self._client.send_message(peer, cmd))
             if peer
             else (await (message.edit if edit else message.respond)(cmd))
+            if message
+            else None
         )
         await self.allmodules.commands[command](message)
         return message
@@ -278,11 +311,15 @@ class Module:
         for frame in frames:
             if isinstance(message, Message):
                 if inline:
-                    message = await self.inline.form(
+                    form = await self.inline.form(
                         message=message,
                         text=frame,
                         reply_markup={"text": "\u0020\u2800", "data": "empty"},
                     )
+                    if not form:
+                        raise ValueError("Failed to create inline form")
+
+                    message = form
                 else:
                     message = await utils.answer(message, frame)
             elif isinstance(message, InlineMessage) and inline:
@@ -300,14 +337,20 @@ class Module:
         return self._db.get(self.__class__.__name__, key, default)
 
     def set(self, key: str, value: JSONSerializable) -> bool:
-        self._db.set(self.__class__.__name__, key, value)
+        return self._db.set(self.__class__.__name__, key, value)
 
     def pointer(
         self,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
         item_type: typing.Optional[typing.Any] = None,
-    ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
+    ) -> typing.Union[
+        JSONSerializable,
+        PointerList,
+        PointerDict,
+        NamedTupleMiddlewareList,
+        NamedTupleMiddlewareDict,
+    ]:
         return self._db.pointer(self.__class__.__name__, key, default, item_type)
 
     async def _decline(
@@ -318,12 +361,22 @@ class Module:
     ):
         from . import utils
 
+        if not isinstance(channel, Channel):
+            channel = await self.client.get_entity(channel)
+
+        if not isinstance(channel, Channel):
+            raise TypeError("`peer` field must be a channel")
+
+        declined_joins = self._db.get("hikka.main", "declined_joins", [])
+        if not isinstance(declined_joins, list):
+            declined_joins = []
+
         self._db.set(
             "hikka.main",
             "declined_joins",
-            list(set(self._db.get("hikka.main", "declined_joins", []) + [channel.id])),
+            list(set(declined_joins + [channel.id])),
         )
-        event.status = False
+        event.status = False  # type: ignore
         event.set()
         await call.edit(
             (
@@ -355,18 +408,28 @@ class Module:
         from . import utils
 
         event = asyncio.Event()
+        input_peer = get_input_peer(self.inline.bot_username)
+        if not input_peer:
+            raise RuntimeError("Bot username is not set")
         await self.client(
             UpdateNotifySettingsRequest(
-                peer=self.inline.bot_username,
+                peer=input_peer,
                 settings=InputPeerNotifySettings(show_previews=False, silent=False),
             )
         )
 
         channel = await self.client.get_entity(peer)
-        if channel.id in self._db.get("hikka.main", "declined_joins", []):
+        if not isinstance(channel, Channel):
+            raise TypeError("`peer` field must be a channel")
+
+        declined_joins = self._db.get("hikka.main", "declined_joins", [])
+        if not isinstance(declined_joins, list):
+            declined_joins = []
+
+        if channel.id in declined_joins:
             if assure_joined:
                 raise LoadError(
-                    f"You need to join @{channel.username} in order to use this module"
+                    f"You need to join @{channel.username} in order to use this module"  # type: ignore
                 )
 
             return False
@@ -384,7 +447,7 @@ class Module:
             self.tg_id,
             "https://i.gifer.com/SD5S.gif",
             caption=(
-                self._client.loader.lookup("translations")
+                self._client.loader.lookup("translations")  # type: ignore
                 .strings("requested_join")
                 .format(
                     self.__class__.__name__,
@@ -393,18 +456,20 @@ class Module:
                     utils.escape_html(reason),
                 )
             ),
-            reply_markup=self.inline.generate_markup([
-                {
-                    "text": "💫 Approve",
-                    "callback": self.lookup("loader").approve_internal,
-                    "args": (channel, event),
-                },
-                {
-                    "text": "✖️ Decline",
-                    "callback": self._decline,
-                    "args": (channel, event),
-                },
-            ]),
+            reply_markup=self.inline.generate_markup(
+                [
+                    {
+                        "text": "💫 Approve",
+                        "callback": self.lookup("loader").approve_internal,
+                        "args": (channel, event),
+                    },
+                    {
+                        "text": "✖️ Decline",
+                        "callback": self._decline,
+                        "args": (channel, event),
+                    },
+                ]
+            ),
         )
 
         self.hikka_wait_channel_approve = (
@@ -412,18 +477,18 @@ class Module:
             channel,
             reason,
         )
-        event.status = False
+        event.status = False  # type: ignore
         await event.wait()
 
         with contextlib.suppress(AttributeError):
             delattr(self, "hikka_wait_channel_approve")
 
-        if assure_joined and not event.status:
+        if assure_joined and not event.status:  # type: ignore
             raise LoadError(
                 f"You need to join @{channel.username} in order to use this module"
             )
 
-        return event.status
+        return event.status  # type: ignore
 
     async def import_lib(
         self,
@@ -463,15 +528,12 @@ class Module:
         code = code.text
 
         if re.search(r"# ?scope: ?hikka_min", code):
-            ver = tuple(
-                map(
-                    int,
-                    re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)[1].split(
-                        "."
-                    ),
-                )
-            )
+            match = re.search(r"# ?scope: ?hikka_min ((\d+\.){2}\d+)", code)
+            if not match:
+                _raise(ValueError("Invalid hikka_min scope format"))
+                raise
 
+            ver = tuple(map(int, match[1].split(".")))
             if version.__version__ < ver:
                 _raise(
                     RuntimeError(
@@ -490,7 +552,10 @@ class Module:
         try:
             instance = importlib.util.module_from_spec(spec)
             sys.modules[module] = instance
-            spec.loader.exec_module(instance)
+            if spec.loader is not None:
+                spec.loader.exec_module(instance)
+            else:
+                raise ImportError("Loader is not available for the module spec")
         except ImportError as e:
             logger.info(
                 "Library loading failed, attemping dependency installation (%s)",
@@ -498,12 +563,16 @@ class Module:
             )
             # Let's try to reinstall dependencies
             try:
+                match = VALID_PIP_PACKAGES.search(code)
+                if not match:
+                    raise TypeError
+
                 requirements = list(
                     filter(
                         lambda x: not x.startswith(("-", "_", ".")),
                         map(
                             str.strip,
-                            VALID_PIP_PACKAGES.search(code)[1].split(),
+                            match[1].split(),
                         ),
                     )
                 )
@@ -512,7 +581,7 @@ class Module:
                     "No valid pip packages specified in code, attemping"
                     " installation from error"
                 )
-                requirements = [e.name]
+                requirements = [str(e.name)]
 
             logger.debug("Installing requirements: %s", requirements)
 
@@ -542,7 +611,7 @@ class Module:
             kwargs = utils.get_kwargs()
             kwargs["_did_requirements"] = True
 
-            return await self._mod_import_lib(**kwargs)  # Try again
+            return await self.import_lib(**kwargs)  # Try again
 
         lib_obj = next(
             (
@@ -555,6 +624,7 @@ class Module:
 
         if not lib_obj:
             _raise(ImportError("Invalid library. No class found"))
+            raise
 
         if not lib_obj.__class__.__name__.endswith("Lib"):
             _raise(
@@ -564,6 +634,7 @@ class Module:
                     )
                 )
             )
+            raise
 
         if (
             all(
@@ -577,8 +648,7 @@ class Module:
                 await self.lookup("loader")._send_stats(url)
 
         lib_obj.source_url = url.strip("/")
-        lib_obj.allmodules = self.allmodules
-        lib_obj.internal_init()
+        lib_obj.internal_init(self.allmodules)
 
         for old_lib in self.allmodules.libraries:
             if old_lib.name == lib_obj.name and (
@@ -610,6 +680,16 @@ class Module:
                 {},
             )
 
+            if not isinstance(libcfg, dict):
+                _raise(
+                    RuntimeError(
+                        "Library config must be a dictionary, not {}".format(
+                            type(libcfg)
+                        )
+                    )
+                )
+                raise
+
             for conf in lib_obj.config:
                 with contextlib.suppress(Exception):
                     lib_obj.config.set_no_raise(
@@ -632,7 +712,9 @@ class Module:
                 if hasattr(old_lib, "on_lib_update") and callable(
                     old_lib.on_lib_update
                 ):
-                    await old_lib.on_lib_update(lib_obj)
+                    presumably_coro = old_lib.on_lib_update(lib_obj)
+                    if asyncio.iscoroutine(presumably_coro):
+                        await presumably_coro
 
                 replace_all_refs(old_lib, lib_obj)
                 logger.debug(
@@ -648,7 +730,26 @@ class Module:
 class Library:
     """All external libraries must have a class-inheritant from this class"""
 
-    def internal_init(self):
+    allmodules: "Modules" = None  # type: ignore
+    db: "Database" = None  # type: ignore
+    _db: "Database" = None  # type: ignore
+    client: "CustomTelegramClient" = None  # type: ignore
+    _client: "CustomTelegramClient" = None  # type: ignore
+    tg_id: int = None  # type: ignore
+    _tg_id: int = None  # type: ignore
+    lookup: typing.Callable = None  # type: ignore
+    get_prefix: typing.Callable = None  # type: ignore
+    inline: "InlineManager" = None  # type: ignore
+    allclients: "list[CustomTelegramClient]" = None  # type: ignore
+    version: str | None = None
+    name: str = None  # type: ignore
+    source_url: str = None  # type: ignore
+    config: "LibraryConfig" = None  # type: ignore
+    strings: "Strings" = {"name": "Unknown"}  # type: ignore
+    translator: "Translator" = None  # type: ignore
+
+    def internal_init(self, allmodules: "Modules"):
+        self.allmodules = allmodules
         self.name = self.__class__.__name__
         self.db = self.allmodules.db
         self._db = self.allmodules.db
@@ -661,6 +762,12 @@ class Library:
         self.inline = self.allmodules.inline
         self.allclients = self.allmodules.allclients
 
+    async def init(self):
+        """Called after the library is loaded"""
+
+    async def on_lib_update(self, new_lib: "Library"):
+        """Called after the library is updated"""
+
     def _lib_get(
         self,
         key: str,
@@ -669,13 +776,19 @@ class Library:
         return self._db.get(self.__class__.__name__, key, default)
 
     def _lib_set(self, key: str, value: JSONSerializable) -> bool:
-        self._db.set(self.__class__.__name__, key, value)
+        return self._db.set(self.__class__.__name__, key, value)
 
     def _lib_pointer(
         self,
         key: str,
         default: typing.Optional[JSONSerializable] = None,
-    ) -> typing.Union[JSONSerializable, PointerDict, PointerList]:
+    ) -> typing.Union[
+        JSONSerializable,
+        PointerDict,
+        PointerList,
+        NamedTupleMiddlewareList,
+        NamedTupleMiddlewareDict,
+    ]:
         return self._db.pointer(self.__class__.__name__, key, default)
 
 
@@ -756,7 +869,11 @@ class ModuleConfig(dict):
     def __init__(self, *entries: typing.Union[str, "ConfigValue"]):
         if all(isinstance(entry, ConfigValue) for entry in entries):
             # New config format processing
-            self._config = {config.option: config for config in entries}
+            self._config = {
+                config.option: config
+                for config in entries
+                if isinstance(config, ConfigValue)
+            }
         else:
             # Legacy config processing
             keys = []
@@ -789,7 +906,7 @@ class ModuleConfig(dict):
             try:
                 # Compatibility tweak
                 # does nothing in Hikka
-                ret = ret(message)
+                ret = ret(message)  # type: ignore
             except Exception:
                 ret = ret()
 
@@ -864,7 +981,8 @@ class ConfigValue:
         Sets the config value w/o ValidationError being raised
         Should not be used uninternally
         """
-        return self.__setattr__("value", value, ignore_validation=True)
+        self.__setattr__("value", value, ignore_validation=True)
+        return True
 
     def __setattr__(
         self,
@@ -894,7 +1012,7 @@ class ConfigValue:
                     from . import validators
 
                     try:
-                        value = self.validator.validate(value)
+                        value = self.validator.validate(value)  # type: ignore
                     except validators.ValidationError as e:
                         if not ignore_validation:
                             raise e
@@ -915,12 +1033,12 @@ class ConfigValue:
                         "Float": 0.0,
                     }
 
-                    if self.validator.internal_id in defaults:
+                    if self.validator.internal_id in defaults:  # type: ignore
                         logger.debug(
                             "Config value was None, so it was reset to %s",
-                            defaults[self.validator.internal_id],
+                            defaults[self.validator.internal_id],  # type: ignore
                         )
-                        value = defaults[self.validator.internal_id]
+                        value = defaults[self.validator.internal_id]  # type: ignore
 
             # This attribute will tell the `Loader` to save this value in db
             self._save_marker = True
@@ -974,7 +1092,9 @@ class CacheRecordEntity:
     def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecordEntity") -> bool:
+    def __eq__(self, record: object) -> bool:
+        if not isinstance(record, CacheRecordEntity):
+            return NotImplemented
         return hash(record) == hash(self)
 
     def __hash__(self) -> int:
@@ -1008,7 +1128,9 @@ class CacheRecordPerms:
     def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecordPerms") -> bool:
+    def __eq__(self, record: object) -> bool:
+        if not isinstance(record, CacheRecordPerms):
+            return NotImplemented
         return hash(record) == hash(self)
 
     def __hash__(self) -> int:
@@ -1034,11 +1156,13 @@ class CacheRecordFullChannel:
     def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecordFullChannel") -> bool:
+    def __eq__(self, record: object) -> bool:
+        if not isinstance(record, CacheRecordFullChannel):
+            return NotImplemented
         return hash(record) == hash(self)
 
     def __hash__(self) -> int:
-        return hash((self._hashable_entity, self._hashable_user))
+        return hash(self.channel_id)
 
     def __str__(self) -> str:
         return f"CacheRecordFullChannel of {self.channel_id}"
@@ -1061,11 +1185,13 @@ class CacheRecordFullUser:
     def expired(self) -> bool:
         return self._exp < time.time()
 
-    def __eq__(self, record: "CacheRecordFullUser") -> bool:
+    def __eq__(self, record: object) -> bool:
+        if not isinstance(record, CacheRecordFullUser):
+            return NotImplemented
         return hash(record) == hash(self)
 
     def __hash__(self) -> int:
-        return hash((self._hashable_entity, self._hashable_user))
+        return hash(self.user_id)
 
     def __str__(self) -> str:
         return f"CacheRecordFullUser of {self.user_id}"

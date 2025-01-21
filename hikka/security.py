@@ -24,6 +24,7 @@
 
 import logging
 import time
+import types
 import typing
 
 from hikkatl.hints import EntityLike
@@ -32,7 +33,7 @@ from hikkatl.tl.types import ChatParticipantAdmin, ChatParticipantCreator, Messa
 from hikkatl.utils import get_display_name
 
 from . import main, utils
-from .database import Database
+from .database import Database, PointerList
 from .tl_cache import CustomTelegramClient
 from .types import Command
 
@@ -96,7 +97,7 @@ def owner(func: Command) -> Command:
     return _sec(func, OWNER)
 
 
-def _deprecated(name: str) -> callable:
+def _deprecated(name: str) -> typing.Callable[[Command], Command]:
     def decorator(func: Command) -> Command:
         logger.debug("Using deprecated decorator `%s`, which will have no effect", name)
         return func
@@ -158,7 +159,7 @@ def inline_everyone(func: Command) -> Command:
 
 def _sec(func: Command, flags: int) -> Command:
     prev = getattr(func, "security", 0)
-    func.security = prev | OWNER | flags
+    func.security = prev | OWNER | flags  # type: ignore
     return func
 
 
@@ -168,15 +169,31 @@ class SecurityManager:
     def __init__(self, client: CustomTelegramClient, db: Database):
         self._client = client
         self._db = db
-        self._cache: typing.Dict[int, dict] = {}
+        self._cache: typing.Dict[int | str, dict] = {}
         self._last_warning: int = 0
         self._sgroups: typing.Dict[str, SecurityGroup] = {}
 
-        self._any_admin = self.any_admin = db.get(__name__, "any_admin", False)
-        self._default = self.default = db.get(__name__, "default", DEFAULT_PERMISSIONS)
-        self._tsec_chat = self.tsec_chat = db.pointer(__name__, "tsec_chat", [])
-        self._tsec_user = self.tsec_user = db.pointer(__name__, "tsec_user", [])
-        self._owner = self.owner = db.pointer(__name__, "owner", [])
+        self._any_admin = self.any_admin = bool(db.get(__name__, "any_admin", False))
+        self._default = self.default = int(
+            db.get(__name__, "default", DEFAULT_PERMISSIONS)  # type: ignore
+        )
+        tsec_chat_pointer = db.pointer(__name__, "tsec_chat", [])
+        if not isinstance(tsec_chat_pointer, PointerList):
+            raise RuntimeError("Database integrity violation")
+        self._tsec_chat: PointerList = tsec_chat_pointer
+        self.tsec_chat = self._tsec_chat
+
+        tsec_user_pointer = db.pointer(__name__, "tsec_user", [])
+        if not isinstance(tsec_user_pointer, PointerList):
+            raise RuntimeError("Database integrity violation")
+        self._tsec_user: PointerList = tsec_user_pointer
+        self.tsec_user = self._tsec_user
+
+        owner_pointer = db.pointer(__name__, "owner", [])
+        if not isinstance(owner_pointer, PointerList):
+            raise RuntimeError("Database integrity violation")
+        self._owner: PointerList = owner_pointer
+        self.owner = self._owner
 
         self._reload_rights()
 
@@ -230,14 +247,16 @@ class SecurityManager:
         if duration < 0:
             raise ValueError(f"Invalid duration: {duration}")
 
-        (self._tsec_chat if target_type == "chat" else self._tsec_user).append({
-            "target": target.id,
-            "rule_type": rule.split("/")[0],
-            "rule": rule.split("/", maxsplit=1)[1],
-            "expires": int(time.time() + duration) if duration else 0,
-            "entity_name": get_display_name(target),
-            "entity_url": utils.get_entity_url(target),
-        })
+        (self._tsec_chat if target_type == "chat" else self._tsec_user).append(
+            {
+                "target": target.id,
+                "rule_type": rule.split("/")[0],
+                "rule": rule.split("/", maxsplit=1)[1],
+                "expires": int(time.time() + duration) if duration else 0,
+                "entity_name": get_display_name(target),
+                "entity_url": utils.get_entity_url(target),
+            }
+        )
 
     def remove_rules(self, target_type: str, target_id: int) -> bool:
         """
@@ -303,7 +322,11 @@ class SecurityManager:
             # every time he changes permissions. It doesn't
             # decrease security at all, bc user anyway can
             # access this attribute
-            config = self._db.get(__name__, "masks", {}).get(
+            masks = self._db.get(__name__, "masks", {})
+            if not isinstance(masks, dict):
+                masks = {}
+
+            config = masks.get(
                 f"{func.__module__}.{func.__name__}",
                 getattr(func, "security", self._default),
             )
@@ -312,7 +335,11 @@ class SecurityManager:
             logger.error("Security config contains unknown bits")
             return False
 
-        return config & self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS)
+        perms = self._db.get(__name__, "bounding_mask", DEFAULT_PERMISSIONS)
+        if not isinstance(perms, int):
+            perms = DEFAULT_PERMISSIONS
+
+        return config & perms
 
     def _check_tsec_inline(self, user_id: int, command: str) -> bool:
         """
@@ -323,13 +350,16 @@ class SecurityManager:
         :return: True if permitted, False otherwise
         """
 
-        return command and any(
-            (
-                rule["target"] == user_id
-                and rule["rule_type"] == "inline"
-                and rule["rule"] == command
+        return bool(
+            command
+            and any(
+                (
+                    rule["target"] == user_id
+                    and rule["rule_type"] == "inline"
+                    and rule["rule"] == command
+                )
+                for rule in self._tsec_user
             )
-            for rule in self._tsec_user
         )
 
     def check_tsec(self, user_id: int, command: str) -> bool:
@@ -381,7 +411,7 @@ class SecurityManager:
         if not (config := self.get_flags(func)):
             return False
 
-        if not user_id:
+        if not user_id and message:
             user_id = message.sender_id
 
         is_channel = False
@@ -421,7 +451,7 @@ class SecurityManager:
                     ),
                     DeprecationWarning,
                 )
-                self._last_warning = time.time()
+                self._last_warning = int(time.time())
 
         f_group_owner = config & GROUP_OWNER
         f_group_admin_add_admins = config & GROUP_ADMIN_ADD_ADMINS
@@ -447,12 +477,19 @@ class SecurityManager:
         if user_id in self._owner:
             return True
 
-        if user_id in self._db.get(main.__name__, "blacklist_users", []):
+        blacklist_users = self._db.get(main.__name__, "blacklist_users", [])
+        if not isinstance(blacklist_users, list):
+            blacklist_users = []
+
+        if user_id in blacklist_users:
             return False
 
         if message is None:  # In case of checking inline query security map
-            return self._check_tsec_inline(user_id, inline_cmd) or bool(
-                config & EVERYONE
+            return (
+                user_id
+                and inline_cmd
+                and self._check_tsec_inline(user_id, inline_cmd)
+                or bool(config & EVERYONE)
             )
 
         try:
@@ -483,6 +520,7 @@ class SecurityManager:
 
                         if (
                             permission["rule_type"] == "module"
+                            and isinstance(func, types.MethodType)
                             and permission["rule"] == func.__self__.__class__.__name__
                         ):
                             logger.debug(
@@ -498,6 +536,7 @@ class SecurityManager:
 
                     if (
                         info["rule_type"] == "module"
+                        and isinstance(func, types.MethodType)
                         and info["rule"] == func.__self__.__class__.__name__
                     ):
                         logger.debug(
@@ -515,6 +554,7 @@ class SecurityManager:
 
                         if (
                             info["rule_type"] == "module"
+                            and isinstance(func, types.MethodType)
                             and info["rule"] == func.__self__.__class__.__name__
                         ):
                             logger.debug(
@@ -616,7 +656,7 @@ class SecurityManager:
                 }
 
             if not participant:
-                return
+                return False
 
             if (
                 isinstance(participant, ChatParticipantCreator)

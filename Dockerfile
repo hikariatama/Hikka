@@ -1,6 +1,6 @@
 # Dockerfile from https://github.com/python-poetry/poetry/discussions/1879
 # `python-base` sets up all our shared environment variables
-FROM python:3.9.5-slim as python-base
+FROM python:3.12.8-slim as python-base
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc as files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -9,6 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
+    AIOHTTP_NO_EXTENSIONS=1 \
     \
     # poetry
     # https://python-poetry.org/docs/configuration/#using-environment-variables

@@ -10,10 +10,10 @@ __version__ = (1, 6, 4)
 
 import os
 
-import git
+from git.base import Repo
 
 try:
-    branch = git.Repo(
+    branch = Repo(
         path=os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     ).active_branch.name
 except Exception:

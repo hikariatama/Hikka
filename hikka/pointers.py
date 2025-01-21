@@ -71,7 +71,7 @@ class PointerList(list):
         super().extend(value)
         self._save()
 
-    def insert(self, index: int, value: typing.Any):
+    def insert(self, index: typing.SupportsIndex, value: typing.Any):
         super().insert(index, value)
         self._save()
 
@@ -79,7 +79,7 @@ class PointerList(list):
         super().remove(value)
         self._save()
 
-    def pop(self, index: int = -1) -> typing.Any:
+    def pop(self, index: typing.SupportsIndex = -1) -> typing.Any:
         a = super().pop(index)
         self._save()
         return a
@@ -138,7 +138,7 @@ class PointerDict(dict):
     def __str__(self):
         return f"PointerDict({dict(self)})"
 
-    def update(self, __m: dict) -> None:
+    def update(self, __m: dict) -> None:  # type: ignore
         super().update(__m)
         self._save()
 
@@ -299,7 +299,7 @@ class NamedTupleMiddlewareList(BaseSerializingMiddlewareList):
 
 
 class NamedTupleMiddlewareDict(BaseSerializingMiddlewareDict):
-    def __init__(self, pointer: PointerList, item_type: typing.Type[typing.Any]):
+    def __init__(self, pointer: PointerDict, item_type: typing.Type[typing.Any]):
         super().__init__(pointer)
         self._item_type = item_type
 

@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class BotPM(InlineUnit):
+    fsm = {}
+
     def set_fsm_state(
         self,
         user: typing.Union[str, int],

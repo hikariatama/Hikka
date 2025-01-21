@@ -15,7 +15,7 @@ from ruamel.yaml import YAML
 from . import utils
 from .database import Database
 from .tl_cache import CustomTelegramClient
-from .types import Module
+from .types import Library, Module
 
 logger = logging.getLogger(__name__)
 yaml = YAML(typ="safe")
@@ -44,6 +44,10 @@ def fmt(text: str, kwargs: dict) -> str:
 
 
 class BaseTranslator:
+    def __init__(self):
+        self._data = {}
+        self.db: Database = None  # type: ignore
+
     def _get_pack_content(
         self,
         pack: Path,
@@ -60,10 +64,10 @@ class BaseTranslator:
         if suffix == ".json":
             return json.loads(content)
 
-        content = yaml.load(content)
-        if all(len(key) == 2 for key in content):
+        parsed_content: dict = yaml.load(content)
+        if all(len(key) == 2 for key in parsed_content):
             return {
-                language: {{
+                language: {
                     (
                         f"{module.strip('$')}.{key}"
                         if module.startswith("$")
@@ -72,8 +76,8 @@ class BaseTranslator:
                     for module, strings in pack.items()
                     for key, value in strings.items()
                     if key != "name"
-                }}
-                for language, pack in content.items()
+                }
+                for language, pack in parsed_content.items()
             }
 
         return {
@@ -82,7 +86,7 @@ class BaseTranslator:
                 if module.startswith("$")
                 else f"{prefix}{module}.{key}"
             ): value
-            for module, strings in content.items()
+            for module, strings in parsed_content.items()
             for key, value in strings.items()
             if key != "name"
         }
@@ -103,7 +107,11 @@ class BaseTranslator:
         if any(len(key) != 2 for key in data):
             return data
 
-        if lang := self.db.get(__name__, "lang", False):
+        if (
+            self.db
+            and (lang := self.db.get(__name__, "lang", False))
+            and isinstance(lang, str)
+        ):
             return next(
                 (data[language] for language in lang.split() if language in data),
                 data.get("en", {}),
@@ -115,15 +123,19 @@ class BaseTranslator:
 class Translator(BaseTranslator):
     def __init__(self, client: CustomTelegramClient, db: Database):
         self._client = client
-        self.db = db
+        self.db: Database = db
         self._data = {}
         self.raw_data = {}
 
     async def init(self) -> bool:
-        self._data = self._get_pack_content(PACKS / "en.yml")
+        data = self._get_pack_content(PACKS / "en.yml")
+        if not data:
+            raise RuntimeError("Integrity check failed")
+
+        self._data = data
         self.raw_data["en"] = self._data.copy()
         any_ = False
-        if lang := self.db.get(__name__, "lang", False):
+        if (lang := self.db.get(__name__, "lang", False)) and isinstance(lang, str):
             for language in lang.split():
                 if utils.check_url(language):
                     try:
@@ -131,6 +143,8 @@ class Translator(BaseTranslator):
                             (await utils.run_sync(requests.get, language)).text,
                             language.split(".")[-1],
                         )
+                        if not data:
+                            raise ValueError("Empty data")
                     except Exception:
                         logger.exception("Unable to decode %s", language)
                         continue
@@ -146,6 +160,9 @@ class Translator(BaseTranslator):
                 ]:
                     if possible_path.exists():
                         data = self._get_pack_content(possible_path)
+                        if not data:
+                            raise ValueError("Empty data")
+
                         self._data.update(data)
                         self.raw_data[language] = data
                         any_ = True
@@ -176,14 +193,18 @@ class ExternalTranslator(BaseTranslator):
 
 
 class Strings:
-    def __init__(self, mod: Module, translator: Translator):  # skipcq: PYL-W0621
+    def __init__(
+        self,
+        mod: Module | Library,
+        translator: Translator,
+    ):  # skipcq: PYL-W0621
         self._mod = mod
         self._translator = translator
 
         if not translator:
             logger.debug("Module %s got empty translator %s", mod, translator)
 
-        self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
+        self._base_strings = mod.strings
         self.external_strings = {}
 
     def get(self, key: str, lang: typing.Optional[str] = None) -> str:
@@ -206,10 +227,12 @@ class Strings:
                     next(
                         (
                             f"strings_{lang}"
-                            for lang in self._translator.db.get(
-                                __name__,
-                                "lang",
-                                "en",
+                            for lang in str(
+                                self._translator.db.get(
+                                    __name__,
+                                    "lang",
+                                    "en",
+                                )
                             ).split(" ")
                             if hasattr(self._mod, f"strings_{lang}")
                             and isinstance(getattr(self._mod, f"strings_{lang}"), dict)

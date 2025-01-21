@@ -38,12 +38,13 @@ import signal
 import string
 import time
 import typing
-from datetime import timedelta
+from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
-import git
+from git.base import Repo
 import grapheme
 import hikkatl
+import hikkatl.extensions.html as parser
 import requests
 from aiogram.types import Message as AiogramMessage
 from hikkatl import hints
@@ -66,59 +67,22 @@ from hikkatl.tl.types import (
     ChatAdminRights,
     InputDocument,
     InputPeerNotifySettings,
-    MessageEntityBankCard,
-    MessageEntityBlockquote,
-    MessageEntityBold,
-    MessageEntityBotCommand,
-    MessageEntityCashtag,
-    MessageEntityCode,
-    MessageEntityEmail,
-    MessageEntityHashtag,
-    MessageEntityItalic,
-    MessageEntityMention,
     MessageEntityMentionName,
-    MessageEntityPhone,
-    MessageEntityPre,
-    MessageEntitySpoiler,
-    MessageEntityStrike,
-    MessageEntityTextUrl,
-    MessageEntityUnderline,
-    MessageEntityUnknown,
-    MessageEntityUrl,
     MessageMediaWebPage,
     PeerChannel,
     PeerChat,
     PeerUser,
     UpdateNewChannelMessage,
     User,
+    MessageReplyHeader,
 )
+from hikkatl.tl.types import TypeMessageEntity as FormattingEntity
+from hikkatl.utils import get_input_channel, get_input_chat_photo
 
 from ._internal import fw_protect
-from .inline.types import BotInlineCall, InlineCall, InlineMessage
+from .inline.types import BotInlineCall, BotMessage, InlineCall, InlineMessage
 from .tl_cache import CustomTelegramClient
 from .types import HikkaReplyMarkup, ListLike, Module
-
-FormattingEntity = typing.Union[
-    MessageEntityUnknown,
-    MessageEntityMention,
-    MessageEntityHashtag,
-    MessageEntityBotCommand,
-    MessageEntityUrl,
-    MessageEntityEmail,
-    MessageEntityBold,
-    MessageEntityItalic,
-    MessageEntityCode,
-    MessageEntityPre,
-    MessageEntityTextUrl,
-    MessageEntityMentionName,
-    MessageEntityPhone,
-    MessageEntityCashtag,
-    MessageEntityUnderline,
-    MessageEntityStrike,
-    MessageEntityBlockquote,
-    MessageEntityBankCard,
-    MessageEntitySpoiler,
-]
 
 emoji_pattern = re.compile(
     "["
@@ -130,11 +94,19 @@ emoji_pattern = re.compile(
     flags=re.UNICODE,
 )
 
-parser = hikkatl.utils.sanitize_parse_mode("html")
 logger = logging.getLogger(__name__)
 
 
-def get_args(message: typing.Union[Message, str]) -> typing.List[str]:
+def get_client(message: typing.Any) -> CustomTelegramClient:
+    if not hasattr(message, "client"):
+        raise ValueError("Message doesn't have a client")
+
+    return message.client
+
+
+def get_args(
+    message: typing.Union[Message, str],
+) -> typing.Union[typing.List[str], typing.Literal[False], str]:
     """
     Get arguments from message
     :param message: Message or string to get arguments from
@@ -143,20 +115,24 @@ def get_args(message: typing.Union[Message, str]) -> typing.List[str]:
     if not (message := getattr(message, "message", message)):
         return False
 
-    if len(message := message.split(maxsplit=1)) <= 1:
+    text = str(message)
+
+    if len(text := text.split(maxsplit=1)) <= 1:
         return []
 
-    message = message[1]
+    text = text[1]
 
     try:
-        split = shlex.split(message)
+        split = shlex.split(text)
     except ValueError:
-        return message  # Cannot split, let's assume that it's just one long message
+        return str(text)  # Cannot split, let's assume that it's just one long message
 
     return list(filter(lambda x: len(x) > 0, split))
 
 
-def get_args_raw(message: typing.Union[Message, str]) -> str:
+def get_args_raw(
+    message: typing.Union[Message, str],
+) -> typing.Union[str, typing.Literal[False]]:
     """
     Get the parameters to the command as a raw string (not split)
     :param message: Message or string to get arguments from
@@ -165,24 +141,26 @@ def get_args_raw(message: typing.Union[Message, str]) -> str:
     if not (message := getattr(message, "message", message)):
         return False
 
-    return args[1] if len(args := message.split(maxsplit=1)) > 1 else ""
+    text = str(message)
+
+    return args[1] if len(args := text.split(maxsplit=1)) > 1 else ""
 
 
-def get_args_html(message: Message) -> str:
+def get_args_html(message: Message) -> typing.Union[str, typing.Literal[False]]:
     """
     Get the parameters to the command as string with HTML (not split)
     :param message: Message to get arguments from
     :return: String with HTML arguments
     """
-    prefix = message.client.loader.get_prefix()
+    prefix = get_client(message).loader.get_prefix()  # type: ignore
 
-    if not (message := message.text):
+    if not (text := message.text):
         return False
 
-    if prefix not in message:
-        return message
+    if prefix not in text:
+        return text
 
-    raw_text, entities = parser.parse(message)
+    raw_text, entities = parser.parse(text)
 
     raw_text = parser._add_surrogate(raw_text)
 
@@ -211,12 +189,13 @@ def get_args_split_by(
     :param separator: Separator to split by
     :return: List of arguments
     """
-    return [
-        section.strip() for section in get_args_raw(message).split(separator) if section
-    ]
+    raw = get_args_raw(message)
+    if not raw:
+        return []
+    return [section.strip() for section in raw.split(separator) if section]
 
 
-def get_chat_id(message: typing.Union[Message, AiogramMessage]) -> int:
+def get_chat_id(message: typing.Union[Message, AiogramMessage]) -> typing.Optional[int]:
     """
     Get the chat ID, but without -100 if its a channel
     :param message: Message to get chat ID from
@@ -284,11 +263,11 @@ async def get_user(message: Message) -> typing.Optional[User]:
         logger.debug("User not in session cache. Searching...")
 
     if isinstance(message.peer_id, PeerUser):
-        await message.client.get_dialogs()
+        await get_client(message).get_dialogs()
         return await message.get_sender()
 
     if isinstance(message.peer_id, (PeerChannel, PeerChat)):
-        async for user in message.client.iter_participants(
+        async for user in get_client(message).iter_participants(
             message.peer_id,
             aggressive=True,
         ):
@@ -376,7 +355,7 @@ def relocate_entities(
 
 
 async def answer_file(
-    message: typing.Union[Message, InlineCall, InlineMessage],
+    message: typing.Union[Message, InlineCall, InlineMessage],  # type: ignore
     file: typing.Union[str, bytes, io.IOBase, InputDocument],
     caption: typing.Optional[str] = None,
     **kwargs,
@@ -400,11 +379,16 @@ async def answer_file(
     if isinstance(message, (InlineCall, InlineMessage)):
         message = message.form["caller"]
 
+    if not isinstance(message, Message):
+        raise ValueError("Message must be a Message object")
+
+    message: Message
+
     if topic := get_topic(message):
         kwargs.setdefault("reply_to", topic)
 
     try:
-        response = await message.client.send_file(
+        response = await get_client(message).send_file(
             message.peer_id,
             file,
             caption=caption,
@@ -426,12 +410,12 @@ async def answer_file(
 
 
 async def answer(
-    message: typing.Union[Message, InlineCall, InlineMessage],
+    message: typing.Union[Message, InlineCall, InlineMessage, BotMessage],  # type: ignore
     response: str,
     *,
     reply_markup: typing.Optional[HikkaReplyMarkup] = None,
     **kwargs,
-) -> typing.Union[InlineCall, InlineMessage, Message]:
+) -> typing.Union[InlineCall, InlineMessage, Message, BotMessage]:
     """
     Use this to give the response to a command
     :param message: Message to answer to. Can be a tl message or hikka inline object
@@ -455,10 +439,12 @@ async def answer(
             disable_security=True,
         )
     """
-    # Compatibility with FTG\GeekTG
 
+    # Compatibility with FTG\GeekTG
     if isinstance(message, list) and message:
         message = message[0]
+
+    result = None
 
     if reply_markup is not None:
         if not isinstance(reply_markup, (list, dict)):
@@ -467,21 +453,26 @@ async def answer(
         if reply_markup:
             kwargs.pop("message", None)
             if isinstance(message, (InlineMessage, InlineCall, BotInlineCall)):
-                await message.edit(response, reply_markup, **kwargs)
-                return
+                return await message.edit(response, reply_markup, **kwargs)
 
-            reply_markup = message.client.loader.inline._normalize_markup(reply_markup)
-            result = await message.client.loader.inline.form(
+            reply_markup = get_client(message).loader.inline._normalize_markup(  # type: ignore
+                reply_markup
+            )
+            result = await get_client(message).loader.inline.form(  # type: ignore
                 response,
-                message=message if message.out else get_chat_id(message),
+                message=(
+                    message if getattr(message, "out", False) else get_chat_id(message)
+                ),
                 reply_markup=reply_markup,
                 **kwargs,
             )
             return result
 
     if isinstance(message, (InlineMessage, InlineCall, BotInlineCall)):
-        await message.edit(response)
-        return message
+        return await message.edit(response)
+
+    if not isinstance(message, Message):
+        raise ValueError("Message must be a Message object")
 
     kwargs.setdefault("link_preview", False)
 
@@ -496,16 +487,16 @@ async def answer(
     parse_mode = hikkatl.utils.sanitize_parse_mode(
         kwargs.pop(
             "parse_mode",
-            message.client.parse_mode,
+            message.client.parse_mode,  # type: ignore
         )
     )
 
     if isinstance(response, str) and not kwargs.pop("asfile", False):
-        text, entities = parse_mode.parse(response)
+        text, entities = parse_mode.parse(response)  # type: ignore
 
         if len(text) >= 4096 and not hasattr(message, "hikka_grepped"):
             try:
-                if not message.client.loader.inline.init_complete:
+                if not message.client.loader.inline.init_complete:  # type: ignore
                     raise
 
                 strings = list(smart_split(text, entities, 4096))
@@ -513,7 +504,7 @@ async def answer(
                 if len(strings) > 10:
                     raise
 
-                list_ = await message.client.loader.inline.list(
+                list_ = await message.client.loader.inline.list(  # type: ignore
                     message=message,
                     strings=strings,
                 )
@@ -526,10 +517,10 @@ async def answer(
                 file = io.BytesIO(text.encode("utf-8"))
                 file.name = "command_result.txt"
 
-                result = await message.client.send_file(
+                result = await message.client.send_file(  # type: ignore
                     message.peer_id,
                     file,
-                    caption=message.client.loader.lookup("translations").strings(
+                    caption=message.client.loader.lookup("translations").strings(  # type: ignore
                         "too_long"
                     ),
                     reply_to=kwargs.get("reply_to") or get_topic(message),
@@ -558,25 +549,29 @@ async def answer(
             result = await message.respond(response, **kwargs)
     else:
         if isinstance(response, bytes):
-            response = io.BytesIO(response)
+            new_response = io.BytesIO(response)
         elif isinstance(response, str):
-            response = io.BytesIO(response.encode("utf-8"))
+            new_response = io.BytesIO(response.encode("utf-8"))
+        else:
+            new_response = response
 
         if name := kwargs.pop("filename", None):
-            response.name = name
+            new_response.name = name
 
         if message.media is not None and edit:
-            await message.edit(file=response, **kwargs)
+            await message.edit(file=new_response, **kwargs)
         else:
             kwargs.setdefault(
                 "reply_to",
                 getattr(message, "reply_to_msg_id", get_topic(message)),
             )
-            result = await message.client.send_file(message.peer_id, response, **kwargs)
+            result = await get_client(message).send_file(
+                message.peer_id, new_response, **kwargs
+            )
             if message.out:
                 await message.delete()
 
-    return result
+    return result  # type: ignore
 
 
 async def get_target(message: Message, arg_no: int = 0) -> typing.Optional[int]:
@@ -590,24 +585,34 @@ async def get_target(message: Message, arg_no: int = 0) -> typing.Optional[int]:
     if any(
         isinstance(entity, MessageEntityMentionName)
         for entity in (message.entities or [])
-    ):
+    ) and isinstance(message.entities, list):
         e = sorted(
             filter(lambda x: isinstance(x, MessageEntityMentionName), message.entities),
             key=lambda x: x.offset,
         )[0]
+        if not isinstance(e, MessageEntityMentionName):
+            return None
+
         return e.user_id
 
-    if len(get_args(message)) > arg_no:
-        user = get_args(message)[arg_no]
+    args = get_args(message)
+    if not args:
+        return None
+
+    if len(args) > arg_no:
+        user = args[arg_no]
     elif message.is_reply:
-        return (await message.get_reply_message()).sender_id
+        reply = await message.get_reply_message()
+        if not reply:
+            return None
+        return reply.sender_id
     elif hasattr(message.peer_id, "user_id"):
-        user = message.peer_id.user_id
+        user = message.peer_id.user_id  # type: ignore
     else:
         return None
 
     try:
-        entity = await message.client.get_entity(user)
+        entity = await get_client(message).get_entity(user)
     except ValueError:
         return None
     else:
@@ -661,13 +666,17 @@ async def set_avatar(
         return False
 
     await fw_protect()
-    res = await client(
-        EditPhotoRequest(
-            channel=peer,
-            photo=await client.upload_file(f, file_name="photo.png"),
-        )
-    )
+    input_channel = get_input_channel(peer)
+    if not input_channel:
+        return False
 
+    input_chat_photo = get_input_chat_photo(
+        await client.upload_file(f, file_name="photo.png")
+    )
+    if not input_chat_photo:
+        return False
+
+    res = await client(EditPhotoRequest(channel=input_channel, photo=input_chat_photo))
     await fw_protect()
 
     try:
@@ -676,7 +685,7 @@ async def set_avatar(
             message_ids=[
                 next(
                     update
-                    for update in res.updates
+                    for update in res.updates  # type: ignore
                     if isinstance(update, UpdateNewChannelMessage)
                 ).message.id
             ],
@@ -700,7 +709,13 @@ async def invite_inline_bot(
     """
 
     try:
-        await client(InviteToChannelRequest(peer, [client.loader.inline.bot_username]))
+        input_channel = get_input_channel(peer)
+        if not input_channel:
+            raise ValueError("Invalid peer")
+
+        await client(
+            InviteToChannelRequest(input_channel, [client.loader.inline.bot_username])  # type: ignore
+        )
     except Exception as e:
         raise RuntimeError(
             "Can't invite inline bot to old asset chat, which is required by module"
@@ -709,8 +724,8 @@ async def invite_inline_bot(
     with contextlib.suppress(Exception):
         await client(
             EditAdminRequest(
-                channel=peer,
-                user_id=client.loader.inline.bot_username,
+                channel=input_channel,
+                user_id=client.loader.inline.bot_username,  # type: ignore
                 admin_rights=ChatAdminRights(ban_users=True),
                 rank="Hikka",
             )
@@ -759,7 +774,7 @@ async def asset_channel(
             client._channels_cache[title] = {"peer": d.entity, "exp": int(time.time())}
             if invite_bot:
                 if all(
-                    participant.id != client.loader.inline.bot_id
+                    participant.id != client.loader.inline.bot_id  # type: ignore
                     for participant in (
                         await client.get_participants(d.entity, limit=100)
                     )
@@ -780,7 +795,7 @@ async def asset_channel(
                 forum=forum,
             )
         )
-    ).chats[0]
+    ).chats[0]  # type: ignore
 
     if invite_bot:
         await fw_protect()
@@ -841,13 +856,17 @@ async def dnd(
     :return: `True` on success, otherwise `False`
     """
     try:
+        input_peer = await client._get_input_notify(peer)
+        if not input_peer:
+            return False
+
         await client(
             UpdateNotifySettingsRequest(
-                peer=peer,
+                peer=input_peer,
                 settings=InputPeerNotifySettings(
                     show_previews=False,
                     silent=True,
-                    mute_until=2**31 - 1,
+                    mute_until=datetime.max,
                 ),
             )
         )
@@ -879,7 +898,11 @@ def get_link(user: typing.Union[User, Channel], /) -> str:
     )
 
 
-def chunks(_list: ListLike, n: int, /) -> typing.List[typing.List[typing.Any]]:
+def chunks(
+    _list: typing.Union[list, str, tuple],
+    n: int,
+    /,
+) -> typing.List[typing.Union[typing.List[typing.Any], str, tuple]]:
     """
     Split provided `_list` into chunks of `n`
     :param _list: List to split
@@ -936,11 +959,13 @@ def get_platform_emoji() -> str:
     """
     from . import main
 
-    BASE = "".join((
-        "<emoji document_id={}>🌘</emoji>",
-        "<emoji document_id=5195311729663286630>🌘</emoji>",
-        "<emoji document_id=5195045669324201904>🌘</emoji>",
-    ))
+    BASE = "".join(
+        (
+            "<emoji document_id={}>🌘</emoji>",
+            "<emoji document_id=5195311729663286630>🌘</emoji>",
+            "<emoji document_id=5195045669324201904>🌘</emoji>",
+        )
+    )
 
     if main.IS_DOCKER:
         return BASE.format(5298554256603752468)
@@ -988,66 +1013,68 @@ def ascii_face() -> str:
     :return: ASCII-art face
     """
     return escape_html(
-        random.choice([
-            "ヽ(๑◠ܫ◠๑)ﾉ",
-            "(◕ᴥ◕ʋ)",
-            "ᕙ(`▽´)ᕗ",
-            "(✿◠‿◠)",
-            "(▰˘◡˘▰)",
-            "(˵ ͡° ͜ʖ ͡°˵)",
-            "ʕっ•ᴥ•ʔっ",
-            "( ͡° ᴥ ͡°)",
-            "(๑•́ ヮ •̀๑)",
-            "٩(^‿^)۶",
-            "(っˆڡˆς)",
-            "ψ(｀∇´)ψ",
-            "⊙ω⊙",
-            "٩(^ᴗ^)۶",
-            "(´・ω・)っ由",
-            "( ͡~ ͜ʖ ͡°)",
-            "✧♡(◕‿◕✿)",
-            "โ๏௰๏ใ ื",
-            "∩｡• ᵕ •｡∩ ♡",
-            "(♡´౪`♡)",
-            "(◍＞◡＜◍)⋈。✧♡",
-            "╰(✿´⌣`✿)╯♡",
-            "ʕ•ᴥ•ʔ",
-            "ᶘ ◕ᴥ◕ᶅ",
-            "▼・ᴥ・▼",
-            "ฅ^•ﻌ•^ฅ",
-            "(΄◞ิ౪◟ิ‵)",
-            "٩(^ᴗ^)۶",
-            "ᕴｰᴥｰᕵ",
-            "ʕ￫ᴥ￩ʔ",
-            "ʕᵕᴥᵕʔ",
-            "ʕᵒᴥᵒʔ",
-            "ᵔᴥᵔ",
-            "(✿╹◡╹)",
-            "(๑￫ܫ￩)",
-            "ʕ·ᴥ·　ʔ",
-            "(ﾉ≧ڡ≦)",
-            "(≖ᴗ≖✿)",
-            "（〜^∇^ )〜",
-            "( ﾉ･ｪ･ )ﾉ",
-            "~( ˘▾˘~)",
-            "(〜^∇^)〜",
-            "ヽ(^ᴗ^ヽ)",
-            "(´･ω･`)",
-            "₍ᐢ•ﻌ•ᐢ₎*･ﾟ｡",
-            "(。・・)_且",
-            "(=｀ω´=)",
-            "(*•‿•*)",
-            "(*ﾟ∀ﾟ*)",
-            "(☉⋆‿⋆☉)",
-            "ɷ◡ɷ",
-            "ʘ‿ʘ",
-            "(。-ω-)ﾉ",
-            "( ･ω･)ﾉ",
-            "(=ﾟωﾟ)ﾉ",
-            "(・ε・`*) …",
-            "ʕっ•ᴥ•ʔっ",
-            "(*˘︶˘*)",
-        ])
+        random.choice(
+            [
+                "ヽ(๑◠ܫ◠๑)ﾉ",
+                "(◕ᴥ◕ʋ)",
+                "ᕙ(`▽´)ᕗ",
+                "(✿◠‿◠)",
+                "(▰˘◡˘▰)",
+                "(˵ ͡° ͜ʖ ͡°˵)",
+                "ʕっ•ᴥ•ʔっ",
+                "( ͡° ᴥ ͡°)",
+                "(๑•́ ヮ •̀๑)",
+                "٩(^‿^)۶",
+                "(っˆڡˆς)",
+                "ψ(｀∇´)ψ",
+                "⊙ω⊙",
+                "٩(^ᴗ^)۶",
+                "(´・ω・)っ由",
+                "( ͡~ ͜ʖ ͡°)",
+                "✧♡(◕‿◕✿)",
+                "โ๏௰๏ใ ื",
+                "∩｡• ᵕ •｡∩ ♡",
+                "(♡´౪`♡)",
+                "(◍＞◡＜◍)⋈。✧♡",
+                "╰(✿´⌣`✿)╯♡",
+                "ʕ•ᴥ•ʔ",
+                "ᶘ ◕ᴥ◕ᶅ",
+                "▼・ᴥ・▼",
+                "ฅ^•ﻌ•^ฅ",
+                "(΄◞ิ౪◟ิ‵)",
+                "٩(^ᴗ^)۶",
+                "ᕴｰᴥｰᕵ",
+                "ʕ￫ᴥ￩ʔ",
+                "ʕᵕᴥᵕʔ",
+                "ʕᵒᴥᵒʔ",
+                "ᵔᴥᵔ",
+                "(✿╹◡╹)",
+                "(๑￫ܫ￩)",
+                "ʕ·ᴥ·　ʔ",
+                "(ﾉ≧ڡ≦)",
+                "(≖ᴗ≖✿)",
+                "（〜^∇^ )〜",
+                "( ﾉ･ｪ･ )ﾉ",
+                "~( ˘▾˘~)",
+                "(〜^∇^)〜",
+                "ヽ(^ᴗ^ヽ)",
+                "(´･ω･`)",
+                "₍ᐢ•ﻌ•ᐢ₎*･ﾟ｡",
+                "(。・・)_且",
+                "(=｀ω´=)",
+                "(*•‿•*)",
+                "(*ﾟ∀ﾟ*)",
+                "(☉⋆‿⋆☉)",
+                "ɷ◡ɷ",
+                "ʘ‿ʘ",
+                "(。-ω-)ﾉ",
+                "( ･ω･)ﾉ",
+                "(=ﾟωﾟ)ﾉ",
+                "(・ε・`*) …",
+                "ʕっ•ᴥ•ʔっ",
+                "(*˘︶˘*)",
+            ]
+        )
     )
 
 
@@ -1244,13 +1271,13 @@ def check_url(url: str) -> bool:
         return False
 
 
-def get_git_hash() -> typing.Union[str, bool]:
+def get_git_hash() -> typing.Union[str, typing.Literal[False]]:
     """
     Get current Hikka git hash
     :return: Git commit hash
     """
     try:
-        return git.Repo().head.commit.hexsha
+        return Repo().head.commit.hexsha
     except Exception:
         return False
 
@@ -1262,7 +1289,11 @@ def get_commit_url() -> str:
     """
     try:
         hash_ = get_git_hash()
-        return f'<a href="https://github.com/hikariatama/Hikka/commit/{hash_}">#{hash_[:7]}</a>'
+        return (
+            f'<a href="https://github.com/hikariatama/Hikka/commit/{hash_}">#{hash_[:7]}</a>'
+            if hash_
+            else "n/a"
+        )
     except Exception:
         return "Unknown"
 
@@ -1345,13 +1376,16 @@ async def get_message_link(
         chat = await message.get_chat()
 
     topic_affix = (
-        f"?topic={message.reply_to.reply_to_msg_id}"
+        f"?topic={getattr(message.reply_to, 'reply_to_msg_id')}"
         if getattr(message.reply_to, "forum_topic", False)
         else ""
     )
 
+    if not chat:
+        return f"https://t.me/c/{message.chat_id}/{message.id}{topic_affix}"
+
     return (
-        f"https://t.me/{chat.username}/{message.id}{topic_affix}"
+        f"https://t.me/{chat.username}/{message.id}{topic_affix}"  # type: ignore
         if getattr(chat, "username", False)
         else f"https://t.me/c/{chat.id}/{message.id}{topic_affix}"
     )
@@ -1384,7 +1418,13 @@ def get_kwargs() -> typing.Dict[str, typing.Any]:
     :return: kwargs
     """
     # https://stackoverflow.com/a/65927265/19170642
-    keys, _, _, values = inspect.getargvalues(inspect.currentframe().f_back)
+    current_frame = inspect.currentframe()
+    if not current_frame:
+        return {}
+    f_back = current_frame.f_back
+    if not f_back:
+        return {}
+    keys, _, _, values = inspect.getargvalues(f_back)
     return {key: values[key] for key in keys if key != "self"}
 
 
@@ -1394,7 +1434,7 @@ def mime_type(message: Message) -> str:
     :param message: Message with document
     :return: Mime type or empty string if not present
     """
-    return (
+    return str(
         ""
         if not isinstance(message, Message) or not getattr(message, "media", False)
         else getattr(getattr(message, "media", False), "mime_type", False) or ""
@@ -1455,11 +1495,14 @@ def validate_html(html: str) -> str:
     :param html: HTML to validate
     :return: Valid HTML
     """
-    text, entities = hikkatl.extensions.html.parse(html)
-    return hikkatl.extensions.html.unparse(escape_html(text), entities)
+    text, entities = parser.parse(html)
+    return parser.unparse(escape_html(text), entities)
 
 
-def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]:
+def iter_attrs(
+    obj: typing.Any,
+    /,
+) -> typing.Generator[typing.Tuple[str, typing.Any], None, None]:
     """
     Returns list of attributes of object
     :param obj: Object to iterate over
@@ -1500,6 +1543,7 @@ def get_topic(message: Message) -> typing.Optional[int]:
         if (
             isinstance(message, Message)
             and message.reply_to
+            and isinstance(message.reply_to, MessageReplyHeader)
             and message.reply_to.forum_topic
         )
         else (
@@ -1551,8 +1595,12 @@ def get_git_info() -> typing.Tuple[str, str]:
     """
     hash_ = get_git_hash()
     return (
-        hash_,
-        f"https://github.com/hikariatama/Hikka/commit/{hash_}" if hash_ else "",
+        (
+            hash_,
+            f"https://github.com/hikariatama/Hikka/commit/{hash_}" if hash_ else "",
+        )
+        if hash_
+        else ("", "")
     )
 
 

@@ -11,10 +11,8 @@ import time
 import typing
 
 from hikkatl import TelegramClient
-from hikkatl import __name__ as __base_name__
 from hikkatl import helpers
 from hikkatl._updates import ChannelState, Entity, EntityType, SessionState
-from hikkatl.errors import RPCError
 from hikkatl.errors.rpcerrorlist import TopicDeletedError
 from hikkatl.hints import EntityLike
 from hikkatl.network import MTProtoSender
@@ -26,13 +24,12 @@ from hikkatl.tl.tlobject import TLRequest
 from hikkatl.tl.types import (
     ChannelFull,
     Message,
-    Pong,
     Updates,
     UpdatesCombined,
     UpdateShort,
     UserFull,
 )
-from hikkatl.utils import is_list_like
+from hikkatl.utils import is_list_like, get_input_channel
 
 from .types import (
     CacheRecordEntity,
@@ -93,99 +90,16 @@ class CustomTelegramClient(TelegramClient):
             ]
         ] = None
 
-    async def connect(self, unix_socket_path: typing.Optional[str] = None):
-        if self.session is None:
-            raise ValueError(
-                "TelegramClient instance cannot be reused after logging out"
-            )
-
-        if self._loop is None:
-            self._loop = helpers.get_running_loop()
-        elif self._loop != helpers.get_running_loop():
-            raise RuntimeError(
-                "The asyncio event loop must not change after connection (see the FAQ"
-                " for details)"
-            )
-
-        connection = self._connection(
-            self.session.server_address,
-            self.session.port,
-            self.session.dc_id,
-            loggers=self._log,
-            proxy=self._proxy,
-            local_addr=self._local_addr,
-        )
-
-        if unix_socket_path is not None:
-            connection.set_unix_socket(unix_socket_path)
-
-        if not await self._sender.connect(connection):
-            # We don't want to init or modify anything if we were already connected
-            return
-
-        self.session.auth_key = self._sender.auth_key
-        self.session.save()
-
-        if self._catch_up:
-            ss = SessionState(0, 0, False, 0, 0, 0, 0, None)
-            cs = []
-
-            for entity_id, state in self.session.get_update_states():
-                if entity_id == 0:
-                    # TODO current session doesn't store self-user info but adding that is breaking on downstream session impls
-                    ss = SessionState(
-                        0,
-                        0,
-                        False,
-                        state.pts,
-                        state.qts,
-                        int(state.date.timestamp()),
-                        state.seq,
-                        None,
-                    )
-                else:
-                    cs.append(ChannelState(entity_id, state.pts))
-
-            self._message_box.load(ss, cs)
-            for state in cs:
-                try:
-                    entity = self.session.get_input_entity(state.channel_id)
-                except ValueError:
-                    self._log[__name__].warning(
-                        "No access_hash in cache for channel %s, will not catch up",
-                        state.channel_id,
-                    )
-                else:
-                    self._mb_entity_cache.put(
-                        Entity(
-                            EntityType.CHANNEL, entity.channel_id, entity.access_hash
-                        )
-                    )
-
-        self._init_request.query = functions.help.GetConfigRequest()
-
-        req = self._init_request
-        if self._no_updates:
-            req = functions.InvokeWithoutUpdatesRequest(req)
-
-        await self._sender.send(functions.InvokeWithLayerRequest(LAYER, req))
-
-        if self._message_box.is_empty():
-            me = await self.get_me()
-            if me:
-                await self._on_login(
-                    me
-                )  # also calls GetState to initialize the MessageBox
-
-        self._updates_handle = self.loop.create_task(self._update_loop())
-        self._keepalive_handle = self.loop.create_task(self._keepalive_loop())
+        self._channels_cache = {}
+        self._tg_id: int = 0
+        self.tg_id: int = 0
 
     @property
-    def raw_updates_processor(self) -> typing.Optional[callable]:
+    def raw_updates_processor(self) -> typing.Optional[typing.Callable]:
         return self._raw_updates_processor
 
     @raw_updates_processor.setter
-    def raw_updates_processor(self, value: callable):
+    def raw_updates_processor(self, value: typing.Callable):
         if self._raw_updates_processor is not None:
             raise ValueError("raw_updates_processor is already set")
 
@@ -195,23 +109,23 @@ class CustomTelegramClient(TelegramClient):
         self._raw_updates_processor = value
 
     @property
-    def hikka_entity_cache(self) -> typing.Dict[int, CacheRecordEntity]:
+    def hikka_entity_cache(self) -> typing.Dict[str | int, CacheRecordEntity]:
         return self._hikka_entity_cache
 
     @property
-    def hikka_perms_cache(self) -> typing.Dict[int, CacheRecordPerms]:
+    def hikka_perms_cache(self) -> typing.Dict[str | int, CacheRecordPerms]:
         return self._hikka_perms_cache
 
     @property
-    def hikka_fullchannel_cache(self) -> typing.Dict[int, CacheRecordFullChannel]:
+    def hikka_fullchannel_cache(self) -> typing.Dict[str | int, CacheRecordFullChannel]:
         return self._hikka_fullchannel_cache
 
     @property
-    def hikka_fulluser_cache(self) -> typing.Dict[int, CacheRecordFullUser]:
+    def hikka_fulluser_cache(self) -> typing.Dict[str | int, CacheRecordFullUser]:
         return self._hikka_fulluser_cache
 
     @property
-    def forbidden_constructors(self) -> typing.List[str]:
+    def forbidden_constructors(self) -> typing.List[int]:
         return self._forbidden_constructors
 
     async def force_get_entity(self, *args, **kwargs):
@@ -219,7 +133,7 @@ class CustomTelegramClient(TelegramClient):
 
         return await self.get_entity(*args, force=True, **kwargs)
 
-    async def get_entity(
+    async def get_entity(  # type: ignore
         self,
         entity: EntityLike,
         exp: int = 5 * 60,
@@ -254,7 +168,7 @@ class CustomTelegramClient(TelegramClient):
         else:
             hashable_entity = entity
 
-        if str(hashable_entity).isdigit() and int(hashable_entity) < 0:
+        if str(hashable_entity).isdigit() and int(str(hashable_entity)) < 0:
             hashable_entity = int(str(hashable_entity)[4:])
 
         if (
@@ -277,7 +191,7 @@ class CustomTelegramClient(TelegramClient):
 
         if resolved_entity:
             cache_record = CacheRecordEntity(hashable_entity, resolved_entity, exp)
-            self._hikka_entity_cache[hashable_entity] = cache_record
+            self._hikka_entity_cache[hashable_entity] = cache_record  # type: ignore
             logger.debug("Saved hashable_entity %s to cache", hashable_entity)
 
             if getattr(resolved_entity, "id", None):
@@ -287,10 +201,10 @@ class CustomTelegramClient(TelegramClient):
             if getattr(resolved_entity, "username", None):
                 logger.debug(
                     "Saved resolved_entity username @%s to cache",
-                    resolved_entity.username,
+                    resolved_entity.username,  # type: ignore
                 )
-                self._hikka_entity_cache[f"@{resolved_entity.username}"] = cache_record
-                self._hikka_entity_cache[resolved_entity.username] = cache_record
+                self._hikka_entity_cache[f"@{resolved_entity.username}"] = cache_record  # type: ignore
+                self._hikka_entity_cache[resolved_entity.username] = cache_record  # type: ignore
 
         return copy.deepcopy(resolved_entity)
 
@@ -330,7 +244,7 @@ class CustomTelegramClient(TelegramClient):
                     "Can't parse hashable from entity %s, using legacy method",
                     entity,
                 )
-                return await self.get_permissions(entity, user)
+                return await self.get_permissions(entity, user)  # type: ignore
 
             try:
                 hashable_user = next(
@@ -343,71 +257,71 @@ class CustomTelegramClient(TelegramClient):
                     "Can't parse hashable from user %s, using legacy method",
                     user,
                 )
-                return await self.get_permissions(entity, user)
+                return await self.get_permissions(entity, user)  # type: ignore
         else:
             hashable_entity = entity
             hashable_user = user
 
-        if str(hashable_entity).isdigit() and int(hashable_entity) < 0:
+        if str(hashable_entity).isdigit() and int(str(hashable_entity)) < 0:
             hashable_entity = int(str(hashable_entity)[4:])
 
-        if str(hashable_user).isdigit() and int(hashable_user) < 0:
+        if str(hashable_user).isdigit() and int(hashable_user) < 0:  # type: ignore
             hashable_user = int(str(hashable_user)[4:])
 
         if (
             not force
             and hashable_entity
             and hashable_user
-            and hashable_user in self._hikka_perms_cache.get(hashable_entity, {})
+            and hashable_user in self._hikka_perms_cache.get(hashable_entity, {})  # type: ignore
             and (
                 not exp
-                or self._hikka_perms_cache[hashable_entity][hashable_user].ts + exp
+                or self._hikka_perms_cache[hashable_entity][hashable_user].ts + exp  # type: ignore
                 > time.time()
             )
         ):
             logger.debug("Using cached perms %s (%s)", hashable_entity, hashable_user)
             return copy.deepcopy(
-                self._hikka_perms_cache[hashable_entity][hashable_user].perms
+                self._hikka_perms_cache[hashable_entity][hashable_user].perms  # type: ignore
             )
 
-        resolved_perms = await self.get_permissions(entity, user)
+        resolved_perms = await self.get_permissions(entity, user)  # type: ignore
 
         if resolved_perms:
             cache_record = CacheRecordPerms(
                 hashable_entity,
                 hashable_user,
-                resolved_perms,
+                resolved_perms,  # type: ignore
                 exp,
             )
-            self._hikka_perms_cache.setdefault(hashable_entity, {})[
-                hashable_user
-            ] = cache_record
+            self._hikka_perms_cache.setdefault(hashable_entity, {})[hashable_user] = (  # type: ignore
+                cache_record
+            )
             logger.debug("Saved hashable_entity %s perms to cache", hashable_entity)
 
             def save_user(key: typing.Union[str, int]):
                 nonlocal self, cache_record, user, hashable_user
                 if getattr(user, "id", None):
-                    self._hikka_perms_cache.setdefault(key, {})[user.id] = cache_record
+                    self._hikka_perms_cache.setdefault(key, {})[user.id] = cache_record  # type: ignore
 
                 if getattr(user, "username", None):
-                    self._hikka_perms_cache.setdefault(key, {})[
-                        f"@{user.username}"
-                    ] = cache_record
-                    self._hikka_perms_cache.setdefault(key, {})[
-                        user.username
-                    ] = cache_record
+                    self._hikka_perms_cache.setdefault(key, {})[f"@{user.username}"] = (  # type: ignore
+                        cache_record
+                    )
+                    self._hikka_perms_cache.setdefault(key, {})[user.username] = (  # type: ignore
+                        cache_record
+                    )
 
             if getattr(entity, "id", None):
-                logger.debug("Saved resolved_entity id %s perms to cache", entity.id)
-                save_user(entity.id)
+                logger.debug("Saved resolved_entity id %s perms to cache", entity.id)  # type: ignore
+                save_user(entity.id)  # type: ignore
 
             if getattr(entity, "username", None):
                 logger.debug(
                     "Saved resolved_entity username @%s perms to cache",
-                    entity.username,
+                    entity.username,  # type: ignore
                 )
-                save_user(f"@{entity.username}")
-                save_user(entity.username)
+                save_user(f"@{entity.username}")  # type: ignore
+                save_user(entity.username)  # type: ignore
 
         return copy.deepcopy(resolved_perms)
 
@@ -440,9 +354,15 @@ class CustomTelegramClient(TelegramClient):
                     ),
                     entity,
                 )
-                return await self(GetFullChannelRequest(channel=entity))
+                input_channel = get_input_channel(entity)
+                if not input_channel:
+                    raise ValueError("Invalid entity")
+
+                return await self(GetFullChannelRequest(channel=input_channel))  # type: ignore
         else:
-            hashable_entity = entity
+            hashable_entity = entity  # type: ignore
+
+        hashable_entity: int
 
         if str(hashable_entity).isdigit() and int(hashable_entity) < 0:
             hashable_entity = int(str(hashable_entity)[4:])
@@ -455,10 +375,13 @@ class CustomTelegramClient(TelegramClient):
         ):
             return self._hikka_fullchannel_cache[hashable_entity].full_channel
 
-        result = await self(GetFullChannelRequest(channel=entity))
+        input_channel = get_input_channel(entity)
+        if not input_channel:
+            raise ValueError("Invalid entity")
+        result = await self(GetFullChannelRequest(channel=input_channel))
         self._hikka_fullchannel_cache[hashable_entity] = CacheRecordFullChannel(
             hashable_entity,
-            result,
+            result,  # type: ignore
             exp,
         )
         return result

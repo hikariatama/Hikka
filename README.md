@@ -8,7 +8,7 @@
 <a href="#"><img src="https://img.shields.io/github/forks/hikariatama/Hikka?style=flat"/></a>
 <a href="#"><img src="https://img.shields.io/github/stars/hikariatama/Hikka"/></a>&nbsp;<a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a><br>
 
-### Disclaimer
+### Disclaimer (READ IT, PLEASE)
 
 > Even though Hikka has extended security measures for scam-modules protection, flood-based account restrictions protection and others, it still may cause damage to server / account if you install module from untrusted developer. Please, consider downloading modules exceptionally from official repository or from trusted developers. If you are not sure about whether module is safe or not, please, DO NOT INSTALL IT. Same goes for unknown commands (.terminal, .e, .eval, .ec, .ecpp, etc.). You have been warned.
 

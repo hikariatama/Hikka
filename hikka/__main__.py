@@ -77,6 +77,7 @@ else:
         print(f"{str(e)}\n🔄 Attempting dependencies installation... Just wait ⏱")
         deps()
         restart()
+        exit()
 
     if "HIKKA_DO_NOT_RESTART" in os.environ:
         del os.environ["HIKKA_DO_NOT_RESTART"]

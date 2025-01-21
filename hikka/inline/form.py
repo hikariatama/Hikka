@@ -69,7 +69,7 @@ class Form(InlineUnit):
         manual_security: bool = False,
         disable_security: bool = False,
         ttl: typing.Optional[int] = None,
-        on_unload: typing.Optional[callable] = None,
+        on_unload: typing.Optional[typing.Callable] = None,
         photo: typing.Optional[str] = None,
         gif: typing.Optional[str] = None,
         file: typing.Optional[str] = None,
@@ -78,7 +78,7 @@ class Form(InlineUnit):
         location: typing.Optional[str] = None,
         audio: typing.Optional[typing.Union[dict, str]] = None,
         silent: bool = False,
-    ) -> typing.Union[InlineMessage, bool]:
+    ) -> typing.Union[InlineMessage, typing.Literal[False]]:
         """
         Send inline form to chat
         :param text: Content of inline form. HTML markdown supported

@@ -31,9 +31,9 @@ import logging
 import re
 import sys
 import traceback
+import types
 import typing
 
-import requests
 from hikkatl import events
 from hikkatl.errors import FloodWaitError, RPCError
 from hikkatl.tl.types import Message
@@ -115,29 +115,38 @@ class CommandDispatcher:
 
         self._ratelimit_storage_user = collections.defaultdict(int)
         self._ratelimit_storage_chat = collections.defaultdict(int)
-        self._ratelimit_max_user = db.get(__name__, "ratelimit_max_user", 30)
-        self._ratelimit_max_chat = db.get(__name__, "ratelimit_max_chat", 100)
+        current_ratelimit_user = db.get(__name__, "ratelimit_max_user", 30)
+        self._ratelimit_max_user: int = (
+            current_ratelimit_user if isinstance(current_ratelimit_user, int) else 30
+        )
+        current_ratelimit_chat = db.get(__name__, "ratelimit_max_chat", 100)
+        self._ratelimit_max_chat: int = (
+            current_ratelimit_chat if isinstance(current_ratelimit_chat, int) else 100
+        )
 
         self.security = security.SecurityManager(client, db)
 
         self.check_security = self.security.check
         self._me = self._client.hikka_me.id
-        self._cached_usernames = [(
-            self._client.hikka_me.username.lower()
-            if self._client.hikka_me.username
-            else str(self._client.hikka_me.id)
-        )]
+        self._cached_usernames = [
+            (
+                self._client.hikka_me.username.lower()
+                if self._client.hikka_me.username
+                else str(self._client.hikka_me.id)
+            )
+        ]
 
         self._cached_usernames.extend(
             getattr(self._client.hikka_me, "usernames", None) or []
         )
 
         self.raw_handlers = []
-        self._external_bl: typing.List[int] = []
 
-        asyncio.ensure_future(self._external_bl_reload_loop())
-
-    async def _handle_ratelimit(self, message: Message, func: callable) -> bool:
+    async def _handle_ratelimit(
+        self,
+        message: Message,
+        func: typing.Callable[..., typing.Any],
+    ) -> bool:
         if await self.security.check(message, security.OWNER):
             return True
 
@@ -183,7 +192,6 @@ class CommandDispatcher:
         return ret
 
     def _handle_grep(self, message: Message) -> Message:
-        # Allow escaping grep with double stick
         if "||grep" in message.text or "|| grep" in message.text:
             message.raw_text = re.sub(r"\|\| ?grep", "| grep", message.raw_text)
             message.text = re.sub(r"\|\| ?grep", "| grep", message.text)
@@ -194,7 +202,11 @@ class CommandDispatcher:
         if not re.search(r".+\| ?grep (.+)", message.raw_text):
             return message
 
-        grep = re.search(r".+\| ?grep (.+)", message.raw_text).group(1)
+        match = re.search(r".+\| ?grep (.+)", message.raw_text)
+        if not match:
+            return message
+
+        grep = match.group(1)
         message.text = re.sub(r"\| ?grep.+", "", message.text)
         message.raw_text = re.sub(r"\| ?grep.+", "", message.raw_text)
         message.message = re.sub(r"\| ?grep.+", "", message.message)
@@ -202,8 +214,10 @@ class CommandDispatcher:
         ungrep = False
 
         if re.search(r"-v (.+)", grep):
-            ungrep = re.search(r"-v (.+)", grep).group(1)
-            grep = re.sub(r"(.+) -v .+", r"\g<1>", grep)
+            match = re.search(r"-v (.+)", grep)
+            if match:
+                ungrep = match.group(1)
+                grep = re.sub(r"(.+) -v .+", r"\g<1>", grep)
 
         grep = utils.escape_html(grep).strip() if grep else False
         ungrep = utils.escape_html(ungrep).strip() if ungrep else False
@@ -219,8 +233,15 @@ class CommandDispatcher:
             for line in text.split("\n"):
                 if (
                     grep
+                    and isinstance(grep, str)
                     and grep in utils.remove_html(line)
-                    and (not ungrep or ungrep not in utils.remove_html(line))
+                    and (
+                        not ungrep
+                        or (
+                            isinstance(ungrep, str)
+                            and ungrep not in utils.remove_html(line)
+                        )
+                    )
                 ):
                     res.append(
                         utils.remove_html(line, escape=True).replace(
@@ -228,13 +249,17 @@ class CommandDispatcher:
                         )
                     )
 
-                if not grep and ungrep and ungrep not in utils.remove_html(line):
+                if (
+                    not grep
+                    and isinstance(ungrep, str)
+                    and ungrep not in utils.remove_html(line)
+                ):
                     res.append(utils.remove_html(line, escape=True))
 
             cont = (
                 (f"contain <b>{grep}</b>" if grep else "")
                 + (" and" if grep and ungrep else "")
-                + ((" do not contain <b>" + ungrep + "</b>") if ungrep else "")
+                + ((f" do not contain <b>{ungrep}</b>") if ungrep else "")
             )
 
             if res:
@@ -271,11 +296,17 @@ class CommandDispatcher:
         self,
         event: typing.Union[events.NewMessage, events.MessageDeleted],
         watcher: bool = False,
-    ) -> typing.Union[bool, typing.Tuple[Message, str, str, callable]]:
+    ) -> typing.Union[
+        typing.Literal[False],
+        typing.Tuple[Message, str, str, typing.Callable[..., typing.Any]],
+    ]:
         if not hasattr(event, "message") or not hasattr(event.message, "message"):
             return False
 
         prefix = self._db.get(main.__name__, "command_prefix", False) or "."
+        if not isinstance(prefix, str):
+            prefix = "."
+
         change = str.maketrans(ru_keys + en_keys, en_keys + ru_keys)
         message = utils.censor(event.message)
 
@@ -286,13 +317,14 @@ class CommandDispatcher:
             message.out
             and len(message.message) > 2
             and (
-                message.message.startswith(prefix * 2)
+                message.message.startswith(str(prefix) * 2)
                 and any(s != prefix for s in message.message)
-                or message.message.startswith(str.translate(prefix * 2, change))
-                and any(s != str.translate(prefix, change) for s in message.message)
+                or message.message.startswith((str(prefix) * 2).translate(change))
+                and any(
+                    s != str.translate(str(prefix), change) for s in message.message
+                )
             )
         ):
-            # Allow escaping commands using .'s
             if not watcher:
                 await message.edit(
                     message.message[1:],
@@ -305,8 +337,8 @@ class CommandDispatcher:
             return False
 
         if (
-            event.message.message.startswith(str.translate(prefix, change))
-            and str.translate(prefix, change) != prefix
+            event.message.message.startswith(str(prefix).translate(change))
+            and str.translate(str(prefix), change) != prefix
         ):
             message.message = str.translate(message.message, change)
             message.text = str.translate(message.text, change)
@@ -326,27 +358,40 @@ class CommandDispatcher:
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
-        # It's not recommended to remove the security check below (external_bl)
-        # If you attempt to bypass this protection, you will be banned from the chat
-        # The protection from using userbots is multi-layer and this is one of the layers
-        # If you bypass it, the next (external) layer will trigger and you will be banned
-        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+        if not isinstance(blacklist_chats, list):
+            blacklist_chats = []
 
-        if (
-            (chat_id := utils.get_chat_id(message)) in self._external_bl
-            or chat_id in blacklist_chats
-            or (whitelist_chats and chat_id not in whitelist_chats)
+        if not isinstance(whitelist_chats, list):
+            whitelist_chats = []
+
+        if not isinstance(whitelist_modules, list):
+            whitelist_modules = []
+
+        if (chat_id := utils.get_chat_id(message)) in blacklist_chats or (
+            whitelist_chats and chat_id not in whitelist_chats
         ):
             return False
 
         if not message.message or len(message.message) == 1:
-            return False  # Message is just the prefix
+            return False
 
         initiator = getattr(event, "sender_id", 0)
 
         command = message.message[1:].strip().split(maxsplit=1)[0]
         tag = command.split("@", maxsplit=1)
+
+        nonickcommands = self._db.get(main.__name__, "nonickcmds", [])
+        nonickusers = self._db.get(main.__name__, "nonickusers", [])
+        nonickchats = self._db.get(main.__name__, "nonickchats", [])
+
+        if not isinstance(nonickcommands, list):
+            nonickcommands = []
+
+        if not isinstance(nonickusers, list):
+            nonickusers = []
+
+        if not isinstance(nonickchats, list):
+            nonickchats = []
 
         if len(tag) == 2:
             if tag[1] == "me":
@@ -368,11 +413,10 @@ class CommandDispatcher:
         elif (
             not event.is_private
             and not self._db.get(main.__name__, "no_nickname", False)
-            and command not in self._db.get(main.__name__, "nonickcmds", [])
-            and initiator not in self._db.get(main.__name__, "nonickusers", [])
+            and command not in nonickcommands
+            and initiator not in nonickusers
             and not self.security.check_tsec(initiator, command)
-            and utils.get_chat_id(event)
-            not in self._db.get(main.__name__, "nonickchats", [])
+            and utils.get_chat_id(event) not in nonickchats
         ):
             return False
 
@@ -412,9 +456,11 @@ class CommandDispatcher:
                 logger.warning("Ignoring message in datachat \\ logging chat")
             return False
 
-        message.message = prefix + txt + message.message[len(prefix + command) :]
+        message.message = (
+            f"{prefix}{txt}" + message.message[len(f"{prefix}{command}") :]
+        )
 
-        if (
+        if isinstance(func, types.MethodType) and (
             f"{str(chat_id)}.{func.__self__.__module__}" in blacklist_chats
             or whitelist_modules
             and f"{chat_id}.{func.__self__.__module__}" not in whitelist_modules
@@ -463,9 +509,9 @@ class CommandDispatcher:
         logger.exception("Command failed", extra={"stack": inspect.stack()})
         if isinstance(exc, RPCError):
             if isinstance(exc, FloodWaitError):
-                hours = exc.seconds // 3600
-                minutes = (exc.seconds % 3600) // 60
-                seconds = exc.seconds % 60
+                hours = exc.seconds // 3600  # type: ignore
+                minutes = (exc.seconds % 3600) // 60  # type: ignore
+                seconds = exc.seconds % 60  # type: ignore
                 hours = f"{hours} hours, " if hours else ""
                 minutes = f"{minutes} minutes, " if minutes else ""
                 seconds = f"{seconds} seconds" if seconds else ""
@@ -476,7 +522,7 @@ class CommandDispatcher:
                     .format(
                         utils.escape_html(message.message),
                         fw_time,
-                        type(exc.request).__name__,
+                        type(exc.request).__name__,  # type: ignore
                     )
                 )
             else:
@@ -519,15 +565,15 @@ class CommandDispatcher:
     async def _handle_tags(
         self,
         event: typing.Union[events.NewMessage, events.MessageDeleted],
-        func: callable,
+        func: typing.Callable[..., typing.Any],
     ) -> bool:
         return bool(await self._handle_tags_ext(event, func))
 
     async def _handle_tags_ext(
         self,
         event: typing.Union[events.NewMessage, events.MessageDeleted],
-        func: callable,
-    ) -> str:
+        func: typing.Callable[..., typing.Any],
+    ) -> str | None:
         """
         Handle tags.
         :param event: The event to handle.
@@ -585,22 +631,38 @@ class CommandDispatcher:
             "mention": lambda: getattr(m, "mentioned", False),
             "no_mention": lambda: not getattr(m, "mentioned", False),
             "startswith": lambda: (
-                isinstance(m, Message) and m.raw_text.startswith(func.startswith)
+                isinstance(m, Message)
+                and isinstance(getattr(func, "startswith", None), str)
+                and m.raw_text.startswith(getattr(func, "startswith", None))
             ),
             "endswith": lambda: (
-                isinstance(m, Message) and m.raw_text.endswith(func.endswith)
+                isinstance(m, Message)
+                and isinstance(getattr(func, "endswith", None), str)
+                and m.raw_text.endswith(getattr(func, "endswith", None))
             ),
-            "contains": lambda: isinstance(m, Message) and func.contains in m.raw_text,
-            "filter": lambda: callable(func.filter) and func.filter(m),
-            "from_id": lambda: getattr(m, "sender_id", None) == func.from_id,
+            "contains": lambda: (
+                isinstance(m, Message)
+                and isinstance(getattr(func, "contains", None), str)
+                and getattr(func, "contains", None) in m.raw_text
+            ),
+            "filter": lambda: (
+                callable(getattr(func, "filter", None))
+                and getattr(func, "filter", lambda *_: None)(m)
+            ),
+            "from_id": lambda: (
+                getattr(m, "sender_id", None)
+                and getattr(m, "sender_id", None) == getattr(func, "from_id", None)
+            ),
             "chat_id": lambda: utils.get_chat_id(m)
             == (
-                func.chat_id
-                if not str(func.chat_id).startswith("-100")
-                else int(str(func.chat_id)[4:])
+                getattr(func, "chat_id", None)
+                if not str(getattr(func, "chat_id", "")).startswith("-100")
+                else int(str(getattr(func, "chat_id", ""))[4:])
             ),
             "regex": lambda: (
-                isinstance(m, Message) and re.search(func.regex, m.raw_text)
+                isinstance(getattr(func, "regex", None), str)
+                and isinstance(m, Message)
+                and re.search(getattr(func, "regex", ""), m.raw_text)
             ),
         }
 
@@ -636,23 +698,26 @@ class CommandDispatcher:
         whitelist_chats = self._db.get(main.__name__, "whitelist_chats", [])
         whitelist_modules = self._db.get(main.__name__, "whitelist_modules", [])
 
-        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
-        # It's not recommended to remove the security check below (external_bl)
-        # If you attempt to bypass this protection, you will be banned from the chat
-        # The protection from using userbots is multi-layer and this is one of the layers
-        # If you bypass it, the next (external) layer will trigger and you will be banned
-        # ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+        if not isinstance(blacklist_chats, list):
+            blacklist_chats = []
 
-        if (
-            (chat_id := utils.get_chat_id(message)) in self._external_bl
-            or chat_id in blacklist_chats
-            or (whitelist_chats and chat_id not in whitelist_chats)
+        if not isinstance(whitelist_chats, list):
+            whitelist_chats = []
+
+        if not isinstance(whitelist_modules, list):
+            whitelist_modules = []
+
+        if (chat_id := utils.get_chat_id(message)) in blacklist_chats or (
+            whitelist_chats and chat_id not in whitelist_chats
         ):
             logger.debug("Message is blacklisted")
             return
 
         for func in self._modules.watchers:
             bl = self._db.get(main.__name__, "disabled_watchers", {})
+            if not isinstance(bl, dict):
+                bl = {}
+
             modname = str(func.__self__.__class__.strings["name"])
 
             if (
@@ -704,9 +769,9 @@ class CommandDispatcher:
 
     async def future_dispatcher(
         self,
-        func: callable,
+        func: typing.Callable[..., typing.Any],
         message: Message,
-        exception_handler: callable,
+        exception_handler: typing.Callable[..., typing.Any],
         *args,
     ):
         # Will be used to determine, which client caused logging messages
@@ -716,15 +781,3 @@ class CommandDispatcher:
             await func(message)
         except Exception as e:
             await exception_handler(e, message, *args)
-
-    async def _external_bl_reload_loop(self):
-        while True:
-            with contextlib.suppress(Exception):
-                self._external_bl = (
-                    await utils.run_sync(
-                        requests.get,
-                        "https://ubguard.dan.tatar/blacklist.json",
-                    )
-                ).json()["blacklist"]
-
-            await asyncio.sleep(60)

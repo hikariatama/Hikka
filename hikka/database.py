@@ -6,19 +6,25 @@
 
 import asyncio
 import collections
+import collections.abc
 import json
 import logging
 import os
 import time
+import typing
 
 try:
     import redis
+    from redis import Redis
 except ImportError as e:
     if "RAILWAY" in os.environ:
         raise e
 
+    redis = None
+    RedisType = typing.Literal[None]
+else:
+    RedisType = redis.Redis
 
-import typing
 
 from hikkatl.errors.rpcerrorlist import ChannelsTooMuchError
 from hikkatl.tl.types import Message, User
@@ -58,15 +64,18 @@ class Database(dict):
         self._client: CustomTelegramClient = client
         self._next_revision_call: int = 0
         self._revisions: typing.List[dict] = []
-        self._assets: int = None
-        self._me: User = None
-        self._redis: redis.Redis = None
-        self._saving_task: asyncio.Future = None
+        self._assets: int | None = None
+        self._me: User | None = None
+        self._redis: "Redis | None" = None
+        self._saving_task: asyncio.Future | None = None
 
     def __repr__(self):
         return object.__repr__(self)
 
     def _redis_save_sync(self):
+        if not self._redis:
+            return
+
         with self._redis.pipeline() as pipe:
             pipe.set(
                 str(self._client.tg_id),
@@ -96,12 +105,17 @@ class Database(dict):
 
     async def redis_init(self) -> bool:
         """Init redis database"""
+        if not redis:
+            return False
+
         if REDIS_URI := (
             os.environ.get("REDIS_URL") or main.get_config_key("redis_uri")
         ):
             self._redis = redis.Redis.from_url(REDIS_URI)
         else:
             return False
+
+        return True
 
     async def init(self):
         """Asynchronous initialization unit"""
@@ -112,13 +126,14 @@ class Database(dict):
         self.read()
 
         try:
-            self._assets, _ = await utils.asset_channel(
+            channel, _ = await utils.asset_channel(
                 self._client,
                 "hikka-assets",
                 "🌆 Your Hikka assets will be stored here",
                 archive=True,
                 avatar="https://raw.githubusercontent.com/hikariatama/assets/master/hikka-assets.png",
             )
+            self._assets = channel.id
         except ChannelsTooMuchError:
             self._assets = None
             logger.error(
@@ -133,13 +148,11 @@ class Database(dict):
         """Read database and stores it in self"""
         if self._redis:
             try:
-                self.update(
-                    **json.loads(
-                        self._redis.get(
-                            str(self._client.tg_id),
-                        ).decode(),
-                    )
-                )
+                res = self._redis.get(str(self._client.tg_id))
+                if not isinstance(res, bytes):
+                    raise TypeError("Redis database read failed")
+
+                self.update(**json.loads(res.decode()))
             except Exception:
                 logger.exception("Error reading redis database")
             return
@@ -212,7 +225,7 @@ class Database(dict):
 
         if self._next_revision_call < time.time():
             self._revisions += [dict(self)]
-            self._next_revision_call = time.time() + 3
+            self._next_revision_call = int(time.time() + 3)
 
         while len(self._revisions) > 15:
             self._revisions.pop()
@@ -261,7 +274,7 @@ class Database(dict):
 
         return asset[0] if asset else None
 
-    def get(
+    def get(  # type: ignore
         self,
         owner: str,
         key: str,
@@ -305,7 +318,13 @@ class Database(dict):
         key: str,
         default: typing.Optional[JSONSerializable] = None,
         item_type: typing.Optional[typing.Any] = None,
-    ) -> typing.Union[JSONSerializable, PointerList, PointerDict]:
+    ) -> typing.Union[
+        JSONSerializable,
+        PointerList,
+        PointerDict,
+        NamedTupleMiddlewareList,
+        NamedTupleMiddlewareDict,
+    ]:
         """Get a pointer to database key"""
         value = self.get(owner, key, default)
         mapping = {
@@ -333,7 +352,14 @@ class Database(dict):
 
         if item_type is not None:
             if isinstance(value, list):
-                for item in self.get(owner, key, default):
+                current = self.get(owner, key, default)
+                if not isinstance(current, list):
+                    raise ValueError(
+                        "Item type can only be specified for dedicated keys and"
+                        " can't be mixed with other ones"
+                    )
+
+                for item in current:
                     if not isinstance(item, dict):
                         raise ValueError(
                             "Item type can only be specified for dedicated keys and"
@@ -345,7 +371,14 @@ class Database(dict):
                     item_type,
                 )
             if isinstance(value, dict):
-                for item in self.get(owner, key, default).values():
+                value = self.get(owner, key, default)
+                if not isinstance(value, dict):
+                    raise ValueError(
+                        "Item type can only be specified for dedicated keys and"
+                        " can't be mixed with other ones"
+                    )
+
+                for item in value.values():
                     if not isinstance(item, dict):
                         raise ValueError(
                             "Item type can only be specified for dedicated keys and"

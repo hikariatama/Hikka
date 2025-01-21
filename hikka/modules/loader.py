@@ -416,7 +416,7 @@ class LoaderMod(loader.Module):
         cancel_callback: callable,
     ) -> bool:
         chat_id = utils.get_chat_id(message)
-        if chat_id == self._tg_id or not isinstance(message.peer_id, PeerUser):
+        if chat_id == self._tg_id:
             return True
 
         async for msg in self._client.iter_messages(

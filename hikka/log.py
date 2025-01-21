@@ -34,7 +34,7 @@ from .web.debugger import WebDebugger
 old = linecache.getlines
 
 
-def getlines(filename: str, module_globals=None) -> str:
+def getlines(filename: str, module_globals=None) -> list[str]:
     """
     Get the lines for a Python source file from the cache.
     Update the cache if it doesn't contain an entry for this file already.
@@ -51,7 +51,7 @@ def getlines(filename: str, module_globals=None) -> str:
                 return list(
                     map(
                         lambda x: f"{x}\n",
-                        sys.modules[module].__loader__.get_source().splitlines(),
+                        sys.modules[module].__loader__.get_source().splitlines(),  # type: ignore
                     )
                 )
     except Exception:
@@ -128,7 +128,11 @@ class HikkaException:
         line_regex = re.compile(r'  File "(.*?)", line ([0-9]+), in (.+)')
 
         def format_line(line: str) -> str:
-            filename_, lineno_, name_ = line_regex.search(line).groups()
+            res = line_regex.search(line)
+            if not res:
+                return f"<code>{utils.escape_html(line)}</code>"
+
+            filename_, lineno_, name_ = res.groups()
 
             return (
                 f"👉 <code>{utils.escape_html(filename_)}:{lineno_}</code> <b>in</b>"
@@ -137,21 +141,27 @@ class HikkaException:
 
         filename, lineno, name = next(
             (
-                line_regex.search(line).groups()
+                (
+                    match.groups()
+                    if (match := line_regex.search(line))
+                    else (None, None, None)
+                )
                 for line in reversed(full_traceback.splitlines())
                 if line_regex.search(line)
             ),
             (None, None, None),
         )
 
-        full_traceback = "\n".join([
-            (
-                format_line(line)
-                if line_regex.search(line)
-                else f"<code>{utils.escape_html(line)}</code>"
-            )
-            for line in full_traceback.splitlines()
-        ])
+        full_traceback = "\n".join(
+            [
+                (
+                    format_line(line)
+                    if line_regex.search(line)
+                    else f"<code>{utils.escape_html(line)}</code>"
+                )
+                for line in full_traceback.splitlines()
+            ]
+        )
 
         caller = utils.find_caller(stack or inspect.stack())
 
@@ -176,9 +186,9 @@ class HikkaException:
                     )
                     else ""
                 ),
-                utils.escape_html(filename),
-                lineno,
-                utils.escape_html(name),
+                utils.escape_html(str(filename)),
+                str(lineno),
+                utils.escape_html(str(name)),
                 utils.escape_html(
                     "".join(
                         traceback.format_exception_only(exc_type, exc_value)
@@ -239,7 +249,7 @@ class TelegramLogsHandler(logging.Handler):
                 await self.sender()
             await asyncio.sleep(3)
 
-    def setLevel(self, level: int):
+    def setLevel(self, level: int):  # type: ignore
         self.lvl = level
 
     def dump(self):
@@ -267,7 +277,7 @@ class TelegramLogsHandler(logging.Handler):
     ):
         chunks = item.message + "\n\n<b>🪐 Full traceback:</b>\n" + item.full_stack
 
-        chunks = list(utils.smart_split(*hikkatl.extensions.html.parse(chunks), 4096))
+        chunks = list(utils.smart_split(*hikkatl.extensions.html.parse(chunks), 4096))  # type: ignore
 
         await call.edit(
             chunks[0],
@@ -282,25 +292,30 @@ class TelegramLogsHandler(logging.Handler):
             return []
 
         if not (url := item.debug_url):
-            try:
-                url = self.web_debugger.feed(*item.sysinfo)
-            except Exception:
+            if not self.web_debugger:
                 url = None
+            else:
+                try:
+                    url = self.web_debugger.feed(*item.sysinfo)
+                except Exception:
+                    url = None
 
-            item.debug_url = url
+            item.debug_url = str(url)  # type: ignore
 
-        return [(
-            {
-                "text": "🐞 Web debugger",
-                "url": url,
-            }
-            if self.web_debugger
-            else {
-                "text": "🪲 Start debugger",
-                "callback": self._start_debugger,
-                "args": (item,),
-            }
-        )]
+        return [
+            (
+                {
+                    "text": "🐞 Web debugger",
+                    "url": url,
+                }
+                if self.web_debugger
+                else {
+                    "text": "🪲 Start debugger",
+                    "callback": self._start_debugger,
+                    "args": (item,),
+                }
+            )
+        ]
 
     async def _start_debugger(
         self,
@@ -312,7 +327,7 @@ class TelegramLogsHandler(logging.Handler):
             await self.web_debugger.proxy_ready.wait()
 
         url = self.web_debugger.feed(*item.sysinfo)
-        item.debug_url = url
+        item.debug_url = url  # type: ignore
 
         await call.edit(
             item.message,
@@ -335,17 +350,19 @@ class TelegramLogsHandler(logging.Handler):
             self._queue = {
                 client_id: utils.chunks(
                     utils.escape_html(
-                        "".join([
-                            item[0]
-                            for item in self.tg_buff
-                            if isinstance(item[0], str)
-                            and (
-                                not item[1]
-                                or item[1] == client_id
-                                or self.force_send_all
-                            )
-                        ])
-                    ),
+                        "".join(
+                            [
+                                item[0]
+                                for item in self.tg_buff
+                                if isinstance(item[0], str)
+                                and (
+                                    not item[1]
+                                    or item[1] == client_id
+                                    or self.force_send_all
+                                )
+                            ]
+                        )
+                    ),  # type: ignore
                     4096,
                 )
                 for client_id in self._mods
@@ -390,7 +407,7 @@ class TelegramLogsHandler(logging.Handler):
 
                 if len(self._queue[client_id]) > 5:
                     logfile = io.BytesIO(
-                        "".join(self._queue[client_id]).encode("utf-8")
+                        "".join(map(str, self._queue[client_id])).encode("utf-8")
                     )
                     logfile.name = "hikka-logs.txt"
                     logfile.seek(0)
@@ -445,7 +462,7 @@ class TelegramLogsHandler(logging.Handler):
                     *record.exc_info,
                     stack=record.__dict__.get("stack", None),
                     comment=record.msg % record.args,
-                )
+                )  # type: ignore
 
                 if not self.ignore_common or all(
                     field not in exc.message
@@ -456,10 +473,12 @@ class TelegramLogsHandler(logging.Handler):
                 ):
                     self.tg_buff += [(exc, caller)]
             else:
-                self.tg_buff += [(
-                    _tg_formatter.format(record),
-                    caller,
-                )]
+                self.tg_buff += [
+                    (
+                        _tg_formatter.format(record),
+                        caller,
+                    )
+                ]
 
         if len(self.buffer) + len(self.handledbuffer) >= self.capacity:
             if self.handledbuffer:
@@ -503,7 +522,7 @@ rotating_handler = RotatingFileHandler(
     maxBytes=10 * 1024 * 1024,
     backupCount=1,
     encoding="utf-8",
-    delay=0,
+    delay=False,
 )
 
 rotating_handler.setFormatter(_main_formatter)
@@ -515,7 +534,7 @@ def init():
     handler.setFormatter(_main_formatter)
     logging.getLogger().handlers = []
     logging.getLogger().addHandler(
-        TelegramLogsHandler((handler, rotating_handler), 7000)
+        TelegramLogsHandler((handler, rotating_handler), 7000)  # type: ignore
     )
     logging.getLogger().setLevel(logging.NOTSET)
     logging.getLogger("hikkatl").setLevel(logging.WARNING)

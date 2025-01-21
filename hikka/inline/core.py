@@ -69,7 +69,7 @@ class InlineManager(
         self.translator: Translator = allmodules.translator
 
         self._units: typing.Dict[str, dict] = {}
-        self._custom_map: typing.Dict[str, callable] = {}
+        self._custom_map: typing.Dict[str, typing.Callable] = {}
         self.fsm: typing.Dict[str, str] = {}
         self._web_auth_tokens: typing.List[str] = []
         self._error_events: typing.Dict[str, asyncio.Event] = {}
@@ -79,14 +79,14 @@ class InlineManager(
 
         self._token = db.get("hikka.inline", "bot_token", False)
 
-        self._me: int = None
-        self._name: str = None
-        self._dp: Dispatcher = None
-        self._task: asyncio.Future = None
-        self._cleaner_task: asyncio.Future = None
-        self.bot: Bot = None
-        self.bot_id: int = None
-        self.bot_username: str = None
+        self._me: int = None  # type: ignore
+        self._name: str = None  # type: ignore
+        self._dp: Dispatcher = None  # type: ignore
+        self._task: asyncio.Future = None  # type: ignore
+        self._cleaner_task: asyncio.Future = None  # type: ignore
+        self.bot: Bot = None  # type: ignore
+        self.bot_id: int = None  # type: ignore
+        self.bot_username: str = None  # type: ignore
 
     async def _cleaner(self):
         """Cleans outdated inline units"""
