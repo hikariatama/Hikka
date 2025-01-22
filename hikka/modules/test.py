@@ -29,7 +29,7 @@ for mod in os.scandir(DEBUG_MODS_DIR):
 
 
 @loader.tds
-class TestMod(loader.Module):
+class Tester(loader.Module):
     """Perform operations based on userbot self-testing"""
 
     strings = {"name": "Tester"}

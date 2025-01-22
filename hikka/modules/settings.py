@@ -13,7 +13,7 @@ from ..inline.types import InlineCall
 
 
 @loader.tds
-class CoreMod(loader.Module):
+class Settings(loader.Module):
     """Control core userbot settings"""
 
     strings = {"name": "Settings"}

@@ -37,7 +37,7 @@ ALL_INVOKES = [
 
 
 @loader.tds
-class HikkaSettingsMod(loader.Module):
+class HikkaSettings(loader.Module):
     """Advanced settings for Hikka Userbot"""
 
     strings = {"name": "HikkaSettings"}

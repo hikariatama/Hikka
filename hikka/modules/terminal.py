@@ -294,7 +294,7 @@ class RawMessageEditor(SudoMessageEditor):
 
 
 @loader.tds
-class TerminalMod(loader.Module):
+class Terminal(loader.Module):
     """Runs commands"""
 
     strings = {"name": "Terminal"}

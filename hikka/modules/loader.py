@@ -52,7 +52,7 @@ MODULE_LOADING_SUCCESS = 1
 
 
 @loader.tds
-class LoaderMod(loader.Module):
+class Loader(loader.Module):
     """Loads modules"""
 
     strings = {"name": "Loader"}

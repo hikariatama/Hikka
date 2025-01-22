@@ -60,7 +60,7 @@ CONSTRUCTORS = {
 
 
 @loader.tds
-class APIRatelimiterMod(loader.Module):
+class APILimiter(loader.Module):
     """Helps userbot avoid spamming Telegram API"""
 
     strings = {"name": "APILimiter"}

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class HikkaBackupMod(loader.Module):
+class HikkaBackup(loader.Module):
     """Handles database and modules backups"""
 
     strings = {"name": "HikkaBackup"}

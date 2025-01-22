@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 @loader.tds
-class UpdaterMod(loader.Module):
+class Updater(loader.Module):
     """Updates itself"""
 
     strings = {"name": "Updater"}

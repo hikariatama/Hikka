@@ -443,9 +443,6 @@ class Evaluator(loader.Module):
                 f'{btoken.split(":")[0]}:{"*" * 26}',
             )
 
-        if htoken := self.lookup("loader").get("token", False):
-            ret = ret.replace(htoken, f'eugeo_{"*" * 26}')
-
         ret = ret.replace(
             StringSession.save(self._client.session),
             "StringSession(**************************)",
