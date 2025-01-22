@@ -670,6 +670,7 @@ class Modules:
 
         await self.complete_registration(ret)
         ret.__origin__ = origin
+        ret.name = ret.__class__.__name__
 
         cls_name = ret.__class__.__name__
 
@@ -876,7 +877,6 @@ class Modules:
             _hikka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
 
         instance.internal_init(self)
-        instance.name = instance.__class__.__name__
 
         for module in self.modules:
             if module.__class__.__name__ == instance.__class__.__name__:
