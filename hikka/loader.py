@@ -670,7 +670,6 @@ class Modules:
 
         await self.complete_registration(ret)
         ret.__origin__ = origin
-        ret.name = ret.__class__.__name__
 
         cls_name = ret.__class__.__name__
 

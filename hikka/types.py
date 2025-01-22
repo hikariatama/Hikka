@@ -138,6 +138,7 @@ class Module:
         self.allclients = self.allmodules.allclients
         self.tg_id = self._client.tg_id
         self._tg_id = self._client.tg_id
+        self.name = self.__class__.__name__
 
     async def on_unload(self):
         """Called after unloading / reloading module"""
@@ -714,23 +715,7 @@ class Module:
 class Library:
     """All external libraries must have a class-inheritant from this class"""
 
-    allmodules: "Modules" = None  # type: ignore
-    db: "Database" = None  # type: ignore
-    _db: "Database" = None  # type: ignore
-    client: "CustomTelegramClient" = None  # type: ignore
-    _client: "CustomTelegramClient" = None  # type: ignore
-    tg_id: int = None  # type: ignore
-    _tg_id: int = None  # type: ignore
-    lookup: typing.Callable = None  # type: ignore
-    get_prefix: typing.Callable = None  # type: ignore
-    inline: "InlineManager" = None  # type: ignore
-    allclients: "list[CustomTelegramClient]" = None  # type: ignore
-    version: str | None = None
-    name: str = None  # type: ignore
-    source_url: str = None  # type: ignore
-    config: "LibraryConfig" = None  # type: ignore
     strings: "Strings" = {"name": "Unknown"}  # type: ignore
-    translator: "Translator" = None  # type: ignore
 
     def internal_init(self, allmodules: "Modules"):
         self.allmodules = allmodules
