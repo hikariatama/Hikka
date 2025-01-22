@@ -115,23 +115,23 @@ class StringLoader(SourceLoader):
 
 
 class Module:
-    allmodules: "Modules" = None  # type: ignore
-    db: "Database" = None  # type: ignore
-    _db: "Database" = None  # type: ignore
-    client: "CustomTelegramClient" = None  # type: ignore
-    _client: "CustomTelegramClient" = None  # type: ignore
-    tg_id: int = None  # type: ignore
-    _tg_id: int = None  # type: ignore
-    lookup: typing.Callable = None  # type: ignore
-    get_prefix: typing.Callable = None  # type: ignore
-    inline: "InlineManager" = None  # type: ignore
-    allclients: "list[CustomTelegramClient]" = None  # type: ignore
+    allmodules: "Modules"
+    db: "Database"
+    _db: "Database"
+    client: "CustomTelegramClient"
+    _client: "CustomTelegramClient"
+    tg_id: int
+    _tg_id: int
+    lookup: typing.Callable
+    get_prefix: typing.Callable
+    inline: "InlineManager"
+    allclients: "list[CustomTelegramClient]"
     __version__: str | None = None
     __origin__: str | None = None
-    config: "ModuleConfig" = None  # type: ignore
-    name: str = None  # type: ignore
+    config: "ModuleConfig"
+    name: str
     strings: "Strings" = {"name": "Unknown"}  # type: ignore
-    translator: "Translator" = None  # type: ignore
+    translator: "Translator"
 
     """There is no help for this module"""
 
@@ -154,6 +154,7 @@ class Module:
         self.allclients = self.allmodules.allclients
         self.tg_id = self._client.tg_id
         self._tg_id = self._client.tg_id
+        self.name = self.__class__.__name__
 
     async def on_unload(self):
         """Called after unloading / reloading module"""
