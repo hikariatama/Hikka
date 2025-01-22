@@ -41,7 +41,7 @@ import typing
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
-from git.base import Repo
+from git import Repo
 import grapheme
 import hikkatl
 import hikkatl.extensions.html as parser

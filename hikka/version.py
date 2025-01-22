@@ -10,7 +10,7 @@ __version__ = (1, 6, 4)
 
 import os
 
-from git.base import Repo
+from git import Repo
 
 try:
     branch = Repo(
