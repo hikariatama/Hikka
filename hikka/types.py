@@ -138,7 +138,6 @@ class Module:
         self.allclients = self.allmodules.allclients
         self.tg_id = self._client.tg_id
         self._tg_id = self._client.tg_id
-        self.name = self.__class__.__name__
 
     async def on_unload(self):
         """Called after unloading / reloading module"""
