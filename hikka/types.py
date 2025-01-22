@@ -115,23 +115,7 @@ class StringLoader(SourceLoader):
 
 
 class Module:
-    allmodules: "Modules"
-    db: "Database"
-    _db: "Database"
-    client: "CustomTelegramClient"
-    _client: "CustomTelegramClient"
-    tg_id: int
-    _tg_id: int
-    lookup: typing.Callable
-    get_prefix: typing.Callable
-    inline: "InlineManager"
-    allclients: "list[CustomTelegramClient]"
-    __version__: str | None = None
-    __origin__: str | None = None
-    config: "ModuleConfig"
-    name: str
     strings: "Strings" = {"name": "Unknown"}  # type: ignore
-    translator: "Translator"
 
     """There is no help for this module"""
 

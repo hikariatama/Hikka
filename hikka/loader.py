@@ -989,9 +989,6 @@ class Modules:
                     mod.config,
                 )
 
-        if not hasattr(mod, "name"):
-            mod.name = mod.strings["name"]
-
         if skip_hook:
             return
 
