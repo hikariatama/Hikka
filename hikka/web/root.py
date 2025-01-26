@@ -89,6 +89,7 @@ class Web:
             "lavhost": "https://github.com/hikariatama/assets/raw/master/victory-hand_270c-fe0f.png",
             "termux": "https://github.com/hikariatama/assets/raw/master/smiling-face-with-sunglasses_1f60e.png",
             "docker": "https://github.com/hikariatama/assets/raw/master/spouting-whale_1f433.png",
+
         }[(
             "lavhost"
             if "LAVHOST" in os.environ
@@ -541,7 +542,10 @@ class Web:
                     (
                         "🌘🔐 <b>Click button below to confirm web application"
                         f" ops</b>\n\n<b>Client IP</b>: {ips}\n{cities}\n<i>If you did"
-                        " not request any codes, simply ignore this message</i>"
+                        " not request any codes, simply ignore this message</i>\n\n⚠️"
+                        " <b>Warning!</b> If you did not make any actions in the web"
+                        " interface, <b>do not click the button below</b>, as it might"
+                        " give the user on the other end the access to your account!"
                     ),
                     disable_web_page_preview=True,
                     reply_markup=markup,

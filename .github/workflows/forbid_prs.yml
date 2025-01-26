@@ -12,4 +12,5 @@ jobs:
       with:
         comment: "We do not accept PRs."
       env:
+
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

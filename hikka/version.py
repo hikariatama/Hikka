@@ -8,6 +8,7 @@
 
 __version__ = (1, 6, 4)
 
+
 import os
 
 import git
