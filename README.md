@@ -9,6 +9,14 @@
 <a href="#"><img src="https://img.shields.io/github/stars/hikariatama/Hikka"/></a>&nbsp;<a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a><br>
 
 <hr>
+
+<b>Warning: </b>If you are a paranoid person, you should not use this userbot. This userbot is not a virus, but it can be used for malicious purposes. You are responsible for all actions taken by your account.  
+  
+**Important notice**: Versions `1.6.4` and `1.7.0` will NOT be released due to the reasons mentioned in the chanelog.  
+The development will start from scratch with a new project, which will be announced later.  
+As of March 2025, you can apply for an early stage of alpha-testing through the official channels.  
+
+<hr>
 <h2><img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="54" align="middle"> Installation</h2>
 
 ### Installation page

@@ -16,7 +16,6 @@ import requests
 
 from . import utils
 from .tl_cache import CustomTelegramClient
-from .version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -107,32 +106,6 @@ class RemoteStorage:
 
             await asyncio.sleep(5)
 
-    async def preload_main_repo(self):
-        """Preloads modules from the main repo."""
-        mods_info = (
-            await utils.run_sync(requests.get, "https://mods.hikariatama.ru/mods.json")
-        ).json()
-        for name, info in mods_info.items():
-            _, repo, module_name = self._parse_url(info["link"])
-            code = self._local_storage.fetch(repo, module_name)
-
-            if code:
-                sha = hashlib.sha256(code.encode()).hexdigest()
-                if sha != info["sha"]:
-                    logger.debug("Module %s from main repo is outdated.", name)
-                    code = None
-                else:
-                    logger.debug("Module %s from main repo is up to date.", name)
-
-            if not code:
-                logger.debug("Preloading module %s from main repo.", name)
-
-                with contextlib.suppress(Exception):
-                    await self.fetch(info["link"])
-
-                await asyncio.sleep(5)
-                continue
-
     @staticmethod
     def _parse_url(url: str) -> typing.Tuple[str, str, str]:
         """
@@ -169,12 +142,6 @@ class RemoteStorage:
                 requests.get,
                 url,
                 auth=(tuple(auth.split(":", 1)) if auth else None),
-                headers={
-                    "User-Agent": "Hikka Userbot",
-                    "X-Hikka-Version": ".".join(map(str, __version__)),
-                    "X-Hikka-Commit-SHA": utils.get_git_hash(),
-                    "X-Hikka-User": str(self._client.tg_id),
-                },
             )
             r.raise_for_status()
         except Exception:

@@ -114,7 +114,6 @@ class LoaderMod(loader.Module):
         )
         logger.debug("Modules: %s", modules)
         asyncio.ensure_future(self._storage.preload(modules))
-        asyncio.ensure_future(self._storage.preload_main_repo())
 
     async def client_ready(self):
         while not (settings := self.lookup("settings")):
